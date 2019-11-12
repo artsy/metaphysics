@@ -285,19 +285,19 @@ export const FilterArtworksFields = () => {
     facet: {
       type: ArtworkFilterFacetType,
       resolve: (
-        { options },
+        { gravityOptions },
         _options,
         { geneLoader, tagLoader }
       ): Promise<ContextSource> | null => {
-        const { tag_id, gene_id } = options
-        if (tag_id) {
-          return tagLoader(tag_id).then(tag => ({
+        const { tagID, geneID } = gravityOptions
+        if (tagID) {
+          return tagLoader(tagID).then(tag => ({
             ...tag,
             context_type: TagType,
           }))
         }
-        if (gene_id) {
-          return geneLoader(gene_id).then(gene => ({
+        if (geneID) {
+          return geneLoader(geneID).then(gene => ({
             ...gene,
             context_type: GeneType,
           }))
@@ -324,7 +324,13 @@ const filterArtworksConnectionType = connectionDefinitions({
       type: new GraphQLNonNull(GraphQLID),
       description: "The ID of the object.",
       resolve: ({ gravityOptions }) => {
-        const { offset, ...filterOptions } = gravityOptions
+        const {
+          aggregations,
+          page,
+          size,
+          offset,
+          ...filterOptions
+        } = gravityOptions
         return toGlobalId(
           "filterArtworksConnection",
           JSON.stringify(filterOptions, Object.keys(filterOptions).sort())
