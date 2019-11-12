@@ -5386,6 +5386,9 @@ type Partner implements Node {
 
   # This field is deprecated and is being used in Eigen release predating the 6.0 release
   locations(size: Int = 25): [Location]
+    @deprecated(
+      reason: "Prefer to use `locationsConnection`. [Will be removed in vundefined]"
+    )
 
   # A connection of locations from a Partner.
   locationsConnection(

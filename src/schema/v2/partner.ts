@@ -30,6 +30,7 @@ import ShowSorts from "./sorts/show_sorts"
 import ArtistSorts from "./sorts/artist_sorts"
 import { fields as partnerArtistFields } from "./partner_artist"
 import { connectionWithCursorInfo } from "./fields/pagination"
+import { deprecate } from "lib/deprecation"
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   forSale: {
@@ -245,6 +246,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(LocationType),
         description:
           "This field is deprecated and is being used in Eigen release predating the 6.0 release",
+        deprecationReason: deprecate({
+          preferUsageOf: "locationsConnection",
+        }),
         args: {
           size: {
             type: GraphQLInt,
