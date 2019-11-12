@@ -247,6 +247,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "This field is deprecated and is being used in Eigen release predating the 6.0 release",
         deprecationReason: deprecate({
+          inVersion: 2,
           preferUsageOf: "locationsConnection",
         }),
         args: {
