@@ -11,7 +11,9 @@ export default opts => {
 
   const [batchSaleLoader, batchSalesLoader] = createBatchLoaders({
     singleLoader: gravityLoader(id => `sale/${id}`),
-    multipleLoader: gravityLoader<{ id: string, is_auction: boolean }[]>('sales')
+    multipleLoader: gravityLoader<{ id: string; is_auction: boolean }[]>(
+      "sales"
+    ),
   })
 
   type GravityCalculatedCostResponse = {
@@ -29,16 +31,35 @@ export default opts => {
     artistGenesLoader: gravityLoader(id => `artist/${id}/genome/genes`),
     artistLoader: gravityLoader(id => `artist/${id}`),
     artistsLoader: gravityLoader("artists"),
-    artworkImageLoader: gravityLoader<any, { artwork_id: string, image_id: string }>(({ artwork_id, image_id }) => `artwork/${artwork_id}/image/${image_id}`),
+    artworkImageLoader: gravityLoader<
+      any,
+      { artwork_id: string; image_id: string }
+    >(({ artwork_id, image_id }) => `artwork/${artwork_id}/image/${image_id}`),
     artworkLoader: gravityLoader(id => `artwork/${id}`),
     artworksLoader: gravityLoader("artworks"),
     bidderLoader: gravityLoader(id => `bidder/${id}`),
-    fairArtistsLoader: gravityLoader(id => `fair/${id}/artists`, {}, { headers: true }),
-    fairBoothsLoader: gravityLoader(id => `fair/${id}/shows`, {}, { headers: true }),
-    fairPartnersLoader: gravityLoader(id => `fair/${id}/partners`, {}, { headers: true }),
+    fairArtistsLoader: gravityLoader(
+      id => `fair/${id}/artists`,
+      {},
+      { headers: true }
+    ),
+    fairBoothsLoader: gravityLoader(
+      id => `fair/${id}/shows`,
+      {},
+      { headers: true }
+    ),
+    fairPartnersLoader: gravityLoader(
+      id => `fair/${id}/partners`,
+      {},
+      { headers: true }
+    ),
     fairLoader: gravityLoader(id => `fair/${id}`),
     fairsLoader: gravityLoader("fairs", {}, { headers: true }),
-    filterArtworksLoader: gravityLoader("filter/artworks", {}, { requestThrottleMs: 1000 * 60 * 60 }),
+    filterArtworksLoader: gravityLoader(
+      "filter/artworks",
+      {},
+      { requestThrottleMs: 1000 * 60 * 60 }
+    ),
     geneArtistsLoader: gravityLoader(id => `gene/${id}/artists`),
     geneFamiliesLoader: gravityLoader("gene_families"),
     geneLoader: gravityLoader(id => `gene/${id}`),
@@ -47,43 +68,119 @@ export default opts => {
     incrementsLoader: gravityLoader("increments"),
     matchArtistsLoader: gravityLoader("match/artists"),
     matchGeneLoader: gravityLoader("match/genes"),
-    partnerArtistLoader: gravityLoader<any, { artist_id: string, partner_id: string }>(({ artist_id, partner_id }) => `partner/${partner_id}/artist/${artist_id}`),
-    partnerArtistsForArtistLoader: gravityLoader(id => `artist/${id}/partner_artists`),
-    partnerArtistsForPartnerLoader: gravityLoader(id => `partner/${id}/partner_artists`, {}, { headers: true }),
-    partnerArtistsLoader: gravityLoader("partner_artists", {}, { headers: true }),
-    partnerArtworksLoader: gravityLoader(id => `partner/${id}/artworks`, {}, { headers: true }),
+    partnerArtistLoader: gravityLoader<
+      any,
+      { artist_id: string; partner_id: string }
+    >(
+      ({ artist_id, partner_id }) => `partner/${partner_id}/artist/${artist_id}`
+    ),
+    partnerArtistsForArtistLoader: gravityLoader(
+      id => `artist/${id}/partner_artists`
+    ),
+    partnerArtistsForPartnerLoader: gravityLoader(
+      id => `partner/${id}/partner_artists`,
+      {},
+      { headers: true }
+    ),
+    partnerArtistsLoader: gravityLoader(
+      "partner_artists",
+      {},
+      { headers: true }
+    ),
+    partnerArtworksLoader: gravityLoader(
+      id => `partner/${id}/artworks`,
+      {},
+      { headers: true }
+    ),
     partnerCategoriesLoader: gravityLoader("partner_categories"),
     partnerCategoryLoader: gravityLoader(id => `partner_category/${id}`),
     partnerLoader: gravityLoader(id => `partner/${id}`),
     partnerLocationsLoader: gravityLoader(id => `partner/${id}/locations`),
-    partnerShowArtworksLoader: gravityLoader<any, { partner_id: string, show_id: string }>(({ partner_id, show_id }) => `partner/${partner_id}/show/${show_id}/artworks`, {}, { headers: true }),
+    partnerLocationsConnectionLoader: gravityLoader<
+      any,
+      { page: number; published: boolean; size: number; total_count: boolean }
+    >(id => `partner/${id}/locations`, {}, { headers: true }),
+    partnerShowArtworksLoader: gravityLoader<
+      any,
+      { partner_id: string; show_id: string }
+    >(
+      ({ partner_id, show_id }) =>
+        `partner/${partner_id}/show/${show_id}/artworks`,
+      {},
+      { headers: true }
+    ),
     partnerShowImagesLoader: gravityLoader(id => `partner_show/${id}/images`),
-    partnerShowArtistsLoader: gravityLoader<any, { partner_id: string, show_id: string }>(({ partner_id, show_id }) => `partner/${partner_id}/show/${show_id}/artists`, {}, { headers: true }),
-    partnerShowLoader: gravityLoader<any, { partner_id: string, show_id: string }>(({ partner_id, show_id }) => `partner/${partner_id}/show/${show_id}`),
-    partnerShowsLoader: gravityLoader(partner_id => `partner/${partner_id}/shows`, {}, { headers: true }),
+    partnerShowArtistsLoader: gravityLoader<
+      any,
+      { partner_id: string; show_id: string }
+    >(
+      ({ partner_id, show_id }) =>
+        `partner/${partner_id}/show/${show_id}/artists`,
+      {},
+      { headers: true }
+    ),
+    partnerShowLoader: gravityLoader<
+      any,
+      { partner_id: string; show_id: string }
+    >(({ partner_id, show_id }) => `partner/${partner_id}/show/${show_id}`),
+    partnerShowsLoader: gravityLoader(
+      partner_id => `partner/${partner_id}/shows`,
+      {},
+      { headers: true }
+    ),
     partnersLoader: gravityLoader("partners"),
     popularArtistsLoader: gravityLoader(`artists/popular`),
     profileLoader: gravityLoader(id => `profile/${id}`),
     relatedArtworksLoader: gravityLoader("related/artworks"),
-    relatedContemporaryArtistsLoader: gravityLoader("related/layer/contemporary/artists", {}, { headers: true }),
-    relatedFairsLoader: gravityLoader<{ has_full_feature: boolean }[]>("related/fairs"),
+    relatedContemporaryArtistsLoader: gravityLoader(
+      "related/layer/contemporary/artists",
+      {},
+      { headers: true }
+    ),
+    relatedFairsLoader: gravityLoader<{ has_full_feature: boolean }[]>(
+      "related/fairs"
+    ),
     relatedGenesLoader: gravityLoader("related/genes"),
-    relatedLayerArtworksLoader: gravityLoader<any, { id: string, type: string }>(({ type, id }) => `related/layer/${type}/${id}/artworks`),
+    relatedLayerArtworksLoader: gravityLoader<
+      any,
+      { id: string; type: string }
+    >(({ type, id }) => `related/layer/${type}/${id}/artworks`),
     relatedLayersLoader: gravityLoader("related/layers"),
-    relatedMainArtistsLoader: gravityLoader("related/layer/main/artists", {}, { headers: true }),
+    relatedMainArtistsLoader: gravityLoader(
+      "related/layer/main/artists",
+      {},
+      { headers: true }
+    ),
     relatedSalesLoader: gravityLoader("related/sales"),
     relatedShowsLoader: gravityLoader("related/shows", {}, { headers: true }),
-    saleArtworkRootLoader: gravityUncachedLoader(id => `sale_artwork/${id}`, null),
+    saleArtworkRootLoader: gravityUncachedLoader(
+      id => `sale_artwork/${id}`,
+      null
+    ),
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
-    saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`, {}, { headers: true }),
-    saleArtworkLoader: gravityUncachedLoader<any, { saleId: string, saleArtworkId: string }>(({ saleId, saleArtworkId }) => `sale/${saleId}/sale_artwork/${saleArtworkId}`, null),
-    saleArtworkCalculatedCostLoader: gravityLoader<GravityCalculatedCostResponse, { saleId: string, saleArtworkId: string, bidAmountMinor: number }>(
+    saleArtworksLoader: gravityLoader(
+      id => `sale/${id}/sale_artworks`,
+      {},
+      { headers: true }
+    ),
+    saleArtworkLoader: gravityUncachedLoader<
+      any,
+      { saleId: string; saleArtworkId: string }
+    >(
+      ({ saleId, saleArtworkId }) =>
+        `sale/${saleId}/sale_artwork/${saleArtworkId}`,
+      null
+    ),
+    saleArtworkCalculatedCostLoader: gravityLoader<
+      GravityCalculatedCostResponse,
+      { saleId: string; saleArtworkId: string; bidAmountMinor: number }
+    >(
       ({ saleId, saleArtworkId, bidAmountMinor }) =>
         `sale/${saleId}/sale_artwork/${saleArtworkId}/calculated_cost?bid_amount_cents=${bidAmountMinor}`
     ),
     saleLoader: batchSaleLoader,
     salesLoader: batchSalesLoader,
-    salesLoaderWithHeaders: gravityLoader('sales', {}, { headers: true }),
+    salesLoaderWithHeaders: gravityLoader("sales", {}, { headers: true }),
     searchLoader: searchLoader(gravityLoader),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     setItemsLoader: gravityLoader(id => `set/${id}/items`),
@@ -93,7 +190,11 @@ export default opts => {
     showsLoader: gravityLoader("shows"),
     showsWithHeadersLoader: gravityLoader("shows", {}, { headers: true }),
     similarArtworksLoader: gravityLoader("related/artworks"),
-    similarGenesLoader: gravityLoader(id => `gene/${id}/similar`, {}, { headers: true }),
+    similarGenesLoader: gravityLoader(
+      id => `gene/${id}/similar`,
+      {},
+      { headers: true }
+    ),
     staticContentLoader: gravityLoader(id => `page/${id}`),
     systemTimeLoader: gravityUncachedLoader("system/time", null),
     tagLoader: gravityLoader(id => `tag/${id}`),

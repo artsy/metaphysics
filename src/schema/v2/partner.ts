@@ -15,7 +15,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import Profile from "./profile"
-import Location from "./location"
+import { locationsConnection, LocationType } from "./location"
 import EventStatus from "schema/v2/input_fields/event_status"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import { artworkConnection } from "./artwork"
@@ -183,6 +183,35 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: artist => artist,
       },
+      cities: {
+        description: "A list of the partners unique city locations",
+        type: new GraphQLList(GraphQLString),
+        args: {
+          size: {
+            type: GraphQLInt,
+            defaultValue: 25,
+          },
+        },
+        resolve: ({ id }, options, { partnerLocationsConnectionLoader }) => {
+          return partnerLocationsConnectionLoader(id, options).then(
+            locations => {
+              const locationCities = locations.body.map(location => {
+                return location.city
+              })
+              const filteredForDuplicatesAndBlanks = locationCities.filter(
+                (city, pos) => {
+                  return (
+                    city &&
+                    locationCities.indexOf(city) === pos &&
+                    city.length > 0
+                  )
+                }
+              )
+              return filteredForDuplicatesAndBlanks
+            }
+          )
+        },
+      },
       defaultProfileID: {
         type: GraphQLString,
         resolve: ({ default_profile_id }) => default_profile_id,
@@ -213,7 +242,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ pre_qualify }) => pre_qualify,
       },
       locations: {
-        type: new GraphQLList(Location.type),
+        type: new GraphQLList(LocationType),
+        description:
+          "This field is deprecated and is being used in Eigen release predating the 6.0 release",
         args: {
           size: {
             type: GraphQLInt,
@@ -222,6 +253,32 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
         resolve: ({ id }, options, { partnerLocationsLoader }) =>
           partnerLocationsLoader(id, options),
+      },
+      locationsConnection: {
+        description: "A connection of locations from a Partner.",
+        type: locationsConnection.connectionType,
+        args: pageable({}),
+        resolve: ({ id }, args, { partnerLocationsConnectionLoader }) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const gravityArgs = {
+            published: true,
+            total_count: true,
+            page,
+            size,
+          }
+
+          return partnerLocationsConnectionLoader(id, gravityArgs).then(
+            ({ body, headers }) => {
+              return connectionFromArraySlice(body, args, {
+                arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+                sliceStart: offset,
+              })
+            }
+          )
+        },
       },
       name: {
         type: GraphQLString,
