@@ -1,3 +1,8 @@
+/**
+ * If this test is failing and you want to add an exception just update the
+ * knowFailures.json file with the hash of the failing query.
+ */
+
 import { validate, parse, Source } from "graphql"
 import fs from "fs"
 import path from "path"
