@@ -289,15 +289,15 @@ export const FilterArtworksFields = () => {
         _options,
         { geneLoader, tagLoader }
       ): Promise<ContextSource> | null => {
-        const { tagID, geneID } = gravityOptions
-        if (tagID) {
-          return tagLoader(tagID).then(tag => ({
+        const { tag_id, gene_id } = gravityOptions
+        if (tag_id) {
+          return tagLoader(tag_id).then(tag => ({
             ...tag,
             context_type: TagType,
           }))
         }
-        if (geneID) {
-          return geneLoader(geneID).then(gene => ({
+        if (gene_id) {
+          return geneLoader(gene_id).then(gene => ({
             ...gene,
             context_type: GeneType,
           }))
