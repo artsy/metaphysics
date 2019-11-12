@@ -133,13 +133,6 @@ enum MarketingGroupTypes {
   OtherCollections
 }
 
-type MarketingImage {
-  id: ID!
-  small: String!
-  medium: String!
-  large: String!
-}
-
 type Query {
   marketingCollections(category: String, randomizationSeed: String, size: Int, isFeaturedArtistContent: Boolean, showOnEditorial: Boolean, artistID: String): [MarketingCollection!]!
   marketingCategories: [MarketingCollectionCategory!]!
