@@ -11,7 +11,7 @@ const queryMap: PersistedQueryMap = JSON.parse(
   )
 )
 
-const schema = require("schema/v1").default
+const schema = require("schema/v2").schema
 const queryToAst = query => parse(new Source(query))
 
 Object.entries(queryMap).forEach(([hash, query]) => {
