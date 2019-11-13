@@ -285,11 +285,11 @@ export const FilterArtworksFields = () => {
     facet: {
       type: ArtworkFilterFacetType,
       resolve: (
-        { options },
+        { gravityOptions },
         _options,
         { geneLoader, tagLoader }
       ): Promise<ContextSource> | null => {
-        const { tag_id, gene_id } = options
+        const { tag_id, gene_id } = gravityOptions
         if (tag_id) {
           return tagLoader(tag_id).then(tag => ({
             ...tag,

@@ -7594,13 +7594,6 @@ enum MarketingGroupTypes {
   OtherCollections
 }
 
-type MarketingImage {
-  id: ID!
-  small: String!
-  medium: String!
-  large: String!
-}
-
 type Me implements Node {
   # A globally unique ID.
   __id: ID!

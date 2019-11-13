@@ -15,7 +15,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import Profile from "./profile"
-import { locationsConnection } from "./location"
+import { locationsConnection, LocationType } from "./location"
 import EventStatus from "schema/v2/input_fields/event_status"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import { artworkConnection } from "./artwork"
@@ -30,6 +30,7 @@ import ShowSorts from "./sorts/show_sorts"
 import ArtistSorts from "./sorts/artist_sorts"
 import { fields as partnerArtistFields } from "./partner_artist"
 import { connectionWithCursorInfo } from "./fields/pagination"
+import { deprecate } from "lib/deprecation"
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   forSale: {
@@ -192,22 +193,24 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             defaultValue: 25,
           },
         },
-        resolve: ({ id }, options, { partnerLocationsLoader }) => {
-          return partnerLocationsLoader(id, options).then(locations => {
-            const locationCities = locations.body.map(location => {
-              return location.city
-            })
-            const filteredForDuplicatesAndBlanks = locationCities.filter(
-              (city, pos) => {
-                return (
-                  city &&
-                  locationCities.indexOf(city) === pos &&
-                  city.length > 0
-                )
-              }
-            )
-            return filteredForDuplicatesAndBlanks
-          })
+        resolve: ({ id }, options, { partnerLocationsConnectionLoader }) => {
+          return partnerLocationsConnectionLoader(id, options).then(
+            locations => {
+              const locationCities = locations.body.map(location => {
+                return location.city
+              })
+              const filteredForDuplicatesAndBlanks = locationCities.filter(
+                (city, pos) => {
+                  return (
+                    city &&
+                    locationCities.indexOf(city) === pos &&
+                    city.length > 0
+                  )
+                }
+              )
+              return filteredForDuplicatesAndBlanks
+            }
+          )
         },
       },
       defaultProfileID: {
@@ -239,11 +242,28 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ pre_qualify }) => pre_qualify,
       },
+      locations: {
+        type: new GraphQLList(LocationType),
+        description:
+          "This field is deprecated and is being used in Eigen release predating the 6.0 release",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "locationsConnection",
+        }),
+        args: {
+          size: {
+            type: GraphQLInt,
+            defaultValue: 25,
+          },
+        },
+        resolve: ({ id }, options, { partnerLocationsLoader }) =>
+          partnerLocationsLoader(id, options),
+      },
       locationsConnection: {
         description: "A connection of locations from a Partner.",
         type: locationsConnection.connectionType,
         args: pageable({}),
-        resolve: ({ id }, args, { partnerLocationsLoader }) => {
+        resolve: ({ id }, args, { partnerLocationsConnectionLoader }) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )
@@ -255,7 +275,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
           }
 
-          return partnerLocationsLoader(id, gravityArgs).then(
+          return partnerLocationsConnectionLoader(id, gravityArgs).then(
             ({ body, headers }) => {
               return connectionFromArraySlice(body, args, {
                 arrayLength: parseInt(headers["x-total-count"] || "0", 10),
