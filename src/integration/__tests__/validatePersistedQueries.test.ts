@@ -1,6 +1,6 @@
 /**
  * If this test is failing and you want to add an exception just update the
- * knowFailures.json file with the hash of the failing query.
+ * knownV1Failures.json or knownV2Failures.json file with the hash of the failing query.
  */
 
 import { validate, parse, Source } from "graphql"
@@ -12,7 +12,7 @@ import knownV1Queries from "./__fixtures__/knownV1Queries.json"
 
 /**
  * This set of queries is known to be valid against v1 _and_ v2. They're contained
- * in the knownV1Queries list.
+ * in the knownV1Queries list. This list shouldn't be changed.
  */
 const knownOverlap = [
   "82ce08bed0f640d2f4d4c84e4a50e012",
