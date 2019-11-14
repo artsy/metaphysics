@@ -116,8 +116,16 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           },
         }),
         description: "A list of genes similar to the specified gene",
-        resolve: (gene, { excludeGeneIDs }, { similarGenesLoader }) => {
-          const options: any = {
+        resolve: (
+          gene,
+          { excludeGeneIDs, before, after, first, last },
+          { similarGenesLoader }
+        ) => {
+          const options = {
+            before,
+            after,
+            first,
+            last,
             exclude_gene_ids: excludeGeneIDs,
           }
           const { limit: size, offset } = getPagingParameters(options)
