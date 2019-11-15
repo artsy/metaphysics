@@ -78,6 +78,130 @@ describe("Partner type", () => {
     })
   })
 
+  describe("#LocationsConnection", () => {
+    let locationsResponse
+
+    beforeEach(() => {
+      locationsResponse = [
+        {
+          city: "New York",
+        },
+        {
+          city: "Detroit",
+        },
+        {
+          city: "Tokyo",
+        },
+      ]
+      context = {
+        partnerLocationsConnectionLoader: () =>
+          Promise.resolve({
+            body: locationsResponse,
+            headers: {
+              "x-total-count": locationsResponse.length,
+            },
+          }),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+    })
+
+    it("returns locations", async () => {
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            locationsConnection(first:3) {
+              totalCount
+              edges {
+                node {
+                  city
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          locationsConnection: {
+            totalCount: 3,
+            edges: [
+              {
+                node: {
+                  city: "New York",
+                },
+              },
+              {
+                node: {
+                  city: "Detroit",
+                },
+              },
+              {
+                node: {
+                  city: "Tokyo",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=true when first is below total", async () => {
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            locationsConnection(first:1) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          locationsConnection: {
+            pageInfo: {
+              hasNextPage: true,
+            },
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=false when first is above total", async () => {
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            locationsConnection(first:3) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          locationsConnection: {
+            pageInfo: {
+              hasNextPage: false,
+            },
+          },
+        },
+      })
+    })
+  })
+
   describe("#artworksConnection", () => {
     let artworksResponse
 

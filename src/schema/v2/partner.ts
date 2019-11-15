@@ -10,7 +10,7 @@ import {
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { flatten, assign } from "lodash"
+import { flatten } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
@@ -278,13 +278,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           return partnerLocationsConnectionLoader(id, gravityArgs).then(
             ({ body, headers }) => {
               const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-              return assign({
+              return {
                 totalCount,
                 ...connectionFromArraySlice(body, args, {
                   arrayLength: totalCount,
                   sliceStart: offset,
                 }),
-              })
+              }
             }
           )
         },
