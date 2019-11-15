@@ -194,8 +194,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
         resolve: ({ id }, options, { partnerLocationsConnectionLoader }) => {
-          return partnerLocationsConnectionLoader(id, options).then(
-            locations => {
+          return partnerLocationsConnectionLoader(id, {
+            total_count: true,
+            ...options,
+          }).then(locations => {
+            if (locations.body) {
               const locationCities = locations.body.map(location => {
                 return location.city
               })
@@ -209,8 +212,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
                 }
               )
               return filteredForDuplicatesAndBlanks
+            } else {
+              return null
             }
-          )
+          })
         },
       },
       defaultProfileID: {
