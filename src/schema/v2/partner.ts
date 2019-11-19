@@ -198,23 +198,19 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             total_count: true,
             ...options,
           }).then(locations => {
-            if (locations.body) {
-              const locationCities = locations.body.map(location => {
-                return location.city
-              })
-              const filteredForDuplicatesAndBlanks = locationCities.filter(
-                (city, pos) => {
-                  return (
-                    city &&
-                    locationCities.indexOf(city) === pos &&
-                    city.length > 0
-                  )
-                }
-              )
-              return filteredForDuplicatesAndBlanks
-            } else {
-              return null
-            }
+            const locationCities = locations.body.map(location => {
+              return location.city
+            })
+            const filteredForDuplicatesAndBlanks = locationCities.filter(
+              (city, pos) => {
+                return (
+                  city &&
+                  locationCities.indexOf(city) === pos &&
+                  city.length > 0
+                )
+              }
+            )
+            return filteredForDuplicatesAndBlanks
           })
         },
       },
