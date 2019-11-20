@@ -52,6 +52,7 @@ const SupportedTypes: any = {
     "./me/conversation/invoice",
     "./partner",
     "./show",
+    "./fair",
     "./sale",
     "./collection",
     "./sale_artwork",
