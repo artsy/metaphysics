@@ -14,7 +14,11 @@ import Artist from "./artist"
 import Partner from "./partner"
 import { ShowsConnection } from "./show"
 import { LocationType } from "./location"
-import { SlugAndInternalIDFields, SlugIDField } from "./object_identification"
+import {
+  SlugAndInternalIDFields,
+  SlugIDField,
+  NodeInterface,
+} from "./object_identification"
 import {
   GraphQLObjectType,
   GraphQLID,
@@ -69,7 +73,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     const {
       EntityWithFilterArtworksConnectionInterface,
     } = require("./filterArtworksConnection")
-    return [EntityWithFilterArtworksConnectionInterface]
+    return [NodeInterface, EntityWithFilterArtworksConnectionInterface]
   },
   fields: () => {
     const { filterArtworksConnection } = require("./filterArtworksConnection")

@@ -49,6 +49,11 @@ describe("Object Identification", () => {
         display_on_partner_profile: true,
       },
     },
+    Fair: {
+      fairLoader: {
+        id: "foo-bar",
+      },
+    },
   }
 
   _.keys(loaderTests).forEach(typeName => {
