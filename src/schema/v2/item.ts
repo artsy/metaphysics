@@ -1,4 +1,3 @@
-import _ from "lodash"
 import { ArtistType } from "./artist"
 import { ArtworkType } from "./artwork"
 import { FeaturedLinkType } from "./featured_link"

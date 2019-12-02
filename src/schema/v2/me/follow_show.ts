@@ -43,7 +43,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       throw new Error("Missing Follow Show Loader. Check your access token.")
     }
 
-    let performAction = unfollow
+    const performAction = unfollow
       ? unfollowShowLoader({ partner_show_id })
       : followShowLoader({ partner_show_id })
 

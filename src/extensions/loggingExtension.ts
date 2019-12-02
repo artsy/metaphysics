@@ -17,7 +17,7 @@ export class LoggingExtension implements GraphQLExtension {
   private enableRequestLogging: boolean
   private requestID: any
 
-  constructor(enableRequestLogging: boolean = false) {
+  constructor(enableRequestLogging = false) {
     this.enableRequestLogging = enableRequestLogging
   }
 

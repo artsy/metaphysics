@@ -540,7 +540,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           )
             return "Free shipping worldwide"
 
-          var domesticShipping = amount(
+          let domesticShipping = amount(
             ({ domestic_shipping_fee_cents }) =>
               domestic_shipping_fee_cents || null
           ).resolve(artwork, {
@@ -548,7 +548,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             symbol: symbolFromCurrencyCode(artwork.price_currency),
           })
 
-          var internationalShipping = amount(
+          let internationalShipping = amount(
             ({ international_shipping_fee_cents }) =>
               international_shipping_fee_cents || null
           ).resolve(artwork, {
@@ -755,7 +755,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           signed_other,
           not_signed,
         }) => {
-          let detailsParts: string[] = []
+          const detailsParts: string[] = []
           if (signed_by_artist) {
             detailsParts.push("hand-signed by artist")
           }

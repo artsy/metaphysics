@@ -6,20 +6,53 @@
     "jasmine": true,
     "es6": true
   },
-  "plugins": ["promise", "@typescript-eslint/eslint-plugin"],
-  "extends": ["react-app", "plugin:promise/recommended"],
+  "plugins": ["promise", "@typescript-eslint"],
+  "extends": [
+    "plugin:promise/recommended",
+    "plugin:import/errors",
+    "plugin:import/typescript",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "parser": "@typescript-eslint/parser",
   "rules": {
     "import/first": 0,
+    "import/named": 0,
+    "import/default": 0,
     "no-useless-escape": 0,
     "no-empty-pattern": 0,
     "promise/no-nesting": 0,
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
+    "@typescript-eslint/member-delimiter-style": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "@typescript-eslint/no-var-requires": 0,
+    "@typescript-eslint/camelcase": 0,
+    "@typescript-eslint/ban-ts-ignore": 0,
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "ignoreRestSiblings": true }
+    ],
+    "@typescript-eslint/no-use-before-define": 0,
+    "prefer-const": ["error", { "ignoreReadBeforeAssign": true }]
   },
   "globals": {
     "expect": false,
     "schema": false,
     "sinon": false,
     "expectPromiseRejectionToMatch": false
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "directory": "./tsconfig.json"
+      }
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    }
+  },
+  "parserOptions": {
+    "sourceType": "module"
   }
 }

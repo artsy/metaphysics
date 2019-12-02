@@ -42,13 +42,13 @@ const ArtistInsightTypeMapping = {
 }
 
 const buildInsights = artist => {
-  const splitEntities = (entitiesString: String, delimiter): Array<String> => {
+  const splitEntities = (entitiesString: string, delimiter): Array<string> => {
     return entitiesString.split(delimiter).map(entity => {
       return entity.trim()
     })
   }
 
-  const buildInsight = (mapping, entitiesString: String) => {
+  const buildInsight = (mapping, entitiesString: string) => {
     return {
       type: mapping.type.name,
       entities: splitEntities(entitiesString, mapping.delimiter || "|"),
