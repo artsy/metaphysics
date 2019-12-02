@@ -86,7 +86,7 @@ export function formatDaySchedules(daySchedules: Array<DaySchedule>) {
           days: day["end"] ? day["start"] + "–" + day["end"] : day["start"],
           hours: schedule[0]["hours"],
         }))
-        .reduce(function(memo, iteratee) {
+        .reduce(function(memo: { days: string; hours: string }, iteratee) {
           memo["days"] = memo["days"] + ", " + iteratee["days"]
           return memo
         })
