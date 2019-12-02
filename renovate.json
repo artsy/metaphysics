@@ -1,4 +1,5 @@
 {
   "extends": ["@artsy:app"],
-  "assignees": ["zephraph", "alloy"]
+  "assignees": ["zephraph"],
+  "reviewers": ["mzikherman"]
 }
