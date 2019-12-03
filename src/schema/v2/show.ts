@@ -172,7 +172,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           const groups: {
             [letter: string]: {
               letter: string
-              items: [String]
+              items: [string]
             }
           } = {}
           const sortedArtists = artists.sort((a, b) => {
@@ -184,7 +184,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             if (aLastName > bLastName) return 1
             return 0
           })
-          for (let artist of sortedArtists) {
+          for (const artist of sortedArtists) {
             const names = artist.name.split(" ")
             const lastName = names[names.length - 1]
             const letter = lastName.substring(0, 1).toUpperCase()

@@ -5,7 +5,6 @@ moment.updateLocale("en", {
     future: "in %s",
     past: "%s ago",
     s: "%ds",
-    ss: "%ds",
     m: "%dm",
     mm: "%dm",
     h: "%dh",

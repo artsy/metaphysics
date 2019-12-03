@@ -33,7 +33,7 @@ export function timeRange(startAt, endAt, timezone) {
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
   let startHour
-  let endHour = endMoment.format("h:mma z")
+  const endHour = endMoment.format("h:mma z")
   if (
     (startMoment.hours() <= 12 && endMoment.hours() <= 12) ||
     (startMoment.hours() >= 12 && endMoment.hours() >= 12)

@@ -18,7 +18,7 @@ export const hasFieldSelection = (
   if (!resolveInfo.fieldNodes) return true
 
   return resolveInfo.fieldNodes.some(rootNode => {
-    let matched: boolean = false
+    let matched = false
 
     const visitor = (
       fieldNode: FieldNode | FragmentDefinitionNode,

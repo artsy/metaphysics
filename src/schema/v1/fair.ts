@@ -367,7 +367,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             if (asc > desc) return 1
             return 0
           })
-          for (let fairExhibitor of fairExhibitors) {
+          for (const fairExhibitor of fairExhibitors) {
             const names = fairExhibitor.name.split(" ")
             const firstName = names[0]
             const letter = firstName.charAt(0).toUpperCase()

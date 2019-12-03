@@ -1,6 +1,6 @@
 interface MoneyField {
   amount: number
-  currencyCode: String
+  currencyCode: string
 }
 
 export const moneyFieldToUnit = (moneyField: MoneyField) => {
