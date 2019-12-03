@@ -72,14 +72,8 @@ describe(amount, () => {
 })
 
 describe("toUSD", () => {
-  it("converts an exact price from native currency to USD dollars", () => {
-    const mockArtwork = {
-      id: "some-european-artwork",
-      price_currency: "EUR",
-      price_cents: [1000],
-    }
-
-    const context = {
+  const mockArtworkContext = mockArtwork => {
+    return {
       artworkLoader: () => {
         return Promise.resolve(mockArtwork)
       },
@@ -89,6 +83,14 @@ describe("toUSD", () => {
         })
       },
     }
+  }
+
+  it("converts an exact price from native currency to USD dollars", () => {
+    const context = mockArtworkContext({
+      id: "some-european-artwork",
+      price_currency: "EUR",
+      price_cents: [1000],
+    })
 
     const query = gql`
       {
@@ -111,22 +113,11 @@ describe("toUSD", () => {
   })
 
   it("converts a price range from native currency to USD dollars", () => {
-    const mockArtwork = {
+    const context = mockArtworkContext({
       id: "some-european-artwork",
       price_currency: "EUR",
       price_cents: [1000, 2000],
-    }
-
-    const context = {
-      artworkLoader: () => {
-        return Promise.resolve(mockArtwork)
-      },
-      exchangeRatesLoader: () => {
-        return Promise.resolve({
-          EUR: 5.0,
-        })
-      },
-    }
+    })
 
     const query = gql`
       {
@@ -158,22 +149,11 @@ describe("toUSD", () => {
   })
 
   it("returns null for missing prices", () => {
-    const mockArtwork = {
+    const context = mockArtworkContext({
       id: "some-european-artwork",
       price_currency: "EUR",
       price_cents: null,
-    }
-
-    const context = {
-      artworkLoader: () => {
-        return Promise.resolve(mockArtwork)
-      },
-      exchangeRatesLoader: () => {
-        return Promise.resolve({
-          EUR: 5.0,
-        })
-      },
-    }
+    })
 
     const query = gql`
       {
