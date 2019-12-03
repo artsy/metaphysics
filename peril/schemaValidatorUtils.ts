@@ -5,8 +5,10 @@ import {
   buildSchema,
 } from "graphql"
 
+/* eslint-disable import/no-unresolved */
 // @ts-ignore (this is in the Peril runtime only)
 import { diff } from "@graphql-inspector/core"
+/* eslint-enable */
 import fetch from "node-fetch"
 
 /**

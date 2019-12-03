@@ -217,7 +217,7 @@ const nearestCity = (latLng: LatLng) => {
 }
 
 const citiesOrderedByDistance = (latLng: LatLng): Point[] => {
-  let cities: Point[] = Object.values(cityDataSortedByDisplayPreference)
+  const cities: Point[] = Object.values(cityDataSortedByDisplayPreference)
   cities.sort((a, b) => {
     const distanceA = distance(latLng, a.coordinates)
     const distanceB = distance(latLng, b.coordinates)

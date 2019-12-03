@@ -4,8 +4,6 @@ import config from "config"
 
 const { RESIZING_SERVICE } = config
 
-module.exports = function resizeWith() {
-  if (RESIZING_SERVICE === "embedly")
-    return embedly.apply(null, arguments as any)
-  return gemini.apply(null, arguments as any)
+module.exports = function resizeWith(...args: [any, any, any, any]) {
+  return RESIZING_SERVICE === "embedly" ? embedly(...args) : gemini(...args)
 }

@@ -4,7 +4,7 @@ import { flattenErrors, statusCodeForError } from "lib/graphqlErrorHandler"
 
 export const principalFieldDirectiveExtension = (documentAST, result) => {
   const path = getPrincipalFieldDirectivePath(documentAST)
-  let extensions = {}
+  const extensions = {}
   if (path.length && result.errors && result.errors.length) {
     const errors = result.errors.find(e => isEqual(e.path, path))
     if (!errors) return extensions

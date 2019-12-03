@@ -24,7 +24,7 @@ export interface DaySchedule {
 function formatDaySchedule(day: DayOfWeek, daySchedules: Array<DaySchedule>) {
   const filteredDaySchedules = _.filter(daySchedules, { day_of_week: day })
   if (filteredDaySchedules.length) {
-    const hours: Array<String> = []
+    const hours: Array<string> = []
     filteredDaySchedules.forEach(daySchedule => {
       const startHour = moment().hour(daySchedule["start_time"] / 60 / 60)
       const startMinute = moment().minutes(daySchedule["start_time"] / 60)
@@ -67,7 +67,8 @@ export function formatDaySchedules(daySchedules: Array<DaySchedule>) {
   _.each(formattedDaySchedules().slice(1), function(daySchedule) {
     if (
       daySchedule &&
-      daySchedule["hours"] === (_.last(daysOpen) as Object)["hours"]
+      daySchedule["hours"] ===
+        (_.last(daysOpen) as Record<string, any>)["hours"]
     ) {
       return _.extend(_.last(daysOpen), { end: daySchedule["start"] })
     } else {

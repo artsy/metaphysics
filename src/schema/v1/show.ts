@@ -217,7 +217,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       ),
       resolve: ({ artists }) => {
         const groups: {
-          [letter: string]: { letter: string; items: [String] }
+          [letter: string]: { letter: string; items: [string] }
         } = {}
 
         const sortedArtists = artists.sort((a, b) => {
@@ -232,7 +232,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           return 0
         })
 
-        for (let artist of sortedArtists) {
+        for (const artist of sortedArtists) {
           const names = artist.name.split(" ")
           const lastName = names[names.length - 1]
           const letter = lastName.substring(0, 1).toUpperCase()
@@ -667,7 +667,7 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
   },
   resolve: (_root, { id }, { showLoader, accessToken }) => {
     const decodeUnverifiedJwt = decodeUnverifiedJWT(accessToken as string)
-    const partnerIds: Array<String> = decodeUnverifiedJwt
+    const partnerIds: Array<string> = decodeUnverifiedJwt
       ? decodeUnverifiedJwt.partner_ids
       : []
     const isAdmin: boolean =

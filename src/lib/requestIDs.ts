@@ -17,7 +17,7 @@ export function resolveIPv4(ipAddress) {
 }
 
 function resolveProxies(req) {
-  var ipAddress = resolveIPv4(req.connection.remoteAddress)
+  const ipAddress = resolveIPv4(req.connection.remoteAddress)
 
   if (req.headers["x-forwarded-for"]) {
     return `${req.headers["x-forwarded-for"]}, ${ipAddress}`
