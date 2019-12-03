@@ -5120,6 +5120,9 @@ type Money {
 
   # An amount of money expressed in major units (like dollars).
   major: Float!
+
+  # An amount of money converted to USD major units (dollars).
+  toUSD: Float!
 }
 
 type Mutation {

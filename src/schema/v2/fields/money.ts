@@ -137,6 +137,18 @@ export const Money = new GraphQLObjectType<any, ResolverContext>({
         return cents / factor
       },
     },
+    toUSD: {
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: "An amount of money converted to USD major units (dollars).",
+      resolve: async ({ cents, currency }, {}, { exchangeRatesLoader }) => {
+        const factor = currencyCodes[currency.toLowerCase()].subunit_to_unit
+        const major = cents / factor
+
+        const exchangeRates = await exchangeRatesLoader()
+        const majorUSD = major / exchangeRates[currency]
+        return majorUSD
+      },
+    },
   },
 })
 

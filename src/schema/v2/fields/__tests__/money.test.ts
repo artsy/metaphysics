@@ -1,4 +1,6 @@
 import { amount } from "../money"
+import { runQuery } from "schema/v2/test/utils"
+import gql from "lib/gql"
 
 describe(amount, () => {
   const getResult = ({
@@ -66,5 +68,135 @@ describe(amount, () => {
     expect(getResult({ obj: { currencyCode: "BLAH" } })).toMatchInlineSnapshot(
       `"$12.34"`
     )
+  })
+})
+
+describe("toUSD", () => {
+  it("converts an exact price from native currency to USD dollars", () => {
+    const mockArtwork = {
+      id: "some-european-artwork",
+      price_currency: "EUR",
+      price_cents: [1000],
+    }
+
+    const context = {
+      artworkLoader: () => {
+        return Promise.resolve(mockArtwork)
+      },
+      exchangeRatesLoader: () => {
+        return Promise.resolve({
+          EUR: 5.0,
+        })
+      },
+    }
+
+    const query = gql`
+      {
+        artwork(id: "some-european-artwork") {
+          listPrice {
+            ... on Money {
+              toUSD
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(result => {
+      const expectedPriceAfterConversion = 2.0
+      expect(result!.artwork.listPrice.toUSD).toEqual(
+        expectedPriceAfterConversion
+      )
+    })
+  })
+
+  it("converts a price range from native currency to USD dollars", () => {
+    const mockArtwork = {
+      id: "some-european-artwork",
+      price_currency: "EUR",
+      price_cents: [1000, 2000],
+    }
+
+    const context = {
+      artworkLoader: () => {
+        return Promise.resolve(mockArtwork)
+      },
+      exchangeRatesLoader: () => {
+        return Promise.resolve({
+          EUR: 5.0,
+        })
+      },
+    }
+
+    const query = gql`
+      {
+        artwork(id: "some-european-artwork") {
+          listPrice {
+            ... on PriceRange {
+              minPrice {
+                toUSD
+              }
+              maxPrice {
+                toUSD
+              }
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(result => {
+      const expectedMinPriceAfterConversion = 2.0
+      const expectedMaxPriceAfterConversion = 4.0
+      expect(result!.artwork.listPrice.minPrice.toUSD).toEqual(
+        expectedMinPriceAfterConversion
+      )
+      expect(result!.artwork.listPrice.maxPrice.toUSD).toEqual(
+        expectedMaxPriceAfterConversion
+      )
+    })
+  })
+
+  it("returns null for missing prices", () => {
+    const mockArtwork = {
+      id: "some-european-artwork",
+      price_currency: "EUR",
+      price_cents: null,
+    }
+
+    const context = {
+      artworkLoader: () => {
+        return Promise.resolve(mockArtwork)
+      },
+      exchangeRatesLoader: () => {
+        return Promise.resolve({
+          EUR: 5.0,
+        })
+      },
+    }
+
+    const query = gql`
+      {
+        artwork(id: "some-european-artwork") {
+          listPrice {
+            ... on Money {
+              toUSD
+            }
+            ... on PriceRange {
+              minPrice {
+                toUSD
+              }
+              maxPrice {
+                toUSD
+              }
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(result => {
+      expect(result!.artwork.listPrice).toBeNull()
+    })
   })
 })

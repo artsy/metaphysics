@@ -38,6 +38,7 @@ export default opts => {
     artworkLoader: gravityLoader(id => `artwork/${id}`),
     artworksLoader: gravityLoader("artworks"),
     bidderLoader: gravityLoader(id => `bidder/${id}`),
+    exchangeRatesLoader: gravityLoader("exchange_rates"),
     fairArtistsLoader: gravityLoader(
       id => `fair/${id}/artists`,
       {},
