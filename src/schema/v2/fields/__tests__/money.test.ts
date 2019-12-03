@@ -179,4 +179,31 @@ describe("toUSD", () => {
       expect(result!.artwork.listPrice).toBeNull()
     })
   })
+
+  it("truncates returned dollar value to cents (two decimal places) precision", () => {
+    const context = mockArtworkContext({
+      id: "some-european-artwork",
+      price_currency: "EUR",
+      price_cents: [1234.56],
+    })
+
+    const query = gql`
+      {
+        artwork(id: "some-european-artwork") {
+          listPrice {
+            ... on Money {
+              toUSD
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(result => {
+      const expectedPriceAfterConversion = 2.47 // i.e. not 2.4691199...
+      expect(result!.artwork.listPrice.toUSD).toEqual(
+        expectedPriceAfterConversion
+      )
+    })
+  })
 })

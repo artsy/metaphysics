@@ -146,7 +146,7 @@ export const Money = new GraphQLObjectType<any, ResolverContext>({
 
         const exchangeRates = await exchangeRatesLoader()
         const majorUSD = major / exchangeRates[currency]
-        return majorUSD
+        return majorUSD.toFixed(2)
       },
     },
   },
