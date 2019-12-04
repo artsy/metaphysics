@@ -148,11 +148,11 @@ export const Money = new GraphQLObjectType<any, ResolverContext>({
 
         const needsConversion = !!convertTo && convertTo !== currency
         if (needsConversion) {
-          const exchangeRates = await exchangeRatesLoader()
           // from here, very USD specific
           if (convertTo !== "USD") {
             throw new Error("Only USD conversion is currently supported")
           }
+          const exchangeRates = await exchangeRatesLoader()
           const convertedToUSD = major / exchangeRates[currency]
           const truncatedUSD = convertedToUSD.toFixed(2)
           return truncatedUSD
