@@ -38,7 +38,11 @@ export default opts => {
     artworkLoader: gravityLoader(id => `artwork/${id}`),
     artworksLoader: gravityLoader("artworks"),
     bidderLoader: gravityLoader(id => `bidder/${id}`),
-    exchangeRatesLoader: gravityLoader("exchange_rates"),
+    exchangeRatesLoader: gravityLoader(
+      "exchange_rates",
+      {},
+      { requestThrottleMs: 1000 * 60 * 60 }
+    ),
     fairArtistsLoader: gravityLoader(
       id => `fair/${id}/artists`,
       {},
