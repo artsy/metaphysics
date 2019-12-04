@@ -5119,10 +5119,10 @@ type Money {
   display: String
 
   # An amount of money expressed in major units (like dollars).
-  major: Float!
-
-  # An amount of money converted to USD major units (dollars).
-  toUSD: Float!
+  major(
+    # ISO-4217 code of a destination currency for conversion
+    convertTo: String
+  ): Float!
 }
 
 type Mutation {

@@ -71,7 +71,7 @@ describe(amount, () => {
   })
 })
 
-describe("toUSD", () => {
+describe("major(convertTo:)", () => {
   const mockArtworkContext = mockArtwork => {
     return {
       artworkLoader: () => {
@@ -97,7 +97,8 @@ describe("toUSD", () => {
         artwork(id: "some-european-artwork") {
           listPrice {
             ... on Money {
-              toUSD
+              original: major
+              converted: major(convertTo: "USD")
             }
           }
         }
@@ -105,10 +106,10 @@ describe("toUSD", () => {
     `
 
     return runQuery(query, context).then(result => {
-      const expectedPriceAfterConversion = 2.0
-      expect(result!.artwork.listPrice.toUSD).toEqual(
-        expectedPriceAfterConversion
-      )
+      expect(result!.artwork.listPrice).toEqual({
+        original: 10.0,
+        converted: 2.0,
+      })
     })
   })
 
@@ -125,10 +126,12 @@ describe("toUSD", () => {
           listPrice {
             ... on PriceRange {
               minPrice {
-                toUSD
+                original: major
+                converted: major(convertTo: "USD")
               }
               maxPrice {
-                toUSD
+                original: major
+                converted: major(convertTo: "USD")
               }
             }
           }
@@ -137,15 +140,37 @@ describe("toUSD", () => {
     `
 
     return runQuery(query, context).then(result => {
-      const expectedMinPriceAfterConversion = 2.0
-      const expectedMaxPriceAfterConversion = 4.0
-      expect(result!.artwork.listPrice.minPrice.toUSD).toEqual(
-        expectedMinPriceAfterConversion
-      )
-      expect(result!.artwork.listPrice.maxPrice.toUSD).toEqual(
-        expectedMaxPriceAfterConversion
-      )
+      expect(result!.artwork.listPrice.minPrice).toEqual({
+        original: 10.0,
+        converted: 2.0,
+      })
+      expect(result!.artwork.listPrice.maxPrice).toEqual({
+        original: 20.0,
+        converted: 4.0,
+      })
     })
+  })
+
+  it("only supports USD", () => {
+    const context = mockArtworkContext({
+      id: "some-european-artwork",
+      price_currency: "EUR",
+      price_cents: [1000],
+    })
+
+    const query = gql`
+      {
+        artwork(id: "some-european-artwork") {
+          listPrice {
+            ... on Money {
+              major(convertTo: "CAD")
+            }
+          }
+        }
+      }
+    `
+
+    expect(runQuery(query, context)).rejects.toThrowError(/*Only USD*/)
   })
 
   it("returns null for missing prices", () => {
@@ -160,14 +185,14 @@ describe("toUSD", () => {
         artwork(id: "some-european-artwork") {
           listPrice {
             ... on Money {
-              toUSD
+              major(convertTo: "USD")
             }
             ... on PriceRange {
               minPrice {
-                toUSD
+                major(convertTo: "USD")
               }
               maxPrice {
-                toUSD
+                major(convertTo: "USD")
               }
             }
           }
@@ -192,7 +217,7 @@ describe("toUSD", () => {
         artwork(id: "some-european-artwork") {
           listPrice {
             ... on Money {
-              toUSD
+              major(convertTo: "USD")
             }
           }
         }
@@ -201,7 +226,7 @@ describe("toUSD", () => {
 
     return runQuery(query, context).then(result => {
       const expectedPriceAfterConversion = 2.47 // i.e. not 2.4691199...
-      expect(result!.artwork.listPrice.toUSD).toEqual(
+      expect(result!.artwork.listPrice.major).toEqual(
         expectedPriceAfterConversion
       )
     })
