@@ -131,10 +131,34 @@ export const Money = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLFloat),
       description:
         "An amount of money expressed in major units (like dollars).",
-      resolve: ({ cents, currency }) => {
+      args: {
+        convertTo: {
+          type: GraphQLString,
+          description: "ISO-4217 code of a destination currency for conversion",
+        },
+      },
+      resolve: async (
+        { cents, currency },
+        { convertTo },
+        { exchangeRatesLoader }
+      ) => {
         const factor = currencyCodes[currency.toLowerCase()].subunit_to_unit
         // TODO: Should we round or used a fixed precision?
-        return cents / factor
+        const major = cents / factor
+
+        const needsConversion = !!convertTo && convertTo !== currency
+        if (needsConversion) {
+          // from here, very USD specific
+          if (convertTo !== "USD") {
+            throw new Error("Only USD conversion is currently supported")
+          }
+          const exchangeRates = await exchangeRatesLoader()
+          const convertedToUSD = major / exchangeRates[currency]
+          const truncatedUSD = convertedToUSD.toFixed(2)
+          return truncatedUSD
+        } else {
+          return major
+        }
       },
     },
   },
