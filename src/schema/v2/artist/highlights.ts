@@ -28,7 +28,7 @@ const ArtistHighlightsType = new GraphQLObjectType<any, ResolverContext>({
           },
         }),
         resolve: (
-          { id: artist_id, ...otherArgs },
+          { id: artist_id },
           {
             representedBy,
             partnerCategory,
