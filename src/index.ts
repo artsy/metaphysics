@@ -25,7 +25,7 @@ import {
 } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
-import { rateLimiter } from "./lib/rateLimiter"
+import { rateLimiterMiddleware } from "./lib/rateLimiter"
 import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
 
 import { ResolverContext } from "types/graphql"
@@ -116,7 +116,7 @@ function startApp(appSchema, path: string) {
     morgan,
     // Gotta parse the JSON body before passing it to logQueryDetails/fetchPersistedQuery
     bodyParser.json(),
-    rateLimiter,
+    rateLimiterMiddleware,
     // Ensure this divider is logged before both fetchPersistedQuery and graphqlHTTP
     (_req, _res, next) => {
       info("----------")
