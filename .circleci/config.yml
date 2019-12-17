@@ -48,6 +48,11 @@ workflows:
           name: test
           <<: *not_staging_or_release
           post-steps:
+            - run: mkdir -p ./coverage
+            - run:
+                name: Copy coverage artifacts
+                command: docker cp hokusai_metaphysics_1:/app/coverage ./
+                when: always
             - codecov/upload:
                 file: ./coverage/lcov.info
 
