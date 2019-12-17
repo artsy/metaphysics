@@ -11,3 +11,4 @@ package-lock.json
 yarn-error.log
 resourceRegistry.log
 tmp
+coverage*
