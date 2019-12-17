@@ -1,17 +1,17 @@
 import { isExisty } from "lib/helpers"
 import { assign, compact, get } from "lodash"
-import cached from "./fields/cached"
-import date from "./fields/date"
-import money, { amount } from "./fields/money"
+import cached from "../fields/cached"
+import date from "../fields/date"
+import money, { amount } from "../fields/money"
 import { formatMoney } from "accounting"
-import numeral from "./fields/numeral"
-import Artwork from "./artwork"
-import Sale from "./sale"
-import { CalculatedCost } from "./types/calculated_cost"
+import numeral from "../fields/numeral"
+import Artwork from "../artwork"
+import Sale from "../sale"
+import { CalculatedCost } from "../types/calculated_cost"
 import {
   GravityIDFields,
   SlugAndInternalIDFields,
-} from "./object_identification"
+} from "../object_identification"
 import {
   GraphQLFloat,
   GraphQLObjectType,
@@ -85,7 +85,7 @@ const BidIncrementsFormatted = new GraphQLObjectType<any, ResolverContext>({
 export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "SaleArtwork",
   interfaces: () => {
-    const { ArtworkEdgeInterface } = require("./artwork")
+    const { ArtworkEdgeInterface } = require("../artwork")
     return [NodeInterface, ArtworkEdgeInterface]
   },
   fields: () => {
