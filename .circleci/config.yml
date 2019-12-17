@@ -48,7 +48,8 @@ workflows:
           name: test
           <<: *not_staging_or_release
           post-steps:
-            - codecov/upload
+            - codecov/upload:
+                file: ./coverage/lcov.info
 
       # staging
       - hokusai/push:
