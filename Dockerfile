@@ -5,6 +5,7 @@ WORKDIR /app
 # Set up deploy user and working directory
 RUN apt-get update && apt-get install \
   dumb-init \
+  git \
   libgpm2 \
   libslang2 \
   mc \
