@@ -5182,6 +5182,11 @@ type Mutation {
     input: RequestCredentialsForAssetUploadInput!
   ): RequestCredentialsForAssetUploadPayload
 
+  # Request the condition report for a sale artwork.
+  requestConditionReport(
+    input: RequestConditionReportInput!
+  ): RequestConditionReportPayload
+
   # Attach an gemini asset to a consignment submission
   createGeminiEntryForAsset(
     input: CreateGeminiEntryForAssetInput!
@@ -6003,6 +6008,15 @@ type RelatedArtworkGrid implements ArtworkContextGrid {
     before: String
     last: Int
   ): ArtworkConnection
+}
+
+input RequestConditionReportInput {
+  saleArtworkID: String
+  clientMutationId: String
+}
+
+type RequestConditionReportPayload {
+  clientMutationId: String
 }
 
 input RequestCredentialsForAssetUploadInput {

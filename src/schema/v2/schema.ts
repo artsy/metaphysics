@@ -63,6 +63,7 @@ import UpdateSubmissionMutation from "./me/consignments/update_submission_mutati
 import AddAssetToConsignmentSubmission from "./me/consignments/add_asset_to_submission_mutation"
 import SaveArtworkMutation from "./me/save_artwork_mutation"
 import { endSaleMutation } from "./sale/end_sale_mutation"
+import { requestConditionReportMutation } from "./sale_artwork/requestConditionReportMutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
@@ -194,6 +195,7 @@ export default new GraphQLSchema({
       saveArtwork: SaveArtworkMutation,
       endSale: endSaleMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
+      requestConditionReport: requestConditionReportMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       ...stitchedMutations,
     },
