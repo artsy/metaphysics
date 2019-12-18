@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   hokusai: artsy/hokusai@0.7.0
   yarn: artsy/yarn@2.1.1
+  codecov: codecov/codecov@1.0.5
 
 not_staging_or_release: &not_staging_or_release
   filters:
@@ -46,6 +47,14 @@ workflows:
       - hokusai/test:
           name: test
           <<: *not_staging_or_release
+          post-steps:
+            - run: mkdir -p ./coverage
+            - run:
+                name: Copy coverage artifacts
+                command: docker cp hokusai_metaphysics_1:/app/coverage ./
+                when: always
+            - codecov/upload:
+                file: ./coverage/lcov.info
 
       # staging
       - hokusai/push:
