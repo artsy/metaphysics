@@ -1,4 +1,4 @@
-# Metaphysics [![CircleCI](https://circleci.com/gh/artsy/metaphysics.svg?style=svg)](https://circleci.com/gh/artsy/metaphysics)
+# Metaphysics
 
 Metaphysics is a [GraphQL](http://graphql.org)-compliant API that wraps various
 Artsy APIs. You can [try it here](https://metaphysics-staging.artsy.net/)
@@ -11,7 +11,7 @@ It is currently used in production all over the place in
 [Artsy.net](http://github.com/artsy/force/), and the
 [Artsy iOS App](http://github.com/artsy/eigen)
 
-### Meta
+## Meta [![CircleCI](https://circleci.com/gh/artsy/metaphysics.svg?style=svg)](https://circleci.com/gh/artsy/metaphysics) [![codecov](https://codecov.io/gh/artsy/metaphysics/branch/master/graph/badge.svg)](https://codecov.io/gh/artsy/metaphysics)
 
 - **State:** production
 - **CI/Deploys:** [CircleCi](https://circleci.com/gh/artsy/metaphysics); merged PRs to `artsy/metaphysics#master` are automatically deployed to staging; PRs from `staging` to `release` are automatically deployed to production. [Start a deploy...](https://github.com/artsy/metaphysics/compare/release...staging?expand=1)
