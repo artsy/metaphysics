@@ -89,7 +89,7 @@
     "node-fetch": "1.7.3",
     "numeral": "1.5.6",
     "opentracing": "0.14.1",
-    "patch-package": "5.1.2",
+    "patch-package": "^6.2.0",
     "performance-now": "2.1.0",
     "postinstall-prepare": "1.0.1",
     "qs": "5.2.1",
