@@ -1,5 +1,14 @@
 directive @principalField on FIELD
 
+type AccountRequest {
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  notes: String
+}
+
 input AddAssetToConsignmentSubmissionInput {
   # The type of the asset
   assetType: String!
@@ -3218,6 +3227,41 @@ type ConversationResponder {
   initials(length: Int = 3): String
 }
 
+type CreateAccountRequestMutationFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateAccountRequestMutationInput {
+  # Message to be sent.
+  notes: String!
+
+  # Email to associate with message.
+  email: String
+
+  # Name to associate with message.
+  name: String
+
+  # Used when logged in.
+  userID: String
+
+  # Type of account request.
+  action: String
+  clientMutationId: String
+}
+
+type CreateAccountRequestMutationPayload {
+  accountRequestOrError: CreateAccountRequestMutationType
+  clientMutationId: String
+}
+
+type CreateAccountRequestMutationSuccess {
+  accountRequest: AccountRequest
+}
+
+union CreateAccountRequestMutationType =
+    CreateAccountRequestMutationSuccess
+  | CreateAccountRequestMutationFailure
+
 input CreateBidderInput {
   saleID: String!
   clientMutationId: String
@@ -5126,6 +5170,11 @@ type Money {
 }
 
 type Mutation {
+  # Create an account request
+  createAccountRequest(
+    input: CreateAccountRequestMutationInput!
+  ): CreateAccountRequestMutationPayload
+
   # Create a bidder
   createBidder(input: CreateBidderInput!): CreateBidderPayload
 

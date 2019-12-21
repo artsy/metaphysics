@@ -72,6 +72,7 @@ import { deleteCreditCardMutation } from "./me/delete_credit_card_mutation"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
 import { sendFeedbackMutation } from "./sendFeedbackMutation"
 import { OrderPartyUnionType } from "./ecommerce/types/order_party_union"
+import { createAccountRequestMutation } from "./createAccountRequestMutation"
 
 import { SearchableItem } from "./SearchableItem"
 import { ArtistArtworkGridType } from "./artwork/artworkContextGrids/ArtistArtworkGrid"
@@ -178,6 +179,7 @@ export default new GraphQLSchema({
   mutation: new GraphQLObjectType<any, ResolverContext>({
     name: "Mutation",
     fields: {
+      createAccountRequest: createAccountRequestMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
       createCreditCard: createCreditCardMutation,

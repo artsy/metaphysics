@@ -27,6 +27,11 @@ export default opts => {
   }
 
   return {
+    createAccountRequestLoader: gravityLoader(
+      "account_requests",
+      {},
+      { method: "POST" }
+    ),
     artistArtworksLoader: gravityLoader(id => `artist/${id}/artworks`),
     artistGenesLoader: gravityLoader(id => `artist/${id}/genome/genes`),
     artistLoader: gravityLoader(id => `artist/${id}`),
