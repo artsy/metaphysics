@@ -71,6 +71,7 @@ describe("API loaders", () => {
       apiLoader = apiLoaderWithoutAuthenticationFactory(api, "test_name", {
         requestIDs: { requestID: "1234", xForwardedFor: "42.42.42.42" },
         userAgent: "catty browser",
+        method: "GET",
       })
       loader = apiLoader("some/path")
     })
@@ -96,6 +97,20 @@ describe("API loaders", () => {
             expect(spy).toHaveBeenCalled()
           })
         })
+    })
+
+    it("doesnt cache the response in memcache for non GETs", () => {
+      loader = apiLoader("some/gravity/post/path", {}, { method: "POST" })
+      return loader().then(() => {
+        return cache
+          .get("some/gravity/post/path?")
+          .then(() => {
+            throw new Error("Did not expect response to be cached")
+          })
+          .catch(() => {
+            // swallow the error, because this is the expected code-path
+          })
+      })
     })
   })
 

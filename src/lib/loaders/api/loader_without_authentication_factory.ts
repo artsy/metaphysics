@@ -106,7 +106,10 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
               return data
             }
 
-            if (CACHE_DISABLED) {
+            // Short-circuits any reading or writing to the cache.
+            const skipCache = CACHE_DISABLED || apiOptions.method !== "GET"
+
+            if (skipCache) {
               return callApi()
                 .then(
                   finish({
