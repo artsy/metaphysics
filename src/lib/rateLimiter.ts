@@ -12,6 +12,7 @@ export const skip = (req: Request) => !!req.headers["x-datadog-trace-id"]
 // underlying memcache client can sometimes hang. It's good to
 // wrap cache access with a timeout to avoid this.
 export const rateLimiterMiddleware = async (req, res, next) => {
+  if (!config.RATE_LIMIT_MAX) return next()
   try {
     await new Promise((resolve, reject) => {
       // Timeout handler, will reject if hit.
