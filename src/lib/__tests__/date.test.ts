@@ -412,15 +412,6 @@ describe("date formatting", () => {
       expect(period).toBe("Jan 1 – 19, 2011")
     })
 
-    it("always shows both years if the dates are not the same year, even if one year is the same as the present year", () => {
-      const period = dateRange(
-        "2011-01-01",
-        moment.tz("UTC").format("YYYY-04-19"),
-        "UTC"
-      )
-      expect(period).toBe("Jan 1, 2011 – Apr 19, 2019")
-    })
-
     it("does not include the year if both years are the same as the present year", () => {
       const period = dateRange(
         moment.tz("UTC").format("YYYY-01-01"),
