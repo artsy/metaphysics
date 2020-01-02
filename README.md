@@ -39,8 +39,7 @@ It is currently used in production all over the place in
   - [Datadog Monitoring - Cache](https://app.datadoghq.com/apm/service/metaphysics.memcached/cache?env=staging)
   - [Sentry error reporting](https://sentry.io/artsynet/metaphysics-staging/)
   - [Papertrail logs](https://papertrailapp.com/groups/3674473/events?q=host%3Ametaphysics-web)
-- **Point People:** [@alloy](https://github.com/alloy) &
-  [@mzikherman](https://github.com/mzikherman)
+- **Point People:** [@mzikherman](https://github.com/mzikherman)
 
 ### Getting Setup
 
