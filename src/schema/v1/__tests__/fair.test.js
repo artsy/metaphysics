@@ -167,7 +167,6 @@ describe("Fair", () => {
         end_at: "2019-02-17T11:00:00+00:00",
         partner_shows_count: 4,
         name: "Aqua Art Miami 2018",
-        exhibition_period: "Feb 15 – 17",
         exhibitors_grouped_by_name: [
           {
             letter: "A",
@@ -315,7 +314,7 @@ describe("Fair", () => {
     const data = await runQuery(query, context)
     expect(data).toEqual({
       fair: {
-        exhibition_period: "Feb 15 – 17",
+        exhibition_period: "Feb 15 – 17, 2019",
       },
     })
   })
