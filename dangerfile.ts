@@ -5,7 +5,7 @@ import * as prettier from "prettier"
 import * as jsdiff from "diff"
 
 // Grab the built schema to skip all the babel path faff
-import schema from "./build/src/schema/v1"
+import schema from "./src/schema/v1"
 
 export default async () => {
   // Rule: encourage all new files to be TypeScript
@@ -28,9 +28,9 @@ export default async () => {
   const localGQL = readFileSync("_schema.graphql", "utf8")
   if (prettySchema !== localGQL) {
     fail(`Please update the schema in the root of the app via:
-  
+
   \`yarn dump-schema _schema.graphql\`
-  
+
   Note: This script uses your current \`.env\` variables.
   `)
     const diff = jsdiff.createPatch(
