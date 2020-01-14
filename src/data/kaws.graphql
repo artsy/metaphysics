@@ -15,9 +15,6 @@ type Collection {
   # Markdown alternate of description field contents.
   descriptionMarkdown: String
 
-  # Collection has its description available as markdown
-  hasMarkdownDescription: Boolean!
-
   # Background image for the header of the collection page
   headerImage: String
 
