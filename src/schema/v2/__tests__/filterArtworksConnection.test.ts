@@ -416,4 +416,118 @@ describe("artworksConnection", () => {
       ])
     })
   })
+
+  describe("Merchandisable artists aggregation", () => {
+    beforeEach(() => {
+      const mockArtworkResults = {
+        hits: [
+          { id: "kawaii-artwork-1" },
+          { id: "kawaii-artwork-2" },
+          { id: "kawaii-artwork-3" },
+        ],
+        aggregations: {
+          total: { value: 42 },
+          merchandisable_artists: {
+            "id-1": { name: "Takashi Murakami", count: 42 },
+            "id-2": { name: "Yamaguchi Ai", count: 42 },
+            "id-3": { name: "Yoshitomo Nara", count: 42 },
+            "id-4": { name: "Aya Takano", count: 42 },
+            "id-5": { name: "Amano Yoshitaka", count: 42 },
+          },
+        },
+      }
+
+      const mockArtistResults = [
+        { _id: "id-1", id: "takashi-murakami", name: "Takashi Murakami" },
+        { _id: "id-2", id: "yamaguchi-ai", name: "Yamaguchi Ai" },
+        { _id: "id-3", id: "yoshitomo-nara", name: "Yoshitomo Nara" },
+        { _id: "id-4", id: "aya-takano", name: "Aya Takano" },
+        { _id: "id-5", id: "amano-yoshitaka", name: "Amano Yoshitaka" },
+      ]
+
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: jest.fn(() =>
+            Promise.resolve(mockArtworkResults)
+          ),
+        },
+        artistsLoader: jest.fn(
+          // mock implementation to filter over the mock results above
+          ({ ids }) =>
+            Promise.resolve(
+              mockArtistResults.filter(({ _id }) => ids.includes(_id))
+            )
+        ),
+      }
+    })
+
+    it("returns all artists by default", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            geneID: "kawaii"
+            first: 3
+            aggregations: [MERCHANDISABLE_ARTISTS]
+          ) {
+            merchandisableArtists {
+              slug
+            }
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+      const artistIdsToLoad = context.artistsLoader.mock.calls[0][0].ids
+
+      expect(artistIdsToLoad).toEqual(["id-1", "id-2", "id-3", "id-4", "id-5"])
+
+      expect(artworksConnection.merchandisableArtists).toHaveLength(5)
+      expect(artworksConnection.merchandisableArtists).toEqual([
+        { slug: "takashi-murakami" },
+        { slug: "yamaguchi-ai" },
+        { slug: "yoshitomo-nara" },
+        { slug: "aya-takano" },
+        { slug: "amano-yoshitaka" },
+      ])
+    })
+
+    it("can limit the number of returned artists", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            geneID: "kawaii"
+            first: 3
+            aggregations: [MERCHANDISABLE_ARTISTS]
+          ) {
+            merchandisableArtists(size: 3) {
+              slug
+            }
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+      const artistIdsToLoad = context.artistsLoader.mock.calls[0][0].ids
+
+      expect(artistIdsToLoad).toEqual(["id-1", "id-2", "id-3"])
+
+      expect(artworksConnection.merchandisableArtists).toHaveLength(3)
+      expect(artworksConnection.merchandisableArtists).toEqual([
+        { slug: "takashi-murakami" },
+        { slug: "yamaguchi-ai" },
+        { slug: "yoshitomo-nara" },
+      ])
+    })
+  })
 })
