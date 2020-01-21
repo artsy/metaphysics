@@ -277,20 +277,17 @@ export const FilterArtworksFields = () => {
         size: {
           type: GraphQLInt,
           description: "The number of artists to return",
+          default: 12,
         },
       },
-      resolve: (
-        { aggregations },
-        { size }: { size?: number },
-        { artistsLoader }
-      ) => {
+      resolve: ({ aggregations }, { size }: any, { artistsLoader }) => {
         if (!isExisty(aggregations.merchandisable_artists)) {
           return null
         }
 
-        const artistIdsToReturn = size
-          ? keys(aggregations.merchandisable_artists).slice(0, size)
-          : keys(aggregations.merchandisable_artists)
+        const artistIdsToReturn = keys(
+          aggregations.merchandisable_artists
+        ).slice(0, size)
 
         return artistsLoader({
           ids: artistIdsToReturn,

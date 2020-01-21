@@ -505,7 +505,7 @@ describe("artworksConnection", () => {
             first: 3
             aggregations: [MERCHANDISABLE_ARTISTS]
           ) {
-            merchandisableArtists(size: 3) {
+            merchandisableArtists(size: 2) {
               slug
             }
             edges {
@@ -520,13 +520,12 @@ describe("artworksConnection", () => {
       const { artworksConnection } = await runQuery(query, context)
       const artistIdsToLoad = context.artistsLoader.mock.calls[0][0].ids
 
-      expect(artistIdsToLoad).toEqual(["id-1", "id-2", "id-3"])
+      expect(artistIdsToLoad).toEqual(["id-1", "id-2"])
 
-      expect(artworksConnection.merchandisableArtists).toHaveLength(3)
+      expect(artworksConnection.merchandisableArtists).toHaveLength(2)
       expect(artworksConnection.merchandisableArtists).toEqual([
         { slug: "takashi-murakami" },
         { slug: "yamaguchi-ai" },
-        { slug: "yoshitomo-nara" },
       ])
     })
   })
