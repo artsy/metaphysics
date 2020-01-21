@@ -4018,7 +4018,7 @@ type FilterArtworksConnection implements Node & ArtworkConnectionInterface {
   # Returns a list of merchandisable artists sorted by merch score.
   merchandisableArtists(
     # The number of artists to return
-    size: Int
+    size: Int = 12
   ): [Artist]
   facet: ArtworkFilterFacet
   pageCursors: PageCursors!

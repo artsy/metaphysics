@@ -277,7 +277,7 @@ export const FilterArtworksFields = () => {
         size: {
           type: GraphQLInt,
           description: "The number of artists to return",
-          default: 12,
+          defaultValue: 12,
         },
       },
       resolve: ({ aggregations }, { size }: any, { artistsLoader }) => {
