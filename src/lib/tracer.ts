@@ -21,14 +21,6 @@ export function init() {
   tracer.use("http", {
     service: `${DD_TRACER_SERVICE_NAME}.http-client`,
   })
-  tracer.use("graphql", {
-    service: `${DD_TRACER_SERVICE_NAME}.graphql`,
-    /**
-     * NOTE: This means we capture _all_ variables. When/if needed, we can
-     *       use this callback to redact sensitive variables.
-     */
-    variables: variables => variables,
-  } as any)
 }
 
 const createCommand = (command: string) => <T>(
