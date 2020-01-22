@@ -1247,7 +1247,7 @@ type ArtworksAggregationResults {
 }
 
 enum ArtworkSorts {
-  AVAILABILITY_DESC
+  AVAILABILITY_ASC
   CREATED_AT_ASC
   CREATED_AT_DESC
   DELETED_AT_ASC

@@ -4,8 +4,8 @@ const ArtworkSorts = {
   type: new GraphQLEnumType({
     name: "ArtworkSorts",
     values: {
-      AVAILABILITY_DESC: {
-        value: "-availability",
+      AVAILABILITY_ASC: {
+        value: "availability",
       },
       CREATED_AT_ASC: {
         value: "created_at",
