@@ -4016,7 +4016,10 @@ type FilterArtworksConnection implements Node & ArtworkConnectionInterface {
     @deprecated(reason: "Prefer to use `edges`. [Will be removed in v2]")
 
   # Returns a list of merchandisable artists sorted by merch score.
-  merchandisableArtists: [Artist]
+  merchandisableArtists(
+    # The number of artists to return
+    size: Int = 12
+  ): [Artist]
   facet: ArtworkFilterFacet
   pageCursors: PageCursors!
 }

@@ -273,12 +273,24 @@ export const FilterArtworksFields = () => {
       type: new GraphQLList(Artist.type),
       description:
         "Returns a list of merchandisable artists sorted by merch score.",
-      resolve: ({ aggregations }, _options, { artistsLoader }) => {
+      args: {
+        size: {
+          type: GraphQLInt,
+          description: "The number of artists to return",
+          defaultValue: 12,
+        },
+      },
+      resolve: ({ aggregations }, { size }: any, { artistsLoader }) => {
         if (!isExisty(aggregations.merchandisable_artists)) {
           return null
         }
+
+        const artistIdsToReturn = keys(
+          aggregations.merchandisable_artists
+        ).slice(0, size)
+
         return artistsLoader({
-          ids: keys(aggregations.merchandisable_artists),
+          ids: artistIdsToReturn,
         })
       },
     },
