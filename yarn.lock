@@ -3059,7 +3059,7 @@ date-fns@^1.27.2:
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
   integrity sha512-lbTXWZ6M20cWH8N9S6afb0SBm6tMk+uUg6z3MqHPKE9atmsY3kJkTm8vKe93izJ2B2+q5MV990sM2CHgtAZaOw==
 
-dd-trace@^0.16.3:
+dd-trace@0.16.3:
   version "0.16.3"
   resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-0.16.3.tgz#3a7e36ee2f96e07604c635793d664bab18d98cba"
   integrity sha512-K77UMS/UziXxV2QnJ8DO/08JRl63AC6GPvXQ90we16s4QNc4LNKlJjaUgV3u+rvkfx8Dg/bJv0YwER0x2Rb9mg==
