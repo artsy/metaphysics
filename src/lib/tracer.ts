@@ -26,9 +26,9 @@ export function init() {
 const createCommand = (command: string) => <T>(
   promise: Promise<T>
 ): Promise<T> => {
-  const parentScope = tracer.scopeManager().active()
+  const parentScope = tracer.scope().active()
   const span = tracer.startSpan("memcached", {
-    childOf: parentScope && parentScope.span(),
+    childOf: parentScope || undefined,
     tags: {
       [Tags.SPAN_KIND]: Tags.SPAN_KIND_RPC_CLIENT,
       [Tags.DB_TYPE]: "memcached",
