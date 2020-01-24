@@ -872,7 +872,7 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@graphql-inspector/core@^1.27.0":
+"@graphql-inspector/core@1.27.0":
   version "1.27.0"
   resolved "https://registry.yarnpkg.com/@graphql-inspector/core/-/core-1.27.0.tgz#87993675e9a1fd1e2f6cc1e1ea42afa098ae58b4"
   integrity sha512-A5VnmNXj/5w8aoBLI3oEHWCYZAiRyMmmM0cJefKv/HYyBe6TYMzSRJLPvNp9mq3bKXU2szYp5NM5b1Bud2t5rQ==
