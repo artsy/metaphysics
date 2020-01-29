@@ -2,10 +2,11 @@ import { buildSchema } from "graphql"
 import { readFileSync } from "fs"
 const { diff: schemaDiff } = require("@graphql-inspector/core")
 import fetch from "node-fetch"
+import { warn } from "danger"
 
 // If there is a breaking change between the local schema,
 // and the current Reaction one, warn.
-;(async () => {
+export default async () => {
   const forcePackageJSON = await (await fetch(
     "https://raw.githubusercontent.com/artsy/force/release/package.json"
   )).json()
@@ -26,4 +27,4 @@ import fetch from "node-fetch"
       `The V2 schema in this PR has breaking changes with production Force. Remember to update Reaction if necessary:\n\n${messages}`
     )
   }
-})()
+}

@@ -38,14 +38,6 @@ workflows:
       # for PRs
       - yarn/update-cache:
           <<: *only_development
-      - yarn/run:
-          <<: *only_development
-          name: schema-drift
-          script: danger local -d scripts/schema-drift.ts
-      - yarn/run:
-          <<: *only_development
-          name: compare-reaction-schema
-          script: danger local -d scripts/compare-reaction-schema.ts
 
       # pre-staging
       - hokusai/test:
