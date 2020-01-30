@@ -4,6 +4,7 @@ import {
   transformSchema,
   RenameTypes,
   RenameRootFields,
+  FilterRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
 import { ReplaceCommerceDateTimeType } from "./transformers/replaceCommerceDateTimeType"
@@ -22,7 +23,12 @@ export const executableExchangeSchema = transforms => {
   // Note that changes in this will need to be
 }
 
+const removeRootFieldList = ["myOrders"]
+
 export const transformsForExchange = [
+  new FilterRootFields(
+    (_operation, name) => !removeRootFieldList.includes(name)
+  ),
   // Apply a prefix to all the typenames
   new RenameTypes(name => {
     return `Commerce${name}`

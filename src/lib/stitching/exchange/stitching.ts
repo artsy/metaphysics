@@ -151,7 +151,7 @@ export const exchangeStitchingEnvironment = ({
 
   return {
     // The SDL used to declare how to stitch an object
-    extensionSchema: `
+    extensionSchema: gql`
     extend type CommerceLineItem {
       artwork: Artwork
       artworkVersion: ArtworkVersion
@@ -186,6 +186,10 @@ export const exchangeStitchingEnvironment = ({
     extend type CommerceOffer {
       fromDetails: OrderParty
       ${offerAmountFieldsSDL.join("\n")}
+    }
+
+    extend type Me {
+      orders(first: Int, last: Int, after: String, before: String, mode: CommerceOrderModeEnum, sellerId: String, sort: CommerceOrderConnectionSortEnum, state: CommerceOrderStateEnum): CommerceOrderConnectionWithTotalCount
     }
   `,
 
@@ -251,6 +255,28 @@ export const exchangeStitchingEnvironment = ({
       CommerceOffer: {
         ...totalsResolvers("CommerceOffer", offerAmountFields),
         fromDetails: fromDetailsResolver,
+      },
+      Me: {
+        orders: {
+          fragment: gql`... on Me {
+            __typename
+          }`,
+          resolve: async (_source, args, context, info) => {
+            console.log("------> here", args, _source)
+            const result = await info.mergeInfo.delegateToSchema({
+              schema: exchangeSchema,
+              operation: "query",
+              fieldName: "myOrders",
+              args: {
+                first: 10,
+              },
+              context,
+              info,
+            })
+            console.log("======>", result)
+            return result
+          },
+        },
       },
     },
   }
