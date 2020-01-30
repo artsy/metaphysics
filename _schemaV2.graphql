@@ -5863,12 +5863,6 @@ type Query {
   # List of all artwork attribution classes
   artworkAttributionClasses: [AttributionClass]
 
-  # An Artwork
-  artwork(
-    # The slug or ID of the Artwork
-    id: String!
-  ): Artwork
-
   # Artworks Elastic Search results
   artworksConnection(
     acquireable: Boolean
@@ -7506,12 +7500,6 @@ type User {
 type Viewer {
   # List of all artwork attribution classes
   artworkAttributionClasses: [AttributionClass]
-
-  # An Artwork
-  artwork(
-    # The slug or ID of the Artwork
-    id: String!
-  ): Artwork
 
   # Artworks Elastic Search results
   artworksConnection(
