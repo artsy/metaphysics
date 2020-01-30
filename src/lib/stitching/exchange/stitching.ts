@@ -262,19 +262,14 @@ export const exchangeStitchingEnvironment = ({
             __typename
           }`,
           resolve: async (_source, args, context, info) => {
-            console.log("------> here", args, _source)
-            const result = await info.mergeInfo.delegateToSchema({
+            return await info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
               operation: "query",
-              fieldName: "myOrders",
-              args: {
-                first: 10,
-              },
+              fieldName: "commerceMyOrders",
+              args,
               context,
               info,
             })
-            console.log("======>", result)
-            return result
           },
         },
       },
