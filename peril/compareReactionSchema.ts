@@ -7,7 +7,7 @@ import { warn, danger } from "danger"
 // and the current Reaction one, warn.
 export default async () => {
   const forcePackageJSON = await (await fetch(
-    "https://raw.githubusercontent.com/artsy/force/release/package.json"
+    "https://raw.githubusercontent.com/artsy/force/master/package.json"
   )).json()
   const reactionVersion = forcePackageJSON["dependencies"]["@artsy/reaction"]
   const reactionSchemaUrl = `https://github.com/artsy/reaction/raw/v${reactionVersion}/data/schema.graphql`
@@ -27,7 +27,9 @@ export default async () => {
   const messages = breakings.map(c => c.message)
   if (messages.length) {
     warn(
-      `The V2 schema in this PR has breaking changes with production Force. Remember to update Reaction if necessary:\n\n${messages}`
+      `The V2 schema in this PR has breaking changes with Force. Remember to update Reaction if necessary.
+      
+${messages.join("\n")}`
     )
   }
 }
