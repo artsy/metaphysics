@@ -1,8 +1,7 @@
 import { buildSchema } from "graphql"
-import { readFileSync } from "fs"
 const { diff: schemaDiff } = require("@graphql-inspector/core")
 import fetch from "node-fetch"
-import { warn } from "danger"
+import { warn, danger } from "danger"
 
 // If there is a breaking change between the local schema,
 // and the current Reaction one, warn.
@@ -14,7 +13,11 @@ export default async () => {
   const reactionSchemaUrl = `https://github.com/artsy/reaction/raw/v${reactionVersion}/data/schema.graphql`
 
   const reactionSchema = await (await fetch(reactionSchemaUrl)).text()
-  const localSchema = readFileSync("_schemaV2.graphql", "utf8")
+  const repo = danger.github.pr.head.repo.full_name
+  const sha = danger.github.pr.head.sha
+  const localSchema = await (await fetch(
+    `https://raw.githubusercontent.com/${repo}/${sha}/_schemaV2.graphql`
+  )).text()
 
   const allChanges = schemaDiff(
     buildSchema(reactionSchema),
