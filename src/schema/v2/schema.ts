@@ -6,7 +6,7 @@ import {
   specifiedDirectives,
 } from "graphql"
 
-import Artwork from "./artwork"
+// import Artwork from "./artwork"
 import ArtworkAttributionClasses from "./artworkAttributionClasses"
 import Artist from "./artist"
 import Fair from "./fair"
@@ -109,7 +109,7 @@ const rootFields = {
   artworkAttributionClasses: ArtworkAttributionClasses,
   // article: Article,
   // articles: Articles,
-  artwork: Artwork,
+  // artwork: Artwork,
   // artworkVersion: ArtworkVersionResolver,
   artworksConnection: filterArtworksConnection(),
   artist: Artist,
