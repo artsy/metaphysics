@@ -71,6 +71,28 @@ describe("Default Context", () => {
     }
   })
 
+  it("Calls the loader class with the correct arguments", async () => {
+    const artistArtworks = [
+      { id: "artwork1", title: "Artwork 1" },
+      { id: "artwork2", title: "Artwork 2" },
+      { id: "artwork3", title: "Artwork 3" },
+    ]
+    context.artistArtworksLoader = jest.fn(() =>
+      Promise.resolve(artistArtworks)
+    )
+
+    await runAuthenticatedQuery(query, context).then(data => {
+      expect(data.artwork.contextGrids.length).toEqual(3)
+      expect(context.artistArtworksLoader).toHaveBeenCalledWith("andy-warhol", {
+        exclude_ids: ["abc123"],
+        page: 1,
+        size: 2,
+        sort: "-merchandisability",
+      })
+    })
+    expect.assertions(2)
+  })
+
   it("Returns the correct values for metadata fields when there is just artist data", async () => {
     parentArtwork.partner = null
     context.partnerArtworksLoader = Promise.resolve(null)
@@ -109,7 +131,6 @@ describe("Default Context", () => {
         ctaHref,
         artworksConnection,
       } = data.artwork.contextGrids[0]
-
       expect(title).toEqual("Other works from CAMA Gallery")
       expect(ctaTitle).toEqual("View all works from CAMA Gallery")
       expect(ctaHref).toEqual("/cama-gallery")
