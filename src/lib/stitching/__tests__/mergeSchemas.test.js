@@ -1,7 +1,7 @@
 import { runQueryMerged } from "test/utils"
 import gql from "lib/gql"
 
-describe("stiched schema regressions", () => {
+describe("stitched schema regressions", () => {
   it("union in interface fragment issue", async () => {
     const artworkResponse = {
       id: "banksy-di-faced-tenner-21",

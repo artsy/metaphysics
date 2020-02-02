@@ -28,6 +28,12 @@ it("extends the Order objects", async () => {
   }
 })
 
+it("extends the Me object", async () => {
+  const mergedSchema = await getExchangeMergedSchema()
+  const meFields = await getFieldsForTypeFromSchema("Me", mergedSchema)
+  expect(meFields).toContain("orders")
+})
+
 it("resolves amount fields on CommerceOrder", async () => {
   const { resolvers } = await getExchangeStitchedSchema()
   const totalListPriceResolver = resolvers.CommerceOrder.totalListPrice.resolve
