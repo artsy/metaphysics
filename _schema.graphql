@@ -7931,6 +7931,16 @@ type Me implements Node {
     size: Int
   ): [Artist]
   type: String
+  orders(
+    first: Int
+    last: Int
+    after: String
+    before: String
+    mode: CommerceOrderModeEnum
+    sellerId: String
+    sort: CommerceOrderConnectionSortEnum
+    state: CommerceOrderStateEnum
+  ): CommerceOrderConnectionWithTotalCount
 }
 
 # A message in a conversation.
