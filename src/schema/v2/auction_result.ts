@@ -7,6 +7,7 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLEnumType,
+  GraphQLBoolean,
 } from "graphql"
 import { indexOf } from "lodash"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
@@ -108,6 +109,10 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
     externalURL: {
       type: GraphQLString,
       resolve: ({ external_url }) => external_url,
+    },
+    boughtIn: {
+      type: GraphQLBoolean,
+      resolve: ({ bought_in }) => bought_in,
     },
     images: {
       type: new GraphQLObjectType<any, ResolverContext>({
