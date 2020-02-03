@@ -63,7 +63,7 @@ describe("integration tests", () => {
     )
   })
 
-  it("does't include `extensions` by default", async () => {
+  it("doesn't include `extensions` by default", async () => {
     // Mock the fetch for the Artist loader
     mockFetch.mockResolvedValueOnce(
       Promise.resolve({ body: { name: "Mr Bank" } })

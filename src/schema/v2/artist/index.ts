@@ -204,6 +204,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         type: auctionResultConnection.connectionType,
         args: pageable({
           sort: AuctionResultSorts,
+          organization: {
+            type: GraphQLString,
+            description: "Filter auction results by organization",
+          },
           recordsTrusted: {
             type: GraphQLBoolean,
             defaultValue: false,
@@ -224,6 +228,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             artist_id: _id,
+            organization: options.organization,
             sort: options.sort,
           }
           return auctionLotLoader(diffusionArgs).then(
