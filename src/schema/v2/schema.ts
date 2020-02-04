@@ -85,7 +85,6 @@ import ObjectIdentification from "./object_identification"
 import { ResolverContext } from "types/graphql"
 import config from "config"
 import { ArtworkVersionType } from "./artwork_version"
-import { deprecate } from "lib/deprecation"
 import { HighlightsField } from "./Highlights"
 
 const { ENABLE_CONSIGNMENTS_STITCHING } = config
@@ -169,10 +168,6 @@ const Viewer = {
   type: ViewerType,
   description: "A wildcard used to support complex root queries in Relay",
   resolve: x => x,
-  deprecationReason: deprecate({
-    inVersion: 2,
-    reason: "Viewer has been deprecated in V2. Rely on root fields instead.",
-  }),
 }
 
 export default new GraphQLSchema({

@@ -6079,9 +6079,6 @@ type Query {
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
-    @deprecated(
-      reason: "Viewer has been deprecated in V2. Rely on root fields instead. [Will be removed in v2]"
-    )
 
   # Autocomplete resolvers.
   _unused_gravity_matchPartners(
