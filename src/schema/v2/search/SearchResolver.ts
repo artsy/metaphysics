@@ -94,6 +94,15 @@ export class SearchResolver {
     }
   }
 
+  isForEigenVersionRequiringWorkaround() {
+    const { userAgent } = this.context
+    return (
+      userAgent &&
+      (userAgent.includes("Artsy-Mobile/6.2.0") ||
+        userAgent.includes("Artsy-Mobile/6.2.1"))
+    )
+  }
+
   resolve() {
     if (!this.args.page) {
       delete this.args.page
@@ -106,6 +115,7 @@ export class SearchResolver {
       ...rest,
       page,
       size,
+      shouldExcludeCollections: this.isForEigenVersionRequiringWorkaround(),
       entities: this.args.entities,
       total_count: true,
     }

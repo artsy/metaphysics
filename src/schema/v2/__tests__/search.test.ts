@@ -2,10 +2,10 @@
 import { runQuery } from "schema/v2/test/utils"
 
 describe("Search", () => {
-  let searchResults: any
+  let searchResults: object[]
   let aggregations: any
   let context: any
-  let searchResponse: any
+  let searchResponse: Promise<{ body: typeof searchResults; headers: object }>
 
   beforeEach(() => {
     aggregations = {
@@ -106,7 +106,7 @@ describe("Search", () => {
               imageUrl
 
               ... on SearchableItem {
-                displayType 
+                displayType
                 internalID
                 slug
               }
@@ -324,6 +324,65 @@ describe("Search", () => {
 
       expect(geneNode.__typename).toBe("Gene")
       expect(geneNode.name).toBe("Minimalism")
+    })
+  })
+
+  describe("user agent sniffing", () => {
+    it("includes Collection results by default", async () => {
+      const query = `
+        {
+          searchConnection(query: "street art", first: 10) {
+            edges {
+              node {
+                __typename
+              }
+            }
+          }
+        }
+      `
+
+      const mockSearchLoader = jest.fn(() => searchResponse)
+      const context = {
+        userAgent: "any old browser",
+        searchLoader: mockSearchLoader,
+      }
+
+      await runQuery(query, context)
+
+      expect(mockSearchLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          shouldExcludeCollections: false,
+        })
+      )
+    })
+
+    it("excludes Collection results for some versions of Eigen", async () => {
+      const query = `
+        {
+          searchConnection(query: "street art", first: 10) {
+            edges {
+              node {
+                __typename
+              }
+            }
+          }
+        }
+      `
+
+      const mockSearchLoader = jest.fn(() => searchResponse)
+      const context = {
+        userAgent:
+          "x86_64 Mozilla/5.0 Artsy-Mobile/6.2.1 Eigen/2019.05.24.09/6.2.1 (iPhone; iOS 13.3; Scale/3.00) AppleWebKit/601.1.46 (KHTML, like Gecko)",
+        searchLoader: mockSearchLoader,
+      }
+
+      await runQuery(query, context)
+
+      expect(mockSearchLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          shouldExcludeCollections: true,
+        })
+      )
     })
   })
 })

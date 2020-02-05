@@ -3,6 +3,7 @@ import {
   DEFAULT_ENTITIES,
   SUGGEST_ENTITIES,
 } from "schema/v1/search/SearchEntity"
+import { without } from "lodash"
 
 const modeMap = {
   AUTOSUGGEST: {
@@ -14,9 +15,13 @@ const modeMap = {
 
 export const searchLoader = gravityLoader => {
   return gravityLoader(
-    ({ query, entities, mode, ...rest }) => {
+    ({ query, entities, mode, shouldExcludeCollections, ...rest }) => {
       const { fallbackEntities, pathname } = modeMap[mode] || modeMap.DEFAULT
-      const indexes = entities || fallbackEntities.map(index => index.value)
+      let indexes = entities || fallbackEntities.map(index => index.value)
+
+      if (shouldExcludeCollections) {
+        indexes = without(indexes, "MarketingCollection")
+      }
 
       const queryParams = {
         term: query,
