@@ -205,8 +205,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         args: pageable({
           sort: AuctionResultSorts,
           organization: {
-            type: GraphQLString,
-            description: "Filter auction results by organization",
+            type: new GraphQLList(GraphQLString),
+            description: "Filter auction results by organizations",
           },
           recordsTrusted: {
             type: GraphQLBoolean,

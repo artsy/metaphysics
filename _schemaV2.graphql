@@ -577,8 +577,8 @@ type Artist implements Node & Searchable & EntityWithFilterArtworksConnectionInt
   auctionResultsConnection(
     sort: AuctionResultSorts
 
-    # Filter auction results by organization
-    organization: String
+    # Filter auction results by organizations
+    organization: [String]
 
     # When true, will only return records for allowed artists.
     recordsTrusted: Boolean = false
