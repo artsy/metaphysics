@@ -3,10 +3,8 @@ import { runQuery } from "schema/v2/test/utils"
 const mutation = `
 mutation {
   startIdentityVerification(input: { identityVerificationID: "id-123"}) {
-    startIdentityVerificationResponseOrError {
-      identity_verification_wizard_url
-      identity_verification_id
-    }
+    identity_verification_wizard_url
+    identity_verification_id
   }
 }
 `
