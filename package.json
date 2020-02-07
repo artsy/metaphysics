@@ -92,7 +92,7 @@
     "patch-package": "6.2.0",
     "performance-now": "2.1.0",
     "postinstall-prepare": "1.0.1",
-    "qs": "5.2.1",
+    "qs": "6.9.1",
     "rate-limit-memcached": "0.6.0",
     "raven": "2.4.2",
     "react": "15.6.2",
