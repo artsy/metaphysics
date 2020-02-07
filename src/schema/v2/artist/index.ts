@@ -206,7 +206,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           sort: AuctionResultSorts,
           organization: {
             type: GraphQLString,
-            description: "Filter auction results by organization",
+            description: "(Deprecated) Filter auction results by organizations",
+          },
+          organizations: {
+            type: new GraphQLList(GraphQLString),
+            description: "Filter auction results by organizations",
           },
           recordsTrusted: {
             type: GraphQLBoolean,
@@ -228,7 +232,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             artist_id: _id,
-            organization: options.organization,
+            organizations: options.organizations || [options.organization],
             sort: options.sort,
           }
           return auctionLotLoader(diffusionArgs).then(
