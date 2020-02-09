@@ -21,19 +21,19 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
   description: "Start an existing identity verification flow",
   inputFields: InputType.getFields(),
   outputFields: {
-    identity_verification_id: {
+    identityVerificationId: {
       type: GraphQLString,
       resolve: _ => "id-123",
     },
-    identity_verification_wizard_url: {
+    identityVerificationWizardUrl: {
       type: GraphQLString,
       resolve: _ => "https://staging.artsy.net/auctions",
     },
   },
   mutateAndGetPayload: ({ identityVerificationID }) => {
     return {
-      identity_verification_id: identityVerificationID,
-      identity_verification_wizard_url: "https://artsy.net",
+      identityVerificationId: identityVerificationID,
+      identityVerificationWizardUrl: "https://artsy.net",
     }
   },
 })
