@@ -577,11 +577,11 @@ type Artist implements Node & Searchable & EntityWithFilterArtworksConnectionInt
   auctionResultsConnection(
     sort: AuctionResultSorts
 
-    # (Deprecated) Filter auction results by organizations
-    organization: String
-
     # Filter auction results by organizations
     organizations: [String]
+
+    # Filter auction results by Artwork sizes
+    sizes: [ArtworkSizes]
 
     # When true, will only return records for allowed artists.
     recordsTrusted: Boolean = false
@@ -1250,6 +1250,12 @@ type ArtworkMeta {
 type ArtworksAggregationResults {
   counts: [AggregationCount]
   slice: ArtworkAggregation
+}
+
+enum ArtworkSizes {
+  SMALL
+  MEDIUM
+  LARGE
 }
 
 enum ArtworkSorts {
