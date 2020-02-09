@@ -1,6 +1,12 @@
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { GraphQLInputObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLInputObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+  GraphQLObjectType,
+} from "graphql"
+import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 
 const InputType = new GraphQLInputObjectType({
   name: "StartIdentityVerificationInput",
@@ -12,15 +18,23 @@ const InputType = new GraphQLInputObjectType({
   },
 })
 
-export const startIdentityVerificationMutation = mutationWithClientMutationId<
-  any,
-  any,
-  ResolverContext
->({
-  name: "startIdentityVerificationMutation",
-  description: "Start an existing identity verification flow",
-  inputFields: InputType.getFields(),
-  outputFields: {
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "startIdentityVerificationFailure",
+  isTypeOf: data => {
+    return data._type === "GravityMutationError"
+  },
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: err => err,
+    },
+  }),
+})
+
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "startIdentityVerificationSuccess",
+  isTypeOf: data => data.id,
+  fields: () => ({
     identityVerificationId: {
       type: GraphQLString,
       description: "Primary ID of the started identity verification",
@@ -30,6 +44,27 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
       description:
         "URL that hosts the user-facing identity verification wizard",
       resolve: _ => "https://staging.artsy.net/auctions",
+    },
+  }),
+})
+
+const OutputType = new GraphQLUnionType({
+  name: "startIdentityVerificationResponseOrError",
+  types: [SuccessType, FailureType],
+})
+
+export const startIdentityVerificationMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
+  name: "startIdentityVerificationMutation",
+  description: "Start an existing identity verification flow",
+  inputFields: InputType.getFields(),
+  outputFields: {
+    startIdentityVerificationResponseOrError: {
+      type: OutputType,
+      resolve: result => result,
     },
   },
   mutateAndGetPayload: ({ identityVerificationId }) => {

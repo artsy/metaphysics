@@ -7191,6 +7191,10 @@ enum sort {
   ASC
 }
 
+type startIdentityVerificationFailure {
+  mutationError: GravityMutationError
+}
+
 input startIdentityVerificationMutationInput {
   # Primary ID of the identity verification to be started
   identityVerificationId: String
@@ -7198,12 +7202,20 @@ input startIdentityVerificationMutationInput {
 }
 
 type startIdentityVerificationMutationPayload {
+  startIdentityVerificationResponseOrError: startIdentityVerificationResponseOrError
+  clientMutationId: String
+}
+
+union startIdentityVerificationResponseOrError =
+    startIdentityVerificationSuccess
+  | startIdentityVerificationFailure
+
+type startIdentityVerificationSuccess {
   # Primary ID of the started identity verification
   identityVerificationId: String
 
   # URL that hosts the user-facing identity verification wizard
   identityVerificationWizardUrl: String
-  clientMutationId: String
 }
 
 type StaticContent {
