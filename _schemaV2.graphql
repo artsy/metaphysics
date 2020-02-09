@@ -5391,6 +5391,11 @@ type Mutation {
     input: CreateGeminiEntryForAssetInput!
   ): CreateGeminiEntryForAssetPayload
 
+  # Start an existing identity verification flow
+  startIdentityVerification(
+    input: startIdentityVerificationMutationInput!
+  ): startIdentityVerificationMutationPayload
+
   # Create a new consignment submission using Convection
   createConsignmentSubmission(
     input: CreateSubmissionMutationInput!
@@ -7184,6 +7189,18 @@ enum ShowSorts {
 enum sort {
   DESC
   ASC
+}
+
+input startIdentityVerificationMutationInput {
+  # Primary ID of the identity verification to be started
+  identityVerificationId: String
+  clientMutationId: String
+}
+
+type startIdentityVerificationMutationPayload {
+  identityVerificationId: String
+  identityVerificationWizardUrl: String
+  clientMutationId: String
 }
 
 type StaticContent {
