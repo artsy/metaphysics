@@ -23,7 +23,6 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
   outputFields: {
     identityVerificationId: {
       type: GraphQLString,
-      resolve: _ => "id-123",
     },
     identityVerificationWizardUrl: {
       type: GraphQLString,
@@ -33,7 +32,6 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
   mutateAndGetPayload: ({ identityVerificationID }) => {
     return {
       identityVerificationId: identityVerificationID,
-      identityVerificationWizardUrl: "https://artsy.net",
     }
   },
 })
