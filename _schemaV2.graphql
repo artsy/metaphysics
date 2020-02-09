@@ -7198,7 +7198,10 @@ input startIdentityVerificationMutationInput {
 }
 
 type startIdentityVerificationMutationPayload {
+  # Primary ID of the started identity verification
   identityVerificationId: String
+
+  # URL that hosts the user-facing identity verification wizard
   identityVerificationWizardUrl: String
   clientMutationId: String
 }

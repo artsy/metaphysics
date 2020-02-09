@@ -23,9 +23,12 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
   outputFields: {
     identityVerificationId: {
       type: GraphQLString,
+      description: "Primary ID of the started identity verification",
     },
     identityVerificationWizardUrl: {
       type: GraphQLString,
+      description:
+        "URL that hosts the user-facing identity verification wizard",
       resolve: _ => "https://staging.artsy.net/auctions",
     },
   },
