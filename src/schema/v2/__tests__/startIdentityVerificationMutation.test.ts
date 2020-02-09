@@ -2,7 +2,7 @@ import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
 
 const mutation = `
 mutation {
-  startIdentityVerification(input: { identityVerificationID: "id-123"}) {
+  startIdentityVerification(input: { identityVerificationId: "id-123"}) {
     identityVerificationWizardUrl
     identityVerificationId
   }

@@ -5,7 +5,7 @@ import { GraphQLInputObjectType, GraphQLString } from "graphql"
 const InputType = new GraphQLInputObjectType({
   name: "StartIdentityVerificationInput",
   fields: {
-    identityVerificationID: {
+    identityVerificationId: {
       type: GraphQLString,
       description: "Primary ID of the identity verification to be started",
     },
@@ -29,9 +29,9 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
       resolve: _ => "https://staging.artsy.net/auctions",
     },
   },
-  mutateAndGetPayload: ({ identityVerificationID }) => {
+  mutateAndGetPayload: ({ identityVerificationId }) => {
     return {
-      identityVerificationId: identityVerificationID,
+      identityVerificationId: identityVerificationId,
     }
   },
 })
