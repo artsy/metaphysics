@@ -33,7 +33,7 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "startIdentityVerificationSuccess",
-  isTypeOf: data => data.id,
+  isTypeOf: data => data.identityVerificationId,
   fields: () => ({
     identityVerificationId: {
       type: GraphQLString,

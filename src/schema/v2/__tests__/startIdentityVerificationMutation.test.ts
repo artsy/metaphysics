@@ -26,8 +26,10 @@ describe("starting an identity verification", () => {
     const response = await runAuthenticatedQuery(mutation)
     expect(response).toEqual({
       startIdentityVerification: {
-        identityVerificationId: "id-123",
-        identityVerificationWizardUrl: "https://staging.artsy.net/auctions",
+        startIdentityVerificationResponseOrError: {
+          identityVerificationId: "id-123",
+          identityVerificationWizardUrl: "https://staging.artsy.net/auctions",
+        },
       },
     })
   })
