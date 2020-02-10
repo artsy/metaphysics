@@ -43,7 +43,6 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description:
         "URL that hosts the user-facing identity verification wizard",
-      resolve: _ => "https://staging.artsy.net/auctions",
     },
   }),
 })
