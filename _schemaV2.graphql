@@ -7191,7 +7191,7 @@ enum sort {
   ASC
 }
 
-type startIdentityVerificationFailure {
+type StartIdentityVerificationFailure {
   mutationError: GravityMutationError
 }
 
@@ -7202,15 +7202,15 @@ input startIdentityVerificationMutationInput {
 }
 
 type startIdentityVerificationMutationPayload {
-  startIdentityVerificationResponseOrError: startIdentityVerificationResponseOrError
+  startIdentityVerificationResponseOrError: StartIdentityVerificationResponseOrError
   clientMutationId: String
 }
 
-union startIdentityVerificationResponseOrError =
-    startIdentityVerificationSuccess
-  | startIdentityVerificationFailure
+union StartIdentityVerificationResponseOrError =
+    StartIdentityVerificationSuccess
+  | StartIdentityVerificationFailure
 
-type startIdentityVerificationSuccess {
+type StartIdentityVerificationSuccess {
   # Primary ID of the started identity verification
   identityVerificationId: String
 

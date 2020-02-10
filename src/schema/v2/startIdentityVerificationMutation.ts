@@ -19,7 +19,7 @@ const InputType = new GraphQLInputObjectType({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "startIdentityVerificationFailure",
+  name: "StartIdentityVerificationFailure",
   isTypeOf: data => {
     return data._type === "GravityMutationError"
   },
@@ -32,7 +32,7 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "startIdentityVerificationSuccess",
+  name: "StartIdentityVerificationSuccess",
   isTypeOf: data => data.identityVerificationId,
   fields: () => ({
     identityVerificationId: {
@@ -48,7 +48,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const OutputType = new GraphQLUnionType({
-  name: "startIdentityVerificationResponseOrError",
+  name: "StartIdentityVerificationResponseOrError",
   types: [SuccessType, FailureType],
 })
 
@@ -69,6 +69,7 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
   mutateAndGetPayload: ({ identityVerificationId }) => {
     return {
       identityVerificationId: identityVerificationId,
+      identityVerificationWizardUrl: "https://staging.artsy.net/auctions",
     }
   },
 })

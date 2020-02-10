@@ -4,7 +4,7 @@ const mutation = `
 mutation {
   startIdentityVerification(input: { identityVerificationId: "id-123"}) {
     startIdentityVerificationResponseOrError {
-      ... on startIdentityVerificationSuccess {
+      ... on StartIdentityVerificationSuccess {
         identityVerificationWizardUrl
         identityVerificationId
       }
@@ -33,4 +33,7 @@ describe("starting an identity verification", () => {
       },
     })
   })
+
+  xit("STUB: returns an Error when Gravity returns a recognizable error", () => {})
+  xit("STUB: throws an error if there is an unrecognizable error", () => {})
 })
