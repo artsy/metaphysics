@@ -38,7 +38,9 @@ describe("starting an identity verification", () => {
     const context = {
       startIdentityVerificationLoader: () => Promise.resolve(gravityResponse),
     }
+
     const response = await runAuthenticatedQuery(mutation, context)
+
     expect(response).toEqual({
       startIdentityVerification: {
         startIdentityVerificationResponseOrError: {
@@ -60,6 +62,7 @@ describe("starting an identity verification", () => {
     }
 
     const response = await runAuthenticatedQuery(mutation, errorRootValue)
+
     expect(response).toEqual({
       startIdentityVerification: {
         startIdentityVerificationResponseOrError: {
