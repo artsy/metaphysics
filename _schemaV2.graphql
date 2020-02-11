@@ -7197,7 +7197,7 @@ type StartIdentityVerificationFailure {
 
 input startIdentityVerificationMutationInput {
   # Primary ID of the identity verification to be started
-  identityVerificationId: String
+  identityVerificationId: String!
   clientMutationId: String
 }
 

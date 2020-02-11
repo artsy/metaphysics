@@ -5,6 +5,7 @@ import {
   GraphQLString,
   GraphQLUnionType,
   GraphQLObjectType,
+  GraphQLNonNull,
 } from "graphql"
 import {
   GravityMutationErrorType,
@@ -15,7 +16,7 @@ const InputType = new GraphQLInputObjectType({
   name: "StartIdentityVerificationInput",
   fields: {
     identityVerificationId: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: "Primary ID of the identity verification to be started",
     },
   },
