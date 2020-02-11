@@ -4701,6 +4701,15 @@ type HomePageRelatedArtistArtworkModule {
   basedOn: Artist
 }
 
+type IdentityVerificationType {
+  # Primary ID of the requested identity verification
+  id: String!
+
+  # WIP: where the identity verification is in it's lifecycle
+  state: String!
+  userID: String!
+}
+
 type Image {
   # An optional type-specific ID.
   internalID: ID
@@ -5185,6 +5194,9 @@ type Me implements Node {
     # The ID of the invoice
     invoiceId: String!
   ): Invoice
+
+  # An identity verification
+  identityVerification: IdentityVerificationType
 
   # Sale Artworks search results
   lotsByFollowedArtistsConnection(
