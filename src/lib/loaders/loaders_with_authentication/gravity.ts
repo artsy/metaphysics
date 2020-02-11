@@ -9,6 +9,12 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
+    startIdentityVerificationLoader: gravityLoader(
+      identityVerificationId =>
+        `identity_verification/${identityVerificationId}/start`,
+      {},
+      { method: "PUT" }
+    ),
     createAccountRequestLoader: gravityLoader(
       "account_requests",
       {},

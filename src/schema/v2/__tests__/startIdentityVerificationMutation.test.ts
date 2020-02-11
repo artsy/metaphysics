@@ -8,6 +8,13 @@ mutation {
         identityVerificationWizardUrl
         identityVerificationId
       }
+      ... on StartIdentityVerificationFailure {
+        mutationError {
+          type
+          message
+          detail
+        }
+      }
     }
   }
 }
@@ -23,17 +30,57 @@ describe("starting an identity verification", () => {
   })
 
   it("STUB: returns the given identity verification ID and a link to the staging auctions page", async () => {
-    const response = await runAuthenticatedQuery(mutation)
+    const gravityResponse = {
+      identity_verification_id: "idv-123",
+      identity_verification_wizard_url: "https://staging.artsy.net/auctions",
+    }
+    const context = {
+      startIdentityVerificationLoader: () => Promise.resolve(gravityResponse),
+    }
+    const response = await runAuthenticatedQuery(mutation, context)
     expect(response).toEqual({
       startIdentityVerification: {
         startIdentityVerificationResponseOrError: {
-          identityVerificationId: "id-123",
+          identityVerificationId: "idv-123",
           identityVerificationWizardUrl: "https://staging.artsy.net/auctions",
         },
       },
     })
   })
 
-  xit("STUB: returns an Error when Gravity returns a recognizable error", () => {})
-  xit("STUB: throws an error if there is an unrecognizable error", () => {})
+  it("STUB: returns an Error when Gravity returns a recognizable error", async () => {
+    const errorRootValue = {
+      startIdentityVerificationLoader: () =>
+        Promise.reject(
+          new Error(
+            `https://stagingapi.artsy.net/api/v1/identity_verification/idv-123/start - {"type":"other_error","message":"Identity verification not found","detail":"Your identity verification cannot be found"}`
+          )
+        ),
+    }
+
+    const response = await runAuthenticatedQuery(mutation, errorRootValue)
+    expect(response).toEqual({
+      startIdentityVerification: {
+        startIdentityVerificationResponseOrError: {
+          mutationError: {
+            type: "other_error",
+            message: "Identity verification not found",
+            detail: "Your identity verification cannot be found",
+          },
+        },
+      },
+    })
+  })
+
+  it("STUB: throws an error if there is an unrecognizable error", () => {
+    const errorRootValue = {
+      startIdentityVerificationLoader: () => {
+        throw new Error("ETIMEOUT service unreachable")
+      },
+    }
+
+    runAuthenticatedQuery(mutation, errorRootValue).catch(error => {
+      expect(error.message).toEqual("ETIMEOUT service unreachable")
+    })
+  })
 })

@@ -6,7 +6,10 @@ import {
   GraphQLUnionType,
   GraphQLObjectType,
 } from "graphql"
-import { GravityMutationErrorType } from "lib/gravityErrorHandler"
+import {
+  GravityMutationErrorType,
+  formatGravityError,
+} from "lib/gravityErrorHandler"
 
 const InputType = new GraphQLInputObjectType({
   name: "StartIdentityVerificationInput",
@@ -33,16 +36,18 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "StartIdentityVerificationSuccess",
-  isTypeOf: data => data.identityVerificationId,
+  isTypeOf: data => data.identity_verification_id,
   fields: () => ({
     identityVerificationId: {
       type: GraphQLString,
       description: "Primary ID of the started identity verification",
+      resolve: res => res.identity_verification_id,
     },
     identityVerificationWizardUrl: {
       type: GraphQLString,
       description:
         "URL that hosts the user-facing identity verification wizard",
+      resolve: res => res.identity_verification_wizard_url,
     },
   }),
 })
@@ -66,10 +71,23 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
       resolve: result => result,
     },
   },
-  mutateAndGetPayload: ({ identityVerificationId }) => {
-    return {
-      identityVerificationId: identityVerificationId,
-      identityVerificationWizardUrl: "https://staging.artsy.net/auctions",
+  mutateAndGetPayload: (
+    { identityVerificationId },
+    { startIdentityVerificationLoader }
+  ) => {
+    if (!startIdentityVerificationLoader) {
+      throw new Error("You need to be signed in to perform this action")
     }
+
+    return startIdentityVerificationLoader(identityVerificationId)
+      .then(result => result)
+      .catch(error => {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      })
   },
 })
