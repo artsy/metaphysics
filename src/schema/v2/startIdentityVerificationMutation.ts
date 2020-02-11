@@ -64,7 +64,8 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "startIdentityVerificationMutation",
-  description: "Start an existing identity verification flow",
+  description:
+    "Start an identity verification flow for a pending identity verification",
   inputFields: InputType.getFields(),
   outputFields: {
     startIdentityVerificationResponseOrError: {
