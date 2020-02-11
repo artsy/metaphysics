@@ -6,10 +6,6 @@ export type StartIdentityVerificationGravityOutput = {
   identity_verification_wizard_url: string
 }
 
-type StartIdentityVerificationGravityInput = {
-  identityVerificationId: string
-}
-
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
   const { gravityLoaderWithAuthenticationFactory } = factories(opts)
@@ -18,9 +14,7 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
-    startIdentityVerificationLoader: ({
-      identityVerificationId,
-    }: StartIdentityVerificationGravityInput) => {
+    startIdentityVerificationLoader: (identityVerificationId: string) => {
       return Promise.resolve<StartIdentityVerificationGravityOutput>({
         identity_verification_id: identityVerificationId,
         identity_verification_wizard_url: "https://staging.artsy.net/auctions",
