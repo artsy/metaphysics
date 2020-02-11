@@ -33,7 +33,7 @@ describe("starting an identity verification", () => {
   it("STUB: returns the given identity verification ID and a link to the staging auctions page", async () => {
     const gravityResponse: StartIdentityVerificationGravityOutput = {
       identity_verification_id: "idv-123",
-      identity_verification_wizard_url: "https://staging.artsy.net/auctions",
+      identity_verification_flow_url: "https://staging.artsy.net/auctions",
     }
     const context = {
       startIdentityVerificationLoader: () => Promise.resolve(gravityResponse),

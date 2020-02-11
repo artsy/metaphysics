@@ -3,7 +3,7 @@ import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/
 
 export type StartIdentityVerificationGravityOutput = {
   identity_verification_id: string
-  identity_verification_wizard_url: string
+  identity_verification_flow_url: string
 }
 
 export default (accessToken, userID, opts) => {
@@ -17,7 +17,7 @@ export default (accessToken, userID, opts) => {
     startIdentityVerificationLoader: (identityVerificationId: string) => {
       return Promise.resolve<StartIdentityVerificationGravityOutput>({
         identity_verification_id: identityVerificationId,
-        identity_verification_wizard_url: "https://staging.artsy.net/auctions",
+        identity_verification_flow_url: "https://staging.artsy.net/auctions",
       })
     },
     createAccountRequestLoader: gravityLoader(
