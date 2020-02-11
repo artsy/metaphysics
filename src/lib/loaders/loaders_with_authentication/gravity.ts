@@ -9,12 +9,13 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
-    startIdentityVerificationLoader: gravityLoader(
-      identityVerificationId =>
-        `identity_verification/${identityVerificationId}/start`,
-      {},
-      { method: "PUT" }
-    ),
+    // TODO: Build types for input and output
+    startIdentityVerificationLoader: identityVerificationID => {
+      return Promise.resolve({
+        identity_verification_id: identityVerificationID,
+        identity_verification_wizard_url: "https://staging.artsy.net/auctions",
+      })
+    },
     createAccountRequestLoader: gravityLoader(
       "account_requests",
       {},
