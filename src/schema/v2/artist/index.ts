@@ -56,6 +56,7 @@ import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { totalViaLoader } from "lib/total"
 import { ResolverContext } from "types/graphql"
+import ArtworkSizes from "../artwork/artworkSizes"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -204,13 +205,13 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         type: auctionResultConnection.connectionType,
         args: pageable({
           sort: AuctionResultSorts,
-          organization: {
-            type: GraphQLString,
-            description: "(Deprecated) Filter auction results by organizations",
-          },
           organizations: {
             type: new GraphQLList(GraphQLString),
             description: "Filter auction results by organizations",
+          },
+          sizes: {
+            type: new GraphQLList(ArtworkSizes),
+            description: "Filter auction results by Artwork sizes",
           },
           recordsTrusted: {
             type: GraphQLBoolean,
@@ -225,14 +226,18 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           }
 
           // Convert `after` cursors to page params
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            options
-          )
+          const {
+            page,
+            size,
+            offset,
+            sizes,
+          } = convertConnectionArgsToGravityArgs(options)
           const diffusionArgs = {
             page,
             size,
             artist_id: _id,
             organizations: options.organizations || [options.organization],
+            sizes,
             sort: options.sort,
           }
           return auctionLotLoader(diffusionArgs).then(
