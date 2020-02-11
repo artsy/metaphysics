@@ -1,6 +1,15 @@
 import factories from "../api"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
+export type StartIdentityVerificationGravityOutput = {
+  identity_verification_id: string
+  identity_verification_wizard_url: string
+}
+
+type StartIdentityVerificationGravityInput = {
+  identityVerificationId: string
+}
+
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
   const { gravityLoaderWithAuthenticationFactory } = factories(opts)
@@ -9,10 +18,11 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
-    // TODO: Build types for input and output
-    startIdentityVerificationLoader: identityVerificationID => {
-      return Promise.resolve({
-        identity_verification_id: identityVerificationID,
+    startIdentityVerificationLoader: ({
+      identityVerificationId,
+    }: StartIdentityVerificationGravityInput) => {
+      return Promise.resolve<StartIdentityVerificationGravityOutput>({
+        identity_verification_id: identityVerificationId,
         identity_verification_wizard_url: "https://staging.artsy.net/auctions",
       })
     },

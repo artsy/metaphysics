@@ -1,4 +1,5 @@
 import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
+import { StartIdentityVerificationGravityOutput } from "lib/loaders/loaders_with_authentication/gravity"
 
 const mutation = `
 mutation {
@@ -30,7 +31,7 @@ describe("starting an identity verification", () => {
   })
 
   it("STUB: returns the given identity verification ID and a link to the staging auctions page", async () => {
-    const gravityResponse = {
+    const gravityResponse: StartIdentityVerificationGravityOutput = {
       identity_verification_id: "idv-123",
       identity_verification_wizard_url: "https://staging.artsy.net/auctions",
     }
