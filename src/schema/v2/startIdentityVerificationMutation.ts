@@ -81,15 +81,15 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    return startIdentityVerificationLoader(identityVerificationId)
-      .then(result => result)
-      .catch(error => {
+    return startIdentityVerificationLoader(identityVerificationId).catch(
+      error => {
         const formattedErr = formatGravityError(error)
         if (formattedErr) {
           return { ...formattedErr, _type: "GravityMutationError" }
         } else {
           throw new Error(error)
         }
-      })
+      }
+    )
   },
 })
