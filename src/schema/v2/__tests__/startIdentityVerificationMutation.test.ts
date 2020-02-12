@@ -22,7 +22,7 @@ mutation {
 `
 
 describe("starting an identity verification", () => {
-  it("requires an access token", () => {
+  it("requires an access token", async () => {
     runQuery(mutation).catch(error => {
       expect(error.message).toEqual(
         "You need to be signed in to perform this action"
