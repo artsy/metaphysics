@@ -4976,6 +4976,7 @@ type MarketingCollection {
   # IDs of artists that should be excluded from Featured Artists for this collection
   featuredArtistExclusionIds: [String!]
   relatedCollections(size: Int = 10): [MarketingCollection!]!
+  isDepartment: Boolean!
   artworksConnection(
     acquireable: Boolean
     offerable: Boolean
