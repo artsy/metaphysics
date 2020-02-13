@@ -9,9 +9,7 @@ export type StartIdentityVerificationGravityOutput = {
 export type IdentityVerificationGravityResponse = {
   id: string
   state: string
-  // created_at: string,
-  // updated_at: string,
-  // invitation_expires_at: string
+  invitation_expires_at: string
   user_id: string
 }
 
@@ -23,7 +21,7 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
-    meIdentityVerificationLoader: gravityLoader(
+    identityVerificationLoader: gravityLoader(
       id => `identity_verification/${id}`
     ),
     createAccountRequestLoader: gravityLoader(

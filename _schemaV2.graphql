@@ -4702,12 +4702,21 @@ type HomePageRelatedArtistArtworkModule {
 }
 
 type IdentityVerificationType {
-  # Primary ID of the requested identity verification
-  id: String!
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # WIP: where the identity verification is in it's lifecycle
   state: String!
   userID: String!
+  invitationExpiresAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
 }
 
 type Image {
@@ -5195,8 +5204,11 @@ type Me implements Node {
     invoiceId: String!
   ): Invoice
 
-  # An identity verification
-  identityVerification: IdentityVerificationType
+  # An identity verification that the user has access to
+  identityVerification(
+    # ID of the IdentityVerification
+    id: String!
+  ): IdentityVerificationType
 
   # Sale Artworks search results
   lotsByFollowedArtistsConnection(

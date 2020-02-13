@@ -5,14 +5,37 @@ import {
   GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { InternalIDFields } from "schema/v1/object_identification"
+import dateField, { DateSource, date } from "../fields/date"
+
+const dateFieldForVerificationExpiresAt: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
+  ...dateField,
+  resolve: (
+    { invitation_expires_at: expiresAt },
+    { format, timezone },
+    { defaultTimezone, _userAgent },
+    { fieldName }
+  ) => {
+    const rawDate = expiresAt
+
+    // FIXME: copied from partner_show_event.ts needed?
+    // if (_userAgent && isOlderEmissionVersion(_userAgent)) {
+    //   const dateWithoutOffset = rawDate.replace(/[-+]\d\d:\d\d$/, "")
+    //   return dateWithoutOffset
+    // }
+
+    const timezoneString = timezone ? timezone : defaultTimezone
+    return date(rawDate, format, timezoneString)
+  },
+}
 
 const IdentityVerificationType = new GraphQLObjectType<any, ResolverContext>({
   name: "IdentityVerificationType",
   fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Primary ID of the requested identity verification",
-    },
+    ...InternalIDFields,
     state: {
       type: new GraphQLNonNull(GraphQLString),
       description: "WIP: where the identity verification is in it's lifecycle",
@@ -21,24 +44,21 @@ const IdentityVerificationType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString), // TODO: ID type?
       resolve: ({ user_id }) => user_id,
     },
+    invitationExpiresAt: dateFieldForVerificationExpiresAt,
   },
 })
 
 export const IdentityVerification: GraphQLFieldConfig<void, ResolverContext> = {
   type: IdentityVerificationType,
-  description: "An identity verification",
-  resolve: (_root, _option, { meIdentityVerificationLoader }) => {
-    if (!meIdentityVerificationLoader) return null
-    return meIdentityVerificationLoader("b408d2c0-e164-422e-9273-9830fb48a054")
-    /*
-      const idv = identityVerificationLoader(id)
-      if (!idv || idv.userId !== _root.internalID) {
-        throw GraphQL Error('something something etc')
-      } else {
-        return {
-          ... the idv in the shape we want
-        }
-      }
-     */
+  description: "An identity verification that the user has access to",
+  args: {
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ID of the IdentityVerification",
+    },
+  },
+  resolve: (_root, { id }, { identityVerificationLoader }) => {
+    if (!identityVerificationLoader) return null
+    return identityVerificationLoader(id)
   },
 }
