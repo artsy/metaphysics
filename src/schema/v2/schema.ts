@@ -86,6 +86,7 @@ import { ResolverContext } from "types/graphql"
 import config from "config"
 import { ArtworkVersionType } from "./artwork_version"
 import { HighlightsField } from "./Highlights"
+import { startIdentityVerificationMutation } from "./startIdentityVerificationMutation"
 
 const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
@@ -192,6 +193,7 @@ export default new GraphQLSchema({
       endSale: endSaleMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
+      startIdentityVerification: startIdentityVerificationMutation,
       ...stitchedMutations,
     },
   }),

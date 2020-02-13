@@ -1,6 +1,11 @@
 import factories from "../api"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
+export type StartIdentityVerificationGravityOutput = {
+  identity_verification_id: string
+  identity_verification_flow_url: string
+}
+
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
   const { gravityLoaderWithAuthenticationFactory } = factories(opts)
@@ -193,6 +198,12 @@ export default (accessToken, userID, opts) => {
     }),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     showLoader: gravityLoader(id => `show/${id}`),
+    startIdentityVerificationLoader: (identityVerificationId: string) => {
+      return Promise.resolve<StartIdentityVerificationGravityOutput>({
+        identity_verification_id: identityVerificationId,
+        identity_verification_flow_url: "https://staging.artsy.net/auctions",
+      })
+    },
     suggestedArtistsLoader: gravityLoader(
       "me/suggested/artists",
       {},

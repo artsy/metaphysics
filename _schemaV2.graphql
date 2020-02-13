@@ -5397,6 +5397,11 @@ type Mutation {
     input: CreateGeminiEntryForAssetInput!
   ): CreateGeminiEntryForAssetPayload
 
+  # Start an identity verification flow for a pending identity verification
+  startIdentityVerification(
+    input: startIdentityVerificationMutationInput!
+  ): startIdentityVerificationMutationPayload
+
   # Create a new consignment submission using Convection
   createConsignmentSubmission(
     input: CreateSubmissionMutationInput!
@@ -7190,6 +7195,33 @@ enum ShowSorts {
 enum sort {
   DESC
   ASC
+}
+
+type StartIdentityVerificationFailure {
+  mutationError: GravityMutationError
+}
+
+input startIdentityVerificationMutationInput {
+  # Primary ID of the identity verification to be started
+  identityVerificationId: String!
+  clientMutationId: String
+}
+
+type startIdentityVerificationMutationPayload {
+  startIdentityVerificationResponseOrError: StartIdentityVerificationResponseOrError
+  clientMutationId: String
+}
+
+union StartIdentityVerificationResponseOrError =
+    StartIdentityVerificationSuccess
+  | StartIdentityVerificationFailure
+
+type StartIdentityVerificationSuccess {
+  # Primary ID of the started identity verification
+  identityVerificationId: String
+
+  # URL that hosts the user-facing identity verification flow (Jumio)
+  identityVerificationWizardUrl: String
 }
 
 type StaticContent {
