@@ -4708,7 +4708,7 @@ type IdentityVerificationType {
   # A type-specific ID likely used as a database ID.
   id: ID!
 
-  # WIP: where the identity verification is in it's lifecycle
+  # Where the identity verification is in its lifecycle
   state: String!
   userID: String!
   invitationExpiresAt(

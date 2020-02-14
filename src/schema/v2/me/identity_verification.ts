@@ -38,10 +38,10 @@ const IdentityVerificationType = new GraphQLObjectType<any, ResolverContext>({
     ...InternalIDFields,
     state: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "WIP: where the identity verification is in it's lifecycle",
+      description: "Where the identity verification is in its lifecycle",
     },
     userID: {
-      type: new GraphQLNonNull(GraphQLString), // TODO: ID type?
+      type: new GraphQLNonNull(GraphQLString), // TODO: Ok to have an id string(?) here instead of the User object?
       resolve: ({ user_id }) => user_id,
     },
     invitationExpiresAt: dateFieldForVerificationExpiresAt,
