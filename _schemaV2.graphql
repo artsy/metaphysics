@@ -5262,6 +5262,9 @@ type Me implements Node {
     last: Int
   ): ArtworkConnection
   type: String
+
+  # A count of unread notifications.
+  unreadNotificationsCount: Int!
   orders(
     first: Int
     last: Int
