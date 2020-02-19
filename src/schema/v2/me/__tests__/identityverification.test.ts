@@ -3,10 +3,11 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("IdentityVerification type", () => {
   it("returns the resolved identity verification", () => {
+    const invitationExpiresAt = new Date(2020, 2, 10).toString()
     const gravityIdentityVerification: any /* IdentityVerificationGravityResponse */ = {
       id: "123",
       state: "pending",
-      invitation_expires_at: new Date(2020, 2, 10).toString,
+      invitation_expires_at: invitationExpiresAt,
       user_id: "user1",
     }
 
@@ -31,8 +32,8 @@ describe("IdentityVerification type", () => {
         identityVerification: {
           id: "123",
           state: "pending",
-          userID: "userx",
-          invitationExpiresAt: { id: "0" },
+          userID: "user1",
+          invitationExpiresAt,
         },
       })
     })

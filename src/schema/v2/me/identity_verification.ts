@@ -6,7 +6,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "schema/v1/object_identification"
-import dateField, { DateSource, date } from "../fields/date"
+import dateField, { date } from "../fields/date"
 
 const dateFieldForVerificationExpiresAt: GraphQLFieldConfig<
   any,
@@ -16,16 +16,9 @@ const dateFieldForVerificationExpiresAt: GraphQLFieldConfig<
   resolve: (
     { invitation_expires_at: expiresAt },
     { format, timezone },
-    { defaultTimezone, _userAgent },
-    { fieldName }
+    { defaultTimezone }
   ) => {
     const rawDate = expiresAt
-
-    // FIXME: copied from partner_show_event.ts needed?
-    // if (_userAgent && isOlderEmissionVersion(_userAgent)) {
-    //   const dateWithoutOffset = rawDate.replace(/[-+]\d\d:\d\d$/, "")
-    //   return dateWithoutOffset
-    // }
 
     const timezoneString = timezone ? timezone : defaultTimezone
     return date(rawDate, format, timezoneString)

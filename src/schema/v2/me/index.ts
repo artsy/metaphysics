@@ -152,6 +152,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "consignmentSubmissions",
       "followsAndSaves",
       "lotsByFollowedArtistsConnection",
+      "identityVerification",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader().catch(() => null)
