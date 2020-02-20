@@ -4710,6 +4710,8 @@ type IdentityVerificationType {
 
   # Where the identity verification is in its lifecycle
   state: String!
+
+  # User ID of the identity verification's owner
   userID: String!
   invitationExpiresAt(
     format: String

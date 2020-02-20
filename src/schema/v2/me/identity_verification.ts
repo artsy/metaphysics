@@ -34,7 +34,8 @@ const IdentityVerificationType = new GraphQLObjectType<any, ResolverContext>({
       description: "Where the identity verification is in its lifecycle",
     },
     userID: {
-      type: new GraphQLNonNull(GraphQLString), // TODO: Ok to have an id string(?) here instead of the User object?
+      description: "User ID of the identity verification's owner",
+      type: new GraphQLNonNull(GraphQLString),
       resolve: ({ user_id }) => user_id,
     },
     invitationExpiresAt: dateFieldForVerificationExpiresAt,
