@@ -278,7 +278,7 @@ describe("HomePageArtworkModules", () => {
     const query = `
     {
       homePage {
-        artworkModules(exclude: [RECOMMENDED_WORKS]) {
+        artworkModules(exclude: [RECOMMENDED_WORKS, GENERIC_GENES]) {
           key
         }
       }
@@ -288,6 +288,7 @@ describe("HomePageArtworkModules", () => {
     return runAuthenticatedQuery(query, context).then(({ homePage }) => {
       const keys = map(homePage.artworkModules, "key")
       expect(keys).not.toContain("recommended_works")
+      expect(keys).not.toContain("generic_gene")
     })
   })
 })
