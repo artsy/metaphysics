@@ -34,7 +34,7 @@ const IdentityVerificationType = new GraphQLObjectType<
   IdentityVerificationGravityResponse,
   ResolverContext
 >({
-  name: "IdentityVerificationType",
+  name: "IdentityVerification",
   fields: {
     ...InternalIDFields,
     state: {
