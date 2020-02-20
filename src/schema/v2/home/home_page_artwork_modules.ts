@@ -27,8 +27,17 @@ import {
   HomePageArtworkModuleTypes,
 } from "./types"
 
-const filterModules = (modules, max_rails) => {
-  const allModules = addGenericGenes(filter(modules, ["display", true]))
+const filterModules = (
+  modules: HomePageArtworkModuleDetails[],
+  max_rails: number,
+  exclude: string[]
+) => {
+  let allModules: HomePageArtworkModuleDetails[]
+  if (exclude.includes("generic_gene")) {
+    allModules = filter(modules, ["display", true])
+  } else {
+    allModules = addGenericGenes(filter(modules, ["display", true]))
+  }
   return max_rails < 0 ? allModules : slice(allModules, 0, max_rails)
 }
 
@@ -134,7 +143,7 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
         ).then(allModulesToDisplay => {
           let modules = allModulesToDisplay
 
-          modules = filterModules(modules, max_rails)
+          modules = filterModules(modules, max_rails, exclude)
           modules = reorderModules(modules, order)
 
           // For the related artists rail, we need to fetch a random
@@ -192,7 +201,7 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
       featuredFair(fairsLoader),
     ]).then(([auction, fair]) => {
       const modules = loggedOutModules(auction, fair)
-      return filterModules(modules, max_rails)
+      return filterModules(modules, max_rails, exclude)
     })
   },
 }
