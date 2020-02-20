@@ -38,6 +38,7 @@ import Submissions from "./consignments/submissions"
 import config from "config"
 import { ResolverContext } from "types/graphql"
 import { SaleArtworksConnectionField } from "../sale_artworks"
+import { IdentityVerification } from "./identity_verification"
 
 // @ts-ignore
 const { ENABLE_CONVECTION_STITCHING } = config
@@ -103,6 +104,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     invoice: Invoice,
+    identityVerification: IdentityVerification,
     lotsByFollowedArtistsConnection: SaleArtworksConnectionField,
     lotStanding: LotStanding,
     lotStandings: LotStandings,
@@ -150,6 +152,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "consignmentSubmissions",
       "followsAndSaves",
       "lotsByFollowedArtistsConnection",
+      "identityVerification",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader().catch(() => null)

@@ -14,6 +14,9 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
+    identityVerificationLoader: gravityLoader(
+      id => `identity_verification/${id}`
+    ),
     createAccountRequestLoader: gravityLoader(
       "account_requests",
       {},
