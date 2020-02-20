@@ -6,13 +6,6 @@ export type StartIdentityVerificationGravityOutput = {
   identity_verification_flow_url: string
 }
 
-export type IdentityVerificationGravityResponse = {
-  id: string
-  state: string
-  invitation_expires_at: string
-  user_id: string
-}
-
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
   const { gravityLoaderWithAuthenticationFactory } = factories(opts)

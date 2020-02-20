@@ -1,13 +1,14 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { IdentityVerificationGravityResponse } from "../identity_verification"
 
 describe("IdentityVerification type", () => {
   it("returns the resolved identity verification", () => {
-    const invitationExpiresAt = new Date(2020, 2, 10).toString()
-    const gravityIdentityVerification: any /* IdentityVerificationGravityResponse */ = {
+    const gravityIdentityVerification: IdentityVerificationGravityResponse = {
       id: "123",
       state: "pending",
-      invitation_expires_at: invitationExpiresAt,
+      invitation_expires_at:
+        "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
       user_id: "user1",
     }
 
@@ -33,7 +34,8 @@ describe("IdentityVerification type", () => {
           id: "123",
           state: "pending",
           userID: "user1",
-          invitationExpiresAt,
+          invitationExpiresAt:
+            "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
         },
       })
     })

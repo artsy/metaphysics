@@ -8,24 +8,32 @@ import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "schema/v1/object_identification"
 import dateField, { date } from "../fields/date"
 
+export type IdentityVerificationGravityResponse = {
+  id: string
+  state: string
+  invitation_expires_at: string
+  user_id: string
+}
+
 const dateFieldForVerificationExpiresAt: GraphQLFieldConfig<
   any,
   ResolverContext
 > = {
   ...dateField,
   resolve: (
-    { invitation_expires_at: expiresAt },
+    { invitation_expires_at: rawDate },
     { format, timezone },
     { defaultTimezone }
   ) => {
-    const rawDate = expiresAt
-
-    const timezoneString = timezone ? timezone : defaultTimezone
+    const timezoneString = timezone || defaultTimezone
     return date(rawDate, format, timezoneString)
   },
 }
 
-const IdentityVerificationType = new GraphQLObjectType<any, ResolverContext>({
+const IdentityVerificationType = new GraphQLObjectType<
+  IdentityVerificationGravityResponse,
+  ResolverContext
+>({
   name: "IdentityVerificationType",
   fields: {
     ...InternalIDFields,
