@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("me/index", () => {
@@ -101,6 +101,42 @@ describe("me/index", () => {
           Promise.resolve({ body: creditCardsResponse }),
       }).then(data => {
         expect(data).toEqual({ me: { hasCreditCards: false } })
+      })
+    })
+  })
+
+  describe("unreadNotificationsCount", () => {
+    const countQuery = gql`
+      query {
+        me {
+          unreadNotificationsCount
+        }
+      }
+    `
+
+    it("returns the number of unread notifications", () => {
+      return runAuthenticatedQuery(countQuery, {
+        notificationsFeedLoader: () => Promise.resolve({ total_unread: 12 }),
+      }).then(data => {
+        expect(data).toEqual({ me: { unreadNotificationsCount: 12 } })
+      })
+    })
+
+    it("handles an unauthorized request", () => {
+      return runQuery(countQuery, {
+        notificationsFeedLoader: () => Promise.resolve({ total_unread: null }),
+      }).catch(error => {
+        expect(error.message).toEqual(
+          "You need to be signed in to perform this action"
+        )
+      })
+    })
+
+    it("handles a null from gravity", () => {
+      return runAuthenticatedQuery(countQuery, {
+        notificationsFeedLoader: () => Promise.resolve({ total_unread: null }),
+      }).then(data => {
+        expect(data).toEqual({ me: { unreadNotificationsCount: 0 } })
       })
     })
   })

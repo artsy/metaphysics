@@ -6,6 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLFieldConfig,
   GraphQLFieldConfigMap,
+  GraphQLInt,
 } from "graphql"
 
 import { IDFields, NodeInterface } from "schema/v2/object_identification"
@@ -125,6 +126,18 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     type: {
       type: GraphQLString,
     },
+    unreadNotificationsCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "A count of unread notifications.",
+      resolve: (_root, options, { notificationsFeedLoader }) => {
+        if (!notificationsFeedLoader)
+          throw new Error("You need to be signed in to perform this action")
+
+        return notificationsFeedLoader(options).then(({ total_unread }) => {
+          return total_unread || 0
+        })
+      },
+    },
   },
 })
 
@@ -153,6 +166,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "followsAndSaves",
       "lotsByFollowedArtistsConnection",
       "identityVerification",
+      "unreadNotificationsCount",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader().catch(() => null)
