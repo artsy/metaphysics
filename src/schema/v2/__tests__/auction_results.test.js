@@ -41,7 +41,7 @@ const auctionResultResponse = (item = {}) => {
   }
 }
 
-xdescribe("Artist type", () => {
+describe("Artist type", () => {
   beforeEach(() => {
     context.auctionLotLoader = jest
       .fn()

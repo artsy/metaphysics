@@ -220,46 +220,55 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
               "When true, will only return records for allowed artists.",
           },
         }),
-        resolve: ({ _id }, options, _context) => {
+        resolve: ({ _id }, options, { auctionLotLoader }) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
             return null
           }
 
           // Convert `after` cursors to page params
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            options
-          )
-
-          return Promise.resolve({
-            total_count: 0,
-            _embedded: { items: [] },
-          }).then(({ total_count, _embedded }) => {
-            const totalPages = Math.ceil(total_count / size)
-            return merge(
-              {
-                pageCursors: createPageCursors(
-                  {
-                    page,
-                    size,
-                  },
-                  total_count
-                ),
-              },
-              {
-                totalCount: total_count,
-              },
-              connectionFromArraySlice(_embedded.items, options, {
-                arrayLength: total_count,
-                sliceStart: offset,
-              }),
-              {
-                pageInfo: {
-                  hasPreviousPage: page > 1,
-                  hasNextPage: page < totalPages,
+          const {
+            page,
+            size,
+            offset,
+            sizes,
+          } = convertConnectionArgsToGravityArgs(options)
+          const diffusionArgs = {
+            page,
+            size,
+            artist_id: _id,
+            organizations: options.organizations || [options.organization],
+            sizes,
+            sort: options.sort,
+          }
+          return auctionLotLoader(diffusionArgs).then(
+            ({ total_count, _embedded }) => {
+              const totalPages = Math.ceil(total_count / size)
+              return merge(
+                {
+                  pageCursors: createPageCursors(
+                    {
+                      page,
+                      size,
+                    },
+                    total_count
+                  ),
                 },
-              }
-            )
-          })
+                {
+                  totalCount: total_count,
+                },
+                connectionFromArraySlice(_embedded.items, options, {
+                  arrayLength: total_count,
+                  sliceStart: offset,
+                }),
+                {
+                  pageInfo: {
+                    hasPreviousPage: page > 1,
+                    hasNextPage: page < totalPages,
+                  },
+                }
+              )
+            }
+          )
         },
       },
       bio: {
