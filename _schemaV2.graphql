@@ -4703,10 +4703,10 @@ type HomePageRelatedArtistArtworkModule {
 
 type IdentityVerification {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID likely used as a database ID.
-  id: ID!
+  internalID: ID!
 
   # Where the identity verification is in its lifecycle
   state: String!
