@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { IdentityVerificationGravityResponse } from "../identity_verification"
 
 describe("IdentityVerification type", () => {
-  it("returns the resolved identity verification", () => {
+  it("returns the resolved identity verification", async () => {
     const gravityIdentityVerification: IdentityVerificationGravityResponse = {
       id: "123",
       state: "pending",
@@ -16,7 +16,7 @@ describe("IdentityVerification type", () => {
       {
         me {
           identityVerification(id: "123") {
-            id
+            internalID
             state
             userID
             invitationExpiresAt
@@ -25,19 +25,19 @@ describe("IdentityVerification type", () => {
       }
     `
 
-    return runAuthenticatedQuery(query, {
+    const { me } = await runAuthenticatedQuery(query, {
       identityVerificationLoader: () =>
         Promise.resolve(gravityIdentityVerification),
-    }).then(({ me }) => {
-      expect(me).toEqual({
-        identityVerification: {
-          id: "123",
-          state: "pending",
-          userID: "user1",
-          invitationExpiresAt:
-            "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
-        },
-      })
+    })
+
+    expect(me).toEqual({
+      identityVerification: {
+        internalID: "123",
+        state: "pending",
+        userID: "user1",
+        invitationExpiresAt:
+          "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
+      },
     })
   })
 })
