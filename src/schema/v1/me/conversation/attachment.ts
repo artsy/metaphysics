@@ -16,7 +16,7 @@ export const AttachmentType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString),
     },
     download_url: {
-      descrpition: "URL of attachment.",
+      description: "URL of attachment.",
       type: new GraphQLNonNull(GraphQLString),
     },
   },
