@@ -6,7 +6,7 @@ mutation {
   startIdentityVerification(input: { identityVerificationId: "id-123"}) {
     startIdentityVerificationResponseOrError {
       ... on StartIdentityVerificationSuccess {
-        identityVerificationWizardUrl
+        identityVerificationFlowUrl
         identityVerificationId
       }
       ... on StartIdentityVerificationFailure {
@@ -46,7 +46,7 @@ describe("starting an identity verification", () => {
       startIdentityVerification: {
         startIdentityVerificationResponseOrError: {
           identityVerificationId: "idv-123",
-          identityVerificationWizardUrl:
+          identityVerificationFlowUrl:
             "https://artsytest.netverify.com/something",
         },
       },
