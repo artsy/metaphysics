@@ -201,12 +201,11 @@ export default (accessToken, userID, opts) => {
     }),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     showLoader: gravityLoader(id => `show/${id}`),
-    startIdentityVerificationLoader: (identityVerificationId: string) => {
-      return Promise.resolve<StartIdentityVerificationGravityOutput>({
-        identity_verification_id: identityVerificationId,
-        identity_verification_flow_url: "https://staging.artsy.net/auctions",
-      })
-    },
+    startIdentityVerificationLoader: gravityLoader(
+      id => `identity_verification/${id}/start`,
+      {},
+      { method: "PUT" }
+    ),
     suggestedArtistsLoader: gravityLoader(
       "me/suggested/artists",
       {},
