@@ -1327,6 +1327,8 @@ type Attachment {
 
   # File name.
   fileName: String!
+
+  # URL of attachment.
   downloadURL: String!
 }
 
