@@ -30,10 +30,11 @@ describe("starting an identity verification", () => {
     })
   })
 
-  it("STUB: returns the given identity verification ID and a link to the staging auctions page", async () => {
+  it("returns the given identity verification ID and flow URL from Gravity", async () => {
     const gravityResponse: StartIdentityVerificationGravityOutput = {
       identity_verification_id: "idv-123",
-      identity_verification_flow_url: "https://staging.artsy.net/auctions",
+      identity_verification_flow_url:
+        "https://artsytest.netverify.com/something",
     }
     const context = {
       startIdentityVerificationLoader: () => Promise.resolve(gravityResponse),
@@ -45,13 +46,14 @@ describe("starting an identity verification", () => {
       startIdentityVerification: {
         startIdentityVerificationResponseOrError: {
           identityVerificationId: "idv-123",
-          identityVerificationWizardUrl: "https://staging.artsy.net/auctions",
+          identityVerificationWizardUrl:
+            "https://artsytest.netverify.com/something",
         },
       },
     })
   })
 
-  it("STUB: returns an Error when Gravity returns a recognizable error", async () => {
+  it("returns an Error when Gravity returns a recognizable error", async () => {
     const errorRootValue = {
       startIdentityVerificationLoader: () =>
         Promise.reject(
@@ -76,7 +78,7 @@ describe("starting an identity verification", () => {
     })
   })
 
-  it("STUB: throws an error if there is an unrecognizable error", () => {
+  it("throws an error if there is an unrecognizable error", () => {
     const errorRootValue = {
       startIdentityVerificationLoader: () => {
         throw new Error("ETIMEOUT service unreachable")
