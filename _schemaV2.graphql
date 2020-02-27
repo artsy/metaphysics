@@ -7253,7 +7253,7 @@ type StartIdentityVerificationSuccess {
   identityVerificationId: String
 
   # URL that hosts the user-facing identity verification flow (Jumio)
-  identityVerificationWizardUrl: String
+  identityVerificationFlowUrl: String
 }
 
 type StaticContent {

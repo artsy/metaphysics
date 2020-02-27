@@ -44,7 +44,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
       description: "Primary ID of the started identity verification",
       resolve: res => res.identity_verification_id,
     },
-    identityVerificationWizardUrl: {
+    identityVerificationFlowUrl: {
       type: GraphQLString,
       description:
         "URL that hosts the user-facing identity verification flow (Jumio)",
