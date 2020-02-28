@@ -213,6 +213,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: new GraphQLList(ArtworkSizes),
             description: "Filter auction results by Artwork sizes",
           },
+          categories: {
+            type: new GraphQLList(GraphQLString),
+            description: "Filter auction results by category (medium)",
+          },
           recordsTrusted: {
             type: GraphQLBoolean,
             defaultValue: false,
@@ -231,12 +235,15 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             size,
             offset,
             sizes,
+            organizations,
+            categories,
           } = convertConnectionArgsToGravityArgs(options)
           const diffusionArgs = {
             page,
             size,
             artist_id: _id,
-            organizations: options.organizations || [options.organization],
+            organizations,
+            categories,
             sizes,
             sort: options.sort,
           }

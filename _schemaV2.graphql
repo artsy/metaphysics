@@ -583,6 +583,9 @@ type Artist implements Node & Searchable & EntityWithFilterArtworksConnectionInt
     # Filter auction results by Artwork sizes
     sizes: [ArtworkSizes]
 
+    # Filter auction results by category (medium)
+    categories: [String]
+
     # When true, will only return records for allowed artists.
     recordsTrusted: Boolean = false
     after: String
