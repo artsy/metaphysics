@@ -16,7 +16,7 @@ It is currently used in production all over the place in
 - **State:** production
 - **CI/Deploys:** [CircleCi](https://circleci.com/gh/artsy/metaphysics); merged PRs to `artsy/metaphysics#master` are automatically deployed to staging; PRs from `staging` to `release` are automatically deployed to production. [Start a deploy...](https://github.com/artsy/metaphysics/compare/release...staging?expand=1)
 - **Production:**
-  - [Endpoint](https://metaphysics-production.artsy.net/)
+  - [Endpoint](https://metaphysics-production.artsy.net/v2)
   - [Kubernetes deployment dashboard](https://kubernetes.artsy.net/#!/deployment/default/metaphysics-web?namespace=default)
   - [Datadog Monitoring - Overview](https://app.datadoghq.com/screen/302489/metaphysics-production)
   - [Datadog Monitoring - GraphQL Queries](https://app.datadoghq.com/apm/service/metaphysics.graphql-query/graphql.query?env=production)
@@ -30,7 +30,7 @@ It is currently used in production all over the place in
   - [Papertrail logs](https://papertrailapp.com/groups/3675843/events?q=host%3Ametaphysics-web)
   - [When Disaster Strikes](https://joe.artsy.net/job/refresh-metaphysics-production/)
 - **Staging:**
-  - [Endpoint](https://metaphysics-staging.artsy.net/)
+  - [Endpoint](https://metaphysics-staging.artsy.net/v2)
   - [Kubernetes deployment dashboard](https://kubernetes-staging.artsy.net/#!/deployment/default/metaphysics-web?namespace=default)
   - [Datadog Monitoring - GraphQL Queries](https://app.datadoghq.com/apm/service/metaphysics.graphql-query/graphql.query?env=staging)
   - [Datadog Monitoring - GraphQL Resolver](https://app.datadoghq.com/apm/service/metaphysics.graphql-resolver/graphql.resolver?env=staging)
