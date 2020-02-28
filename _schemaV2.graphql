@@ -1080,6 +1080,9 @@ type Artwork implements Node & Searchable & Sellable {
   # Minimal location information describing from where artwork will be shipped.
   shippingOrigin: String
 
+  # Flags if artwork located in one of EU local shipping countries.
+  euShippingOrigin: Boolean
+
   # The country an artwork will be shipped from.
   shippingCountry: String
   provenance(format: Format): String
