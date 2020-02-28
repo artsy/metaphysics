@@ -8,11 +8,13 @@
   "eslint.autoFixOnSave": false,
   "javascript.validate.enable": true,
   "search.exclude": {
-    "**/node_modules": true
+    "**/node_modules": true,
+    "src/schema/v1": true
   },
   "files.exclude": {
     "**/.git": true,
-    "**/build": true
+    "**/build": true,
+    "src/schema/v1": false
   },
   "path-intellisense.mappings": {
     "/": "${workspaceRoot}",

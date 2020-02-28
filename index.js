@@ -131,7 +131,7 @@ function bootApp() {
 
   server = require("http-shutdown")(
     app.listen(port, () =>
-      info(`[Metaphysics] Listening on http://localhost:${port}`)
+      info(`[Metaphysics] Listening on http://localhost:${port}/v2`)
     )
   )
 
@@ -145,7 +145,7 @@ function gracefulExit() {
   if (isShuttingDown) return
   isShuttingDown = true
   console.log("Received signal SIGTERM, shutting down")
-  server.shutdown(function() {
+  server.shutdown(function () {
     console.log("Closed existing connections.")
     process.exit(0)
   })
