@@ -54,6 +54,7 @@ input CreateConsignmentSubmissionInput {
   artist_id: String!
   authenticity_certificate: Boolean
   category: Category
+  currency: String
   depth: String
   dimensions_metric: String
   edition: Boolean
@@ -64,6 +65,7 @@ input CreateConsignmentSubmissionInput {
   location_country: String
   location_state: String
   medium: String
+  minimum_price_dollars: Int
   provenance: String
   signature: Boolean
   state: State
@@ -118,13 +120,13 @@ type Query {
     # Returns the first _n_ elements from the list.
     first: Int
 
-    # Returns the elements in the list that come after the specified global ID.
+    # Returns the elements in the list that come after the specified cursor.
     after: String
 
     # Returns the last _n_ elements from the list.
     last: Int
 
-    # Returns the elements in the list that come before the specified global ID.
+    # Returns the elements in the list that come before the specified cursor.
     before: String
 
     # Get all submissions with these IDs
@@ -152,6 +154,7 @@ type Submission {
   assets: [Asset]
   authenticity_certificate: Boolean
   category: Category
+  currency: String
   depth: String
   dimensions_metric: String
   edition: String
@@ -165,6 +168,7 @@ type Submission {
   location_country: String
   location_state: String
   medium: String
+  minimum_price_dollars: Int
   provenance: String
   signature: Boolean
   state: State
@@ -201,6 +205,7 @@ input UpdateConsignmentSubmissionInput {
   artist_id: String
   authenticity_certificate: Boolean
   category: Category
+  currency: String
   depth: String
   dimensions_metric: String
   edition: Boolean
@@ -211,6 +216,7 @@ input UpdateConsignmentSubmissionInput {
   location_country: String
   location_state: String
   medium: String
+  minimum_price_dollars: Int
   provenance: String
   signature: Boolean
   state: State

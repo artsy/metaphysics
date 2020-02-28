@@ -1,7 +1,9 @@
+require("dotenv").config()
+
 // The below all relate to Convection stitching.
 // TODO: Refactor when adding another service.
 // Also, consider https://github.com/artsy/README/issues/31
-//
+
 import fs from "fs"
 import path from "path"
 import { printSchema } from "graphql/utilities"
@@ -14,7 +16,7 @@ const destination = "src/data"
 
 const httpConvectionLink = createHttpLink({
   fetch,
-  uri: urljoin("https://convection-staging.artsy.net/api", "graphql"),
+  uri: urljoin(process.env.CONVECTION_API_BASE, "graphql"),
 })
 
 introspectSchema(httpConvectionLink)
