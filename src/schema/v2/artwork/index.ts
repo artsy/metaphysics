@@ -584,6 +584,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return artwork.shipping_origin && artwork.shipping_origin.join(", ")
         },
       },
+      euShippingOrigin: {
+        type: GraphQLBoolean,
+        description:
+          "Flags if artwork located in one of EU local shipping countries.",
+        resolve: artwork => {
+          return artwork.eu_shipping_origin
+        },
+      },
       shippingCountry: {
         type: GraphQLString,
         description: "The country an artwork will be shipped from.",

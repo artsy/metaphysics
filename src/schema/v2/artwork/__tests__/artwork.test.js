@@ -1721,6 +1721,23 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#euShippingOrigin", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          euShippingOrigin
+        }
+      }
+    `
+
+    it("returns artworks eu_shipping_origin", () => {
+      artwork.eu_shipping_origin = true
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({ artwork: { euShippingOrigin: true } })
+      })
+    })
+  })
+
   describe("#shippingCountry", () => {
     const query = `
       {
