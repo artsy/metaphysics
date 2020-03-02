@@ -6,7 +6,10 @@
     "jasmine": true,
     "es6": true
   },
-  "plugins": ["promise", "@typescript-eslint"],
+  "plugins": [
+    "promise",
+    "@typescript-eslint"
+  ],
   "extends": [
     "plugin:promise/recommended",
     "plugin:import/errors",
@@ -31,10 +34,18 @@
     "@typescript-eslint/ban-ts-ignore": 0,
     "@typescript-eslint/no-unused-vars": [
       "error",
-      { "argsIgnorePattern": "^_", "ignoreRestSiblings": true }
+      {
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
     ],
     "@typescript-eslint/no-use-before-define": 0,
-    "prefer-const": ["error", { "ignoreReadBeforeAssign": true }]
+    "prefer-const": [
+      "error",
+      {
+        "ignoreReadBeforeAssign": true
+      }
+    ]
   },
   "globals": {
     "expect": false,
@@ -44,12 +55,20 @@
   },
   "settings": {
     "import/resolver": {
+      "node": {
+        "paths": [
+          "src"
+        ]
+      },
       "typescript": {
         "directory": "./tsconfig.json"
       }
     },
     "import/parsers": {
-      "@typescript-eslint/parser": [".ts", ".tsx"]
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx"
+      ]
     }
   },
   "parserOptions": {

@@ -6,16 +6,16 @@ export const consignmentStitchingEnvironment = (
 ) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: `
-    extend type ConsignmentSubmission {
+    extend type unstable__ConsignmentSubmission {
       artist: Artist
     }
   `,
 
   // Resolvers for the above
   resolvers: {
-    ConsignmentSubmission: {
+    unstable__ConsignmentSubmission: {
       artist: {
-        fragment: `fragment SubmissionArtist on ConsignmentSubmission { artist_id }`,
+        fragment: `fragment SubmissionArtist on unstable__ConsignmentSubmission { artist_id }`,
         resolve: (parent, _args, context, info) => {
           const id = parent.artist_id
           return info.mergeInfo.delegateToSchema({

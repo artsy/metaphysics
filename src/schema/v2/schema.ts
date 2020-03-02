@@ -83,22 +83,17 @@ import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGr
 
 import ObjectIdentification from "./object_identification"
 import { ResolverContext } from "types/graphql"
-import config from "config"
 import { ArtworkVersionType } from "./artwork_version"
 import { HighlightsField } from "./Highlights"
 import { startIdentityVerificationMutation } from "./startIdentityVerificationMutation"
-
-const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
 // If you're using stitching then we _don't_ want to include particular mutations
 // which come from the stitching instead of our manual version
 const stitchedMutations: any = {}
 
-if (!ENABLE_CONSIGNMENTS_STITCHING) {
-  stitchedMutations.createConsignmentSubmission = CreateSubmissionMutation
-  stitchedMutations.updateConsignmentSubmission = UpdateSubmissionMutation
-  stitchedMutations.addAssetToConsignmentSubmission = AddAssetToConsignmentSubmission
-}
+stitchedMutations.createConsignmentSubmission = CreateSubmissionMutation
+stitchedMutations.updateConsignmentSubmission = UpdateSubmissionMutation
+stitchedMutations.addAssetToConsignmentSubmission = AddAssetToConsignmentSubmission
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",

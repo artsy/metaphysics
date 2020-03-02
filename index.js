@@ -111,10 +111,10 @@ function bootApp() {
     }
     cache
       .isAvailable()
-      .then(stats => {
+      .then(_stats => {
         return res.status(200).end()
       })
-      .catch(err => {
+      .catch(_err => {
         return res.status(503).end()
       })
   })
@@ -131,7 +131,9 @@ function bootApp() {
 
   server = require("http-shutdown")(
     app.listen(port, () =>
-      info(`[Metaphysics] Listening on http://localhost:${port}/v2`)
+      info(
+        `[Metaphysics] Listening on http://localhost:${port}.
+[Metaphysics] Open GraphiQL explorer at http://localhost:${port}/v2`)
     )
   )
 

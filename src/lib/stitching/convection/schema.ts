@@ -19,11 +19,11 @@ export const executableConvectionSchema = () => {
   // Remap the names of certain types from Convection to fit in the larger
   // metaphysics ecosystem.
   const remap = {
-    Submission: "ConsignmentSubmission",
-    Category: "ConsignmentSubmissionCategoryAggregation",
-    Asset: "ConsignmentSubmissionCategoryAsset",
-    State: "ConsignmentSubmissionStateAggregation",
-    SubmissionConnection: "ConsignmentSubmissionConnection",
+    Submission: "unstable__ConsignmentSubmission",
+    Category: "unstable__ConsignmentSubmissionCategoryAggregation",
+    Asset: "unstable__ConsignmentSubmissionCategoryAsset",
+    State: "unstable__ConsignmentSubmissionStateAggregation",
+    SubmissionConnection: "unstable__ConsignmentSubmissionConnection",
   }
 
   // Return the new modified schema
