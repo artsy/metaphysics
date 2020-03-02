@@ -1023,6 +1023,9 @@ type Artwork implements Node & Searchable & Sellable {
   # Is this artwork part of an auction that is currently running?
   isBiddable: Boolean
 
+  # Can a user request a lot conditions report for this artwork?
+  canRequestLotConditionsReport: Boolean
+
   # When in an auction, can the work be bought immediately
   isBuyNowable: Boolean
   isComparableWithAuctionResults: Boolean
@@ -6407,6 +6410,7 @@ type Sale implements Node {
   isPreliminary: Boolean
   isRegistrationClosed: Boolean
   isWithBuyersPremium: Boolean
+  isLotConditionsReportEnabled: Boolean
   liveStartAt(
     format: String
 

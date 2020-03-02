@@ -904,6 +904,88 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#canRequestLotConditionsReport", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          canRequestLotConditionsReport
+        }
+      }
+    `
+
+    it("is true if the artwork's sale is an auction, live, and has lot conditions report enabled", () => {
+      context.saleLoader = sinon.stub().returns(
+        Promise.resolve({
+          live: true,
+          is_auction: true,
+          lot_conditions_report_enabled: true,
+        })
+      )
+
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            canRequestLotConditionsReport: true,
+          },
+        })
+      })
+    })
+
+    it("is false if the artwork's sale is not an auction", () => {
+      context.saleLoader = sinon.stub().returns(
+        Promise.resolve({
+          live: true,
+          is_auction: false,
+          lot_conditions_report_enabled: true,
+        })
+      )
+
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            canRequestLotConditionsReport: false,
+          },
+        })
+      })
+    })
+
+    it("is false if the artwork's sale is an auction but has not started yet or is already closed", () => {
+      context.saleLoader = sinon.stub().returns(
+        Promise.resolve({
+          live: false,
+          is_auction: true,
+          lot_conditions_report_enabled: true,
+        })
+      )
+
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            canRequestLotConditionsReport: false,
+          },
+        })
+      })
+    })
+
+    it("is false if the lot conditions report for the sale is not enabled", () => {
+      context.saleLoader = sinon.stub().returns(
+        Promise.resolve({
+          live: true,
+          is_auction: true,
+          lot_conditions_report_enabled: false,
+        })
+      )
+
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            canRequestLotConditionsReport: false,
+          },
+        })
+      })
+    })
+  })
+
   describe("#isBuyNowable", () => {
     const query = `
       {
