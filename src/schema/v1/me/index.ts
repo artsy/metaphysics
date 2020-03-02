@@ -37,19 +37,13 @@ import SaleRegistrations from "./sale_registrations"
 import SavedArtworks from "./saved_artworks"
 import SuggestedArtists from "./suggested_artists"
 import Submissions from "./consignments/submissions"
-import config from "config"
 import { ResolverContext } from "types/graphql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
-
-// @ts-ignore
-const { ENABLE_CONVECTION_STITCHING } = config
 
 const mySubmissions: GraphQLFieldConfigMap<
   void,
   ResolverContext
-> = !!ENABLE_CONVECTION_STITCHING
-  ? {}
-  : { consignment_submissions: Submissions }
+> = { consignment_submissions: Submissions }
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",

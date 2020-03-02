@@ -36,20 +36,14 @@ import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 // import SaleRegistrations from "./sale_registrations"
 import { SavedArtworks } from "./saved_artworks"
 import Submissions from "./consignments/submissions"
-import config from "config"
 import { ResolverContext } from "types/graphql"
 import { SaleArtworksConnectionField } from "../sale_artworks"
 import { IdentityVerification } from "./identity_verification"
 
-// @ts-ignore
-const { ENABLE_CONVECTION_STITCHING } = config
-
 const mySubmissions: GraphQLFieldConfigMap<
   void,
   ResolverContext
-> = !!ENABLE_CONVECTION_STITCHING
-  ? {}
-  : { consignmentSubmissionsConnection: Submissions }
+> = { consignmentSubmissionsConnection: Submissions }
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
