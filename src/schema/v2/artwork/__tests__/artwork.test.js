@@ -916,7 +916,7 @@ describe("Artwork type", () => {
     it("is true if the artwork's sale is an auction, live, and has lot conditions report enabled", () => {
       context.saleLoader = sinon.stub().returns(
         Promise.resolve({
-          live: true,
+          auction_state: "open",
           is_auction: true,
           lot_conditions_report_enabled: true,
         })
@@ -934,7 +934,9 @@ describe("Artwork type", () => {
     it("is false if the artwork's sale is not an auction", () => {
       context.saleLoader = sinon.stub().returns(
         Promise.resolve({
-          live: true,
+          // auction_state would always be `null` for non-auction sales but
+          // this adds extra layer of protection in case Gravity has a bug.
+          auction_state: "open",
           is_auction: false,
           lot_conditions_report_enabled: true,
         })
@@ -949,10 +951,28 @@ describe("Artwork type", () => {
       })
     })
 
-    it("is false if the artwork's sale is an auction but has not started yet or is already closed", () => {
+    it("is false if the artwork's sale is closed", () => {
       context.saleLoader = sinon.stub().returns(
         Promise.resolve({
-          live: false,
+          auction_state: "closed",
+          is_auction: true,
+          lot_conditions_report_enabled: true,
+        })
+      )
+
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            canRequestLotConditionsReport: false,
+          },
+        })
+      })
+    })
+
+    it("is false if the artwork's sale state is preview", () => {
+      context.saleLoader = sinon.stub().returns(
+        Promise.resolve({
+          auction_state: "preview",
           is_auction: true,
           lot_conditions_report_enabled: true,
         })
@@ -970,7 +990,7 @@ describe("Artwork type", () => {
     it("is false if the lot conditions report for the sale is not enabled", () => {
       context.saleLoader = sinon.stub().returns(
         Promise.resolve({
-          live: true,
+          auction_state: "open",
           is_auction: true,
           lot_conditions_report_enabled: false,
         })
