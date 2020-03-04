@@ -347,7 +347,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               .catch(() => false) // don't error if the sale is not found or unpublished
               .then(sale => {
                 return (
-                  !!sale.live &&
+                  sale.auction_state === "open" &&
                   sale.is_auction &&
                   sale.lot_conditions_report_enabled
                 )
