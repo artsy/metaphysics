@@ -74,7 +74,7 @@ export const featuredGene = followedGenesLoader => {
       return first(follows).gene
     }
 
-    return undefined
+    return null
   })
 }
 
