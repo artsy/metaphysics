@@ -1,3 +1,7 @@
+/**
+ * FIXME: Deprecated. Remove once Convection stitching settles for a bit
+ */
+
 import { mutationWithClientMutationId, MutationConfig } from "graphql-relay"
 import {
   SubmissionType,
