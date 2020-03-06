@@ -4,7 +4,8 @@ import { config as createSubmissionMutation } from "schema/v1/me/consignments/cr
 
 import gql from "lib/gql"
 
-describe("UpdateSubmissionMutation", () => {
+// FIXME: We're now stitching. Remove these files once this work settles
+xdescribe("UpdateSubmissionMutation", () => {
   it("does not include the id param", () => {
     const mutation = createSubmissionMutation
     expect(Object.keys(mutation.inputFields)).not.toContain("id")

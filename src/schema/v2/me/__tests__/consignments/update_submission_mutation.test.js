@@ -3,7 +3,8 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { config as updateSubmissionMutation } from "schema/v2/me/consignments/update_submission_mutation"
 import gql from "lib/gql"
 
-describe("UpdateSubmissionMutation", () => {
+// FIXME: We're now stitching. Remove these files once this work settles
+xdescribe("UpdateSubmissionMutation", () => {
   it("includes the id param", () => {
     const mutation = updateSubmissionMutation
     expect(Object.keys(mutation.inputFields)).toContain("id")
