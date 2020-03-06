@@ -1,3 +1,7 @@
+/**
+ * FIXME: Deprecated. Remove once Convection stitching settles for a bit
+ */
+
 import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { AssetType } from "./asset"
