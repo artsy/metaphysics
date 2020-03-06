@@ -8,11 +8,13 @@ import {
   GraphQLObjectType,
   GraphQLEnumType,
   GraphQLBoolean,
+  GraphQLInt,
 } from "graphql"
 import { indexOf } from "lodash"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import Image, { normalizeImageData } from "schema/v2/image"
 import { ResolverContext } from "types/graphql"
+import dedent from "dedent"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 import currencyCodes from "lib/currency_codes.json"
@@ -240,4 +242,38 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
 
 export const auctionResultConnection = connectionWithCursorInfo({
   nodeType: AuctionResultType,
+  connectionFields: {
+    earliestCreatedYear: {
+      type: GraphQLInt,
+      description: dedent`
+        The earliest recorded created date for a work in this Artist's auction lots.
+        The result is for _all_ auction lots associated to the artist, not only the
+        set returned in this connection.
+      `,
+      resolve: ({ artist_id }, _, { auctionCreatedYearRangeLoader }) => {
+        console.log(artist_id)
+        // TODO: Narrow down to only `earliest_created_year` when diffusion returns that
+        return auctionCreatedYearRangeLoader({ artist_id }).then(
+          ({ earliest_created_date, earliest_created_year }) =>
+            earliest_created_date || earliest_created_year
+        )
+      },
+    },
+    latestCreatedYear: {
+      type: GraphQLInt,
+      description: dedent`
+        The latest recorded created date for a work in this Artist's auction lots.
+        The result is for _all_ auction lots associated to the artist, not only the
+        set returned in this connection.
+      `,
+      // TODO: Narrow down to only `latest_created_year` when diffusion returns that
+      resolve: ({ artist_id }, _, { auctionCreatedYearRangeLoader }) => {
+        console.log(artist_id)
+        return auctionCreatedYearRangeLoader({ artist_id }).then(
+          ({ latest_created_date, latest_created_year }) =>
+            latest_created_date || latest_created_year
+        )
+      },
+    },
+  },
 })
