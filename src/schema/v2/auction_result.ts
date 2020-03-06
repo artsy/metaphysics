@@ -251,7 +251,6 @@ export const auctionResultConnection = connectionWithCursorInfo({
         set returned in this connection.
       `,
       resolve: ({ artist_id }, _, { auctionCreatedYearRangeLoader }) => {
-        console.log(artist_id)
         // TODO: Narrow down to only `earliest_created_year` when diffusion returns that
         return auctionCreatedYearRangeLoader({ artist_id }).then(
           ({ earliest_created_date, earliest_created_year }) =>
