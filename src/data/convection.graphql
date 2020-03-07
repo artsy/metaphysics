@@ -82,6 +82,9 @@ type CreateSubmissionMutationPayload {
   consignmentSubmission: Submission
 }
 
+# An ISO 8601-encoded datetime
+scalar ISO8601DateTime
+
 # Mutation root for this schema
 type Mutation {
   # Create an asset
@@ -149,6 +152,7 @@ type Submission {
   assets: [Asset]
   authenticity_certificate: Boolean
   category: Category
+  created_at: ISO8601DateTime
   currency: String
   depth: String
   dimensions_metric: String

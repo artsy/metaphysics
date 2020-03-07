@@ -3053,6 +3053,7 @@ type ConsignmentSubmission {
   assets: [ConsignmentSubmissionCategoryAsset]
   authenticity_certificate: Boolean
   category: ConsignmentSubmissionCategoryAggregation
+  created_at: ISO8601DateTime
   currency: String
   depth: String
   dimensions_metric: String
@@ -4825,6 +4826,8 @@ enum InvoiceState {
   VOID
   REFUNDED
 }
+
+scalar ISO8601DateTime
 
 # Represents untyped JSON
 scalar JSON
