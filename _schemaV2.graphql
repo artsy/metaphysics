@@ -588,6 +588,12 @@ type Artist implements Node & Searchable & EntityWithFilterArtworksConnectionInt
 
     # When true, will only return records for allowed artists.
     recordsTrusted: Boolean = false
+
+    # Filter auction results by earliest created at year
+    earliestCreatedYear: Int
+
+    # Filter auction results by latest created at year
+    latestCreatedYear: Int
     after: String
     first: Int
     before: String
