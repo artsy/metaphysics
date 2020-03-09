@@ -243,35 +243,41 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
 export const auctionResultConnection = connectionWithCursorInfo({
   nodeType: AuctionResultType,
   connectionFields: {
-    earliestCreatedYear: {
-      type: GraphQLInt,
-      description: dedent`
-        The earliest recorded created date for a work in this Artist's auction lots.
-        The result is for _all_ auction lots associated to the artist, not only the
-        set returned in this connection.
-      `,
-      resolve: ({ artist_id }, _, { auctionCreatedYearRangeLoader }) => {
-        // TODO: Narrow down to only `earliest_created_year` when diffusion returns that
-        return auctionCreatedYearRangeLoader({ artist_id }).then(
-          ({ earliest_created_date, earliest_created_year }) =>
-            earliest_created_date || earliest_created_year
-        )
-      },
-    },
-    latestCreatedYear: {
-      type: GraphQLInt,
-      description: dedent`
-        The latest recorded created date for a work in this Artist's auction lots.
-        The result is for _all_ auction lots associated to the artist, not only the
-        set returned in this connection.
-      `,
-      // TODO: Narrow down to only `latest_created_year` when diffusion returns that
+    createdYearRange: {
       resolve: ({ artist_id }, _, { auctionCreatedYearRangeLoader }) => {
         return auctionCreatedYearRangeLoader({ artist_id }).then(
-          ({ latest_created_date, latest_created_year }) =>
-            latest_created_date || latest_created_year
+          ({
+            earliest_created_date,
+            earliest_created_year,
+            latest_created_date,
+            latest_created_year,
+          }) => ({
+            earliestCreatedYear: earliest_created_date || earliest_created_year,
+            latestCreatedYear: latest_created_date || latest_created_year,
+          })
         )
       },
+      type: new GraphQLObjectType<any, ResolverContext>({
+        name: "CreatedYearRange",
+        fields: {
+          earliestCreatedYear: {
+            type: GraphQLInt,
+            description: dedent`
+              The earliest recorded created date for a work in this Artist's auction lots.
+              The result is for _all_ auction lots associated to the artist, not only the
+              set returned in this connection.
+            `,
+          },
+          latestCreatedYear: {
+            type: GraphQLInt,
+            description: dedent`
+              The latest recorded created date for a work in this Artist's auction lots.
+              The result is for _all_ auction lots associated to the artist, not only the
+              set returned in this connection.
+            `,
+          },
+        },
+      }),
     },
   },
 })
