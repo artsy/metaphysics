@@ -1426,6 +1426,7 @@ type AuctionResultConnection {
   edges: [AuctionResultEdge]
   pageCursors: PageCursors!
   totalCount: Int
+  createdYearRange: YearRange
 }
 
 # An edge in a connection.
@@ -7760,4 +7761,12 @@ type Viewer {
     # ID of the user
     id: String
   ): User
+}
+
+type YearRange {
+  # The first year of the year range
+  startAt: Int
+
+  # The last year of the year range
+  endAt: Int
 }

@@ -282,6 +282,9 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
                     hasPreviousPage: page > 1,
                     hasNextPage: page < totalPages,
                   },
+                },
+                {
+                  artist_id: _id,
                 }
               )
             }

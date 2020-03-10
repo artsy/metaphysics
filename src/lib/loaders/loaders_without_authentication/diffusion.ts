@@ -6,5 +6,6 @@ export default opts => {
 
   return {
     auctionLotLoader: diffusionLoader("lots"),
+    auctionCreatedYearRangeLoader: diffusionLoader("lots/created_dates"),
   }
 }
