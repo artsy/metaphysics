@@ -58,9 +58,6 @@ import { UserField } from "./user"
 import UpdateConversationMutation from "./me/conversation/update_conversation_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
-import CreateSubmissionMutation from "./me/consignments/create_submission_mutation"
-import UpdateSubmissionMutation from "./me/consignments/update_submission_mutation"
-import AddAssetToConsignmentSubmission from "./me/consignments/add_asset_to_submission_mutation"
 import SaveArtworkMutation from "./me/save_artwork_mutation"
 import { endSaleMutation } from "./sale/end_sale_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
@@ -83,22 +80,9 @@ import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGr
 
 import ObjectIdentification from "./object_identification"
 import { ResolverContext } from "types/graphql"
-import config from "config"
 import { ArtworkVersionType } from "./artwork_version"
 import { HighlightsField } from "./Highlights"
 import { startIdentityVerificationMutation } from "./startIdentityVerificationMutation"
-
-const { ENABLE_CONSIGNMENTS_STITCHING } = config
-
-// If you're using stitching then we _don't_ want to include particular mutations
-// which come from the stitching instead of our manual version
-const stitchedMutations: any = {}
-
-if (!ENABLE_CONSIGNMENTS_STITCHING) {
-  stitchedMutations.createConsignmentSubmission = CreateSubmissionMutation
-  stitchedMutations.updateConsignmentSubmission = UpdateSubmissionMutation
-  stitchedMutations.addAssetToConsignmentSubmission = AddAssetToConsignmentSubmission
-}
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -194,7 +178,6 @@ export default new GraphQLSchema({
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       startIdentityVerification: startIdentityVerificationMutation,
-      ...stitchedMutations,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
