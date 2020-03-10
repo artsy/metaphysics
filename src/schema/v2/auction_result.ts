@@ -245,14 +245,9 @@ export const auctionResultConnection = connectionWithCursorInfo({
     createdYearRange: {
       resolve: ({ artist_id }, _, { auctionCreatedYearRangeLoader }) => {
         return auctionCreatedYearRangeLoader({ artist_id }).then(
-          ({
-            earliest_created_date,
-            earliest_created_year,
-            latest_created_date,
-            latest_created_year,
-          }) => ({
-            startAt: earliest_created_date || earliest_created_year,
-            endAt: latest_created_date || latest_created_year,
+          ({ earliest_created_year, latest_created_year }) => ({
+            startAt: earliest_created_year,
+            endAt: latest_created_year,
           })
         )
       },
