@@ -107,7 +107,7 @@
     "babel-core": "7.0.0-bridge.0"
   },
   "devDependencies": {
-    "@artsy/express-reloadable": "1.4.7",
+    "@artsy/express-reloadable": "1.4.8",
     "@graphql-inspector/core": "1.27.0",
     "@types/express-rate-limit": "2.9.3",
     "@types/graphql-relay": "0.4.9",
