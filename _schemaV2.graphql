@@ -1438,7 +1438,7 @@ type AuctionResultConnection {
   edges: [AuctionResultEdge]
   pageCursors: PageCursors!
   totalCount: Int
-  createdYearRange: CreatedYearRange
+  createdYearRange: YearRange
 }
 
 # An edge in a connection.
@@ -3325,18 +3325,6 @@ input CreateBidderInput {
 type CreateBidderPayload {
   bidder: Bidder
   clientMutationId: String
-}
-
-type CreatedYearRange {
-  # The earliest recorded created date for a work in this Artist's auction lots.
-  # The result is for _all_ auction lots associated to the artist, not only the
-  # set returned in this connection.
-  earliestCreatedYear: Int
-
-  # The latest recorded created date for a work in this Artist's auction lots.
-  # The result is for _all_ auction lots associated to the artist, not only the
-  # set returned in this connection.
-  latestCreatedYear: Int
 }
 
 input CreateGeminiEntryForAssetInput {
@@ -7813,4 +7801,12 @@ type Viewer {
     # ID of the user
     id: String
   ): User
+}
+
+type YearRange {
+  # The first year of the year range
+  startAt: Int
+
+  # The last year of the year range
+  endAt: Int
 }

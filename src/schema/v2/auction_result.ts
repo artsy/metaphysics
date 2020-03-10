@@ -8,16 +8,15 @@ import {
   GraphQLObjectType,
   GraphQLEnumType,
   GraphQLBoolean,
-  GraphQLInt,
 } from "graphql"
 import { indexOf } from "lodash"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import Image, { normalizeImageData } from "schema/v2/image"
 import { ResolverContext } from "types/graphql"
-import dedent from "dedent"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 import currencyCodes from "lib/currency_codes.json"
+import { YearRange } from "./types/yearRange"
 const symbolOnly = ["USD", "GBP", "EUR", "MYR"]
 
 export const AuctionResultSorts = {
@@ -252,32 +251,12 @@ export const auctionResultConnection = connectionWithCursorInfo({
             latest_created_date,
             latest_created_year,
           }) => ({
-            earliestCreatedYear: earliest_created_date || earliest_created_year,
-            latestCreatedYear: latest_created_date || latest_created_year,
+            startAt: earliest_created_date || earliest_created_year,
+            endAt: latest_created_date || latest_created_year,
           })
         )
       },
-      type: new GraphQLObjectType<any, ResolverContext>({
-        name: "CreatedYearRange",
-        fields: {
-          earliestCreatedYear: {
-            type: GraphQLInt,
-            description: dedent`
-              The earliest recorded created date for a work in this Artist's auction lots.
-              The result is for _all_ auction lots associated to the artist, not only the
-              set returned in this connection.
-            `,
-          },
-          latestCreatedYear: {
-            type: GraphQLInt,
-            description: dedent`
-              The latest recorded created date for a work in this Artist's auction lots.
-              The result is for _all_ auction lots associated to the artist, not only the
-              set returned in this connection.
-            `,
-          },
-        },
-      }),
+      type: YearRange,
     },
   },
 })
