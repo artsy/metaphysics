@@ -554,7 +554,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents == null
           )
-            return "Free domestic shipping only"
+            return artwork.eu_shipping_origin
+              ? "Free shipping within Continental Europe only"
+              : "Free domestic shipping only"
+
           if (
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents === 0
@@ -577,24 +580,22 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             symbol: symbolFromCurrencyCode(artwork.price_currency),
           })
 
+          const shippingRegion = artwork.eu_shipping_origin
+            ? "within Continental Europe"
+            : "domestic"
+
           if (
             domesticShipping &&
             artwork.international_shipping_fee_cents == null
           )
-            return "Shipping: " + domesticShipping + " domestic only"
+            return `Shipping: ${domesticShipping} ${shippingRegion} only`
 
           if (artwork.domestic_shipping_fee_cents === 0)
             domesticShipping = "Free"
           if (artwork.international_shipping_fee_cents === 0)
             internationalShipping = "free"
 
-          return (
-            "Shipping: " +
-            domesticShipping +
-            " domestic, " +
-            internationalShipping +
-            " rest of world"
-          )
+          return `Shipping: ${domesticShipping} ${shippingRegion}, ${internationalShipping} rest of world`
         },
       },
       shippingOrigin: {
