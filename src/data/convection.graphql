@@ -25,6 +25,9 @@ type Asset {
 
   # Uniq ID for this asset
   id: ID!
+
+  # known image urls
+  image_urls: JSON
   submissionID: ID
   submission_id: ID!
 }
@@ -84,6 +87,9 @@ type CreateSubmissionMutationPayload {
 
 # An ISO 8601-encoded datetime
 scalar ISO8601DateTime
+
+# Represents untyped JSON
+scalar JSON
 
 # Mutation root for this schema
 type Mutation {
