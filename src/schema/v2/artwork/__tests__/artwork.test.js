@@ -1689,7 +1689,7 @@ describe("Artwork type", () => {
         return runQuery(query, context).then(data => {
           expect(data).toEqual({
             artwork: {
-              shippingInfo: "Free shipping within the EU and Switzerland only",
+              shippingInfo: "Free shipping within Continental Europe only",
             },
           })
         })
@@ -1713,7 +1713,7 @@ describe("Artwork type", () => {
         return runQuery(query, context).then(data => {
           expect(data).toEqual({
             artwork: {
-              shippingInfo: "Shipping: $10 within the EU and Switzerland only",
+              shippingInfo: "Shipping: $10 within Continental Europe only",
             },
           })
         })
@@ -1726,7 +1726,7 @@ describe("Artwork type", () => {
           expect(data).toEqual({
             artwork: {
               shippingInfo:
-                "Shipping: $10 within the EU and Switzerland, free rest of world",
+                "Shipping: $10 within Continental Europe, free rest of world",
             },
           })
         })
@@ -1739,7 +1739,7 @@ describe("Artwork type", () => {
           expect(data).toEqual({
             artwork: {
               shippingInfo:
-                "Shipping: Free within the EU and Switzerland, $100 rest of world",
+                "Shipping: Free within Continental Europe, $100 rest of world",
             },
           })
         })
@@ -1752,7 +1752,7 @@ describe("Artwork type", () => {
           expect(data).toEqual({
             artwork: {
               shippingInfo:
-                "Shipping: $10 within the EU and Switzerland, $20 rest of world",
+                "Shipping: $10 within Continental Europe, $20 rest of world",
             },
           })
         })
@@ -1766,7 +1766,7 @@ describe("Artwork type", () => {
           expect(data).toEqual({
             artwork: {
               shippingInfo:
-                "Shipping: €10 within the EU and Switzerland, €20 rest of world",
+                "Shipping: €10 within Continental Europe, €20 rest of world",
             },
           })
         })

@@ -555,7 +555,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             artwork.international_shipping_fee_cents == null
           )
             return artwork.eu_shipping_origin
-              ? "Free shipping within the EU and Switzerland only"
+              ? "Free shipping within Continental Europe only"
               : "Free domestic shipping only"
 
           if (
@@ -581,7 +581,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           })
 
           const shippingRegion = artwork.eu_shipping_origin
-            ? "within the EU and Switzerland"
+            ? "within Continental Europe"
             : "domestic"
           if (
             domesticShipping &&
