@@ -3115,6 +3115,9 @@ type ConsignmentSubmissionCategoryAsset {
 
   # Uniq ID for this asset
   id: ID!
+
+  # known image urls
+  image_urls: JSON
   submissionID: ID
   submission_id: ID!
 }
@@ -4836,7 +4839,6 @@ enum InvoiceState {
 
 scalar ISO8601DateTime
 
-# Represents untyped JSON
 scalar JSON
 
 type LatLng {
