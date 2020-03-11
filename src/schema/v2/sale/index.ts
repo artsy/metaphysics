@@ -231,6 +231,11 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ buyers_premium }) => !!buyers_premium,
       },
+      isLotConditionsReportEnabled: {
+        type: GraphQLBoolean,
+        resolve: ({ lot_conditions_report_enabled }) =>
+          !!lot_conditions_report_enabled,
+      },
       liveStartAt: date,
       // Only fetches the partner info that's already included in the Sale object
       liveURLIfOpen: {

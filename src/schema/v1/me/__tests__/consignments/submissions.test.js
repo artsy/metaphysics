@@ -2,7 +2,8 @@
 import { runAuthenticatedQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 
-describe("submissions", () => {
+// FIXME: We're now stitching. Remove these files once this work settles
+xdescribe("submissions", () => {
   it("asks for a user's submissions", () => {
     const mutation = gql`
       {

@@ -335,6 +335,27 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return false
         },
       },
+      canRequestLotConditionsReport: {
+        type: GraphQLBoolean,
+        description:
+          "Can a user request a lot conditions report for this artwork?",
+        resolve: ({ sale_ids }, _options, { saleLoader }) => {
+          if (sale_ids && sale_ids.length > 0) {
+            const sale_id = sale_ids[0]
+
+            return saleLoader(sale_id)
+              .catch(() => false) // don't error if the sale is not found or unpublished
+              .then(sale => {
+                return (
+                  sale.auction_state === "open" &&
+                  sale.is_auction &&
+                  sale.lot_conditions_report_enabled
+                )
+              })
+          }
+          return false
+        },
+      },
       isBuyNowable: {
         type: GraphQLBoolean,
         description: "When in an auction, can the work be bought immediately",

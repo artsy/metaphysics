@@ -13,6 +13,7 @@ describe("Sale type", () => {
     is_auction: true,
     is_preliminary: false,
     increment_strategy: "default",
+    lot_conditions_report_enabled: true,
   }
 
   const execute = async (query, gravityResponse = sale, context = {}) => {
@@ -51,6 +52,7 @@ describe("Sale type", () => {
           isClosed
           isPreliminary
           isRegistrationClosed
+          isLotConditionsReportEnabled
           status
         }
       }
@@ -67,6 +69,7 @@ describe("Sale type", () => {
           isClosed: true,
           isPreliminary: false,
           isRegistrationClosed: false,
+          isLotConditionsReportEnabled: true,
           status: "closed",
         },
       })
@@ -83,6 +86,7 @@ describe("Sale type", () => {
           isClosed: false,
           isPreliminary: false,
           isRegistrationClosed: false,
+          isLotConditionsReportEnabled: true,
           status: "preview",
         },
       })
@@ -100,6 +104,7 @@ describe("Sale type", () => {
           isClosed: false,
           isPreliminary: false,
           isRegistrationClosed: false,
+          isLotConditionsReportEnabled: true,
           status: "open",
         },
       })
@@ -117,6 +122,7 @@ describe("Sale type", () => {
           isClosed: false,
           isPreliminary: false,
           isRegistrationClosed: false,
+          isLotConditionsReportEnabled: true,
           status: "open",
         },
       })
@@ -134,6 +140,7 @@ describe("Sale type", () => {
           isClosed: false,
           isPreliminary: false,
           isRegistrationClosed: true,
+          isLotConditionsReportEnabled: true,
           status: "open",
         },
       })

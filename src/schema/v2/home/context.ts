@@ -122,7 +122,7 @@ const moduleContext: HomePageArtworkModuleResolvers<ContextSource> = {
     }
     // Backward compatibility for Force.
     return featuredGene(followedGenesLoader).then(fetchedGene => {
-      return { ...fetchedGene, context_type: GeneType }
+      return fetchedGene && ({ ...fetchedGene, context_type: GeneType })
     })
   },
   generic_gene: ({ geneLoader }, params) => {

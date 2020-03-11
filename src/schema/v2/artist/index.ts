@@ -223,6 +223,14 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             description:
               "When true, will only return records for allowed artists.",
           },
+          earliestCreatedYear: {
+            type: GraphQLInt,
+            description: "Filter auction results by earliest created at year",
+          },
+          latestCreatedYear: {
+            type: GraphQLInt,
+            description: "Filter auction results by latest created at year",
+          },
         }),
         resolve: ({ _id }, options, { auctionLotLoader }) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
@@ -244,6 +252,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             artist_id: _id,
             organizations,
             categories,
+            earliest_created_year: options.earliestCreatedYear,
+            latest_created_year: options.latestCreatedYear,
             sizes,
             sort: options.sort,
           }
@@ -272,6 +282,9 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
                     hasPreviousPage: page > 1,
                     hasNextPage: page < totalPages,
                   },
+                },
+                {
+                  artist_id: _id,
                 }
               )
             }

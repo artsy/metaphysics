@@ -1,7 +1,8 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("addAssetToConsignmentSubmission", () => {
+// FIXME: We're now stitching. Remove these files once this work settles
+xdescribe("addAssetToConsignmentSubmission", () => {
   it("creates a submission and returns its new data payload", async () => {
     const mutation = `
       mutation {

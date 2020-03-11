@@ -16,6 +16,7 @@ import { ResolverContext } from "types/graphql"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 import currencyCodes from "lib/currency_codes.json"
+import { YearRange } from "./types/yearRange"
 const symbolOnly = ["USD", "GBP", "EUR", "MYR"]
 
 export const AuctionResultSorts = {
@@ -240,4 +241,17 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
 
 export const auctionResultConnection = connectionWithCursorInfo({
   nodeType: AuctionResultType,
+  connectionFields: {
+    createdYearRange: {
+      resolve: ({ artist_id }, _, { auctionCreatedYearRangeLoader }) => {
+        return auctionCreatedYearRangeLoader({ artist_id }).then(
+          ({ earliest_created_year, latest_created_year }) => ({
+            startAt: earliest_created_year,
+            endAt: latest_created_year,
+          })
+        )
+      },
+      type: YearRange,
+    },
+  },
 })

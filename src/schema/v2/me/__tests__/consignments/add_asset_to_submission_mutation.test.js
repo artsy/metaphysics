@@ -2,7 +2,8 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("addAssetToConsignmentSubmission", () => {
+// FIXME: We're now stitching. Remove these files once this work settles
+xdescribe("addAssetToConsignmentSubmission", () => {
   it("creates a submission and returns its new data payload", () => {
     const mutation = gql`
       mutation {
