@@ -1639,18 +1639,6 @@ describe("Artwork type", () => {
       })
     })
 
-    it("is set to free domestic shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
-      artwork.domestic_shipping_fee_cents = 0
-      artwork.international_shipping_fee_cents = 10000
-      return runQuery(query, context).then(data => {
-        expect(data).toEqual({
-          artwork: {
-            shippingInfo: "Shipping: Free domestic, $100 rest of world",
-          },
-        })
-      })
-    })
-
     it("is set to domestic and intermational shipping when both domestic_shipping_fee_cents and present and international_shipping_fee_cents are set", () => {
       artwork.domestic_shipping_fee_cents = 1000
       artwork.international_shipping_fee_cents = 2000
@@ -1672,6 +1660,115 @@ describe("Artwork type", () => {
           artwork: {
             shippingInfo: "Shipping: £10 domestic, £20 rest of world",
           },
+        })
+      })
+    })
+
+    describe("for artworks that is located within continental EU", () => {
+      beforeEach(() => {
+        artwork.eu_shipping_origin = true
+      })
+
+      it("is set to prompt string when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
+        artwork.domestic_shipping_fee_cents = null
+        artwork.international_shipping_fee_cents = null
+
+        return runQuery(query, context).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              shippingInfo:
+                "Shipping, tax, and additional fees quoted by seller",
+            },
+          })
+        })
+      })
+
+      it("is set to free euro shipping only when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is null", () => {
+        artwork.domestic_shipping_fee_cents = 0
+        artwork.international_shipping_fee_cents = null
+        return runQuery(query, context).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              shippingInfo: "Free shipping within Continental Europe only",
+            },
+          })
+        })
+      })
+
+      it("is set to free shipping string when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is 0", () => {
+        artwork.domestic_shipping_fee_cents = 0
+        artwork.international_shipping_fee_cents = 0
+        return runQuery(query, context).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              shippingInfo: "Free shipping worldwide",
+            },
+          })
+        })
+      })
+
+      it("is set to domestic shipping only when its domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
+        artwork.domestic_shipping_fee_cents = 1000
+        artwork.international_shipping_fee_cents = null
+        return runQuery(query, context).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              shippingInfo: "Shipping: $10 within Continental Europe only",
+            },
+          })
+        })
+      })
+
+      it("is set to free international shipping when domestic_shipping_fee_cents is 0 and domestic_shipping_fee_cents is present", () => {
+        artwork.domestic_shipping_fee_cents = 1000
+        artwork.international_shipping_fee_cents = 0
+        return runQuery(query, context).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              shippingInfo:
+                "Shipping: $10 within Continental Europe, free rest of world",
+            },
+          })
+        })
+      })
+
+      it("is set to free domestic shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
+        artwork.domestic_shipping_fee_cents = 0
+        artwork.international_shipping_fee_cents = 10000
+        return runQuery(query, context).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              shippingInfo:
+                "Shipping: Free within Continental Europe, $100 rest of world",
+            },
+          })
+        })
+      })
+
+      it("is set to domestic and intermational shipping when both domestic_shipping_fee_cents and present and international_shipping_fee_cents are set", () => {
+        artwork.domestic_shipping_fee_cents = 1000
+        artwork.international_shipping_fee_cents = 2000
+        return runQuery(query, context).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              shippingInfo:
+                "Shipping: $10 within Continental Europe, $20 rest of world",
+            },
+          })
+        })
+      })
+
+      it("shows shipping costs in the same currency as list price", () => {
+        artwork.domestic_shipping_fee_cents = 1000
+        artwork.international_shipping_fee_cents = 2000
+        artwork.price_currency = "EUR"
+        return runQuery(query, context).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              shippingInfo:
+                "Shipping: €10 within Continental Europe, €20 rest of world",
+            },
+          })
         })
       })
     })
