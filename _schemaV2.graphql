@@ -5900,6 +5900,9 @@ type Query {
     id: String!
   ): Artwork
 
+  # A list of artworks by internalID.
+  artworksByInternalID(ids: [String]!): [Artwork]
+
   # Artworks Elastic Search results
   artworksConnection(
     acquireable: Boolean
@@ -7569,6 +7572,9 @@ type Viewer {
     # The slug or ID of the Artwork
     id: String!
   ): Artwork
+
+  # A list of artworks by internalID.
+  artworksByInternalID(ids: [String]!): [Artwork]
 
   # Artworks Elastic Search results
   artworksConnection(
