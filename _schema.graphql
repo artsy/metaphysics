@@ -4807,6 +4807,9 @@ type ConsignmentSubmissionCategoryAsset {
 
   # Uniq ID for this asset
   id: ID!
+
+  # known image urls
+  image_urls: JSON
   submissionID: ID
   submission_id: ID!
 }
@@ -7458,7 +7461,6 @@ scalar ISO8601DateTime
 
 union Item = ArtistItem | ArtworkItem | FeaturedLinkItem | GeneItem
 
-# Represents untyped JSON
 scalar JSON
 
 type LatLng {

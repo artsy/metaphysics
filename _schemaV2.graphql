@@ -3115,6 +3115,9 @@ type ConsignmentSubmissionCategoryAsset {
 
   # Uniq ID for this asset
   id: ID!
+
+  # known image urls
+  image_urls: JSON
   submissionID: ID
   submission_id: ID!
 }
@@ -4836,7 +4839,6 @@ enum InvoiceState {
 
 scalar ISO8601DateTime
 
-# Represents untyped JSON
 scalar JSON
 
 type LatLng {
@@ -5897,6 +5899,9 @@ type Query {
     # The slug or ID of the Artwork
     id: String!
   ): Artwork
+
+  # A list of artworks by internalID.
+  artworksByInternalID(ids: [String]!): [Artwork]
 
   # Artworks Elastic Search results
   artworksConnection(
@@ -7567,6 +7572,9 @@ type Viewer {
     # The slug or ID of the Artwork
     id: String!
   ): Artwork
+
+  # A list of artworks by internalID.
+  artworksByInternalID(ids: [String]!): [Artwork]
 
   # Artworks Elastic Search results
   artworksConnection(
