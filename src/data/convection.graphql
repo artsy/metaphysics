@@ -31,12 +31,12 @@ type Asset {
   """
   type of this Asset
   """
-  asset_type: String!
+  assetType: String!
 
   """
   gemini token for asset
   """
-  gemini_token: String
+  geminiToken: String
 
   """
   Uniq ID for this asset
@@ -46,9 +46,9 @@ type Asset {
   """
   known image urls
   """
-  image_urls: JSON
+  imageUrls: JSON
   submissionID: ID
-  submission_id: ID!
+  submissionId: ID!
 }
 
 enum Category {
@@ -127,12 +127,9 @@ scalar JSON
 Mutation root for this schema
 """
 type Mutation {
-  """
-  Create an asset
-  """
-  addAssetToConsignmentSubmission(input: AddAssetToConsignmentSubmissionInput): AddAssetToConsignmentSubmissionPayload
-  createConsignmentSubmission(input: CreateSubmissionMutationInput): CreateSubmissionMutationPayload
-  updateConsignmentSubmission(input: UpdateSubmissionMutationInput): UpdateSubmissionMutationPayload
+  addAssetToConsignmentSubmission(input: AddAssetToConsignmentSubmissionInput!): AddAssetToConsignmentSubmissionPayload
+  createConsignmentSubmission(input: CreateSubmissionMutationInput!): CreateSubmissionMutationPayload
+  updateConsignmentSubmission(input: UpdateSubmissionMutationInput!): UpdateSubmissionMutationPayload
 }
 
 """
@@ -160,9 +157,6 @@ type PageInfo {
   startCursor: String
 }
 
-"""
-Query root for this schema
-"""
 type Query {
   """
   Get a Submission
@@ -196,7 +190,7 @@ type Query {
     """
     Get all submissions with these IDs
     """
-    ids: [ID]
+    ids: [ID!]
 
     """
     Returns the last _n_ elements from the list.
@@ -204,9 +198,9 @@ type Query {
     last: Int
 
     """
-    Only get submission by this user_id
+    Get all submissions with these user IDs
     """
-    user_id: [ID]
+    userId: [ID!]
   ): SubmissionConnection
 }
 
@@ -221,18 +215,18 @@ enum State {
 Consignment Submission
 """
 type Submission {
-  additional_info: String
-  artist_id: String!
+  additionalInfo: String
+  artistId: String!
   assets: [Asset]
-  authenticity_certificate: Boolean
+  authenticityCertificate: Boolean
   category: Category
-  created_at: ISO8601DateTime
+  createdAt: ISO8601DateTime
   currency: String
   depth: String
-  dimensions_metric: String
+  dimensionsMetric: String
   edition: String
-  edition_number: String
-  edition_size: Int
+  editionNumber: String
+  editionSize: Int
   height: String
 
   """
@@ -240,16 +234,16 @@ type Submission {
   """
   id: ID!
   internalID: ID
-  location_city: String
-  location_country: String
-  location_state: String
+  locationCity: String
+  locationCountry: String
+  locationState: String
   medium: String
-  minimum_price_dollars: Int
+  minimumPriceDollars: Int
   provenance: String
   signature: Boolean
   state: State
   title: String
-  user_id: String!
+  userId: String!
   width: String
   year: String
 }
@@ -262,6 +256,11 @@ type SubmissionConnection {
   A list of edges.
   """
   edges: [SubmissionEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [Submission]
 
   """
   Information to aid in pagination.
