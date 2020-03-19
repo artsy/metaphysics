@@ -5,7 +5,6 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLFieldConfig,
-  GraphQLFieldConfigMap,
 } from "graphql"
 
 import { IDFields, NodeInterface } from "schema/v1/object_identification"
@@ -36,27 +35,14 @@ import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import SaleRegistrations from "./sale_registrations"
 import SavedArtworks from "./saved_artworks"
 import SuggestedArtists from "./suggested_artists"
-import Submissions from "./consignments/submissions"
-import config from "config"
 import { ResolverContext } from "types/graphql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
-
-// @ts-ignore
-const { ENABLE_CONVECTION_STITCHING } = config
-
-const mySubmissions: GraphQLFieldConfigMap<
-  void,
-  ResolverContext
-> = !!ENABLE_CONVECTION_STITCHING
-  ? {}
-  : { consignment_submissions: Submissions }
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
   interfaces: [NodeInterface],
   fields: {
     ...IDFields,
-    ...mySubmissions,
     artwork_inquiries_connection: ArtworkInquiries,
     bidders: Bidders,
     bidder_status: BidderStatus,

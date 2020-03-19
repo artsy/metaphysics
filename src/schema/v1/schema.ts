@@ -74,9 +74,6 @@ import Me from "./me"
 import UpdateConversationMutation from "./me/conversation/update_conversation_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
-import CreateSubmissionMutation from "./me/consignments/create_submission_mutation"
-import UpdateSubmissionMutation from "./me/consignments/update_submission_mutation"
-import AddAssetToConsignmentSubmission from "./me/consignments/add_asset_to_submission_mutation"
 import SaveArtworkMutation from "./me/save_artwork_mutation"
 import { endSaleMutation } from "./sale/end_sale_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
@@ -101,7 +98,6 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-import config from "config"
 import { BuyOrderType, OfferOrderType } from "./ecommerce/types/order"
 import { AddInitialOfferToOrderMutation } from "./ecommerce/add_initial_offer_to_order_mutation"
 import { SearchableItem } from "./SearchableItem"
@@ -111,7 +107,6 @@ import { AuctionArtworkGridType } from "./artwork/artworkContextGrids/AuctionArt
 import { PartnerArtworkGridType } from "./artwork/artworkContextGrids/PartnerArtworkGrid"
 import { RelatedArtworkGridType } from "./artwork/artworkContextGrids/RelatedArtworkGrid"
 import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGrid"
-const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
 const rootFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   artworkAttributionClasses: ArtworkAttributionClasses,
@@ -188,12 +183,6 @@ const stitchedRootFields: any = {}
 // If you're using stitching then we _don't_ want to include particular mutations
 // which come from the stitching instead of our manual version
 const stitchedMutations: any = {}
-
-if (!ENABLE_CONSIGNMENTS_STITCHING) {
-  stitchedMutations.createConsignmentSubmission = CreateSubmissionMutation
-  stitchedMutations.updateConsignmentSubmission = UpdateSubmissionMutation
-  stitchedMutations.addAssetToConsignmentSubmission = AddAssetToConsignmentSubmission
-}
 
 stitchedRootFields.ecommerceOrder = Order
 stitchedRootFields.ecommerceOrders = Orders
