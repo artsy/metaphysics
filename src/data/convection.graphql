@@ -173,14 +173,14 @@ type Query {
     after: String
 
     """
+    If true return only available submissions
+    """
+    available: Boolean
+
+    """
     Returns the elements in the list that come before the specified cursor.
     """
     before: String
-
-    """
-    If present return either completed or not completed submissions
-    """
-    completed: Boolean
 
     """
     Returns the first _n_ elements from the list.
