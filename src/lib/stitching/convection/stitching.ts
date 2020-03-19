@@ -15,9 +15,9 @@ export const consignmentStitchingEnvironment = (
   resolvers: {
     ConsignmentSubmission: {
       artist: {
-        fragment: `fragment SubmissionArtist on ConsignmentSubmission { artist_id }`,
+        fragment: `fragment SubmissionArtist on ConsignmentSubmission { artistId }`,
         resolve: (parent, _args, context, info) => {
-          const id = parent.artist_id
+          const id = parent.artistId
           return info.mergeInfo.delegateToSchema({
             schema: localSchema,
             operation: "query",
