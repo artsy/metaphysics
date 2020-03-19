@@ -14,7 +14,7 @@ it("resolves an Artist on a Consignment Submission", async () => {
   const query = gql`
     {
       submission(id: 123) {
-        artist_id
+        artistId
         artist {
           name
         }
@@ -30,7 +30,7 @@ it("resolves an Artist on a Consignment Submission", async () => {
     mocks: {
       Query: () => ({
         submission: (_root, _params) => {
-          return { artist_id: "321" }
+          return { artistId: "321" }
         },
       }),
     },
@@ -42,6 +42,6 @@ it("resolves an Artist on a Consignment Submission", async () => {
   })
 
   expect(result).toEqual({
-    data: { submission: { artist: { name: "Hello World" }, artist_id: "321" } },
+    data: { submission: { artist: { name: "Hello World" }, artistId: "321" } },
   })
 })
