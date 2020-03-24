@@ -92,6 +92,10 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     },
     invoice: Invoice,
     identityVerification: IdentityVerification,
+    identityVerified: {
+      type: GraphQLBoolean,
+      resolve: ({ identity_verified }) => identity_verified,
+    },
     lotsByFollowedArtistsConnection: SaleArtworksConnectionField,
     lotStanding: LotStanding,
     lotStandings: LotStandings,
@@ -151,6 +155,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "followsAndSaves",
       "lotsByFollowedArtistsConnection",
       "identityVerification",
+      "identityVerified",
       "unreadNotificationsCount",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
