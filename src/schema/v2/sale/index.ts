@@ -273,6 +273,11 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ require_bidder_approval }) => require_bidder_approval,
       },
+      requireIdentityVerification: {
+        type: GraphQLBoolean,
+        resolve: ({ require_identity_verification }) =>
+          require_identity_verification,
+      },
       saleArtworksConnection: {
         type: saleArtworkConnection,
         args: pageable({
