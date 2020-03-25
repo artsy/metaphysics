@@ -3,6 +3,39 @@ import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("me/index", () => {
+  const query = gql`
+    query {
+      me {
+        name
+        email
+        paddleNumber
+        identityVerified
+      }
+    }
+  `
+
+  it("loads data from meLoader", () => {
+    const body = {
+      name: "Test User",
+      email: "test@email.com",
+      paddle_number: "123456",
+      identity_verified: true,
+    }
+
+    return runAuthenticatedQuery(query, {
+      meLoader: () => Promise.resolve(body),
+    }).then(data => {
+      expect(data).toEqual({
+        me: {
+          name: "Test User",
+          email: "test@email.com",
+          paddleNumber: "123456",
+          identityVerified: true,
+        },
+      })
+    })
+  })
+
   describe("has_qualified_credit_cards", () => {
     const creditCardQuery = gql`
       query {

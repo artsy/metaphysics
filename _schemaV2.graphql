@@ -5217,6 +5217,7 @@ type Me implements Node {
     # ID of the IdentityVerification
     id: String!
   ): IdentityVerification
+  identityVerified: Boolean
 
   # Sale Artworks search results
   lotsByFollowedArtistsConnection(

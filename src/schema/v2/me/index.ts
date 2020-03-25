@@ -155,7 +155,6 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "followsAndSaves",
       "lotsByFollowedArtistsConnection",
       "identityVerification",
-      "identityVerified",
       "unreadNotificationsCount",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
