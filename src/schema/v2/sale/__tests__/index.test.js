@@ -14,6 +14,7 @@ describe("Sale type", () => {
     is_preliminary: false,
     increment_strategy: "default",
     lot_conditions_report_enabled: true,
+    require_identity_verification: true,
   }
 
   const execute = async (query, gravityResponse = sale, context = {}) => {
@@ -53,6 +54,7 @@ describe("Sale type", () => {
           isPreliminary
           isRegistrationClosed
           isLotConditionsReportEnabled
+          requireIdentityVerification
           status
         }
       }
@@ -70,6 +72,7 @@ describe("Sale type", () => {
           isPreliminary: false,
           isRegistrationClosed: false,
           isLotConditionsReportEnabled: true,
+          requireIdentityVerification: true,
           status: "closed",
         },
       })
@@ -87,6 +90,7 @@ describe("Sale type", () => {
           isPreliminary: false,
           isRegistrationClosed: false,
           isLotConditionsReportEnabled: true,
+          requireIdentityVerification: true,
           status: "preview",
         },
       })
@@ -105,6 +109,7 @@ describe("Sale type", () => {
           isPreliminary: false,
           isRegistrationClosed: false,
           isLotConditionsReportEnabled: true,
+          requireIdentityVerification: true,
           status: "open",
         },
       })
@@ -123,6 +128,7 @@ describe("Sale type", () => {
           isPreliminary: false,
           isRegistrationClosed: false,
           isLotConditionsReportEnabled: true,
+          requireIdentityVerification: true,
           status: "open",
         },
       })
@@ -141,6 +147,7 @@ describe("Sale type", () => {
           isPreliminary: false,
           isRegistrationClosed: true,
           isLotConditionsReportEnabled: true,
+          requireIdentityVerification: true,
           status: "open",
         },
       })
