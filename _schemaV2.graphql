@@ -3056,8 +3056,25 @@ type ConditionReportRequest {
 
 # Consignment Offer
 type ConsignmentOffer {
+  commissionPercentWhole: Int
+  createdById: ID
+  currency: String
+  deadlineToConsign: String
+  highEstimateCents: Int
+
   # Uniq ID for this submission
   id: ID!
+  insuranceInfo: String
+  lowEstimateCents: Int
+  notes: String
+  offerType: String
+  otherFeesInfo: String
+  partnerInfo: String
+  photographyInfo: String
+  saleDate: String
+  saleName: String
+  shippingInfo: String
+  state: String
 }
 
 # Consignment Submission
@@ -3084,6 +3101,7 @@ type ConsignmentSubmission {
   locationState: String
   medium: String
   minimumPriceDollars: Int
+  offers(gravityPartnerId: ID!): [ConsignmentOffer!]!
   provenance: String
   signature: Boolean
   state: ConsignmentSubmissionStateAggregation
