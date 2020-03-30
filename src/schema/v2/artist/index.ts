@@ -57,6 +57,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { totalViaLoader } from "lib/total"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
+import { ArtistTargetSupply } from "./targetSupply"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -545,14 +546,15 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       gender: { type: GraphQLString },
-      href: { type: GraphQLString, resolve: artist => `/artist/${artist.id}` },
       hasMetadata: {
         type: GraphQLBoolean,
         resolve: ({ blurb, nationality, years, hometown, location }) => {
           return !!(blurb || nationality || years || hometown || location)
         },
       },
+      highlights: ArtistHighlights,
       hometown: { type: GraphQLString },
+      href: { type: GraphQLString, resolve: artist => `/artist/${artist.id}` },
       image: Image,
       imageUrl: {
         type: GraphQLString,
@@ -665,7 +667,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ sortable_id }) => sortable_id,
       },
       statuses: ArtistStatuses,
-      highlights: ArtistHighlights,
+      targetSupply: ArtistTargetSupply,
       years: { type: GraphQLString },
     }
   },
