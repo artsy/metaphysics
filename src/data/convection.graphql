@@ -181,10 +181,27 @@ type Mutation {
 Consignment Offer
 """
 type Offer {
+  commissionPercentWhole: Int
+  createdById: ID
+  currency: String
+  deadlineToConsign: String
+  highEstimateCents: Int
+
   """
   Uniq ID for this submission
   """
   id: ID!
+  insuranceInfo: String
+  lowEstimateCents: Int
+  notes: String
+  offerType: String
+  otherFeesInfo: String
+  partnerInfo: String
+  photographyInfo: String
+  saleDate: String
+  saleName: String
+  shippingInfo: String
+  state: String
 }
 
 """
@@ -294,6 +311,7 @@ type Submission {
   locationState: String
   medium: String
   minimumPriceDollars: Int
+  offers(gravityPartnerId: ID!): [Offer!]!
   provenance: String
   signature: Boolean
   state: State
