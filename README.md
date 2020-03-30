@@ -54,10 +54,21 @@ yarn install
 # Installed system tools (like cache servers)
 brew bundle
 # Get set up with a default env
-cp .env.example .env
+cp .env.oss .env
 ```
 
-For Artsy staff wanting to expand on your `.env`, you can use `hokusai staging env get` to see staging's env vars.
+For Artsy staff wanting to expand on your `.env`, you can use `hokusai staging
+env get` to see staging's env vars. Or better yet, use [copy_env][] to match
+staging:
+
+[copy_env]: https://github.com/jonallured/copy_env
+
+```
+$ copy_env hokusai
+```
+
+That command will dump the env vars from staging and do a find/replace on the
+keys from staging that are listed as REPLACE in the example file.
 
 ### Development
 
