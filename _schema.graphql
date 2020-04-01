@@ -4775,7 +4775,7 @@ type ConsignmentSubmission {
   artistId: String!
   assets: [ConsignmentSubmissionCategoryAsset]
   authenticityCertificate: Boolean
-  category: ConsignmentSubmissionCategoryAggregation
+  category: String
   createdAt: ISO8601DateTime
   currency: String
   depth: String
