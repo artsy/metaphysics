@@ -291,7 +291,7 @@ type Submission {
   artistId: String!
   assets: [Asset]
   authenticityCertificate: Boolean
-  category: Category
+  category: String
   createdAt: ISO8601DateTime
   currency: String
   depth: String
