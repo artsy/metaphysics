@@ -4636,6 +4636,7 @@ type HomePage {
   # A list of enabled hero units to show on the requested platform
   heroUnits(platform: HomePageHeroUnitPlatform!): [HomePageHeroUnit]
   fairsModule: HomePageFairsModule
+  salesModule: HomePageSalesModule
 }
 
 type HomePageArtistModule implements Node {
@@ -4760,6 +4761,10 @@ type HomePageModulesParams {
 type HomePageRelatedArtistArtworkModule {
   artist: Artist
   basedOn: Artist
+}
+
+type HomePageSalesModule {
+  results: [Sale]!
 }
 
 type IdentityVerification {
