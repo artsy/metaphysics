@@ -85,8 +85,8 @@ import { ArtworkVersionType } from "./artwork_version"
 import { HighlightsField } from "./Highlights"
 import { startIdentityVerificationMutation } from "./startIdentityVerificationMutation"
 import { ArtworksByInternalID } from "./artworksByInternalID"
-import { ArticlesByInternalID } from "./articlesByInternalID"
 import Fairs from "./fairs"
+import Articles from "./articles"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -96,8 +96,7 @@ const PrincipalFieldDirective = new GraphQLDirective({
 const rootFields = {
   artworkAttributionClasses: ArtworkAttributionClasses,
   article: Article,
-  articlesByInternalID: ArticlesByInternalID,
-  // articles: Articles,
+  articles: Articles,
   artwork: Artwork,
   // artworkVersion: ArtworkVersionResolver,
   artworksByInternalID: ArtworksByInternalID,
