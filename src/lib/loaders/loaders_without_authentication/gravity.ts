@@ -193,7 +193,11 @@ export default opts => {
     salesLoaderWithHeaders: gravityLoader("sales", {}, { headers: true }),
     searchLoader: searchLoader(gravityLoader),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
-    setItemsLoader: gravityLoader(id => `set/${id}/items`),
+    setItemsLoader: gravityLoader(
+      id => `set/${id}/items`,
+      {},
+      { headers: true }
+    ),
     setLoader: gravityLoader(id => `set/${id}`),
     setsLoader: gravityLoader("sets"),
     showLoader: gravityLoader(id => `show/${id}`),

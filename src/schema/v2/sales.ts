@@ -21,7 +21,7 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
     //       this was meant for refetching purposes, then we should add a plural
     //       `nodes` root field and use that instead.
     //
-    id: {
+    ids: {
       type: new GraphQLList(GraphQLString),
       description: `
         Only return sales matching specified ids.
@@ -47,7 +47,7 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
   }),
   resolve: async (
     _root,
-    { id, isAuction, live, published, sort, ...paginationArgs },
+    { ids, isAuction, live, published, sort, ...paginationArgs },
     { salesLoaderWithHeaders }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(
@@ -56,7 +56,7 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
 
     const { body: sales, headers } = ((await salesLoaderWithHeaders(
       {
-        id,
+        id: ids,
         is_auction: isAuction,
         live,
         published,

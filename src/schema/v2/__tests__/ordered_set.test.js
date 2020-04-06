@@ -30,14 +30,17 @@ describe("OrderedSet type", () => {
         })
       ),
       setItemsLoader: sinon.stub().returns(
-        Promise.resolve([
-          {
-            title: "My Artwork",
-          },
-          {
-            title: "Another Artwork",
-          },
-        ])
+        Promise.resolve({
+          body: [
+            {
+              title: "My Artwork",
+            },
+            {
+              title: "Another Artwork",
+            },
+          ],
+          headers: {},
+        })
       ),
     }
 
@@ -65,7 +68,7 @@ describe("OrderedSet type", () => {
     const query = `
       {
         orderedSet(id: "52dd3c2e4b8480091700027f") {
-          itemsConnection {
+          itemsConnection(first: 2) {
             edges {
               node {
                 title
@@ -87,14 +90,19 @@ describe("OrderedSet type", () => {
         })
       ),
       setItemsLoader: sinon.stub().returns(
-        Promise.resolve([
-          {
-            title: "My Artwork",
+        Promise.resolve({
+          body: [
+            {
+              title: "My Artwork",
+            },
+            {
+              title: "Another Artwork",
+            },
+          ],
+          headers: {
+            "x-total-count": 11,
           },
-          {
-            title: "Another Artwork",
-          },
-        ])
+        })
       ),
     }
 

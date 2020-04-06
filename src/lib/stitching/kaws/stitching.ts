@@ -108,13 +108,7 @@ export const kawsStitchingEnvironmentV2 = (
       marketingCollections(size: Int): [MarketingCollection]
     }
     extend type Viewer {
-      marketingCollections(slugs: [String!]
-      category: String
-      randomizationSeed: String
-      size: Int
-      isFeaturedArtistContent: Boolean
-      showOnEditorial: Boolean
-      artistID: String): [MarketingCollection]
+      marketingCollections(slugs: [String!], category: String, randomizationSeed: String, size: Int, isFeaturedArtistContent: Boolean, showOnEditorial: Boolean, artistID: String): [MarketingCollection]
     }
     extend type MarketingCollection {
       artworksConnection(${argsToSDL(filterArtworksArgsV2).join(

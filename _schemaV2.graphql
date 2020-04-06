@@ -5620,7 +5620,12 @@ type OrderedSet {
   items: [OrderedSetItem]
 
   # Returns a connection of the items. Only Artwork supported right now.
-  itemsConnection: ArtworkConnection
+  itemsConnection(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
   name: String
 }
 
@@ -6202,7 +6207,7 @@ type Query {
     #         Only return sales matching specified ids.
     #         Accepts list of ids.
     #
-    id: [String]
+    ids: [String]
 
     # Limit by auction.
     isAuction: Boolean = true
@@ -7899,7 +7904,7 @@ type Viewer {
     #         Only return sales matching specified ids.
     #         Accepts list of ids.
     #
-    id: [String]
+    ids: [String]
 
     # Limit by auction.
     isAuction: Boolean = true

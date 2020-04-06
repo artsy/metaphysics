@@ -30,11 +30,13 @@ describe("OrderedSets type", () => {
       ])
     ),
     setItemsLoader: sinon.stub().returns(
-      Promise.resolve([
-        {
-          name: "Painting",
-        },
-      ])
+      Promise.resolve({
+        body: [
+          {
+            name: "Painting",
+          },
+        ],
+      })
     ),
   }
 
