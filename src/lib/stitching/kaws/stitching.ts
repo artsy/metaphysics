@@ -9,6 +9,7 @@ import {
 import { filterArtworksArgs as filterArtworksArgsV1 } from "schema/v1/filter_artworks"
 import { filterArtworksArgs as filterArtworksArgsV2WithoutPageable } from "schema/v2/filterArtworksConnection"
 import { pageable } from "relay-cursor-paging"
+import gql from "lib/gql"
 
 export const kawsStitchingEnvironmentV1 = (
   localSchema: GraphQLSchema,
@@ -102,9 +103,12 @@ export const kawsStitchingEnvironmentV2 = (
   const filterArtworksArgsV2 = pageable(filterArtworksArgsV2WithoutPageable)
   return {
     // The SDL used to declare how to stitch an object
-    extensionSchema: `
+    extensionSchema: gql`
     extend type Artist {
       marketingCollections(size: Int): [MarketingCollection]
+    }
+    extend type Viewer {
+      marketingCollections(slugs: [String!], category: String, randomizationSeed: String, size: Int, isFeaturedArtistContent: Boolean, showOnEditorial: Boolean, artistID: String): [MarketingCollection]
     }
     extend type MarketingCollection {
       artworksConnection(${argsToSDL(filterArtworksArgsV2).join(
@@ -134,6 +138,26 @@ export const kawsStitchingEnvironmentV2 = (
                 artistID,
                 size,
               },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Viewer: {
+        marketingCollections: {
+          fragment: gql`
+            ...on Viewer {
+              __typename
+            }
+          `,
+          resolve: async (_source, args, context, info) => {
+            return await info.mergeInfo.delegateToSchema({
+              schema: kawsSchema,
+              operation: "query",
+              fieldName: "marketingCollections",
+
+              args,
               context,
               info,
             })

@@ -141,6 +141,7 @@ enum GroupTypes {
 
 type Query {
   collections(
+    slugs: [String!]
     category: String
     randomizationSeed: String
     size: Int

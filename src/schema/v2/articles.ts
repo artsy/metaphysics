@@ -15,6 +15,13 @@ const Articles: GraphQLFieldConfig<void, ResolverContext> = {
     auctionID: {
       type: GraphQLString,
     },
+    ids: {
+      type: new GraphQLList(GraphQLString),
+      description: `
+        Only return articles matching specified ids.
+        Accepts list of ids.
+      `,
+    },
     published: {
       type: GraphQLBoolean,
       defaultValue: true,

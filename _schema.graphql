@@ -10480,6 +10480,7 @@ type Query {
   # Find PartnerStats
   analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStats
   marketingCollections(
+    slugs: [String!]
     category: String
     randomizationSeed: String
     size: Int

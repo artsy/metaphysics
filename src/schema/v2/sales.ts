@@ -1,6 +1,11 @@
 import { SaleType } from "./sale/index"
 import SaleSorts from "./sale/sorts"
-import { GraphQLBoolean, GraphQLFieldConfig } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLList,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionWithCursorInfo } from "./fields/pagination"
@@ -16,13 +21,13 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
     //       this was meant for refetching purposes, then we should add a plural
     //       `nodes` root field and use that instead.
     //
-    // ids: {
-    //   type: new GraphQLList(GraphQLString),
-    //   description: `
-    //     Only return sales matching specified ids.
-    //     Accepts list of ids.
-    //   `,
-    // },
+    ids: {
+      type: new GraphQLList(GraphQLString),
+      description: `
+        Only return sales matching specified ids.
+        Accepts list of ids.
+      `,
+    },
     isAuction: {
       description: "Limit by auction.",
       type: GraphQLBoolean,
@@ -42,21 +47,16 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
   }),
   resolve: async (
     _root,
-    { isAuction, live, published, sort, ...paginationArgs },
+    { ids, isAuction, live, published, sort, ...paginationArgs },
     { salesLoaderWithHeaders }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(
       paginationArgs
     )
 
-    // // Rename ids plural to id to match Gravity
-    // if (options.ids) {
-    //   cleanedOptions.id = options.ids
-    //   delete cleanedOptions.ids
-    // }
-
     const { body: sales, headers } = ((await salesLoaderWithHeaders(
       {
+        id: ids,
         is_auction: isAuction,
         live,
         published,

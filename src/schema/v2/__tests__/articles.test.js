@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 
-xdescribe("Articles type", () => {
+describe("Articles type", () => {
   let context = null
 
   beforeEach(() => {
