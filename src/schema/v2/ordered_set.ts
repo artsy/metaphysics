@@ -9,6 +9,8 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { artworkConnection } from "./artwork"
+import { connectionFromArraySlice } from "graphql-relay"
 
 const OrderedSetType = new GraphQLObjectType<any, ResolverContext>({
   name: "OrderedSet",
@@ -34,6 +36,24 @@ const OrderedSetType = new GraphQLObjectType<any, ResolverContext>({
             return item
           })
         })
+      },
+    },
+    itemsConnection: {
+      type: artworkConnection.connectionType,
+      description:
+        "Returns a connection of the items. Only Artwork supported right now.",
+      resolve: ({ id, item_type }, options, { setItemsLoader }) => {
+        // Only ArtworkConnections are supported at this time.
+        if (item_type === "Artwork") {
+          return setItemsLoader(id).then(items => {
+            return connectionFromArraySlice(items, options, {
+              arrayLength: items.length,
+              sliceStart: 0,
+            })
+          })
+        } else {
+          throw new Error("Can only return a connection for sets of Artworks.")
+        }
       },
     },
     name: {

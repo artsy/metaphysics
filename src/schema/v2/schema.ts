@@ -27,6 +27,7 @@ import Me from "./me"
 import System from "./system"
 
 // import Status from "./status"
+import Article from "./article"
 import Artists from "./artists"
 // import Collection from "./collection"
 import { CreditCard } from "./credit_card"
@@ -35,7 +36,7 @@ import { CreditCard } from "./credit_card"
 import Genes from "./genes"
 // import GeneFamilies from "./gene_families"
 // import GeneFamily from "./gene_family"
-// import OrderedSet from "./ordered_set"
+import OrderedSet from "./ordered_set"
 // import OrderedSets from "./ordered_sets"
 // import Profile from "./profile"
 // import Partner from "./partner"
@@ -84,6 +85,8 @@ import { ArtworkVersionType } from "./artwork_version"
 import { HighlightsField } from "./Highlights"
 import { startIdentityVerificationMutation } from "./startIdentityVerificationMutation"
 import { ArtworksByInternalID } from "./artworksByInternalID"
+import { ArticlesByInternalID } from "./articlesByInternalID"
+import Fairs from "./fairs"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -92,7 +95,8 @@ const PrincipalFieldDirective = new GraphQLDirective({
 
 const rootFields = {
   artworkAttributionClasses: ArtworkAttributionClasses,
-  // article: Article,
+  article: Article,
+  articlesByInternalID: ArticlesByInternalID,
   // articles: Articles,
   artwork: Artwork,
   // artworkVersion: ArtworkVersionResolver,
@@ -106,7 +110,7 @@ const rootFields = {
   creditCard: CreditCard,
   // externalPartner: ExternalPartner,
   fair: Fair,
-  // fairs: Fairs,
+  fairs: Fairs,
   // filterPartners: FilterPartners,
   // filterArtworksConnection: filterArtworksConnection(),
   gene: Gene,
@@ -120,7 +124,7 @@ const rootFields = {
   // matchGene: MatchGene,
   me: Me,
   node: ObjectIdentification.NodeField,
-  // orderedSet: OrderedSet,
+  orderedSet: OrderedSet,
   // orderedSets: OrderedSets,
   partner: Partner,
   // partnerCategories: PartnerCategories,
