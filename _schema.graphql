@@ -7396,13 +7396,6 @@ type HomePageModulesParams {
   related_artist_id: ID
 }
 
-type IdentityVerification {
-  internalID: ID!
-  invitationExpiresAt: ISO8601DateTime
-  state: String!
-  userID: ID!
-}
-
 type Image {
   # An optional type-specific ID.
   id: ID
@@ -10400,9 +10393,6 @@ type Query {
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
-
-  # Find an identity verification by id
-  _unused_gravity_identityVerification(id: ID!): IdentityVerification
 
   # Autocomplete resolvers.
   _unused_gravity_matchPartners(
