@@ -84,7 +84,6 @@ import { ResolverContext } from "types/graphql"
 import { ArtworkVersionType } from "./artwork_version"
 import { HighlightsField } from "./Highlights"
 import { startIdentityVerificationMutation } from "./startIdentityVerificationMutation"
-import { ArtworksByInternalID } from "./artworksByInternalID"
 import Fairs from "./fairs"
 import Articles from "./articles"
 
@@ -99,7 +98,6 @@ const rootFields = {
   articles: Articles,
   artwork: Artwork,
   // artworkVersion: ArtworkVersionResolver,
-  artworksByInternalID: ArtworksByInternalID,
   artworksConnection: filterArtworksConnection(),
   artist: Artist,
   artists: Artists,
