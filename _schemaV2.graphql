@@ -750,7 +750,14 @@ type Artist implements Node & Searchable & EntityWithFilterArtworksConnectionInt
   statuses: ArtistStatuses
   targetSupply: ArtistTargetSupply
   years: String
-  marketingCollections(size: Int): [MarketingCollection]
+  marketingCollections(
+    slugs: [String!]
+    category: String
+    randomizationSeed: String
+    size: Int
+    isFeaturedArtistContent: Boolean
+    showOnEditorial: Boolean
+  ): [MarketingCollection]
 }
 
 type ArtistArtworkGrid implements ArtworkContextGrid {
