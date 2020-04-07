@@ -5295,6 +5295,8 @@ type Me implements Node {
 
   # Sale Artworks search results
   lotsByFollowedArtistsConnection(
+    includeArtworksByFollowedArtists: Boolean
+    artistIDs: [String]
     aggregations: [SaleArtworkAggregation]
     liveSale: Boolean
     isAuction: Boolean
@@ -5302,6 +5304,8 @@ type Me implements Node {
     estimateRange: String
     saleID: ID
     sort: String
+    page: Int
+    size: Int
     after: String
     first: Int
     before: String
@@ -6204,6 +6208,31 @@ type Query {
     # The slug or ID of the Sale
     id: String!
   ): Sale
+
+  # A Sale Artwork
+  saleArtwork(
+    # The slug or ID of the SaleArtwork
+    id: String!
+  ): SaleArtwork
+
+  # Sale Artworks search results
+  saleArtworksConnection(
+    includeArtworksByFollowedArtists: Boolean
+    artistIDs: [String]
+    aggregations: [SaleArtworkAggregation]
+    liveSale: Boolean
+    isAuction: Boolean
+    geneIDs: [String]
+    estimateRange: String
+    saleID: ID
+    sort: String
+    page: Int
+    size: Int
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): SaleArtworksConnection
 
   # A list of Sales
   salesConnection(
@@ -7898,6 +7927,31 @@ type Viewer {
     # The slug or ID of the Sale
     id: String!
   ): Sale
+
+  # A Sale Artwork
+  saleArtwork(
+    # The slug or ID of the SaleArtwork
+    id: String!
+  ): SaleArtwork
+
+  # Sale Artworks search results
+  saleArtworksConnection(
+    includeArtworksByFollowedArtists: Boolean
+    artistIDs: [String]
+    aggregations: [SaleArtworkAggregation]
+    liveSale: Boolean
+    isAuction: Boolean
+    geneIDs: [String]
+    estimateRange: String
+    saleID: ID
+    sort: String
+    page: Int
+    size: Int
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): SaleArtworksConnection
 
   # A list of Sales
   salesConnection(

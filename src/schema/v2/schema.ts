@@ -86,6 +86,8 @@ import { HighlightsField } from "./Highlights"
 import { startIdentityVerificationMutation } from "./startIdentityVerificationMutation"
 import Fairs from "./fairs"
 import Articles from "./articles"
+import SaleArtwork from "./sale_artwork"
+import { SaleArtworksConnectionField } from "./sale_artworks"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -129,8 +131,8 @@ const rootFields = {
   // partners: Partners,
   // profile: Profile,
   sale: Sale,
-  // saleArtwork: SaleArtwork,
-  // saleArtworksConnection: SaleArtworksConnectionField,
+  saleArtwork: SaleArtwork,
+  saleArtworksConnection: SaleArtworksConnectionField,
   salesConnection: SalesConnectionField,
   searchConnection: Search,
   show: Show,
