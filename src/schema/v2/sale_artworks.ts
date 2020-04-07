@@ -5,6 +5,7 @@ import {
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLInt,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -74,12 +75,12 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     //       If this gets used elsewhere in the future, be sure to *not* expose
     //       these arguments under `me`, as they make no sense there.
     //
-    // includeArtworksByFollowedArtists: {
-    //   type: GraphQLBoolean,
-    // },
-    // artistIDs: {
-    //   type: new GraphQLList(GraphQLString),
-    // },
+    includeArtworksByFollowedArtists: {
+      type: GraphQLBoolean,
+    },
+    artistIDs: {
+      type: new GraphQLList(GraphQLString),
+    },
     aggregations: {
       type: new GraphQLList(SaleArtworksAggregation),
     },
@@ -101,13 +102,12 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     sort: {
       type: GraphQLString,
     },
-    // TODO: Enable when needed.
-    // page: {
-    //   type: GraphQLInt,
-    // },
-    // size: {
-    //   type: GraphQLInt,
-    // },
+    page: {
+      type: GraphQLInt,
+    },
+    size: {
+      type: GraphQLInt,
+    },
   }),
   description: "Sale Artworks search results",
   type: SaleArtworksConnectionType,
