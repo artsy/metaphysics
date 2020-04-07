@@ -128,10 +128,10 @@ export const kawsStitchingEnvironmentV2 = (
         marketingCollections: {
           fragment: `
           ... on Artist {
-            _id
+            internalID
           }
         `,
-          resolve: ({ _id: artistID }, args, context, info) => {
+          resolve: ({ internalID: artistID }, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
               schema: kawsSchema,
               operation: "query",
