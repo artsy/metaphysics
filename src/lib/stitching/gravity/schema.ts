@@ -28,6 +28,7 @@ export const executableGravitySchema = () => {
     "ArtworkEdge",
     "ArtworkConnection",
     "ArtistConnection",
+    "Money",
   ]
 
   // Return the new modified schema

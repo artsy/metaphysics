@@ -5441,11 +5441,20 @@ type MetaphysicsService {
 }
 
 type Money {
-  # Amount in the minor unit of currency
-  amountMinor: Int!
+  # An amount of money expressed in minor units (like cents).
+  minor: Int!
 
-  # Three-letter currency code
+  # The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217
   currencyCode: String!
+
+  # A pre-formatted price.
+  display: String
+
+  # An amount of money expressed in major units (like dollars).
+  major(
+    # ISO-4217 code of a destination currency for conversion
+    convertTo: String
+  ): Float!
 }
 
 # A simple type to hold an amount and currency code
@@ -5458,7 +5467,7 @@ input MoneyInput {
 }
 
 # A money object with amount in minor currency and a currency code, or an error object
-union MoneyOrErrorUnion = Error | Money
+union MoneyOrErrorUnion = Error
 
 type Mutation {
   # Create an account request
