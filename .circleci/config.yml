@@ -79,7 +79,8 @@ workflows:
       #     requires:
       #       - push-staging-image
 
-      - push-schema-changes
+      - push-schema-changes:
+        context: hokusai
 
       # # release
       # - hokusai/deploy-production:
