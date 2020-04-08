@@ -14,13 +14,16 @@ import { ArtworkType } from "schema/v2/artwork"
 const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistTargetSupply",
   fields: {
+    isTargetSupply: {
+      description: "True if artist is in target supply list.",
+      type: GraphQLBoolean,
+      resolve: artist => artist.target_supply,
+    },
     isInMicrofunnel: {
-      description:
-        "Returns whether an artist is in within the microfunnel list.",
+      description: "True if an artist is in within the microfunnel list.",
       type: GraphQLBoolean,
       resolve: artist => Boolean(getMicrofunnelData(`/artist/${artist.id}`)),
     },
-
     microfunnel: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "ArtistTargetSupplyMicrofunnel",
