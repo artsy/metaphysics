@@ -21,22 +21,35 @@ export const executableGravitySchema = () => {
 
   // Types which come from Gravity which MP already has copies of.
   // In the future, these could get merged into the MP types.
-  const removeTypes = [
+  const duplicatedTypes = [
     "Artist",
     "Artwork",
     "ArtistEdge",
     "ArtworkEdge",
     "ArtworkConnection",
     "ArtistConnection",
-    "Money",
     "IdentityVerification",
+    "Money",
+    "MoneyInput",
+  ]
+
+  // Types which come from Gravity that are not (yet) needed in MP.
+  // In the future, these can be removed from this list as they are needed.
+  const unusedTypes = [
+    "DebitCommissionExemptionInput",
+    "DebitCommissionExemptionPayload",
+    "MoneyOrErrorUnion",
+    "RefundCommissionExemptionInput",
+    "RefundCommissionExemptionPayload",
   ]
 
   // Return the new modified schema
   return transformSchema(schema, [
     // Remove types which Metaphysics handles better
     new FilterTypes(type => {
-      return !removeTypes.includes(type.name)
+      return (
+        !duplicatedTypes.includes(type.name) && !unusedTypes.includes(type.name)
+      )
     }),
     // So, we cannot remove all of the types from a schema is a lesson I have
     // learned in creating these transformations. This means that there has to
