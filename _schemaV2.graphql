@@ -701,6 +701,7 @@ type Artist implements Node & Searchable & EntityWithFilterArtworksConnectionInt
   isFollowed: Boolean
   isPublic: Boolean
   isShareable: Boolean
+  isTargetSupply: Boolean
   displayLabel: String
   location: String
   meta: ArtistMeta
@@ -968,7 +969,10 @@ type ArtistStatuses {
 }
 
 type ArtistTargetSupply {
-  # Returns whether an artist is in within the microfunnel list.
+  # True if artist is in target supply list.
+  isTargetSupply: Boolean
+
+  # True if an artist is in within the microfunnel list.
   isInMicrofunnel: Boolean
   microfunnel: ArtistTargetSupplyMicrofunnel
 }

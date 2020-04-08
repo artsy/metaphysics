@@ -1,6 +1,29 @@
 import { runQuery } from "schema/v2/test/utils"
 
 describe("ArtistTargetSupply", () => {
+  describe("isTargetSupply", () => {
+    it("returns boolean if in target supply", async () => {
+      const query = `
+      {
+        artist(id:"andy-warhol") {
+          targetSupply {
+            isTargetSupply
+          }
+        }
+      }
+    `
+      const context = {
+        artistLoader: () => {
+          return Promise.resolve({
+            id: "andy-warhol",
+            target_supply: true,
+          })
+        },
+      }
+      const response = await runQuery(query, context)
+      expect(response.artist.targetSupply.isTargetSupply).toEqual(true)
+    })
+  })
   describe("isInMicrofunnel", () => {
     it("returns false if artist not in microfunnel", async () => {
       const query = `
