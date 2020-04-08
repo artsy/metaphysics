@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   hokusai: artsy/hokusai@0.7.2
   yarn: artsy/yarn@4.0.2
+  node: artsy/node@0.1.0
   codecov: codecov/codecov@1.0.5
 
 not_staging_or_release: &not_staging_or_release
@@ -33,17 +34,18 @@ only_development: &only_development
         - master
 
 jobs:
-  - push-schema-changes:
-      steps:
-        - hokusai/setup
-        - hokusai/install-aws-iam-authenticator
-        - hokusai/configure-hokusai
-        - yarn/load_dependencies
-        - yarn/install
-        - yarn/save_dependencies
-        - run:
-            name: push schema changes
-            command: node scripts/push-schema-changes.js
+  push-schema-changes:
+    executor: node/build
+    steps:
+      - hokusai/setup
+      - hokusai/install-aws-iam-authenticator
+      - hokusai/configure-hokusai
+      - yarn/load_dependencies
+      - yarn/install
+      - yarn/save_dependencies
+      - run:
+          name: push schema changes
+          command: node scripts/push-schema-changes.js
 
 workflows:
   default:
