@@ -80,7 +80,7 @@ workflows:
       #       - push-staging-image
 
       - push-schema-changes:
-        context: hokusai
+          context: hokusai
 
       # # release
       # - hokusai/deploy-production:
