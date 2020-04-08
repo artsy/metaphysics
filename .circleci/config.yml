@@ -50,39 +50,37 @@ workflows:
   default:
     jobs:
       # for PRs
-      - yarn/update-cache:
-          <<: *only_development
+      # - yarn/update-cache:
+      #     <<: *only_development
 
-      # pre-staging
-      - hokusai/test:
-          name: test
-          <<: *not_staging_or_release
-          post-steps:
-            - run: mkdir -p ./coverage
-            - run:
-                name: Copy coverage artifacts
-                command: docker cp hokusai_metaphysics_1:/app/coverage ./
-                when: always
-            - codecov/upload:
-                file: ./coverage/lcov.info
+      # # pre-staging
+      # - hokusai/test:
+      #     name: test
+      #     <<: *not_staging_or_release
+      #     post-steps:
+      #       - run: mkdir -p ./coverage
+      #       - run:
+      #           name: Copy coverage artifacts
+      #           command: docker cp hokusai_metaphysics_1:/app/coverage ./
+      #           when: always
+      #       - codecov/upload:
+      #           file: ./coverage/lcov.info
 
-      # staging
-      - hokusai/push:
-          name: push-staging-image
-          <<: *only_master
-          requires:
-            - test
+      # # staging
+      # - hokusai/push:
+      #     name: push-staging-image
+      #     <<: *only_master
+      #     requires:
+      #       - test
 
-      - hokusai/deploy-staging:
-          <<: *only_master
-          project-name: metaphysics
-          requires:
-            - push-staging-image
+      # - hokusai/deploy-staging:
+      #     <<: *only_master
+      #     project-name: metaphysics
+      #     requires:
+      #       - push-staging-image
 
-      - push-schema-changes:
-          requires:
-            - yarn/update-cache
+      - push-schema-changes
 
-      # release
-      - hokusai/deploy-production:
-          <<: *only_release
+      # # release
+      # - hokusai/deploy-production:
+      #     <<: *only_release
