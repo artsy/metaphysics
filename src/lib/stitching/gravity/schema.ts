@@ -38,7 +38,6 @@ export const executableGravitySchema = () => {
   const unusedTypes = [
     "DebitCommissionExemptionInput",
     "DebitCommissionExemptionPayload",
-    "MoneyOrErrorUnion",
     "RefundCommissionExemptionInput",
     "RefundCommissionExemptionPayload",
   ]
