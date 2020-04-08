@@ -171,10 +171,18 @@ scalar JSON
 Mutation root for this schema
 """
 type Mutation {
-  addAssetToConsignmentSubmission(input: AddAssetToConsignmentSubmissionInput!): AddAssetToConsignmentSubmissionPayload
-  createConsignmentOffer(input: CreateOfferMutationInput!): CreateOfferMutationPayload
-  createConsignmentSubmission(input: CreateSubmissionMutationInput!): CreateSubmissionMutationPayload
-  updateConsignmentSubmission(input: UpdateSubmissionMutationInput!): UpdateSubmissionMutationPayload
+  addAssetToConsignmentSubmission(
+    input: AddAssetToConsignmentSubmissionInput!
+  ): AddAssetToConsignmentSubmissionPayload
+  createConsignmentOffer(
+    input: CreateOfferMutationInput!
+  ): CreateOfferMutationPayload
+  createConsignmentSubmission(
+    input: CreateSubmissionMutationInput!
+  ): CreateSubmissionMutationPayload
+  updateConsignmentSubmission(
+    input: UpdateSubmissionMutationInput!
+  ): UpdateSubmissionMutationPayload
 }
 
 """
@@ -202,6 +210,38 @@ type Offer {
   saleName: String
   shippingInfo: String
   state: String
+}
+
+type PageCursor {
+  """
+  first cursor on the page
+  """
+  cursor: String!
+
+  """
+  is this the current page?
+  """
+  isCurrent: Boolean!
+
+  """
+  page number out of totalPages
+  """
+  page: Int!
+}
+
+type PageCursors {
+  around: [PageCursor!]!
+
+  """
+  optional, may be included in field around
+  """
+  first: PageCursor
+
+  """
+  optional, may be included in field around
+  """
+  last: PageCursor
+  previous: PageCursor
 }
 
 """
@@ -334,11 +374,14 @@ type SubmissionConnection {
   A list of nodes.
   """
   nodes: [Submission]
+  pageCursors: PageCursors
 
   """
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
+  totalCount: Int
+  totalPages: Int
 }
 
 """
