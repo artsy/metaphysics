@@ -39,12 +39,15 @@ async function main() {
 }
 
 function getStagingEnv() {
-  const envString = execSync("hokusai staging env get").toString()
+  const envString = execSync("hokusai staging env get")
+    .toString()
+    .trim()
   const result = {}
 
-  for (const [key, value] of envString
-    .split("\n")
-    .map(line => line.split("=", 1))) {
+  for (const [key, value] of envString.split("\n").map(line => {
+    const equalsIndex = line.indexOf("=")
+    return [line.slice(0, equalsIndex), line.slice(equalsIndex + 1)]
+  })) {
     result[key] = value
   }
 
