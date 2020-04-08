@@ -39,12 +39,12 @@ jobs:
       - hokusai/setup
       - hokusai/install-aws-iam-authenticator
       - hokusai/configure-hokusai
-      - yarn/load_dependencies
-      - yarn/install
-      - yarn/save_dependencies
-      - run:
-          name: push schema changes
-          command: node scripts/push-schema-changes.js
+      # - yarn/load_dependencies
+      # - yarn/install
+      # - yarn/save_dependencies
+      # - run:
+      #     name: push schema changes
+      #     command: node scripts/push-schema-changes.js
 
 workflows:
   default:
