@@ -8048,6 +8048,9 @@ input MoneyInput {
   currencyCode: String!
 }
 
+# A money object with amount in minor currency and a currency code, or an error object
+union MoneyOrErrorUnion = Error
+
 type Mutation {
   # Create a bidder
   createBidder(input: CreateBidderInput!): CreateBidderPayload
@@ -10374,6 +10377,9 @@ type Query {
   # Find partners by IDs
   _unused_gravity_partners(ids: [ID!]!): [DoNotUseThisPartner!]
 
+  # Find a viewing room by ID
+  viewingRoom(id: ID!): ViewingRoom
+
   # Find list of competing orders
   commerceCompetingOrders(
     # Returns the elements in the list that come after the specified cursor.
@@ -12504,4 +12510,126 @@ type Viewer {
     # Number of results to return
     size: Int
   ): PopularArtists
+}
+
+# An artwork viewing room
+type ViewingRoom {
+  artworksConnection(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+  ): ViewingRoomArtworkConnection
+
+  # Body copy
+  body: String
+
+  # Datetime after which the viewing room is no longer viewable
+  endAt: ISO8601DateTime
+
+  # Image URL for hero image on viewing room home screen
+  heroImageURL: String
+
+  # Unique ID for this room
+  internalID: ID!
+
+  # Introductory paragraph
+  introStatement: String
+
+  # ID of the partner associated with this viewing room
+  partnerID: String!
+  pullQuote: String
+
+  # Datetime when the viewing room is viewable
+  startAt: ISO8601DateTime
+  subsectionsConnection(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+  ): ViewingRoomSubsectionConnection
+  timeZone: String
+
+  # Viewing room name
+  title: String!
+}
+
+# Title, image, text, and caption for a viewing room section
+type ViewingRoomArtwork {
+  # Unique ID
+  internalID: ID!
+}
+
+# The connection type for ViewingRoomArtwork.
+type ViewingRoomArtworkConnection {
+  # A list of edges.
+  edges: [ViewingRoomArtworkEdge]
+
+  # A list of nodes.
+  nodes: [ViewingRoomArtwork]
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+}
+
+# An edge in a connection.
+type ViewingRoomArtworkEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: ViewingRoomArtwork
+}
+
+# Title, image, text, and caption for a viewing room section
+type ViewingRoomSubsection {
+  # Body copy
+  body: String
+
+  # Image caption
+  caption: String
+
+  # Image URL
+  imageURL: String
+
+  # Unique ID for this subsection
+  internalID: ID!
+
+  # Section header
+  title: String
+}
+
+# The connection type for ViewingRoomSubsection.
+type ViewingRoomSubsectionConnection {
+  # A list of edges.
+  edges: [ViewingRoomSubsectionEdge]
+
+  # A list of nodes.
+  nodes: [ViewingRoomSubsection]
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+}
+
+# An edge in a connection.
+type ViewingRoomSubsectionEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: ViewingRoomSubsection
 }
