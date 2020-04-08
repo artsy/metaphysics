@@ -701,7 +701,6 @@ type Artist implements Node & Searchable & EntityWithFilterArtworksConnectionInt
   isFollowed: Boolean
   isPublic: Boolean
   isShareable: Boolean
-  isTargetSupply: Boolean
   displayLabel: String
   location: String
   meta: ArtistMeta
@@ -8102,6 +8101,7 @@ type ViewingRoom {
 type ViewingRoomArtwork {
   # Unique ID
   internalID: ID!
+  artwork: Artwork
 }
 
 # The connection type for ViewingRoomArtwork.
