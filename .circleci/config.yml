@@ -32,6 +32,19 @@ only_development: &only_development
         - release
         - master
 
+jobs:
+  - push-schema-changes:
+      steps:
+        - hokusai/setup
+        - hokusai/install-aws-iam-authenticator
+        - hokusai/configure-hokusai
+        - yarn/load_dependencies
+        - yarn/install
+        - yarn/save_dependencies
+        - run:
+            name: push schema changes
+            command: node scripts/push-schema-changes.js
+
 workflows:
   default:
     jobs:
@@ -64,6 +77,10 @@ workflows:
           project-name: metaphysics
           requires:
             - push-staging-image
+
+      - push-schema-changes:
+          requires:
+            - yarn/update-cache
 
       # release
       - hokusai/deploy-production:
