@@ -10,8 +10,7 @@ async function main() {
 
     execSync("yarn dump:staging")
 
-    await updateRepo({
-      repo: { owner: "artsy", repo: "eigen" },
+    const updateSchemaAction = {
       branch: "update-schema",
       title: "Update metaphysics schema",
       targetBranch: "master",
@@ -20,18 +19,34 @@ async function main() {
         "Greetings human :robot: this PR was automatically created as part of metaphysics's deploy process",
       assignees: ["artsyit"],
       labels: ["Merge On Green"],
-      update: eigenDir => {
+      update: repoDir => {
         execSync(
-          `cp _schemaV2.graphql '${path.join(eigenDir, "data/schema.graphql")}'`
+          `cp _schemaV2.graphql '${path.join(repoDir, "data/schema.graphql")}'`
         )
-        execSync("yarn install --ignore-engines", { cwd: eigenDir })
+        execSync("yarn install --ignore-engines", { cwd: repoDir })
         execSync("./node_modules/.bin/prettier --write data/schema.graphql", {
-          cwd: eigenDir,
+          cwd: repoDir,
         })
       },
+    }
+
+    await updateRepo({
+      repo: {
+        owner: "artsy",
+        repo: "eigen",
+      },
+      ...updateSchemaAction,
     })
-  } catch (e) {
-    console.error(e)
+
+    await updateRepo({
+      repo: {
+        owner: "artsy",
+        repo: "reaction",
+      },
+      ...updateSchemaAction,
+    })
+  } catch (error) {
+    console.error(error)
     process.exit(1)
   }
 }
