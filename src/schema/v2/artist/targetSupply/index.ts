@@ -20,7 +20,7 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
       resolve: artist => artist.target_supply,
     },
     isInMicrofunnel: {
-      description: "True if an artist is in within the microfunnel list.",
+      description: "True if an artist is in the microfunnel list.",
       type: GraphQLBoolean,
       resolve: artist => Boolean(getMicrofunnelData(`/artist/${artist.id}`)),
     },
