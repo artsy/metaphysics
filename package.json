@@ -19,6 +19,7 @@
     "dev": "DEBUG=info,warn,error nf start --procfile Procfile.dev -w",
     "dump-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-schema.ts",
     "dump:local": "yarn dump-schema v1 _schema.graphql & yarn dump-schema v2 _schemaV2.graphql & wait",
+    "dump:staging": "node scripts/dump-staging-schema.js",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
     "prepare": "patch-package",
@@ -107,6 +108,7 @@
   },
   "devDependencies": {
     "@artsy/express-reloadable": "1.4.8",
+    "@artsy/update-repo": "^0.0.5",
     "@graphql-inspector/core": "1.27.0",
     "@types/express-rate-limit": "2.9.3",
     "@types/graphql-relay": "0.4.9",
@@ -191,7 +193,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged; yarn dump:local; git add _schema.graphql _schemaV2.graphql",
+      "pre-commit": "lint-staged; yarn dump:staging; git add _schema.graphql _schemaV2.graphql",
       "pre-push": "yarn run type-check"
     }
   }

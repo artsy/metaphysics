@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   hokusai: artsy/hokusai@0.7.2
   yarn: artsy/yarn@4.0.2
+  node: artsy/node@0.1.0
   codecov: codecov/codecov@1.0.5
 
 not_staging_or_release: &not_staging_or_release
@@ -32,6 +33,32 @@ only_development: &only_development
         - release
         - master
 
+jobs:
+  push-schema-changes:
+    executor: node/build
+    steps:
+      - run:
+          name: Let hokusai modify /usr/local/bin
+          command: sudo chmod -R 777 /usr/local/bin
+      - add_ssh_keys:
+          fingerprints:
+            - '70:1f:d8:35:a9:12:c5:60:76:95:dc:e2:c2:f2:f2:0d'
+      - checkout
+      - hokusai/install-aws-iam-authenticator
+      - run:
+          name: Install hokusai
+          command: |
+            sudo apt install python-pip
+            pip install awscli --upgrade
+            pip install hokusai
+      - hokusai/configure-hokusai
+      - yarn/load_dependencies
+      - yarn/install
+      - yarn/save_dependencies
+      - run:
+          name: push schema changes
+          command: node scripts/push-schema-changes.js
+
 workflows:
   default:
     jobs:
@@ -60,10 +87,18 @@ workflows:
             - test
 
       - hokusai/deploy-staging:
+          name: deploy-staging
           <<: *only_master
           project-name: metaphysics
           requires:
             - push-staging-image
+
+      - push-schema-changes:
+          <<: *only_master
+          context: hokusai
+          requires:
+            - push-staging-image
+            - deploy-staging
 
       # release
       - hokusai/deploy-production:
