@@ -108,7 +108,7 @@
   },
   "devDependencies": {
     "@artsy/express-reloadable": "1.4.8",
-    "@artsy/update-repo": "^0.0.5",
+    "@artsy/update-repo": "0.0.5",
     "@graphql-inspector/core": "1.27.0",
     "@types/express-rate-limit": "2.9.3",
     "@types/graphql-relay": "0.4.9",
