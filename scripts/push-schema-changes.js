@@ -6,13 +6,9 @@ const path = require("path")
 
 async function main() {
   try {
-    console.log("∙ Dumping local schema")
-    const env = {
-      ...process.env,
-      ...getStagingEnv(),
-    }
+    console.log("∙ Dumping staging schema")
 
-    execSync("yarn dump:local", { env })
+    execSync("yarn dump:staging")
 
     await updateRepo({
       repo: { owner: "artsy", repo: "eigen" },
@@ -29,29 +25,15 @@ async function main() {
           `cp _schemaV2.graphql '${path.join(eigenDir, "data/schema.graphql")}'`
         )
         execSync("yarn install --ignore-engines", { cwd: eigenDir })
-        execSync("./node_modules/.bin/prettier --write data/schema.graphql", { cwd: eigenDir })
+        execSync("./node_modules/.bin/prettier --write data/schema.graphql", {
+          cwd: eigenDir,
+        })
       },
     })
   } catch (e) {
     console.error(e)
     process.exit(1)
   }
-}
-
-function getStagingEnv() {
-  const envString = execSync("hokusai staging env get")
-    .toString()
-    .trim()
-  const result = {}
-
-  for (const [key, value] of envString.split("\n").map(line => {
-    const equalsIndex = line.indexOf("=")
-    return [line.slice(0, equalsIndex), line.slice(equalsIndex + 1)]
-  })) {
-    result[key] = value
-  }
-
-  return result
 }
 
 main()
