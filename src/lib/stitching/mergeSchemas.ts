@@ -18,6 +18,7 @@ import { exchangeStitchingEnvironment } from "./exchange/stitching"
 import { executableVortexSchema } from "lib/stitching/vortex/schema"
 import { vortexStitchingEnvironment as vortexStitchingEnvironmentv1 } from "./vortex/stitchingv1"
 import { vortexStitchingEnvironment as vortexStitchingEnvironmentv2 } from "./vortex/stitching"
+import { gravityStitchingEnvironment } from "./gravity/stitching"
 
 /**
  * Incrementally merges in schemas according to `process.env`
@@ -50,6 +51,8 @@ export const incrementalMergeSchemas = (
 
   const gravitySchema = executableGravitySchema()
   schemas.push(gravitySchema)
+
+  useStitchingEnvironment(gravityStitchingEnvironment(localSchema))
 
   if (ENABLE_COMMERCE_STITCHING) {
     const exchangeSchema = executableExchangeSchema(transformsForExchange)

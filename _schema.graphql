@@ -12560,6 +12560,7 @@ type ViewingRoom {
 type ViewingRoomArtwork {
   # Unique ID
   internalID: ID!
+  artwork: Artwork
 }
 
 # The connection type for ViewingRoomArtwork.
