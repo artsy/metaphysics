@@ -712,13 +712,10 @@ type ViewingRoom {
 }
 
 """
-Title, image, text, and caption for a viewing room section
+An artwork associated with a viewing room. Note that the full artwork is stitched in in Metaphysics!
 """
 type ViewingRoomArtwork {
-  """
-  Artwork
-  """
-  artwork: Artwork
+  artworkID: String!
 
   """
   Unique ID
