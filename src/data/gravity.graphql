@@ -1,3 +1,17 @@
+"""
+App Authenticator Two-Factor Authentication factor
+"""
+type AppSecondFactor implements SecondFactor {
+  createdAt: ISO8601DateTime!
+  disabledAt: ISO8601DateTime
+  enabled: Boolean!
+  enabledAt: ISO8601DateTime
+  internalID: ID!
+  kind: SecondFactorKind!
+  name: String
+  updatedAt: ISO8601DateTime!
+}
+
 type Artist {
   id: ID!
   name: String
@@ -120,6 +134,19 @@ type ArtworkEdge {
   The item at the end of the edge.
   """
   node: Artwork
+}
+
+"""
+Backup Two-Factor Authentication factor
+"""
+type BackupSecondFactor implements SecondFactor {
+  createdAt: ISO8601DateTime!
+  disabledAt: ISO8601DateTime
+  enabled: Boolean!
+  enabledAt: ISO8601DateTime
+  internalID: ID!
+  kind: SecondFactorKind!
+  updatedAt: ISO8601DateTime!
 }
 
 """
@@ -542,6 +569,13 @@ type Query {
   partners(ids: [ID!]!): [Partner!]
 
   """
+  List enabled Two-Factor Authentication factors
+  """
+  secondFactors(
+    kinds: [SecondFactorKind!] = [app, sms, backup]
+  ): [SecondFactor!]!
+
+  """
   Find a viewing room by ID
   """
   viewingRoom(id: ID!): ViewingRoom
@@ -639,6 +673,51 @@ type RequestConditionReportPayload {
   """
   clientMutationId: String
   conditionReportRequest: ConditionReportRequest!
+}
+
+interface SecondFactor {
+  createdAt: ISO8601DateTime!
+  disabledAt: ISO8601DateTime
+  enabled: Boolean!
+  enabledAt: ISO8601DateTime
+  internalID: ID!
+  kind: SecondFactorKind!
+  updatedAt: ISO8601DateTime!
+}
+
+"""
+Two-Factor Authentication (2FA) Method
+"""
+enum SecondFactorKind {
+  """
+  App authenticator 2FA method
+  """
+  app
+
+  """
+  Backup 2FA method
+  """
+  backup
+
+  """
+  SMS 2FA method
+  """
+  sms
+}
+
+"""
+SMS Two-Factor Authentication factor
+"""
+type SmsSecondFactor implements SecondFactor {
+  createdAt: ISO8601DateTime!
+  disabledAt: ISO8601DateTime
+  enabled: Boolean!
+  enabledAt: ISO8601DateTime
+  internalID: ID!
+  kind: SecondFactorKind!
+  lastDeliveredAt: ISO8601DateTime
+  maskedPhone: String
+  updatedAt: ISO8601DateTime!
 }
 
 """

@@ -52,7 +52,9 @@ export const incrementalMergeSchemas = (
   const gravitySchema = executableGravitySchema()
   schemas.push(gravitySchema)
 
-  useStitchingEnvironment(gravityStitchingEnvironment(localSchema))
+  useStitchingEnvironment(
+    gravityStitchingEnvironment(localSchema, gravitySchema)
+  )
 
   if (ENABLE_COMMERCE_STITCHING) {
     const exchangeSchema = executableExchangeSchema(transformsForExchange)

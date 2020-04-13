@@ -1,16 +1,37 @@
 import gql from "lib/gql"
 import { GraphQLSchema } from "graphql"
 
-export const gravityStitchingEnvironment = (localSchema: GraphQLSchema) => {
+export const gravityStitchingEnvironment = (
+  localSchema: GraphQLSchema,
+  gravitySchema: GraphQLSchema & { transforms: any }
+) => {
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
+      extend type Me {
+        secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
+      }
+
       extend type ViewingRoomArtwork {
         artwork: Artwork
       }
     `,
 
     resolvers: {
+      Me: {
+        secondFactors: {
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_secondFactors",
+              args: args,
+              context,
+              info,
+            })
+          },
+        },
+      },
       ViewingRoomArtwork: {
         artwork: {
           fragment: `
