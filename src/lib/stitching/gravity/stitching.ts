@@ -1,3 +1,4 @@
+import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import gql from "lib/gql"
 import { GraphQLSchema } from "graphql"
 
@@ -15,8 +16,11 @@ export const gravityStitchingEnvironment = (
       extend type ViewingRoomArtwork {
         artwork: Artwork
       }
-    `,
 
+      extend type ViewingRoom {
+        artworks: ArtworkConnection
+      }
+    `,
     resolvers: {
       Me: {
         secondFactors: {
@@ -32,9 +36,29 @@ export const gravityStitchingEnvironment = (
           },
         },
       },
+      ViewingRoom: {
+        artworks: {
+          resolve: (parent, _args, context, _info) => {
+            const ids = parent.artworksConnection.edges.map(
+              edge => edge.node.artworkID
+            )
+
+            if (ids.length === 0) {
+              return connectionFromArray(ids, _args)
+            }
+
+            return context.artworksLoader({ ids }).then(body => {
+              return connectionFromArraySlice(body, _args, {
+                arrayLength: body.length,
+                sliceStart: 0,
+              })
+            })
+          },
+        },
+      },
       ViewingRoomArtwork: {
         artwork: {
-          fragment: `
+          fragment: gql`
             ... on ViewingRoomArtwork {
               artworkID
             }

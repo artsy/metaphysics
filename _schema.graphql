@@ -12643,6 +12643,7 @@ type ViewingRoom {
 
   # Viewing room name
   title: String!
+  artworks: ArtworkConnection
 }
 
 # An artwork associated with a viewing room. Note that the full artwork is stitched in in Metaphysics!
