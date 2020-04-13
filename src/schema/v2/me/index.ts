@@ -90,6 +90,10 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
+    hasSecondFactorEnabled: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ second_factor_enabled }) => second_factor_enabled,
+    },
     invoice: Invoice,
     identityVerification: IdentityVerification,
     identityVerified: {

@@ -10,6 +10,7 @@ describe("me/index", () => {
         email
         paddleNumber
         identityVerified
+        hasSecondFactorEnabled
       }
     }
   `
@@ -20,6 +21,7 @@ describe("me/index", () => {
       email: "test@email.com",
       paddle_number: "123456",
       identity_verified: true,
+      second_factor_enabled: true,
     }
 
     return runAuthenticatedQuery(query, {
@@ -31,6 +33,7 @@ describe("me/index", () => {
           email: "test@email.com",
           paddleNumber: "123456",
           identityVerified: true,
+          hasSecondFactorEnabled: true,
         },
       })
     })
