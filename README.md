@@ -57,8 +57,7 @@ brew bundle
 cp .env.oss .env
 ```
 
-For Artsy staff wanting to expand on your `.env`, you can use `hokusai staging
-env get` to see staging's env vars. Or better yet, use [copy_env][] to match
+For Artsy staff wanting to expand on your `.env`, you can use `hokusai staging env get` to see staging's env vars. Or better yet, use [copy_env][] to match
 staging:
 
 [copy_env]: https://github.com/jonallured/copy_env
@@ -132,6 +131,9 @@ If any of these queries fail, it's probable that you misconfigured your
 - [Adding a GraphQL micro-service to Metaphysics](docs/adding_a_new_graphql_microservice.md)
 - [Adding a rest micro-service to Metaphysics](docs/adding_a_new_rest_microservice.md)
 - [Debugging with VS Code](docs/debugging_with_vscode.md)
+- [GraphQL Schema Design][]
+
+[graphql schema design]: https://github.com/artsy/README/blob/master/playbooks/graphql-schema-design.md
 
 ### Docker and Kubernetes setup
 
