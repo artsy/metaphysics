@@ -8187,7 +8187,12 @@ type ViewingRoom {
 
   # Viewing room name
   title: String!
-  artworks: ArtworkConnection
+  artworks(
+    first: Int
+    last: Int
+    after: String
+    before: String
+  ): ArtworkConnection
 }
 
 # An artwork associated with a viewing room. Note that the full artwork is stitched in in Metaphysics!
@@ -8196,7 +8201,6 @@ type ViewingRoomArtwork {
 
   # Unique ID
   internalID: ID!
-  artwork: Artwork
 }
 
 # The connection type for ViewingRoomArtwork.

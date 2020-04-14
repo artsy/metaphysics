@@ -1,9 +1,8 @@
-import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArray } from "graphql-relay"
 import gql from "lib/gql"
 import { GraphQLSchema } from "graphql"
 
 export const gravityStitchingEnvironment = (
-  localSchema: GraphQLSchema,
   gravitySchema: GraphQLSchema & { transforms: any }
 ) => {
   return {
@@ -13,12 +12,13 @@ export const gravityStitchingEnvironment = (
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
       }
 
-      extend type ViewingRoomArtwork {
-        artwork: Artwork
-      }
-
       extend type ViewingRoom {
-        artworks: ArtworkConnection
+        artworks(
+          first: Int
+          last: Int
+          after: String
+          before: String
+        ): ArtworkConnection
       }
     `,
     resolvers: {
@@ -38,42 +38,32 @@ export const gravityStitchingEnvironment = (
       },
       ViewingRoom: {
         artworks: {
-          resolve: (parent, _args, context, _info) => {
-            const ids = parent.artworksConnection.edges.map(
-              edge => edge.node.artworkID
-            )
+          fragment: gql`
+            ... on ViewingRoom {
+              artworksConnection {
+                edges {
+                  node {
+                    artworkID
+                  }
+                }
+              }
+            }
+          `,
+          resolve: (parent, args, context, _info) => {
+            let ids = []
+
+            if (parent.artworksConnection) {
+              ids = parent.artworksConnection.edges.map(
+                edge => edge.node.artworkID
+              )
+            }
 
             if (ids.length === 0) {
-              return connectionFromArray(ids, _args)
+              return connectionFromArray(ids, args)
             }
 
             return context.artworksLoader({ ids }).then(body => {
-              return connectionFromArraySlice(body, _args, {
-                arrayLength: body.length,
-                sliceStart: 0,
-              })
-            })
-          },
-        },
-      },
-      ViewingRoomArtwork: {
-        artwork: {
-          fragment: gql`
-            ... on ViewingRoomArtwork {
-              artworkID
-            }
-          `,
-          resolve: (parent, _args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: localSchema,
-              operation: "query",
-              fieldName: "artwork",
-
-              args: {
-                id: parent.artworkID,
-              },
-              context,
-              info,
+              return connectionFromArray(body, args)
             })
           },
         },
