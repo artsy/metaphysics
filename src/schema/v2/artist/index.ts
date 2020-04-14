@@ -232,6 +232,12 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLInt,
             description: "Filter auction results by latest created at year",
           },
+          allowEmptyCreatedDates: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+            description:
+              "Filter auction results by empty artwork created date values",
+          },
         }),
         resolve: ({ _id }, options, { auctionLotLoader }) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
@@ -255,6 +261,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             categories,
             earliest_created_year: options.earliestCreatedYear,
             latest_created_year: options.latestCreatedYear,
+            allow_empty_created_dates: options.allowEmptyCreatedDates,
             sizes,
             sort: options.sort,
           }
