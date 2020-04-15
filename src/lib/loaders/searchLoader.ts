@@ -2,7 +2,7 @@ import * as url from "url"
 import {
   DEFAULT_ENTITIES,
   SUGGEST_ENTITIES,
-} from "schema/v1/search/SearchEntity"
+} from "schema/v2/search/SearchEntity"
 
 const modeMap = {
   AUTOSUGGEST: {
