@@ -47,7 +47,8 @@ jobs:
       - run:
           name: Install hokusai
           command: |
-            sudo apt install python-pip
+            sudo apt update
+            sudo apt install --assume-yes python-pip
             pip install awscli --upgrade
             pip install hokusai
       - hokusai/configure-hokusai
