@@ -37,7 +37,7 @@ jobs:
   push-schema-changes:
     executor:
       name: node/default
-      tag: "10"
+      tag: "10.19"
     steps:
       - run:
           name: Let hokusai modify /usr/local/bin
