@@ -43,13 +43,13 @@ export const gravityStitchingEnvironment = (
               artworkIDs
             }
           `,
-          resolve: (parent, args, context, _info) => {
-            return context
-              .artworksLoader({ ids: parent.artworkIDs })
-              .then(body => {
-                console.log(body)
-                return connectionFromArray(body, args)
-              })
+          resolve: ({ artworkIDs }, args, context, _info) => {
+            return context.artworksLoader({ ids: artworkIDs }).then(body => {
+              return {
+                totalCount: artworkIDs.length,
+                ...connectionFromArray(body, args),
+              }
+            })
           },
         },
       },

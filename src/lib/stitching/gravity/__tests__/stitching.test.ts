@@ -46,4 +46,5 @@ it("resolves the artworks field on ViewingRoom as a paginated list", async () =>
   expect(artworks.pageInfo.endCursor).not.toBe(null)
   expect(artworks.pageInfo.hasNextPage).toBe(true)
   expect(artworks.pageInfo.hasPreviousPage).toBe(false)
+  expect(artworks.totalCount).toBe(3)
 })
