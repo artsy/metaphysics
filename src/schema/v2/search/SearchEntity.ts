@@ -33,6 +33,9 @@ export const SearchEntity = new GraphQLEnumType({
     INSTITUTION: {
       value: "institution",
     },
+    PAGE: {
+      value: "Page",
+    },
     PROFILE: {
       value: "Profile",
     },

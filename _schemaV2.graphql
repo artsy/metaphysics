@@ -7104,6 +7104,7 @@ enum SearchEntity {
   GALLERY
   GENE
   INSTITUTION
+  PAGE
   PROFILE
   SALE
   SHOW
