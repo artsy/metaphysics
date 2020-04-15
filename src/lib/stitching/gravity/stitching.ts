@@ -13,7 +13,7 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type ViewingRoom {
-        artworks(
+        artworksConnection(
           first: Int
           last: Int
           after: String
@@ -37,34 +37,19 @@ export const gravityStitchingEnvironment = (
         },
       },
       ViewingRoom: {
-        artworks: {
+        artworksConnection: {
           fragment: gql`
             ... on ViewingRoom {
-              artworksConnection {
-                edges {
-                  node {
-                    artworkID
-                  }
-                }
-              }
+              artworkIDs
             }
           `,
           resolve: (parent, args, context, _info) => {
-            let ids = []
-
-            if (parent.artworksConnection) {
-              ids = parent.artworksConnection.edges.map(
-                edge => edge.node.artworkID
-              )
-            }
-
-            if (ids.length === 0) {
-              return connectionFromArray(ids, args)
-            }
-
-            return context.artworksLoader({ ids }).then(body => {
-              return connectionFromArray(body, args)
-            })
+            return context
+              .artworksLoader({ ids: parent.artworkIDs })
+              .then(body => {
+                console.log(body)
+                return connectionFromArray(body, args)
+              })
           },
         },
       },

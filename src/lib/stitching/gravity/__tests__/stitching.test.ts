@@ -4,42 +4,22 @@ import {
   getGravityStitchedSchema,
 } from "./testingUtils"
 
-it("extends the ViewingRoom type with an artworks field", async () => {
+it("extends the ViewingRoom type with an artworksConnection field", async () => {
   const mergedSchema = await getGravityMergedSchema()
   const artworkConnectionFields = await getFieldsForTypeFromSchema(
     "ViewingRoom",
     mergedSchema
   )
 
-  expect(artworkConnectionFields).toContain("artworks")
+  expect(artworkConnectionFields).toContain("artworksConnection")
 })
 
 it("resolves the artworks field on ViewingRoom as a paginated list", async () => {
   const { resolvers } = await getGravityStitchedSchema()
-  const artworksResolver = resolvers.ViewingRoom.artworks.resolve
+  const artworksResolver = resolvers.ViewingRoom.artworksConnection.resolve
 
   const artworks = await artworksResolver(
-    {
-      artworksConnection: {
-        edges: [
-          {
-            node: {
-              artworkID: "1",
-            },
-          },
-          {
-            node: {
-              artworkID: "2",
-            },
-          },
-          {
-            node: {
-              artworkID: "3",
-            },
-          },
-        ],
-      },
-    },
+    { artworkIDs: ["1", "2", "3"] },
     { first: 2 },
     {
       artworksLoader: () =>
