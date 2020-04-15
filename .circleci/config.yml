@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   hokusai: artsy/hokusai@0.7.2
   yarn: artsy/yarn@4.0.2
-  node: artsy/node@1.0.0
+  node: circleci/node@2.0.2
   codecov: codecov/codecov@1.0.5
 
 not_staging_or_release: &not_staging_or_release
@@ -35,14 +35,13 @@ only_development: &only_development
 
 jobs:
   push-schema-changes:
-    executor: node/build
+    executor:
+      name: node/default
+      tag: "10"
     steps:
       - run:
           name: Let hokusai modify /usr/local/bin
           command: sudo chmod -R 777 /usr/local/bin
-      - add_ssh_keys:
-          fingerprints:
-            - '70:1f:d8:35:a9:12:c5:60:76:95:dc:e2:c2:f2:f2:0d'
       - checkout
       - hokusai/install-aws-iam-authenticator
       - run:
