@@ -48,7 +48,7 @@ Object {
     },
     "initialMessage": "Loved some of the works at your fair booth!",
     "internalID": "420",
-    "messages": Object {
+    "messagesConnection": Object {
       "edges": Array [
         Object {
           "node": Object {
@@ -61,6 +61,7 @@ Object {
           },
         },
       ],
+      "totalCount": 1,
     },
   },
 }

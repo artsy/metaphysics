@@ -11,6 +11,7 @@ import {
   GraphQLEnumType,
   GraphQLUnionType,
   GraphQLFieldConfig,
+  GraphQLInt,
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
@@ -141,6 +142,12 @@ export const {
   edgeType: MessageEdge,
 } = connectionDefinitions({
   nodeType: MessageType,
+  connectionFields: {
+    totalCount: {
+      resolve: ({ total_count }) => total_count,
+      type: GraphQLInt,
+    },
+  },
 })
 
 const isLastMessageToUser = ({ _embedded, from_email }) => {
@@ -153,6 +160,56 @@ const lastMessageId = conversation => {
   return get(conversation, "_embedded.last_message.id")
 }
 
+// TODO: Move back inside ConversationType after messages is removed
+const messagesConnection = {
+  type: MessageConnection,
+  description: "A connection for all messages in a single conversation",
+  args: pageable({
+    sort: {
+      type: new GraphQLEnumType({
+        name: "sort",
+        values: {
+          DESC: { value: "desc" },
+          ASC: { value: "asc" },
+        },
+      }),
+    },
+  }),
+  resolve: (
+    { id, from_email },
+    options,
+    { conversationMessagesLoader }: { conversationMessagesLoader?: any }
+  ) => {
+    if (!conversationMessagesLoader) return null
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
+    return conversationMessagesLoader({
+      page,
+      size,
+      conversation_id: id,
+      "expand[]": "deliveries",
+      sort: options.sort || "asc",
+    }).then(({ total_count, message_details }) => {
+      // Inject the convesation initiator's email into each message payload
+      // so we can tell if the user sent a particular message.
+      // Also inject the conversation id, since we need it in some message
+      // resolvers (invoices).
+      /* eslint-disable no-param-reassign */
+      message_details = message_details.map(message => {
+        return merge(message, {
+          conversation_from_address: from_email,
+          conversation_id: id,
+        })
+      })
+      return {
+        ...connectionFromArraySlice(message_details, options, {
+          arrayLength: total_count,
+          sliceStart: offset,
+        }),
+        total_count,
+      }
+    })
+  },
+}
 export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
   name: "Conversation",
   description: "A conversation.",
@@ -300,54 +357,11 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     },
 
     messages: {
-      type: MessageConnection,
-      description: "A connection for all messages in a single conversation",
-      args: pageable({
-        sort: {
-          type: new GraphQLEnumType({
-            name: "sort",
-            values: {
-              DESC: { value: "desc" },
-              ASC: { value: "asc" },
-            },
-          }),
-        },
-      }),
-      resolve: (
-        { id, from_email },
-        options,
-        { conversationMessagesLoader }
-      ) => {
-        if (!conversationMessagesLoader) return null
-        const { page, size, offset } = convertConnectionArgsToGravityArgs(
-          options
-        )
-        return conversationMessagesLoader({
-          page,
-          size,
-          conversation_id: id,
-          "expand[]": "deliveries",
-          sort: options.sort || "asc",
-        }).then(({ total_count, message_details }) => {
-          // Inject the convesation initiator's email into each message payload
-          // so we can tell if the user sent a particular message.
-          // Also inject the conversation id, since we need it in some message
-          // resolvers (invoices).
-          /* eslint-disable no-param-reassign */
-          message_details = message_details.map(message => {
-            return merge(message, {
-              conversation_from_address: from_email,
-              conversation_id: id,
-            })
-          })
-          /* eslint-disable no-param-reassign */
-          return connectionFromArraySlice(message_details, options, {
-            arrayLength: total_count,
-            sliceStart: offset,
-          })
-        })
-      },
+      ...messagesConnection,
+      deprecationReason: "Prefer messagesConnection",
     },
+
+    messagesConnection,
 
     unread: {
       type: GraphQLBoolean,
