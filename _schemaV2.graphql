@@ -610,7 +610,6 @@ type Artist implements Node & Searchable & EntityWithFilterArtworksConnectionInt
 
     # Filter auction results by empty artwork created date values
     allowEmptyCreatedDates: Boolean = true
-
     after: String
     first: Int
     before: String
@@ -3326,6 +3325,15 @@ type Conversation implements Node {
     first: Int
     before: String
     last: Int
+  ): MessageConnection @deprecated(reason: "Prefer messagesConnection")
+
+  # A connection for all messages in a single conversation
+  messagesConnection(
+    sort: sort
+    after: String
+    first: Int
+    before: String
+    last: Int
   ): MessageConnection
 
   # True if there is an unread message by the user.
@@ -5457,6 +5465,7 @@ type MessageConnection {
 
   # A list of edges.
   edges: [MessageEdge]
+  totalCount: Int
 }
 
 # An edge in a connection.
