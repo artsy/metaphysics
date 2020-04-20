@@ -12,11 +12,15 @@ export const gravityStitchingEnvironment = (
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
       }
 
-      extend type ViewingRoomArtwork {
-        artwork: Artwork
+      extend type ViewingRoom {
+        artworksConnection(
+          first: Int
+          last: Int
+          after: String
+          before: String
+        ): ArtworkConnection
       }
     `,
-
     resolvers: {
       Me: {
         secondFactors: {
@@ -32,21 +36,21 @@ export const gravityStitchingEnvironment = (
           },
         },
       },
-      ViewingRoomArtwork: {
-        artwork: {
-          fragment: `
-            ... on ViewingRoomArtwork {
-              artworkID
+      ViewingRoom: {
+        artworksConnection: {
+          fragment: gql`
+            ... on ViewingRoom {
+              artworkIDs
             }
           `,
-          resolve: (parent, _args, context, info) => {
+          resolve: ({ artworkIDs: ids }, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
               operation: "query",
-              fieldName: "artwork",
-
+              fieldName: "artworks",
               args: {
-                id: parent.artworkID,
+                ids,
+                ...args,
               },
               context,
               info,
