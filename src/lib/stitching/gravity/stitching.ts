@@ -1,8 +1,8 @@
-import { connectionFromArray } from "graphql-relay"
 import gql from "lib/gql"
 import { GraphQLSchema } from "graphql"
 
 export const gravityStitchingEnvironment = (
+  localSchema: GraphQLSchema,
   gravitySchema: GraphQLSchema & { transforms: any }
 ) => {
   return {
@@ -43,12 +43,17 @@ export const gravityStitchingEnvironment = (
               artworkIDs
             }
           `,
-          resolve: ({ artworkIDs }, args, context, _info) => {
-            return context.artworksLoader({ ids: artworkIDs }).then(body => {
-              return {
-                totalCount: artworkIDs.length,
-                ...connectionFromArray(body, args),
-              }
+          resolve: ({ artworkIDs: ids }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "artworks",
+              args: {
+                ids,
+                ...args,
+              },
+              context,
+              info,
             })
           },
         },

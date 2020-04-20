@@ -20,7 +20,7 @@ export const getGravityTransformedSchema = async () => {
 export const getGravityStitchedSchema = async () => {
   if (!stitchedSchema) {
     const cachedSchema = await getGravityTransformedSchema()
-    stitchedSchema = gravityStitchingEnvironment(cachedSchema)
+    stitchedSchema = gravityStitchingEnvironment(localSchema, cachedSchema)
   }
   return stitchedSchema
 }

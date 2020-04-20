@@ -6170,6 +6170,18 @@ type Query {
     last: Int
   ): FilterArtworksConnection
 
+  # A list of Artworks
+  artworks(
+    ids: [String]
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
+    @deprecated(
+      reason: "This is only for use in resolving stitched queries, not for first-class client use."
+    )
+
   # An Artist
   artist(
     # The slug or ID of the Artist
@@ -7932,6 +7944,18 @@ type Viewer {
     before: String
     last: Int
   ): FilterArtworksConnection
+
+  # A list of Artworks
+  artworks(
+    ids: [String]
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
+    @deprecated(
+      reason: "This is only for use in resolving stitched queries, not for first-class client use."
+    )
 
   # An Artist
   artist(

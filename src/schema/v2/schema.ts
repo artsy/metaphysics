@@ -88,6 +88,7 @@ import Fairs from "./fairs"
 import Articles from "./articles"
 import SaleArtwork from "./sale_artwork"
 import { SaleArtworksConnectionField } from "./sale_artworks"
+import Artworks from "./artworks"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -101,6 +102,7 @@ const rootFields = {
   artwork: Artwork,
   // artworkVersion: ArtworkVersionResolver,
   artworksConnection: filterArtworksConnection(),
+  artworks: Artworks,
   artist: Artist,
   artists: Artists,
   // causalityJWT: CausalityJWT, // TODO: Perhaps this should go into `system` ?
