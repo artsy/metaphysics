@@ -99,6 +99,11 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
         is_first_message,
       }) => {
         if (is_first_message) {
+          if (!conversation_initial_message) {
+            throw new Error(
+              "This is the first message, but initial_message not provided"
+            )
+          }
           const parts = conversation_initial_message.split(
             "Message from " + conversation_from_name + ":\n\n"
           )
