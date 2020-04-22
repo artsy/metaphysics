@@ -25,6 +25,17 @@ Object {
       "edges": Array [
         Object {
           "node": Object {
+            "body": "Loved some of the works at your fair booth!",
+            "from": Object {
+              "email": "fancy_german_person@posteo.de",
+              "name": "Percy Z",
+            },
+            "internalID": "222",
+            "isFromUser": true,
+          },
+        },
+        Object {
+          "node": Object {
             "body": "I'm a cat oh yea!",
             "from": Object {
               "email": "fancy_german_person@posteo.de",
@@ -52,16 +63,28 @@ Object {
       "edges": Array [
         Object {
           "node": Object {
+            "body": "Loved some of the works at your fair booth!",
+            "from": Object {
+              "email": "fancy_german_person@posteo.de",
+              "name": "Percy Z",
+            },
+            "internalID": "222",
+            "isFirstMessage": true,
+          },
+        },
+        Object {
+          "node": Object {
             "body": "I'm a cat oh yea!",
             "from": Object {
               "email": "fancy_german_person@posteo.de",
               "name": "Percy Z",
             },
             "internalID": "222",
+            "isFirstMessage": false,
           },
         },
       ],
-      "totalCount": 1,
+      "totalCount": 2,
     },
   },
 }
