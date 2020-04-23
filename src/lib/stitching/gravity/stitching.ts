@@ -19,6 +19,7 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
         ): ArtworkConnection
+        partner: Partner
       }
     `,
     resolvers: {
@@ -51,6 +52,25 @@ export const gravityStitchingEnvironment = (
               args: {
                 ids,
                 ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+        partner: {
+          fragment: gql`
+            ... on ViewingRoom {
+              partnerID
+            }
+          `,
+          resolve: ({ partnerID: id }, _args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "partner",
+              args: {
+                id,
               },
               context,
               info,

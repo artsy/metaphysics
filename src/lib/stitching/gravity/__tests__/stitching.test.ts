@@ -54,7 +54,7 @@ it("resolves the partner field on ViewingRoom", async () => {
   partner.resolve({ partnerID: "fakeid" }, {}, {}, info)
 
   expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-    args: { partnerID: "fakeid" },
+    args: { id: "fakeid" },
     operation: "query",
     fieldName: "partner",
     schema: expect.anything(),
