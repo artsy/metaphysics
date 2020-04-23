@@ -58,6 +58,11 @@ import { totalViaLoader } from "lib/total"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
 import { ArtistTargetSupply } from "./targetSupply"
+import { cast } from "lib/cast"
+import {
+  GravityArtistCodec,
+  GravityArtistResponse,
+} from "codecs/gravity/artist"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -76,7 +81,10 @@ export const artistArtworkArrayLength = (artist, filter) => {
   return length
 }
 
-export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
+export const ArtistType = new GraphQLObjectType<
+  GravityArtistResponse,
+  ResolverContext
+>({
   name: "Artist",
   interfaces: () => {
     const {
@@ -689,13 +697,13 @@ const Artist: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, { artistLoader }) => {
-    if (id.length === 0) {
-      return null
-    }
-    return artistLoader(id)
+  resolve: async (_root, { id }, { artistLoader }) => {
+    if (id.length === 0) return null
+    const artist = await artistLoader(id)
+    return cast(GravityArtistCodec, artist)
   },
 }
+
 export default Artist
 
 export const artistConnection = connectionWithCursorInfo({

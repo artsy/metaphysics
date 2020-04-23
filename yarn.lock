@@ -4247,6 +4247,11 @@ forwarded@~0.1.2:
   resolved "https://registry.yarnpkg.com/forwarded/-/forwarded-0.1.2.tgz#98c23dab1175657b8c0573e8ceccd91b0ff18c84"
   integrity sha1-mMI9qxF1ZXuMBXPozszZGw/xjIQ=
 
+fp-ts@^2.5.3:
+  version "2.5.3"
+  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.5.3.tgz#7f09cc7f3e09623c6ade303d98a2cccdb2cc861f"
+  integrity sha512-lQd+hahLd8cygNoXbEHDjH/cbF6XVWlEPb8h5GXXlozjCSDxWgclvkpOoTRfBA0P+r69l9VvW1nEsSGIJRQpWw==
+
 fragment-cache@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/fragment-cache/-/fragment-cache-0.2.1.tgz#4290fad27f13e89be7f33799c6bc5a0abfff0d19"
@@ -5079,6 +5084,11 @@ invert-kv@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-1.0.0.tgz#104a8e4aaca6d3d8cd157a8ef8bfab2d7a3ffdb6"
   integrity sha1-EEqOSqym09jNFXqO+L+rLXo//bY=
+
+io-ts@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.2.1.tgz#d8cb21a23cf8fbe697d78445a65bab42c0eb467f"
+  integrity sha512-RufppkTV58MfDKF2gXlHVBvi+WIyL7nUcAQMkJ1O3SiQcqwlxf6dBOJP/LV19UxHRkGKJZ6ImSj7LqYcELIejQ==
 
 ip6@0.0.4:
   version "0.0.4"
