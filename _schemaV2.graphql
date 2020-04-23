@@ -8382,6 +8382,7 @@ type ViewingRoom {
     after: String
     before: String
   ): ArtworkConnection
+  partner: Partner
 }
 
 # Title, image, text, and caption for a viewing room section
