@@ -6732,6 +6732,10 @@ type ResizedImageUrl {
   width: Int
   height: Int
   url: String
+  src: String
+
+  # Returns a `srcSet` string with 1x, 2x, 3x pixel densities based on passed in arguments
+  srcSet: String
 }
 
 # The conditions for uploading assets to media.artsy.net
