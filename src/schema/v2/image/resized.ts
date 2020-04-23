@@ -1,7 +1,6 @@
-import _ from "lodash"
-// FIXME: proxy has no default export
-// @ts-ignore
+import { defaults } from "lodash"
 import proxy from "./proxies"
+import { scale } from "proportional-scale"
 import { setVersion } from "./normalize"
 import {
   GraphQLObjectType,
@@ -13,39 +12,56 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-export const resizedImageUrl = (image, options) => {
-  const opts = _.defaults(options, {
-    version: ["large"],
-  })
+export const resizedImageUrl = (
+  image,
+  args: { width?: number; height?: number; version?: string[] }
+) => {
+  const options = defaults(args, { version: ["large"] })
+  const src: string = setVersion(image, options.version)
 
-  const desired = _.pick(opts, "width", "height")
-  const factor =
-    _.min(
-      _.map(desired, (value, attr) => {
-        return value / image[`original_${attr}`]
-      })
-    ) || Infinity
-
-  let width: number | null = null
-  let height: number | null = null
-
-  if (_.isFinite(factor)) {
-    width = Math.floor(image.original_width * factor)
-    height = Math.floor(image.original_height * factor)
+  if (!image.original_height && !image.original_width) {
+    return {
+      src,
+      factor: Infinity,
+      width: null,
+      height: null,
+      resize: {
+        width: options.width,
+        height: options.height,
+      },
+    }
   }
 
-  const src = setVersion(image, opts.version)
-  const url = proxy(src, "resize", width || opts.width, height || opts.height)
+  const { width, height, scale: factor } = scale({
+    width: image.original_width,
+    height: image.original_height,
+    maxWidth: options.width!,
+    maxHeight: options.height!,
+  })
 
   return {
+    src,
     factor,
     width,
     height,
-    url,
+    resize: {
+      width: width || options.width,
+      height: height || options.height,
+    },
   }
 }
 
-const ResizedImageUrlType = new GraphQLObjectType<any, ResolverContext>({
+// TODO: Test out and refine equivalent perceptual qualities on actual devices
+export const SUPPORTED_PIXEL_DENSITIES = [
+  { density: 1, quality: 80 },
+  { density: 2, quality: 65 },
+  { density: 3, quality: 50 },
+]
+
+const ResizedImageUrlType = new GraphQLObjectType<
+  ReturnType<typeof resizedImageUrl>,
+  ResolverContext
+>({
   name: "ResizedImageUrl",
   fields: {
     factor: {
@@ -59,6 +75,28 @@ const ResizedImageUrlType = new GraphQLObjectType<any, ResolverContext>({
     },
     url: {
       type: GraphQLString,
+      resolve: ({ src, resize: { width, height } }) =>
+        proxy(src, "resize", width, height),
+    },
+    src: {
+      type: GraphQLString,
+      resolve: ({ src, resize: { width, height } }) =>
+        proxy(src, "resize", width, height),
+    },
+    srcSet: {
+      type: GraphQLString,
+      description:
+        "Returns a `srcSet` string with 1x, 2x, 3x pixel densities based on passed in arguments",
+      resolve: ({ src, resize: { width, height } }) =>
+        SUPPORTED_PIXEL_DENSITIES.map(({ density, quality }) =>
+          proxy(
+            src,
+            "resize",
+            width && width * density,
+            height && height * density,
+            quality
+          )
+        ).join(", "),
     },
   },
 })

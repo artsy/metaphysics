@@ -7871,6 +7871,11 @@ properties@^1.2.1:
   resolved "https://registry.yarnpkg.com/properties/-/properties-1.2.1.tgz#0ee97a7fc020b1a2a55b8659eda4aa8d869094bd"
   integrity sha1-Dul6f8AgsaKlW4ZZ7aSqjYaQlL0=
 
+proportional-scale@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/proportional-scale/-/proportional-scale-3.0.0.tgz#0dd18547b596d2bcb14479b5c48e9184c976ddd4"
+  integrity sha512-nkjqoDTsfYfmVksCDK5I0nK+0endS0Cgh1CMcN91E2Oj364m/RTFT7aVf9jUT17b9/0W/5tTL1r2Yj+3yAzTwA==
+
 protobufjs@^6.8.6:
   version "6.8.8"
   resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-6.8.8.tgz#c8b4f1282fd7a90e6f5b109ed11c84af82908e7c"
