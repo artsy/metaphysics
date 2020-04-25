@@ -825,7 +825,7 @@ describe("Sale type", () => {
         const query = gql`
           {
             sale(id: "foo-foo") {
-              requiresIdentityVerificationFor(user_id: "not-a-user-id")
+              requiresIdentityVerificationFor
             }
           }
         `
@@ -864,17 +864,19 @@ describe("Sale type", () => {
 
           const context = {
             saleLoader: () => Promise.resolve(sale),
-            meBiddersLoader: () => Promise.resolve([]),
           }
 
-          const data = await runAuthenticatedQuery(query, context)
+          const data = await runQuery(query, context)
           expect(data.sale.requiresIdentityVerificationFor).toEqual(true)
         })
       })
 
       describe("when there is a current user", () => {
-        describe("when the user is identity verification", () => {
-          it("returns false", async () => {
+        describe("when the user is registered for the sale", () => {
+          it.todo("returns bidder.needs_identity_verification?")
+        })
+        describe("when the user is not registered for the sale", () => {
+          it("returns false when the user is identity verified", async () => {
             const sale = {
               id: "foo-foo",
               _id: "123",
@@ -896,11 +898,40 @@ describe("Sale type", () => {
 
             const context = {
               saleLoader: () => Promise.resolve(sale),
-              meBiddersLoader: () => Promise.resolve([]),
+              meLoader: () => Promise.resolve({ identity_verified: true }),
             }
 
             const data = await runAuthenticatedQuery(query, context)
             expect(data.sale.requiresIdentityVerificationFor).toEqual(false)
+          })
+
+          it("returns true when the user is not identity verified", async () => {
+            const sale = {
+              id: "foo-foo",
+              _id: "123",
+              currency: "$",
+              is_auction: true,
+              is_preliminary: false,
+              increment_strategy: "default",
+              lot_conditions_report_enabled: true,
+              require_identity_verification: true,
+            }
+
+            const query = gql`
+              {
+                sale(id: "foo-foo") {
+                  requiresIdentityVerificationFor
+                }
+              }
+            `
+
+            const context = {
+              saleLoader: () => Promise.resolve(sale),
+              meLoader: () => Promise.resolve({ identity_verified: false }),
+            }
+
+            const data = await runAuthenticatedQuery(query, context)
+            expect(data.sale.requiresIdentityVerificationFor).toEqual(true)
           })
         })
       })

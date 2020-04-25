@@ -280,9 +280,23 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       requiresIdentityVerificationFor: {
         type: GraphQLBoolean,
-        args: { user_id: { type: GraphQLID } },
-        resolve: ({ require_identity_verification }) =>
-          require_identity_verification,
+        resolve: (
+          { require_identity_verification },
+          _options,
+          { meLoader }
+        ) => {
+          if (require_identity_verification) {
+            if (!meLoader) {
+              return true
+            } else {
+              return meLoader().then(({ identity_verified }) => {
+                return !identity_verified
+              })
+            }
+          } else {
+            return false
+          }
+        },
       },
       saleArtworksConnection: {
         type: saleArtworkConnection,
