@@ -863,7 +863,6 @@ describe("Sale type", () => {
 
           const context = {
             saleLoader: () => Promise.resolve(sale),
-            meBiddersLoader: () => Promise.resolve([]),
           }
 
           const data = await runQuery(query, context)
@@ -873,7 +872,7 @@ describe("Sale type", () => {
 
       describe("when there is a current user", () => {
         describe("when the user is registered for the sale", () => {
-          it("returns false bidder.needs_identity_verification? is false", async () => {
+          it("returns false bidder.needs_identity_verification is false", async () => {
             const bidder = {
               id: "bidder-id",
               sale: { _id: "sale-id", id: "sale-slug" },
@@ -897,7 +896,7 @@ describe("Sale type", () => {
             expect(data.sale.userNeedsIdentityVerification).toEqual(false)
           })
 
-          it("returns true when bidder.needs_identity_verification? is true", async () => {
+          it("returns true when bidder.needs_identity_verification is true", async () => {
             const bidder = {
               id: "bidder-id",
               sale: { _id: "sale-id", id: "sale-slug" },
