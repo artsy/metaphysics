@@ -287,24 +287,19 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           _options,
           { meLoader, meBiddersLoader }
         ) => {
-          if (require_identity_verification) {
-            if (!meLoader || !meBiddersLoader) {
-              return true
+          if (!require_identity_verification) return false
+          if (!meLoader || !meBiddersLoader) return true
+
+          return meBiddersLoader({ sale_id: id }).then(bidders => {
+            if (bidders.length > 0) {
+              const bidder = bidders[0]
+              return bidder.needs_identity_verification
             } else {
-              return meBiddersLoader({ sale_id: id }).then(bidders => {
-                if (bidders.length > 0) {
-                  const bidder = bidders[0]
-                  return bidder.needs_identity_verification
-                } else {
-                  return meLoader().then(({ identity_verified }) => {
-                    return !identity_verified
-                  })
-                }
+              return meLoader().then(({ identity_verified }) => {
+                return !identity_verified
               })
             }
-          } else {
-            return false
-          }
+          })
         },
       },
       saleArtworksConnection: {
