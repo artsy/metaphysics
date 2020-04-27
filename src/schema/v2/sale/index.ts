@@ -278,19 +278,28 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ require_identity_verification }) =>
           require_identity_verification,
       },
-      requiresIdentityVerificationFor: {
+      userNeedsIdentityVerification: {
         type: GraphQLBoolean,
+        description:
+          "True if the current client needs to undergo identity verification for this sale, false otherwise",
         resolve: (
-          { require_identity_verification },
+          { require_identity_verification, id },
           _options,
-          { meLoader }
+          { meLoader, meBiddersLoader }
         ) => {
           if (require_identity_verification) {
-            if (!meLoader) {
+            if (!meLoader || !meBiddersLoader) {
               return true
             } else {
-              return meLoader().then(({ identity_verified }) => {
-                return !identity_verified
+              return meBiddersLoader({ sale_id: id }).then(bidders => {
+                if (bidders.length > 0) {
+                  const bidder = bidders[0]
+                  return bidder.needs_identity_verification
+                } else {
+                  return meLoader().then(({ identity_verified }) => {
+                    return !identity_verified
+                  })
+                }
               })
             }
           } else {
