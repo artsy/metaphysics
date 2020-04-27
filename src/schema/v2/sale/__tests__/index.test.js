@@ -808,6 +808,161 @@ describe("Sale type", () => {
     })
   })
 
+  describe("userNeedsIdentityVerification", () => {
+    describe("when the sale doesn't requires identity verification", () => {
+      let sale = {
+        id: "foo-foo",
+        _id: "123",
+        currency: "$",
+        is_auction: true,
+        is_preliminary: false,
+        increment_strategy: "default",
+        lot_conditions_report_enabled: true,
+        require_identity_verification: false,
+      }
+
+      it("returns false", async () => {
+        const query = gql`
+          {
+            sale(id: "foo-foo") {
+              userNeedsIdentityVerification
+            }
+          }
+        `
+
+        const context = {
+          saleLoader: () => Promise.resolve(sale),
+        }
+
+        const data = await runAuthenticatedQuery(query, context)
+        expect(data.sale.userNeedsIdentityVerification).toEqual(false)
+      })
+    })
+
+    describe("when the sale does require identity verification", () => {
+      let sale = {
+        id: "foo-foo",
+        _id: "123",
+        currency: "$",
+        is_auction: true,
+        is_preliminary: false,
+        increment_strategy: "default",
+        lot_conditions_report_enabled: true,
+        require_identity_verification: true,
+      }
+
+      describe("when there is no current user", () => {
+        it("returns true", async () => {
+          const query = gql`
+            {
+              sale(id: "foo-foo") {
+                userNeedsIdentityVerification
+              }
+            }
+          `
+
+          const context = {
+            saleLoader: () => Promise.resolve(sale),
+          }
+
+          const data = await runQuery(query, context)
+          expect(data.sale.userNeedsIdentityVerification).toEqual(true)
+        })
+      })
+
+      describe("when there is a current user", () => {
+        describe("when the user is registered for the sale", () => {
+          it("returns false bidder.needs_identity_verification is false", async () => {
+            const bidder = {
+              id: "bidder-id",
+              sale: { _id: "sale-id", id: "sale-slug" },
+              needs_identity_verification: false,
+            }
+
+            const query = gql`
+              {
+                sale(id: "foo-foo") {
+                  userNeedsIdentityVerification
+                }
+              }
+            `
+            const context = {
+              saleLoader: () => Promise.resolve(sale),
+              meLoader: () => Promise.resolve({ identity_verified: false }),
+              meBiddersLoader: () => Promise.resolve([bidder]),
+            }
+
+            const data = await runAuthenticatedQuery(query, context)
+            expect(data.sale.userNeedsIdentityVerification).toEqual(false)
+          })
+
+          it("returns true when bidder.needs_identity_verification is true", async () => {
+            const bidder = {
+              id: "bidder-id",
+              sale: { _id: "sale-id", id: "sale-slug" },
+              needs_identity_verification: true,
+            }
+
+            const query = gql`
+              {
+                sale(id: "foo-foo") {
+                  userNeedsIdentityVerification
+                }
+              }
+            `
+            const context = {
+              saleLoader: () => Promise.resolve(sale),
+              meLoader: () => Promise.resolve({ identity_verified: false }),
+              meBiddersLoader: () => Promise.resolve([bidder]),
+            }
+
+            const data = await runAuthenticatedQuery(query, context)
+            expect(data.sale.userNeedsIdentityVerification).toEqual(true)
+          })
+        })
+        describe("when the user is not registered for the sale", () => {
+          it("returns false when the user is identity verified", async () => {
+            const query = gql`
+              {
+                sale(id: "foo-foo") {
+                  userNeedsIdentityVerification
+                }
+              }
+            `
+
+            const context = {
+              saleLoader: () => Promise.resolve(sale),
+              meLoader: () => Promise.resolve({ identity_verified: true }),
+              meBiddersLoader: () => Promise.resolve([]),
+            }
+
+            const data = await runAuthenticatedQuery(query, context)
+            expect(data.sale.userNeedsIdentityVerification).toEqual(false)
+          })
+
+          it("returns true when the user is not identity verified", async () => {
+            const query = gql`
+              {
+                sale(id: "foo-foo") {
+                  userNeedsIdentityVerification
+                }
+              }
+            `
+
+            const context = {
+              saleLoader: () => Promise.resolve(sale),
+              meLoader: () => Promise.resolve({ identity_verified: false }),
+              meBiddersLoader: () => Promise.resolve([]),
+            }
+
+            const data = await runAuthenticatedQuery(query, context)
+            expect(data.sale.userNeedsIdentityVerification).toEqual(true)
+          })
+        })
+      })
+    })
+  })
+
   describe("artworksConnection", () => {
     it("returns data from gravity", () => {
       const query = `
