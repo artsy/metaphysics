@@ -832,7 +832,6 @@ describe("Sale type", () => {
 
         const context = {
           saleLoader: () => Promise.resolve(sale),
-          meBiddersLoader: () => Promise.resolve([]),
         }
 
         const data = await runAuthenticatedQuery(query, context)
