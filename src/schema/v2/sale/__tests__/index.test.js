@@ -810,18 +810,18 @@ describe("Sale type", () => {
 
   describe("userNeedsIdentityVerification", () => {
     describe("when the sale doesn't requires identity verification", () => {
-      it("returns false", async () => {
-        const sale = {
-          id: "foo-foo",
-          _id: "123",
-          currency: "$",
-          is_auction: true,
-          is_preliminary: false,
-          increment_strategy: "default",
-          lot_conditions_report_enabled: true,
-          require_identity_verification: false,
-        }
+      let sale = {
+        id: "foo-foo",
+        _id: "123",
+        currency: "$",
+        is_auction: true,
+        is_preliminary: false,
+        increment_strategy: "default",
+        lot_conditions_report_enabled: true,
+        require_identity_verification: false,
+      }
 
+      it("returns false", async () => {
         const query = gql`
           {
             sale(id: "foo-foo") {
@@ -841,19 +841,19 @@ describe("Sale type", () => {
     })
 
     describe("when the sale does require identity verification", () => {
+      let sale = {
+        id: "foo-foo",
+        _id: "123",
+        currency: "$",
+        is_auction: true,
+        is_preliminary: false,
+        increment_strategy: "default",
+        lot_conditions_report_enabled: true,
+        require_identity_verification: true,
+      }
+
       describe("when there is no current user", () => {
         it("returns true", async () => {
-          const sale = {
-            id: "foo-foo",
-            _id: "123",
-            currency: "$",
-            is_auction: true,
-            is_preliminary: false,
-            increment_strategy: "default",
-            lot_conditions_report_enabled: true,
-            require_identity_verification: true,
-          }
-
           const query = gql`
             {
               sale(id: "foo-foo") {
@@ -875,16 +875,6 @@ describe("Sale type", () => {
       describe("when there is a current user", () => {
         describe("when the user is registered for the sale", () => {
           it("returns false bidder.needs_identity_verification? is false", async () => {
-            const sale = {
-              id: "foo-foo",
-              _id: "123",
-              currency: "$",
-              is_auction: true,
-              is_preliminary: false,
-              increment_strategy: "default",
-              lot_conditions_report_enabled: true,
-              require_identity_verification: true,
-            }
             const bidder = {
               id: "bidder-id",
               sale: { _id: "sale-id", id: "sale-slug" },
@@ -909,17 +899,6 @@ describe("Sale type", () => {
           })
 
           it("returns true when bidder.needs_identity_verification? is true", async () => {
-            const sale = {
-              id: "foo-foo",
-              _id: "123",
-              currency: "$",
-              is_auction: true,
-              is_preliminary: false,
-              increment_strategy: "default",
-              lot_conditions_report_enabled: true,
-              require_identity_verification: true,
-            }
-
             const bidder = {
               id: "bidder-id",
               sale: { _id: "sale-id", id: "sale-slug" },
@@ -945,17 +924,6 @@ describe("Sale type", () => {
         })
         describe("when the user is not registered for the sale", () => {
           it("returns false when the user is identity verified", async () => {
-            const sale = {
-              id: "foo-foo",
-              _id: "123",
-              currency: "$",
-              is_auction: true,
-              is_preliminary: false,
-              increment_strategy: "default",
-              lot_conditions_report_enabled: true,
-              require_identity_verification: true,
-            }
-
             const query = gql`
               {
                 sale(id: "foo-foo") {
@@ -975,17 +943,6 @@ describe("Sale type", () => {
           })
 
           it("returns true when the user is not identity verified", async () => {
-            const sale = {
-              id: "foo-foo",
-              _id: "123",
-              currency: "$",
-              is_auction: true,
-              is_preliminary: false,
-              increment_strategy: "default",
-              lot_conditions_report_enabled: true,
-              require_identity_verification: true,
-            }
-
             const query = gql`
               {
                 sale(id: "foo-foo") {
