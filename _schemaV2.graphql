@@ -6850,7 +6850,7 @@ type Sale implements Node {
   requireBidderApproval: Boolean
   requireIdentityVerification: Boolean
 
-  # True if the current client needs to undergo identity verification for this sale, false otherwise
+  # True if the current user needs to undergo identity verification for this sale, false otherwise
   userNeedsIdentityVerification: Boolean
   saleArtworksConnection(
     # List of sale artwork internal IDs to fetch

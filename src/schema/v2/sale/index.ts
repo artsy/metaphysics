@@ -281,7 +281,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       userNeedsIdentityVerification: {
         type: GraphQLBoolean,
         description:
-          "True if the current client needs to undergo identity verification for this sale, false otherwise",
+          "True if the current user needs to undergo identity verification for this sale, false otherwise",
         resolve: (
           { require_identity_verification, id },
           _options,
