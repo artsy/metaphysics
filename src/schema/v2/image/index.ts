@@ -21,7 +21,7 @@ export { normalize as normalizeImageData } from "./normalize"
 
 export const getDefault = images => {
   if (isArray(images)) {
-    return find(images, { is_default: true } as any) || first(images)
+    return find(images, { default: true } as any) || first(images)
   }
   return images
 }
