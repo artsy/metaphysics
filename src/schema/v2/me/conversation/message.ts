@@ -100,7 +100,7 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
       }) => {
         if (is_first_message) {
           if (!conversation_initial_message) {
-            return "Hi, I’m interested in purchasing this work. Could you please provide more information about the piece?"
+            return ""
           }
           const parts = conversation_initial_message.split(
             "Message from " + conversation_from_name + ":\n\n"
