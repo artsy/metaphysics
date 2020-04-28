@@ -47,6 +47,11 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ id }) => id,
     },
+    isFirstMessage: {
+      description: "True if message is the first in the conversation.",
+      type: GraphQLBoolean,
+      resolve: ({ is_first_message }) => is_first_message,
+    },
     isFromUser: {
       description: "True if message is from the user to the partner.",
       type: GraphQLBoolean,
@@ -86,7 +91,22 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
       description:
         "Unaltered text if possible, otherwise `body`: a parsed/sanitized version from Sendgrid.",
       type: GraphQLString,
-      resolve: ({ body, original_text }) => {
+      resolve: ({
+        body,
+        original_text,
+        conversation_from_name,
+        conversation_initial_message,
+        is_first_message,
+      }) => {
+        if (is_first_message) {
+          if (!conversation_initial_message) {
+            return null
+          }
+          const parts = conversation_initial_message.split(
+            "Message from " + conversation_from_name + ":\n\n"
+          )
+          return parts[parts.length - 1]
+        }
         if (original_text) {
           return original_text
         }

@@ -176,7 +176,7 @@ const messagesConnection = {
     },
   }),
   resolve: (
-    { id, from_email },
+    { id, from_email, initial_message, from_name },
     options,
     { conversationMessagesLoader }: { conversationMessagesLoader?: any }
   ) => {
@@ -196,6 +196,8 @@ const messagesConnection = {
       /* eslint-disable no-param-reassign */
       message_details = message_details.map(message => {
         return merge(message, {
+          conversation_initial_message: initial_message,
+          conversation_from_name: from_name,
           conversation_from_address: from_email,
           conversation_id: id,
         })
@@ -257,6 +259,8 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ from_last_viewed_message_id }) => from_last_viewed_message_id,
     },
     initialMessage: {
+      deprecationReason:
+        "This field is no longer required. Prefer the first message from the MessageConnection.",
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ initial_message, from_name }) => {
         const parts = initial_message.split(

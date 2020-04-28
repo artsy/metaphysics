@@ -13,11 +13,28 @@ describe("Me", () => {
           }),
         conversationMessagesLoader: () =>
           Promise.resolve({
-            total_count: 1,
+            total_count: 2,
             message_details: [
               {
                 id: "222",
                 raw_text: "I'm a cat",
+                is_first_message: true,
+                from_email_address: "fancy_german_person@posteo.de",
+                from_id: null,
+                attachments: [],
+                metadata: {
+                  lewitt_invoice_id: "420i",
+                },
+                from: `"Percy Z" <percy@cat.com>`,
+                from_principal: true,
+                original_text:
+                  "Loved some of the works at your fair booth! ABOUT THIS COLLECTOR: blah, blah",
+                body: "I'm a cat",
+              },
+              {
+                id: "222",
+                raw_text: "I'm a cat",
+                is_first_message: false,
                 from_email_address: "fancy_german_person@posteo.de",
                 from_id: null,
                 attachments: [],
@@ -47,6 +64,7 @@ describe("Me", () => {
                   totalCount
                   edges {
                     node {
+                      isFirstMessage
                       body
                       internalID
                       from {
