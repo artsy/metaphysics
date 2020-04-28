@@ -58,7 +58,7 @@ const ImageType = new GraphQLObjectType<any, ResolverContext>({
     },
     isDefault: {
       type: GraphQLBoolean,
-      resolve: ({ is_default }) => is_default,
+      resolve: ({ default: is_default }) => is_default,
     },
     isZoomable: {
       type: GraphQLBoolean,
