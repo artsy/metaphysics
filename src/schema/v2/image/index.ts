@@ -21,7 +21,10 @@ export { normalize as normalizeImageData } from "./normalize"
 
 export const getDefault = images => {
   if (isArray(images)) {
-    return find(images, { default: true } as any) || first(images)
+    return (
+      find(images, img => img.is_default === true || img.default === true) ||
+      first(images)
+    )
   }
   return images
 }
@@ -58,7 +61,7 @@ const ImageType = new GraphQLObjectType<any, ResolverContext>({
     },
     isDefault: {
       type: GraphQLBoolean,
-      resolve: ({ default: is_default }) => is_default,
+      resolve: image => image.is_default || image.default,
     },
     isZoomable: {
       type: GraphQLBoolean,
