@@ -105,7 +105,10 @@ export interface Image {
   downloadable: boolean
   original_width: number
   original_height: number
-  is_default: boolean
+
+  default?: boolean // Appears in `Image`
+  is_default?: boolean //Appears in `AdditionalImage`
+
   image_url: string
   image_versions: string[]
   image_urls: ImageImageUrls
