@@ -10,7 +10,13 @@ describe("HomePageArtistModule", () => {
         homePage {
           artistModule(key: ${key}) {
             results {
+              __typename
               slug
+              ... on SuggestedArtist {
+                basedOn {
+                  slug
+                }
+              }
             }
           }
         }
@@ -42,6 +48,11 @@ describe("HomePageArtistModule", () => {
           birthday: null,
           artworks_count: null,
         },
+        sim_artist: {
+          id: "similar",
+          birthday: null,
+          artworks_count: null,
+        },
       },
     ],
   }
@@ -56,15 +67,17 @@ describe("HomePageArtistModule", () => {
     it("returns trending artists", () => {
       return runAuthenticatedQuery(query("TRENDING"), context).then(
         ({ homePage }) => {
-          expect(homePage.artistModule.results).toEqual([{ slug: "trending" }])
+          expect(homePage.artistModule.results[0].slug).toEqual("trending")
+          expect(homePage.artistModule.results[0].__typename).toEqual("Artist")
         }
       )
     })
 
-    it("returns trending artists", () => {
-      return runAuthenticatedQuery(query("TRENDING"), context).then(
+    it("returns popular artists", () => {
+      return runAuthenticatedQuery(query("POPULAR"), context).then(
         ({ homePage }) => {
-          expect(homePage.artistModule.results).toEqual([{ slug: "trending" }])
+          expect(homePage.artistModule.results[0].slug).toEqual("popular")
+          expect(homePage.artistModule.results[0].__typename).toEqual("Artist")
         }
       )
     })
@@ -72,7 +85,13 @@ describe("HomePageArtistModule", () => {
     it("returns suggestions", () => {
       return runAuthenticatedQuery(query("SUGGESTED"), context).then(
         ({ homePage }) => {
-          expect(homePage.artistModule.results).toEqual([{ slug: "suggested" }])
+          expect(homePage.artistModule.results[0].slug).toEqual("suggested")
+          expect(homePage.artistModule.results[0].__typename).toEqual(
+            "SuggestedArtist"
+          )
+          expect(homePage.artistModule.results[0].basedOn.slug).toEqual(
+            "similar"
+          )
         }
       )
     })
@@ -82,15 +101,15 @@ describe("HomePageArtistModule", () => {
     it("returns trending artists", () => {
       return runAuthenticatedQuery(query("TRENDING"), context).then(
         ({ homePage }) => {
-          expect(homePage.artistModule.results).toEqual([{ slug: "trending" }])
+          expect(homePage.artistModule.results[0].slug).toEqual("trending")
         }
       )
     })
 
-    it("returns trending artists", () => {
-      return runAuthenticatedQuery(query("TRENDING"), context).then(
+    it("returns popular artists", () => {
+      return runAuthenticatedQuery(query("POPULAR"), context).then(
         ({ homePage }) => {
-          expect(homePage.artistModule.results).toEqual([{ slug: "trending" }])
+          expect(homePage.artistModule.results[0].slug).toEqual("popular")
         }
       )
     })

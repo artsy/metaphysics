@@ -1,6 +1,8 @@
-import { map } from "lodash"
-import Artist from "schema/v2/artist"
-import { NodeInterface } from "schema/v2/object_identification"
+import { ArtistType } from "schema/v2/artist"
+import {
+  NodeInterface,
+  SlugAndInternalIDFields,
+} from "schema/v2/object_identification"
 import { toGlobalId } from "graphql-relay"
 import {
   GraphQLEnumType,
@@ -13,6 +15,9 @@ import {
 } from "graphql"
 import { totalViaLoader } from "lib/total"
 import { ResolverContext } from "types/graphql"
+import { HomePageArtist } from "schema/v2/home/homePageArtistInterface"
+import Image from "schema/v2/image"
+import { artworkConnection } from "schema/v2/artwork"
 
 // This object is used for both the `key` argument enum and to do fetching.
 // The order of the artists should be 1. suggested, 2. trending, 3. popular
@@ -46,20 +51,65 @@ export const HomePageArtistModuleTypes: {
       return suggestedSimilarArtistsLoader({
         exclude_followed_artists: true,
         exclude_artists_without_forsale_artworks: true,
-      }).then(({ body }) => map(body, "artist"))
+      }).then(({ body }) =>
+        body.map(({ artist, sim_artist }) => ({
+          __typename: SuggestedArtist.name,
+          ...artist,
+          sim_artist,
+        }))
+      )
     },
   },
   TRENDING: {
     description: "The trending artists.",
     display: () => Promise.resolve(true),
-    resolve: ({ trendingArtistsLoader }) => trendingArtistsLoader(),
+    resolve: ({ trendingArtistsLoader }) =>
+      trendingArtistsLoader().then(artists => {
+        return artists.map(a => ({ __typename: ArtistType.name, ...a }))
+      }),
   },
   POPULAR: {
     description: "The most searched for artists.",
     display: () => Promise.resolve(true),
-    resolve: ({ popularArtistsLoader }) => popularArtistsLoader(),
+    resolve: ({ popularArtistsLoader }) =>
+      popularArtistsLoader().then(artists => {
+        return artists.map(a => ({ __typename: ArtistType.name, ...a }))
+      }),
   },
 }
+
+export const SuggestedArtist = new GraphQLObjectType<any, ResolverContext>({
+  name: "SuggestedArtist",
+  interfaces: [NodeInterface, HomePageArtist],
+  fields: {
+    ...SlugAndInternalIDFields,
+    href: {
+      type: GraphQLString,
+    },
+    name: {
+      type: GraphQLString,
+    },
+    // Fall back to ArtistType implementation.
+    formattedNationalityAndBirthday: {
+      type: GraphQLString,
+      resolve: ArtistType.getFields()["formattedNationalityAndBirthday"]
+        .resolve,
+    },
+    // Fall back to ArtistType implementation.
+    formattedArtworksCount: {
+      type: GraphQLString,
+      resolve: ArtistType.getFields()["formattedArtworksCount"].resolve,
+    },
+    image: Image,
+    artworksConnection: {
+      type: artworkConnection.connectionType,
+    },
+    basedOn: {
+      type: ArtistType,
+      resolve: ({ sim_artist }) => sim_artist,
+    },
+  },
+})
 
 export const HomePageArtistModuleType = new GraphQLObjectType<
   any,
@@ -80,7 +130,7 @@ export const HomePageArtistModuleType = new GraphQLObjectType<
       type: GraphQLString,
     },
     results: {
-      type: new GraphQLList(Artist.type),
+      type: new GraphQLList(HomePageArtist),
       resolve: ({ key }, _options, context) => {
         return HomePageArtistModuleTypes[key].resolve(context)
       },
