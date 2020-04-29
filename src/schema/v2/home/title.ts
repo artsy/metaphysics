@@ -11,7 +11,7 @@ import {
 import { ResolverContext } from "types/graphql"
 
 const moduleTitle: HomePageArtworkModuleResolvers<string> = {
-  active_bids: () => "Your active bids",
+  active_bids: () => "Your Active Bids",
   current_fairs: ({ fairsLoader }) => {
     return featuredFair(fairsLoader).then(fair => fair && fair.name)
   },
@@ -44,7 +44,7 @@ const moduleTitle: HomePageArtworkModuleResolvers<string> = {
   live_auctions: ({ salesLoader }) => {
     return featuredAuction(salesLoader).then(auction => auction && auction.name)
   },
-  popular_artists: () => "Works by popular artists",
+  popular_artists: () => "Works by Popular Artists",
   recommended_works: () => "Recommended Works for You",
   related_artists: ({ artistLoader }, params) => {
     if (!isRelatedArtistArtworkModuleParams(params)) return null
