@@ -3210,6 +3210,7 @@ type ConsignmentSubmission {
   medium: String
   minimumPriceDollars: Int
   offers(gravityPartnerId: ID!): [ConsignmentOffer!]!
+  primaryImage: ConsignmentSubmissionCategoryAsset
   provenance: String
   signature: Boolean
   state: ConsignmentSubmissionStateAggregation

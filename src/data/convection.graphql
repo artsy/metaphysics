@@ -352,6 +352,7 @@ type Submission {
   medium: String
   minimumPriceDollars: Int
   offers(gravityPartnerId: ID!): [Offer!]!
+  primaryImage: Asset
   provenance: String
   signature: Boolean
   state: State
