@@ -84,12 +84,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
     } = require("../filterArtworksConnection")
     const { Searchable } = require("schema/v2/searchable")
     const { NodeInterface } = require("schema/v2/object_identification")
-    const { HomePageArtist } = require("schema/v2/home/homePageArtistInterface")
     return [
       NodeInterface,
       Searchable,
       EntityWithFilterArtworksConnectionInterface,
-      HomePageArtist,
     ]
   },
   fields: () => {

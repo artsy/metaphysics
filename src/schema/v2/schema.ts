@@ -78,7 +78,6 @@ import { AuctionArtworkGridType } from "./artwork/artworkContextGrids/AuctionArt
 import { PartnerArtworkGridType } from "./artwork/artworkContextGrids/PartnerArtworkGrid"
 import { RelatedArtworkGridType } from "./artwork/artworkContextGrids/RelatedArtworkGrid"
 import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGrid"
-import { SuggestedArtist } from "./home/home_page_artist_module"
 
 import ObjectIdentification from "./object_identification"
 import { ResolverContext } from "types/graphql"
@@ -206,7 +205,6 @@ export default new GraphQLSchema({
     PartnerArtworkGridType,
     RelatedArtworkGridType,
     ShowArtworkGridType,
-    SuggestedArtist,
   ],
   directives: specifiedDirectives.concat([PrincipalFieldDirective]),
 })
