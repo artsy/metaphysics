@@ -299,6 +299,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      basedOn: {
+        type: ArtistType,
+        description:
+          "In applicable contexts, this is what the artist (as a suggestion) is based on.",
+      },
       bio: {
         type: GraphQLString,
         resolve: ({ nationality, years, hometown, location }) => {

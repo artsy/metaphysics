@@ -1,4 +1,3 @@
-import { map } from "lodash"
 import Artist from "schema/v2/artist"
 import { NodeInterface } from "schema/v2/object_identification"
 import { toGlobalId } from "graphql-relay"
@@ -46,7 +45,12 @@ export const HomePageArtistModuleTypes: {
       return suggestedSimilarArtistsLoader({
         exclude_followed_artists: true,
         exclude_artists_without_forsale_artworks: true,
-      }).then(({ body }) => map(body, "artist"))
+      }).then(({ body }) =>
+        body.map(({ artist, sim_artist }) => ({
+          ...artist,
+          basedOn: sim_artist,
+        }))
+      )
     },
   },
   TRENDING: {
