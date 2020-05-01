@@ -27,7 +27,10 @@ export const ArtworkInquiryType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ArtworkInquiries: GraphQLFieldConfig<void, ResolverContext> = {
-  type: connectionDefinitions({ nodeType: ArtworkInquiryType }).connectionType,
+  type: connectionDefinitions({
+    nonNullable: true,
+    nodeType: ArtworkInquiryType,
+  }).connectionType,
   args: pageable({}),
   description: "A list of the current user’s inquiry requests",
   resolve: (_root, options, { inquiryRequestsLoader }) => {

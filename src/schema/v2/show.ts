@@ -112,7 +112,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       },
       artworksConnection: {
         description: "The artworks featured in the show",
-        type: artworkConnection.connectionType,
+        type: new GraphQLNonNull(artworkConnection.connectionType),
         args: pageable(artworksArgs),
         resolve: (show, options, { partnerShowArtworksLoader }) => {
           const loaderOptions = {
@@ -466,7 +466,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       },
       nearbyShowsConnection: {
         description: "Shows that are near (~75km) from this show",
-        type: ShowsConnection.connectionType,
+        type: new GraphQLNonNull(ShowsConnection.connectionType),
         args: pageable({
           sort: {
             type: ShowSorts,
@@ -585,8 +585,13 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ fair }) => (isExisty(fair) ? "Fair Booth" : "Show"),
       },
       followedArtistsConnection: {
-        type: connectionDefinitions({ nodeType: FollowArtistType })
-          .connectionType,
+        // https://github.com/ds300/gravity/blob/4ebad08af27cc3b3a36414b2afb2bb992366737f/app/api/v1/me_follow_artists_endpoint.rb#L30
+        type: new GraphQLNonNull(
+          connectionDefinitions({
+            nodeType: FollowArtistType,
+            nonNullable: true,
+          }).connectionType
+        ),
         args: pageable({}),
         description:
           "A Connection of followed artists by current user for this show",
@@ -627,4 +632,7 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default Show
-export const ShowsConnection = connectionWithCursorInfo({ nodeType: ShowType })
+export const ShowsConnection = connectionWithCursorInfo({
+  nodeType: ShowType,
+  nonNullable: true,
+})

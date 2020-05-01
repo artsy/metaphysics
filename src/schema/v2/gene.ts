@@ -52,7 +52,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
       ...SlugAndInternalIDFields,
       cached,
       artistsConnection: {
-        type: artistConnection.connectionType,
+        type: new GraphQLNonNull(artistConnection.connectionType),
         args: pageable(),
         resolve: ({ id, counts }, options, { geneArtistsLoader }) => {
           const parsedOptions = _.omit(
@@ -200,5 +200,6 @@ const Gene: GraphQLFieldConfig<void, ResolverContext> = {
 export default Gene
 
 export const geneConnection = connectionDefinitions({
+  nonNullable: true,
   nodeType: GeneType,
 }).connectionType

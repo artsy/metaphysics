@@ -21,7 +21,10 @@ const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FollowedArtists: GraphQLFieldConfig<void, ResolverContext> = {
-  type: connectionDefinitions({ nodeType: FollowArtistType }).connectionType,
+  type: connectionDefinitions({
+    nonNullable: true,
+    nodeType: FollowArtistType,
+  }).connectionType,
   args: pageable({}),
   description: "A Connection of followed artists by current user",
   resolve: (_parent, args, context) => followArtistsResolver({}, args, context),

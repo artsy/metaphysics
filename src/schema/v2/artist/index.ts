@@ -114,7 +114,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
           },
         }),
-        type: articleConnection.connectionType,
+        type: new GraphQLNonNull(articleConnection.connectionType),
         resolve: (
           { _id },
           { inEditorialFeed, ..._args },
@@ -153,7 +153,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       artworksConnection: {
-        type: artworkConnection.connectionType,
+        type: new GraphQLNonNull(artworkConnection.connectionType),
         args: pageable({
           exclude: {
             type: new GraphQLList(GraphQLString),
@@ -566,7 +566,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       highlights: ArtistHighlights,
       hometown: { type: GraphQLString },
-      href: { type: GraphQLString, resolve: artist => `/artist/${artist.id}` },
+      href: {
+        type: GraphQLString,
+        resolve: artist => `/artist/${artist.id}`,
+      },
       image: Image,
       imageUrl: {
         type: GraphQLString,
@@ -610,7 +613,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       nationality: { type: GraphQLString },
       name: { type: GraphQLString },
       partnersConnection: {
-        type: PartnerArtistConnection,
+        type: new GraphQLNonNull(PartnerArtistConnection),
         args: pageable({
           representedBy: {
             type: GraphQLBoolean,
@@ -705,4 +708,5 @@ export default Artist
 
 export const artistConnection = connectionWithCursorInfo({
   nodeType: ArtistType,
+  nonNullable: true,
 })

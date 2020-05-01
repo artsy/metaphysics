@@ -70,10 +70,11 @@ const SearchConnection = connectionWithCursorInfo({
   connectionFields: {
     aggregations: SearchAggregations,
   },
+  nonNullable: true,
 })
 
 export const Search: GraphQLFieldConfig<void, ResolverContext> = {
-  type: SearchConnection.connectionType,
+  type: new GraphQLNonNull(SearchConnection.connectionType),
   description: "Global search",
   args: searchArgs,
   resolve: (_source, args, context, info) => {

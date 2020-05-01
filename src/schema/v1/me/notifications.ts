@@ -58,8 +58,10 @@ const NotificationsFeedItemType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const Notifications: GraphQLFieldConfig<void, ResolverContext> = {
-  type: connectionDefinitions({ nodeType: NotificationsFeedItemType })
-    .connectionType,
+  type: connectionDefinitions({
+    nonNullable: true,
+    nodeType: NotificationsFeedItemType,
+  }).connectionType,
   description:
     "A list of feed items, indicating published artworks (grouped by date and artists).",
   args: pageable({}),

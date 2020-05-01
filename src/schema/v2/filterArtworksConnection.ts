@@ -214,7 +214,7 @@ export const FilterArtworksFields = () => {
     },
     aggregations: ArtworkFilterAggregations,
     artworksConnection: {
-      type: artworkConnection.connectionType,
+      type: new GraphQLNonNull(artworkConnection.connectionType),
       // FIXME: Uncomment deprecationReason once https://github.com/apollographql/apollo-tooling/issues/805
       // has been addressed.
       //deprecationReason:
@@ -328,6 +328,7 @@ const connectionFields = () => {
 }
 
 const filterArtworksConnectionType = connectionDefinitions({
+  nonNullable: true,
   name: "FilterArtworks",
   nodeType: ArtworkType,
   connectionFields: {
@@ -354,7 +355,7 @@ const filterArtworksConnectionType = connectionDefinitions({
 const filterArtworksConnectionTypeFactory = (
   mapRootToFilterParams
 ): GraphQLFieldConfig<any, ResolverContext> => ({
-  type: filterArtworksConnectionType,
+  type: new GraphQLNonNull(filterArtworksConnectionType),
   description: "Artworks Elastic Search results",
   args: pageable(filterArtworksArgs),
   resolve: (

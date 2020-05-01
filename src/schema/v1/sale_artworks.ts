@@ -16,6 +16,7 @@ const DEFAULTS = {
 }
 
 const SaleArtworksType = connectionDefinitions({
+  nonNullable: true,
   name: "SaleArtworks",
   nodeType: SaleArtworkType,
   connectionFields: {

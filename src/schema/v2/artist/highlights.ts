@@ -4,6 +4,7 @@ import {
   GraphQLList,
   GraphQLString,
   GraphQLFieldConfig,
+  GraphQLNonNull,
 } from "graphql"
 import { partnersForArtist } from "../partner_artist"
 import { pageable } from "relay-cursor-paging"
@@ -15,7 +16,7 @@ const ArtistHighlightsType = new GraphQLObjectType<any, ResolverContext>({
     const { PartnerArtistConnection } = require("../partnerArtistConnection")
     return {
       partnersConnection: {
-        type: PartnerArtistConnection,
+        type: new GraphQLNonNull(PartnerArtistConnection),
         args: pageable({
           representedBy: {
             type: GraphQLBoolean,

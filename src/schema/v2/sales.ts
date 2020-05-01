@@ -5,6 +5,7 @@ import {
   GraphQLFieldConfig,
   GraphQLList,
   GraphQLString,
+  GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
@@ -14,7 +15,12 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { BodyAndHeaders } from "lib/loaders"
 
 export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
-  type: connectionWithCursorInfo({ nodeType: SaleType }).connectionType,
+  type: new GraphQLNonNull(
+    connectionWithCursorInfo({
+      nodeType: SaleType,
+      nonNullable: true,
+    }).connectionType
+  ),
   description: "A list of Sales",
   args: pageable({
     // TODO: This wasn’t needed by Emission and is a tad awkward of an arg. If

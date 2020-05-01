@@ -105,7 +105,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       artistsConnection: {
-        type: artistConnection.connectionType,
+        type: new GraphQLNonNull(artistConnection.connectionType),
         args: pageable({
           sort: {
             type: FairArtistSortsType,
@@ -429,4 +429,7 @@ const Fair: GraphQLFieldConfig<void, ResolverContext> = {
 
 export default Fair
 
-export const fairConnection = connectionWithCursorInfo({ nodeType: FairType })
+export const fairConnection = connectionWithCursorInfo({
+  nonNullable: true,
+  nodeType: FairType,
+})

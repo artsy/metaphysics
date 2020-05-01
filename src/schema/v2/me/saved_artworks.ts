@@ -12,18 +12,10 @@ import CollectionSorts from "../sorts/collection_sorts"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
 
-// Forward this directly to the collection resolver with known defaults.
-
-// const SavedArtworks: GraphQLFieldConfig<void, ResolverContext> = {
-//   type: CollectionType,
-//   resolve: collectionResolverFactory("saved-artwork"),
-// }
-
-// export default SavedArtworks
-
-export const SavedArtworksConnection = connectionWithCursorInfo({
+const SavedArtworksConnection = connectionWithCursorInfo({
   name: "SavedArtworks",
   nodeType: ArtworkType,
+  nonNullable: true,
   connectionFields: {
     description: {
       type: new GraphQLNonNull(GraphQLString),

@@ -5,15 +5,16 @@ import {
   connectionFromPromisedArray,
 } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { GraphQLFieldConfig } from "graphql"
+import { GraphQLFieldConfig, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 const { connectionType: GeneFamilyConnection } = connectionDefinitions({
+  nonNullable: true,
   nodeType: GeneFamilyType,
 })
 
 const GeneFamilies: GraphQLFieldConfig<void, ResolverContext> = {
-  type: GeneFamilyConnection,
+  type: new GraphQLNonNull(GeneFamilyConnection),
   description: "A list of Gene Families",
   args: pageable(),
   resolve: (_root, options, { geneFamiliesLoader }) => {

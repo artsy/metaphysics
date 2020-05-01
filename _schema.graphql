@@ -576,7 +576,7 @@ type ArticleConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [ArticleEdge]
+  edges: [ArticleEdge!]!
   pageCursors: PageCursors
   totalCount: Int
 }
@@ -584,7 +584,7 @@ type ArticleConnection {
 # An edge in a connection.
 type ArticleEdge {
   # The item at the end of the edge
-  node: Article
+  node: Article!
 
   # A cursor for use in pagination
   cursor: String!
@@ -871,7 +871,7 @@ type ArtistConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [ArtistEdge]
+  edges: [ArtistEdge!]!
   pageCursors: PageCursors
   totalCount: Int
 }
@@ -915,7 +915,7 @@ type ArtistCounts {
 # An edge in a connection.
 type ArtistEdge {
   # The item at the end of the edge
-  node: Artist
+  node: Artist!
 
   # A cursor for use in pagination
   cursor: String!
@@ -1513,7 +1513,7 @@ type ArtworkConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [ArtworkEdge]
+  edges: [ArtworkEdge!]!
   pageCursors: PageCursors
   totalCount: Int
 }
@@ -2156,7 +2156,7 @@ type ArtworkContextSale implements Node {
 # An edge in a connection.
 type ArtworkEdge {
   # The item at the end of the edge
-  node: Artwork
+  node: Artwork!
 
   # A cursor for use in pagination
   cursor: String!
@@ -2311,13 +2311,13 @@ type ArtworkInquiryConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [ArtworkInquiryEdge]
+  edges: [ArtworkInquiryEdge!]!
 }
 
 # An edge in a connection.
 type ArtworkInquiryEdge {
   # The item at the end of the edge
-  node: ArtworkInquiry
+  node: ArtworkInquiry!
 
   # A cursor for use in pagination
   cursor: String!
@@ -2787,7 +2787,7 @@ type AuctionResultConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [AuctionResultEdge]
+  edges: [AuctionResultEdge!]!
   pageCursors: PageCursors
   totalCount: Int
 }
@@ -2795,7 +2795,7 @@ type AuctionResultConnection {
 # An edge in a connection.
 type AuctionResultEdge {
   # The item at the end of the edge
-  node: AuctionResult
+  node: AuctionResult!
 
   # A cursor for use in pagination
   cursor: String!
@@ -5019,14 +5019,14 @@ type ConversationConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [ConversationEdge]
+  edges: [ConversationEdge!]!
   totalUnreadCount: Int
 }
 
 # An edge in a connection.
 type ConversationEdge {
   # The item at the end of the edge
-  node: Conversation
+  node: Conversation!
 
   # A cursor for use in pagination
   cursor: String!
@@ -5313,13 +5313,13 @@ type CreditCardConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [CreditCardEdge]
+  edges: [CreditCardEdge!]!
 }
 
 # An edge in a connection.
 type CreditCardEdge {
   # The item at the end of the edge
-  node: CreditCard
+  node: CreditCard!
 
   # A cursor for use in pagination
   cursor: String!
@@ -5807,7 +5807,7 @@ type FairConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [FairEdge]
+  edges: [FairEdge!]!
   pageCursors: PageCursors
   totalCount: Int
 }
@@ -5838,7 +5838,7 @@ type FairCounts {
 # An edge in a connection.
 type FairEdge {
   # The item at the end of the edge
-  node: Fair
+  node: Fair!
 
   # A cursor for use in pagination
   cursor: String!
@@ -6005,7 +6005,7 @@ type FollowArtistConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [FollowArtistEdge]
+  edges: [FollowArtistEdge!]!
 }
 
 type FollowArtistCounts {
@@ -6015,7 +6015,7 @@ type FollowArtistCounts {
 # An edge in a connection.
 type FollowArtistEdge {
   # The item at the end of the edge
-  node: FollowArtist
+  node: FollowArtist!
 
   # A cursor for use in pagination
   cursor: String!
@@ -6081,13 +6081,13 @@ type FollowedArtistsArtworksGroupConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [FollowedArtistsArtworksGroupEdge]
+  edges: [FollowedArtistsArtworksGroupEdge!]!
 }
 
 # An edge in a connection.
 type FollowedArtistsArtworksGroupEdge {
   # The item at the end of the edge
-  node: FollowedArtistsArtworksGroup
+  node: FollowedArtistsArtworksGroup!
 
   # A cursor for use in pagination
   cursor: String!
@@ -6104,13 +6104,13 @@ type FollowedFairConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [FollowedFairEdge]
+  edges: [FollowedFairEdge!]!
 }
 
 # An edge in a connection.
 type FollowedFairEdge {
   # The item at the end of the edge
-  node: Fair
+  node: Fair!
 
   # A cursor for use in pagination
   cursor: String!
@@ -6122,13 +6122,13 @@ type FollowedShowConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [FollowedShowEdge]
+  edges: [FollowedShowEdge!]!
 }
 
 # An edge in a connection.
 type FollowedShowEdge {
   # The item at the end of the edge
-  node: Show
+  node: Show!
 
   # A cursor for use in pagination
   cursor: String!
@@ -6150,13 +6150,13 @@ type FollowGeneConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [FollowGeneEdge]
+  edges: [FollowGeneEdge!]!
 }
 
 # An edge in a connection.
 type FollowGeneEdge {
   # The item at the end of the edge
-  node: FollowGene
+  node: FollowGene!
 
   # A cursor for use in pagination
   cursor: String!
@@ -6414,7 +6414,7 @@ type GeneArtworksConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [GeneArtworksEdge]
+  edges: [GeneArtworksEdge!]!
 
   # Returns aggregation counts for the given filter query.
   aggregations: [ArtworksAggregationResults]
@@ -6424,7 +6424,7 @@ type GeneArtworksConnection {
 # An edge in a connection.
 type GeneArtworksEdge {
   # The item at the end of the edge
-  node: Artwork
+  node: Artwork!
 
   # A cursor for use in pagination
   cursor: String!
@@ -6436,13 +6436,13 @@ type GeneConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [GeneEdge]
+  edges: [GeneEdge!]!
 }
 
 # An edge in a connection.
 type GeneEdge {
   # The item at the end of the edge
-  node: Gene
+  node: Gene!
 
   # A cursor for use in pagination
   cursor: String!
@@ -6467,13 +6467,13 @@ type GeneFamilyConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [GeneFamilyEdge]
+  edges: [GeneFamilyEdge!]!
 }
 
 # An edge in a connection.
 type GeneFamilyEdge {
   # The item at the end of the edge
-  node: GeneFamily
+  node: GeneFamily!
 
   # A cursor for use in pagination
   cursor: String!
@@ -8152,13 +8152,13 @@ type MessageConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [MessageEdge]
+  edges: [MessageEdge!]!
 }
 
 # An edge in a connection.
 type MessageEdge {
   # The item at the end of the edge
-  node: Message
+  node: Message!
 
   # A cursor for use in pagination
   cursor: String!
@@ -8515,13 +8515,13 @@ type NotificationsFeedItemConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [NotificationsFeedItemEdge]
+  edges: [NotificationsFeedItemEdge!]!
 }
 
 # An edge in a connection.
 type NotificationsFeedItemEdge {
   # The item at the end of the edge
-  node: NotificationsFeedItem
+  node: NotificationsFeedItem!
 
   # A cursor for use in pagination
   cursor: String!
@@ -8642,13 +8642,13 @@ type OfferConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [OfferEdge]
+  edges: [OfferEdge!]!
 }
 
 # An edge in a connection.
 type OfferEdge {
   # The item at the end of the edge
-  node: Offer
+  node: Offer!
 
   # A cursor for use in pagination
   cursor: String!
@@ -9102,7 +9102,7 @@ type OrderConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [OrderEdge]
+  edges: [OrderEdge!]!
   totalCount: Int
   totalPages: Int
   pageCursors: PageCursors
@@ -9111,7 +9111,7 @@ type OrderConnection {
 # An edge in a connection.
 type OrderEdge {
   # The item at the end of the edge
-  node: Order
+  node: Order!
 
   # A cursor for use in pagination
   cursor: String!
@@ -9159,13 +9159,13 @@ type OrderFulfillmentConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [OrderFulfillmentEdge]
+  edges: [OrderFulfillmentEdge!]!
 }
 
 # An edge in a connection.
 type OrderFulfillmentEdge {
   # The item at the end of the edge
-  node: OrderFulfillment
+  node: OrderFulfillment!
 
   # A cursor for use in pagination
   cursor: String!
@@ -9252,13 +9252,13 @@ type OrderLineItemConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [OrderLineItemEdge]
+  edges: [OrderLineItemEdge!]!
 }
 
 # An edge in a connection.
 type OrderLineItemEdge {
   # The item at the end of the edge
-  node: OrderLineItem
+  node: OrderLineItem!
 
   # A cursor for use in pagination
   cursor: String!
@@ -9457,7 +9457,7 @@ type PartnerArtistConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [PartnerArtistEdge]
+  edges: [PartnerArtistEdge!]!
 }
 
 type PartnerArtistCounts {
@@ -9476,7 +9476,7 @@ type PartnerArtistCounts {
 # An edge in a connection.
 type PartnerArtistEdge {
   # The item at the end of the edge
-  node: Partner
+  node: Partner!
 
   # A cursor for use in pagination
   cursor: String!
@@ -11021,7 +11021,7 @@ type SaleArtworkConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [SaleArtworkEdge]
+  edges: [SaleArtworkEdge!]!
 }
 
 type SaleArtworkCounts {
@@ -11054,7 +11054,7 @@ type SaleArtworkCurrentBid {
 # An edge in a connection.
 type SaleArtworkEdge {
   # The item at the end of the edge
-  node: SaleArtwork
+  node: SaleArtwork!
 
   # A cursor for use in pagination
   cursor: String!
@@ -11196,7 +11196,7 @@ type SaleArtworksConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [SaleArtworksEdge]
+  edges: [SaleArtworksEdge!]!
 
   # Returns aggregation counts for the given filter query.
   aggregations: [SaleArtworksAggregationResults]
@@ -11206,7 +11206,7 @@ type SaleArtworksConnection {
 # An edge in a connection.
 type SaleArtworksEdge {
   # The item at the end of the edge
-  node: SaleArtwork
+  node: SaleArtwork!
 
   # A cursor for use in pagination
   cursor: String!
@@ -11259,7 +11259,7 @@ type SearchableConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [SearchableEdge]
+  edges: [SearchableEdge!]!
   pageCursors: PageCursors
   totalCount: Int
 
@@ -11270,7 +11270,7 @@ type SearchableConnection {
 # An edge in a connection.
 type SearchableEdge {
   # The item at the end of the edge
-  node: Searchable
+  node: Searchable!
 
   # A cursor for use in pagination
   cursor: String!
@@ -11798,7 +11798,7 @@ type ShowConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [ShowEdge]
+  edges: [ShowEdge!]!
   pageCursors: PageCursors
   totalCount: Int
 }
@@ -11819,7 +11819,7 @@ type ShowCounts {
 # An edge in a connection.
 type ShowEdge {
   # The item at the end of the edge
-  node: Show
+  node: Show!
 
   # A cursor for use in pagination
   cursor: String!
@@ -11835,13 +11835,13 @@ type ShowFollowArtistConnection {
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [ShowFollowArtistEdge]
+  edges: [ShowFollowArtistEdge!]!
 }
 
 # An edge in a connection.
 type ShowFollowArtistEdge {
   # The item at the end of the edge
-  node: ShowFollowArtist
+  node: ShowFollowArtist!
 
   # A cursor for use in pagination
   cursor: String!

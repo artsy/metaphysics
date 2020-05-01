@@ -6,6 +6,7 @@ import { GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 export const FollowedFairConnection = connectionDefinitions({
+  nonNullable: true,
   name: "FollowedFair",
   // This never ended up being used in the underlying lib.
   // edgeType: FollowedFairEdge,

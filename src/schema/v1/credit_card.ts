@@ -113,6 +113,7 @@ export const {
   connectionType: CreditCardConnection,
   edgeType: CreditCardEdge,
 } = connectionDefinitions({
+  nonNullable: true,
   nodeType: CreditCardType,
 })
 

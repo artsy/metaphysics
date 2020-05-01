@@ -2,11 +2,11 @@ import { CreditCardConnection } from "schema/v2/credit_card"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { GraphQLFieldConfig } from "graphql/type"
+import { GraphQLFieldConfig, GraphQLNonNull } from "graphql/type"
 import { ResolverContext } from "types/graphql"
 
 export const CreditCards: GraphQLFieldConfig<void, ResolverContext> = {
-  type: CreditCardConnection,
+  type: new GraphQLNonNull(CreditCardConnection),
   args: pageable({}),
   description: "A list of the current user’s credit cards",
   resolve: (_root, options, { meCreditCardsLoader }) => {

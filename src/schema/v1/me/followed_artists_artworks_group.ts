@@ -67,8 +67,10 @@ const FollowedArtistsArtworksGroup: GraphQLFieldConfig<
   void,
   ResolverContext
 > = {
-  type: connectionDefinitions({ nodeType: FollowedArtistsArtworksGroupType })
-    .connectionType,
+  type: connectionDefinitions({
+    nonNullable: true,
+    nodeType: FollowedArtistsArtworksGroupType,
+  }).connectionType,
   description:
     "A list of published artworks by followed artists (grouped by date and artists).",
   args: pageable({

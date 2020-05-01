@@ -5,6 +5,7 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
+  GraphQLNonNull,
 } from "graphql"
 import ShowSorts from "schema/v2/sorts/show_sorts"
 import { merge, defaults, reject, includes } from "lodash"
@@ -69,7 +70,7 @@ export const ShowsConnectionField: GraphQLFieldConfig<
   { id: string },
   ResolverContext
 > = {
-  type: ShowsConnection.connectionType,
+  type: new GraphQLNonNull(ShowsConnection.connectionType),
   args: pageable(ShowArgs),
   resolve: ({ id }, args, { relatedShowsLoader }) => {
     const gravityArgs = {

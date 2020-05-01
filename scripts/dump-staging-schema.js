@@ -22,4 +22,4 @@ const env = {
   ...getStagingEnv(),
 }
 
-execSync("yarn dump:local", { env })
+execSync("yarn dump:local", { env, stdio: "inherit" })

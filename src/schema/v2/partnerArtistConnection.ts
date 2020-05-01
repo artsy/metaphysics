@@ -10,4 +10,5 @@ export const PartnerArtistConnection = connectionDefinitions({
   name: "PartnerArtist",
   nodeType: PartnerType,
   edgeFields: fields,
+  nonNullable: true,
 }).connectionType

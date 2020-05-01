@@ -6,6 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
+  GraphQLNonNull,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -64,6 +65,7 @@ const SaleArtworksConnectionType = connectionWithCursorInfo({
     counts: SaleArtworkCounts,
   },
   connectionInterfaces: [ArtworkConnectionInterface],
+  nonNullable: true,
 }).connectionType
 
 export const SaleArtworksConnectionField: GraphQLFieldConfig<
@@ -110,7 +112,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     },
   }),
   description: "Sale Artworks search results",
-  type: SaleArtworksConnectionType,
+  type: new GraphQLNonNull(SaleArtworksConnectionType),
   resolve: async (
     _root,
     {

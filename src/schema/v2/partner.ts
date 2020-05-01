@@ -51,6 +51,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       name: "ArtistPartner",
       nodeType: ArtistType,
       edgeFields: partnerArtistFields,
+      nonNullable: true,
     }).connectionType
 
     return {
@@ -58,7 +59,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       cached,
       artistsConnection: {
         description: "A connection of artists at a partner.",
-        type: ArtistPartnerConnection,
+        type: new GraphQLNonNull(ArtistPartnerConnection),
         args: pageable({
           sort: ArtistSorts,
           representedBy: {
@@ -98,7 +99,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       artworksConnection: {
         description: "A connection of artworks from a Partner.",
-        type: artworkConnection.connectionType,
+        type: new GraphQLNonNull(artworkConnection.connectionType),
         args: pageable(artworksArgs),
         resolve: ({ id }, args, { partnerArtworksLoader }) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
@@ -262,7 +263,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       locationsConnection: {
         description: "A connection of locations from a Partner.",
-        type: locationsConnection.connectionType,
+        type: new GraphQLNonNull(locationsConnection.connectionType),
         args: pageable({}),
         resolve: ({ id }, args, { partnerLocationsConnectionLoader }) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
@@ -301,7 +302,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       showsConnection: {
         description: "A connection of shows from a Partner.",
-        type: ShowsConnection.connectionType,
+        type: new GraphQLNonNull(ShowsConnection.connectionType),
         args: pageable({
           sort: {
             type: ShowSorts,

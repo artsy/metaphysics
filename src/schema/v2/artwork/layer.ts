@@ -1,6 +1,11 @@
 import { artworkConnection } from "./index"
 import { IDFields } from "schema/v2/object_identification"
-import { GraphQLObjectType, GraphQLString, GraphQLFieldConfig } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLFieldConfig,
+  GraphQLNonNull,
+} from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
@@ -16,7 +21,7 @@ const ArtworkLayerType = new GraphQLObjectType<any, ResolverContext>({
     // hasNextPage is always false.
     artworksConnection: {
       description: "A connection of artworks from a Layer.",
-      type: artworkConnection.connectionType,
+      type: new GraphQLNonNull(artworkConnection.connectionType),
       args: pageable(),
       resolve: (
         { id, type, artwork_id },

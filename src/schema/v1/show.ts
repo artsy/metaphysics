@@ -645,8 +645,10 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ fair }) => (isExisty(fair) ? "Fair Booth" : "Show"),
     },
     followedArtists: {
-      type: connectionDefinitions({ nodeType: FollowArtistType })
-        .connectionType,
+      type: connectionDefinitions({
+        nonNullable: true,
+        nodeType: FollowArtistType,
+      }).connectionType,
       args: pageable({}),
       description:
         "A Connection of followed artists by current user for this show",

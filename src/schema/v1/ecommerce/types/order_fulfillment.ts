@@ -26,5 +26,6 @@ export const {
   connectionType: OrderFulfillmentConnection,
   edgeType: OrderFulfillmentEdge,
 } = connectionDefinitions({
+  nonNullable: true,
   nodeType: OrderFulfillmentType,
 })

@@ -1,4 +1,5 @@
-patch-package
+diff --git a/node_modules/graphql-relay/lib/connection/arrayconnection.js b/node_modules/graphql-relay/lib/connection/arrayconnection.js
+index 9ccedfa..b11e2de 100644
 --- a/node_modules/graphql-relay/lib/connection/arrayconnection.js
 +++ b/node_modules/graphql-relay/lib/connection/arrayconnection.js
 @@ -60,7 +60,9 @@ function connectionFromArraySlice(arraySlice, args, meta) {
@@ -33,6 +34,8 @@ patch-package
    });
  
    var firstEdge = edges[0];
+diff --git a/node_modules/graphql-relay/lib/connection/connection.js b/node_modules/graphql-relay/lib/connection/connection.js
+index e8f9f52..1cf8cf8 100644
 --- a/node_modules/graphql-relay/lib/connection/connection.js
 +++ b/node_modules/graphql-relay/lib/connection/connection.js
 @@ -3,7 +3,7 @@
@@ -44,7 +47,7 @@ patch-package
  
  var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
                                                                                                                                                                                                                                                                     * Copyright (c) 2015-present, Facebook, Inc.
-@@ -66,9 +66,10 @@ function connectionDefinitions(config) {
+@@ -66,13 +66,14 @@ function connectionDefinitions(config) {
    var connectionFields = config.connectionFields || {};
    var resolveNode = config.resolveNode;
    var resolveCursor = config.resolveCursor;
@@ -56,6 +59,11 @@ patch-package
      fields: function fields() {
        return _extends({
          node: {
+-          type: nodeType,
++          type: config.nonNullable ? new _graphql.GraphQLNonNull(nodeType) : nodeType,
+           resolve: resolveNode,
+           description: 'The item at the end of the edge'
+         },
 @@ -88,6 +89,7 @@ function connectionDefinitions(config) {
    var connectionType = new _graphql.GraphQLObjectType({
      name: name + 'Connection',
@@ -64,6 +72,15 @@ patch-package
      fields: function fields() {
        return _extends({
          pageInfo: {
+@@ -95,7 +97,7 @@ function connectionDefinitions(config) {
+           description: 'Information to aid in pagination.'
+         },
+         edges: {
+-          type: new _graphql.GraphQLList(edgeType),
++          type: new _graphql.GraphQLNonNull(new _graphql.GraphQLList(new _graphql.GraphQLNonNull(edgeType))),
+           description: 'A list of edges.'
+         }
+       }, resolveMaybeThunk(connectionFields));
 @@ -108,7 +110,7 @@ function connectionDefinitions(config) {
  /**
   * The common page info type used by all connections.
@@ -73,6 +90,8 @@ patch-package
    name: 'PageInfo',
    description: 'Information about pagination in a connection.',
    fields: function fields() {
+diff --git a/node_modules/graphql-relay/lib/index.js b/node_modules/graphql-relay/lib/index.js
+index 1ed2f2d..18eab87 100644
 --- a/node_modules/graphql-relay/lib/index.js
 +++ b/node_modules/graphql-relay/lib/index.js
 @@ -30,6 +30,12 @@ Object.defineProperty(exports, 'forwardConnectionArgs', {

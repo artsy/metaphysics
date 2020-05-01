@@ -1,7 +1,12 @@
-patch-package
+diff --git a/node_modules/@types/graphql-relay/index.d.ts b/node_modules/@types/graphql-relay/index.d.ts
+index 67edfa3..5779379 100644
 --- a/node_modules/@types/graphql-relay/index.d.ts
 +++ b/node_modules/@types/graphql-relay/index.d.ts
-@@ -70,8 +70,11 @@ export interface ConnectionConfig {
+@@ -67,11 +67,15 @@ export type ConnectionConfigNodeType =
+ 
+ export interface ConnectionConfig {
+     name?: string | null;
++    nonNullable: boolean
      nodeType: ConnectionConfigNodeType;
      resolveNode?: GraphQLFieldResolver<any, any> | null;
      resolveCursor?: GraphQLFieldResolver<any, any> | null;
@@ -13,7 +18,7 @@ patch-package
  }
  
  export interface GraphQLConnectionDefinitions {
-@@ -104,6 +107,8 @@ export interface PageInfo {
+@@ -104,6 +108,8 @@ export interface PageInfo {
      hasNextPage?: boolean | null;
  }
  
@@ -22,7 +27,7 @@ patch-package
  /**
   * A flow type designed to be exposed as a `Connection` over GraphQL.
   */
-@@ -135,6 +140,8 @@ export interface ConnectionArguments {
+@@ -135,6 +141,8 @@ export interface ConnectionArguments {
  export interface ArraySliceMetaInfo {
      sliceStart: number;
      arrayLength: number;
@@ -31,7 +36,7 @@ patch-package
  }
  
  /**
-@@ -211,11 +218,11 @@ export function getOffsetWithDefault(
+@@ -211,11 +219,11 @@ export function getOffsetWithDefault(
  
  // mutation/mutation.js
  
@@ -47,7 +52,7 @@ patch-package
  
  /**
   * A description of a mutation consumable by mutationWithClientMutationId
-@@ -231,12 +238,12 @@ export type mutationFn = (
+@@ -231,12 +239,12 @@ export type mutationFn = (
   * input field, and it should return an Object with a key for each
   * output field. It may return synchronously, or return a Promise.
   */
@@ -63,7 +68,7 @@ patch-package
      deprecationReason?: string;
  }
  
-@@ -244,8 +251,8 @@ export interface MutationConfig {
+@@ -244,8 +252,8 @@ export interface MutationConfig {
   * Returns a GraphQLFieldConfig for the mutation described by the
   * provided MutationConfig.
   */

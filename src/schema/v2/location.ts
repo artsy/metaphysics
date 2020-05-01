@@ -126,5 +126,6 @@ export const LocationField: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export const locationsConnection = connectionWithCursorInfo({
+  nonNullable: true,
   nodeType: LocationType,
 })

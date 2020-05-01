@@ -155,6 +155,7 @@ export function createPageCursors(
 export function connectionWithCursorInfo(type, connectionFields = {}) {
   return connectionDefinitions({
     nodeType: type,
+    nonNullable: true,
     connectionFields: {
       pageCursors: {
         type: PageCursorsType,

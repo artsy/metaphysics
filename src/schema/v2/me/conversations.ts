@@ -9,6 +9,7 @@ import { ResolverContext } from "types/graphql"
 
 const Conversations: GraphQLFieldConfig<void, ResolverContext> = {
   type: connectionDefinitions({
+    nonNullable: true,
     nodeType: ConversationType,
     connectionFields: {
       totalUnreadCount: {

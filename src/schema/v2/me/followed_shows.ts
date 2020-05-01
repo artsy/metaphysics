@@ -17,6 +17,7 @@ const getValidCitySlugs = () => Object.keys(location_by_city_slug).join(", ")
 
 export const FollowedShowConnection = connectionDefinitions({
   name: "FollowedShow",
+  nonNullable: true,
   nodeType: ShowType,
 })
 

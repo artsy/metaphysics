@@ -6,6 +6,7 @@ import {
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLNonNull,
 } from "graphql"
 
 import { LatLngType } from "../location"
@@ -55,7 +56,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
       type: LatLngType,
     },
     showsConnection: {
-      type: ShowsConnection.connectionType,
+      type: new GraphQLNonNull(ShowsConnection.connectionType),
       args: pageable({
         sort: {
           type: ShowSorts,
@@ -99,7 +100,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         }),
     },
     fairsConnection: {
-      type: fairConnection.connectionType,
+      type: new GraphQLNonNull(fairConnection.connectionType),
       args: pageable({
         sort: FairSorts,
         status: EventStatus,
@@ -133,7 +134,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
             },
           },
           showsConnection: {
-            type: ShowsConnection.connectionType,
+            type: new GraphQLNonNull(ShowsConnection.connectionType),
             args: pageable({
               sort: {
                 type: ShowSorts,

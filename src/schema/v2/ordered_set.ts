@@ -40,7 +40,7 @@ const OrderedSetType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     itemsConnection: {
-      type: artworkConnection.connectionType,
+      type: new GraphQLNonNull(artworkConnection.connectionType),
       description:
         "Returns a connection of the items. Only Artwork supported right now.",
       args: pageable(),

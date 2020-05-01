@@ -5,6 +5,7 @@ import {
   GraphQLInt,
   GraphQLString,
   GraphQLList,
+  GraphQLNonNull,
 } from "graphql"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { artistConnection } from "schema/v2/artist"
@@ -34,7 +35,7 @@ export const Related = {
     name: "ArtistRelatedData",
     fields: () => ({
       genes: {
-        type: geneConnection,
+        type: new GraphQLNonNull(geneConnection),
         args: pageable({}),
         resolve: ({ id }, args, { relatedGenesLoader }) => {
           return relatedGenesLoader({ artist: [id] }).then(response => {
@@ -43,7 +44,7 @@ export const Related = {
         },
       },
       artistsConnection: {
-        type: artistConnection.connectionType,
+        type: new GraphQLNonNull(artistConnection.connectionType),
         args: pageable({
           excludeArtistsWithoutArtworks: {
             type: GraphQLBoolean,

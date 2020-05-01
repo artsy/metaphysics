@@ -899,7 +899,7 @@ export const ArtworkEdgeInterface = new GraphQLInterfaceType({
   name: "ArtworkEdgeInterface",
   fields: {
     node: {
-      type: ArtworkType,
+      type: new GraphQLNonNull(ArtworkType),
     },
     cursor: {
       type: GraphQLString,
@@ -912,11 +912,16 @@ export const ArtworkConnectionInterface = new GraphQLInterfaceType({
   fields: {
     pageCursors: { type: new GraphQLNonNull(PageCursorsType) },
     pageInfo: { type: new GraphQLNonNull(PageInfoType) },
-    edges: { type: new GraphQLList(ArtworkEdgeInterface) },
+    edges: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ArtworkEdgeInterface))
+      ),
+    },
   },
 })
 
 export const artworkConnection = connectionWithCursorInfo({
+  nonNullable: true,
   nodeType: ArtworkType,
   connectionInterfaces: [ArtworkConnectionInterface],
   edgeInterfaces: [ArtworkEdgeInterface],

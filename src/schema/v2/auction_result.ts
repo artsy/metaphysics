@@ -240,6 +240,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 export const auctionResultConnection = connectionWithCursorInfo({
+  nonNullable: true,
   nodeType: AuctionResultType,
   connectionFields: {
     createdYearRange: {

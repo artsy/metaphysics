@@ -16,6 +16,7 @@ const location_by_city_slug = cityData.reduce((acc, val) => {
 const getValidCitySlugs = () => Object.keys(location_by_city_slug).join(", ")
 
 export const FollowedShowConnection = connectionDefinitions({
+  nonNullable: true,
   name: "FollowedShow",
   // This never ended up being used in the underlying lib.
   // edgeType: FollowedShowEdge,

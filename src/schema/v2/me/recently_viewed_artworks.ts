@@ -2,14 +2,14 @@ import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 
 import { artworkConnection } from "schema/v2/artwork"
-import { GraphQLFieldConfig } from "graphql"
+import { GraphQLFieldConfig, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 export const RecentlyViewedArtworks: GraphQLFieldConfig<
   { recently_viewed_artwork_ids: string[] },
   ResolverContext
 > = {
-  type: artworkConnection.connectionType,
+  type: new GraphQLNonNull(artworkConnection.connectionType),
   args: pageable({}),
   description: "A list of the current user’s recently viewed artworks.",
   resolve: (
