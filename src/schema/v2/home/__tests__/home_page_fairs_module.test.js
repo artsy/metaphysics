@@ -59,6 +59,44 @@ describe("HomePageFairsModule", () => {
     })
   })
 
+  it("puts fairs that haven't started yet at the end of the results", async () => {
+    const fairs = [
+      {
+        mobile_image: {},
+        id: "future-fair",
+        start_at: "2027-11-03T10:00:00+00:00",
+        name: "Future Fair",
+      },
+      {
+        mobile_image: {},
+        id: "current-fair",
+        start_at: "2017-11-03T10:00:00+00:00",
+        name: "Current Fair",
+      },
+    ]
+
+    const query = `
+      {
+        homePage {
+          fairsModule {
+            results {
+              slug
+              name
+              isActive
+            }
+          }
+        }
+      }
+    `
+
+    const fairModule = await runQuery(query, {
+      fairsLoader: options => Promise.resolve({ body: fairs }),
+    })
+    const results = fairModule.homePage.fairsModule.results
+    expect(results[0].slug).toEqual("current-fair")
+    expect(results[1].slug).toEqual("future-fair")
+  })
+
   it("does not request past fairs if it has 8 running ones", () => {
     const aFair = {
       id: "artissima-2017",
