@@ -21,6 +21,10 @@ export const gravityStitchingEnvironment = (
         ): ArtworkConnection
         partner: Partner
       }
+
+      extend type Partner {
+        viewingRoomsConnection: ViewingRoomConnection
+      }
     `,
     resolvers: {
       Me: {
@@ -71,6 +75,28 @@ export const gravityStitchingEnvironment = (
               fieldName: "partner",
               args: {
                 id,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Partner: {
+        viewingRoomsConnection: {
+          fragment: gql`
+            ... on Partner {
+              internalID
+            }
+          `,
+          resolve: ({ internalID: partner_id }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "viewingRooms",
+              args: {
+                partner_id,
+                ...args,
               },
               context,
               info,
