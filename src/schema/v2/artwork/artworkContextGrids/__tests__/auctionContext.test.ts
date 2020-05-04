@@ -1,6 +1,7 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { assign } from "lodash"
+import artworks from 'test/fixtures/gravity/artworks_array.json'
 
 describe("Default Context", () => {
   let context: any
@@ -56,9 +57,9 @@ describe("Default Context", () => {
     ]
 
     const saleArtworks = [
-      { id: "saleArtwork1", title: "Sale Artwork 1" },
-      { id: "saleArtwork2", title: "Sale Artwork 2" },
-      { id: "saleArtwork3", title: "Sale Artwork 3" },
+      { id: "saleArtwork1", title: "Sale Artwork 1", artwork: artworks[0] },
+      { id: "saleArtwork2", title: "Sale Artwork 2", artwork: artworks[1] },
+      { id: "saleArtwork3", title: "Sale Artwork 3", artwork: artworks[2] },
     ]
 
     context = {
