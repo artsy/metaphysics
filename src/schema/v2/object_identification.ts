@@ -33,6 +33,7 @@ import {
   GraphQLInterfaceType,
   GraphQLFieldConfig,
   GraphQLFieldConfigMap,
+  isNonNullType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -156,7 +157,7 @@ const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
       ).then(data => {
         // Add the already known type so `NodeInterface` can pluck that out in
         // its `resolveType` implementation.
-        return { __type: type, ...data }
+        return { __type: isNonNullType(type) ? type.ofType : type, ...data }
       })
     }
   },
