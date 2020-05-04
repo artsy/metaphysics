@@ -92,8 +92,14 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      artwork: { type: Artwork.type, resolve: ({ artwork }) => artwork },
-      node: { type: Artwork.type, resolve: ({ artwork }) => artwork },
+      artwork: {
+        type: new GraphQLNonNull(Artwork.type),
+        resolve: ({ artwork }) => artwork,
+      },
+      node: {
+        type: new GraphQLNonNull(Artwork.type),
+        resolve: ({ artwork }) => artwork,
+      },
       cursor: { type: GraphQLString },
       counts: {
         resolve: x => x,
@@ -130,9 +136,10 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           display_estimate_dollars,
         }) => {
           return (
-            compact(
-              [display_low_estimate_dollars, display_high_estimate_dollars]
-            ).join("–") || display_estimate_dollars
+            compact([
+              display_low_estimate_dollars,
+              display_high_estimate_dollars,
+            ]).join("–") || display_estimate_dollars
           )
         },
       },

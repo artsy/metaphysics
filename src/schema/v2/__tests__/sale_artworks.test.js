@@ -1,6 +1,7 @@
 import _ from "lodash"
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import artworks from 'test/fixtures/gravity/artworks_array.json'
 
 describe("Sale Artworks", () => {
   const execute = async (gravityResponse, query, context = {}) => {
@@ -11,7 +12,7 @@ describe("Sale Artworks", () => {
   }
 
   it("pulls from /sale_artworks if `live_sale, include_lots_by_followed_artists, is_auction to true` ", async () => {
-    const hits = _.fill(Array(10), { id: "foo" })
+    const hits = _.fill(Array(10), { id: "foo", artwork: artworks[0] })
     const totalCount = hits.length * 2
     const gravityResponse = {
       body: hits,
@@ -51,7 +52,7 @@ describe("Sale Artworks", () => {
   })
 
   it("returns 10 items by default", async () => {
-    const hits = _.fill(Array(10), { id: "foo" })
+    const hits = _.fill(Array(10), { id: "foo", artwork: artworks[0] })
     const totalCount = hits.length * 2
     const gravityResponse = {
       hits,
@@ -91,7 +92,7 @@ describe("Sale Artworks", () => {
 
   it("allows for adjustable size counts", async () => {
     const size = 1
-    const hits = _.fill(Array(size), { id: "foo" })
+    const hits = _.fill(Array(size), { id: "foo", artwork: artworks[0] })
     const gravityResponse = {
       hits,
       aggregations: {
@@ -122,7 +123,7 @@ describe("Sale Artworks", () => {
   })
 
   it("allows for cursor offsets", async () => {
-    const hits = _.fill(Array(20), { id: "foo" })
+    const hits = _.fill(Array(20), { id: "foo", artwork: artworks[0] })
     const gravityResponse = {
       hits,
       aggregations: {
