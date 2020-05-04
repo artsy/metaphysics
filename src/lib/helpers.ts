@@ -58,20 +58,29 @@ export const truncate = (string, length, append = "…") => {
   const limit = ~~length
   return x.length > limit ? x.slice(0, limit) + append : x
 }
-export const toQueryString = (options = {}) =>
+export const toQueryString = (options = {}) => {
+  // qs ignores empty array/object and prevents us from sending `?array[]=`.
+  // This is a workaround to map an empty array to `[null]` so it gets treated
+  // as an empty string.
+  // https://github.com/ljharb/qs/issues/362
+  const mapEmptyArray = a => (Array.isArray(a) && a.length === 0 ? [null] : a)
+
   /**
    * In the case of batched requests we want to explicitly _not_ sort the
    * params because the order matters to dataloader
    */
   // @ts-ignore
-  options.batched
+  return options.batched
     ? stringify(options, {
         arrayFormat: "brackets",
+        filter: (_prefix, v) => mapEmptyArray(v),
       })
     : stringify(options, {
         arrayFormat: "brackets",
         sort: (a, b) => a.localeCompare(b),
+        filter: (_prefix, v) => mapEmptyArray(v),
       })
+}
 export const toKey = (path, options = {}) => `${path}?${toQueryString(options)}`
 export const exclude = (values?: any[], property?: any) => xs =>
   reject(xs, x => includes(values, x[property]))
