@@ -39,11 +39,9 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: {
     ...InternalIDFields,
-    // This alias exists specifically because our fork of Relay Classic did not yet properly support using `__id`
-    // instead of `id`, which lead to Relay overwriting `id` fields with the `__id` value. Thus using a completely
-    // different field name works around this. You should probably not use it.
     impulseID: {
       description: "Impulse message id.",
+      deprecationReason: "Prefer internalID",
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ id }) => id,
     },
