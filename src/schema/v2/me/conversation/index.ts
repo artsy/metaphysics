@@ -276,9 +276,10 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     lastMessage: {
       type: GraphQLString,
       description: "This is a snippet of text from the last message.",
-      deprecationReason: "Prefer querying `messagesConnection(last:1)`",
-      resolve: conversation =>
-        get(conversation, "_embedded.last_message.snippet"),
+      resolve: ({ _embedded = {} }) => {
+        const lastMessage = _embedded.last_message || {}
+        return lastMessage.snippet.split("About this collector")[0].trim()
+      },
     },
     lastMessageAt: date,
 

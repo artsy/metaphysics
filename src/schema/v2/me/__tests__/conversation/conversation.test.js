@@ -13,7 +13,7 @@ describe("Me", () => {
           from_name: "Percy",
           _embedded: {
             last_message: {
-              snippet: "Cool snippet",
+              snippet: "Cool snippet About this collector: Percy is a good cat",
               from_email_address: "other-collector@example.com",
               id: "25",
             },
@@ -129,7 +129,7 @@ describe("Me", () => {
               from {
                 email
               }
-              lastMessageID
+              lastMessage
               unread
               messages(first: 10) {
                 edges {
