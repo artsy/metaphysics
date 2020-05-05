@@ -10561,7 +10561,7 @@ type Query {
   ): [SecondFactor!]!
 
   # Find a viewing room by ID
-  viewingRoom(id: ID!): ViewingRoom
+  viewingRoom(idOrSlug: ID!): ViewingRoom
 
   # List viewing rooms
   viewingRooms(
@@ -12817,7 +12817,7 @@ type ViewingRoom {
 
   # ID of the partner associated with this viewing room
   partnerID: String!
-  pullQuote: String!
+  pullQuote: String
   slug: String!
 
   # Datetime when the viewing room is viewable

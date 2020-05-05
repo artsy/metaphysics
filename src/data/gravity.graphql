@@ -761,7 +761,7 @@ type Query {
   """
   Find a viewing room by ID
   """
-  viewingRoom(id: ID!): ViewingRoom
+  viewingRoom(idOrSlug: ID!): ViewingRoom
 
   """
   List viewing rooms
@@ -1040,7 +1040,7 @@ type ViewingRoom {
   ID of the partner associated with this viewing room
   """
   partnerID: String!
-  pullQuote: String!
+  pullQuote: String
   slug: String!
 
   """
