@@ -3322,7 +3322,6 @@ type Conversation implements Node {
 
   # This is a snippet of text from the last message.
   lastMessage: String
-    @deprecated(reason: "Prefer querying `messagesConnection(last:1)`")
   lastMessageAt(
     format: String
 

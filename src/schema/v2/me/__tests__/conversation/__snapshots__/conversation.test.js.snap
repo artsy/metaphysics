@@ -47,7 +47,7 @@ Object {
     },
     "initialMessage": "Loved some of the works at your fair booth!",
     "internalID": "420",
-    "lastMessageID": "25",
+    "lastMessage": "Cool snippet",
     "messages": Object {
       "edges": Array [
         Object {
