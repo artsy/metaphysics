@@ -3,7 +3,7 @@ services:
   metaphysics:
     command: env NODE_OPTIONS=--max_old_space_size=4096 yarn ci
     extends:
-      file: common.yml
+      file: build.yml
       service: metaphysics
     environment:
       - MEMCACHED_URL=metaphysics-memcached:11211

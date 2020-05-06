@@ -2,7 +2,7 @@ version: "2"
 services:
   metaphysics:
     extends:
-      file: common.yml
+      file: build.yml
       service: metaphysics
     environment:
       - MEMCACHED_URL=metaphysics-memcached:11211
