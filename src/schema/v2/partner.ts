@@ -51,7 +51,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       name: "ArtistPartner",
       nodeType: ArtistType,
       edgeFields: partnerArtistFields,
-      nonNullable: true,
+      nodeIsNonNullable: true,
     }).connectionType
 
     return {

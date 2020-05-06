@@ -59,7 +59,7 @@ const NotificationsFeedItemType = new GraphQLObjectType<any, ResolverContext>({
 
 const Notifications: GraphQLFieldConfig<void, ResolverContext> = {
   type: connectionDefinitions({
-    nonNullable: true,
+    nodeIsNonNullable: true,
     nodeType: NotificationsFeedItemType,
   }).connectionType,
   description:

@@ -60,7 +60,7 @@ index e8f9f52..1cf8cf8 100644
        return _extends({
          node: {
 -          type: nodeType,
-+          type: config.nonNullable ? new _graphql.GraphQLNonNull(nodeType) : nodeType,
++          type: config.nodeIsNonNullable ? new _graphql.GraphQLNonNull(nodeType) : nodeType,
            resolve: resolveNode,
            description: 'The item at the end of the edge'
          },

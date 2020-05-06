@@ -708,5 +708,5 @@ export default Artist
 
 export const artistConnection = connectionWithCursorInfo({
   nodeType: ArtistType,
-  nonNullable: true,
+  nodeIsNonNullable: true,
 })

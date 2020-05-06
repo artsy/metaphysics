@@ -15,7 +15,7 @@ import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
 const SavedArtworksConnection = connectionWithCursorInfo({
   name: "SavedArtworks",
   nodeType: ArtworkType,
-  nonNullable: true,
+  nodeIsNonNullable: true,
   connectionFields: {
     description: {
       type: new GraphQLNonNull(GraphQLString),

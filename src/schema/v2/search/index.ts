@@ -70,7 +70,7 @@ const SearchConnection = connectionWithCursorInfo({
   connectionFields: {
     aggregations: SearchAggregations,
   },
-  nonNullable: true,
+  nodeIsNonNullable: true,
 })
 
 export const Search: GraphQLFieldConfig<void, ResolverContext> = {

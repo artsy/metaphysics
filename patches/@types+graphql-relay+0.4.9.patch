@@ -1,12 +1,12 @@
 diff --git a/node_modules/@types/graphql-relay/index.d.ts b/node_modules/@types/graphql-relay/index.d.ts
-index 67edfa3..5779379 100644
+index 67edfa3..f9b2e1d 100644
 --- a/node_modules/@types/graphql-relay/index.d.ts
 +++ b/node_modules/@types/graphql-relay/index.d.ts
 @@ -67,11 +67,15 @@ export type ConnectionConfigNodeType =
  
  export interface ConnectionConfig {
      name?: string | null;
-+    nonNullable: boolean
++    nodeIsNonNullable: boolean
      nodeType: ConnectionConfigNodeType;
      resolveNode?: GraphQLFieldResolver<any, any> | null;
      resolveCursor?: GraphQLFieldResolver<any, any> | null;

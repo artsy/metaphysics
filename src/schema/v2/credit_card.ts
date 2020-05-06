@@ -118,7 +118,7 @@ export const {
   edgeType: CreditCardEdge,
 } = connectionDefinitions({
   nodeType: CreditCardType,
-  nonNullable: true,
+  nodeIsNonNullable: true,
 })
 
 export const CreditCard: GraphQLFieldConfig<void, ResolverContext> = {

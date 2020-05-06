@@ -22,7 +22,7 @@ const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
 
 const FollowedArtists: GraphQLFieldConfig<void, ResolverContext> = {
   type: connectionDefinitions({
-    nonNullable: true,
+    nodeIsNonNullable: true,
     nodeType: FollowArtistType,
   }).connectionType,
   args: pageable({}),

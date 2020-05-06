@@ -65,7 +65,7 @@ const SaleArtworksConnectionType = connectionWithCursorInfo({
     counts: SaleArtworkCounts,
   },
   connectionInterfaces: [ArtworkConnectionInterface],
-  nonNullable: true,
+  nodeIsNonNullable: true,
 }).connectionType
 
 export const SaleArtworksConnectionField: GraphQLFieldConfig<

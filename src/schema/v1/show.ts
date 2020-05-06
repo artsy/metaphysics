@@ -646,7 +646,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
     },
     followedArtists: {
       type: connectionDefinitions({
-        nonNullable: true,
+        nodeIsNonNullable: true,
         nodeType: FollowArtistType,
       }).connectionType,
       args: pageable({}),

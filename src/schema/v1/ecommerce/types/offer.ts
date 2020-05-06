@@ -82,6 +82,6 @@ export const {
   connectionType: OfferConnection,
   edgeType: OfferEdge,
 } = connectionDefinitions({
-  nonNullable: true,
+  nodeIsNonNullable: true,
   nodeType: OfferType,
 })

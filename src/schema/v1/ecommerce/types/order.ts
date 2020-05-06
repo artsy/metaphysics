@@ -218,7 +218,7 @@ export const {
   connectionType: OrderConnection,
   edgeType: OrderEdge,
 } = connectionDefinitions({
-  nonNullable: true,
+  nodeIsNonNullable: true,
   nodeType: OrderInterface,
   connectionFields: {
     totalCount: {

@@ -71,7 +71,7 @@ const BuyersPremium = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const saleArtworkConnection = connectionDefinitions({
-  nonNullable: true,
+  nodeIsNonNullable: true,
   nodeType: SaleArtworkType,
 }).connectionType
 

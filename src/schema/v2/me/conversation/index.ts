@@ -142,7 +142,7 @@ export const {
   edgeType: MessageEdge,
 } = connectionDefinitions({
   nodeType: MessageType,
-  nonNullable: true,
+  nodeIsNonNullable: true,
   connectionFields: {
     totalCount: {
       resolve: ({ total_count }) => total_count,

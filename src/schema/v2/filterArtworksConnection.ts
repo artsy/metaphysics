@@ -328,7 +328,7 @@ const connectionFields = () => {
 }
 
 const filterArtworksConnectionType = connectionDefinitions({
-  nonNullable: true,
+  nodeIsNonNullable: true,
   name: "FilterArtworks",
   nodeType: ArtworkType,
   connectionFields: {

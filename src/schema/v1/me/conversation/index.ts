@@ -140,7 +140,7 @@ export const {
   connectionType: MessageConnection,
   edgeType: MessageEdge,
 } = connectionDefinitions({
-  nonNullable: true,
+  nodeIsNonNullable: true,
   nodeType: MessageType,
 })
 

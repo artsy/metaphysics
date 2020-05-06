@@ -430,6 +430,6 @@ const Fair: GraphQLFieldConfig<void, ResolverContext> = {
 export default Fair
 
 export const fairConnection = connectionWithCursorInfo({
-  nonNullable: true,
+  nodeIsNonNullable: true,
   nodeType: FairType,
 })

@@ -6893,8 +6893,8 @@ type SaleArtwork implements Node & ArtworkEdgeInterface {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
-  artwork: Artwork
-  node: Artwork
+  artwork: Artwork!
+  node: Artwork!
   cursor: String
   counts: SaleArtworkCounts
 

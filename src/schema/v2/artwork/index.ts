@@ -921,7 +921,7 @@ export const ArtworkConnectionInterface = new GraphQLInterfaceType({
 })
 
 export const artworkConnection = connectionWithCursorInfo({
-  nonNullable: true,
+  nodeIsNonNullable: true,
   nodeType: ArtworkType,
   connectionInterfaces: [ArtworkConnectionInterface],
   edgeInterfaces: [ArtworkEdgeInterface],

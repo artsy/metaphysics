@@ -70,6 +70,6 @@ export const {
   connectionType: OrderLineItemConnection,
   edgeType: OrderLineItemEdge,
 } = connectionDefinitions({
-  nonNullable: true,
+  nodeIsNonNullable: true,
   nodeType: OrderLineItemType,
 })

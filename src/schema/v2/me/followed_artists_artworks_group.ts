@@ -63,7 +63,7 @@ const FollowedArtistsArtworksGroup: GraphQLFieldConfig<
   ResolverContext
 > = {
   type: connectionDefinitions({
-    nonNullable: true,
+    nodeIsNonNullable: true,
     nodeType: FollowedArtistsArtworksGroupType,
   }).connectionType,
   description:

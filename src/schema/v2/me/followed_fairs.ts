@@ -7,7 +7,7 @@ import { FairType } from "schema/v2/fair"
 export const FollowedFairConnection = connectionDefinitions({
   name: "FollowedFair",
   nodeType: FairType,
-  nonNullable: true,
+  nodeIsNonNullable: true,
 })
 
 const FollowedFairs: GraphQLFieldConfig<void, ResolverContext> = {

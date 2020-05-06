@@ -18,7 +18,7 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLNonNull(
     connectionWithCursorInfo({
       nodeType: SaleType,
-      nonNullable: true,
+      nodeIsNonNullable: true,
     }).connectionType
   ),
   description: "A list of Sales",

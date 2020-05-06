@@ -72,7 +72,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
       },
       artworks_connection: {
         type: connectionDefinitions({
-          nonNullable: true,
+          nodeIsNonNullable: true,
           name: "GeneArtworks",
           nodeType: ArtworkType,
           connectionFields: {
@@ -224,6 +224,6 @@ const Gene: GraphQLFieldConfig<void, ResolverContext> = {
 export default Gene
 
 export const geneConnection = connectionDefinitions({
-  nonNullable: true,
+  nodeIsNonNullable: true,
   nodeType: GeneType,
 }).connectionType

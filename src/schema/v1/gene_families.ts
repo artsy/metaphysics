@@ -9,7 +9,7 @@ import { GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 const { connectionType: GeneFamilyConnection } = connectionDefinitions({
-  nonNullable: true,
+  nodeIsNonNullable: true,
   nodeType: GeneFamilyType,
 })
 

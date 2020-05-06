@@ -589,7 +589,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLNonNull(
           connectionDefinitions({
             nodeType: FollowArtistType,
-            nonNullable: true,
+            nodeIsNonNullable: true,
           }).connectionType
         ),
         args: pageable({}),
@@ -634,5 +634,5 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
 export default Show
 export const ShowsConnection = connectionWithCursorInfo({
   nodeType: ShowType,
-  nonNullable: true,
+  nodeIsNonNullable: true,
 })

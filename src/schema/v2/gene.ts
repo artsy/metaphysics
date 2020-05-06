@@ -200,6 +200,6 @@ const Gene: GraphQLFieldConfig<void, ResolverContext> = {
 export default Gene
 
 export const geneConnection = connectionDefinitions({
-  nonNullable: true,
+  nodeIsNonNullable: true,
   nodeType: GeneType,
 }).connectionType

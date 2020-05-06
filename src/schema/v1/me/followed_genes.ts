@@ -18,7 +18,7 @@ export const FollowGeneType = new GraphQLObjectType<any, ResolverContext>({
 
 const FollowedGenes: GraphQLFieldConfig<void, ResolverContext> = {
   type: connectionDefinitions({
-    nonNullable: true,
+    nodeIsNonNullable: true,
     nodeType: FollowGeneType,
   }).connectionType,
   args: pageable({}),
