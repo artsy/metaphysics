@@ -8,7 +8,7 @@ import {
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
-const allowList = ["viewingRoom"]
+const allowList = ["viewingRoom", "viewingRooms"]
 
 export const executableGravitySchema = () => {
   const gravityTypeDefs = readFileSync("src/data/gravity.graphql", "utf8")

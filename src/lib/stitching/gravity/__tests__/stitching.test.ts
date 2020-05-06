@@ -62,3 +62,35 @@ it("resolves the partner field on ViewingRoom", async () => {
     info: expect.anything(),
   })
 })
+
+it("extends the Partner type with a viewingRoomsConnection field", async () => {
+  const mergedSchema = await getGravityMergedSchema()
+  const partnerFields = await getFieldsForTypeFromSchema(
+    "Partner",
+    mergedSchema
+  )
+
+  expect(partnerFields).toContain("viewingRoomsConnection")
+})
+
+it("resolves the viewing rooms field on Partner as a paginated list", async () => {
+  const { resolvers } = await getGravityStitchedSchema()
+  const { viewingRoomsConnection } = resolvers.Partner
+  const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+  viewingRoomsConnection.resolve(
+    { internalID: "partner-id" },
+    { first: 2 },
+    {},
+    info
+  )
+
+  expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+    args: { partner_id: "partner-id", first: 2 },
+    operation: "query",
+    fieldName: "viewingRooms",
+    schema: expect.anything(),
+    context: expect.anything(),
+    info: expect.anything(),
+  })
+})
