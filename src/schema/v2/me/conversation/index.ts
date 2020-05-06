@@ -176,11 +176,15 @@ const messagesConnection = {
     },
   }),
   resolve: (
-    { id, from_email, initial_message, from_name },
+    { id, from_email, initial_message, from_name, _embedded },
     options,
     { conversationMessagesLoader }: { conversationMessagesLoader?: any }
   ) => {
     if (!conversationMessagesLoader) return null
+    const optionKeys = Object.keys(options)
+    if (optionKeys.includes("last") && !optionKeys.includes("before")) {
+      options.before = `${lastMessageId({ _embedded })}`
+    }
     const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
     return conversationMessagesLoader({
       page,
@@ -272,13 +276,17 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     lastMessage: {
       type: GraphQLString,
       description: "This is a snippet of text from the last message.",
-      resolve: conversation =>
-        get(conversation, "_embedded.last_message.snippet"),
+      resolve: ({ _embedded = {} }) => {
+        const lastMessage = _embedded.last_message || {}
+        return lastMessage.snippet.split("About this collector")[0].trim()
+      },
     },
     lastMessageAt: date,
 
     lastMessageID: {
       type: GraphQLString,
+      deprecationReason:
+        "Prefer querying `messagesConnection(last:1) { edges { node { internalID } } }`",
       description: "Impulse id of the last message.",
       resolve: conversation => lastMessageId(conversation),
     },
