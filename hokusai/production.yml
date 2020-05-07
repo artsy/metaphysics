@@ -32,6 +32,10 @@ spec:
                   fieldPath: spec.nodeName
             - name: NODE_OPTIONS
               value: "--max_old_space_size=1024"
+            - name: KEEPALIVE_TIMEOUT_SECONDS
+              value: "95"
+            - name: HEADERS_TIMEOUT_SECONDS
+              value: "105"
           envFrom:
             - configMapRef:
                 name: metaphysics-environment
@@ -133,7 +137,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
     service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
     service.beta.kubernetes.io/aws-load-balancer-connection-draining-enabled: "true"
-    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "90"
 spec:
   ports:
     - port: 443

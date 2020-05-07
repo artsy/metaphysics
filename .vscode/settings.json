@@ -42,5 +42,8 @@
   ],
   "debug.node.autoAttach": "on",
   "eslint.validate": ["typescript"],
-  "typescript.surveys.enabled": false
+  "typescript.surveys.enabled": false,
+  "[yaml]": {
+    "editor.formatOnSave": false
+  }
 }

@@ -21,6 +21,8 @@ const {
   NODE_ENV,
   PORT,
   PRODUCTION_ENV,
+  KEEPALIVE_TIMEOUT_SECONDS,
+  HEADERS_TIMEOUT_SECONDS,
 } = config
 
 global.Promise = Bluebird
@@ -135,6 +137,9 @@ function bootApp() {
     )
   )
 
+  server.keepAliveTimeout = parseInt(KEEPALIVE_TIMEOUT_SECONDS) * 1000
+  server.headersTimeout = parseInt(HEADERS_TIMEOUT_SECONDS) * 1000
+
   // General error handler, should be last (and after Sentry's).
   app.use(errorHandler)
 }
@@ -145,7 +150,7 @@ function gracefulExit() {
   if (isShuttingDown) return
   isShuttingDown = true
   console.log("Received signal SIGTERM, shutting down")
-  server.shutdown(function () {
+  server.shutdown(function() {
     console.log("Closed existing connections.")
     process.exit(0)
   })
