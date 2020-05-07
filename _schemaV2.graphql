@@ -4952,7 +4952,7 @@ type HomePageMarketingCollectionsModule {
     @deprecated(
       reason: "This field only exists to satisfy the GraphQL Schema validation"
     )
-  results: [MarketingCollection]
+  results: [MarketingCollection]!
 }
 
 type HomePageModulesParams {

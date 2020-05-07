@@ -24,24 +24,17 @@ describe("KAWS Stitching", () => {
       expect(homePageMarketingCollectionsModuleFields).toContain("results")
     })
 
-    it("passes through slugs to kaws when querying HomePageMarketingCollectionsModule.results", async () => {
+    it("returns an array even if the kaws request fails", async () => {
       const { resolvers } = await getKawsStitchedSchema()
       const resultsResolver =
         resolvers.HomePageMarketingCollectionsModule.results.resolve
-      const mergeInfo = { delegateToSchema: jest.fn() }
-      resultsResolver({}, {}, {}, { mergeInfo })
-
-      expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith(
-        expect.objectContaining({
-          args: {
-            slugs: [
-              "new-this-week",
-              "auction-highlights",
-              "trending-emerging-artists",
-            ],
-          },
-        })
+      const delegateToSchemaMock = jest.fn()
+      delegateToSchemaMock.mockRejectedValue(
+        "simulating a kaws request failure"
       )
+      const mergeInfo = { delegateToSchema: delegateToSchemaMock }
+      const results = await resultsResolver({}, {}, {}, { mergeInfo })
+      expect(results).toEqual([])
     })
   })
 
@@ -52,7 +45,7 @@ describe("KAWS Stitching", () => {
         resolvers.Artist.marketingCollections.resolve
       const mergeInfo = { delegateToSchema: jest.fn() }
 
-      marketingCollectionsResolver(
+      await marketingCollectionsResolver(
         { internalID: "artist-internal-id" },
         {},
         {},
