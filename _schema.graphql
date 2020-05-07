@@ -10561,7 +10561,7 @@ type Query {
   ): [SecondFactor!]!
 
   # Find a viewing room by ID
-  viewingRoom(idOrSlug: ID!): ViewingRoom
+  viewingRoom(id: ID!): ViewingRoom
 
   # List viewing rooms
   viewingRooms(
