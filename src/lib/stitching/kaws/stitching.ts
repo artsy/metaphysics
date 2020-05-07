@@ -118,6 +118,9 @@ export const kawsStitchingEnvironmentV2 = (
         "\n"
       )}): FilterArtworksConnection
     }
+    extend type HomePageMarketingCollectionsModule {
+      results: [MarketingCollection]
+    }
   `,
 
     // Resolvers for the above, this passes in ALL potential parameters
@@ -140,6 +143,34 @@ export const kawsStitchingEnvironmentV2 = (
               args: {
                 artistID,
                 ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      HomePageMarketingCollectionsModule: {
+        results: {
+          fragment: gql`
+            ... on HomePageMarketingCollectionsModule {
+              __typename
+            }
+          `,
+          resolve: (_source, _args, context, info) => {
+            // We hard-code the collections slugs here in MP so that the app can
+            // display different collections based only on an MP change (and not
+            // an app deploy).
+            return info.mergeInfo.delegateToSchema({
+              schema: kawsSchema,
+              operation: "query",
+              fieldName: "marketingCollections",
+              args: {
+                slugs: [
+                  "new-this-week",
+                  "auction-highlights",
+                  "trending-emerging-artists",
+                ],
               },
               context,
               info,

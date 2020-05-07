@@ -14,6 +14,37 @@ describe("KAWS Stitching", () => {
     expect(viewerFields).toContain("marketingCollections")
   })
 
+  describe("HomePageMarketingCollectionsModule", () => {
+    it("extends the HomePageMarketingCollectionsModule object", async () => {
+      const mergedSchema = await getKawsMergedSchema()
+      const homePageMarketingCollectionsModuleFields = await getFieldsForTypeFromSchema(
+        "HomePageMarketingCollectionsModule",
+        mergedSchema
+      )
+      expect(homePageMarketingCollectionsModuleFields).toContain("results")
+    })
+
+    it("passes through slugs to kaws when querying HomePageMarketingCollectionsModule.results", async () => {
+      const { resolvers } = await getKawsStitchedSchema()
+      const resultsResolver =
+        resolvers.HomePageMarketingCollectionsModule.results.resolve
+      const mergeInfo = { delegateToSchema: jest.fn() }
+      resultsResolver({}, {}, {}, { mergeInfo })
+
+      expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+        expect.objectContaining({
+          args: {
+            slugs: [
+              "new-this-week",
+              "auction-highlights",
+              "trending-emerging-artists",
+            ],
+          },
+        })
+      )
+    })
+  })
+
   describe("marketingCollections", () => {
     it("passes artist internalID to kaws' artistID arg when querying `... on Artist`", async () => {
       const { resolvers } = await getKawsStitchedSchema()
