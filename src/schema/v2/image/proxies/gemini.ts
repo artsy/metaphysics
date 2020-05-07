@@ -2,10 +2,11 @@ import urljoin from "url-join"
 import qs from "qs"
 import { isExisty } from "lib/helpers"
 import config from "config"
+import { Mode } from "./index"
 
 const { GEMINI_ENDPOINT } = config
 
-function resizeTo(mode, width, height) {
+function resizeTo(mode: Mode, width?: number, height?: number) {
   if (mode === "crop") {
     return "fill"
   } else if (isExisty(width) && !isExisty(height)) {
@@ -16,12 +17,18 @@ function resizeTo(mode, width, height) {
   return "fit"
 }
 
-export default (src, mode, width, height) => {
+export default (
+  src: string,
+  mode: Mode,
+  width?: number,
+  height?: number,
+  quality = 80
+) => {
   const options = {
     resize_to: resizeTo(mode, width, height),
     width,
     height,
-    quality: 80,
+    quality,
     src,
   }
 

@@ -1,6 +1,4 @@
 import _ from "lodash"
-// FIXME: proxy has no default export
-// @ts-ignore
 import proxy from "./proxies"
 import { setVersion } from "./normalize"
 import {
