@@ -322,7 +322,7 @@ type Query {
   _unused_gravity_secondFactors(kinds: [SecondFactorKind!] = [app, sms, backup]): [SecondFactor!]!
 
   # Find a viewing room by ID
-  viewingRoom(idOrSlug: ID!): ViewingRoom
+  viewingRoom(id: ID!): ViewingRoom
 
   # List viewing rooms
   viewingRooms(
