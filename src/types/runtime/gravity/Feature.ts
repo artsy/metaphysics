@@ -23,7 +23,7 @@ export const Feature = Record({
     large_rectangle: String.Or(Undefined),
     wide: String.Or(Undefined),
     source: String.Or(Undefined),
-  }),
+  }).Or(Null),
   created_at: String,
 })
 
