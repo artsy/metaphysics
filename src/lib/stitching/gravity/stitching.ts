@@ -49,6 +49,18 @@ export const gravityStitchingEnvironment = (
             }
           `,
           resolve: ({ artworkIDs: ids }, args, context, info) => {
+            // qs ignores empty array/object and prevents us from sending `?array[]=`.
+            // This is a workaround to map an empty array to `[null]` so it gets treated
+            // as an empty string.
+            // https://github.com/ljharb/qs/issues/362
+            //
+            // Note that we can't easily change this globally as there are multiple places
+            // clients are sending params of empty array but expecting Gravity to return
+            // non-empty data. This only fixes the issue for viewing room artworks.
+            if (ids.length === 0) {
+              ids = [null]
+            }
+
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
               operation: "query",

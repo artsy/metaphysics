@@ -1,10 +1,11 @@
 import {
   exclude,
-  toKey,
   isExisty,
   removeNulls,
-  stripTags,
   resolveBlueGreen,
+  stripTags,
+  toKey,
+  toQueryString,
 } from "lib/helpers"
 
 describe("exclude", () => {
@@ -22,6 +23,26 @@ describe("exclude", () => {
 
   it("simply returns the list if invoked without arguments", () => {
     expect(exclude()(xs)).toEqual(xs)
+  })
+})
+
+describe("toQueryString", () => {
+  it("stringifies regular arraies", () => {
+    expect(
+      toQueryString({ ids: [13, 27], visible: true, availability: "for sale" })
+    ).toBe("availability=for%20sale&ids%5B%5D=13&ids%5B%5D=27&visible=true")
+  })
+
+  it("ignores empty arraies", () => {
+    expect(
+      toQueryString({ ids: [], visible: true, availability: "for sale" })
+    ).toBe("availability=for%20sale&visible=true")
+  })
+
+  it("stringifies [null] as an empty array", () => {
+    expect(
+      toQueryString({ ids: [null], visible: true, availability: "for sale" })
+    ).toBe("availability=for%20sale&ids%5B%5D=&visible=true")
   })
 })
 

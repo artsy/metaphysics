@@ -46,6 +46,23 @@ it("resolves the artworks field on ViewingRoom as a paginated list", async () =>
   })
 })
 
+it("converts empty artworkIDs argument", async () => {
+  const { resolvers } = await getGravityStitchedSchema()
+  const { artworksConnection } = resolvers.ViewingRoom
+  const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+  artworksConnection.resolve({ artworkIDs: [] }, { first: 2 }, {}, info)
+
+  expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+    args: { ids: [null], first: 2 },
+    operation: "query",
+    fieldName: "artworks",
+    schema: expect.anything(),
+    context: expect.anything(),
+    info: expect.anything(),
+  })
+})
+
 it("resolves the partner field on ViewingRoom", async () => {
   const { resolvers } = await getGravityStitchedSchema()
   const { partner } = resolvers.ViewingRoom
