@@ -12,8 +12,13 @@ import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "./artwork"
 import { connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
+import { Gravity } from "types/runtime"
+import { connectionWithCursorInfo } from "./fields/pagination"
 
-const OrderedSetType = new GraphQLObjectType<any, ResolverContext>({
+export const OrderedSetType = new GraphQLObjectType<
+  Gravity.OrderedSet & { cached: number },
+  ResolverContext
+>({
   name: "OrderedSet",
   fields: () => ({
     ...IDFields,
@@ -83,5 +88,9 @@ const OrderedSet: GraphQLFieldConfig<void, ResolverContext> = {
   },
   resolve: (_root, { id }, { setLoader }) => setLoader(id),
 }
+
+export const OrderedSetConnection = connectionWithCursorInfo({
+  nodeType: OrderedSetType,
+})
 
 export default OrderedSet
