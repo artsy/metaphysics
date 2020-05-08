@@ -4,6 +4,18 @@ import config from "config"
 
 const { RESIZING_SERVICE } = config
 
-module.exports = function resizeWith(...args: [any, any, any, any]) {
+export type Mode = "resize" | "crop"
+
+export type ResizeWith = (
+  src: string,
+  mode: Mode,
+  width?: number,
+  height?: number,
+  quality?: number
+) => string
+
+export const resizeWith: ResizeWith = (...args) => {
   return RESIZING_SERVICE === "embedly" ? embedly(...args) : gemini(...args)
 }
+
+export default resizeWith

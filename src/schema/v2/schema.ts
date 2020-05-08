@@ -85,6 +85,7 @@ import { ArtworkVersionType } from "./artwork_version"
 import { HighlightsField } from "./Highlights"
 import { startIdentityVerificationMutation } from "./startIdentityVerificationMutation"
 import Fairs from "./fairs"
+import { Feature } from "./Feature"
 import Articles from "./articles"
 import SaleArtwork from "./sale_artwork"
 import { SaleArtworksConnectionField } from "./sale_artworks"
@@ -112,6 +113,7 @@ const rootFields = {
   // externalPartner: ExternalPartner,
   fair: Fair,
   fairs: Fairs,
+  feature: Feature,
   // filterPartners: FilterPartners,
   // filterArtworksConnection: filterArtworksConnection(),
   gene: Gene,
