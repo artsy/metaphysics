@@ -1,3 +1,4 @@
+import { Gravity } from "types/runtime"
 import factories from "../api"
 import { uncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_factory"
 import gravity from "lib/apis/gravity"
@@ -27,6 +28,8 @@ export default opts => {
   }
 
   return {
+    featureLoader: (id: string) =>
+      gravityLoader(id => `feature/${id}`)(id).then(Gravity.Feature.check),
     createAccountRequestLoader: gravityLoader(
       "account_requests",
       {},
