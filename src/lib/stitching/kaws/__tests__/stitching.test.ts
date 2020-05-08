@@ -14,6 +14,30 @@ describe("KAWS Stitching", () => {
     expect(viewerFields).toContain("marketingCollections")
   })
 
+  describe("HomePageMarketingCollectionsModule", () => {
+    it("extends the HomePageMarketingCollectionsModule object", async () => {
+      const mergedSchema = await getKawsMergedSchema()
+      const homePageMarketingCollectionsModuleFields = await getFieldsForTypeFromSchema(
+        "HomePageMarketingCollectionsModule",
+        mergedSchema
+      )
+      expect(homePageMarketingCollectionsModuleFields).toContain("results")
+    })
+
+    it("returns an array even if the kaws request fails", async () => {
+      const { resolvers } = await getKawsStitchedSchema()
+      const resultsResolver =
+        resolvers.HomePageMarketingCollectionsModule.results.resolve
+      const delegateToSchemaMock = jest.fn()
+      delegateToSchemaMock.mockRejectedValue(
+        "simulating a kaws request failure"
+      )
+      const mergeInfo = { delegateToSchema: delegateToSchemaMock }
+      const results = await resultsResolver({}, {}, {}, { mergeInfo })
+      expect(results).toEqual([])
+    })
+  })
+
   describe("marketingCollections", () => {
     it("passes artist internalID to kaws' artistID arg when querying `... on Artist`", async () => {
       const { resolvers } = await getKawsStitchedSchema()
@@ -21,7 +45,7 @@ describe("KAWS Stitching", () => {
         resolvers.Artist.marketingCollections.resolve
       const mergeInfo = { delegateToSchema: jest.fn() }
 
-      marketingCollectionsResolver(
+      await marketingCollectionsResolver(
         { internalID: "artist-internal-id" },
         {},
         {},

@@ -118,6 +118,9 @@ export const kawsStitchingEnvironmentV2 = (
         "\n"
       )}): FilterArtworksConnection
     }
+    extend type HomePageMarketingCollectionsModule {
+      results: [MarketingCollection]!
+    }
   `,
 
     // Resolvers for the above, this passes in ALL potential parameters
@@ -144,6 +147,41 @@ export const kawsStitchingEnvironmentV2 = (
               context,
               info,
             })
+          },
+        },
+      },
+      HomePageMarketingCollectionsModule: {
+        results: {
+          fragment: gql`
+            ... on HomePageMarketingCollectionsModule {
+              __typename
+            }
+          `,
+          resolve: async (_source, _args, context, info) => {
+            try {
+              // We hard-code the collections slugs here in MP so that the app
+              // can display different collections based only on an MP change
+              // (and not an app deploy).
+              return await info.mergeInfo.delegateToSchema({
+                schema: kawsSchema,
+                operation: "query",
+                fieldName: "marketingCollections",
+                args: {
+                  slugs: [
+                    "new-this-week",
+                    "auction-highlights",
+                    "trending-emerging-artists",
+                  ],
+                },
+                context,
+                info,
+              })
+            } catch (error) {
+              // The schema guarantees a present array for results, so fall back
+              // to an empty one if the request to kaws fails. Note that we
+              // still bubble-up any errors in the GraphQL response.
+              return []
+            }
           },
         },
       },
