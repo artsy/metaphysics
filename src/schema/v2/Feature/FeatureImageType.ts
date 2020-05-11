@@ -34,8 +34,11 @@ export const FeatureImageType = new GraphQLObjectType<
         },
       },
       resolve: ({ image_urls }, args) => {
+        if (!image_urls) return null
+
         const { version } = args as { version: FeatureImageVersion }
         const url = image_urls[version.key as keyof typeof image_urls]
+
         return url
       },
     },

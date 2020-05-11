@@ -202,7 +202,7 @@ export default opts => {
       { headers: true }
     ),
     setLoader: gravityLoader(id => `set/${id}`),
-    setsLoader: gravityLoader("sets"),
+    setsLoader: gravityLoader("sets", {}, { headers: true }),
     showLoader: gravityLoader(id => `show/${id}`),
     showsLoader: gravityLoader("shows"),
     showsWithHeadersLoader: gravityLoader("shows", {}, { headers: true }),

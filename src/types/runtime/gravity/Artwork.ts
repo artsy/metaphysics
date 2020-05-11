@@ -71,7 +71,7 @@ export const Artwork = Record({
   partner: Partner,
   pickup_available: Boolean.Or(Null),
   price_cents: Array(Number.Or(Null)).Or(Null),
-  price_currency: String,
+  price_currency: String.Or(Null),
   price_hidden: Boolean,
   price_includes_tax: Boolean,
   price: String,

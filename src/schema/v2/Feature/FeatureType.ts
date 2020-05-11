@@ -4,11 +4,16 @@ import {
   GraphQLObjectType,
   GraphQLBoolean,
 } from "graphql"
+import { Array } from "runtypes"
+import { pageable } from "relay-cursor-paging"
+import { connectionFromArraySlice } from "graphql-relay"
 import { Gravity } from "types/runtime"
 import { ResolverContext } from "types/graphql"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import { markdown } from "schema/v2/fields/markdown"
 import { FeatureImageType } from "./FeatureImageType"
+import { OrderedSetConnection } from "../ordered_set"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 export const FeatureType = new GraphQLObjectType<
   Gravity.Feature,
@@ -32,6 +37,32 @@ export const FeatureType = new GraphQLObjectType<
         // If there is no available image return null here rather than down-tree (!)
         if (feature.image_versions.length === 0) return null
         return feature
+      },
+    },
+    setsConnection: {
+      type: OrderedSetConnection.connectionType,
+      args: pageable(),
+      description:
+        "Features are composed of sets, which are themselves composed of items of various types",
+      resolve: async ({ id }, args, { setsLoader }) => {
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        const { body, headers } = await setsLoader({
+          owner_type: "Feature",
+          owner_id: id,
+          total_count: true,
+          page,
+          size,
+        })
+
+        return connectionFromArraySlice(
+          Array(Gravity.OrderedSet).check(body),
+          args,
+          {
+            arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+            sliceStart: offset,
+          }
+        )
       },
     },
   }),
