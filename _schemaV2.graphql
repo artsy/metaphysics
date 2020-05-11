@@ -5889,12 +5889,12 @@ type OrderedSet {
   key: String
   itemType: String
   items: [OrderedSetItem]
-  nextItemsConnection(
+  orderedItemsConnection(
     after: String
     first: Int
     before: String
     last: Int
-  ): OrderedSetItemConnection
+  ): OrderedSetItemConnection!
 
   # Returns a connection of the items. Only Artwork supported right now.
   itemsConnection(
@@ -5903,7 +5903,7 @@ type OrderedSet {
     before: String
     last: Int
   ): ArtworkConnection
-    @deprecated(reason: "Utilize `nextItemsConnection` for union type")
+    @deprecated(reason: "Utilize `orderedItemsConnection` for union type")
   name: String
 }
 
