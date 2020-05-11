@@ -32,11 +32,11 @@ const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
 
 let server, isShuttingDown, hasBooted
 
-// Always load the source on startup so any file level issues surface sooner.
-require("./src")
-
 // This needs to happen as early as possible so the plugins can hook into the
-// modules we use before any other code gets a chance to use them.
+// modules we use before any other code gets a chance to use them. Additionally,
+// since dd-trace monkey patches express it needs to be loaded before creating
+// the graphql server otherwise we will not have accurate tracing on those
+// routes.
 if (enableQueryTracing) {
   if (isDevelopment) {
     console.warn(
@@ -46,6 +46,9 @@ if (enableQueryTracing) {
   console.warn("[FEATURE] Enabling query tracing")
   initTracer()
 }
+
+// Always load the source on startup so any file level issues surface sooner.
+require("./src")
 
 if (enableAsyncStackTraces) {
   console.warn("[FEATURE] Enabling long async stack traces") // eslint-disable-line
@@ -145,7 +148,7 @@ function gracefulExit() {
   if (isShuttingDown) return
   isShuttingDown = true
   console.log("Received signal SIGTERM, shutting down")
-  server.shutdown(function () {
+  server.shutdown(function() {
     console.log("Closed existing connections.")
     process.exit(0)
   })
