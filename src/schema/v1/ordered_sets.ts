@@ -30,7 +30,10 @@ const OrderedSets: GraphQLFieldConfig<void, ResolverContext> = {
       defaultValue: 10,
     },
   },
-  resolve: (_root, options, { setsLoader }) => setsLoader(options),
+  resolve: async (_root, args, { setsLoader }) => {
+    const { body } = await setsLoader(args)
+    return body
+  },
 }
 
 export default OrderedSets

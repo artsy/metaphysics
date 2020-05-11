@@ -19,15 +19,17 @@ describe("OrderedSets type", () => {
 
   const context = {
     setsLoader: sinon.stub().returns(
-      Promise.resolve([
-        {
-          id: "52dd3c2e4b8480091700027f",
-          item_type: "Gene",
-          key: "artists:featured-genes",
-          name: "Featured Genes",
-          description: "These Genes are featured",
-        },
-      ])
+      Promise.resolve({
+        body: [
+          {
+            id: "52dd3c2e4b8480091700027f",
+            item_type: "Gene",
+            key: "artists:featured-genes",
+            name: "Featured Genes",
+            description: "These Genes are featured",
+          },
+        ],
+      })
     ),
     setItemsLoader: sinon.stub().returns(
       Promise.resolve({
