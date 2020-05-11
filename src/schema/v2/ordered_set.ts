@@ -1,5 +1,5 @@
 import cached from "./fields/cached"
-import { OrderedSetItemType } from "./item"
+import { OrderedSetItemType, OrderedSetItemConnection } from "./item"
 import { IDFields } from "./object_identification"
 import {
   GraphQLString,
@@ -13,7 +13,9 @@ import { artworkConnection } from "./artwork"
 import { connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { Gravity } from "types/runtime"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionWithCursorInfo } from "./fields/pagination"
+import { Array } from "runtypes"
 
 export const OrderedSetType = new GraphQLObjectType<
   Gravity.OrderedSet & { cached: number },
@@ -38,13 +40,40 @@ export const OrderedSetType = new GraphQLObjectType<
       resolve: ({ id, item_type }, _options, { setItemsLoader }) => {
         return setItemsLoader(id).then(({ body: items }) => {
           return items.map(item => {
-            item.item_type = item_type // eslint-disable-line no-param-reassign
-            return item
+            return { ...item, item_type }
           })
         })
       },
     },
+
+    orderedItemsConnection: {
+      type: new GraphQLNonNull(OrderedSetItemConnection.connectionType),
+      args: pageable(),
+      resolve: async ({ id, item_type }, args, { setItemsLoader }) => {
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        const { body, headers } = await setItemsLoader(id, {
+          total_count: true,
+          page,
+          size,
+        })
+
+        const validated = Array(Gravity.OrderedItem).check(body)
+        const discriminated = validated.map(item => ({ ...item, item_type }))
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return {
+          totalCount,
+          ...connectionFromArraySlice(discriminated, args, {
+            arrayLength: totalCount,
+            sliceStart: offset,
+          }),
+        }
+      },
+    },
+
     itemsConnection: {
+      deprecationReason: "Utilize `orderedItemsConnection` for union type",
       type: artworkConnection.connectionType,
       description:
         "Returns a connection of the items. Only Artwork supported right now.",
