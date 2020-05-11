@@ -55,14 +55,16 @@ export const FeatureType = new GraphQLObjectType<
           size,
         })
 
-        return connectionFromArraySlice(
-          Array(Gravity.OrderedSet).check(body),
-          args,
-          {
-            arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+        const validated = Array(Gravity.OrderedSet).check(body)
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return {
+          totalCount,
+          ...connectionFromArraySlice(validated, args, {
+            arrayLength: totalCount,
             sliceStart: offset,
-          }
-        )
+          }),
+        }
       },
     },
   }),
