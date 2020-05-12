@@ -1,5 +1,7 @@
 import gql from "lib/gql"
 import { GraphQLSchema } from "graphql"
+import moment from "moment"
+import "moment.distance"
 
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
@@ -19,6 +21,7 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
         ): ArtworkConnection
+        formattedEndAt: String
         partner: Partner
       }
 
@@ -72,6 +75,25 @@ export const gravityStitchingEnvironment = (
               context,
               info,
             })
+          },
+        },
+        formattedEndAt: {
+          fragment: gql`
+            ... on ViewingRoom {
+              startAt
+              endAt
+            }
+          `,
+          resolve: ({ startAt: sa, endAt: ea }) => {
+            const startAt = moment(sa)
+            const endAt = moment(ea)
+            if (endAt > moment().add(30, "days")) {
+              return null
+            }
+            const label =
+              // @ts-ignore - .distance() is a moment plugin
+              "Closes in " + moment.duration(endAt.diff(startAt)).distance()
+            return label
           },
         },
         partner: {
