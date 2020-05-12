@@ -14,6 +14,7 @@ export const HomePageSalesModuleType = new GraphQLObjectType<
         // Check for all sales that are currently running
         const gravityOptions = {
           live: true,
+          is_auction: true,
           size: 10,
           sort: "timely_at,name",
         }
