@@ -250,23 +250,8 @@ function startApp(appSchema, path: string) {
 
 const app = express()
 
-let appV1: express.Express
-let appV2: express.Express
-
-app.all("/", (req, res, next) => {
-  if (!appV1) {
-    appV1 = express()
-    appV1.use("/", startApp(schemaV1, "/"))
-  }
-  appV1(req, res, next)
-})
-
-app.all("/v2", (req, res, next) => {
-  if (!appV2) {
-    appV2 = express()
-    appV2.use("/", startApp(schemaV2, "/v2"))
-  }
-  appV2(req, res, next)
-})
+// This order is important for dd-trace to be able to find the nested routes.
+app.use("/v2", startApp(schemaV2, "/"))
+app.use("/", startApp(schemaV1, "/"))
 
 export default app
