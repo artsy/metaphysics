@@ -162,7 +162,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "unreadNotificationsCount",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
-      return meLoader().catch(() => null)
+      return meLoader()
     }
     // The email and is_collector are here so that the type system's `isTypeOf`
     // resolves correctly when we're skipping gravity data
