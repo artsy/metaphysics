@@ -1,7 +1,11 @@
 import gql from "lib/gql"
 import { GraphQLSchema } from "graphql"
-import moment from "moment"
+import moment, { Duration } from "moment"
 import "moment.distance"
+
+interface DistancePlugin extends Duration {
+  distance(): string
+}
 
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
@@ -82,17 +86,27 @@ export const gravityStitchingEnvironment = (
             ... on ViewingRoom {
               startAt
               endAt
+              timeZone
             }
           `,
-          resolve: ({ startAt: sa, endAt: ea }) => {
-            const startAt = moment(sa)
-            const endAt = moment(ea)
+          resolve: ({ startAt: _startAt, endAt: _endAt, timeZone }) => {
+            const startAt = moment(_startAt)
+            const endAt = moment(_endAt)
+
+            timeZone = timeZone || moment.tz.guess()
+
             if (endAt > moment().add(30, "days")) {
               return null
             }
+            if (endAt < startAt) {
+              return "Closed"
+            }
+
             const label =
-              // @ts-ignore - .distance() is a moment plugin
-              "Closes in " + moment.duration(endAt.diff(startAt)).distance()
+              "Closes in " +
+              (moment.duration(
+                endAt.tz(timeZone).diff(startAt)
+              ) as DistancePlugin).distance()
             return label
           },
         },
