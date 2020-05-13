@@ -8526,6 +8526,7 @@ type ViewingRoom {
     after: String
     before: String
   ): ArtworkConnection
+  formattedEndAt: String
   partner: Partner
 }
 

@@ -3,111 +3,182 @@ import {
   getGravityMergedSchema,
   getGravityStitchedSchema,
 } from "./testingUtils"
+import moment from "moment"
 
-it("extends the ViewingRoom type with an artworksConnection field", async () => {
-  const mergedSchema = await getGravityMergedSchema()
-  const artworkConnectionFields = await getFieldsForTypeFromSchema(
-    "ViewingRoom",
-    mergedSchema
-  )
+describe("gravity/stitching", () => {
+  describe("#artworksConnection", () => {
+    it("extends the ViewingRoom type with an artworksConnection field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const artworkConnectionFields = await getFieldsForTypeFromSchema(
+        "ViewingRoom",
+        mergedSchema
+      )
 
-  expect(artworkConnectionFields).toContain("artworksConnection")
-})
+      expect(artworkConnectionFields).toContain("artworksConnection")
+    })
 
-it("extends the ViewingRoom type with a partner field", async () => {
-  const mergedSchema = await getGravityMergedSchema()
-  const artworkConnectionFields = await getFieldsForTypeFromSchema(
-    "ViewingRoom",
-    mergedSchema
-  )
+    it("resolves the artworks field on ViewingRoom as a paginated list", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { artworksConnection } = resolvers.ViewingRoom
+      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-  expect(artworkConnectionFields).toContain("partner")
-})
+      artworksConnection.resolve(
+        { artworkIDs: ["1", "2", "3"] },
+        { first: 2 },
+        {},
+        info
+      )
 
-it("resolves the artworks field on ViewingRoom as a paginated list", async () => {
-  const { resolvers } = await getGravityStitchedSchema()
-  const { artworksConnection } = resolvers.ViewingRoom
-  const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+        args: { ids: ["1", "2", "3"], first: 2 },
+        operation: "query",
+        fieldName: "artworks",
+        schema: expect.anything(),
+        context: expect.anything(),
+        info: expect.anything(),
+      })
+    })
 
-  artworksConnection.resolve(
-    { artworkIDs: ["1", "2", "3"] },
-    { first: 2 },
-    {},
-    info
-  )
+    it("converts empty artworkIDs argument", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { artworksConnection } = resolvers.ViewingRoom
+      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-  expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-    args: { ids: ["1", "2", "3"], first: 2 },
-    operation: "query",
-    fieldName: "artworks",
-    schema: expect.anything(),
-    context: expect.anything(),
-    info: expect.anything(),
+      artworksConnection.resolve({ artworkIDs: [] }, { first: 2 }, {}, info)
+
+      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+        args: { ids: [null], first: 2 },
+        operation: "query",
+        fieldName: "artworks",
+        schema: expect.anything(),
+        context: expect.anything(),
+        info: expect.anything(),
+      })
+    })
   })
-})
 
-it("converts empty artworkIDs argument", async () => {
-  const { resolvers } = await getGravityStitchedSchema()
-  const { artworksConnection } = resolvers.ViewingRoom
-  const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+  describe("#formattedEndAt", () => {
+    it("extends the ViewingRoom type with a formattedEndAt field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const fields = await getFieldsForTypeFromSchema(
+        "ViewingRoom",
+        mergedSchema
+      )
 
-  artworksConnection.resolve({ artworkIDs: [] }, { first: 2 }, {}, info)
+      expect(fields).toContain("formattedEndAt")
+    })
 
-  expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-    args: { ids: [null], first: 2 },
-    operation: "query",
-    fieldName: "artworks",
-    schema: expect.anything(),
-    context: expect.anything(),
-    info: expect.anything(),
+    it("returns null if endAt date is greater than 30 days", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { formattedEndAt } = resolvers.ViewingRoom
+
+      expect(
+        formattedEndAt.resolve({
+          startAt: moment().add(1, "days"),
+          endAt: moment().add(32, "days"),
+          timeZone: null,
+        })
+      ).toEqual(null)
+    })
+
+    it("returns properly formatted distance string", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { formattedEndAt } = resolvers.ViewingRoom
+
+      expect(
+        formattedEndAt.resolve({
+          startAt: moment().add(1, "days"),
+          endAt: moment().add(2, "days"),
+          timeZone: null,
+        })
+      ).toEqual("Closes in 1 day")
+
+      expect(
+        formattedEndAt.resolve({
+          startAt: moment().add(1, "hour"),
+          endAt: moment().add(2, "hours"),
+          timeZone: null,
+        })
+      ).toEqual("Closes in about 1 hour")
+
+      expect(
+        formattedEndAt.resolve({
+          startAt: moment().add(1, "minute"),
+          endAt: moment().add(10, "minutes"),
+          timeZone: null,
+        })
+      ).toEqual("Closes in about 9 minutes")
+
+      expect(
+        formattedEndAt.resolve({
+          startAt: moment().add(1, "minute"),
+          endAt: moment().subtract(10, "minutes"),
+          timeZone: null,
+        })
+      ).toEqual("Closed")
+    })
   })
-})
 
-it("resolves the partner field on ViewingRoom", async () => {
-  const { resolvers } = await getGravityStitchedSchema()
-  const { partner } = resolvers.ViewingRoom
-  const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+  describe("#partner", () => {
+    it("extends the ViewingRoom type with a partner field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const artworkConnectionFields = await getFieldsForTypeFromSchema(
+        "ViewingRoom",
+        mergedSchema
+      )
 
-  partner.resolve({ partnerID: "fakeid" }, {}, {}, info)
+      expect(artworkConnectionFields).toContain("partner")
+    })
 
-  expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-    args: { id: "fakeid" },
-    operation: "query",
-    fieldName: "partner",
-    schema: expect.anything(),
-    context: expect.anything(),
-    info: expect.anything(),
+    it("resolves the partner field on ViewingRoom", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { partner } = resolvers.ViewingRoom
+      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+      partner.resolve({ partnerID: "fakeid" }, {}, {}, info)
+
+      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+        args: { id: "fakeid" },
+        operation: "query",
+        fieldName: "partner",
+        schema: expect.anything(),
+        context: expect.anything(),
+        info: expect.anything(),
+      })
+    })
   })
-})
 
-it("extends the Partner type with a viewingRoomsConnection field", async () => {
-  const mergedSchema = await getGravityMergedSchema()
-  const partnerFields = await getFieldsForTypeFromSchema(
-    "Partner",
-    mergedSchema
-  )
+  describe("#viewingRoomsConnection", () => {
+    it("extends the Partner type with a viewingRoomsConnection field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const partnerFields = await getFieldsForTypeFromSchema(
+        "Partner",
+        mergedSchema
+      )
 
-  expect(partnerFields).toContain("viewingRoomsConnection")
-})
+      expect(partnerFields).toContain("viewingRoomsConnection")
+    })
 
-it("resolves the viewing rooms field on Partner as a paginated list", async () => {
-  const { resolvers } = await getGravityStitchedSchema()
-  const { viewingRoomsConnection } = resolvers.Partner
-  const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+    it("resolves the viewing rooms field on Partner as a paginated list", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { viewingRoomsConnection } = resolvers.Partner
+      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-  viewingRoomsConnection.resolve(
-    { internalID: "partner-id" },
-    { first: 2 },
-    {},
-    info
-  )
+      viewingRoomsConnection.resolve(
+        { internalID: "partner-id" },
+        { first: 2 },
+        {},
+        info
+      )
 
-  expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-    args: { partner_id: "partner-id", first: 2 },
-    operation: "query",
-    fieldName: "viewingRooms",
-    schema: expect.anything(),
-    context: expect.anything(),
-    info: expect.anything(),
+      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+        args: { partner_id: "partner-id", first: 2 },
+        operation: "query",
+        fieldName: "viewingRooms",
+        schema: expect.anything(),
+        context: expect.anything(),
+        info: expect.anything(),
+      })
+    })
   })
 })

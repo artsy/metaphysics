@@ -6929,6 +6929,11 @@ moment-timezone@0.5.25:
   dependencies:
     moment ">= 2.9.0"
 
+moment.distance@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/moment.distance/-/moment.distance-1.2.0.tgz#4d9621d181d993bb3905f7b1610924898c3aa7a9"
+  integrity sha512-m+X94soJ/sotjU+V2hdc9k4ufp2XcFfZCOM+tU4qQj329pwdJaNgxeFHvmhJ8qUEaed17Rveyvfqs15tChdQrA==
+
 moment@*, moment@2.19.3, "moment@>= 2.9.0", moment@>=2.14.0:
   version "2.19.3"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.19.3.tgz#bdb99d270d6d7fda78cc0fbace855e27fe7da69f"
