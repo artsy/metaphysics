@@ -456,13 +456,6 @@ An ISO 8601-encoded datetime
 """
 scalar ISO8601DateTime
 
-type IdentityVerification {
-  internalID: ID!
-  invitationExpiresAt: ISO8601DateTime
-  state: String!
-  userID: ID!
-}
-
 type InventoryHold {
   capturedAt: String
   id: ID!
@@ -720,11 +713,6 @@ type Query {
   Find artworks by ID
   """
   artworks(ids: [ID!]!): [Artwork!]
-
-  """
-  Find an identity verification by id
-  """
-  identityVerification(id: ID!): IdentityVerification
 
   """
   Autocomplete resolvers.
