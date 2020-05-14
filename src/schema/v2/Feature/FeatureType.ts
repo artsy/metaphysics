@@ -14,6 +14,10 @@ import { markdown } from "schema/v2/fields/markdown"
 import { FeatureImageType } from "./FeatureImageType"
 import { OrderedSetConnection } from "../ordered_set"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import {
+  OrderedSetSortsEnum,
+  ORDERED_SET_SORTS,
+} from "../OrderedSet/OrderedSetSortsEnum"
 
 export const FeatureType = new GraphQLObjectType<
   Gravity.Feature,
@@ -41,11 +45,18 @@ export const FeatureType = new GraphQLObjectType<
     },
     setsConnection: {
       type: OrderedSetConnection.connectionType,
-      args: pageable(),
+      args: pageable({
+        sort: {
+          type: OrderedSetSortsEnum,
+          defaultValue: ORDERED_SET_SORTS.KEY_ASC.value,
+        },
+      }),
       description:
         "Features are composed of sets, which are themselves composed of items of various types",
       resolve: async ({ id }, args, { setsLoader }) => {
-        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+        const { page, size, offset, sort } = convertConnectionArgsToGravityArgs(
+          args
+        )
 
         const { body, headers } = await setsLoader({
           owner_type: "Feature",
@@ -53,6 +64,7 @@ export const FeatureType = new GraphQLObjectType<
           total_count: true,
           page,
           size,
+          sort,
         })
 
         const validated = Array(Gravity.OrderedSet).check(body)
