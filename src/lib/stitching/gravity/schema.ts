@@ -28,7 +28,6 @@ export const executableGravitySchema = () => {
     "ArtworkEdge",
     "ArtworkConnection",
     "ArtistConnection",
-    "IdentityVerification",
     "Money",
     "MoneyInput",
   ]
