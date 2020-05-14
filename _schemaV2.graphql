@@ -4261,6 +4261,7 @@ type Feature {
 
   # Features are composed of sets, which are themselves composed of items of various types
   setsConnection(
+    sort: OrderedSetSorts
     after: String
     first: Int
     before: String
@@ -5927,7 +5928,7 @@ type OrderedSetEdge {
   cursor: String!
 }
 
-union OrderedSetItem = Artist | Artwork | FeaturedLink | Gene
+union OrderedSetItem = Artist | Artwork | FeaturedLink | Gene | Sale | Show
 
 # A connection to a list of items.
 type OrderedSetItemConnection {
@@ -5947,6 +5948,25 @@ type OrderedSetItemEdge {
 
   # A cursor for use in pagination
   cursor: String!
+}
+
+enum OrderedSetSorts {
+  ID_ASC
+  ID_DESC
+  KEY_ASC
+  KEY_DESC
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  OWNER_TYPE_ASC
+  OWNER_TYPE_DESC
+  OWNER_ID_ASC
+  OWNER_ID_DESC
+  ITEM_TYPE_ASC
+  ITEM_TYPE_DESC
+  NAME_ASC
+  NAME_DESC
+  INTERNAL_NAME_ASC
+  INTERNAL_NAME_DESC
 }
 
 union OrderParty = Partner | User
