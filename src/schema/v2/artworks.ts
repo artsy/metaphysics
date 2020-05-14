@@ -20,9 +20,10 @@ const Artworks: GraphQLFieldConfig<void, ResolverContext> = {
     const { ids } = options
     const { page, size } = convertConnectionArgsToGravityArgs(options)
     return artworksLoader({ ids }).then(body => {
+      const totalCount = body.length
       return {
-        totalCount: ids.length,
-        pageCursors: createPageCursors({ page, size }, ids.length),
+        totalCount,
+        pageCursors: createPageCursors({ page, size }, totalCount),
         ...connectionFromArray(body, options),
       }
     })
