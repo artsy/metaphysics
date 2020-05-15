@@ -76,7 +76,6 @@ describe("gravity/stitching", () => {
         formattedEndAt.resolve({
           startAt: moment().add(1, "days"),
           endAt: moment().add(32, "days"),
-          timeZone: null,
         })
       ).toEqual(null)
     })
@@ -87,33 +86,29 @@ describe("gravity/stitching", () => {
 
       expect(
         formattedEndAt.resolve({
-          startAt: moment().add(1, "days"),
+          startAt: moment().subtract(1, "days"),
           endAt: moment().add(2, "days"),
-          timeZone: null,
         })
-      ).toEqual("Closes in 1 day")
+      ).toEqual("Closes in 2 days")
 
       expect(
         formattedEndAt.resolve({
-          startAt: moment().add(1, "hour"),
+          startAt: moment().subtract(1, "hour"),
           endAt: moment().add(2, "hours"),
-          timeZone: null,
         })
-      ).toEqual("Closes in about 1 hour")
+      ).toEqual("Closes in about 2 hours")
 
       expect(
         formattedEndAt.resolve({
-          startAt: moment().add(1, "minute"),
+          startAt: moment().subtract(1, "minute"),
           endAt: moment().add(10, "minutes"),
-          timeZone: null,
         })
-      ).toEqual("Closes in about 9 minutes")
+      ).toEqual("Closes in about 10 minutes")
 
       expect(
         formattedEndAt.resolve({
-          startAt: moment().add(1, "minute"),
+          startAt: moment().subtract(1, "minute"),
           endAt: moment().subtract(10, "minutes"),
-          timeZone: null,
         })
       ).toEqual("Closed")
     })

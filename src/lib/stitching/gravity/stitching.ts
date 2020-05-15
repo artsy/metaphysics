@@ -86,28 +86,24 @@ export const gravityStitchingEnvironment = (
             ... on ViewingRoom {
               startAt
               endAt
-              timeZone
             }
           `,
-          resolve: ({ startAt: _startAt, endAt: _endAt, timeZone }) => {
+          resolve: ({ startAt: _startAt, endAt: _endAt }) => {
             const startAt = moment(_startAt)
             const endAt = moment(_endAt)
+            const now = moment()
 
-            timeZone = timeZone || moment.tz.guess()
-
-            if (endAt > moment().add(30, "days")) {
+            if (now < startAt || endAt > now.clone().add(30, "days")) {
               return null
             }
-            if (endAt < startAt) {
+            if (now > endAt) {
               return "Closed"
             }
 
-            const label =
+            return (
               "Closes in " +
-              (moment.duration(
-                endAt.tz(timeZone).diff(startAt)
-              ) as DistancePlugin).distance()
-            return label
+              (moment.duration(endAt.diff(now)) as DistancePlugin).distance()
+            )
           },
         },
         partner: {
