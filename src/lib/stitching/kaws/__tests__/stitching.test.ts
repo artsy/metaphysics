@@ -15,19 +15,21 @@ describe("KAWS Stitching", () => {
   })
 
   describe("HomePageMarketingCollectionsModule", () => {
-    it("extends the HomePageMarketingCollectionsModule object", async () => {
+    it("extends the HomePage type", async () => {
       const mergedSchema = await getKawsMergedSchema()
       const homePageMarketingCollectionsModuleFields = await getFieldsForTypeFromSchema(
-        "HomePageMarketingCollectionsModule",
+        "HomePage",
         mergedSchema
       )
-      expect(homePageMarketingCollectionsModuleFields).toContain("results")
+      expect(homePageMarketingCollectionsModuleFields).toContain(
+        "marketingCollectionsModule"
+      )
     })
 
     it("returns an array even if the kaws request fails", async () => {
       const { resolvers } = await getKawsStitchedSchema()
       const resultsResolver =
-        resolvers.HomePageMarketingCollectionsModule.results.resolve
+        resolvers.HomePage.marketingCollectionsModule.resolve
       const delegateToSchemaMock = jest.fn()
       delegateToSchemaMock.mockRejectedValue(
         "simulating a kaws request failure"
