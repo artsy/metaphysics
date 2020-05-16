@@ -118,8 +118,11 @@ export const kawsStitchingEnvironmentV2 = (
         "\n"
       )}): FilterArtworksConnection
     }
+    type HomePageMarketingCollectionsModule {
+      results: [MarketingCollection]!
+    }
     extend type HomePage {
-      marketingCollectionsModule: [MarketingCollection]!
+      marketingCollectionsModule: HomePageMarketingCollectionsModule
     }
   `,
 
@@ -157,6 +160,18 @@ export const kawsStitchingEnvironmentV2 = (
                 __typename
               }
             `,
+          resolve: () => {
+            return {}
+          },
+        },
+      },
+      HomePageMarketingCollectionsModule: {
+        results: {
+          fragment: gql`
+            ... on HomePageMarketingCollectionsModule {
+              __typename
+            }
+          `,
           resolve: async (_source, _args, context, info) => {
             try {
               // We hard-code the collections slugs here in MP so that the app

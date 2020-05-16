@@ -4878,7 +4878,7 @@ type HomePage {
   heroUnits(platform: HomePageHeroUnitPlatform!): [HomePageHeroUnit]
   fairsModule: HomePageFairsModule
   salesModule: HomePageSalesModule
-  marketingCollectionsModule: [MarketingCollection]!
+  marketingCollectionsModule: HomePageMarketingCollectionsModule
 }
 
 type HomePageArtistModule implements Node {
@@ -4988,6 +4988,10 @@ enum HomePageHeroUnitPlatform {
   MOBILE
   DESKTOP
   MARTSY
+}
+
+type HomePageMarketingCollectionsModule {
+  results: [MarketingCollection]!
 }
 
 type HomePageModulesParams {
