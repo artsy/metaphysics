@@ -3,19 +3,18 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("CreditCards", () => {
-  let context: any
-  beforeEach(() => {
+  it("returns a credit card connection", () => {
     const creditCards = [
       { id: "12345", brand: "Visa" },
       { id: "6789", brand: "Mastercard" },
     ]
-    context = {
+    const context = {
       meCreditCardsLoader: () =>
-        Promise.resolve({ body: creditCards, headers: { "x-total-count": 2 } }),
+        Promise.resolve({
+          body: creditCards,
+          headers: { "x-total-count": "2" },
+        }),
     }
-  })
-
-  it("returns a credit card connection", () => {
     const query = gql`
       {
         me {
