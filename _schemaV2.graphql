@@ -8513,19 +8513,19 @@ type ViewingRoom {
   artworkIDs: [String!]!
 
   # Body copy
-  body: String!
+  body: String
 
   # Datetime after which the viewing room is no longer viewable
-  endAt: ISO8601DateTime!
+  endAt: ISO8601DateTime
 
   # Image URL for hero image on viewing room home screen
-  heroImageURL: String!
+  heroImageURL: String
 
   # Unique ID for this room
   internalID: ID!
 
   # Introductory paragraph
-  introStatement: String!
+  introStatement: String
 
   # ID of the partner associated with this viewing room
   partnerID: String!
@@ -8533,7 +8533,7 @@ type ViewingRoom {
   slug: String!
 
   # Datetime when the viewing room is viewable
-  startAt: ISO8601DateTime!
+  startAt: ISO8601DateTime
   subsections: [ViewingRoomSubsection!]
   timeZone: String
 
