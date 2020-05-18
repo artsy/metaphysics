@@ -70,7 +70,10 @@ describe("me/index", () => {
 
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
-          Promise.resolve({ body: creditCardsResponse }),
+          Promise.resolve({
+            body: creditCardsResponse,
+            headers: { "x-total-count": "1" },
+          }),
       }).then(data => {
         expect(data).toEqual({ me: { hasQualifiedCreditCards: true } })
       })
@@ -81,7 +84,10 @@ describe("me/index", () => {
 
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
-          Promise.resolve({ body: creditCardsResponse }),
+          Promise.resolve({
+            body: creditCardsResponse,
+            headers: { "x-total-count": "0" },
+          }),
       }).then(data => {
         expect(data).toEqual({
           me: {
@@ -123,7 +129,10 @@ describe("me/index", () => {
 
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
-          Promise.resolve({ body: creditCardsResponse }),
+          Promise.resolve({
+            body: creditCardsResponse,
+            headers: { "x-total-count": "0" },
+          }),
       }).then(data => {
         expect(data).toEqual({ me: { hasCreditCards: true } })
       })
@@ -134,7 +143,10 @@ describe("me/index", () => {
 
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
-          Promise.resolve({ body: creditCardsResponse }),
+          Promise.resolve({
+            body: creditCardsResponse,
+            headers: { "x-total-count": "0" },
+          }),
       }).then(data => {
         expect(data).toEqual({ me: { hasCreditCards: false } })
       })
