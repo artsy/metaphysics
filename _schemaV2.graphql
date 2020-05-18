@@ -5885,7 +5885,7 @@ type OrderedSet {
   # A type-specific ID.
   internalID: ID!
   cached: Int
-  description: String
+  description(format: Format): String
   key: String
   itemType: String
   items: [OrderedSetItem]
