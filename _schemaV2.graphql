@@ -4280,7 +4280,7 @@ type FeaturedLink {
   href: String
   image: Image
   initials(length: Int = 3): String
-  subtitle: String
+  subtitle(format: Format): String
   description(format: Format): String
   title: String
 }
