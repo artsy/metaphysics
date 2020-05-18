@@ -49,7 +49,7 @@ async function main() {
         owner: "artsy",
         repo: "reaction",
       },
-      ...updateSchemaAction(),
+      ...updateSchemaAction(true),
     })
   } catch (error) {
     console.error(error)
