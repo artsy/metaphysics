@@ -1002,17 +1002,17 @@ type ViewingRoom {
   """
   Body copy
   """
-  body: String!
+  body: String
 
   """
   Datetime after which the viewing room is no longer viewable
   """
-  endAt: ISO8601DateTime!
+  endAt: ISO8601DateTime
 
   """
   Image URL for hero image on viewing room home screen
   """
-  heroImageURL: String!
+  heroImageURL: String
 
   """
   Unique ID for this room
@@ -1022,7 +1022,7 @@ type ViewingRoom {
   """
   Introductory paragraph
   """
-  introStatement: String!
+  introStatement: String
 
   """
   ID of the partner associated with this viewing room
@@ -1034,7 +1034,7 @@ type ViewingRoom {
   """
   Datetime when the viewing room is viewable
   """
-  startAt: ISO8601DateTime!
+  startAt: ISO8601DateTime
   subsections: [ViewingRoomSubsection!]
   timeZone: String
 
