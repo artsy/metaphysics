@@ -39,7 +39,7 @@ describe("me/index", () => {
     })
   })
 
-  describe("has_qualified_credit_cards", () => {
+  describe("hasQualifiedCreditCards", () => {
     const creditCardQuery = gql`
       query {
         me {
@@ -92,7 +92,7 @@ describe("me/index", () => {
     })
   })
 
-  describe("has_credit_cards", () => {
+  describe("hasCreditCards", () => {
     const creditCardQuery = gql`
       query {
         me {
