@@ -16,6 +16,7 @@ import { Gravity } from "types/runtime"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { Array } from "runtypes"
+import { markdown } from "./fields/markdown"
 
 export const OrderedSetType = new GraphQLObjectType<
   Gravity.OrderedSet & { cached: number },
@@ -25,9 +26,7 @@ export const OrderedSetType = new GraphQLObjectType<
   fields: () => ({
     ...IDFields,
     cached,
-    description: {
-      type: GraphQLString,
-    },
+    description: markdown(),
     key: {
       type: GraphQLString,
     },

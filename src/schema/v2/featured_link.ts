@@ -23,9 +23,7 @@ export const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
     },
     image: Image,
     initials: initials("title"),
-    subtitle: {
-      type: GraphQLString,
-    },
+    subtitle: markdown(),
     description: markdown(),
     title: {
       type: GraphQLString,

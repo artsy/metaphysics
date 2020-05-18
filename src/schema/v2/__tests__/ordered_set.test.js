@@ -49,7 +49,7 @@ describe("OrderedSet type", () => {
         orderedSet: {
           internalID: "52dd3c2e4b8480091700027f",
           name: "Featured Artworks",
-          description: "",
+          description: null,
           key: "artworks:featured-artworks",
           artworks: [
             {

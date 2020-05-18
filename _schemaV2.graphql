@@ -4259,7 +4259,7 @@ type Feature {
   description(format: Format): String
   subheadline(format: Format): String
   callout(format: Format): String
-  image: FeatureImage
+  image: Image
 
   # Features are composed of sets, which are themselves composed of items of various types
   setsConnection(
@@ -4280,27 +4280,9 @@ type FeaturedLink {
   href: String
   image: Image
   initials(length: Int = 3): String
-  subtitle: String
+  subtitle(format: Format): String
   description(format: Format): String
   title: String
-}
-
-type FeatureImage {
-  # Unscaled (original) image width
-  width: Int
-
-  # Unscaled (original) image height
-  height: Int
-
-  # Ask for a version and you might receive it. Versions are not guaranteed to be present.
-  url(version: FeatureImageVersion): String
-}
-
-enum FeatureImageVersion {
-  LARGE_RECTANGLE
-  WIDE
-  SQUARE
-  SOURCE
 }
 
 type Feedback {
@@ -5885,7 +5867,7 @@ type OrderedSet {
   # A type-specific ID.
   internalID: ID!
   cached: Int
-  description: String
+  description(format: Format): String
   key: String
   itemType: String
   items: [OrderedSetItem]
