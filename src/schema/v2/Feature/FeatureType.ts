@@ -11,13 +11,13 @@ import { Gravity } from "types/runtime"
 import { ResolverContext } from "types/graphql"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import { markdown } from "schema/v2/fields/markdown"
-import { FeatureImageType } from "./FeatureImageType"
 import { OrderedSetConnection } from "../ordered_set"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import {
   OrderedSetSortsEnum,
   ORDERED_SET_SORTS,
 } from "../OrderedSet/OrderedSetSortsEnum"
+import Image from "../image"
 
 export const FeatureType = new GraphQLObjectType<
   Gravity.Feature,
@@ -37,14 +37,7 @@ export const FeatureType = new GraphQLObjectType<
     description: markdown(),
     subheadline: markdown(),
     callout: markdown(),
-    image: {
-      type: FeatureImageType,
-      resolve: feature => {
-        // If there is no available image return null here rather than down-tree (!)
-        if (feature.image_versions.length === 0) return null
-        return feature
-      },
-    },
+    image: Image,
     setsConnection: {
       type: OrderedSetConnection.connectionType,
       args: pageable({
