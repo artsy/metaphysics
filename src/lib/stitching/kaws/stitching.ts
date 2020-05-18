@@ -118,8 +118,11 @@ export const kawsStitchingEnvironmentV2 = (
         "\n"
       )}): FilterArtworksConnection
     }
-    extend type HomePageMarketingCollectionsModule {
+    type HomePageMarketingCollectionsModule {
       results: [MarketingCollection]!
+    }
+    extend type HomePage {
+      marketingCollectionsModule: HomePageMarketingCollectionsModule
     }
   `,
 
@@ -147,6 +150,18 @@ export const kawsStitchingEnvironmentV2 = (
               context,
               info,
             })
+          },
+        },
+      },
+      HomePage: {
+        marketingCollectionsModule: {
+          fragment: gql`
+              ... on HomePage {
+                __typename
+              }
+            `,
+          resolve: () => {
+            return {}
           },
         },
       },
