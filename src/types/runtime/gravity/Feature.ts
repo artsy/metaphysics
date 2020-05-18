@@ -14,6 +14,8 @@ export const Feature = Record({
   id: String,
   name: String,
   description: String.Or(Null),
+  subheadline: String.Or(Null),
+  callout: String.Or(Null),
   active: Boolean,
   original_width: Number.Or(Null),
   original_height: Number.Or(Null),

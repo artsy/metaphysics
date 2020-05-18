@@ -12,9 +12,10 @@ import {
 export const FeaturedLink = Record({
   id: String,
   _id: String,
-  href: String,
-  title: String,
-  subtitle: String,
+  href: String.Or(Null),
+  title: String.Or(Null),
+  subtitle: String.Or(Null),
+  description: String.Or(Null),
   original_width: Number.Or(Null),
   original_height: Number.Or(Null),
   image_url: String.Or(Null),

@@ -4257,6 +4257,8 @@ type Feature {
   name: String!
   isActive: Boolean!
   description(format: Format): String
+  subheadline(format: Format): String
+  callout(format: Format): String
   image: FeatureImage
 
   # Features are composed of sets, which are themselves composed of items of various types
@@ -4279,6 +4281,7 @@ type FeaturedLink {
   image: Image
   initials(length: Int = 3): String
   subtitle: String
+  description(format: Format): String
   title: String
 }
 
