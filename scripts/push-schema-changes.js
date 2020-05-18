@@ -10,24 +10,30 @@ async function main() {
 
     execSync("yarn dump:staging")
 
-    const updateSchemaAction = {
-      branch: "update-schema",
-      title: "Update metaphysics schema",
-      targetBranch: "master",
-      commitMessage: "Update metaphysics schema",
-      body:
-        "Greetings human :robot: this PR was automatically created as part of metaphysics's deploy process",
-      assignees: ["artsyit"],
-      labels: ["Merge On Green"],
-      update: repoDir => {
-        execSync(
-          `cp _schemaV2.graphql '${path.join(repoDir, "data/schema.graphql")}'`
-        )
-        execSync("yarn install --ignore-engines", { cwd: repoDir })
-        execSync("./node_modules/.bin/prettier --write data/schema.graphql", {
-          cwd: repoDir,
-        })
-      },
+    const updateSchemaAction = (generateRelayTypes = false) => {
+      return {
+        branch: "update-schema",
+        title: "Update metaphysics schema",
+        targetBranch: "master",
+        commitMessage: "Update metaphysics schema",
+        body:
+          "Greetings human :robot: this PR was automatically created as part of metaphysics's deploy process",
+        assignees: ["artsyit"],
+        labels: ["Merge On Green"],
+        update: repoDir => {
+          execSync(
+            `cp _schemaV2.graphql '${path.join(
+              repoDir,
+              "data/schema.graphql"
+            )}'`
+          )
+          execSync("yarn install --ignore-engines", { cwd: repoDir })
+          generateRelayTypes && execSync("yarn relay", { cwd: repoDir })
+          execSync("./node_modules/.bin/prettier --write data/schema.graphql", {
+            cwd: repoDir,
+          })
+        },
+      }
     }
 
     await updateRepo({
@@ -35,7 +41,7 @@ async function main() {
         owner: "artsy",
         repo: "eigen",
       },
-      ...updateSchemaAction,
+      ...updateSchemaAction(true),
     })
 
     await updateRepo({
@@ -43,7 +49,7 @@ async function main() {
         owner: "artsy",
         repo: "reaction",
       },
-      ...updateSchemaAction,
+      ...updateSchemaAction(),
     })
   } catch (error) {
     console.error(error)
