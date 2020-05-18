@@ -35,6 +35,8 @@ export const FeatureType = new GraphQLObjectType<
       resolve: ({ active }) => active,
     },
     description: markdown(),
+    subheadline: markdown(),
+    callout: markdown(),
     image: {
       type: FeatureImageType,
       resolve: feature => {

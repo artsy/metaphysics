@@ -3,6 +3,7 @@ import Image from "./image"
 import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
+import { markdown } from "./fields/markdown"
 
 export const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeaturedLink",
@@ -25,6 +26,7 @@ export const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
     subtitle: {
       type: GraphQLString,
     },
+    description: markdown(),
     title: {
       type: GraphQLString,
     },

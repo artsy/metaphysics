@@ -15,6 +15,7 @@ export const FeaturedLink = Record({
   href: String,
   title: String,
   subtitle: String,
+  description: String,
   original_width: Number.Or(Null),
   original_height: Number.Or(Null),
   image_url: String.Or(Null),
