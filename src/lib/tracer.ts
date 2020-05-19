@@ -17,9 +17,12 @@ export function init() {
     // We want the root spans of MP to be labelled as just `metaphysics`
     service: DD_TRACER_SERVICE_NAME,
     headers: ["User-Agent", "X-User-ID"],
-  } as any)
+  })
   tracer.use("http", {
     service: `${DD_TRACER_SERVICE_NAME}.http-client`,
+  })
+  tracer.use("graphql", {
+    service: `${DD_TRACER_SERVICE_NAME}.graphql`,
   })
 }
 
