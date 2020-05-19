@@ -188,4 +188,54 @@ describe("me/index", () => {
       })
     })
   })
+
+  describe("canRequestEmailConfirmation", () => {
+    it("returns false when the user has a non-empty confirmed_at", async () => {
+      const meLoaderResponse = {
+        name: "Test User",
+        email: "test@email.com",
+        paddle_number: "123456",
+        identity_verified: true,
+        second_factor_enabled: true,
+        confirmed_at: "2020-05-18T22:34:33+00:00",
+      }
+      const query = gql`
+        query {
+          me {
+            canRequestEmailConfirmation
+          }
+        }
+      `
+
+      const response = await runAuthenticatedQuery(query, {
+        meLoader: () => Promise.resolve(meLoaderResponse),
+      })
+
+      expect(response).toEqual({ me: { canRequestEmailConfirmation: false } })
+    })
+
+    it("returns true when the user has an empty confirmed_at", async () => {
+      const meLoaderResponse = {
+        name: "Test User",
+        email: "test@email.com",
+        paddle_number: "123456",
+        identity_verified: true,
+        second_factor_enabled: true,
+        confirmed_at: null,
+      }
+      const query = gql`
+        query {
+          me {
+            canRequestEmailConfirmation
+          }
+        }
+      `
+
+      const response = await runAuthenticatedQuery(query, {
+        meLoader: () => Promise.resolve(meLoaderResponse),
+      })
+
+      expect(response).toEqual({ me: { canRequestEmailConfirmation: true } })
+    })
+  })
 })

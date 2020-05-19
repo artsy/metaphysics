@@ -56,6 +56,12 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     email: {
       type: GraphQLString,
     },
+    canRequestEmailConfirmation: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description:
+        "Allow the user to request email confirmation if they do not have a confirmed email",
+      resolve: ({ confirmed_at }) => !confirmed_at,
+    },
     followsAndSaves: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "FollowsAndSaves",
