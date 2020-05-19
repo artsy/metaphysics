@@ -167,7 +167,7 @@ describe("gravity/stitching", () => {
       )
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { partner_id: "partner-id", first: 2 },
+        args: { partnerId: "partner-id", first: 2 },
         operation: "query",
         fieldName: "viewingRooms",
         schema: expect.anything(),
