@@ -133,13 +133,13 @@ export const gravityStitchingEnvironment = (
               internalID
             }
           `,
-          resolve: ({ internalID: partner_id }, args, context, info) => {
+          resolve: ({ internalID: partnerId }, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,
               operation: "query",
               fieldName: "viewingRooms",
               args: {
-                partner_id,
+                partnerId,
                 ...args,
               },
               context,
