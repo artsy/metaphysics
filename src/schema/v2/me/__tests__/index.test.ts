@@ -39,7 +39,7 @@ describe("me/index", () => {
     })
   })
 
-  describe("has_qualified_credit_cards", () => {
+  describe("hasQualifiedCreditCards", () => {
     const creditCardQuery = gql`
       query {
         me {
@@ -70,7 +70,10 @@ describe("me/index", () => {
 
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
-          Promise.resolve({ body: creditCardsResponse }),
+          Promise.resolve({
+            body: creditCardsResponse,
+            headers: { "x-total-count": "1" },
+          }),
       }).then(data => {
         expect(data).toEqual({ me: { hasQualifiedCreditCards: true } })
       })
@@ -81,7 +84,10 @@ describe("me/index", () => {
 
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
-          Promise.resolve({ body: creditCardsResponse }),
+          Promise.resolve({
+            body: creditCardsResponse,
+            headers: { "x-total-count": "0" },
+          }),
       }).then(data => {
         expect(data).toEqual({
           me: {
@@ -92,7 +98,7 @@ describe("me/index", () => {
     })
   })
 
-  describe("has_credit_cards", () => {
+  describe("hasCreditCards", () => {
     const creditCardQuery = gql`
       query {
         me {
@@ -123,7 +129,10 @@ describe("me/index", () => {
 
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
-          Promise.resolve({ body: creditCardsResponse }),
+          Promise.resolve({
+            body: creditCardsResponse,
+            headers: { "x-total-count": "0" },
+          }),
       }).then(data => {
         expect(data).toEqual({ me: { hasCreditCards: true } })
       })
@@ -134,7 +143,10 @@ describe("me/index", () => {
 
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
-          Promise.resolve({ body: creditCardsResponse }),
+          Promise.resolve({
+            body: creditCardsResponse,
+            headers: { "x-total-count": "0" },
+          }),
       }).then(data => {
         expect(data).toEqual({ me: { hasCreditCards: false } })
       })
