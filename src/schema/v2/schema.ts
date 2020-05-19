@@ -68,6 +68,7 @@ import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
 import { deleteCreditCardMutation } from "./me/delete_credit_card_mutation"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
+import { sendConfirmationEmailMutation } from "./me/sendConfirmationEmailMutation"
 import { sendFeedbackMutation } from "./sendFeedbackMutation"
 import { OrderPartyUnionType } from "./ecommerce/types/order_party_union"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
@@ -180,6 +181,7 @@ export default new GraphQLSchema({
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
+      sendConfirmationEmail: sendConfirmationEmailMutation,
       sendConversationMessage: SendConversationMessageMutation,
       sendFeedback: sendFeedbackMutation,
       saveArtwork: SaveArtworkMutation,
