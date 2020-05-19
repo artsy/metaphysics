@@ -199,6 +199,11 @@ export default (accessToken, userID, opts) => {
       user_id: userID,
       private: true,
     }),
+    sendConfirmationEmailLoader: gravityLoader(
+      "me/confirmation_emails",
+      {},
+      { method: "POST" }
+    ),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     showLoader: gravityLoader(id => `show/${id}`),
     startIdentityVerificationLoader: gravityLoader(
