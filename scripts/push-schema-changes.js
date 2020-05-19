@@ -26,7 +26,7 @@ async function updateSchemaFile(repo) {
         `cp _schemaV2.graphql '${path.join(repoDir, "data/schema.graphql")}'`
       )
       execSync("yarn install --ignore-engines", { cwd: repoDir })
-      execSync("./node_modules/.bin/relay-compiler")
+      execSync("./node_modules/.bin/relay-compiler", { cwd: repoDir })
       execSync("./node_modules/.bin/prettier --write data/schema.graphql", {
         cwd: repoDir,
       })
