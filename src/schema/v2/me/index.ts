@@ -142,7 +142,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     unreadConversationCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: "The count of conversations with unread messages.",
-      resolve: (_root, options, { conversationsLoader }) => {
+      resolve: (_root, _options, { conversationsLoader }) => {
         if (!conversationsLoader) return 0
         const { page, size } = convertConnectionArgsToGravityArgs({
           first: 1,
