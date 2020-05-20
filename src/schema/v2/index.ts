@@ -1,5 +1,6 @@
 import localSchema from "./schema"
 import { incrementalMergeSchemas } from "lib/stitching/mergeSchemas"
+import { lexicographicSortSchema } from "graphql"
 
 import config from "config"
 const { DISABLE_SCHEMA_STITCHING } = config
@@ -20,4 +21,4 @@ if (enableSchemaStitching) {
   }
 }
 
-export const schema = exportedSchema
+export const schema = lexicographicSortSchema(exportedSchema)
