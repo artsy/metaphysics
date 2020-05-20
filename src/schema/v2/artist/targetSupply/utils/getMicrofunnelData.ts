@@ -88,3 +88,9 @@ export function getMicrofunnelDataByArtworkInternalID(internalID: string) {
   const microfunnelData = dataGroupedByInternalID[internalID]
   return microfunnelData?.[0]
 }
+
+export function getTargetSupplyArtists() {
+  const artworksGroupedBySlug = groupBy(staticCSVToJSONData, "slug")
+  // .filter(x => x) --- why is there a blank slug in the dataset?
+  return Object.keys(artworksGroupedBySlug).filter(x => x)
+}

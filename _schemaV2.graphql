@@ -6857,6 +6857,7 @@ type Query {
     # The slug or ID of the Tag
     id: String!
   ): Tag
+  targetSupply: TargetSupply
   user(
     # Email to search for user by
     email: String
@@ -8108,6 +8109,34 @@ type Tag implements Node {
   slug: ID!
 }
 
+type TargetSupply {
+  microfunnel: [TargetSupplyMicrofunnelItem]
+}
+
+type TargetSupplyMicrofunnelItem {
+  metadata: TargetSupplyMicrofunnelItemMetadata
+  artist: Artist
+  artworksConnection(
+    # Randomize the order of artworks for display purposes.
+    randomize: Boolean
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
+}
+
+type TargetSupplyMicrofunnelItemMetadata {
+  highestRealized: String
+  realized: String
+  recentlySoldArtworkIDs: [String]
+  roundedUniqueVisitors: String
+  roundedViews: String
+  str: String
+  uniqueVisitors: String
+  views: String
+}
+
 type TrendingArtists {
   artists: [Artist]
 }
@@ -8611,6 +8640,7 @@ type Viewer {
     # The slug or ID of the Tag
     id: String!
   ): Tag
+  targetSupply: TargetSupply
   user(
     # Email to search for user by
     email: String
