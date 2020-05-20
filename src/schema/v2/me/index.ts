@@ -37,6 +37,7 @@ import { SavedArtworks } from "./saved_artworks"
 import { ResolverContext } from "types/graphql"
 import { SaleArtworksConnectionField } from "../sale_artworks"
 import { IdentityVerification } from "./identity_verification"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -136,6 +137,20 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
         return notificationsFeedLoader(options).then(({ total_unread }) => {
           return total_unread || 0
         })
+      },
+    },
+    unreadConversationCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "The count of conversations with unread messages.",
+      resolve: (_root, options, { conversationsLoader }) => {
+        if (!conversationsLoader) return 0
+        const { page, size } = convertConnectionArgsToGravityArgs({
+          first: 1,
+        })
+        const expand = ["total_unread_count"]
+        return conversationsLoader({ page, size, expand }).then(
+          ({ total_unread_count }) => total_unread_count
+        )
       },
     },
   },

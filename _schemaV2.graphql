@@ -1010,6 +1010,9 @@ type ArtistTargetSupplyMicrofunnel {
   artworks(
     # Randomize the order of artworks for display purposes.
     randomize: Boolean
+
+    # Number of artworks to return
+    size: Int
   ): [ArtistTargetSupplyMicrofunnelArtwork]
 }
 
@@ -5565,6 +5568,9 @@ type Me implements Node {
 
   # A count of unread notifications.
   unreadNotificationsCount: Int!
+
+  # The count of conversations with unread messages.
+  unreadConversationCount: Int!
   secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
   orders(
     first: Int
