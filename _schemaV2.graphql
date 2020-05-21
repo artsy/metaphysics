@@ -1034,23 +1034,12 @@ type ArtistTargetSupplyMicrofunnel {
     # Randomize the order of artworks for display purposes.
     randomize: Boolean
   ): ArtworkConnection
-  metadata: ArtistTargetSupplyMicrofunnelMetadata
+  metadata: TargetSupplyMicrofunnelMetadata
 }
 
 type ArtistTargetSupplyMicrofunnelArtwork {
   artwork: Artwork
   realizedPrice: String
-}
-
-type ArtistTargetSupplyMicrofunnelMetadata {
-  highestRealized: String
-  realized: String
-  recentlySoldArtworkIDs: [String]
-  roundedUniqueVisitors: String
-  roundedViews: String
-  str: String
-  uniqueVisitors: String
-  views: String
 }
 
 type Artwork implements Node & Searchable & Sellable {
@@ -8123,10 +8112,10 @@ type TargetSupplyMicrofunnelItem {
     # Randomize the order of artworks for display purposes.
     randomize: Boolean
   ): ArtworkConnection
-  metadata: TargetSupplyMicrofunnelItemMetadata
+  metadata: TargetSupplyMicrofunnelMetadata
 }
 
-type TargetSupplyMicrofunnelItemMetadata {
+type TargetSupplyMicrofunnelMetadata {
   highestRealized: String
   realized: String
   recentlySoldArtworkIDs: [String]

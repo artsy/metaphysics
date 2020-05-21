@@ -1,10 +1,5 @@
 import { ResolverContext } from "types/graphql"
-import {
-  GraphQLObjectType,
-  GraphQLFieldConfig,
-  GraphQLList,
-  GraphQLString,
-} from "graphql"
+import { GraphQLObjectType, GraphQLFieldConfig, GraphQLList } from "graphql"
 import { ArtistType } from "../artist"
 import {
   getMicrofunnelData,
@@ -14,6 +9,7 @@ import {
   getRecentlySoldArtworksConnection,
   RecentlySoldArtworksConnectionSource,
 } from "../types/recentlySoldArtworksConnection"
+import { TargetSupplyMicrofunnelMetadata } from "../types/targetSupplyMicrofunnelMetadata"
 
 interface TargetSupplyMicrofunnelItemSource
   extends RecentlySoldArtworksConnectionSource {
@@ -32,36 +28,7 @@ const TargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
           name: "TargetSupplyMicrofunnelItem",
           fields: {
             metadata: {
-              // TODO: share this shape with the one in ArtistTargetSupply
-              type: new GraphQLObjectType<any, ResolverContext>({
-                name: "TargetSupplyMicrofunnelItemMetadata",
-                fields: {
-                  highestRealized: {
-                    type: GraphQLString,
-                  },
-                  realized: {
-                    type: GraphQLString,
-                  },
-                  recentlySoldArtworkIDs: {
-                    type: new GraphQLList(GraphQLString),
-                  },
-                  roundedUniqueVisitors: {
-                    type: GraphQLString,
-                  },
-                  roundedViews: {
-                    type: GraphQLString,
-                  },
-                  str: {
-                    type: GraphQLString,
-                  },
-                  uniqueVisitors: {
-                    type: GraphQLString,
-                  },
-                  views: {
-                    type: GraphQLString,
-                  },
-                },
-              }),
+              type: TargetSupplyMicrofunnelMetadata,
             },
 
             artist: {
@@ -76,8 +43,8 @@ const TargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
           },
         })
       ),
-      resolve: (data) => {
-        const results = data.microfunnel.map((slug) => {
+      resolve: data => {
+        const results = data.microfunnel.map(slug => {
           const microfunnelData = getMicrofunnelData(`/artist/${slug}`)
           return {
             ...microfunnelData,
