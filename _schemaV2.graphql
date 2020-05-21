@@ -8114,16 +8114,17 @@ type TargetSupply {
 }
 
 type TargetSupplyMicrofunnelItem {
-  metadata: TargetSupplyMicrofunnelItemMetadata
   artist: Artist
   artworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
     # Randomize the order of artworks for display purposes.
     randomize: Boolean
-    after: String
-    first: Int
-    before: String
-    last: Int
   ): ArtworkConnection
+  metadata: TargetSupplyMicrofunnelItemMetadata
 }
 
 type TargetSupplyMicrofunnelItemMetadata {
