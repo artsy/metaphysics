@@ -1,7 +1,8 @@
 import localSchema from "./schema"
 import { incrementalMergeSchemas } from "lib/stitching/mergeSchemas"
-
 import config from "config"
+import { lexicographicSortSchema } from "graphql"
+
 const { DISABLE_SCHEMA_STITCHING } = config
 
 // Default to the existing metaphysics schema
@@ -19,6 +20,6 @@ if (enableSchemaStitching) {
     console.log("[V1] Error merging schemas:", err)
   }
 }
-export const schema = exportedSchema
+export const schema = lexicographicSortSchema(exportedSchema)
 
 export default exportedSchema
