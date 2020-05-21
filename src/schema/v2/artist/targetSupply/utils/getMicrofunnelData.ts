@@ -79,3 +79,12 @@ export function getMicrofunnelData(pathname: string): ArtistConsignment {
   const microfunnelData = mappedData[pathname]
   return microfunnelData
 }
+
+export function getMicrofunnelDataByArtworkInternalID(internalID: string) {
+  const dataGroupedByInternalID = groupBy(
+    staticCSVToJSONData,
+    "Artwork ids (recently sold) (comma separated)"
+  )
+  const microfunnelData = dataGroupedByInternalID[internalID]
+  return microfunnelData?.[0]
+}

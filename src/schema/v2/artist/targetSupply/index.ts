@@ -10,7 +10,12 @@ import {
   GraphQLString,
   GraphQLInt,
 } from "graphql"
-import { ArtworkType } from "schema/v2/artwork"
+import { ArtworkType, artworkConnection } from "schema/v2/artwork"
+import { pageable } from "relay-cursor-paging"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { createPageCursors } from "schema/v2/fields/pagination"
+import { connectionFromArray } from "graphql-relay"
+import { deprecate } from "lib/deprecation"
 
 const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistTargetSupply",
@@ -28,7 +33,7 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
     microfunnel: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "ArtistTargetSupplyMicrofunnel",
-        fields: {
+        fields: () => ({
           /**
            * This field is resolved by parsing static CSVtoJSON data.
            * @see src/schema/v2/artist/targetSupply/utils/getMicrofunnelData.ts
@@ -64,11 +69,46 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
               },
             }),
           },
+
+          artworksConnection: {
+            description: "A list of recently sold artworks.",
+            type: artworkConnection.connectionType,
+            args: pageable({
+              randomize: {
+                type: GraphQLBoolean,
+                description:
+                  "Randomize the order of artworks for display purposes.",
+              },
+              size: {
+                type: GraphQLInt,
+                description: "Number of artworks to return",
+              },
+            }),
+            resolve: async (artist, options, { artworksLoader }) => {
+              const { page, size } = convertConnectionArgsToGravityArgs(options)
+              let response = await artworksLoader({
+                ids: artist.metadata.recentlySoldArtworkIDs,
+              })
+              const totalCount = response.length
+              if (options.randomize) {
+                response = shuffle(response)
+              }
+              return {
+                totalCount,
+                pageCursors: createPageCursors({ page, size }, totalCount),
+                ...connectionFromArray(response, options),
+              }
+            },
+          },
+
           /**
-           * Take all of the recentlySoldArtworkIDs from metadata and perform
-           * a fetch for associated artworks and attach recently sold prices.
+           * Deprecated.
            */
           artworks: {
+            deprecationReason: deprecate({
+              inVersion: 2,
+              preferUsageOf: "artworksConnection",
+            }),
             args: {
               randomize: {
                 type: GraphQLBoolean,
@@ -120,7 +160,7 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
               return artworksWithRealizedPrice
             },
           },
-        },
+        }),
       }),
       resolve: (artist) => {
         const microfunnelData = getMicrofunnelData(`/artist/${artist.id}`) // pass in artist href, as thats how CSV data is formatted
