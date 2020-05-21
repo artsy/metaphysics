@@ -1,7 +1,6 @@
 import { ResolverContext } from "types/graphql"
 import {
   GraphQLObjectType,
-  GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLList,
   GraphQLString,
@@ -11,44 +10,25 @@ import {
   getMicrofunnelData,
   getTargetSupplyArtists,
 } from "../artist/targetSupply/utils/getMicrofunnelData"
-import { pageable } from "relay-cursor-paging"
-import { connectionFromArray } from "graphql-relay"
-import { artworkConnection } from "schema/v2/artwork"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { createPageCursors } from "../fields/pagination"
+import {
+  getRecentlySoldArtworksConnection,
+  RecentlySoldArtworksConnectionSource,
+} from "../types/recentlySoldArtworksConnection"
 
-//Example query:
-// query {
-//   targetSupply {
-//     microfunnel {
-//       metadata {
-//         highestRealized
-//       }
-//       artist {
-//         slug
-//       }
-//       artworks(first: 2) {
-// #         realizedPrice
-//         pageInfo {
-//           hasNextPage
-//           endCursor
-//         }
-//         edges {
-//           node {
-//             slug
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
+interface TargetSupplyMicrofunnelItemSource
+  extends RecentlySoldArtworksConnectionSource {
+  slug: string
+}
 
 const TargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
   name: "TargetSupply",
   fields: {
     microfunnel: {
       type: new GraphQLList(
-        new GraphQLObjectType({
+        new GraphQLObjectType<
+          TargetSupplyMicrofunnelItemSource,
+          ResolverContext
+        >({
           name: "TargetSupplyMicrofunnelItem",
           fields: {
             metadata: {
@@ -91,78 +71,13 @@ const TargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
                 return artist
               },
             },
-            // TODO: what can be shared between here and ArtistTargetSupply?
-            artworksConnection: {
-              args: pageable({
-                randomize: {
-                  type: GraphQLBoolean,
-                  description:
-                    "Randomize the order of artworks for display purposes.",
-                },
-              }),
-              type: artworkConnection.connectionType,
 
-              // TODO: figure out how to extend the type inside this connection (artwork)
-              //       to include `realizedPrice`.
-              // type: new GraphQLList(
-              //   new GraphQLObjectType({
-              //     name: "TargetSupplyMicrofunnelItemArtwork",
-              //     fields: () => {
-              //       return {
-              //         artwork: {
-              //           type: ArtworkType,
-              //         },
-              //         realizedPrice: {
-              //           type: GraphQLString,
-              //         },
-              //       }
-              //     },
-              //   })
-              // ),
-              resolve: async (artist, options, { artworksLoader }) => {
-                // TODO: implement `randomize` argument
-
-                const artworkIds = artist.metadata.recentlySoldArtworkIDs
-                const { page, size } = convertConnectionArgsToGravityArgs(
-                  options
-                )
-                const body = await artworksLoader({ ids: artworkIds })
-                return {
-                  totalCount: artworkIds.length,
-                  pageCursors: createPageCursors(
-                    { page, size },
-                    artworkIds.length
-                  ),
-                  ...connectionFromArray(body, options),
-                }
-
-                // const artworkIds = take(
-                //   artist.metadata.recentlySoldArtworkIDs,
-                //   first
-                // )
-                // const artworks = await artworksLoader({
-                //   ids: artworkIds,
-                // })
-                // let artworksWithRealizedPrice = artworks.map(
-                //   (artwork, index) => {
-                //     const realizedPrice = artist.artworks[index].realizedPrice
-                //     return {
-                //       artwork,
-                //       realizedPrice,
-                //     }
-                //   }
-                // )
-                // if (randomize) {
-                //   artworksWithRealizedPrice = shuffle(artworksWithRealizedPrice)
-                // }
-                // return artworksWithRealizedPrice
-              },
-            },
+            artworksConnection: getRecentlySoldArtworksConnection(),
           },
         })
       ),
-      resolve: data => {
-        const results = data.microfunnel.map(slug => {
+      resolve: (data) => {
+        const results = data.microfunnel.map((slug) => {
           const microfunnelData = getMicrofunnelData(`/artist/${slug}`)
           return {
             ...microfunnelData,

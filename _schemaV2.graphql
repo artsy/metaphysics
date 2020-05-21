@@ -1033,9 +1033,6 @@ type ArtistTargetSupplyMicrofunnel {
 
     # Randomize the order of artworks for display purposes.
     randomize: Boolean
-
-    # Number of artworks to return
-    size: Int
   ): ArtworkConnection
   metadata: ArtistTargetSupplyMicrofunnelMetadata
 }
@@ -8115,6 +8112,8 @@ type TargetSupply {
 
 type TargetSupplyMicrofunnelItem {
   artist: Artist
+
+  # A list of recently sold artworks.
   artworksConnection(
     after: String
     before: String
