@@ -61,7 +61,6 @@ export const TargetSupply: GraphQLFieldConfig<void, ResolverContext> = {
   type: TargetSupplyType,
   resolve: () => {
     return {
-      // TODO: figure out if we can preserve data between here & the microfunnel resolver above
       microfunnel: getTargetSupplyArtists(),
     }
   },

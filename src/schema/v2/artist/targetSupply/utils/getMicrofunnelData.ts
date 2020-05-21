@@ -91,6 +91,5 @@ export function getMicrofunnelDataByArtworkInternalID(internalID: string) {
 
 export function getTargetSupplyArtists() {
   const artworksGroupedBySlug = groupBy(staticCSVToJSONData, "slug")
-  // .filter(x => x) --- why is there a blank slug in the dataset?
-  return Object.keys(artworksGroupedBySlug).filter(x => x)
+  return Object.keys(artworksGroupedBySlug).filter((x) => x)
 }
