@@ -10,12 +10,10 @@ import {
   GraphQLString,
   GraphQLInt,
 } from "graphql"
-import { ArtworkType, artworkConnection } from "schema/v2/artwork"
-import { pageable } from "relay-cursor-paging"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { createPageCursors } from "schema/v2/fields/pagination"
-import { connectionFromArray } from "graphql-relay"
+import { ArtworkType } from "schema/v2/artwork"
 import { deprecate } from "lib/deprecation"
+import { getRecentlySoldArtworksConnection } from "schema/v2/types/targetSupply/recentlySoldArtworksConnection"
+import { TargetSupplyMicrofunnelMetadata } from "schema/v2/types/targetSupply/targetSupplyMicrofunnelMetadata"
 
 const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistTargetSupply",
@@ -39,67 +37,10 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
            * @see src/schema/v2/artist/targetSupply/utils/getMicrofunnelData.ts
            */
           metadata: {
-            type: new GraphQLObjectType<any, ResolverContext>({
-              name: "ArtistTargetSupplyMicrofunnelMetadata",
-              fields: {
-                highestRealized: {
-                  type: GraphQLString,
-                },
-                realized: {
-                  type: GraphQLString,
-                },
-                recentlySoldArtworkIDs: {
-                  type: new GraphQLList(GraphQLString),
-                },
-                roundedUniqueVisitors: {
-                  type: GraphQLString,
-                },
-                roundedViews: {
-                  type: GraphQLString,
-                },
-                str: {
-                  type: GraphQLString,
-                },
-                uniqueVisitors: {
-                  type: GraphQLString,
-                },
-                views: {
-                  type: GraphQLString,
-                },
-              },
-            }),
+            type: TargetSupplyMicrofunnelMetadata,
           },
 
-          artworksConnection: {
-            description: "A list of recently sold artworks.",
-            type: artworkConnection.connectionType,
-            args: pageable({
-              randomize: {
-                type: GraphQLBoolean,
-                description:
-                  "Randomize the order of artworks for display purposes.",
-              },
-              size: {
-                type: GraphQLInt,
-                description: "Number of artworks to return",
-              },
-            }),
-            resolve: async (artist, options, { artworksLoader }) => {
-              const { page, size } = convertConnectionArgsToGravityArgs(options)
-              let response = await artworksLoader({
-                ids: artist.metadata.recentlySoldArtworkIDs,
-              })
-              const totalCount = response.length
-              if (options.randomize) {
-                response = shuffle(response)
-              }
-              return {
-                totalCount,
-                pageCursors: createPageCursors({ page, size }, totalCount),
-                ...connectionFromArray(response, options),
-              }
-            },
-          },
+          artworksConnection: getRecentlySoldArtworksConnection(),
 
           /**
            * Deprecated.

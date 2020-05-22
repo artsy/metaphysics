@@ -88,3 +88,8 @@ export function getMicrofunnelDataByArtworkInternalID(internalID: string) {
   const microfunnelData = dataGroupedByInternalID[internalID]
   return microfunnelData?.[0]
 }
+
+export function getTargetSupplyArtists() {
+  const artworksGroupedBySlug = groupBy(staticCSVToJSONData, "slug")
+  return Object.keys(artworksGroupedBySlug).filter((x) => x)
+}
