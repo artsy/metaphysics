@@ -8,8 +8,8 @@ import {
 import {
   getRecentlySoldArtworksConnection,
   RecentlySoldArtworksConnectionSource,
-} from "../types/recentlySoldArtworksConnection"
-import { TargetSupplyMicrofunnelMetadata } from "../types/targetSupplyMicrofunnelMetadata"
+} from "../types/targetSupply/recentlySoldArtworksConnection"
+import { TargetSupplyMicrofunnelMetadata } from "../types/targetSupply/targetSupplyMicrofunnelMetadata"
 
 interface TargetSupplyMicrofunnelItemSource
   extends RecentlySoldArtworksConnectionSource {
@@ -43,8 +43,8 @@ const TargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
           },
         })
       ),
-      resolve: data => {
-        const results = data.microfunnel.map(slug => {
+      resolve: (data) => {
+        const results = data.microfunnel.map((slug) => {
           const microfunnelData = getMicrofunnelData(`/artist/${slug}`)
           return {
             ...microfunnelData,

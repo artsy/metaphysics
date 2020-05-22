@@ -12,8 +12,8 @@ import {
 } from "graphql"
 import { ArtworkType } from "schema/v2/artwork"
 import { deprecate } from "lib/deprecation"
-import { getRecentlySoldArtworksConnection } from "schema/v2/types/recentlySoldArtworksConnection"
-import { TargetSupplyMicrofunnelMetadata } from "schema/v2/types/targetSupplyMicrofunnelMetadata"
+import { getRecentlySoldArtworksConnection } from "schema/v2/types/targetSupply/recentlySoldArtworksConnection"
+import { TargetSupplyMicrofunnelMetadata } from "schema/v2/types/targetSupply/targetSupplyMicrofunnelMetadata"
 
 const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistTargetSupply",
@@ -21,12 +21,12 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
     isTargetSupply: {
       description: "True if artist is in target supply list.",
       type: GraphQLBoolean,
-      resolve: artist => artist.target_supply,
+      resolve: (artist) => artist.target_supply,
     },
     isInMicrofunnel: {
       description: "True if an artist is in the microfunnel list.",
       type: GraphQLBoolean,
-      resolve: artist => Boolean(getMicrofunnelData(`/artist/${artist.id}`)),
+      resolve: (artist) => Boolean(getMicrofunnelData(`/artist/${artist.id}`)),
     },
     microfunnel: {
       type: new GraphQLObjectType<any, ResolverContext>({
@@ -103,7 +103,7 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
           },
         }),
       }),
-      resolve: artist => {
+      resolve: (artist) => {
         const microfunnelData = getMicrofunnelData(`/artist/${artist.id}`) // pass in artist href, as thats how CSV data is formatted
         return microfunnelData
       },
@@ -113,5 +113,5 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
 
 export const ArtistTargetSupply: GraphQLFieldConfig<void, ResolverContext> = {
   type: ArtistTargetSupplyType,
-  resolve: artist => artist,
+  resolve: (artist) => artist,
 }
