@@ -5,7 +5,7 @@ const { execSync } = require("child_process")
 const path = require("path")
 
 /**
- * @param {'eigen' | 'reaction'} repo
+ * @param {'eigen' | 'force'} repo
  */
 async function updateSchemaFile(repo) {
   await updateRepo({
@@ -21,7 +21,7 @@ async function updateSchemaFile(repo) {
       "Greetings human :robot: this PR was automatically created as part of metaphysics's deploy process",
     assignees: ["artsyit"],
     labels: ["Merge On Green"],
-    update: repoDir => {
+    update: (repoDir) => {
       execSync(
         `cp _schemaV2.graphql '${path.join(repoDir, "data/schema.graphql")}'`
       )
@@ -41,7 +41,7 @@ async function main() {
     execSync("yarn dump:staging")
 
     await updateSchemaFile("eigen")
-    await updateSchemaFile("reaction")
+    await updateSchemaFile("force")
   } catch (error) {
     console.error(error)
     process.exit(1)
