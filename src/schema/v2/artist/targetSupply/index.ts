@@ -11,6 +11,9 @@ import {
   GraphQLInt,
 } from "graphql"
 import { ArtworkType } from "schema/v2/artwork"
+import { deprecate } from "lib/deprecation"
+import { getRecentlySoldArtworksConnection } from "schema/v2/types/targetSupply/recentlySoldArtworksConnection"
+import { TargetSupplyMicrofunnelMetadata } from "schema/v2/types/targetSupply/targetSupplyMicrofunnelMetadata"
 
 const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistTargetSupply",
@@ -28,47 +31,25 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
     microfunnel: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "ArtistTargetSupplyMicrofunnel",
-        fields: {
+        fields: () => ({
           /**
            * This field is resolved by parsing static CSVtoJSON data.
            * @see src/schema/v2/artist/targetSupply/utils/getMicrofunnelData.ts
            */
           metadata: {
-            type: new GraphQLObjectType<any, ResolverContext>({
-              name: "ArtistTargetSupplyMicrofunnelMetadata",
-              fields: {
-                highestRealized: {
-                  type: GraphQLString,
-                },
-                realized: {
-                  type: GraphQLString,
-                },
-                recentlySoldArtworkIDs: {
-                  type: new GraphQLList(GraphQLString),
-                },
-                roundedUniqueVisitors: {
-                  type: GraphQLString,
-                },
-                roundedViews: {
-                  type: GraphQLString,
-                },
-                str: {
-                  type: GraphQLString,
-                },
-                uniqueVisitors: {
-                  type: GraphQLString,
-                },
-                views: {
-                  type: GraphQLString,
-                },
-              },
-            }),
+            type: TargetSupplyMicrofunnelMetadata,
           },
+
+          artworksConnection: getRecentlySoldArtworksConnection(),
+
           /**
-           * Take all of the recentlySoldArtworkIDs from metadata and perform
-           * a fetch for associated artworks and attach recently sold prices.
+           * Deprecated.
            */
           artworks: {
+            deprecationReason: deprecate({
+              inVersion: 2,
+              preferUsageOf: "artworksConnection",
+            }),
             args: {
               randomize: {
                 type: GraphQLBoolean,
@@ -120,7 +101,7 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
               return artworksWithRealizedPrice
             },
           },
-        },
+        }),
       }),
       resolve: (artist) => {
         const microfunnelData = getMicrofunnelData(`/artist/${artist.id}`) // pass in artist href, as thats how CSV data is formatted
