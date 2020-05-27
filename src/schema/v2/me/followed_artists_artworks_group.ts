@@ -92,7 +92,7 @@ const FollowedArtistsArtworksGroup: GraphQLFieldConfig<
           sliceStart: gravityOptions.offset,
         })
 
-        const groupedByArtist = groupBy(connection.edges, item => {
+        const groupedByArtist = groupBy(connection.edges, (item) => {
           // FIXME: Property 'artist' does not exist on type '{}'
           // @ts-ignore
           return item.node.artist.id
@@ -100,7 +100,7 @@ const FollowedArtistsArtworksGroup: GraphQLFieldConfig<
 
         let newEdges = []
         let newEdge
-        Object.keys(groupedByArtist).forEach(artist => {
+        Object.keys(groupedByArtist).forEach((artist) => {
           const groupedNodes = groupedByArtist[artist]
           /**
            * FIXME: Fix all the type issues commented out with @ts-ignore
@@ -110,7 +110,7 @@ const FollowedArtistsArtworksGroup: GraphQLFieldConfig<
               summary: `${groupedNodes.length} work${
                 groupedNodes.length === 1 ? "" : "s"
               } added`,
-              artworks: map(groupedNodes, grouped => {
+              artworks: map(groupedNodes, (grouped) => {
                 // @ts-ignore
                 return grouped.node
               }),

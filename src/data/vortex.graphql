@@ -111,7 +111,11 @@ enum GroupedStatsObjectTypeEnum {
 """
 A grouped stat item: country or device etc.
 """
-union GroupedStatsUnion = VisitorsByCountry | VisitorsByDevice | VisitorsByLandingPage | VisitorsByReferral
+union GroupedStatsUnion =
+    VisitorsByCountry
+  | VisitorsByDevice
+  | VisitorsByLandingPage
+  | VisitorsByReferral
 
 """
 A histogram bin
@@ -329,12 +333,14 @@ type PartnerStats {
     Returns the last _n_ elements from the list.
     """
     last: Int
-  ): RankedStatsConnection @deprecated(reason: "Use rankedStats(objectType: ) instead")
+  ): RankedStatsConnection
+    @deprecated(reason: "Use rankedStats(objectType: ) instead")
 
   """
   Number of unique visitors
   """
-  uniqueVisitors(period: QueryPeriodEnum!): Int @deprecated(reason: "Use audience() { uniqueVisitors } instead")
+  uniqueVisitors(period: QueryPeriodEnum!): Int
+    @deprecated(reason: "Use audience() { uniqueVisitors } instead")
 }
 
 """
@@ -485,7 +491,11 @@ type Query {
   """
   Pricing Context Histograms
   """
-  pricingContext(artistId: String!, category: PricingContextCategoryEnum!, sizeScore: Int!): PricingContext
+  pricingContext(
+    artistId: String!
+    category: PricingContextCategoryEnum!
+    sizeScore: Int!
+  ): PricingContext
 }
 
 enum QueryPeriodEnum {

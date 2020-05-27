@@ -116,7 +116,7 @@ describe("Search", () => {
     `
 
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       const artistSearchableItemNode = data!.search.edges[0].node
 
       expect(artistSearchableItemNode.__typename).toBe("SearchableItem")
@@ -183,7 +183,7 @@ describe("Search", () => {
     `
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data!.search.pageInfo.hasNextPage).toBeTruthy()
     })
   })
@@ -200,7 +200,7 @@ describe("Search", () => {
     `
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       const { page, size } = context.searchLoader.mock.calls[0][0]
       expect(page).toEqual(30)
       expect(size).toEqual(20)
@@ -234,16 +234,16 @@ describe("Search", () => {
       .fn()
       .mockImplementation(() => Promise.resolve(searchResponseWithAggregations))
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       const typeAggregation = data!.search.aggregations.find(
-        agg => agg.slice === "TYPE"
+        (agg) => agg.slice === "TYPE"
       ).counts
 
-      const profileCount = typeAggregation.find(agg => agg.name === "profile")
+      const profileCount = typeAggregation.find((agg) => agg.name === "profile")
       expect(profileCount.count).toBe(100)
-      const artistCount = typeAggregation.find(agg => agg.name === "artist")
+      const artistCount = typeAggregation.find((agg) => agg.name === "artist")
       expect(artistCount.count).toBe(50)
-      const artworkCount = typeAggregation.find(agg => agg.name === "artwork")
+      const artworkCount = typeAggregation.find((agg) => agg.name === "artwork")
       expect(artworkCount.count).toBe(25)
     })
   })
@@ -266,7 +266,7 @@ describe("Search", () => {
     `
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       const artistNode = data!.search.edges[0].node
 
       expect(artistNode.__typename).toBe("Artist")
@@ -292,7 +292,7 @@ describe("Search", () => {
     `
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       const artworkNode = data!.search.edges[1].node
 
       expect(artworkNode.__typename).toBe("Artwork")

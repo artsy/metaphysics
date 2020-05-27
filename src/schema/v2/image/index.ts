@@ -19,10 +19,10 @@ import { NullableIDField } from "schema/v2/object_identification"
 
 export { normalize as normalizeImageData } from "./normalize"
 
-export const getDefault = images => {
+export const getDefault = (images) => {
   if (isArray(images)) {
     return (
-      find(images, img => img.is_default === true || img.default === true) ||
+      find(images, (img) => img.is_default === true || img.default === true) ||
       first(images)
     )
   }
@@ -61,7 +61,7 @@ const ImageType = new GraphQLObjectType<any, ResolverContext>({
     },
     isDefault: {
       type: GraphQLBoolean,
-      resolve: image => image.is_default || image.default,
+      resolve: (image) => image.is_default || image.default,
     },
     isZoomable: {
       type: GraphQLBoolean,

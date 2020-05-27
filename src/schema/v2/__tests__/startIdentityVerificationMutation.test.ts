@@ -23,7 +23,7 @@ mutation {
 
 describe("starting an identity verification", () => {
   it("requires an access token", async () => {
-    runQuery(mutation).catch(error => {
+    runQuery(mutation).catch((error) => {
       expect(error.message).toEqual(
         "You need to be signed in to perform this action"
       )
@@ -85,7 +85,7 @@ describe("starting an identity verification", () => {
       },
     }
 
-    runAuthenticatedQuery(mutation, errorRootValue).catch(error => {
+    runAuthenticatedQuery(mutation, errorRootValue).catch((error) => {
       expect(error.message).toEqual("ETIMEOUT service unreachable")
     })
   })

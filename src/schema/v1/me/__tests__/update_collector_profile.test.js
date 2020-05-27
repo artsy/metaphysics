@@ -67,7 +67,7 @@ describe("UpdateCollectorProfile", () => {
       .then(() => {
         throw new Error("An error was not thrown but was expected.")
       })
-      .catch(error => {
+      .catch((error) => {
         expect(error.message).toEqual(errorResponse)
       })
   })

@@ -39,7 +39,7 @@ describe("AddInitialOfferToOrder Mutation", () => {
       },
     }
     context = mockxchange(resolvers)
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.ecommerceAddInitialOfferToOrder.orderOrError.order).toEqual(
         sampleOrder({ mode: "OFFER", includeOfferFields: true })
       )
@@ -55,7 +55,7 @@ describe("AddInitialOfferToOrder Mutation", () => {
       },
     }
     context = mockxchange(resolvers)
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.ecommerceAddInitialOfferToOrder.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

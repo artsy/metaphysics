@@ -22,7 +22,7 @@ export const OfferType = new GraphQLObjectType<any, ResolverContext>({
       type: UserType,
       description: "Creator of this order",
       resolve: ({ creatorId }, _args, { userByIDLoader }) =>
-        userByIDLoader(creatorId).catch(err => {
+        userByIDLoader(creatorId).catch((err) => {
           if (err.statusCode === 404) {
             return false
           }

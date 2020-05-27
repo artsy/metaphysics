@@ -23,7 +23,7 @@ describe("UpdateConversationMutation", () => {
 
     expect.assertions(1)
     return runAuthenticatedQuery(mutation, context).then(
-      updatedConversation => {
+      (updatedConversation) => {
         expect(updatedConversation).toMatchSnapshot()
       }
     )

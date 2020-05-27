@@ -13,7 +13,7 @@ export default (accessToken, opts) => {
   } = factories(opts)
 
   const convectionAccessTokenLoader = () =>
-    convectionTokenLoader().then(data => data.token)
+    convectionTokenLoader().then((data) => data.token)
 
   const gravityLoader = gravityLoaderWithAuthenticationFactory(
     gravityAccessTokenLoader
@@ -39,7 +39,7 @@ export default (accessToken, opts) => {
       { method: "POST" }
     ),
     submissionUpdateLoader: convectionLoader(
-      id => `submissions/${id}`,
+      (id) => `submissions/${id}`,
       {},
       { method: "PUT" }
     ),

@@ -43,7 +43,7 @@ describe("Create Offer Order Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(
         data!.ecommerceCreateOfferOrderWithArtwork.orderOrError.order
       ).toEqual(sampleOrder())
@@ -66,7 +66,7 @@ describe("Create Offer Order Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(
         data!.ecommerceCreateOfferOrderWithArtwork.orderOrError.error
       ).toEqual({ type: "application_error", code: "404", data: null })

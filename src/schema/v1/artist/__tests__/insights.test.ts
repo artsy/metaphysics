@@ -29,7 +29,7 @@ describe("ArtistInsights type", () => {
         }
       `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data!.artist.insights).toEqual([])
     })
   })
@@ -50,7 +50,7 @@ describe("ArtistInsights type", () => {
         }
       `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data!.artist.insights).toEqual([])
     })
   })
@@ -75,7 +75,7 @@ describe("ArtistInsights type", () => {
           }
         `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data!.artist.insights).toEqual([
         {
           type: "SOLO_SHOW",
@@ -122,7 +122,7 @@ describe("ArtistInsights type", () => {
           }
         `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data!.artist.insights).toEqual([
         {
           type: "COLLECTED",

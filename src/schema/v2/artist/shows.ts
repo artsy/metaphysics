@@ -23,7 +23,7 @@ const denyListedPartnerTypes = [
 ]
 
 export function showsWithDenyListedPartnersRemoved(shows) {
-  return reject(shows, show => {
+  return reject(shows, (show) => {
     if (show.partner) {
       return includes(denyListedPartnerTypes, show.partner.type)
     }

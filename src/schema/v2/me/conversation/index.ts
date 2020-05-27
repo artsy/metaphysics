@@ -156,7 +156,7 @@ const isLastMessageToUser = ({ _embedded, from_email }) => {
   return lastMessagePrincipal === false || from_email !== lastMessageFromEmail
 }
 
-const lastMessageId = conversation => {
+const lastMessageId = (conversation) => {
   return get(conversation, "_embedded.last_message.id")
 }
 
@@ -198,7 +198,7 @@ const messagesConnection = {
       // Also inject the conversation id, since we need it in some message
       // resolvers (invoices).
       /* eslint-disable no-param-reassign */
-      message_details = message_details.map(message => {
+      message_details = message_details.map((message) => {
         return merge(message, {
           conversation_initial_message: initial_message,
           conversation_from_name: from_name,
@@ -231,7 +231,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     from: {
       description: "The participant who initiated the conversation",
       type: new GraphQLNonNull(ConversationInitiatorType),
-      resolve: conversation => {
+      resolve: (conversation) => {
         return {
           id: conversation.from_id,
           type: conversation.from_type,
@@ -243,7 +243,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     to: {
       description: "The participant(s) responding to the conversation",
       type: new GraphQLNonNull(ConversationResponderType),
-      resolve: conversation => {
+      resolve: (conversation) => {
         return {
           id: conversation.to_id,
           type: conversation.to_type,
@@ -288,7 +288,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       deprecationReason:
         "Prefer querying `messagesConnection(last:1) { edges { node { internalID } } }`",
       description: "Impulse id of the last message.",
-      resolve: conversation => lastMessageId(conversation),
+      resolve: (conversation) => lastMessageId(conversation),
     },
 
     // TODO: Currently if the user is not the sender of a message, we assume they are a recipient.
@@ -296,7 +296,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     isLastMessageToUser: {
       type: GraphQLBoolean,
       description: "True if user/conversation initiator is a recipient.",
-      resolve: conversation => isLastMessageToUser(conversation),
+      resolve: (conversation) => isLastMessageToUser(conversation),
     },
 
     // If the user is a recipient of the last message, return the relevant delivery id.
@@ -322,7 +322,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
             return null
           }
           const relevantDelivery = message_details[0].deliveries.find(
-            d => d.email === conversation.from_email
+            (d) => d.email === conversation.from_email
           )
           if (!relevantDelivery) {
             return null
@@ -335,7 +335,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     artworks: {
       type: new GraphQLList(ArtworkType),
       description: "Only the artworks discussed in the conversation.",
-      resolve: conversation => {
+      resolve: (conversation) => {
         const results = []
         for (const item of conversation.items) {
           if (item.item_type === "Artwork") {
@@ -352,7 +352,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLList(ConversationItem),
       description:
         "The artworks and/or partner shows discussed in the conversation.",
-      resolve: conversation => {
+      resolve: (conversation) => {
         const results = []
         for (const item of conversation.items) {
           if (
@@ -378,7 +378,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     unread: {
       type: GraphQLBoolean,
       description: "True if there is an unread message by the user.",
-      resolve: conversation => {
+      resolve: (conversation) => {
         const memoizedLastMessageId = lastMessageId(conversation)
         const { from_last_viewed_message_id } = conversation
         return (

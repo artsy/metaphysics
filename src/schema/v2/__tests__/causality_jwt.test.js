@@ -46,7 +46,7 @@ xdescribe("CausalityJWT", () => {
     const query = `{
       causalityJWT(role: PARTICIPANT, saleID: "foo")
     }`
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "bidder",
@@ -61,7 +61,7 @@ xdescribe("CausalityJWT", () => {
     const query = `{
       causalityJWT(role: PARTICIPANT, saleID: "slug")
     }`
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "bidder",
@@ -76,7 +76,7 @@ xdescribe("CausalityJWT", () => {
     const query = `{
       causalityJWT(role: PARTICIPANT, saleID: "slug")
     }`
-    return runQuery(query, { saleLoader: context.saleLoader }).then(data => {
+    return runQuery(query, { saleLoader: context.saleLoader }).then((data) => {
       expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
@@ -92,7 +92,7 @@ xdescribe("CausalityJWT", () => {
       causalityJWT(role: PARTICIPANT, saleID: "bar")
     }`
     context.meBiddersLoader = sinon.stub().returns(Promise.resolve([]))
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
@@ -116,7 +116,7 @@ xdescribe("CausalityJWT", () => {
         },
       ])
     )
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
@@ -140,7 +140,7 @@ xdescribe("CausalityJWT", () => {
       })
     )
 
-    return runAuthenticatedQuery(query, context).catch(e => {
+    return runAuthenticatedQuery(query, context).catch((e) => {
       expect(e.message).toEqual("Unauthorized to be operator")
     })
   })
@@ -162,7 +162,7 @@ xdescribe("CausalityJWT", () => {
     )
     context.mePartnersLoader = sinon.stub().returns(Promise.resolve([]))
 
-    return runAuthenticatedQuery(query, context).catch(e => {
+    return runAuthenticatedQuery(query, context).catch((e) => {
       expect(e.message).toEqual("Unauthorized to be operator")
     })
   })
@@ -171,7 +171,7 @@ xdescribe("CausalityJWT", () => {
     const query = `{
       causalityJWT(role: OPERATOR, saleID: "foo")
     }`
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "externalOperator",

@@ -37,7 +37,7 @@ const Articles: GraphQLFieldConfig<void, ResolverContext> = {
       show_id: showID,
       ..._options,
     }
-    return articlesLoader(options).then(articles => articles.results)
+    return articlesLoader(options).then((articles) => articles.results)
   },
 }
 

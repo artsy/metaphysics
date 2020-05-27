@@ -7,7 +7,8 @@ import {
 
 type DeprecationOptions = { inVersion: 2 } & (
   | { preferUsageOf: string; reason?: undefined }
-  | { reason: string; preferUsageOf?: undefined })
+  | { reason: string; preferUsageOf?: undefined }
+)
 
 export function deprecate(options: DeprecationOptions) {
   const reason = options.reason || `Prefer to use \`${options.preferUsageOf}\`.`
@@ -28,9 +29,7 @@ export function shouldBeRemoved(options: {
       return removeFromVersion >= options.inVersion
     } else {
       throw new Error(
-        `Use the \`deprecate\` function to define a deprecation. [${
-          options.typeName
-        }.${options.fieldName}]`
+        `Use the \`deprecate\` function to define a deprecation. [${options.typeName}.${options.fieldName}]`
       )
     }
   } else {
@@ -50,11 +49,7 @@ export function deprecateType<
     options.preferUsageOf
       ? {
           inVersion: options.inVersion,
-          reason: `The \`${
-            type.name
-          }\` type has been deprecated. Prefer to use the \`${
-            options.preferUsageOf
-          }\` type instead.`,
+          reason: `The \`${type.name}\` type has been deprecated. Prefer to use the \`${options.preferUsageOf}\` type instead.`,
         }
       : options
   )
@@ -84,7 +79,7 @@ function deprecateFields(
   deprecationReason: string,
   fields: GraphQLFieldMap<any, any>
 ) {
-  Object.keys(fields).forEach(fieldName => {
+  Object.keys(fields).forEach((fieldName) => {
     fields[fieldName] = { ...fields[fieldName], deprecationReason }
   })
   return fields

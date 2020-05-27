@@ -81,7 +81,7 @@ export const FilterArtworksCounts = {
       ),
     },
   }),
-  resolve: data => data,
+  resolve: (data) => data,
 }
 
 export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
@@ -186,12 +186,12 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ options }, _options, { geneLoader, tagLoader }) => {
         const { tag_id, gene_id } = options
         if (tag_id) {
-          return tagLoader(tag_id).then(tag =>
+          return tagLoader(tag_id).then((tag) =>
             assign({ context_type: "Tag" }, tag)
           )
         }
         if (gene_id) {
-          return geneLoader(gene_id).then(gene =>
+          return geneLoader(gene_id).then((gene) =>
             assign({ context_type: "Gene" }, gene)
           )
         }
@@ -382,7 +382,7 @@ const filterArtworksTypeFactory = (
     }
 
     const allOptions = Object.assign({}, gravityOptions, relayOptions)
-    return loader(allOptions).then(response =>
+    return loader(allOptions).then((response) =>
       Object.assign({}, response, { options: allOptions })
     )
   },

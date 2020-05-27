@@ -58,7 +58,7 @@ export const TagField: GraphQLFieldConfig<void, ResolverContext> = {
       "internalID",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
-      return tagLoader(id).then(tag => {
+      return tagLoader(id).then((tag) => {
         return Object.assign(tag, { _type: "Tag" }, {})
       })
     }

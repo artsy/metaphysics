@@ -45,7 +45,7 @@ describe("Create Buy Order Mutation", () => {
       }
     `
 
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.ecommerceCreateOrderWithArtwork.orderOrError.order).toEqual(
         sampleOrder()
       )

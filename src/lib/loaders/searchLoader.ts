@@ -12,11 +12,11 @@ const modeMap = {
   DEFAULT: { fallbackEntities: DEFAULT_ENTITIES, pathname: "/match" },
 }
 
-export const searchLoader = gravityLoader => {
+export const searchLoader = (gravityLoader) => {
   return gravityLoader(
     ({ query, entities, mode, ...rest }) => {
       const { fallbackEntities, pathname } = modeMap[mode] || modeMap.DEFAULT
-      const indexes = entities || fallbackEntities.map(index => index.value)
+      const indexes = entities || fallbackEntities.map((index) => index.value)
 
       const queryParams = {
         term: query,

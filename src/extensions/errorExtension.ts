@@ -46,7 +46,7 @@ export class ErrorExtension implements GraphQLExtension {
         })
       }
       options.graphqlResponse.errors = options.graphqlResponse.errors.map(
-        error => this.errorHandler!(error) as GraphQLError
+        (error) => this.errorHandler!(error) as GraphQLError
       )
     }
     return options

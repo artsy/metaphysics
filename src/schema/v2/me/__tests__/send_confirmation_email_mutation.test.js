@@ -70,7 +70,7 @@ describe("Send confirmation email mutation", () => {
       sendConfirmationEmailLoader: undefined,
     }
 
-    return runAuthenticatedQuery(query, context).catch(error => {
+    return runAuthenticatedQuery(query, context).catch((error) => {
       expect(error.message).toEqual(
         "You need to be signed in to perform this action"
       )
@@ -84,7 +84,7 @@ describe("Send confirmation email mutation", () => {
       },
     }
 
-    return runAuthenticatedQuery(query, errorRootValue).catch(error => {
+    return runAuthenticatedQuery(query, errorRootValue).catch((error) => {
       expect(error.message).toEqual("ETIMEOUT service unreachable")
     })
   })

@@ -45,7 +45,7 @@ const LotStandings: GraphQLFieldConfig<void, ResolverContext> = {
       live,
       sale_id,
       sale_artwork_id,
-    }).then(lotStandings => {
+    }).then((lotStandings) => {
       return lotStandings
     })
   },

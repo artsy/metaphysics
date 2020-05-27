@@ -71,7 +71,7 @@ export const kawsStitchingEnvironmentV1 = (
 
             const existingLoader =
               context.unauthenticatedLoaders.filterArtworksLoader
-            const newLoader = loaderParams => {
+            const newLoader = (loaderParams) => {
               return existingLoader.call(null, loaderParams, {
                 requestThrottleMs: 1000 * 60 * 60,
               })
@@ -235,7 +235,7 @@ export const kawsStitchingEnvironmentV2 = (
 
             const existingLoader =
               context.unauthenticatedLoaders.filterArtworksLoader
-            const newLoader = loaderParams => {
+            const newLoader = (loaderParams) => {
               return existingLoader.call(null, loaderParams, {
                 requestThrottleMs: 1000 * 60 * 60,
               })
@@ -267,7 +267,7 @@ export const kawsStitchingEnvironmentV2 = (
 // https://github.com/graphql/graphql-js/blob/master/src/utilities/schemaPrinter.js
 function argsToSDL(args: GraphQLFieldConfigArgumentMap) {
   const result: string[] = []
-  Object.keys(args).forEach(argName => {
+  Object.keys(args).forEach((argName) => {
     result.push(`${argName}: ${printType(args[argName].type)}`)
   })
   return result

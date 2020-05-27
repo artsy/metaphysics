@@ -26,7 +26,7 @@ const Genes: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: (_root, options, { geneLoader, genesLoader }) => {
     if (options.slugs) {
       return Promise.all(
-        options.slugs.map(slug =>
+        options.slugs.map((slug) =>
           geneLoader(
             slug,
             {},

@@ -16,7 +16,7 @@ describe("HomePageHeroUnits", () => {
       mobile_description: "Discover works on your phone",
     },
   ]
-  ;[("mobile", "desktop")].forEach(platform => {
+  ;[("mobile", "desktop")].forEach((platform) => {
     it(`picks subtitle for ${platform}`, () => {
       const params = { enabled: true }
       params[platform] = true

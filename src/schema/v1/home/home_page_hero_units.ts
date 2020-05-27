@@ -142,8 +142,8 @@ const HomePageHeroUnits: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: (_, { platform }, { heroUnitsLoader }) => {
     const params = { enabled: true }
     params[platform] = true
-    return heroUnitsLoader(params).then(units => {
-      return units.map(unit => Object.assign({ platform }, unit))
+    return heroUnitsLoader(params).then((units) => {
+      return units.map((unit) => Object.assign({ platform }, unit))
     })
   },
 }

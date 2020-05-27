@@ -6,7 +6,7 @@ xdescribe("Partners", () => {
     const partnersLoader = ({ id }) => {
       if (id) {
         return Promise.resolve(
-          id.map(id => ({
+          id.map((id) => ({
             _id: id,
             has_full_profile: true,
             profile_banner_display: true,

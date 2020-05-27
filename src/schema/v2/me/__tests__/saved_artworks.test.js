@@ -50,7 +50,7 @@ describe("me { saved_artwork", () => {
         ),
       }
 
-      return runAuthenticatedQuery(query, context).then(data => {
+      return runAuthenticatedQuery(query, context).then((data) => {
         expect(data).toMatchSnapshot()
       })
     })

@@ -34,12 +34,12 @@ const MetaphysicsSchema = new GraphQLObjectType<any, ResolverContext>({
   name: "Metaphysics",
   fields: () => {
     const fields = {}
-    Object.keys(mapEnvBooleans).forEach(key => {
+    Object.keys(mapEnvBooleans).forEach((key) => {
       fields[key] = {
         type: new GraphQLNonNull(GraphQLBoolean),
       }
     })
-    Object.keys(mapEnvStrings).forEach(key => {
+    Object.keys(mapEnvStrings).forEach((key) => {
       fields[key] = {
         type: new GraphQLNonNull(GraphQLString),
       }

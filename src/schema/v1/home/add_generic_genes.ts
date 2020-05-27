@@ -75,7 +75,7 @@ export const params: GenericGeneArtworkModuleParams[] = [
 
 const genericGenes: (
   modules: HomePageArtworkModuleDetails[]
-) => HomePageArtworkModuleDetails[] = modules => {
+) => HomePageArtworkModuleDetails[] = (modules) => {
   const clonedParams = clone(params)
   return concat(
     modules,

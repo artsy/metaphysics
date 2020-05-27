@@ -21,27 +21,28 @@ export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
     id: {
       ...SlugAndInternalIDFields.id,
       type: new GraphQLNonNull(GraphQLID),
-      resolve: item => toGlobalId("SearchableItem", item._id),
+      resolve: (item) => toGlobalId("SearchableItem", item._id),
     },
     description: {
       type: GraphQLString,
-      resolve: item => new SearchableItemPresenter(item).formattedDescription(),
+      resolve: (item) =>
+        new SearchableItemPresenter(item).formattedDescription(),
     },
     displayLabel: {
       type: GraphQLString,
-      resolve: item => item.display,
+      resolve: (item) => item.display,
     },
     imageUrl: {
       type: GraphQLString,
-      resolve: item => new SearchableItemPresenter(item).imageUrl(),
+      resolve: (item) => new SearchableItemPresenter(item).imageUrl(),
     },
     href: {
       type: GraphQLString,
-      resolve: item => new SearchableItemPresenter(item).href(),
+      resolve: (item) => new SearchableItemPresenter(item).href(),
     },
     displayType: {
       type: GraphQLString,
-      resolve: item => new SearchableItemPresenter(item).displayType(),
+      resolve: (item) => new SearchableItemPresenter(item).displayType(),
     },
   },
 })

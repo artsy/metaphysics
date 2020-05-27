@@ -31,7 +31,7 @@ export const executableConvectionSchema = () => {
 
   // Return the new modified schema
   return transformSchema(schema, [
-    new RenameTypes(name => {
+    new RenameTypes((name) => {
       const newName = remap[name] || name
       return newName
     }),

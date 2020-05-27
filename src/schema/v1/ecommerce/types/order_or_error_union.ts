@@ -50,7 +50,7 @@ export const OrderWithMutationFailure = new GraphQLObjectType<
 export const OrderOrFailureUnionType = new GraphQLUnionType({
   name: "OrderOrFailureUnionType",
   types: [OrderWithMutationSuccess, OrderWithMutationFailure],
-  resolveType: object => {
+  resolveType: (object) => {
     switch (object.__typename) {
       case "EcommerceOrderWithMutationSuccess": {
         return OrderWithMutationSuccess

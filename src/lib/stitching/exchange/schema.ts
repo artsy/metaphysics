@@ -8,7 +8,7 @@ import {
 import { readFileSync } from "fs"
 import { ReplaceCommerceDateTimeType } from "./transformers/replaceCommerceDateTimeType"
 
-export const executableExchangeSchema = transforms => {
+export const executableExchangeSchema = (transforms) => {
   const exchangeSDL = readFileSync("src/data/exchange.graphql", "utf8")
   const exchangeLink = createExchangeLink()
 
@@ -24,7 +24,7 @@ export const executableExchangeSchema = transforms => {
 
 export const transformsForExchange = [
   // Apply a prefix to all the typenames
-  new RenameTypes(name => {
+  new RenameTypes((name) => {
     return `Commerce${name}`
   }),
   // Rename all the root fields to be camelCased
@@ -39,7 +39,7 @@ export const transformsForExchange = [
 export const legacyTransformsForExchange = [
   // Apply a prefix to all the typenames
   // for Legacy merged schema approach
-  new RenameTypes(name => {
+  new RenameTypes((name) => {
     return `Ecommerce${name}`
   }),
   // Rename all the root fields to be camelCased

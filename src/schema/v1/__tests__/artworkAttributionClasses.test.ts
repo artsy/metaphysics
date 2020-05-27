@@ -15,7 +15,7 @@ describe("ArtworkAttributionClasses type", () => {
       }
     `
 
-    return runQuery(query).then(data => {
+    return runQuery(query).then((data) => {
       expect(data!.artworkAttributionClasses[0].id).toBe("unique")
       expect(data!.artworkAttributionClasses[0].name).toBe("Unique")
       expect(data!.artworkAttributionClasses[0].shortDescription).toBe(

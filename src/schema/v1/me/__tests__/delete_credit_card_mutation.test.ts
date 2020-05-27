@@ -65,7 +65,7 @@ describe("Delete card mutation", () => {
         throw new Error("ETIMEOUT service unreachable")
       },
     }
-    runAuthenticatedQuery(query, errorRootValue).catch(error => {
+    runAuthenticatedQuery(query, errorRootValue).catch((error) => {
       expect(error.message).toEqual("ETIMEOUT service unreachable")
     })
   })

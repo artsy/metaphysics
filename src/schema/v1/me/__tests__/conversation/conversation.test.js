@@ -246,7 +246,7 @@ describe("Me", () => {
         const customRootValue = Object.assign({}, context, {
           // Get a copy of the conversation payload, mutate it, and return that instead.
           conversationLoader: () =>
-            context.conversationLoader().then(conversation => {
+            context.conversationLoader().then((conversation) => {
               const convo = conversation
               convo.items[0].properties = {}
               return convo

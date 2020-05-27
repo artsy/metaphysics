@@ -164,7 +164,7 @@ const ViewerType = new GraphQLObjectType<any, ResolverContext>({
 const Viewer = {
   type: ViewerType,
   description: "A wildcard used to support complex root queries in Relay",
-  resolve: x => x,
+  resolve: (x) => x,
 }
 
 export default new GraphQLSchema({

@@ -39,7 +39,7 @@ it("returns artists for a user", () => {
   `
   return runAuthenticatedQuery(query, {
     followedArtistsLoader,
-  }).then(data => {
+  }).then((data) => {
     expect(data).toMatchSnapshot()
   })
 })

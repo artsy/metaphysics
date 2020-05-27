@@ -49,7 +49,7 @@ const queryMap: PersistedQueryMap = JSON.parse(
 const schemaV1 = require("schema/v1").schema
 const schemaV2 = require("schema/v2").schema
 
-const queryToAst = query => parse(new Source(query))
+const queryToAst = (query) => parse(new Source(query))
 
 const knownV1Query = (hash: string) => hash in knownV1Queries
 const knownFailingForV1 = (hash: string) => hash in knownV1Failures

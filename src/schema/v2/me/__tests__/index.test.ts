@@ -26,7 +26,7 @@ describe("me/index", () => {
 
     return runAuthenticatedQuery(query, {
       meLoader: () => Promise.resolve(body),
-    }).then(data => {
+    }).then((data) => {
       expect(data).toEqual({
         me: {
           name: "Test User",
@@ -74,7 +74,7 @@ describe("me/index", () => {
             body: creditCardsResponse,
             headers: { "x-total-count": "1" },
           }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { hasQualifiedCreditCards: true } })
       })
     })
@@ -88,7 +88,7 @@ describe("me/index", () => {
             body: creditCardsResponse,
             headers: { "x-total-count": "0" },
           }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({
           me: {
             hasQualifiedCreditCards: false,
@@ -133,7 +133,7 @@ describe("me/index", () => {
             body: creditCardsResponse,
             headers: { "x-total-count": "0" },
           }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { hasCreditCards: true } })
       })
     })
@@ -147,7 +147,7 @@ describe("me/index", () => {
             body: creditCardsResponse,
             headers: { "x-total-count": "0" },
           }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { hasCreditCards: false } })
       })
     })
@@ -165,7 +165,7 @@ describe("me/index", () => {
     it("returns the number of unread notifications", () => {
       return runAuthenticatedQuery(countQuery, {
         notificationsFeedLoader: () => Promise.resolve({ total_unread: 12 }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { unreadNotificationsCount: 12 } })
       })
     })
@@ -173,7 +173,7 @@ describe("me/index", () => {
     it("handles an unauthorized request", () => {
       return runQuery(countQuery, {
         notificationsFeedLoader: () => Promise.resolve({ total_unread: null }),
-      }).catch(error => {
+      }).catch((error) => {
         expect(error.message).toEqual(
           "You need to be signed in to perform this action"
         )
@@ -183,7 +183,7 @@ describe("me/index", () => {
     it("handles a null from gravity", () => {
       return runAuthenticatedQuery(countQuery, {
         notificationsFeedLoader: () => Promise.resolve({ total_unread: null }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { unreadNotificationsCount: 0 } })
       })
     })

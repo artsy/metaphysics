@@ -25,7 +25,7 @@ function formatDaySchedule(day: DayOfWeek, daySchedules: Array<DaySchedule>) {
   const filteredDaySchedules = _.filter(daySchedules, { day_of_week: day })
   if (filteredDaySchedules.length) {
     const hours: Array<string> = []
-    filteredDaySchedules.forEach(daySchedule => {
+    filteredDaySchedules.forEach((daySchedule) => {
       const startHour = moment().hour(daySchedule["start_time"] / 60 / 60)
       const startMinute = moment().minutes(daySchedule["start_time"] / 60)
       const endHour = moment().hour(daySchedule["end_time"] / 60 / 60)
@@ -59,12 +59,12 @@ export function formatDaySchedules(daySchedules: Array<DaySchedule>) {
     return []
   }
   const formattedDaySchedules = () =>
-    _.map(Object.values(DayOfWeek), day => {
+    _.map(Object.values(DayOfWeek), (day) => {
       return formatDaySchedule(day, daySchedules)
     })
 
   const daysOpen = [formattedDaySchedules()[0]]
-  _.each(formattedDaySchedules().slice(1), function(daySchedule) {
+  _.each(formattedDaySchedules().slice(1), function (daySchedule) {
     if (
       daySchedule &&
       daySchedule["hours"] ===
@@ -81,13 +81,13 @@ export function formatDaySchedules(daySchedules: Array<DaySchedule>) {
 
   return _.chain(daysOpen)
     .groupBy("hours")
-    .map(schedule =>
+    .map((schedule) =>
       _.chain(schedule)
-        .map(day => ({
+        .map((day) => ({
           days: day["end"] ? day["start"] + "–" + day["end"] : day["start"],
           hours: schedule[0]["hours"],
         }))
-        .reduce(function(memo: { days: string; hours: string }, iteratee) {
+        .reduce(function (memo: { days: string; hours: string }, iteratee) {
           memo["days"] = memo["days"] + ", " + iteratee["days"]
           return memo
         })

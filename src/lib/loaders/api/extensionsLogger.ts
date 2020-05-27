@@ -52,12 +52,12 @@ const extensionsLogger = (
 }
 
 // This will only be triggered in non-production environments
-export const fetchLoggerSetup = requestID => {
+export const fetchLoggerSetup = (requestID) => {
   requests[requestID] = {}
 }
 
 // Called at the end of a request, returns the results and resets
-export const fetchLoggerRequestDone = requestID => {
+export const fetchLoggerRequestDone = (requestID) => {
   const requestCopy = requests[requestID]
   delete requests[requestID]
 

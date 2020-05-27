@@ -37,7 +37,7 @@ it("returns artworks for a collection", () => {
       }
     }
   `
-  return runAuthenticatedQuery(query, { followedGenesLoader }).then(data => {
+  return runAuthenticatedQuery(query, { followedGenesLoader }).then((data) => {
     expect(data).toMatchSnapshot()
   })
 })

@@ -96,7 +96,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
       node: { type: Artwork.type, resolve: ({ artwork }) => artwork },
       cursor: { type: GraphQLString },
       counts: {
-        resolve: x => x,
+        resolve: (x) => x,
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "SaleArtworkCounts",
           fields: {
@@ -112,7 +112,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       currentBid: money({
         name: "SaleArtworkCurrentBid",
-        resolve: saleArtwork => ({
+        resolve: (saleArtwork) => ({
           ...GravityIDFields,
           cents:
             saleArtwork.highest_bid_amount_cents ||
@@ -130,9 +130,10 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           display_estimate_dollars,
         }) => {
           return (
-            compact(
-              [display_low_estimate_dollars, display_high_estimate_dollars]
-            ).join("–") || display_estimate_dollars
+            compact([
+              display_low_estimate_dollars,
+              display_high_estimate_dollars,
+            ]).join("–") || display_estimate_dollars
           )
         },
       },
@@ -209,7 +210,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
             saleLoader,
             incrementsLoader,
             minimum_next_bid_cents: minimumNextBid,
-          }).then(bid_increments => {
+          }).then((bid_increments) => {
             // If you are leading, we want to show increments _above_ your max
             // bid (which is the first element of the array). If you are not
             // leading, the first element of the array represents the next
@@ -218,7 +219,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
               bid_increments.shift()
             }
 
-            return bid_increments.map(increment => {
+            return bid_increments.map((increment) => {
               return {
                 cents: increment,
                 display: formatMoney(increment / 100, { symbol, precision: 0 }),
@@ -238,7 +239,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           if (!!saleArtwork.sale) {
             return isBiddable(saleArtwork.sale, saleArtwork)
           }
-          return saleLoader(saleArtwork.sale_id).then(sale =>
+          return saleLoader(saleArtwork.sale_id).then((sale) =>
             isBiddable(sale, saleArtwork)
           )
         },

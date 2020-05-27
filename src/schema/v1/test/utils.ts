@@ -5,23 +5,20 @@ import { ResolverContext } from "types/graphql"
 import { createLoadersWithAuthentication } from "lib/loaders/loaders_with_authentication"
 
 export const runQueryOrThrow = (args: GraphQLArgs) => {
-  return graphql(args).then(result => {
+  return graphql(args).then((result) => {
     if (result.errors) {
-      const errors = result.errors.reduce(
-        (acc, gqlError) => {
-          const error = unpackGraphQLError(gqlError) as Error | CombinedError
-          return isCombinedError(error)
-            ? [...acc, ...error.errors.map(unpackGraphQLError)]
-            : [...acc, error]
-        },
-        [] as Error[]
-      )
+      const errors = result.errors.reduce((acc, gqlError) => {
+        const error = unpackGraphQLError(gqlError) as Error | CombinedError
+        return isCombinedError(error)
+          ? [...acc, ...error.errors.map(unpackGraphQLError)]
+          : [...acc, error]
+      }, [] as Error[])
       if (errors.length === 1) {
         throw errors[0]
       } else {
         const combinedError = new Error("Multiple errors occurred.")
         combinedError.stack = errors
-          .map(e => `${e.message}:\n${e.stack}`)
+          .map((e) => `${e.message}:\n${e.stack}`)
           .join("\n")
         throw combinedError
       }
@@ -96,7 +93,7 @@ export const runAuthenticatedQuery = (
   const accessToken = "secret"
   const userID = "user-42"
   const loaders = createLoadersWithAuthentication(accessToken, userID, {})
-  Object.keys(loaders).forEach(key => (loaders[key] = jest.fn()))
+  Object.keys(loaders).forEach((key) => (loaders[key] = jest.fn()))
   return runQuery(query, {
     accessToken,
     userID,
@@ -128,7 +125,7 @@ export const runQueryMerged = async (
       ENABLE_CONSIGNMENTS_STITCHING: true,
     })
   }
-  return graphql(mergedSchema, query, null, context).then(result => {
+  return graphql(mergedSchema, query, null, context).then((result) => {
     if (result.errors) {
       const error = result.errors[0]
       throw error.originalError || error

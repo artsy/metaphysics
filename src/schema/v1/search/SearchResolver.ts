@@ -49,8 +49,8 @@ export class SearchResolver {
               InlineFragment(node) {
                 if (
                   node.typeCondition &&
-                  (node.typeCondition.name.value !== Searchable.name &&
-                    node.typeCondition.name.value !== SearchableItem.name)
+                  node.typeCondition.name.value !== Searchable.name &&
+                  node.typeCondition.name.value !== SearchableItem.name
                 ) {
                   entityTypesToFetch.push(node.typeCondition.name.value)
                 }
@@ -73,7 +73,7 @@ export class SearchResolver {
 
   processSearchResultItem(searchResultItem) {
     if (this.shouldFetchEntityType(searchResultItem.label)) {
-      return this.fetch(searchResultItem).then(response => {
+      return this.fetch(searchResultItem).then((response) => {
         return {
           ...response,
           __typename: searchResultItem.label,
@@ -113,10 +113,10 @@ export class SearchResolver {
         results = body.results
       }
       return Promise.all(
-        results.map(searchResultItem =>
+        results.map((searchResultItem) =>
           this.processSearchResultItem(searchResultItem)
         )
-      ).then(processedSearchResults => {
+      ).then((processedSearchResults) => {
         const connection = connectionFromArraySlice(
           processedSearchResults,
           this.args,

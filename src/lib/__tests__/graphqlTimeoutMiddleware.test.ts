@@ -14,7 +14,7 @@ import { applyMiddleware } from "graphql-middleware"
  * between multiple expressions.
  */
 function delay(by: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, by))
+  return new Promise((resolve) => setTimeout(resolve, by))
 }
 
 describe("graphQLTimeoutMiddleware", () => {
@@ -62,7 +62,7 @@ describe("graphQLTimeoutMiddleware", () => {
       const args =
         timeout &&
         Object.keys(timeout)
-          .map(key => `${key}: ${timeout[key]}`)
+          .map((key) => `${key}: ${timeout[key]}`)
           .join(", ")
       const directive = (timeout && `@timeout${args ? `(${args})` : ""}`) || ""
       const schema = buildSchema(gql`

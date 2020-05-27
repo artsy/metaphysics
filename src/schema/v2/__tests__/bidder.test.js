@@ -59,7 +59,7 @@ describe("Bidder type", () => {
       id: toGlobalId("Bidder", "5cdae6b0478dbf000ece64b9"),
     }
 
-    return runQuery(query, context, variables).then(data => {
+    return runQuery(query, context, variables).then((data) => {
       expect(data.node.pin).toBe("1234")
       expect(data.node.user.name).toEqual("Lucille Bluth")
       expect(data.node.sale.name).toEqual("Shared Live Mocktion")

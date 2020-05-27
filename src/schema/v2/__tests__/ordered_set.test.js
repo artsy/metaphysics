@@ -44,7 +44,7 @@ describe("OrderedSet type", () => {
       ),
     }
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         orderedSet: {
           internalID: "52dd3c2e4b8480091700027f",
@@ -106,7 +106,7 @@ describe("OrderedSet type", () => {
       ),
     }
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         orderedSet: {
           itemsConnection: {

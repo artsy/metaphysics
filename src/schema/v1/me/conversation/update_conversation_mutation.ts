@@ -19,7 +19,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   outputFields: {
     conversation: {
       type: Conversation.type,
-      resolve: conversation => conversation,
+      resolve: (conversation) => conversation,
     },
   },
   mutateAndGetPayload: (

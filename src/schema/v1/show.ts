@@ -351,7 +351,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
       }),
-      resolve: partner_show => partner_show,
+      resolve: (partner_show) => partner_show,
     },
     description: {
       description: "A description of the show",
@@ -590,7 +590,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLUnionType({
         name: "PartnerTypes",
         types: [PartnerType, ExternalPartnerType],
-        resolveType: value => {
+        resolveType: (value) => {
           if (value._links) {
             return ExternalPartnerType
           }
@@ -673,11 +673,11 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
     const isAdmin: boolean =
       decodeUnverifiedJwt &&
       decodeUnverifiedJwt.roles.split(",").includes("admin")
-    const isDisplayable = show =>
+    const isDisplayable = (show) =>
       show.displayable || isAdmin || partnerIds.includes(show.partner._id)
 
     return showLoader(id)
-      .then(show => {
+      .then((show) => {
         if (
           !isDisplayable(show) &&
           !show.is_local_discovery &&

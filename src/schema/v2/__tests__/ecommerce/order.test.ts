@@ -26,7 +26,7 @@ describe("Order query", () => {
       }
     `
 
-    await runQuery(query, context).then(data => {
+    await runQuery(query, context).then((data) => {
       console.log("order", data.order)
       expect(data!.order).toEqual(
         sampleOrder({

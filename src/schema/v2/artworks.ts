@@ -19,7 +19,7 @@ const Artworks: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: (_root, options, { artworksLoader }) => {
     const { ids } = options
     const { page, size } = convertConnectionArgsToGravityArgs(options)
-    return artworksLoader({ ids }).then(body => {
+    return artworksLoader({ ids }).then((body) => {
       const totalCount = body.length
       return {
         totalCount,

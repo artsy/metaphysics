@@ -36,7 +36,7 @@ export interface DataLoaderKey {
   apiOptions?: APIOptions
 }
 
-export default opts => ({
+export default (opts) => ({
   // Unauthenticated loaders
 
   /**

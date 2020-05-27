@@ -88,7 +88,7 @@ export const FilterArtworksCounts = {
       ),
     },
   }),
-  resolve: data => data,
+  resolve: (data) => data,
 }
 
 export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
@@ -303,13 +303,13 @@ export const FilterArtworksFields = () => {
       ): Promise<ContextSource> | null => {
         const { tag_id, gene_id } = gravityOptions
         if (tag_id) {
-          return tagLoader(tag_id).then(tag => ({
+          return tagLoader(tag_id).then((tag) => ({
             ...tag,
             context_type: TagType,
           }))
         }
         if (gene_id) {
-          return geneLoader(gene_id).then(gene => ({
+          return geneLoader(gene_id).then((gene) => ({
             ...gene,
             context_type: GeneType,
           }))

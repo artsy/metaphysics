@@ -25,7 +25,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   outputFields: {
     bidder: {
       type: Bidder.type,
-      resolve: bidder => bidder,
+      resolve: (bidder) => bidder,
     },
   },
   mutateAndGetPayload: ({ saleID: sale_id }, { createBidderLoader }) => {

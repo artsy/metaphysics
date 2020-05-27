@@ -47,7 +47,7 @@ describe("City", () => {
         }
       `
 
-      return runQuery(query).then(result => {
+      return runQuery(query).then((result) => {
         expect(result!.city).toEqual({
           name: "Sacramende",
         })
@@ -63,7 +63,7 @@ describe("City", () => {
           }
         }
       `
-      return runQuery(query).catch(e =>
+      return runQuery(query).catch((e) =>
         expect(e.message).toMatch(/City sacramundo not found in:/)
       )
     })
@@ -80,7 +80,7 @@ describe("City", () => {
         }
       `
 
-      return runQuery(query).then(result => {
+      return runQuery(query).then((result) => {
         expect(result!.city).toEqual({
           name: "Smallville",
         })
@@ -97,7 +97,7 @@ describe("City", () => {
         }
       `
 
-      return runQuery(query).then(result => {
+      return runQuery(query).then((result) => {
         expect(result!.city).toBeNull()
       })
     })
@@ -134,7 +134,7 @@ describe("City", () => {
     })
 
     it("resolves nearby shows", () => {
-      return runQuery(query, context).then(result => {
+      return runQuery(query, context).then((result) => {
         expect(result!.city).toEqual({
           name: "Sacramende",
           shows: {
@@ -403,7 +403,7 @@ describe("City", () => {
         }
       `
 
-      return runQuery(query, context).then(result => {
+      return runQuery(query, context).then((result) => {
         expect(result!.city).toEqual({
           name: "Sacramende",
           fairs: {

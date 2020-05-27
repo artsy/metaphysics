@@ -24,7 +24,7 @@ export const HomePageFairsModuleType = new GraphQLObjectType<
             // Gravity returns fairs that are both current and upcoming.
             // Make sure the current ones appear first in the results list.
             const now = moment.utc()
-            const returnValue = groupBy(ungroupedRunningFairs, fair => {
+            const returnValue = groupBy(ungroupedRunningFairs, (fair) => {
               const startAt = moment.utc(fair.start_at)
               return now.isAfter(startAt) ? "current" : "upcoming"
             })
@@ -43,10 +43,10 @@ export const HomePageFairsModuleType = new GraphQLObjectType<
               }
               return fairsLoader(newOptions).then(({ body: closedFairs }) => {
                 const allFairs = runningFairs.concat(closedFairs)
-                return allFairs.filter(fair => fair.mobile_image)
+                return allFairs.filter((fair) => fair.mobile_image)
               })
             }
-            return runningFairs.filter(fair => fair.mobile_image)
+            return runningFairs.filter((fair) => fair.mobile_image)
           }
         )
       },

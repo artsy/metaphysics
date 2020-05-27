@@ -36,7 +36,7 @@ const CausalityJWT: GraphQLFieldConfig<void, ResolverContext> = {
   ) => {
     // Observer role for logged out users
     if (!meLoader || !meBiddersLoader || !mePartnersLoader) {
-      return saleLoader(options.sale_id).then(sale =>
+      return saleLoader(options.sale_id).then((sale) =>
         jwt.encode(
           {
             aud: "auctions",
@@ -102,7 +102,7 @@ const CausalityJWT: GraphQLFieldConfig<void, ResolverContext> = {
 
           if (sale.partner) {
             return mePartnersLoader({ "partner_ids[]": sale.partner._id }).then(
-              mePartners => {
+              (mePartners) => {
                 // Check if current user has access to partner running the sale
                 if (mePartners.length === 0) {
                   throw new Error("Unauthorized to be operator")

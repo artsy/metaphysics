@@ -100,14 +100,14 @@ describe("Default Context", () => {
         auction_state: "closed",
       })
 
-    await runAuthenticatedQuery(query, context).then(data => {
+    await runAuthenticatedQuery(query, context).then((data) => {
       // Returns the default grid
       expect(data.artwork.contextGrids.length).toEqual(3)
     })
   })
 
   it("Returns the correct values for metadata fields for an open auction", async () => {
-    await runAuthenticatedQuery(query, context).then(data => {
+    await runAuthenticatedQuery(query, context).then((data) => {
       // Should have one artist grid and one related grid with 0 works
       expect(data.artwork.contextGrids.length).toEqual(1)
       const {
@@ -132,7 +132,7 @@ describe("Default Context", () => {
         auction_state: "closed",
       })
 
-    await runAuthenticatedQuery(query, context).then(data => {
+    await runAuthenticatedQuery(query, context).then((data) => {
       // Should have one partner grid and one related grid with 0 works
       expect(data.artwork.contextGrids.length).toEqual(2)
       const {

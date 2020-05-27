@@ -38,7 +38,7 @@ export const OrderedSetType = new GraphQLObjectType<
       type: new GraphQLList(OrderedSetItemType),
       resolve: ({ id, item_type }, _options, { setItemsLoader }) => {
         return setItemsLoader(id).then(({ body: items }) => {
-          return items.map(item => {
+          return items.map((item) => {
             return { ...item, item_type }
           })
         })
@@ -58,7 +58,7 @@ export const OrderedSetType = new GraphQLObjectType<
         })
 
         const validated = Array(Gravity.OrderedItem).check(body)
-        const discriminated = validated.map(item => ({ ...item, item_type }))
+        const discriminated = validated.map((item) => ({ ...item, item_type }))
         const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
         return {

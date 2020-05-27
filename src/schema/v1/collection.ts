@@ -56,7 +56,7 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
               sliceStart: gravityOptions.offset,
             })
           })
-          .catch(e => {
+          .catch((e) => {
             warn("Bypassing Gravity error: ", e)
             // For some users with no favourites, Gravity produces an error of "Collection Not Found".
             // This can cause the Gravity endpoint to produce a 404, so we will intercept the error

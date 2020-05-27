@@ -1,7 +1,7 @@
 import { info } from "./loggers"
 import { round } from "lodash"
 
-export default key => {
+export default (key) => {
   let time: ReturnType<typeof process.hrtime> | null = null
 
   return {

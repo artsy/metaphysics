@@ -137,7 +137,7 @@ describe("Credit card mutation", () => {
         throw new Error("ETIMEOUT service unreachable")
       },
     }
-    runAuthenticatedQuery(newQuery, errorRootValue).catch(error => {
+    runAuthenticatedQuery(newQuery, errorRootValue).catch((error) => {
       expect(error.message).toEqual("ETIMEOUT service unreachable")
     })
   })

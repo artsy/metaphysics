@@ -24,7 +24,7 @@ describe("Order query", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data!.order).toEqual(
         sampleOrder({
           fulfillments: true,

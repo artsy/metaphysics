@@ -3,7 +3,7 @@ import { HTTPError } from "lib/HTTPError"
 import { principalFieldDirectiveExtension } from "extensions/principalFieldDirectiveExtension"
 
 const schema = require("schema/v1").default
-const queryToAst = query => parse(new Source(query))
+const queryToAst = (query) => parse(new Source(query))
 
 describe(principalFieldDirectiveExtension, () => {
   it("returns the underlying error when occurring on a tagged field", async () => {

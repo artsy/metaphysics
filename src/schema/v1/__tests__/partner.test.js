@@ -64,7 +64,7 @@ describe("Partner type", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner: {
           name: "Catty Partner",

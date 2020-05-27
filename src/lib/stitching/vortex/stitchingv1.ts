@@ -91,7 +91,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           }
         `,
         resolve: (parent, args, _context, _info) =>
-          amount(_ => parent.minPriceCents).resolve({}, args),
+          amount((_) => parent.minPriceCents).resolve({}, args),
       },
       maxPrice: {
         fragment: gql`
@@ -100,7 +100,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           }
         `,
         resolve: (parent, args, _context, _info) =>
-          amount(_ => parent.maxPriceCents).resolve({}, args),
+          amount((_) => parent.maxPriceCents).resolve({}, args),
       },
     },
     Artwork: {
@@ -174,7 +174,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             [
               { sizeScore: mainSizeScore, listPrice },
               ...(edition_sets || []),
-            ].filter(e => e.sizeScore),
+            ].filter((e) => e.sizeScore),
             getMaxPrice
           ).pop() as any
 
@@ -268,7 +268,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           }
         `,
         resolve: (parent, args, _context, _info) =>
-          amount(_ => parent.totalCents).resolve({}, args),
+          amount((_) => parent.totalCents).resolve({}, args),
       },
     },
     AnalyticsPartnerSalesTimeSeriesStats: {
@@ -279,7 +279,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           }
         `,
         resolve: (parent, args, _context, _info) =>
-          amount(_ => parent.totalCents).resolve({}, args),
+          amount((_) => parent.totalCents).resolve({}, args),
       },
     },
     AnalyticsRankedStats: {
@@ -301,7 +301,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           }
         `,
         resolve: (parent, _args, context, info) => {
-          const removeVortexPrefix = name => name.replace("Analytics", "")
+          const removeVortexPrefix = (name) => name.replace("Analytics", "")
           const typename = parent.rankedEntity.__typename
           const fieldName = removeVortexPrefix(typename).toLowerCase()
           const id = parent.rankedEntity.entityId
@@ -317,7 +317,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               info,
               transforms: vortexSchema.transforms,
             })
-            .then(response => {
+            .then((response) => {
               response.__typename = removeVortexPrefix(typename)
               return response
             })

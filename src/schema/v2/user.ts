@@ -76,10 +76,10 @@ export const UserField: GraphQLFieldConfig<void, ResolverContext> = {
       ? userByIDLoader(option.id)
       : userByEmailLoader(option)
     return promise
-      .then(result => {
+      .then((result) => {
         return result
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.statusCode === 404) {
           return false
         }

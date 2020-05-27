@@ -19,7 +19,7 @@ import { NullableIDField } from "schema/v1/object_identification"
 
 export { normalize as normalizeImageData } from "./normalize"
 
-export const getDefault = images => {
+export const getDefault = (images) => {
   if (isArray(images)) {
     return find(images, { is_default: true } as any) || first(images)
   }

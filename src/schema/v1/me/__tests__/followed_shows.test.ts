@@ -41,7 +41,7 @@ describe("returns followed shows for a user", () => {
   })
 
   describe("filter by status", () => {
-    const assert_status_supported = async status => {
+    const assert_status_supported = async (status) => {
       const query = generate_query(
         `(first: 10, status: ${status.toUpperCase()})`
       )
@@ -54,7 +54,7 @@ describe("returns followed shows for a user", () => {
       })
     }
 
-    const assert_invalid_status_fails = async status => {
+    const assert_invalid_status_fails = async (status) => {
       const query = generate_query(
         `(first: 10, status: ${status.toUpperCase()})`
       )
@@ -104,13 +104,13 @@ describe("returns followed shows for a user", () => {
 
     it("relies on the state of cityData", () => {
       cityData
-        .map(city => ({
+        .map((city) => ({
           name: city.name,
           slug: city.slug,
           lat: city.coordinates.lat,
           lng: city.coordinates.lng,
         }))
-        .forEach(city => {
+        .forEach((city) => {
           expect(city).toMatchObject({
             name: expect.any(String),
             slug: expect.any(String),
