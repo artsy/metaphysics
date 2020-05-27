@@ -35,7 +35,7 @@ const ArtistCarousel: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
         published: true,
       }),
     ])
-      .then(([{ body: shows }, artworks]) => {
+      .then(([{ body: shows }, { body: artworks }]) => {
         const elligibleShows = shows.filter(show => show.images_count > 0)
         return Promise.all(
           elligibleShows.map(show =>

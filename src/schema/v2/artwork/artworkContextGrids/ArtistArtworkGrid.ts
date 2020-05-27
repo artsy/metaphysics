@@ -47,14 +47,16 @@ export const ArtistArtworkGridType = new GraphQLObjectType<
         })
         gravityArgs.sort = "-merchandisability"
 
-        return artistArtworksLoader(artist.id, gravityArgs).then(artworks => {
-          if (!artworks) return null
+        return artistArtworksLoader(artist.id, gravityArgs).then(
+          ({ body: artworks }) => {
+            if (!artworks) return null
 
-          return connectionFromArraySlice(artworks, options, {
-            arrayLength: artistArtworkArrayLength(artist, options.filter),
-            sliceStart: offset,
-          })
-        })
+            return connectionFromArraySlice(artworks, options, {
+              arrayLength: artistArtworkArrayLength(artist, options.filter),
+              sliceStart: offset,
+            })
+          }
+        )
       },
     },
   }),

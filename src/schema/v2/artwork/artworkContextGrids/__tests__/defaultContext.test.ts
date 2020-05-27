@@ -57,7 +57,7 @@ describe("Default Context", () => {
 
     context = {
       artworkLoader: () => Promise.resolve(parentArtwork),
-      artistArtworksLoader: () => Promise.resolve(artistArtworks),
+      artistArtworksLoader: () => Promise.resolve({ body: artistArtworks }),
       relatedFairsLoader: () => Promise.resolve(null),
       relatedShowsLoader: () => Promise.resolve(null),
       partnerArtworksLoader: () => {
@@ -78,7 +78,7 @@ describe("Default Context", () => {
       { id: "artwork3", title: "Artwork 3" },
     ]
     context.artistArtworksLoader = jest.fn(() =>
-      Promise.resolve(artistArtworks)
+      Promise.resolve({ body: artistArtworks })
     )
 
     await runAuthenticatedQuery(query, context).then(data => {

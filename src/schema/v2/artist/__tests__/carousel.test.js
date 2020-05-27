@@ -38,20 +38,22 @@ describe("ArtistCarousel type", () => {
           published: true,
         })
         .returns(
-          Promise.resolve([
-            {
-              id: "foo-bar-artwork-1",
-              images: [
-                {
-                  original_height: 2333,
-                  original_width: 3500,
-                  image_url: "https://xxx.cloudfront.net/xxx/:version.jpg",
-                  image_versions: ["large"],
-                  is_default: true,
-                },
-              ],
-            },
-          ])
+          Promise.resolve({
+            body: [
+              {
+                id: "foo-bar-artwork-1",
+                images: [
+                  {
+                    original_height: 2333,
+                    original_width: 3500,
+                    image_url: "https://xxx.cloudfront.net/xxx/:version.jpg",
+                    image_versions: ["large"],
+                    is_default: true,
+                  },
+                ],
+              },
+            ],
+          })
         )
     })
 
@@ -74,7 +76,7 @@ describe("ArtistCarousel type", () => {
         }
       `
 
-      return runQuery(query, context).then(data => {
+      return runQuery(query, context).then((data) => {
         expect(data.artist.carousel).toEqual({
           images: [
             {

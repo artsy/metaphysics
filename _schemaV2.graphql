@@ -654,6 +654,12 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     # The number of Shows to return
     size: Int = 5
   ): [Show]
+  featuredArtworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection
 
   # Artworks Elastic Search results
   filterArtworksConnection(

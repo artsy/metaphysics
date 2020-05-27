@@ -120,10 +120,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           { inEditorialFeed, ..._args },
           { articlesLoader }
         ) => {
-          const args: any = {
-            in_editorial_feed: inEditorialFeed,
-            ..._args,
-          }
+          const args: any = { in_editorial_feed: inEditorialFeed, ..._args }
           const pageOptions = convertConnectionArgsToGravityArgs(args)
           const { page, size, offset } = pageOptions
 
@@ -194,11 +191,12 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             gravityArgs.exclude_ids = flatten([options.exclude])
           }
 
-          return artistArtworksLoader(artist.id, gravityArgs).then(artworks =>
-            connectionFromArraySlice(artworks, options, {
-              arrayLength: artistArtworkArrayLength(artist, filter),
-              sliceStart: offset,
-            })
+          return artistArtworksLoader(artist.id, gravityArgs).then(
+            ({ body: artworks }) =>
+              connectionFromArraySlice(artworks, options, {
+                arrayLength: artistArtworkArrayLength(artist, filter),
+                sliceStart: offset,
+              })
           )
         },
       },
@@ -505,6 +503,41 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      featuredArtworksConnection: {
+        type: artworkConnection.connectionType,
+        args: pageable(),
+        resolve: (artist, options, { artistArtworksLoader }) => {
+          // Convert `after` cursors to page params
+          const { limit: size, offset } = getPagingParameters(options)
+
+          interface GravityArgs {
+            offset: number
+            size: number
+            total_count: boolean
+            sort: string
+            published: boolean
+          }
+
+          const gravityArgs: GravityArgs = {
+            size,
+            offset,
+            total_count: true,
+            sort: "-iconicity",
+            published: true,
+          }
+
+          return artistArtworksLoader(artist.id, gravityArgs).then(
+            ({ body: artworks, headers }) => {
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+              return connectionFromArraySlice(artworks, options, {
+                arrayLength: totalCount,
+                sliceStart: offset,
+              })
+            }
+          )
+        },
+      },
       filterArtworksConnection: filterArtworksConnectionWithParams(
         ({ _id }) => ({
           artist_id: _id,
@@ -566,7 +599,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       highlights: ArtistHighlights,
       hometown: { type: GraphQLString },
-      href: { type: GraphQLString, resolve: artist => `/artist/${artist.id}` },
+      href: {
+        type: GraphQLString,
+        resolve: artist => `/artist/${artist.id}`,
+      },
       image: Image,
       imageUrl: {
         type: GraphQLString,
@@ -659,10 +695,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           { isAuction, ..._options },
           { relatedSalesLoader }
         ) => {
-          const options: any = {
-            is_auction: isAuction,
-            ..._options,
-          }
+          const options: any = { is_auction: isAuction, ..._options }
           return relatedSalesLoader(
             defaults(options, {
               artist_id: id,

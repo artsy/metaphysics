@@ -228,11 +228,12 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             gravityArgs.exclude_ids = flatten([options.exclude])
           }
 
-          return artistArtworksLoader(artist.id, gravityArgs).then(artworks =>
-            connectionFromArraySlice(artworks, options, {
-              arrayLength: artistArtworkArrayLength(artist, filter),
-              sliceStart: offset,
-            })
+          return artistArtworksLoader(artist.id, gravityArgs).then(
+            ({ body: artworks }) =>
+              connectionFromArraySlice(artworks, options, {
+                arrayLength: artistArtworkArrayLength(artist, filter),
+                sliceStart: offset,
+              })
           )
         },
       },
@@ -548,7 +549,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       gender: { type: GraphQLString },
-      href: { type: GraphQLString, resolve: artist => `/artist/${artist.id}` },
+      href: {
+        type: GraphQLString,
+        resolve: artist => `/artist/${artist.id}`,
+      },
       has_metadata: {
         type: GraphQLBoolean,
         resolve: ({ blurb, nationality, years, hometown, location }) => {

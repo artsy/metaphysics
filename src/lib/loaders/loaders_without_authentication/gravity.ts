@@ -35,7 +35,11 @@ export default opts => {
       {},
       { method: "POST" }
     ),
-    artistArtworksLoader: gravityLoader(id => `artist/${id}/artworks`),
+    artistArtworksLoader: gravityLoader(
+      id => `artist/${id}/artworks`,
+      {},
+      { headers: true }
+    ),
     artistGenesLoader: gravityLoader(id => `artist/${id}/genome/genes`),
     artistLoader: gravityLoader(id => `artist/${id}`),
     artistsLoader: gravityLoader("artists"),

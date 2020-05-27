@@ -63,7 +63,7 @@ describe("Default Context", () => {
 
     context = {
       artworkLoader: () => Promise.resolve(parentArtwork),
-      artistArtworksLoader: () => Promise.resolve(artistArtworks),
+      artistArtworksLoader: () => Promise.resolve({ body: artistArtworks }),
       relatedFairsLoader: () => Promise.resolve(null),
       relatedShowsLoader: () => Promise.resolve(null),
       partnerArtworksLoader: () => {
