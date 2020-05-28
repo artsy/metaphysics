@@ -400,7 +400,7 @@ const filterArtworksConnectionTypeFactory = (
       artist_ids: artistIDs,
       at_auction: atAuction,
       attribution_class: attributionClass,
-      size_bucket: sizes,
+      sizes: sizes,
       dimension_range: dimensionRange,
       extra_aggregation_gene_ids: extraAggregationGeneIDs,
       include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
