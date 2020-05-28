@@ -845,7 +845,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       published: {
         type: new GraphQLNonNull(GraphQLBoolean),
-        description: "Whether this Artwork is Published of not",
+        description: "Whether this artwork is published or not",
+      },
+      unlisted: {
+        type: GraphQLBoolean,
+        description: "Whether this artwork is unlisted or not",
       },
       website: {
         type: GraphQLString,

@@ -46,6 +46,7 @@ describe("Artwork type", () => {
       attribution_class: "unique",
       dimensions: { in: "2 x 3in." },
       metric: "in",
+      unlisted: true,
     }
     context = {
       artworkLoader: sinon
@@ -2127,6 +2128,24 @@ describe("Artwork type", () => {
         })
         expect(data.artwork.hasCertificateOfAuthenticity).toBe(false)
       })
+    })
+  })
+
+  describe("#unlisted", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          unlisted
+        }
+      }
+    `
+    it("returns unlisted", async () => {
+      let data = await runQuery(query, context)
+      expect(data.artwork.unlisted).toBe(true)
+      artwork.unlisted = false
+
+      data = await runQuery(query, context)
+      expect(data.artwork.unlisted).toBe(false)
     })
   })
 })
