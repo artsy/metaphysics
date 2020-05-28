@@ -49,6 +49,7 @@ import { GeneType } from "./gene"
 import numeral from "./fields/numeral"
 import { ArtworkType } from "./artwork"
 import { deprecate } from "lib/deprecation"
+import ArtworkSizes from "./artwork/artworkSizes"
 
 interface ContextSource {
   context_type: GraphQLObjectType<any, ResolverContext>
@@ -88,7 +89,7 @@ export const FilterArtworksCounts = {
       ),
     },
   }),
-  resolve: data => data,
+  resolve: (data) => data,
 }
 
 export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
@@ -118,6 +119,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   color: {
     type: GraphQLString,
+  },
+  sizeBuckets: {
+    type: new GraphQLList(ArtworkSizes),
   },
   dimensionRange: {
     type: GraphQLString,
@@ -303,13 +307,13 @@ export const FilterArtworksFields = () => {
       ): Promise<ContextSource> | null => {
         const { tag_id, gene_id } = gravityOptions
         if (tag_id) {
-          return tagLoader(tag_id).then(tag => ({
+          return tagLoader(tag_id).then((tag) => ({
             ...tag,
             context_type: TagType,
           }))
         }
         if (gene_id) {
-          return geneLoader(gene_id).then(gene => ({
+          return geneLoader(gene_id).then((gene) => ({
             ...gene,
             context_type: GeneType,
           }))
@@ -365,6 +369,7 @@ const filterArtworksConnectionTypeFactory = (
       artistIDs,
       atAuction,
       attributionClass,
+      sizeBuckets,
       dimensionRange,
       extraAggregationGeneIDs,
       includeArtworksByFollowedArtists,
@@ -394,6 +399,7 @@ const filterArtworksConnectionTypeFactory = (
       artist_ids: artistIDs,
       at_auction: atAuction,
       attribution_class: attributionClass,
+      size_bucket: sizeBuckets,
       dimension_range: dimensionRange,
       extra_aggregation_gene_ids: extraAggregationGeneIDs,
       include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
