@@ -19,13 +19,13 @@ export const uncachedLoaderFactory = (
     // If you use gravity as the api here, then options will get interpreted as
     // an accessToken, so you have to explicitly pass null
     const loader = new DataLoader<DataLoaderKey, any>(
-      keys =>
+      (keys) =>
         Promise.all(
           keys.map(({ key, apiOptions }) => {
             if (apiOptions) {
               throw new Error("A uncachedLoader does not accept API options.")
             }
-            return Promise.resolve(api(key, options).then(r => r.body))
+            return Promise.resolve(api(key, options).then((r) => r.body))
           })
         ),
       { cache: false, batch: false }

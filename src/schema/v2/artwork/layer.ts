@@ -36,7 +36,7 @@ const ArtworkLayerType = new GraphQLObjectType<any, ResolverContext>({
         }
 
         return relatedLayerArtworksLoader({ id, type }, gravityArgs).then(
-          body => {
+          (body) => {
             return connectionFromArraySlice(body, options, {
               arrayLength: body && body.length,
               sliceStart: 0,

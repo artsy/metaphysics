@@ -29,7 +29,7 @@ const MessageInitiatorType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-const isInvoiceMessage = metadata => {
+const isInvoiceMessage = (metadata) => {
   return !!metadata && isExisty(metadata.lewitt_invoice_id)
 }
 

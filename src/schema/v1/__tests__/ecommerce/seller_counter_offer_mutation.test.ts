@@ -40,7 +40,7 @@ describe("SellerCounterOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.ecommerceSellerCounterOffer.orderOrError.order).toEqual(
         sampleOrder({ mode: "OFFER", includeOfferFields: true })
       )
@@ -63,7 +63,7 @@ describe("SellerCounterOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.ecommerceSellerCounterOffer.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

@@ -4,7 +4,7 @@ import schema from "schema/v1"
 import { runAuthenticatedQuery } from "schema/v1/test/utils"
 
 describe("HomePageArtistModule", () => {
-  const query = key => {
+  const query = (key) => {
     return `
       {
         home_page {
@@ -96,7 +96,7 @@ describe("HomePageArtistModule", () => {
     })
 
     it("does not return any suggestions", () => {
-      return graphql(schema, query("SUGGESTED")).then(response => {
+      return graphql(schema, query("SUGGESTED")).then((response) => {
         expect(response.data.home_page.artist_module.results).toBe(null)
         expect(response.errors.length).toBeGreaterThan(0)
       })

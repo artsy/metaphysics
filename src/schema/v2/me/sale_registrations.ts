@@ -34,10 +34,10 @@ const SaleRegistration: GraphQLFieldConfig<void, ResolverContext> = {
   args: SalesConnectionField.args,
   resolve: (_root, options, { meBiddersLoader, salesLoader }) => {
     if (!meBiddersLoader) return null
-    return salesLoader(options).then(sales => {
+    return salesLoader(options).then((sales) => {
       return Promise.all(
-        sales.map(sale => {
-          return meBiddersLoader({ sale_id: sale.id }).then(bidders => {
+        sales.map((sale) => {
+          return meBiddersLoader({ sale_id: sale.id }).then((bidders) => {
             return {
               sale,
               bidder: first(bidders),

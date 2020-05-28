@@ -74,7 +74,7 @@ describe("ArtistCarousel type", () => {
         }
       `
 
-      return runQuery(query, context).then(data => {
+      return runQuery(query, context).then((data) => {
         expect(data.artist.carousel).toEqual({
           images: [
             {

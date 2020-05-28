@@ -28,7 +28,7 @@ const OrderedSetType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLList(ItemType),
       resolve: ({ id, item_type }, _options, { setItemsLoader }) => {
         return setItemsLoader(id).then(({ body: items }) => {
-          return items.map(item => {
+          return items.map((item) => {
             item.item_type = item_type // eslint-disable-line no-param-reassign
             return item
           })

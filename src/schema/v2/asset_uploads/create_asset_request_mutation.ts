@@ -96,7 +96,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   outputFields: {
     asset: {
       type: CredentialsType,
-      resolve: asset => asset,
+      resolve: (asset) => asset,
     },
   },
   mutateAndGetPayload: ({ name, acl }, { createNewGeminiAssetLoader }) => {

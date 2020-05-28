@@ -23,7 +23,7 @@ xdescribe("MatchArtist", () => {
         },
       ])
 
-    return runQuery(query, { matchArtistsLoader }).then(data => {
+    return runQuery(query, { matchArtistsLoader }).then((data) => {
       expect(data).toEqual({
         matchArtist: [
           { birthday: "1958", slug: "han-myung-ok", name: "Han Myung-Ok" },

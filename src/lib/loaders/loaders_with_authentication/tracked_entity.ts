@@ -43,9 +43,9 @@ const trackedEntityLoaderFactory = (
     batchSize = 200,
   } = options
   const trackedEntityLoader = new DataLoader(
-    ids => {
-      return dataLoader({ [paramKey]: ids }).then(body => {
-        const parsedResults = map(ids, id => {
+    (ids) => {
+      return dataLoader({ [paramKey]: ids }).then((body) => {
+        const parsedResults = map(ids, (id) => {
           const match = find(body, [
             entityKeyPath
               ? `${entityKeyPath}.${entityIDKeyPath}`
@@ -64,7 +64,7 @@ const trackedEntityLoaderFactory = (
     },
     { batch: true, cache: true, maxBatchSize: batchSize }
   )
-  return id => trackedEntityLoader.load(id)
+  return (id) => trackedEntityLoader.load(id)
 }
 
 export default trackedEntityLoaderFactory

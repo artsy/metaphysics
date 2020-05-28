@@ -28,10 +28,10 @@ export const HomePageFairsModuleType = new GraphQLObjectType<
             }
             return fairsLoader(newOptions).then(({ body: closedFairs }) => {
               const allFairs = runningFairs.concat(closedFairs)
-              return allFairs.filter(fair => fair.mobile_image)
+              return allFairs.filter((fair) => fair.mobile_image)
             })
           }
-          return runningFairs.filter(fair => fair.mobile_image)
+          return runningFairs.filter((fair) => fair.mobile_image)
         })
       },
     },

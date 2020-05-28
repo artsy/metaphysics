@@ -139,7 +139,7 @@ describe("SaleArtwork type", () => {
             increment_strategy: "default",
           })
         },
-        incrementsLoader: sale => {
+        incrementsLoader: (sale) => {
           return Promise.resolve([
             {
               key: sale.increment_strategy,
@@ -195,7 +195,7 @@ describe("SaleArtwork type", () => {
             increment_strategy: "default",
           })
         },
-        incrementsLoader: sale => {
+        incrementsLoader: (sale) => {
           return Promise.resolve([
             {
               key: sale.increment_strategy,
@@ -259,7 +259,7 @@ describe("SaleArtwork type", () => {
             increment_strategy: "default",
           })
         },
-        incrementsLoader: sale => {
+        incrementsLoader: (sale) => {
           return Promise.resolve([
             {
               key: sale.increment_strategy,
@@ -305,7 +305,7 @@ describe("SaleArtwork type", () => {
         },
         saleArtworkRootLoader: () => Promise.resolve(saleArtwork),
         lotStandingLoader: () => null,
-        incrementsLoader: sale => {
+        incrementsLoader: (sale) => {
           return Promise.resolve([
             {
               key: sale.increment_strategy,

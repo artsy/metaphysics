@@ -41,7 +41,7 @@ describe("Reject Order Mutation", () => {
       }
     `
 
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.rejectOrder.orderOrError.order).toEqual(sampleOrder())
     })
   })

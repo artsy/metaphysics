@@ -23,7 +23,7 @@ const RESULTS_SIZE = 20
 const moduleResults: HomePageArtworkModuleResolvers = {
   active_bids: ({ lotStandingLoader }) => activeSaleArtworks(lotStandingLoader),
   current_fairs: ({ fairsLoader, filterArtworksLoader }) => {
-    return featuredFair(fairsLoader).then<any[] | undefined>(fair => {
+    return featuredFair(fairsLoader).then<any[] | undefined>((fair) => {
       if (fair) {
         return filterArtworksLoader({
           fair_id: fair.id,
@@ -66,7 +66,7 @@ const moduleResults: HomePageArtworkModuleResolvers = {
       return geneArtworks(filterArtworksLoader, params.id, RESULTS_SIZE)
     }
     // Backward compatibility for Force.
-    return featuredGene(followedGenesLoader).then(gene => {
+    return featuredGene(followedGenesLoader).then((gene) => {
       if (gene) {
         return geneArtworks(filterArtworksLoader, gene.id, RESULTS_SIZE)
       }
@@ -80,7 +80,7 @@ const moduleResults: HomePageArtworkModuleResolvers = {
     ).then(({ hits }) => hits)
   },
   live_auctions: ({ salesLoader, saleArtworksLoader }) => {
-    return featuredAuction(salesLoader).then(auction => {
+    return featuredAuction(salesLoader).then((auction) => {
       if (auction) {
         return saleArtworksLoader(auction.id, {
           size: RESULTS_SIZE,
@@ -93,7 +93,7 @@ const moduleResults: HomePageArtworkModuleResolvers = {
   },
   popular_artists: ({ filterArtworksLoader, deltaLoader }) => {
     // TODO This appears to largely replicate Gravity’s /api/v1/artists/popular endpoint
-    return popularArtists(deltaLoader).then(artists => {
+    return popularArtists(deltaLoader).then((artists) => {
       const ids = without(keys(artists), "cached", "context_type")
       return filterArtworksLoader({
         artist_ids: ids,
@@ -128,7 +128,7 @@ const moduleResults: HomePageArtworkModuleResolvers = {
     return savedArtworksLoader({
       size: RESULTS_SIZE,
       sort: "-position",
-    }).then(works => {
+    }).then((works) => {
       return similarArtworksLoader({
         artwork_id: map(works, "_id").slice(0, 7),
       })

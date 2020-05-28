@@ -68,9 +68,15 @@ describe("Me", () => {
 
       return runAuthenticatedQuery(query, {
         followedArtistsArtworksLoader: () => Promise.resolve(artworkResponse),
-      }).then(({ me: { followsAndSaves: { bundledArtworksByArtist } } }) => {
-        expect(bundledArtworksByArtist).toEqual(expectedConnectionData)
-      })
+      }).then(
+        ({
+          me: {
+            followsAndSaves: { bundledArtworksByArtist },
+          },
+        }) => {
+          expect(bundledArtworksByArtist).toEqual(expectedConnectionData)
+        }
+      )
     })
   })
 })

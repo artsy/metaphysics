@@ -27,7 +27,7 @@ describe("API loaders", () => {
       })
 
       it("yields a given ID to the loader", () => {
-        const dynamicLoader = apiLoader(id => `some/path/with/id/${id}`)
+        const dynamicLoader = apiLoader((id) => `some/path/with/id/${id}`)
         return dynamicLoader("42").then(({ path }) => {
           expect(path).toEqual("some/path/with/id/42?")
         })
@@ -48,7 +48,7 @@ describe("API loaders", () => {
     })
 
     it("caches the response for the lifetime of the loader", () => {
-      return Promise.all([loader(), loader()]).then(responses => {
+      return Promise.all([loader(), loader()]).then((responses) => {
         expect(responses.map(({ path }) => path)).toEqual([
           "some/path?",
           "some/path?",

@@ -23,7 +23,7 @@ describe("Popular Artists", () => {
     }
 
     expect.assertions(1)
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toMatchSnapshot()
     })
   })

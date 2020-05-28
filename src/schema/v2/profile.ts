@@ -21,7 +21,7 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     counts: {
-      resolve: profile => profile,
+      resolve: (profile) => profile,
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "ProfileCounts",
         fields: {
@@ -59,7 +59,7 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
     },
     isPubliclyVisible: {
       type: GraphQLBoolean,
-      resolve: profile => profile && profile.published && !profile.private,
+      resolve: (profile) => profile && profile.published && !profile.private,
     },
   }),
 })

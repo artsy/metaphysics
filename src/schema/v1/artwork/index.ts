@@ -51,11 +51,11 @@ import Show from "schema/v1/show"
 import ShowSort from "schema/v1/sorts/show_sort"
 import { ArtworkContextGrids } from "./artworkContextGrids"
 
-const has_price_range = price => {
+const has_price_range = (price) => {
   return new RegExp(/\-/).test(price)
 }
 
-const has_multiple_editions = edition_sets => {
+const has_multiple_editions = (edition_sets) => {
   return edition_sets && edition_sets.length > 1
 }
 
@@ -108,13 +108,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ artists }, { shallow }, { artistLoader }) => {
           if (shallow) return artists
           return Promise.all(
-            artists.map(artist => artistLoader(artist.id))
+            artists.map((artist) => artistLoader(artist.id))
           ).catch(() => [])
         },
       },
       artist_names: {
         type: GraphQLString,
-        resolve: artwork => artistNames(artwork),
+        resolve: (artwork) => artistNames(artwork),
       },
       articles: {
         type: new GraphQLList(Article.type),
@@ -332,7 +332,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               id: sale_ids,
               is_auction: true,
               live: true,
-            }).then(sales => {
+            }).then((sales) => {
               return sales.length > 0
             })
           }
@@ -348,7 +348,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               id: sale_ids,
               is_auction: true,
               live: true,
-            }).then(sales => {
+            }).then((sales) => {
               return sales.length > 0
             })
           }
@@ -374,7 +374,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             active: true,
             artwork: [artwork.id],
           })
-            .then(sales => {
+            .then((sales) => {
               return (
                 artwork.forsale &&
                 !_.isEmpty(artwork.partner) &&
@@ -402,7 +402,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       is_for_sale: { type: GraphQLBoolean, resolve: ({ forsale }) => forsale },
       is_hangable: {
         type: GraphQLBoolean,
-        resolve: artwork => {
+        resolve: (artwork) => {
           const is3D =
             _.includes(artwork.category, "sculpture") ||
             _.includes(artwork.category, "installation") ||
@@ -424,7 +424,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             return salesLoader({
               id: sale_ids,
               is_auction: true,
-            }).then(sales => {
+            }).then((sales) => {
               return sales.length > 0
             })
           }
@@ -482,8 +482,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: ArtworkLayer.type,
         args: { id: { type: GraphQLString } },
         resolve: (artwork, { id }, { relatedLayersLoader }) =>
-          artworkLayers(artwork.id, relatedLayersLoader).then(
-            layers => (!!id ? _.find(layers, { id }) : _.first(layers))
+          artworkLayers(artwork.id, relatedLayersLoader).then((layers) =>
+            !!id ? _.find(layers, { id }) : _.first(layers)
           ),
       },
       layers: {
@@ -595,7 +595,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           inVersion: 2,
           preferUsageOf: "onlyShipsDomestically",
         }),
-        resolve: artwork => {
+        resolve: (artwork) => {
           return Boolean(
             artwork.domestic_shipping_fee_cents &&
               artwork.international_shipping_fee_cents == null
@@ -605,7 +605,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       onlyShipsDomestically: {
         type: GraphQLBoolean,
         description: "Is this work only available for shipping domestically?",
-        resolve: artwork => {
+        resolve: (artwork) => {
           return Boolean(
             artwork.domestic_shipping_fee_cents &&
               artwork.international_shipping_fee_cents == null
@@ -616,7 +616,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "The string that describes domestic and international shipping.",
-        resolve: artwork => {
+        resolve: (artwork) => {
           if (
             artwork.domestic_shipping_fee_cents == null &&
             artwork.international_shipping_fee_cents == null
@@ -673,14 +673,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "Minimal location information describing from where artwork will be shipped.",
-        resolve: artwork => {
+        resolve: (artwork) => {
           return artwork.shipping_origin && artwork.shipping_origin.join(", ")
         },
       },
       shippingCountry: {
         type: GraphQLString,
         description: "The country an artwork will be shipped from.",
-        resolve: artwork => {
+        resolve: (artwork) => {
           return (
             artwork.shipping_origin &&
             artwork.shipping_origin[artwork.shipping_origin.length - 1]
@@ -851,7 +851,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS",
-        resolve: artwork => (isEmbeddedVideo(artwork) ? null : artwork.website),
+        resolve: (artwork) =>
+          isEmbeddedVideo(artwork) ? null : artwork.website,
       },
       width: {
         type: GraphQLString, // See note on `metric` field.

@@ -156,7 +156,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
       }),
-      resolve: city => sponsoredContentForCity(city.slug),
+      resolve: (city) => sponsoredContentForCity(city.slug),
     },
   },
 })
@@ -193,7 +193,7 @@ export const City: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 const lookupCity = (slug: string) => {
-  const city = cityDataSortedByDisplayPreference.find(c => c.slug === slug)
+  const city = cityDataSortedByDisplayPreference.find((c) => c.slug === slug)
   if (!city) {
     throw new Error(
       `City ${slug} not found in: ${cityDataSortedByDisplayPreference
@@ -244,7 +244,7 @@ async function loadData(
       api: {
         requestThrottleMs: 7200000, // 1000 * 60 * 60 * 2 = 2 hours
       },
-    }).then(data => ({
+    }).then((data) => ({
       // This just creates a body/headers object again, as the code
       // below already expects that.
       // TODO: Perhaps `allViaLoader` should support that out of the box.

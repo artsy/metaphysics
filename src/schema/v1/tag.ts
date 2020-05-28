@@ -51,7 +51,7 @@ const Tag: GraphQLFieldConfig<void, ResolverContext> = {
     // do not make a Gravity call for the gene data.
     const fieldsNotRequireLoader = ["filtered_artworks", "id", "__id"]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
-      return tagLoader(id).then(tag => {
+      return tagLoader(id).then((tag) => {
         return Object.assign(tag, { _type: "Tag" }, {})
       })
     }

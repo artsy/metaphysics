@@ -98,7 +98,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, context).then(data => {
+      return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -124,7 +124,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, context).then(data => {
+      return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -158,7 +158,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, context).then(data => {
+      return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -217,7 +217,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, context).then(data => {
+      return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           gene: {
             artists_connection: {
@@ -243,7 +243,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, context).then(data => {
+      return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           gene: {
             artists_connection: {
@@ -307,7 +307,7 @@ describe("Gene", () => {
         })
       )
 
-      return runQuery(query, context).then(data => {
+      return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           gene: {
             similar: {
@@ -407,13 +407,13 @@ describe("Gene", () => {
     })
 
     it("returns true if gene is returned", () => {
-      return followedGeneLoader("brooklyn-artists").then(gene => {
+      return followedGeneLoader("brooklyn-artists").then((gene) => {
         expect(gene.is_followed).toBe(true)
       })
     })
 
     it("returns false if gene is not returned", () => {
-      return followedGeneLoader("new-york-artists").then(gene => {
+      return followedGeneLoader("new-york-artists").then((gene) => {
         expect(gene.is_followed).toBe(false)
       })
     })

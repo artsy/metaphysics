@@ -87,7 +87,7 @@ export const exchangeStitchingEnvironment = ({
             })
             // Re-jigger the type systems back into place, as right now
             // it is considered a CommerceUser and clients will reject it.
-            .then(response => {
+            .then((response) => {
               response.__typename =
                 typename === "CommerceUser" ? "User" : "Partner"
               return response
@@ -136,18 +136,18 @@ export const exchangeStitchingEnvironment = ({
   // the type param is only used for the fragment name
   const totalsResolvers = (type, totalSDLS) =>
     reduceToResolvers(
-      totalSDLS.map(name => ({
+      totalSDLS.map((name) => ({
         [name]: {
           fragment: `fragment ${type}_${name} on ${type} { ${name}Cents currencyCode }`,
           resolve: (parent, args, _context, _info) => {
-            return amount(_ => parent[name + "Cents"]).resolve(parent, args)
+            return amount((_) => parent[name + "Cents"]).resolve(parent, args)
           },
         },
       }))
     )
 
   // Used to convert an array of `key: resolvers` to a single obj
-  const reduceToResolvers = arr => arr.reduce((a, b) => ({ ...a, ...b }))
+  const reduceToResolvers = (arr) => arr.reduce((a, b) => ({ ...a, ...b }))
 
   return {
     // The SDL used to declare how to stitch an object

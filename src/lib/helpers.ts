@@ -24,10 +24,10 @@ export function timestamp() {
 }
 
 export function enhance(xs = [], source = {}) {
-  return xs.map(x => assign({}, source, x))
+  return xs.map((x) => assign({}, source, x))
 }
 
-export const isExisty = x => {
+export const isExisty = (x) => {
   // Return false on empty Objects
   if (isObject(x) && isEmpty(x)) return false
 
@@ -39,17 +39,14 @@ export const isExisty = x => {
 }
 
 // Coerce a usable value or nothing at all
-export const existyValue = x => {
+export const existyValue = (x) => {
   if (isExisty(x)) return x
 }
 
-export const capitalizeFirstCharacter = x =>
+export const capitalizeFirstCharacter = (x) =>
   x.charAt(0).toUpperCase() + x.slice(1)
 
-export const classify = flow(
-  camelCase,
-  capitalizeFirstCharacter
-)
+export const classify = flow(camelCase, capitalizeFirstCharacter)
 
 export const join = (by, xs) => compact(xs).join(by)
 
@@ -73,13 +70,13 @@ export const toQueryString = (options = {}) =>
         sort: (a, b) => a.localeCompare(b),
       })
 export const toKey = (path, options = {}) => `${path}?${toQueryString(options)}`
-export const exclude = (values?: any[], property?: any) => xs =>
-  reject(xs, x => includes(values, x[property]))
+export const exclude = (values?: any[], property?: any) => (xs) =>
+  reject(xs, (x) => includes(values, x[property]))
 export const stripTags = (str?: string) => {
   if (!str) return ""
   return String(str).replace(/<\/?[^>]+>/g, "")
 }
-export const markdownToText = str => {
+export const markdownToText = (str) => {
   return stripTags(formatMarkdownValue(str, "html"))
 }
 
@@ -99,8 +96,10 @@ export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(
   } as any
 }
 
-export const removeNulls = object => {
-  Object.keys(object).forEach(key => object[key] == null && delete object[key]) // eslint-disable-line eqeqeq, no-param-reassign, max-len
+export const removeNulls = (object) => {
+  Object.keys(object).forEach(
+    (key) => object[key] == null && delete object[key]
+  ) // eslint-disable-line eqeqeq, no-param-reassign, max-len
 }
 export const resolveBlueGreen = (
   resolveBlue: string,

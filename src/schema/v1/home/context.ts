@@ -92,7 +92,7 @@ export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType<
 
 export const moduleContext: HomePageArtworkModuleResolvers = {
   popular_artists: ({ deltaLoader }) => {
-    return popularArtists(deltaLoader).then(trending => {
+    return popularArtists(deltaLoader).then((trending) => {
       return assign({}, trending, { context_type: "Trending" })
     })
   },
@@ -110,18 +110,18 @@ export const moduleContext: HomePageArtworkModuleResolvers = {
   similar_to_saved_works: () => null,
   recommended_works: () => null,
   live_auctions: ({ salesLoader }) => {
-    return featuredAuction(salesLoader).then(sale => {
+    return featuredAuction(salesLoader).then((sale) => {
       return assign({}, sale, { context_type: "Sale" })
     })
   },
   current_fairs: ({ fairsLoader }) => {
-    return featuredFair(fairsLoader).then(fair => {
+    return featuredFair(fairsLoader).then((fair) => {
       return assign({}, fair, { context_type: "Fair" })
     })
   },
   followed_artist: ({ artistLoader }, params) => {
     if (!isFollowedArtistArtworkModuleParams(params)) return null
-    return artistLoader(params.followed_artist_id).then(artist => {
+    return artistLoader(params.followed_artist_id).then((artist) => {
       return assign(
         {},
         {
@@ -152,13 +152,13 @@ export const moduleContext: HomePageArtworkModuleResolvers = {
       return assign({}, params.gene, { context_type: "Gene" })
     }
     // Backward compatibility for Force.
-    return featuredGene(followedGenesLoader).then(fetchedGene => {
+    return featuredGene(followedGenesLoader).then((fetchedGene) => {
       return assign({}, fetchedGene, { context_type: "Gene" })
     })
   },
   generic_gene: ({ geneLoader }, params) => {
     if (!isGenericGeneArtworkModuleParams(params)) return null
-    return geneLoader(params.gene_id).then(gene => {
+    return geneLoader(params.gene_id).then((gene) => {
       return assign({}, gene, { context_type: "Gene" })
     })
   },

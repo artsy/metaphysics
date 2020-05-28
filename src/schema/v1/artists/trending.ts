@@ -19,7 +19,7 @@ export const TrendingArtistsType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLList(Artist.type),
       resolve: (deltaResponse, _args, { artistLoader }) => {
         const ids = without(keys(deltaResponse), "cached", "context_type")
-        return Promise.all(ids.map(id => artistLoader(id)))
+        return Promise.all(ids.map((id) => artistLoader(id)))
       },
     },
   }),

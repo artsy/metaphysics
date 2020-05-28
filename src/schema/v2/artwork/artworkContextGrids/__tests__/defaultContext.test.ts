@@ -81,7 +81,7 @@ describe("Default Context", () => {
       Promise.resolve(artistArtworks)
     )
 
-    await runAuthenticatedQuery(query, context).then(data => {
+    await runAuthenticatedQuery(query, context).then((data) => {
       expect(data.artwork.contextGrids.length).toEqual(3)
       expect(context.artistArtworksLoader).toHaveBeenCalledWith("andy-warhol", {
         exclude_ids: ["abc123"],
@@ -97,7 +97,7 @@ describe("Default Context", () => {
     parentArtwork.partner = null
     context.partnerArtworksLoader = Promise.resolve(null)
 
-    await runAuthenticatedQuery(query, context).then(data => {
+    await runAuthenticatedQuery(query, context).then((data) => {
       // Should have one artist grid and one related grid with 0 works
       expect(data.artwork.contextGrids.length).toEqual(2)
       const {
@@ -122,7 +122,7 @@ describe("Default Context", () => {
     parentArtwork.artist = null
     context.artistArtworksLoader = Promise.resolve(null)
 
-    await runAuthenticatedQuery(query, context).then(data => {
+    await runAuthenticatedQuery(query, context).then((data) => {
       // Should have one partner grid and one related grid with 0 works
       expect(data.artwork.contextGrids.length).toEqual(2)
       const {
@@ -151,7 +151,7 @@ describe("Default Context", () => {
         { id: "relatedArtwork3", title: "Related Artwork 3" },
       ])
 
-    await runAuthenticatedQuery(query, context).then(data => {
+    await runAuthenticatedQuery(query, context).then((data) => {
       // Should have one artist grid and one related grid with 0 works
       expect(data.artwork.contextGrids.length).toEqual(3)
 

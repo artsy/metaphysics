@@ -7,8 +7,8 @@ describe("Fairs", () => {
     const fairsLoader = ({ id }) => {
       if (id) {
         return Promise.resolve({
-          body: id.map(internalID => ({ internalID })),
-        }).then(r => console.log(r) || r)
+          body: id.map((internalID) => ({ internalID })),
+        }).then((r) => console.log(r) || r)
       }
       throw new Error("Unexpected invocation")
     }

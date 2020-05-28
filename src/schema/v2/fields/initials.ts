@@ -12,9 +12,7 @@ export function initials(string = "", length = 3) {
 
   // FIXME: Expected 1 arguments, but got 2.
   // @ts-ignore
-  return take(string.match(/\b\w/g, ""), length)
-    .join("")
-    .toUpperCase()
+  return take(string.match(/\b\w/g, ""), length).join("").toUpperCase()
 }
 
 export default (attr): GraphQLFieldConfig<void, ResolverContext> => ({

@@ -28,7 +28,7 @@ describe("GeneFamilies", () => {
       }
     `
 
-    return runQuery(query, { geneFamiliesLoader }).then(geneFamilies => {
+    return runQuery(query, { geneFamiliesLoader }).then((geneFamilies) => {
       expect(geneFamilies).toMatchSnapshot()
     })
   })

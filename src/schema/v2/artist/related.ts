@@ -37,7 +37,7 @@ export const Related = {
         type: geneConnection,
         args: pageable({}),
         resolve: ({ id }, args, { relatedGenesLoader }) => {
-          return relatedGenesLoader({ artist: [id] }).then(response => {
+          return relatedGenesLoader({ artist: [id] }).then((response) => {
             return connectionFromArray(response, args)
           })
         },
@@ -167,5 +167,5 @@ export const Related = {
       },
     }),
   }),
-  resolve: artist => artist,
+  resolve: (artist) => artist,
 }

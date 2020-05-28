@@ -17,7 +17,7 @@ export const hasFieldSelection = (
 ): boolean => {
   if (!resolveInfo.fieldNodes) return true
 
-  return resolveInfo.fieldNodes.some(rootNode => {
+  return resolveInfo.fieldNodes.some((rootNode) => {
     let matched = false
 
     const visitor = (
@@ -54,7 +54,7 @@ export const hasIntersectionWithSelectionSet = (
   resolveInfo: GraphQLResolveInfo,
   fieldNames: string[]
 ): boolean => {
-  return hasFieldSelection(resolveInfo, nodeName =>
+  return hasFieldSelection(resolveInfo, (nodeName) =>
     fieldNames.includes(nodeName)
   )
 }
@@ -65,7 +65,7 @@ export const includesFieldsOtherThanSelectionSet = (
 ): boolean => {
   return hasFieldSelection(
     resolveInfo,
-    nodeName => !fieldNames.includes(nodeName)
+    (nodeName) => !fieldNames.includes(nodeName)
   )
 }
 
@@ -73,10 +73,10 @@ export const isSkipped = ({ directives, info }) => {
   if (!directives || !directives.length) return false
 
   let skipped = false
-  directives.forEach(directive => {
+  directives.forEach((directive) => {
     if (directive.name.value === "skip") {
       directive.arguments &&
-        directive.arguments.forEach(arg => {
+        directive.arguments.forEach((arg) => {
           if (arg.name.value === "if") {
             if (arg.value.kind === "Variable") {
               const variableName = arg.value.name.value
@@ -103,7 +103,7 @@ export const parseConnectionArgsFromConnection = (
 ) => {
   const connectionArgs: CursorPageable = {}
   info.fieldNodes &&
-    info.fieldNodes.forEach(rootNode => {
+    info.fieldNodes.forEach((rootNode) => {
       const visitor = (
         fieldNode: FieldNode | FragmentDefinitionNode,
         fragments?: { [key: string]: FragmentDefinitionNode }
@@ -121,7 +121,7 @@ export const parseConnectionArgsFromConnection = (
               if (isSkipped({ directives: node.directives, info })) return BREAK
 
               node.arguments &&
-                node.arguments.forEach(arg => {
+                node.arguments.forEach((arg) => {
                   if (
                     ["first", "last", "before", "after"].includes(
                       arg.name.value

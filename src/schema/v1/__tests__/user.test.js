@@ -11,7 +11,7 @@ describe("User", () => {
       paddle_number: "314159",
     }
 
-    const userByEmailLoader = data => {
+    const userByEmailLoader = (data) => {
       if (data) {
         return Promise.resolve(foundUser)
       }
@@ -38,7 +38,7 @@ describe("User", () => {
     const notFoundUser = { error: "User Not Found" }
     const error = new Error(notFoundUser)
     error.statusCode = 404
-    const userByEmailLoader = data => {
+    const userByEmailLoader = (data) => {
       if (data) {
         return Promise.resolve(notFoundUser)
       }

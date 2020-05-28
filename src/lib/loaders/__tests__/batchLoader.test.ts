@@ -35,7 +35,7 @@ describe("batchLoader", () => {
     })
 
     it("should call the single loader when one item is batched", async () => {
-      const singleLoader = jest.fn(v => Promise.resolve([{ _id: v.id }]))
+      const singleLoader = jest.fn((v) => Promise.resolve([{ _id: v.id }]))
       const multipleLoader = jest.fn()
       const batch = batchLoader({ singleLoader, multipleLoader })
 
@@ -50,8 +50,8 @@ describe("batchLoader", () => {
      * endpoint.
      */
     it("should call the multiple loader when one argument when no single loader provided", async () => {
-      const multipleLoader = jest.fn(v =>
-        v.id.map(id => ({
+      const multipleLoader = jest.fn((v) =>
+        v.id.map((id) => ({
           _id: id,
           ...v,
         }))
@@ -82,8 +82,8 @@ describe("batchLoader", () => {
     })
 
     it("should group multiple calls together", async () => {
-      const multipleLoader = jest.fn(paramSet =>
-        paramSet.id.map(id => ({
+      const multipleLoader = jest.fn((paramSet) =>
+        paramSet.id.map((id) => ({
           _id: id,
           ...paramSet,
         }))

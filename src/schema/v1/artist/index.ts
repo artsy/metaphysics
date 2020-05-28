@@ -228,7 +228,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             gravityArgs.exclude_ids = flatten([options.exclude])
           }
 
-          return artistArtworksLoader(artist.id, gravityArgs).then(artworks =>
+          return artistArtworksLoader(artist.id, gravityArgs).then((artworks) =>
             connectionFromArraySlice(artworks, options, {
               arrayLength: artistArtworkArrayLength(artist, filter),
               sliceStart: offset,
@@ -312,7 +312,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             published: true,
             biography_for_artist_id: _id,
             limit: 1,
-          }).then(articles => first(articles.results)),
+          }).then((articles) => first(articles.results)),
       },
       biography_blurb: {
         args: {
@@ -353,7 +353,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           return partnerArtistsForArtistLoader(id, {
             size: 1,
             featured: true,
-          }).then(partner_artists => {
+          }).then((partner_artists) => {
             if (partner_artists && partner_artists.length) {
               const { biography, partner } = first(partner_artists) as any
               return {
@@ -460,7 +460,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             ),
           },
         }),
-        resolve: artist => artist,
+        resolve: (artist) => artist,
       },
       currentEvent: CurrentEvent,
       deathday: { type: GraphQLString },
@@ -544,11 +544,14 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         description: `A list of genes associated with an artist`,
         type: new GraphQLList(GeneType),
         resolve: ({ id }, _options, { artistGenesLoader }) => {
-          return artistGenesLoader(id).then(genes => genes)
+          return artistGenesLoader(id).then((genes) => genes)
         },
       },
       gender: { type: GraphQLString },
-      href: { type: GraphQLString, resolve: artist => `/artist/${artist.id}` },
+      href: {
+        type: GraphQLString,
+        resolve: (artist) => `/artist/${artist.id}`,
+      },
       has_metadata: {
         type: GraphQLBoolean,
         resolve: ({ blurb, nationality, years, hometown, location }) => {
@@ -588,10 +591,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           return followedArtistLoader(id).then(({ is_followed }) => is_followed)
         },
       },
-      is_public: { type: GraphQLBoolean, resolve: artist => artist.public },
+      is_public: { type: GraphQLBoolean, resolve: (artist) => artist.public },
       is_shareable: {
         type: GraphQLBoolean,
-        resolve: artist => artist.published_artworks_count > 0,
+        resolve: (artist) => artist.published_artworks_count > 0,
       },
       displayLabel: { type: GraphQLString, resolve: ({ name }) => name },
       location: { type: GraphQLString },

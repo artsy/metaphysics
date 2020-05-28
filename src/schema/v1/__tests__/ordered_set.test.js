@@ -43,7 +43,7 @@ describe("OrderedSet type", () => {
       ),
     }
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         ordered_set: {
           id: "52dd3c2e4b8480091700027f",

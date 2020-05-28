@@ -78,7 +78,7 @@ describe("Artist Statuses", () => {
       },
     }
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual(expectedHighlightData)
     })
   })

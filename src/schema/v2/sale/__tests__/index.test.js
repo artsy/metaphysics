@@ -239,7 +239,7 @@ describe("Sale type", () => {
         ),
       }
 
-      return runAuthenticatedQuery(query, context).then(data => {
+      return runAuthenticatedQuery(query, context).then((data) => {
         expect(data).toMatchSnapshot()
       })
     })
@@ -269,7 +269,7 @@ describe("Sale type", () => {
         saleArtworksLoader: saleArtworksLoaderMock,
       }
 
-      return runAuthenticatedQuery(query, context).then(data => {
+      return runAuthenticatedQuery(query, context).then((data) => {
         expect(saleArtworksLoaderMock.mock.calls[0][1].ids).toEqual([
           "sa-id-0",
           "sa-id-1",
@@ -298,7 +298,7 @@ describe("Sale type", () => {
       saleLoader: () => Promise.resolve(sale),
     }
 
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       expect(data.sale.saleArtworksConnection.edges).toEqual([])
     })
   })
@@ -361,7 +361,7 @@ describe("Sale type", () => {
         },
       }
 
-      return runAuthenticatedQuery(query, context).then(data => {
+      return runAuthenticatedQuery(query, context).then((data) => {
         expect(
           data.sale.saleArtworksConnection[0].increments.cents.slice(0, 5)
         ).toEqual([400000, 410000, 420000, 430000, 440000])
@@ -676,7 +676,7 @@ describe("Sale type", () => {
         })
       )
 
-      const labels = testData.map(test => test[1])
+      const labels = testData.map((test) => test[1])
 
       results.forEach(({ sale: { displayTimelyAt } }, index) => {
         expect(displayTimelyAt).toEqual(labels[index])
@@ -798,7 +798,7 @@ describe("Sale type", () => {
       `
       const context = {
         saleLoader: () => Promise.resolve(sale),
-        meBiddersLoader: params =>
+        meBiddersLoader: (params) =>
           _.isEqual(params, { saleID: "foo-foo" }) &&
           Promise.resolve([{ qualifiedForBidding: true }]),
       }
@@ -996,7 +996,7 @@ describe("Sale type", () => {
           }),
       }
 
-      return runAuthenticatedQuery(query, context).then(data => {
+      return runAuthenticatedQuery(query, context).then((data) => {
         expect(data.sale.artworksConnection.pageInfo.hasNextPage).toBe(true)
         expect(data).toMatchSnapshot()
       })

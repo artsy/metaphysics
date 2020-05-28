@@ -3,7 +3,7 @@ import express from "express"
 import bodyParser from "body-parser"
 import { makeExecutableSchema, addMockFunctionsToSchema } from "graphql-tools"
 
-export const invokeError = status => (req, res, next) => {
+export const invokeError = (status) => (req, res, next) => {
   const err = new Error()
   err.status = status
   next(err)

@@ -51,7 +51,7 @@ const CurrentEventType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-const showDetails = show => {
+const showDetails = (show) => {
   let status = ""
   if (show.location && show.location.city) {
     status += show.location.city + ", "

@@ -58,7 +58,7 @@ describe("SaleArtwork type", () => {
               increment_strategy: "default",
             })
           },
-          incrementsLoader: sale => {
+          incrementsLoader: (sale) => {
             return Promise.resolve([
               {
                 key: sale.increment_strategy,

@@ -27,7 +27,7 @@ xdescribe("Profile type", () => {
   `
 
   it("isPubliclyVisible returns true when profile is published", () => {
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         profile: {
           slug: "the-armory-show",
@@ -39,7 +39,7 @@ xdescribe("Profile type", () => {
 
   it("isPubliclyVisible returns false when profile is private", () => {
     profileData.private = true
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         profile: {
           slug: "the-armory-show",

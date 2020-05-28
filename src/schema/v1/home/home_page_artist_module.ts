@@ -35,7 +35,7 @@ export const HomePageArtistModuleTypes: {
           exclude_followed_artists: true,
           exclude_artists_without_forsale_artworks: true,
         }
-      ).then(total => total > 0)
+      ).then((total) => total > 0)
     },
     resolve: ({ suggestedSimilarArtistsLoader }) => {
       if (!suggestedSimilarArtistsLoader) {

@@ -42,7 +42,7 @@ describe("Approve Order Mutation", () => {
       }
     `
 
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.approveOrder.orderOrError.order).toEqual(sampleOrder())
     })
   })

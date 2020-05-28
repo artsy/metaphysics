@@ -21,7 +21,7 @@ export const RecentlyViewedArtworks: GraphQLFieldConfig<
       return connectionFromArray(ids, options)
     }
     const { offset } = getPagingParameters(options)
-    return artworksLoader({ ids }).then(body => {
+    return artworksLoader({ ids }).then((body) => {
       return connectionFromArraySlice(body, options, {
         arrayLength: body.length,
         sliceStart: offset,

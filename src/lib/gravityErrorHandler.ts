@@ -22,7 +22,7 @@ export const GravityMutationErrorType = new GraphQLObjectType<
   }),
 })
 
-export const formatGravityError = error => {
+export const formatGravityError = (error) => {
   const errorSplit = error.message.split(" - ")
 
   if (errorSplit && errorSplit.length > 1) {

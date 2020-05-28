@@ -47,7 +47,7 @@ xdescribe("Article type", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data.article.slug).toBe("foo-bar")
       expect(data.article.title).toBe("My Awesome Article")
     })
@@ -67,7 +67,7 @@ xdescribe("Article type", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data.article.slug).toBe("foo-bar")
       expect(data.article.title).toBe("My Awesome Article")
       expect(data.article.contributingAuthors).toEqual([

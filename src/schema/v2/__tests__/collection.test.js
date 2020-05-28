@@ -27,7 +27,7 @@ xdescribe("Collections", () => {
         }
       `
       const context = {
-        collectionLoader: id =>
+        collectionLoader: (id) =>
           id === "saved-artwork" && Promise.resolve(gravityData),
       }
       const data = await runAuthenticatedQuery(query, context)

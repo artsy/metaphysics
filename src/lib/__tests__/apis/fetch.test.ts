@@ -42,7 +42,7 @@ it("tries to parse the response when there is a String and resolves with it", as
   return expectPromiseRejectionToMatch(fetch("foo/bar"), /Unexpected token/)
 })
 
-it("tries to parse the response when there is a String and resolves with it", done => {
+it("tries to parse the response when there is a String and resolves with it", (done) => {
   let reqResponse = {
     statusCode: 400,
     request: {
@@ -57,7 +57,7 @@ it("tries to parse the response when there is a String and resolves with it", do
     callback(null, reqResponse)
   )
 
-  fetch("foo/bar").catch(error => {
+  fetch("foo/bar").catch((error) => {
     expect(error.message).toEqual(
       `http://api.artsy.net/api/v1/me - { "type": "other_error", "message": "undefined method \`[]' for nil:NilClass" }`
     )

@@ -11,7 +11,7 @@ const SendConfirmationEmailMutationSuccess = new GraphQLObjectType<
   ResolverContext
 >({
   name: "SendConfirmationEmailMutationSuccess",
-  isTypeOf: data => data.id,
+  isTypeOf: (data) => data.id,
   fields: () => ({
     confirmationSentAt: {
       type: GraphQLString,
@@ -29,13 +29,13 @@ const SendConfirmationEmailMutationFailure = new GraphQLObjectType<
   ResolverContext
 >({
   name: "SendConfirmationEmailMutationFailure",
-  isTypeOf: data => {
+  isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
-      resolve: err => err,
+      resolve: (err) => err,
     },
   }),
 })
@@ -57,7 +57,7 @@ export const sendConfirmationEmailMutation = mutationWithClientMutationId<
           SendConfirmationEmailMutationFailure,
         ],
       }),
-      resolve: result => result,
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: (_, { sendConfirmationEmailLoader }) => {
@@ -66,8 +66,8 @@ export const sendConfirmationEmailMutation = mutationWithClientMutationId<
     }
 
     return sendConfirmationEmailLoader()
-      .then(result => result)
-      .catch(error => {
+      .then((result) => result)
+      .catch((error) => {
         const formattedErr = formatGravityError(error)
         if (formattedErr) {
           return { ...formattedErr, _type: "GravityMutationError" }

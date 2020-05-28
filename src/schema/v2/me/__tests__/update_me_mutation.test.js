@@ -42,7 +42,7 @@ describe("UpdateMeMutation", () => {
         }),
     }
 
-    await runAuthenticatedQuery(mutation, context).then(data => {
+    await runAuthenticatedQuery(mutation, context).then((data) => {
       expect(data).toMatchSnapshot()
     })
     expect.assertions(1)

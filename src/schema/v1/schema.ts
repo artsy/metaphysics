@@ -174,7 +174,7 @@ const ViewerType = new GraphQLObjectType<any, ResolverContext>({
 const Viewer = {
   type: ViewerType,
   description: "A wildcard used to support complex root queries in Relay",
-  resolve: x => x,
+  resolve: (x) => x,
 }
 
 // A set of fields which are overridden when coming in from stitching

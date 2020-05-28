@@ -34,7 +34,7 @@ export const formDefaultGravityArgs = ({ options, artwork }) => {
   }
 }
 
-const resolveType = data => {
+const resolveType = (data) => {
   return data.gridType
 }
 

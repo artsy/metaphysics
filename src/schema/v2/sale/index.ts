@@ -110,7 +110,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
 
           return saleArtworksLoader(id, gravityArgs)
             .then(({ body }) => map(body, "artwork"))
-            .then(body => {
+            .then((body) => {
               return connectionFromArraySlice(body, options, {
                 arrayLength: eligible_sale_artworks_count,
                 sliceStart: offset,
@@ -134,7 +134,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (sale, _options, { incrementsLoader }) => {
           return incrementsLoader({
             key: sale.increment_strategy,
-          }).then(increments => {
+          }).then((increments) => {
             return increments[0].increments
           })
         },
@@ -142,7 +142,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       buyersPremium: {
         type: new GraphQLList(BuyersPremium),
         description: "Auction's buyer's premium policy.",
-        resolve: sale => {
+        resolve: (sale) => {
           if (!sale.buyers_premium) return null
 
           return map(sale.buyers_premium.schedule, (item: any) => ({
@@ -242,7 +242,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "Returns a live auctions url if the sale is open and start time is after now",
-        resolve: sale => {
+        resolve: (sale) => {
           if (isLiveOpen(sale)) {
             return PREDICTION_ENDPOINT + "/" + sale.id
           }
@@ -290,7 +290,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           if (!require_identity_verification) return false
           if (!meLoader || !meBiddersLoader) return true
 
-          return meBiddersLoader({ sale_id: id }).then(bidders => {
+          return meBiddersLoader({ sale_id: id }).then((bidders) => {
             if (bidders.length > 0) {
               const bidder = bidders[0]
               return bidder.needs_identity_verification

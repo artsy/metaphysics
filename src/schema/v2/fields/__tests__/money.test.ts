@@ -72,7 +72,7 @@ describe(amount, () => {
 })
 
 describe("major(convertTo:)", () => {
-  const mockArtworkContext = mockArtwork => {
+  const mockArtworkContext = (mockArtwork) => {
     return {
       artworkLoader: () => {
         return Promise.resolve(mockArtwork)
@@ -105,7 +105,7 @@ describe("major(convertTo:)", () => {
       }
     `
 
-    return runQuery(query, context).then(result => {
+    return runQuery(query, context).then((result) => {
       expect(result!.artwork.listPrice).toEqual({
         original: 10.0,
         converted: 2.0,
@@ -139,7 +139,7 @@ describe("major(convertTo:)", () => {
       }
     `
 
-    return runQuery(query, context).then(result => {
+    return runQuery(query, context).then((result) => {
       expect(result!.artwork.listPrice.minPrice).toEqual({
         original: 10.0,
         converted: 2.0,
@@ -200,7 +200,7 @@ describe("major(convertTo:)", () => {
       }
     `
 
-    return runQuery(query, context).then(result => {
+    return runQuery(query, context).then((result) => {
       expect(result!.artwork.listPrice).toBeNull()
     })
   })
@@ -224,7 +224,7 @@ describe("major(convertTo:)", () => {
       }
     `
 
-    return runQuery(query, context).then(result => {
+    return runQuery(query, context).then((result) => {
       const expectedPriceAfterConversion = 2.47 // i.e. not 2.4691199...
       expect(result!.artwork.listPrice.major).toEqual(
         expectedPriceAfterConversion

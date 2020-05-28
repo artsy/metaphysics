@@ -6,9 +6,9 @@ import cache, { client, cacheKey } from "lib/cache"
 jest.mock("lib/tracer", () => {
   return {
     cacheTracer: {
-      get: jest.fn(promise => promise),
-      set: jest.fn(promise => promise),
-      delete: jest.fn(promise => promise),
+      get: jest.fn((promise) => promise),
+      set: jest.fn((promise) => promise),
+      delete: jest.fn((promise) => promise),
     },
   }
 })
@@ -30,7 +30,7 @@ describe("Cache with compression enabled", () => {
       beforeEach(async () => await cache.set("get_foo", { bar: "baz" }))
 
       it("parses the data and resolves the promise", () => {
-        return cache.get("get_foo").then(data => {
+        return cache.get("get_foo").then((data) => {
           expect(data.bar).toBe("baz")
         })
       })
@@ -52,7 +52,7 @@ describe("Cache with compression enabled", () => {
 
     describe("#set", () => {
       describe("with a plain Object", () => {
-        it("sets the cache and includes a timestamp", async done => {
+        it("sets the cache and includes a timestamp", async (done) => {
           await cache.set("set_foo", { bar: "baz" })
 
           client.get(cacheKey("set_foo"), (_err, data) => {
@@ -69,7 +69,7 @@ describe("Cache with compression enabled", () => {
         })
       })
 
-      it("with an Array it sets the cache and includes a timestamp", async done => {
+      it("with an Array it sets the cache and includes a timestamp", async (done) => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
         client.get(cacheKey("set_bar"), (_err, data) => {
@@ -98,7 +98,7 @@ describe("Cache with compression disabled", () => {
       beforeEach(async () => await cache.set("get_foo", { bar: "baz" }))
 
       it("parses the data and resolves the promise", () => {
-        return cache.get("get_foo").then(data => {
+        return cache.get("get_foo").then((data) => {
           expect(data.bar).toBe("baz")
         })
       })
@@ -109,7 +109,7 @@ describe("Cache with compression disabled", () => {
 
       it("deletes the data", () => {
         cache.delete("get_foo")
-        return cache.get("get_foo").catch(e => {
+        return cache.get("get_foo").catch((e) => {
           expect(e.message).toEqual("[Cache#get] Cache miss")
         })
       })
@@ -117,7 +117,7 @@ describe("Cache with compression disabled", () => {
 
     describe("#set", () => {
       describe("with a plain Object", () => {
-        it("sets the cache and includes a timestamp", async done => {
+        it("sets the cache and includes a timestamp", async (done) => {
           await cache.set("set_foo", { bar: "baz" })
 
           client.get(cacheKey("set_foo"), (_err, data) => {
@@ -134,7 +134,7 @@ describe("Cache with compression disabled", () => {
         })
       })
 
-      it("with an Array it sets the cache and includes a timestamp", async done => {
+      it("with an Array it sets the cache and includes a timestamp", async (done) => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
         client.get(cacheKey("set_bar"), (_err, data) => {

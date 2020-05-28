@@ -5,7 +5,7 @@ import { ResolverContext } from "types/graphql"
 
 const ANY_RESERVE_MET_STATUSES = ["no_reserve", "reserve_met"]
 
-const anyReserveMet = position => {
+const anyReserveMet = (position) => {
   return (
     ANY_RESERVE_MET_STATUSES.indexOf(position.sale_artwork.reserve_status) > -1
   )
@@ -22,7 +22,7 @@ export const BidderPosition: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: (_root, { id }, { meBidderPositionLoader }) =>
     !meBidderPositionLoader
       ? null
-      : meBidderPositionLoader(id).then(response => {
+      : meBidderPositionLoader(id).then((response) => {
           const position = response.body
           let status
           if (
@@ -47,7 +47,7 @@ export const BidderPosition: GraphQLFieldConfig<void, ResolverContext> = {
             status = "ERROR"
           }
           const message =
-            BiddingMessages.find(d => status.trim().startsWith(d.id)) ||
+            BiddingMessages.find((d) => status.trim().startsWith(d.id)) ||
             BiddingMessages[BiddingMessages.length - 1] // error
           return {
             status,

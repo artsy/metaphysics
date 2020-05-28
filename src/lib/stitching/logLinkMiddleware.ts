@@ -18,7 +18,7 @@ export const responseLoggerLink = (name: string) =>
       // null checks
       (forward &&
         operation &&
-        forward(operation).map(response => {
+        forward(operation).map((response) => {
           // Log to CLI
           if (shouldLogLinkTraffic) {
             console.log(`>\n> Made query to ${name}:`)

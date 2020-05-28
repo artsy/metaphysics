@@ -38,7 +38,7 @@ describe("MatchGene", () => {
 
     const matchGeneLoader = () => Promise.resolve(response)
 
-    return runQuery(query, { matchGeneLoader }).then(data => {
+    return runQuery(query, { matchGeneLoader }).then((data) => {
       expect(data).toEqual({
         match_gene: [{ id: "pop-art", name: "Pop Art", _id: "123456" }],
       })

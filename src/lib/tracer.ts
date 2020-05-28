@@ -42,11 +42,11 @@ const createCommand = (command: string) => <T>(
   })
 
   return promise.then(
-    result => {
+    (result) => {
       span.finish()
       return result
     },
-    err => {
+    (err) => {
       const tags = {
         "error.type": err.name,
         "error.msg": err.message,

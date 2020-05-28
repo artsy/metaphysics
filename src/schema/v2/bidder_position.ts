@@ -61,7 +61,7 @@ const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: (position, _options, { saleArtworkRootLoader }) => {
         return saleArtworkRootLoader(position.sale_artwork_id).then(
-          saleArtwork =>
+          (saleArtwork) =>
             get(saleArtwork, "highest_bid.id") ===
             get(position, "highest_bid.id")
         )

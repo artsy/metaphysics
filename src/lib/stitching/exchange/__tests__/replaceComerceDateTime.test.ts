@@ -15,7 +15,7 @@ const originalSchema = new GraphQLSchema({
             someDateField: {
               type: new GraphQLScalarType({
                 name: "CommerceDateTime",
-                serialize: x => x,
+                serialize: (x) => x,
               }),
             },
           },

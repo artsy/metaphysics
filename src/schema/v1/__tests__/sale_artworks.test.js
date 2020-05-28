@@ -247,7 +247,7 @@ describe("Sale Artworks", () => {
     } = await execute(gravityResponse, query)
 
     expect(aggregations.length).toBeGreaterThan(0)
-    aggregations.forEach(aggregation => {
+    aggregations.forEach((aggregation) => {
       expect(aggregation.counts.length).toBeGreaterThan(0)
     })
   })

@@ -17,7 +17,7 @@ const ArtistStatusesType = new GraphQLObjectType<any, ResolverContext>({
           relatedMainArtistsLoader,
           {},
           { exclude_artists_without_artworks: true, artist: [id] }
-        ).then(count => count > 0),
+        ).then((count) => count > 0),
     },
     articles: {
       type: GraphQLBoolean,
@@ -61,7 +61,7 @@ const ArtistStatusesType = new GraphQLObjectType<any, ResolverContext>({
             exclude_artists_without_artworks: true,
             artist: [id],
           }
-        ).then(total => total > 0)
+        ).then((total) => total > 0)
       },
     },
     cv: {
@@ -87,7 +87,7 @@ const ArtistStatusesType = new GraphQLObjectType<any, ResolverContext>({
 
 const ArtistStatuses: GraphQLFieldConfig<any, ResolverContext> = {
   type: ArtistStatusesType,
-  resolve: artist => artist,
+  resolve: (artist) => artist,
 }
 
 export default ArtistStatuses

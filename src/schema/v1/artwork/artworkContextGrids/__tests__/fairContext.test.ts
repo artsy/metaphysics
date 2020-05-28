@@ -96,7 +96,7 @@ describe("Show Context", () => {
     parentArtwork.artist = null
     context.artistArtworksLoader = () => Promise.resolve(null)
 
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       // Should have one artist grid and one related grid with 0 works
       expect(data.artwork.contextGrids.length).toEqual(2)
       const {
@@ -127,7 +127,7 @@ describe("Show Context", () => {
         { id: "relatedArtwork3", title: "Related Artwork 3" },
       ])
 
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       // Should have one artist grid and one related grid with 0 works
       expect(data.artwork.contextGrids.length).toEqual(3)
 

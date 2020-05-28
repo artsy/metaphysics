@@ -20,7 +20,7 @@ const runLinkChain = (link, op, complete) =>
 
 // FIXME: This seems to be hitting the actual network and thus fails without it.
 xdescribe("exchange link", () => {
-  it("passes request ID headers to the fetch", done => {
+  it("passes request ID headers to the fetch", (done) => {
     expect.assertions(1)
 
     const link = createExchangeLink()
@@ -50,7 +50,7 @@ xdescribe("exchange link", () => {
   })
 
   describe("when authenticated", () => {
-    it("also gravity auth HTTP headers to the fetch", done => {
+    it("also gravity auth HTTP headers to the fetch", (done) => {
       expect.assertions(1)
 
       // The difference here is that locals will now include a dataloader named exchangeTokenLoader

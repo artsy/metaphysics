@@ -28,7 +28,7 @@ xdescribe("CreditCard type", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data!.creditCard.internalID).toBe("card123")
       expect(data!.creditCard.brand).toBe("Visa")
       expect(data!.creditCard.lastDigits).toBe("4242")

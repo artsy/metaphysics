@@ -174,7 +174,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
       }),
-      resolve: lot => lot,
+      resolve: (lot) => lot,
     },
     price_realized: {
       type: new GraphQLObjectType<any, ResolverContext>({
@@ -220,7 +220,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
       }),
-      resolve: lot => lot,
+      resolve: (lot) => lot,
     },
   }),
 })

@@ -5,7 +5,7 @@ import geminiLoaders from "./gemini"
 import gravityLoaders from "./gravity"
 import positronLoaders from "./positron"
 
-export const createLoadersWithoutAuthentication = opts => ({
+export const createLoadersWithoutAuthentication = (opts) => ({
   ...deltaLoaders(opts),
   ...diffusionLoaders(opts),
   ...galaxyLoaders(opts),

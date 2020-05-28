@@ -19,7 +19,7 @@ const { CACHE_DISABLED } = config
 //                                                   Promise<{ body: Object }>
 
 function tap(cb) {
-  return data => {
+  return (data) => {
     cb(data)
     return data
   }
@@ -42,7 +42,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
 ) => {
   const apiLoaderFactory = (path, globalParams = {}, pathAPIOptions = {}) => {
     const loader = new DataLoader<DataLoaderKey, T | { body: T; headers: any }>(
-      keys =>
+      (keys) =>
         Promise.all<any>(
           keys.map(({ key, apiOptions: invocationAPIOptions }) => {
             const apiOptions = {
@@ -65,7 +65,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
                */
               cached?: boolean
             }) =>
-              tap(data => {
+              tap((data) => {
                 verbose(message)
                 const time = clock.end()
                 if (
@@ -93,7 +93,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
               })
 
             const callApi = () =>
-              api(key, null, apiOptions).catch(err => {
+              api(key, null, apiOptions).catch((err) => {
                 warn(key, err)
                 throw err
               })
@@ -102,7 +102,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
               apiOptions.headers ? { body, headers } : body
 
             const cacheData = (data, options: CacheOptions) => {
-              cache.set(key, data, options).catch(err => warn(key, err))
+              cache.set(key, data, options).catch((err) => warn(key, err))
               return data
             }
 
@@ -148,7 +148,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
                         })
                       )
                       .then(reduceData)
-                      .then(data => cacheData(data, cacheOptions))
+                      .then((data) => cacheData(data, cacheOptions))
                   })
               )
             }
@@ -157,7 +157,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
       {
         batch: false,
         cache: true,
-        cacheKeyFn: input => JSON.stringify(input),
+        cacheKeyFn: (input) => JSON.stringify(input),
       }
     )
     return loaderInterface(loader, path, globalParams)

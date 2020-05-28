@@ -15,7 +15,7 @@ const get = (url, options) => {
   )
 }
 
-const metaphysics = endpoint => (query, vars = {}) => {
+const metaphysics = (endpoint) => (query, vars = {}) => {
   const variables = JSON.stringify(vars)
   return get(endpoint, { method: "GET", qs: { query, variables } })
 }

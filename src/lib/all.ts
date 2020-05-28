@@ -17,7 +17,7 @@ export const allViaLoader = (
   } = {}
 ) => {
   const params = options.params ? { size: 25, ...options.params } : { size: 25 }
-  const invokeLoader = invocationParams =>
+  const invokeLoader = (invocationParams) =>
     options.path
       ? loader(options.path, invocationParams, options.api)
       : loader(invocationParams, options.api)
@@ -32,7 +32,7 @@ export const allViaLoader = (
       const count = parseInt(headers["x-total-count"] || "0", 10)
       const pages = Math.ceil(count / params.size)
       return Promise.all(
-        times(pages, i => {
+        times(pages, (i) => {
           const pageParams = { ...params, page: i + 1 }
           return invokeLoader(pageParams).then(({ body }) => body)
         })

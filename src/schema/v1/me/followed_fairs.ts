@@ -32,7 +32,7 @@ const FollowedFairs: GraphQLFieldConfig<void, ResolverContext> = {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
         sliceStart: offset,
         // @ts-ignore
-        resolveNode: follow_profile => follow_profile.profile.owner,
+        resolveNode: (follow_profile) => follow_profile.profile.owner,
       })
     })
   },

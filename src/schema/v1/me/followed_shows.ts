@@ -70,7 +70,7 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
         sliceStart: offset,
         // @ts-ignore
-        resolveNode: follow_show => follow_show.partner_show,
+        resolveNode: (follow_show) => follow_show.partner_show,
       })
     })
   },

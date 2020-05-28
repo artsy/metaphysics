@@ -14,7 +14,7 @@ const PopularArtistsType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: results => results,
+      resolve: (results) => results,
     },
   }),
 })
