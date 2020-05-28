@@ -4847,6 +4847,7 @@ type ConsignmentOffer {
   partnerInfo: String
   photographyInfo: String
   saleDate: String
+  saleLocation: String
   saleName: String
   shippingInfo: String
   state: String
@@ -5191,6 +5192,7 @@ input CreateOfferMutationInput {
   partnerInfo: String
   photographyInfo: String
   saleDate: Date
+  saleLocation: String
   saleName: String
   shippingInfo: String
   state: String
