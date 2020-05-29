@@ -998,7 +998,10 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
   },
   resolve: (_source, args, { artworkLoader }) => {
     const { id } = args
-    const gravityParams = _.pick(args, ["includeUnlisted"])
+    const gravityParams = _.mapKeys(
+      _.pick(args, ["includeUnlisted"]),
+      (_v, k) => _.snakeCase(k)
+    )
     return artworkLoader(id, gravityParams)
   },
 }
