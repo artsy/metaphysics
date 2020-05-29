@@ -7,7 +7,7 @@ import { warn, danger } from "danger"
 // and the current Force one, warn.
 export default async () => {
   const forceSchemaUrl =
-    "https://github.com/artsy/force/blob/master/data/schema.graphql"
+    "https://github.com/artsy/force/raw/master/data/schema.graphql"
 
   const forceSchema = await (await fetch(forceSchemaUrl)).text()
   const repo = danger.github.pr.head.repo.full_name
