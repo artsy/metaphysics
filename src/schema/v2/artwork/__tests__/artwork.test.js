@@ -2247,4 +2247,44 @@ describe("Artwork type", () => {
       expect(data.artwork.unlisted).toBe(false)
     })
   })
+
+  describe("includeUnlisted argument", () => {
+    beforeEach(() => {
+      context = {
+        artworkLoader: jest.fn(() => Promise.resolve(artwork)),
+      }
+    })
+
+    it("passes includeUnlisted to artworkLoader when with the argument", async () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait", includeUnlisted: true) {
+            unlisted
+          }
+        }
+      `
+      await runQuery(query, context)
+      expect(context.artworkLoader).toBeCalledWith(
+        "richard-prince-untitled-portrait",
+        {
+          include_unlisted: true,
+        }
+      )
+    })
+
+    it("does not pass includeUnlisted to artworkLoader when without the argument", async () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            unlisted
+          }
+        }
+      `
+      await runQuery(query, context)
+      expect(context.artworkLoader).toBeCalledWith(
+        "richard-prince-untitled-portrait",
+        {}
+      )
+    })
+  })
 })

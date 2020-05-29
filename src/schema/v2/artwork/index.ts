@@ -906,9 +906,15 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
       description: "The slug or ID of the Artwork",
     },
+    includeUnlisted: {
+      type: GraphQLBoolean,
+      description: "Include unlisted artwork or not",
+    },
   },
-  resolve: (_source, { id }, { artworkLoader }) => {
-    return artworkLoader(id)
+  resolve: (_source, args, { artworkLoader }) => {
+    const { id } = args
+    const gravityParams = _.pick(args, ["includeUnlisted"])
+    return artworkLoader(id, gravityParams)
   },
 }
 

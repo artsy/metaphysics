@@ -7075,6 +7075,9 @@ type Query {
   artwork(
     # The slug or ID of the Artwork
     id: String!
+
+    # Include unlisted artwork or not
+    includeUnlisted: Boolean
   ): Artwork
 
   # List of all artwork attribution classes
@@ -9010,6 +9013,9 @@ type Viewer {
   artwork(
     # The slug or ID of the Artwork
     id: String!
+
+    # Include unlisted artwork or not
+    includeUnlisted: Boolean
   ): Artwork
 
   # List of all artwork attribution classes
