@@ -120,8 +120,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   color: {
     type: GraphQLString,
   },
-  sizeBuckets: {
+  sizes: {
     type: new GraphQLList(ArtworkSizes),
+    description: "Filter results by Artwork sizes",
   },
   dimensionRange: {
     type: GraphQLString,
@@ -369,7 +370,7 @@ const filterArtworksConnectionTypeFactory = (
       artistIDs,
       atAuction,
       attributionClass,
-      sizeBuckets,
+      sizes,
       dimensionRange,
       extraAggregationGeneIDs,
       includeArtworksByFollowedArtists,
@@ -399,7 +400,7 @@ const filterArtworksConnectionTypeFactory = (
       artist_ids: artistIDs,
       at_auction: atAuction,
       attribution_class: attributionClass,
-      size_bucket: sizeBuckets,
+      sizes: sizes,
       dimension_range: dimensionRange,
       extra_aggregation_gene_ids: extraAggregationGeneIDs,
       include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
