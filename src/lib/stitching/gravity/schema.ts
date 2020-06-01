@@ -44,7 +44,7 @@ export const executableGravitySchema = () => {
   // Return the new modified schema
   return transformSchema(schema, [
     // Remove types which Metaphysics handles better
-    new FilterTypes(type => {
+    new FilterTypes((type) => {
       return (
         !duplicatedTypes.includes(type.name) && !unusedTypes.includes(type.name)
       )
@@ -56,7 +56,7 @@ export const executableGravitySchema = () => {
     // When Partner was removed, we'd see this error
     // https://github.com/graphcool/graphql-import/issues/73
     // but I don't think we're exhibiting the same bug.
-    new RenameTypes(name => {
+    new RenameTypes((name) => {
       if (name === "Partner") {
         return "DoNotUseThisPartner"
       }

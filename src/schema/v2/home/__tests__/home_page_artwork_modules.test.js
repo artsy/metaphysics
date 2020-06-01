@@ -201,7 +201,7 @@ describe("HomePageArtworkModules", () => {
         { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
       ])
 
-    return runAuthenticatedQuery(query, context).then(results => {
+    return runAuthenticatedQuery(query, context).then((results) => {
       expect(results).toEqual(expectedResults)
     })
   })
@@ -238,7 +238,7 @@ describe("HomePageArtworkModules", () => {
         { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
       ])
 
-    return runAuthenticatedQuery(query, context).then(results => {
+    return runAuthenticatedQuery(query, context).then((results) => {
       expect(results).toEqual(expectedResults)
     })
   })

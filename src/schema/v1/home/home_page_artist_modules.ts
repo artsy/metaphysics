@@ -13,12 +13,12 @@ const HomePageArtistModules: GraphQLFieldConfig<void, ResolverContext> = {
     // First check each type if they can display…
     return Promise.all(
       map(HomePageArtistModuleTypes, ({ display }, key) => {
-        return display(context).then(displayable => ({
+        return display(context).then((displayable) => ({
           key,
           displayable,
         }))
       })
-    ).then(results => {
+    ).then((results) => {
       // …then reduce list to those that can be displayed.
       return map(filter(results, "displayable"), ({ key }) => ({ key }))
     })

@@ -35,7 +35,7 @@ const BidderPositions: GraphQLFieldConfig<void, ResolverContext> = {
       artwork_id,
       sale_id,
       sort: "-created_at",
-    }).then(positions => {
+    }).then((positions) => {
       if (!current || artwork_id) return positions
       // When asking for "my current bids" we need to...
       //
@@ -55,20 +55,20 @@ const BidderPositions: GraphQLFieldConfig<void, ResolverContext> = {
       // `bidder_position.sale_artwork.sale.auction_state != open`
       //
       return Promise.all(
-        _.map(latestPositions, position =>
+        _.map(latestPositions, (position) =>
           // FIXME: Property 'sale_artwork_id' does not exist on type 'string'.
           // @ts-ignore
           saleArtworkRootLoader(position.sale_artwork_id)
             // For unpublished artworks
             .catch(() => null)
         )
-      ).then(saleArtworks => {
+      ).then((saleArtworks) => {
         return Promise.all(
-          _.map(_.compact(saleArtworks), saleArtwork =>
+          _.map(_.compact(saleArtworks), (saleArtwork) =>
             saleLoader(saleArtwork.sale_id)
           )
-        ).then(sales => {
-          return _.filter(latestPositions, position => {
+        ).then((sales) => {
+          return _.filter(latestPositions, (position) => {
             const saleArtwork = _.find(saleArtworks, {
               // FIXME: Property 'sale_artwork_id' does not exist on type 'string'.
               // @ts-ignore

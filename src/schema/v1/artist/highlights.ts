@@ -34,7 +34,7 @@ const ArtistHighlightsType = new GraphQLObjectType<any, ResolverContext>({
 
 const ArtistHighlights: GraphQLFieldConfig<void, ResolverContext> = {
   type: ArtistHighlightsType,
-  resolve: artist => artist,
+  resolve: (artist) => artist,
 }
 
 export default ArtistHighlights

@@ -26,11 +26,11 @@ const CreateAccountRequestMutationSuccessType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "CreateAccountRequestMutationSuccess",
-  isTypeOf: data => data.id,
+  isTypeOf: (data) => data.id,
   fields: () => ({
     accountRequest: {
       type: AccountRequestType,
-      resolve: accountRequest => accountRequest,
+      resolve: (accountRequest) => accountRequest,
     },
   }),
 })
@@ -40,13 +40,13 @@ const CreateAccountRequestMutationFailureType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "CreateAccountRequestMutationFailure",
-  isTypeOf: data => {
+  isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
-      resolve: err => err,
+      resolve: (err) => err,
     },
   }),
 })
@@ -96,7 +96,7 @@ export const createAccountRequestMutation = mutationWithClientMutationId<
   outputFields: {
     accountRequestOrError: {
       type: CreateAccountRequestMutationType,
-      resolve: result => result,
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: (
@@ -111,8 +111,8 @@ export const createAccountRequestMutation = mutationWithClientMutationId<
       name,
     }
     return createAccountRequestLoader(gravityOptions)
-      .then(result => result)
-      .catch(error => {
+      .then((result) => result)
+      .catch((error) => {
         const formattedErr = formatGravityError(error)
         if (formattedErr) {
           return { ...formattedErr, _type: "GravityMutationError" }

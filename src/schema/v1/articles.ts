@@ -25,7 +25,7 @@ const Articles: GraphQLFieldConfig<void, ResolverContext> = {
     sort: ArticleSorts,
   },
   resolve: (_root, options, { articlesLoader }) => {
-    return articlesLoader(options).then(articles => articles.results)
+    return articlesLoader(options).then((articles) => articles.results)
   },
 }
 

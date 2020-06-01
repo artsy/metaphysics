@@ -40,12 +40,13 @@ const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
       ),
     },
   }),
-  resolve: partner_artist => partner_artist,
+  resolve: (partner_artist) => partner_artist,
 }
 
-export const fields: Thunk<
-  GraphQLFieldConfigMap<PartnerArtistDetails, ResolverContext>
-> = () => ({
+export const fields: Thunk<GraphQLFieldConfigMap<
+  PartnerArtistDetails,
+  ResolverContext
+>> = () => ({
   ...IDFields,
   artist: {
     type: Artist.type,
@@ -129,7 +130,7 @@ export const partnersForArtist = (
     return connectionFromArraySlice(body, options, {
       arrayLength: parseInt(headers["x-total-count"] || "0", 10),
       sliceStart: offset,
-      resolveNode: node => node.partner, // Can also be a promise: `partnerLoader(node.partner.id)`
+      resolveNode: (node) => node.partner, // Can also be a promise: `partnerLoader(node.partner.id)`
     })
   })
 }

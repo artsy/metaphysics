@@ -18,7 +18,7 @@ moment.updateLocale("en", {
   },
 })
 
-export const isLiveOpen = sale => {
+export const isLiveOpen = (sale) => {
   const liveStart = moment(sale.live_start_at)
   return (
     sale.auction_state === "open" &&
@@ -26,7 +26,7 @@ export const isLiveOpen = sale => {
   )
 }
 
-const hasEnded = end_at => {
+const hasEnded = (end_at) => {
   return end_at && end_at < moment()
 }
 
@@ -80,7 +80,7 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
     const isInProgress = startAt < moment()
     const isNearFuture = startAt > moment() && startAt < range
     const isFuture = startAt > range
-    const dateLabel = saleDate => {
+    const dateLabel = (saleDate) => {
       return moment(saleDate).fromNow(true)
     }
 

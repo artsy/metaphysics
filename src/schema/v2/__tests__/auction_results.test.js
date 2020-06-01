@@ -80,7 +80,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         artist: {
           auctionResultsConnection: {
@@ -246,7 +246,7 @@ describe("Artist type", () => {
         Promise.resolve(auctionResultResponse({ images: null }))
       )
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         artist: {
           auctionResultsConnection: {

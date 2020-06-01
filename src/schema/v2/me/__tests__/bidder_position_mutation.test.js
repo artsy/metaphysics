@@ -115,9 +115,7 @@ describe("Bidder position mutation", () => {
     expect(data.createBidderPosition.result.messageDescriptionMD).toEqual(
       "Sorry, your bid wasn’t received before\n" +
         "live bidding started. To continue\n" +
-        `bidding, please [join the live auction](${
-          config.PREDICTION_ENDPOINT
-        }/sixteen-year-of-resistance-benefit-auction-2032).`
+        `bidding, please [join the live auction](${config.PREDICTION_ENDPOINT}/sixteen-year-of-resistance-benefit-auction-2032).`
     )
   })
 })

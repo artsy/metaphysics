@@ -40,7 +40,7 @@ describe("FixFailedPayment Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.ecommerceFixFailedPayment.orderOrError.order).toEqual(
         sampleOrder({ includeCreditCard: true })
       )
@@ -63,7 +63,7 @@ describe("FixFailedPayment Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.ecommerceFixFailedPayment.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

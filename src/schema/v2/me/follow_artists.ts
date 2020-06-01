@@ -14,7 +14,7 @@ export const FollowArtistsType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: data => {
+      resolve: (data) => {
         const artists = data.artists ? data.artists : data
         return map(artists, "artist")
       },
@@ -33,7 +33,7 @@ export const FollowArtistsType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
       }),
-      resolve: follows => follows,
+      resolve: (follows) => follows,
     },
   },
 })

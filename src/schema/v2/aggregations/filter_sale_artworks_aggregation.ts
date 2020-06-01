@@ -22,8 +22,9 @@ export const SaleArtworksAggregation = new GraphQLEnumType({
 })
 
 const sorts = {
-  default: counts => orderBy(counts, ["count"], ["desc"]),
-  artist: counts => orderBy(counts, ["sortable_id", "count"], ["asc", "desc"]),
+  default: (counts) => orderBy(counts, ["count"], ["desc"]),
+  artist: (counts) =>
+    orderBy(counts, ["sortable_id", "count"], ["asc", "desc"]),
 }
 
 export const SaleArtworksAggregationResultsType = new GraphQLObjectType<

@@ -185,7 +185,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             ),
           },
         }),
-        resolve: artist => artist,
+        resolve: (artist) => artist,
       },
       default_profile_id: {
         type: GraphQLString,
@@ -271,7 +271,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       website: {
         description: "The gallery partner's web address",
         type: GraphQLString,
-        resolve: root => {
+        resolve: (root) => {
           if (root.website) {
             return root.website
           }

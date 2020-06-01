@@ -1,7 +1,7 @@
 import { parse } from "url"
 
-export const isDimensional = value => parseFloat(value) > 0
-export const isTinyDimensional = value => parseFloat(value) > 1
+export const isDimensional = (value) => parseFloat(value) > 0
+export const isTinyDimensional = (value) => parseFloat(value) > 1
 
 export const isTwoDimensional = ({ width, height, depth, diameter }) => {
   return (

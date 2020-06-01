@@ -151,7 +151,7 @@ describe("SaleArtwork type", () => {
             increment_strategy: "default",
           })
         },
-        incrementsLoader: sale => {
+        incrementsLoader: (sale) => {
           return Promise.resolve([
             {
               key: sale.increment_strategy,
@@ -168,7 +168,7 @@ describe("SaleArtwork type", () => {
       }
 
       const data = await execute(query, gravityResponse, context)
-      expect(data.node.increments.slice(0, 20).map(i => i.cents)).toEqual([
+      expect(data.node.increments.slice(0, 20).map((i) => i.cents)).toEqual([
         2400000000,
         2400001000,
         2400002000,
@@ -211,7 +211,7 @@ describe("SaleArtwork type", () => {
             increment_strategy: "default",
           })
         },
-        incrementsLoader: sale => {
+        incrementsLoader: (sale) => {
           return Promise.resolve([
             {
               key: sale.increment_strategy,
@@ -233,7 +233,7 @@ describe("SaleArtwork type", () => {
       }
 
       const data = await execute(query, saleArtwork, context)
-      expect(data.node.increments.slice(0, 20).map(i => i.cents)).toEqual([
+      expect(data.node.increments.slice(0, 20).map((i) => i.cents)).toEqual([
         351000,
         355000,
         360000,
@@ -277,7 +277,7 @@ describe("SaleArtwork type", () => {
             increment_strategy: "default",
           })
         },
-        incrementsLoader: sale => {
+        incrementsLoader: (sale) => {
           return Promise.resolve([
             {
               key: sale.increment_strategy,
@@ -335,7 +335,7 @@ describe("SaleArtwork type", () => {
         },
         saleArtworkRootLoader: () => Promise.resolve(saleArtwork),
         lotStandingLoader: () => null,
-        incrementsLoader: sale => {
+        incrementsLoader: (sale) => {
           return Promise.resolve([
             {
               key: sale.increment_strategy,

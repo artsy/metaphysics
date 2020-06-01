@@ -35,7 +35,7 @@ describe("CreditCards", () => {
     `
 
     expect.assertions(1)
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       expect(data!.me.creditCards).toEqual({
         edges: [
           {

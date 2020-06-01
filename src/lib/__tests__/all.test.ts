@@ -12,7 +12,7 @@ describe("all", () => {
       )
       .mockReturnValue(Promise.resolve({}))
 
-    return allViaLoader(loader, { params: { size: 10 } }).then(artworks => {
+    return allViaLoader(loader, { params: { size: 10 } }).then((artworks) => {
       expect(artworks.length).toBe(3) // 3 pages of 10 each to get 22 works
 
       // FIXME: The /shows endpoint does not return a count with size=0

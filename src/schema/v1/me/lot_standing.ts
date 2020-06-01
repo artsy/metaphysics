@@ -12,10 +12,10 @@ import {
 import { ResolverContext } from "types/graphql"
 
 // is leading human bidder
-export const isLeadingBidder = lotStanding =>
+export const isLeadingBidder = (lotStanding) =>
   isExisty(lotStanding.leading_position)
 
-export const isHighestBidder = lotStanding =>
+export const isHighestBidder = (lotStanding) =>
   isLeadingBidder(lotStanding) &&
   lotStanding.sale_artwork.reserve_status !== "reserve_not_met"
 
@@ -25,7 +25,7 @@ export const LotStandingType = new GraphQLObjectType<any, ResolverContext>({
     active_bid: {
       type: BidderPosition.type,
       description: "Your bid if it is currently winning",
-      resolve: lotStanding =>
+      resolve: (lotStanding) =>
         isHighestBidder(lotStanding) ? lotStanding.leading_position : null,
     },
     bidder: {

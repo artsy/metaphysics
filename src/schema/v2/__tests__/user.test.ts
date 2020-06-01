@@ -12,7 +12,7 @@ describe("User", () => {
       paddle_number: "314159",
     }
 
-    const userByEmailLoader = data => {
+    const userByEmailLoader = (data) => {
       if (data) {
         return Promise.resolve(foundUser)
       }
@@ -38,7 +38,7 @@ describe("User", () => {
   it("returns false if user is not found by email", async () => {
     const notFoundUser = { error: "User Not Found" }
     const error = new HTTPError(notFoundUser.error, 404)
-    const userByEmailLoader = data => {
+    const userByEmailLoader = (data) => {
       if (data) {
         return Promise.resolve(notFoundUser)
       }

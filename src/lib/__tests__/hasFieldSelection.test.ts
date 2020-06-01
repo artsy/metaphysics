@@ -50,16 +50,18 @@ const info: GraphQLResolveInfo = {
 
 describe("hasFieldSelection", () => {
   it("returns if it has selections from the received field nodes", () => {
-    expect(hasFieldSelection(info, n => n === "id")).toEqual(true)
-    expect(hasFieldSelection(info, n => n === "edition_sets")).toEqual(true)
+    expect(hasFieldSelection(info, (n) => n === "id")).toEqual(true)
+    expect(hasFieldSelection(info, (n) => n === "edition_sets")).toEqual(true)
   })
 
   it("returns if it has selections from any spread in fragments", () => {
-    expect(hasFieldSelection(info, n => n === "edition_of")).toEqual(true)
+    expect(hasFieldSelection(info, (n) => n === "edition_of")).toEqual(true)
   })
 
   it("returns that no such field selection exists", () => {
-    expect(hasFieldSelection(info, n => n === "something-else")).toEqual(false)
+    expect(hasFieldSelection(info, (n) => n === "something-else")).toEqual(
+      false
+    )
   })
 })
 

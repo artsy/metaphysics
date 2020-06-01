@@ -17,7 +17,7 @@ export function timeoutForField(field: GraphQLField<any, any>) {
   const fieldDirectives = field.astNode && field.astNode.directives
   const directive =
     fieldDirectives &&
-    fieldDirectives.find(directive => directive.name.value === "timeout")
+    fieldDirectives.find((directive) => directive.name.value === "timeout")
   if (directive) {
     const args = directive && directive.arguments
     const arg = args && args[0]
@@ -31,9 +31,7 @@ export function timeoutForField(field: GraphQLField<any, any>) {
     } else {
       invariant(
         false,
-        `graphqlTimeoutMiddleware: Expected \`@timeout(ms: …)\` to be a \`IntValue\`, got \`${
-          value.kind
-        }\` instead.`
+        `graphqlTimeoutMiddleware: Expected \`@timeout(ms: …)\` to be a \`IntValue\`, got \`${value.kind}\` instead.`
       )
       return null
     }

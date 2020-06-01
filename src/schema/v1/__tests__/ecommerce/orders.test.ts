@@ -51,7 +51,7 @@ describe("Orders query", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data!.orders.totalCount).toEqual(100)
       expect(data!.orders.totalPages).toEqual(10)
       expect(data!.orders.pageCursors).not.toBeNull

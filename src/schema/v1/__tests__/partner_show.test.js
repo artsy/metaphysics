@@ -34,7 +34,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
           has_location: true,
@@ -51,7 +51,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
           has_location: true,
@@ -68,7 +68,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
           has_location: true,
@@ -84,7 +84,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
           has_location: false,
@@ -105,7 +105,7 @@ describe("PartnerShow type", () => {
       .then(() => {
         throw new Error("Did not expect query to not throw an error")
       })
-      .catch(error => {
+      .catch((error) => {
         expect(error.message).toEqual("Show Not Found")
       })
   })
@@ -121,7 +121,7 @@ describe("PartnerShow type", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
           id: "new-museum-1-2015-triennial-surround-audience",
@@ -141,7 +141,7 @@ describe("PartnerShow type", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
           exhibition_period: "Feb 25 – May 24, 2015",
@@ -158,7 +158,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
           status_update: "Closing tomorrow",
@@ -174,7 +174,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
           press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",
@@ -195,7 +195,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
           counts: {
@@ -215,7 +215,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
           counts: {
@@ -238,7 +238,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
           counts: {

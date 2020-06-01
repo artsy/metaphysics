@@ -90,7 +90,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
               return connectionFromArraySlice(body, args, {
                 arrayLength: parseInt(headers["x-total-count"] || "0", 10),
                 sliceStart: offset,
-                resolveNode: node => node.artist,
+                resolveNode: (node) => node.artist,
               })
             }
           )
@@ -182,7 +182,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             ),
           },
         }),
-        resolve: artist => artist,
+        resolve: (artist) => artist,
       },
       cities: {
         description: "A list of the partners unique city locations",
@@ -197,8 +197,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           return partnerLocationsConnectionLoader(id, {
             total_count: true,
             ...options,
-          }).then(locations => {
-            const locationCities = locations.body.map(location => {
+          }).then((locations) => {
+            const locationCities = locations.body.map((location) => {
               return location.city
             })
             const filteredForDuplicatesAndBlanks = locationCities.filter(
@@ -364,7 +364,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       website: {
         description: "The gallery partner's web address",
         type: GraphQLString,
-        resolve: root => {
+        resolve: (root) => {
           if (root.website) {
             return root.website
           }

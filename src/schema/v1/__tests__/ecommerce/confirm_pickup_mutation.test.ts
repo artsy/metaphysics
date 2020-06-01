@@ -42,7 +42,7 @@ describe("Confirm Pickup Mutation", () => {
       }
     `
 
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.ecommerceConfirmPickup.orderOrError.order).toEqual(
         sampleOrder()
       )

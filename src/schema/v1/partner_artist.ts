@@ -38,12 +38,13 @@ const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
       ),
     },
   }),
-  resolve: partner_artist => partner_artist,
+  resolve: (partner_artist) => partner_artist,
 }
 
-const fields: Thunk<
-  GraphQLFieldConfigMap<PartnerArtistDetails, ResolverContext>
-> = () => ({
+const fields: Thunk<GraphQLFieldConfigMap<
+  PartnerArtistDetails,
+  ResolverContext
+>> = () => ({
   ...IDFields,
   artist: {
     type: Artist.type,
@@ -134,7 +135,7 @@ export const partnersForArtist = (
       sliceStart: offset,
       // Type properly
       // @ts-ignore
-      resolveNode: node => node.partner, // Can also be a promise: `partnerLoader(node.partner.id)`
+      resolveNode: (node) => node.partner, // Can also be a promise: `partnerLoader(node.partner.id)`
     })
   })
 }

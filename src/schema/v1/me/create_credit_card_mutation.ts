@@ -24,13 +24,13 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
         inVersion: 2,
         preferUsageOf: "creditCardOrError",
       }),
-      resolve: result => {
+      resolve: (result) => {
         return result && result.id ? result : null
       },
     },
     creditCardOrError: {
       type: CreditCardMutationType,
-      resolve: result => result,
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: ({ token, oneTimeUse }, { createCreditCardLoader }) => {
@@ -43,8 +43,8 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       one_time_use: oneTimeUse,
       provider: "stripe",
     })
-      .then(result => result)
-      .catch(error => {
+      .then((result) => result)
+      .catch((error) => {
         const formattedErr = formatGravityError(error)
         if (formattedErr) {
           return { ...formattedErr, _type: "GravityMutationError" }

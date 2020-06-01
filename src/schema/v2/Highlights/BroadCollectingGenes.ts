@@ -6,7 +6,7 @@ import { ResolverContext } from "types/graphql"
 // Takes our dummy data and makes sure that it conforms to the
 // Gene's Node interface check (e.g. pass `isTypeOf` in `GeneType`.)
 
-const suggestedGeneToGene = suggestedGene => ({
+const suggestedGeneToGene = (suggestedGene) => ({
   ...suggestedGene,
   browseable: true,
   published: true,

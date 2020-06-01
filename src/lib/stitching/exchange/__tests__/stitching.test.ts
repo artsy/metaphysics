@@ -21,7 +21,7 @@ it("extends the Order objects", async () => {
     // Any field inside the CommerceBuyOrder & CommerceOfferOrder which
     // ends in cents should have a version without cents which is a
     // string equivalent
-    const fieldsWithCents = orderableFields.filter(f => f.endsWith("Cents"))
+    const fieldsWithCents = orderableFields.filter((f) => f.endsWith("Cents"))
     for (const field of fieldsWithCents) {
       expect(orderableFields).toContain(field.replace("Cents", ""))
     }

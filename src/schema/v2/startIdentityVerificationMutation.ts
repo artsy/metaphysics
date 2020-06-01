@@ -24,31 +24,31 @@ const InputType = new GraphQLInputObjectType({
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
   name: "StartIdentityVerificationFailure",
-  isTypeOf: data => {
+  isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
-      resolve: err => err,
+      resolve: (err) => err,
     },
   }),
 })
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "StartIdentityVerificationSuccess",
-  isTypeOf: data => data.identity_verification_id,
+  isTypeOf: (data) => data.identity_verification_id,
   fields: () => ({
     identityVerificationId: {
       type: GraphQLString,
       description: "Primary ID of the started identity verification",
-      resolve: res => res.identity_verification_id,
+      resolve: (res) => res.identity_verification_id,
     },
     identityVerificationFlowUrl: {
       type: GraphQLString,
       description:
         "URL that hosts the user-facing identity verification flow (Jumio)",
-      resolve: res => res.identity_verification_flow_url,
+      resolve: (res) => res.identity_verification_flow_url,
     },
   }),
 })
@@ -70,7 +70,7 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
   outputFields: {
     startIdentityVerificationResponseOrError: {
       type: OutputType,
-      resolve: result => result,
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: (
@@ -82,7 +82,7 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
     }
 
     return startIdentityVerificationLoader(identityVerificationId).catch(
-      error => {
+      (error) => {
         const formattedErr = formatGravityError(error)
         if (formattedErr) {
           return { ...formattedErr, _type: "GravityMutationError" }

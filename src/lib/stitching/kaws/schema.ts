@@ -19,7 +19,7 @@ export const executableKawsSchema = () => {
 
   // Return the new modified schema
   return transformSchema(schema, [
-    new RenameTypes(name => {
+    new RenameTypes((name) => {
       return `Marketing${name}`
     }),
     new RenameRootFields(

@@ -30,7 +30,7 @@ const VerboseEvents = [
 const uncompressedKeyPrefix = "::"
 const cacheVersion = "v1"
 
-export const cacheKey = key => {
+export const cacheKey = (key) => {
   if (CACHE_COMPRESSION_DISABLED) {
     return CACHE_NAMESPACE + uncompressedKeyPrefix + key
   } else {
@@ -38,7 +38,7 @@ export const cacheKey = key => {
   }
 }
 
-const deflateP = dataz => {
+const deflateP = (dataz) => {
   return new Promise<Buffer>((resolve, reject) =>
     zlib.deflate(JSON.stringify(dataz), (err, deflatedData) => {
       if (err) {
@@ -72,7 +72,7 @@ function createMemcachedClient() {
   const client = new Memcached(MEMCACHED_URL, {
     poolSize: MEMCACHED_MAX_POOL,
   })
-  VerboseEvents.forEach(event => {
+  VerboseEvents.forEach((event) => {
     client.on(event, () => verbose(`[Cache] ${event}`))
   })
   return client
@@ -81,7 +81,7 @@ function createMemcachedClient() {
 export const client = isTest ? createMockClient() : createMemcachedClient()
 
 const cacheTracer: ReturnType<typeof createCacheTracer> = isTest
-  ? { get: x => x, set: x => x, delete: x => x }
+  ? { get: (x) => x, set: (x) => x, delete: (x) => x }
   : createCacheTracer()
 
 const statsClient = isTest ? null : createStatsClient()
@@ -141,7 +141,7 @@ function _set(key, data, options: CacheOptions) {
   const timestamp = new Date().getTime()
   /* eslint-disable no-param-reassign */
   if (isArray(data)) {
-    data.forEach(datum => {
+    data.forEach((datum) => {
       datum && (datum.cached = timestamp)
     })
   } else {
@@ -154,22 +154,19 @@ function _set(key, data, options: CacheOptions) {
     return new Promise<void>((resolve, reject) => {
       const payload = JSON.stringify(data)
       verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
-      client.set(cacheKey(key), payload, cacheTtl, err => {
+      client.set(cacheKey(key), payload, cacheTtl, (err) => {
         err ? reject(err) : resolve()
       })
     }).catch(error)
   } else {
     return deflateP(data)
-      .then(deflatedData => {
+      .then((deflatedData) => {
         const payload = deflatedData.toString("base64")
         verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
 
         return new Promise<void>((resolve, reject) => {
-          client.set(
-            cacheKey(key),
-            payload,
-            cacheTtl,
-            err => (err ? reject(err) : resolve())
+          client.set(cacheKey(key), payload, cacheTtl, (err) =>
+            err ? reject(err) : resolve()
           )
         })
       })
@@ -177,9 +174,9 @@ function _set(key, data, options: CacheOptions) {
   }
 }
 
-const _delete = key =>
+const _delete = (key) =>
   new Promise<void>((resolve, reject) =>
-    client.del(cacheKey(key), err => {
+    client.del(cacheKey(key), (err) => {
       err ? reject(err) : resolve()
     })
   )

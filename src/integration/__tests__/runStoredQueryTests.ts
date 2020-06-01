@@ -138,7 +138,7 @@ const request = (query: string, variables?: any) =>
     },
     body: JSON.stringify({ query, variables }),
   })
-    .catch(err => {
+    .catch((err) => {
       if (err.message.includes("ESOCKETTIMEDOUT")) {
         process.stdout.write(
           `\n${chalk.red.bold("[!]")} Timed out, retrying... `
@@ -148,7 +148,7 @@ const request = (query: string, variables?: any) =>
         throw err
       }
     })
-    .then(response => {
+    .then((response) => {
       if (!(response.status >= 200 && response.status < 300)) {
         return response
       } else {

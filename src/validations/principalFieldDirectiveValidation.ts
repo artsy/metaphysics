@@ -1,6 +1,6 @@
 import { GraphQLError, BREAK } from "graphql"
 
-export const principalFieldDirectiveValidation = context => {
+export const principalFieldDirectiveValidation = (context) => {
   let directivesSeen = 0
   return {
     Directive(node) {

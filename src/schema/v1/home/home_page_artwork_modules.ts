@@ -41,7 +41,7 @@ const addFollowedGenes = (
   if (followedGeneIndex && max_followed_gene_rails >= 1) {
     // 100 is the max that Gravity will return per page.
     const size = max_followed_gene_rails < 0 ? 100 : max_followed_gene_rails
-    return followedGenes(followedGenesLoader, size).then(results => {
+    return followedGenes(followedGenesLoader, size).then((results) => {
       const blueprint = modules[followedGeneIndex]
       const genes = map(results, ({ gene }) => {
         return { ...blueprint, params: { id: gene.id, gene } }
@@ -63,7 +63,7 @@ const reorderModules = (
   }
   const unordered = modules.slice(0)
   const reordered: HomePageArtworkModuleDetails[] = []
-  preferredOrder.forEach(key => {
+  preferredOrder.forEach((key) => {
     remove(unordered, (mod: any) => {
       if (mod.key === key) {
         // FIXME: Argument of type 'any' is not assignable to parameter of type 'never'.
@@ -116,9 +116,9 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
   ): Promise<HomePageArtworkModuleDetails[]> => {
     // If user is logged in, get their specific modules
     if (homepageModulesLoader && followedGenesLoader) {
-      return homepageModulesLoader().then(response => {
+      return homepageModulesLoader().then((response) => {
         const keysToDisplay = without(keys(response), ...exclude)
-        const modulesToDisplay = map(keysToDisplay, key => ({
+        const modulesToDisplay = map(keysToDisplay, (key) => ({
           key,
           display: response[key],
         }))
@@ -126,7 +126,7 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
           followedGenesLoader,
           modulesToDisplay,
           max_followed_gene_rails
-        ).then(allModulesToDisplay => {
+        ).then((allModulesToDisplay) => {
           let modules = allModulesToDisplay
 
           modules = filterModules(modules, max_rails)
@@ -141,7 +141,7 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
 
           if (relatedArtistIndex > -1) {
             return relatedArtists(suggestedSimilarArtistsLoader).then(
-              artistPairs => {
+              (artistPairs) => {
                 // relatedArtist now returns 2 random artist pairs
                 // we will use one for the related_artist rail and one for
                 // the followed_artist rail

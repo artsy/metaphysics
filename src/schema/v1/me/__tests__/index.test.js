@@ -35,7 +35,7 @@ describe("me/index", () => {
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
           Promise.resolve({ body: creditCardsResponse }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { has_qualified_credit_cards: true } })
       })
     })
@@ -46,7 +46,7 @@ describe("me/index", () => {
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
           Promise.resolve({ body: creditCardsResponse }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({
           me: {
             has_qualified_credit_cards: false,
@@ -88,7 +88,7 @@ describe("me/index", () => {
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
           Promise.resolve({ body: creditCardsResponse }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { has_credit_cards: true } })
       })
     })
@@ -99,7 +99,7 @@ describe("me/index", () => {
       return runAuthenticatedQuery(creditCardQuery, {
         meCreditCardsLoader: () =>
           Promise.resolve({ body: creditCardsResponse }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { has_credit_cards: false } })
       })
     })

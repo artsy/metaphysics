@@ -51,7 +51,7 @@ describe("Fulfill Order at Once Mutation", () => {
     }
     `
 
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.fulfillOrderAtOnce.orderOrError.order).toEqual(
         sampleOrder({ fulfillments: true })
       )

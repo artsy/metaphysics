@@ -15,9 +15,9 @@ describe("Genes", () => {
   ]
 
   it("returns a list of genes matching array of slugs", async () => {
-    const geneLoader = slug => {
+    const geneLoader = (slug) => {
       if (slug) {
-        return Promise.resolve(find(apiResponse, item => item.id === slug))
+        return Promise.resolve(find(apiResponse, (item) => item.id === slug))
       }
       throw new Error("Unexpected invocation")
     }

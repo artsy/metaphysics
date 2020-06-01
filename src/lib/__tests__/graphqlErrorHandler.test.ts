@@ -31,7 +31,7 @@ describe("graphqlErrorHandler", () => {
     })
 
     it("reports HTTP client errors that are not blacklisted", () => {
-      ;[400, 418].forEach(statusCode => {
+      ;[400, 418].forEach((statusCode) => {
         expect(
           shouldReportError(new HTTPError("an error", statusCode))
         ).toBeTruthy()
@@ -39,7 +39,7 @@ describe("graphqlErrorHandler", () => {
     })
 
     it("does not report blacklisted HTTP client errors", () => {
-      ;[401, 403, 404].forEach(statusCode => {
+      ;[401, 403, 404].forEach((statusCode) => {
         expect(
           shouldReportError(new HTTPError("an error", statusCode))
         ).toBeFalsy()
@@ -47,7 +47,7 @@ describe("graphqlErrorHandler", () => {
     })
 
     it("does not report HTTP server errors", () => {
-      ;[500, 511].forEach(statusCode => {
+      ;[500, 511].forEach((statusCode) => {
         expect(
           shouldReportError(new HTTPError("an error", statusCode))
         ).toBeFalsy()

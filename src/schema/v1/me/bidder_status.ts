@@ -19,7 +19,7 @@ const BidderStatus: GraphQLFieldConfig<void, ResolverContext> = {
       : lotStandingLoader({
           sale_id,
           artwork_id,
-        }).then(lotStanding => {
+        }).then((lotStanding) => {
           if (lotStanding.length === 0) return null
           return lotStanding[0]
         }),

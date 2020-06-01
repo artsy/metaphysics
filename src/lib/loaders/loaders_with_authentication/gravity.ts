@@ -15,23 +15,23 @@ export default (accessToken, userID, opts) => {
 
   return {
     identityVerificationLoader: gravityLoader(
-      id => `identity_verification/${id}`
+      (id) => `identity_verification/${id}`
     ),
     createAccountRequestLoader: gravityLoader(
       "account_requests",
       {},
       { method: "POST" }
     ),
-    artworkLoader: gravityLoader(id => `artwork/${id}`),
+    artworkLoader: gravityLoader((id) => `artwork/${id}`),
     authenticatedArtworkVersionLoader: gravityLoader(
-      id => `artwork_version/${id}`
+      (id) => `artwork_version/${id}`
     ),
     collectionArtworksLoader: gravityLoader(
-      id => `collection/${id}/artworks`,
+      (id) => `collection/${id}/artworks`,
       { user_id: userID },
       { headers: true }
     ),
-    collectionLoader: gravityLoader(id => `collection/${id}`, {
+    collectionLoader: gravityLoader((id) => `collection/${id}`, {
       user_id: userID,
     }),
     collectorProfileLoader: gravityLoader("me/collector_profile"),
@@ -46,19 +46,19 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    creditCardLoader: gravityLoader(id => `credit_card/${id}`),
+    creditCardLoader: gravityLoader((id) => `credit_card/${id}`),
     deleteArtworkLoader: gravityLoader(
-      id => `collection/saved-artwork/artwork/${id}`,
+      (id) => `collection/saved-artwork/artwork/${id}`,
       {},
       { method: "DELETE" }
     ),
     deleteCreditCardLoader: gravityLoader(
-      id => `me/credit_card/${id}`,
+      (id) => `me/credit_card/${id}`,
       {},
       { method: "DELETE" }
     ),
     endSaleLoader: gravityLoader(
-      id => `sale/${id}/end_sale`,
+      (id) => `sale/${id}/end_sale`,
       {},
       { method: "PUT" }
     ),
@@ -149,7 +149,7 @@ export default (accessToken, userID, opts) => {
     ),
     lotStandingLoader: gravityLoader("me/lot_standings"),
     meBidderPositionLoader: gravityLoader(
-      id => `me/bidder_position/${id}/`,
+      (id) => `me/bidder_position/${id}/`,
       {},
       { headers: true }
     ),
@@ -176,12 +176,12 @@ export default (accessToken, userID, opts) => {
     ),
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     saleArtworksLoader: gravityLoader(
-      id => `sale/${id}/sale_artworks`,
+      (id) => `sale/${id}/sale_artworks`,
       {},
       { headers: true }
     ),
     saveArtworkLoader: gravityLoader(
-      id => `collection/saved-artwork/artwork/${id}`,
+      (id) => `collection/saved-artwork/artwork/${id}`,
       {},
       { method: "POST" }
     ),
@@ -205,9 +205,9 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
-    showLoader: gravityLoader(id => `show/${id}`),
+    showLoader: gravityLoader((id) => `show/${id}`),
     startIdentityVerificationLoader: gravityLoader(
-      id => `identity_verification/${id}/start`,
+      (id) => `identity_verification/${id}/start`,
       {},
       { method: "PUT" }
     ),
@@ -222,12 +222,12 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     unfollowArtistLoader: gravityLoader(
-      id => `me/follow/artist/${id}`,
+      (id) => `me/follow/artist/${id}`,
       {},
       { method: "DELETE" }
     ),
     unfollowProfileLoader: gravityLoader(
-      id => `me/follow/profile/${id}`,
+      (id) => `me/follow/profile/${id}`,
       {},
       { method: "DELETE" }
     ),

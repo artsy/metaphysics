@@ -13,12 +13,12 @@ import { ResolverContext } from "types/graphql"
 const moduleTitle: HomePageArtworkModuleResolvers = {
   active_bids: () => "Your Active Bids",
   current_fairs: ({ fairsLoader }) => {
-    return featuredFair(fairsLoader).then(fair => fair && fair.name)
+    return featuredFair(fairsLoader).then((fair) => fair && fair.name)
   },
   followed_artist: ({ artistLoader }, params) => {
     if (!isFollowedArtistArtworkModuleParams(params)) return null
     return artistLoader(params.followed_artist_id).then(
-      artist => artist && artist.name
+      (artist) => artist && artist.name
     )
   },
   followed_artists: () => "New Works by Artists You Follow",
@@ -34,7 +34,7 @@ const moduleTitle: HomePageArtworkModuleResolvers = {
       return params.gene.name
     }
     // Backward compatibility for Force.
-    return featuredGene(followedGenesLoader).then(fetchedGene => {
+    return featuredGene(followedGenesLoader).then((fetchedGene) => {
       if (fetchedGene) {
         return fetchedGene.name
       }
@@ -42,14 +42,16 @@ const moduleTitle: HomePageArtworkModuleResolvers = {
     })
   },
   live_auctions: ({ salesLoader }) => {
-    return featuredAuction(salesLoader).then(auction => auction && auction.name)
+    return featuredAuction(salesLoader).then(
+      (auction) => auction && auction.name
+    )
   },
   popular_artists: () => "Works by Popular Artists",
   recommended_works: () => "Recommended Works for You",
   related_artists: ({ artistLoader }, params) => {
     if (!isRelatedArtistArtworkModuleParams(params)) return null
     return artistLoader(params.related_artist_id).then(
-      artist => artist && artist.name
+      (artist) => artist && artist.name
     )
   },
   saved_works: () => "Recently Saved",

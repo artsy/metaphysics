@@ -56,7 +56,7 @@ describe("Object Identification", () => {
     },
   }
 
-  _.keys(loaderTests).forEach(typeName => {
+  _.keys(loaderTests).forEach((typeName) => {
     const fieldName = _.snakeCase(typeName)
     const loaderName = _.keys(loaderTests[typeName])[0]
     const payload = loaderTests[typeName][loaderName]
@@ -77,7 +77,7 @@ describe("Object Identification", () => {
           }
         `
 
-        return runQuery(query, context).then(data => {
+        return runQuery(query, context).then((data) => {
           const expectedData = {}
           expectedData[fieldName] = {
             id: toGlobalId(typeName, "foo-bar"),
@@ -98,7 +98,7 @@ describe("Object Identification", () => {
           }
         `
 
-        return runQuery(query, context).then(data => {
+        return runQuery(query, context).then((data) => {
           expect(data).toEqual({
             node: {
               __typename: typeName,
@@ -119,7 +119,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runAuthenticatedQuery(query).then(data => {
+      return runAuthenticatedQuery(query).then((data) => {
         expect(data).toEqual({
           me: {
             id: globalId,
@@ -138,7 +138,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runAuthenticatedQuery(query).then(data => {
+      return runAuthenticatedQuery(query).then((data) => {
         expect(data).toEqual({
           node: {
             __typename: "Me",
@@ -164,7 +164,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             homePage: {
               artworkModule: {
@@ -185,7 +185,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             node: {
               __typename: "HomePageArtworkModule",
@@ -210,7 +210,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             homePage: {
               artworkModule: {
@@ -234,7 +234,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             node: {
               __typename: "HomePageArtworkModule",
@@ -269,7 +269,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             homePage: {
               artworkModule: {
@@ -294,7 +294,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             node: {
               __typename: "HomePageArtworkModule",
@@ -324,7 +324,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query).then((data) => {
         expect(data).toEqual({
           homePage: {
             artistModule: {
@@ -345,7 +345,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query).then((data) => {
         expect(data).toEqual({
           node: {
             __typename: "HomePageArtistModule",
@@ -354,12 +354,13 @@ describe("Object Identification", () => {
         })
       })
     })
-  }) /*
-  * These test that the proper AST is passed on by testing that the `Me` type
-  * doesn’t make any gravity calls (as the `Me` type’s `resolve` function is
-  * optimised to not make a request when
-  * only the `id` field is requested).
-  */
+  })
+  /*
+   * These test that the proper AST is passed on by testing that the `Me` type
+   * doesn’t make any gravity calls (as the `Me` type’s `resolve` function is
+   * optimised to not make a request when
+   * only the `id` field is requested).
+   */
   describe("concerning passing the proper AST to resolvers", () => {
     const globalId = toGlobalId("Me", "user-42")
     it("should pass the proper inline fragment AST", () => {
@@ -372,7 +373,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runAuthenticatedQuery(query).then(data => {
+      return runAuthenticatedQuery(query).then((data) => {
         expect(data).toEqual({
           node: {
             internalID: "user-42",
@@ -391,7 +392,7 @@ describe("Object Identification", () => {
           internalID
         }
       `
-      return runAuthenticatedQuery(query).then(data => {
+      return runAuthenticatedQuery(query).then((data) => {
         expect(data).toEqual({
           node: {
             internalID: "user-42",

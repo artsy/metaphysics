@@ -37,7 +37,7 @@ export function createStatsClient() {
     port: STATSD_PORT,
     globalTags: { service: DD_TRACER_SERVICE_NAME, pod_name: os.hostname() },
     mock: !isProd,
-    errorHandler: function(err) {
+    errorHandler: function (err) {
       error(`Statsd client error ${err}`)
     },
   })
@@ -52,7 +52,7 @@ export function createStatsClient() {
       appmetrics.disable(val)
     })
 
-    monitoring.on("loop", loopMetrics => {
+    monitoring.on("loop", (loopMetrics) => {
       statsClient.timing("loop.count_per_five_seconds", loopMetrics.count)
       statsClient.timing("loop.minimum_loop_duration", loopMetrics.minimum)
       statsClient.timing("loop.maximum_loop_duration", loopMetrics.maximum)
@@ -60,18 +60,18 @@ export function createStatsClient() {
       statsClient.timing("loop.cpu_usage_in_system", loopMetrics.cpu_system)
     })
 
-    monitoring.on("eventloop", eventloopMetrics => {
+    monitoring.on("eventloop", (eventloopMetrics) => {
       statsClient.timing("eventloop.latency.min", eventloopMetrics.latency.min)
       statsClient.timing("eventloop.latency.max", eventloopMetrics.latency.max)
       statsClient.timing("eventloop.latency.avg", eventloopMetrics.latency.avg)
     })
 
-    monitoring.on("memory", memoryMetrics => {
+    monitoring.on("memory", (memoryMetrics) => {
       statsClient.gauge("memory.physical", memoryMetrics.physical)
       statsClient.gauge("memory.virtual", memoryMetrics.virtual)
     })
 
-    monitoring.on("gc", gcMetrics => {
+    monitoring.on("gc", (gcMetrics) => {
       statsClient.gauge("gc.heap_size", gcMetrics.size)
       statsClient.gauge("gc.heap_used", gcMetrics.used)
       statsClient.timing("gc.sweep_duration", gcMetrics.duration, {

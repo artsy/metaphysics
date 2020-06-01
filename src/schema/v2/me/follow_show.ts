@@ -47,6 +47,6 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       ? unfollowShowLoader({ partner_show_id })
       : followShowLoader({ partner_show_id })
 
-    return performAction.then(returnValue => returnValue)
+    return performAction.then((returnValue) => returnValue)
   },
 })

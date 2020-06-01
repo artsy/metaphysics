@@ -82,13 +82,13 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
 
         return {
           artists: followedArtistsLoader({ fair_id }).then(({ body }) => {
-            return body.map(artist_follow => artist_follow.artist)
+            return body.map((artist_follow) => artist_follow.artist)
           }),
           galleries: followedPartnersLoader({
             fair_id,
             owner_types: ["PartnerGallery"],
           }).then(({ body }) => {
-            return body.map(profile_follow => profile_follow.profile.owner)
+            return body.map((profile_follow) => profile_follow.profile.owner)
           }),
         }
       },
@@ -112,7 +112,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         return fairArtistsLoader(id, gravityOptions).then(
           ({ body, headers }) => {
             return artistsLoader({ ids: map(body, "artist_id") }).then(
-              artists => {
+              (artists) => {
                 return connectionFromArraySlice(artists, options, {
                   arrayLength: parseInt(headers["x-total-count"] || "0", 10),
                   sliceStart: gravityOptions.offset,
@@ -139,7 +139,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           ),
         },
       }),
-      resolve: fair => fair,
+      resolve: (fair) => fair,
     },
     exhibition_period: {
       type: GraphQLString,
@@ -217,7 +217,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         if (location) {
           return location
         } else if (published) {
-          return fairLoader(id, options).then(fair => {
+          return fairLoader(id, options).then((fair) => {
             return fair.location
           })
         }
@@ -359,7 +359,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         } = {}
         const fetch = allViaLoader(fairPartnersLoader, { path: root._id })
 
-        return fetch.then(result => {
+        return fetch.then((result) => {
           const fairExhibitors = result.sort((a, b) => {
             const asc = a.name.toLowerCase()
             const desc = b.name.toLowerCase()
@@ -409,7 +409,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
       }),
-      resolve: fair => sponsoredContentForFair(fair.id),
+      resolve: (fair) => sponsoredContentForFair(fair.id),
     },
   }),
 })

@@ -3,7 +3,7 @@ import fs from "fs"
 import path from "path"
 import { legacyTransformsForExchange } from "lib/stitching/exchange/schema"
 
-export const mockxchange = resolvers => {
+export const mockxchange = (resolvers) => {
   const typeDefs = fs.readFileSync(
     path.resolve(__dirname, "../../../data/exchange.graphql"),
     "utf8"

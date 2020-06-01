@@ -39,10 +39,8 @@ export const BiddingMessages: BiddingMessage[] = [
     id: "LIVE_BIDDING_STARTED",
     gravity_key: "Live Bidding has Started",
     header: "Live bidding has started",
-    description_md: params =>
-      `Sorry, your bid wasn’t received before\nlive bidding started. To continue\nbidding, please [join the live auction](${
-        params.liveAuctionUrl
-      }).`,
+    description_md: (params) =>
+      `Sorry, your bid wasn’t received before\nlive bidding started. To continue\nbidding, please [join the live auction](${params.liveAuctionUrl}).`,
   },
   {
     id: "BIDDER_NOT_QUALIFIED",

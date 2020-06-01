@@ -102,7 +102,7 @@ function argumentsForChild(type, id) {
 
 function rootValueForChild(rootValue) {
   const selections = rootValue.fieldNodes[0].selectionSet.selections
-  let fragment = _.find(selections, selection => {
+  let fragment = _.find(selections, (selection) => {
     return (
       selection.kind === "InlineFragment" || selection.kind === "FragmentSpread"
     )
@@ -153,7 +153,7 @@ const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
           context,
           rootValueForChild(rootValue)
         )
-      ).then(data => {
+      ).then((data) => {
         // Add the already known type so `NodeInterface` can pluck that out in
         // its `resolveType` implementation.
         return { __type: type, ...data }

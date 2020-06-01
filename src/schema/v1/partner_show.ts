@@ -181,7 +181,7 @@ export const PartnerShowType = deprecateType(
               ),
             },
           }),
-          resolve: partner_show => partner_show,
+          resolve: (partner_show) => partner_show,
         },
         cover_image: {
           type: Image.type,
@@ -369,7 +369,7 @@ const PartnerShow: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { showLoader }) => {
-    return showLoader(id).then(show => {
+    return showLoader(id).then((show) => {
       if (!show.displayable) {
         return new HTTPError("Show Not Found", 404)
       }

@@ -29,11 +29,11 @@ const SendFeedbackMutationSuccessType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "SendFeedbackMutationSuccess",
-  isTypeOf: data => data.id,
+  isTypeOf: (data) => data.id,
   fields: () => ({
     feedback: {
       type: FeedbackType,
-      resolve: feedback => feedback,
+      resolve: (feedback) => feedback,
     },
   }),
 })
@@ -43,13 +43,13 @@ const SendFeedbackMutationFailureType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "SendFeedbackMutationFailure",
-  isTypeOf: data => {
+  isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
-      resolve: err => err,
+      resolve: (err) => err,
     },
   }),
 })
@@ -92,13 +92,13 @@ export const sendFeedbackMutation = mutationWithClientMutationId<
   outputFields: {
     feedbackOrError: {
       type: SendFeedbackMutationType,
-      resolve: result => result,
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: (params, { sendFeedbackLoader }) => {
     return sendFeedbackLoader(params)
-      .then(result => result)
-      .catch(error => {
+      .then((result) => result)
+      .catch((error) => {
         const formattedErr = formatGravityError(error)
         if (formattedErr) {
           return { ...formattedErr, _type: "GravityMutationError" }

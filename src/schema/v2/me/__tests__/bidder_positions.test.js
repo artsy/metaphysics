@@ -107,7 +107,7 @@ describe("Me type", () => {
         }
       }
     `
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       expect(map(data.me.bidderPositions, "internalID").join("")).toEqual(
         "01234"
       )
@@ -124,7 +124,7 @@ describe("Me type", () => {
         }
       }
     `
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       expect(map(data.me.bidderPositions, "internalID").join("")).toEqual("14")
     })
   })
@@ -160,7 +160,7 @@ describe("Me type", () => {
         })
       )
 
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       expect(map(data.me.bidderPositions, "internalID").join("")).toEqual("1")
     })
   })
@@ -193,7 +193,7 @@ describe("Me type", () => {
       .mockReturnValueOnce(Promise.resolve({}))
       .mockReturnValueOnce(Promise.resolve({}))
 
-    return runAuthenticatedQuery(query, context).then(data => {
+    return runAuthenticatedQuery(query, context).then((data) => {
       expect(data.me.bidderPositions[2].isWinning).toEqual(true)
     })
   })

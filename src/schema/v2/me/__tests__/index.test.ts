@@ -26,7 +26,7 @@ describe("me/index", () => {
 
     return runAuthenticatedQuery(query, {
       meLoader: () => Promise.resolve(body),
-    }).then(data => {
+    }).then((data) => {
       expect(data).toEqual({
         me: {
           name: "Test User",
@@ -74,7 +74,7 @@ describe("me/index", () => {
             body: creditCardsResponse,
             headers: { "x-total-count": "1" },
           }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { hasQualifiedCreditCards: true } })
       })
     })
@@ -88,7 +88,7 @@ describe("me/index", () => {
             body: creditCardsResponse,
             headers: { "x-total-count": "0" },
           }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({
           me: {
             hasQualifiedCreditCards: false,
@@ -133,7 +133,7 @@ describe("me/index", () => {
             body: creditCardsResponse,
             headers: { "x-total-count": "0" },
           }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { hasCreditCards: true } })
       })
     })
@@ -147,7 +147,7 @@ describe("me/index", () => {
             body: creditCardsResponse,
             headers: { "x-total-count": "0" },
           }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { hasCreditCards: false } })
       })
     })
@@ -165,7 +165,7 @@ describe("me/index", () => {
     it("returns the number of unread notifications", () => {
       return runAuthenticatedQuery(countQuery, {
         notificationsFeedLoader: () => Promise.resolve({ total_unread: 12 }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { unreadNotificationsCount: 12 } })
       })
     })
@@ -173,7 +173,7 @@ describe("me/index", () => {
     it("handles an unauthorized request", () => {
       return runQuery(countQuery, {
         notificationsFeedLoader: () => Promise.resolve({ total_unread: null }),
-      }).catch(error => {
+      }).catch((error) => {
         expect(error.message).toEqual(
           "You need to be signed in to perform this action"
         )
@@ -183,21 +183,16 @@ describe("me/index", () => {
     it("handles a null from gravity", () => {
       return runAuthenticatedQuery(countQuery, {
         notificationsFeedLoader: () => Promise.resolve({ total_unread: null }),
-      }).then(data => {
+      }).then((data) => {
         expect(data).toEqual({ me: { unreadNotificationsCount: 0 } })
       })
     })
   })
 
   describe("canRequestEmailConfirmation", () => {
-    it("returns false when the user has a non-empty confirmed_at", async () => {
-      const meLoaderResponse = {
-        name: "Test User",
-        email: "test@email.com",
-        paddle_number: "123456",
-        identity_verified: true,
-        second_factor_enabled: true,
-        confirmed_at: "2020-05-18T22:34:33+00:00",
+    it("returns whatever boolean is returned at `can_request_email_confirmation` in the Gravity response", async () => {
+      const minimalMeLoaderResponse = {
+        can_request_email_confirmation: false,
       }
       const query = gql`
         query {
@@ -208,34 +203,10 @@ describe("me/index", () => {
       `
 
       const response = await runAuthenticatedQuery(query, {
-        meLoader: () => Promise.resolve(meLoaderResponse),
+        meLoader: () => Promise.resolve(minimalMeLoaderResponse),
       })
 
       expect(response).toEqual({ me: { canRequestEmailConfirmation: false } })
-    })
-
-    it("returns true when the user has an empty confirmed_at", async () => {
-      const meLoaderResponse = {
-        name: "Test User",
-        email: "test@email.com",
-        paddle_number: "123456",
-        identity_verified: true,
-        second_factor_enabled: true,
-        confirmed_at: null,
-      }
-      const query = gql`
-        query {
-          me {
-            canRequestEmailConfirmation
-          }
-        }
-      `
-
-      const response = await runAuthenticatedQuery(query, {
-        meLoader: () => Promise.resolve(meLoaderResponse),
-      })
-
-      expect(response).toEqual({ me: { canRequestEmailConfirmation: true } })
     })
   })
 })

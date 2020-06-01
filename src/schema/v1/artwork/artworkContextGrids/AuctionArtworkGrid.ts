@@ -45,7 +45,7 @@ export const AuctionArtworkGridType = new GraphQLObjectType<
 
         return saleArtworksLoader(id, gravityArgs)
           .then(({ body }) => map(body, "artwork"))
-          .then(artworks => {
+          .then((artworks) => {
             return connectionFromArraySlice(artworks, options, {
               arrayLength: eligible_sale_artworks_count,
               sliceStart: offset,

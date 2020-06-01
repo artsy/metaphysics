@@ -29,7 +29,7 @@ export const endSaleMutation = mutationWithClientMutationId<
   outputFields: {
     sale: {
       type: SaleType,
-      resolve: sale => sale,
+      resolve: (sale) => sale,
     },
   },
   mutateAndGetPayload: ({ saleID }, { endSaleLoader }) => {

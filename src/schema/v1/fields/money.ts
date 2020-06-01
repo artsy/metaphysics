@@ -13,7 +13,7 @@ import { ResolverContext } from "types/graphql"
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 import currencyCodes from "lib/currency_codes.json"
 
-export const amountSDL = name => `
+export const amountSDL = (name) => `
   ${name}(
     decimal: String = "."
 
@@ -25,7 +25,7 @@ export const amountSDL = name => `
   ): String
 `
 
-export const amount = centsResolver => ({
+export const amount = (centsResolver) => ({
   type: GraphQLString,
   description: "A formatted price with various currency formatting options.",
   args: {
@@ -70,7 +70,7 @@ export const amount = centsResolver => ({
   },
 })
 
-export const symbolFromCurrencyCode = currencyCode => {
+export const symbolFromCurrencyCode = (currencyCode) => {
   return currencyCode
     ? currencyCodes[currencyCode.toLowerCase()] &&
         currencyCodes[currencyCode.toLowerCase()].symbol
@@ -82,15 +82,15 @@ export const symbolFromCurrencyCode = currencyCode => {
  * type instead.
  */
 const money = ({ name, resolve }) => ({
-  resolve: x => x,
+  resolve: (x) => x,
   type: new GraphQLObjectType<any, ResolverContext>({
     name,
     fields: {
-      amount: amount(obj => resolve(obj).cents),
+      amount: amount((obj) => resolve(obj).cents),
       cents: {
         type: GraphQLFloat,
         description: "An amount of money expressed in cents.",
-        resolve: obj => {
+        resolve: (obj) => {
           const { cents } = resolve(obj)
           if (!cents) return null
           return cents
@@ -99,7 +99,7 @@ const money = ({ name, resolve }) => ({
       display: {
         type: GraphQLString,
         description: "A pre-formatted price.",
-        resolve: obj => {
+        resolve: (obj) => {
           const { display } = resolve(obj)
           if (!display) return null
           return display

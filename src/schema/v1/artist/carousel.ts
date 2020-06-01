@@ -36,28 +36,28 @@ const ArtistCarousel: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
       }),
     ])
       .then(([{ body: shows }, artworks]) => {
-        const elligibleShows = shows.filter(show => show.images_count > 0)
+        const elligibleShows = shows.filter((show) => show.images_count > 0)
         return Promise.all(
-          elligibleShows.map(show =>
+          elligibleShows.map((show) =>
             partnerShowImagesLoader(show.id, { size: 1 })
           )
         )
-          .then(showImages => {
+          .then((showImages) => {
             return _.zip(elligibleShows, showImages).map(
               ([show, images]: any) => {
                 return _.assign(
                   { href: `/show/${show.id}`, title: show.name },
-                  _.find(images, i => i.is_default)
+                  _.find(images, (i) => i.is_default)
                 )
               }
             )
           })
-          .then(showsWithImages => {
+          .then((showsWithImages) => {
             return showsWithImages.concat(
-              artworks.map(artwork => {
+              artworks.map((artwork) => {
                 return _.assign(
                   { href: `/artwork/${artwork.id}`, title: artwork.title },
-                  _.find(artwork.images, i => i.is_default)
+                  _.find(artwork.images, (i) => i.is_default)
                 )
               })
             )

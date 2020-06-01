@@ -19,15 +19,15 @@ const CreditCardMutationSuccessType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "CreditCardMutationSuccess",
-  isTypeOf: data => data.id,
+  isTypeOf: (data) => data.id,
   fields: () => ({
     creditCard: {
       type: CreditCard.type,
-      resolve: creditCard => creditCard,
+      resolve: (creditCard) => creditCard,
     },
     creditCardEdge: {
       type: CreditCardEdge,
-      resolve: creditCard => {
+      resolve: (creditCard) => {
         return {
           cursor: cursorForObjectInConnection([creditCard], creditCard),
           node: creditCard,
@@ -42,13 +42,13 @@ const CreditCardMutationFailureType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "CreditCardMutationFailure",
-  isTypeOf: data => {
+  isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
-      resolve: err => err,
+      resolve: (err) => err,
     },
   }),
 })

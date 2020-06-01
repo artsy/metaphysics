@@ -3,7 +3,7 @@ import { compact } from "lodash"
 import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-export const metaName = artist => {
+export const metaName = (artist) => {
   if (artist.name) return stripTags(artist.name)
   return "Unnamed Artist"
 }
@@ -13,7 +13,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     description: {
       type: GraphQLString,
-      resolve: artist => {
+      resolve: (artist) => {
         const blurb = artist.blurb.length
           ? markdownToText(artist.blurb)
           : undefined
@@ -29,7 +29,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
     },
     title: {
       type: GraphQLString,
-      resolve: artist => {
+      resolve: (artist) => {
         const count = artist.published_artworks_count
         return `${metaName(artist)} - ${count} Artworks, Bio & Shows on Artsy`
       },
@@ -39,7 +39,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
 
 const Meta: GraphQLFieldConfig<void, ResolverContext> = {
   type: ArtistMetaType,
-  resolve: x => x,
+  resolve: (x) => x,
 }
 
 export default Meta

@@ -61,7 +61,7 @@ describe("BuyerRejectOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutationWithRejectReason, context).then(data => {
+    return runQuery(mutationWithRejectReason, context).then((data) => {
       expect(data!.ecommerceBuyerRejectOffer.orderOrError.order).toEqual(
         sampleOrder()
       )
@@ -79,7 +79,7 @@ describe("BuyerRejectOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutationWithoutRejectReason, context).then(data => {
+    return runQuery(mutationWithoutRejectReason, context).then((data) => {
       expect(data!.ecommerceBuyerRejectOffer.orderOrError.order).toEqual(
         sampleOrder()
       )
@@ -102,7 +102,7 @@ describe("BuyerRejectOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutationWithoutRejectReason, context).then(data => {
+    return runQuery(mutationWithoutRejectReason, context).then((data) => {
       expect(data!.ecommerceBuyerRejectOffer.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

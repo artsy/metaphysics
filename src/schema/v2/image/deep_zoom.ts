@@ -32,7 +32,7 @@ const DeepZoomType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeepZoom",
   fields: {
     Image: {
-      resolve: image => image,
+      resolve: (image) => image,
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "DeepZoomImage",
         fields: {
@@ -45,7 +45,7 @@ const DeepZoomType = new GraphQLObjectType<any, ResolverContext>({
             resolve: ({ tile_overlap }) => tile_overlap,
           },
           Size: {
-            resolve: image => image,
+            resolve: (image) => image,
             type: new GraphQLObjectType<any, ResolverContext>({
               name: "DeepZoomImageSize",
               fields: {
@@ -86,7 +86,7 @@ const DeepZoomType = new GraphQLObjectType<any, ResolverContext>({
 
 const DeepZoom: GraphQLFieldConfig<Partial<ZoomableImage>, ResolverContext> = {
   type: DeepZoomType,
-  resolve: image => (isZoomable(image) ? image : null),
+  resolve: (image) => (isZoomable(image) ? image : null),
 }
 
 export default DeepZoom

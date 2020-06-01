@@ -31,10 +31,7 @@ export const HomePageArtworkModuleType = new GraphQLObjectType<
       description: "A globally unique ID.",
       resolve: ({ key, params }) => {
         // Compose this ID from params that `resolve` uses to identify a rail later on.
-        const payload = chain(params)
-          .pick(possibleArgs)
-          .set("key", key)
-          .value()
+        const payload = chain(params).pick(possibleArgs).set("key", key).value()
         return toGlobalId("HomePageArtworkModule", JSON.stringify(payload))
       },
     },
@@ -99,7 +96,7 @@ const HomePageArtworkModule: GraphQLFieldConfig<void, ResolverContext> = {
       // but Force does not.
       case "genes":
         if (id) {
-          return geneLoader(id).then(gene => {
+          return geneLoader(id).then((gene) => {
             return { key, display, params: { id, gene } }
           })
         }

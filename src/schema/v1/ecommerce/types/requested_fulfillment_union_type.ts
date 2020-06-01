@@ -57,5 +57,5 @@ export const Pickup = new GraphQLObjectType<any, ResolverContext>({
 export const RequestedFulfillmentUnionType = new GraphQLUnionType({
   name: "RequestedFulfillment",
   types: [Ship, Pickup],
-  resolveType: obj => (obj.__typename === "EcommerceShip" ? Ship : Pickup),
+  resolveType: (obj) => (obj.__typename === "EcommerceShip" ? Ship : Pickup),
 })

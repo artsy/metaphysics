@@ -28,7 +28,7 @@ const FollowedFairs: GraphQLFieldConfig<void, ResolverContext> = {
       return connectionFromArraySlice(body, options, {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
         sliceStart: offset,
-        resolveNode: follow_profile => follow_profile.profile.owner,
+        resolveNode: (follow_profile) => follow_profile.profile.owner,
       })
     })
   },

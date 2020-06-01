@@ -29,7 +29,7 @@ export const flattenErrors = (error: GraphQLError) => {
     : [error]
 }
 
-export const statusCodeForError = e => {
+export const statusCodeForError = (e) => {
   // Check for server-side errors during stitching downstream.
   // `e.originalError` is of `ServerError` type.
   // https://github.com/apollographql/apollo-link/blob/480df382cf7db486ae76c56ac2522134d77e36fa/packages/apollo-link-http-common/src/index.ts#L15
@@ -122,7 +122,7 @@ export const formattedGraphQLError = (
   }
 
   const httpStatusCodes: number[] = []
-  ;(flattenedErrors || flattenErrors(topLevelError)).forEach(e => {
+  ;(flattenedErrors || flattenErrors(topLevelError)).forEach((e) => {
     // Check for server-side errors during stitching downstream.
     // `e.originalError` is of `ServerError` type.
     // https://github.com/apollographql/apollo-link/blob/480df382cf7db486ae76c56ac2522134d77e36fa/packages/apollo-link-http-common/src/index.ts#L15
@@ -145,7 +145,7 @@ export const graphqlErrorHandler = (
   return (topLevelError: GraphQLError) => {
     const flattenedErrors = flattenErrors(topLevelError)
     if (enableSentry) {
-      flattenedErrors.forEach(e => {
+      flattenedErrors.forEach((e) => {
         if (shouldReportError(e)) {
           reportErrorToSentry(e, queryContext)
         }

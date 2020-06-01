@@ -45,7 +45,7 @@ describe("addAssetToConsignmentSubmission", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, context).then(data => {
+    return runAuthenticatedQuery(mutation, context).then((data) => {
       expect(data).toMatchSnapshot()
     })
   })

@@ -57,7 +57,7 @@ describe("Fair type", () => {
 
     context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         fair: {
           slug: "the-armory-show-2017",
@@ -85,7 +85,7 @@ describe("Fair type", () => {
 
     context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         fair: {
           slug: "the-armory-show-2017",
@@ -113,7 +113,7 @@ describe("Fair type", () => {
 
     context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         fair: {
           slug: "the-armory-show-2017",
@@ -358,12 +358,8 @@ describe("Fair", () => {
       it("is false ", async () => {
         const mockFair = {
           id: "this-fair-was-active",
-          active_start_at: moment()
-            .subtract(14, "days")
-            .toISOString(),
-          end_at: moment()
-            .subtract(7, "days")
-            .toISOString(),
+          active_start_at: moment().subtract(14, "days").toISOString(),
+          end_at: moment().subtract(7, "days").toISOString(),
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
@@ -393,12 +389,8 @@ describe("Fair", () => {
       it("is true ", async () => {
         const mockFair = {
           id: "this-fair-is-active",
-          active_start_at: moment()
-            .subtract(7, "days")
-            .toISOString(),
-          end_at: moment()
-            .add(7, "days")
-            .toISOString(),
+          active_start_at: moment().subtract(7, "days").toISOString(),
+          end_at: moment().add(7, "days").toISOString(),
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
@@ -428,12 +420,8 @@ describe("Fair", () => {
       it("is false ", async () => {
         const mockFair = {
           id: "this-fair-not-yet-active",
-          active_start_at: moment()
-            .add(7, "days")
-            .toISOString(),
-          end_at: moment()
-            .add(14, "days")
-            .toISOString(),
+          active_start_at: moment().add(7, "days").toISOString(),
+          end_at: moment().add(14, "days").toISOString(),
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))

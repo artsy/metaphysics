@@ -91,7 +91,7 @@ const moduleContext: HomePageArtworkModuleResolvers<ContextSource> = {
     return { ...sale, context_type: SaleType }
   },
   current_fairs: ({ fairsLoader }) => {
-    return featuredFair(fairsLoader).then(fair => {
+    return featuredFair(fairsLoader).then((fair) => {
       return assign({}, fair, { context_type: FairType })
     })
   },
@@ -121,13 +121,13 @@ const moduleContext: HomePageArtworkModuleResolvers<ContextSource> = {
       return { ...params.gene, context_type: GeneType }
     }
     // Backward compatibility for Force.
-    return featuredGene(followedGenesLoader).then(fetchedGene => {
-      return fetchedGene && ({ ...fetchedGene, context_type: GeneType })
+    return featuredGene(followedGenesLoader).then((fetchedGene) => {
+      return fetchedGene && { ...fetchedGene, context_type: GeneType }
     })
   },
   generic_gene: ({ geneLoader }, params) => {
     if (!isGenericGeneArtworkModuleParams(params)) return null
-    return geneLoader(params.gene_id).then(gene => {
+    return geneLoader(params.gene_id).then((gene) => {
       return { ...gene, context_type: GeneType }
     })
   },

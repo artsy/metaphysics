@@ -13,13 +13,13 @@ import { ResolverContext } from "types/graphql"
 const titleWithDate = ({ title, date }) =>
   join(" ", [title, date ? `(${date})` : undefined])
 
-export const artistNames = artwork =>
+export const artistNames = (artwork) =>
   artwork.cultural_maker || map(artwork.artists, "name").join(", ")
 
-const forSaleIndication = artwork =>
+const forSaleIndication = (artwork) =>
   artwork.forsale ? "Available for Sale" : undefined
 
-const dimensions = artwork => artwork.dimensions[artwork.metric]
+const dimensions = (artwork) => artwork.dimensions[artwork.metric]
 
 const partnerDescription = ({ partner, forsale }, expanded = true) => {
   const name = partner && partner.name
@@ -61,7 +61,7 @@ const ArtworkMetaType = new GraphQLObjectType<any, ResolverContext>({
     },
     share: {
       type: GraphQLString,
-      resolve: artwork => {
+      resolve: (artwork) => {
         return join(", ", [
           "Check out " + artistNames(artwork),
           titleWithDate(artwork),
@@ -71,7 +71,7 @@ const ArtworkMetaType = new GraphQLObjectType<any, ResolverContext>({
     },
     title: {
       type: GraphQLString,
-      resolve: artwork => {
+      resolve: (artwork) => {
         return join(" | ", [
           artistNames(artwork),
           titleWithDate(artwork),
@@ -85,7 +85,7 @@ const ArtworkMetaType = new GraphQLObjectType<any, ResolverContext>({
 
 const Meta: GraphQLFieldConfig<any, ResolverContext> = {
   type: ArtworkMetaType,
-  resolve: x => x,
+  resolve: (x) => x,
 }
 
 export default Meta

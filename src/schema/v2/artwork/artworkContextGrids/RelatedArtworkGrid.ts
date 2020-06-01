@@ -60,7 +60,7 @@ export const RelatedArtworkGridType = new GraphQLObjectType<
         return relatedLayerArtworksLoader(
           { id: layerID, type: layer.type },
           gravityArgs
-        ).then(body => {
+        ).then((body) => {
           return connectionFromArraySlice(body, options, {
             arrayLength: body && body.length,
             sliceStart: 0,

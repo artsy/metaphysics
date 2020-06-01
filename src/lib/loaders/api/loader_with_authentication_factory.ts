@@ -26,14 +26,14 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
   apiName: string,
   globalAPIOptions: any
 ) => {
-  return accessTokenLoader => {
+  return (accessTokenLoader) => {
     const apiLoaderFactory = (path, globalParams = {}, pathAPIOptions = {}) => {
       const loader = new DataLoader<
         DataLoaderKey,
         T | { body: T; headers: any }
       >(
-        keys => {
-          return accessTokenLoader().then(accessToken =>
+        (keys) => {
+          return accessTokenLoader().then((accessToken) =>
             Promise.all(
               keys.map(({ key, apiOptions: invocationAPIOptions }) => {
                 const apiOptions = {
@@ -48,7 +48,7 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
                 return new Promise((resolve, reject) => {
                   verbose(`Requested: ${key}`)
                   api(key, accessToken, apiOptions)
-                    .then(response => {
+                    .then((response) => {
                       if (apiOptions.headers) {
                         resolve(pick(response, ["body", "headers"]))
                       } else {
@@ -65,7 +65,7 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
                         { time, cache: false, length }
                       )
                     })
-                    .catch(err => {
+                    .catch((err) => {
                       warn(path, err)
                       reject(err)
                     })
@@ -77,7 +77,7 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
         {
           batch: false,
           cache: true,
-          cacheKeyFn: input => JSON.stringify(input),
+          cacheKeyFn: (input) => JSON.stringify(input),
         }
       )
       return loaderInterface(loader, path, globalParams)

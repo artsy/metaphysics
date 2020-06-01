@@ -12,9 +12,7 @@ import {
 export const EmbeddedArtist = Record({
   _id: String,
   id: String,
-  alternate_names: Array(String)
-    .Or(Null)
-    .Or(Undefined),
+  alternate_names: Array(String).Or(Null).Or(Undefined),
   artworks_count: Number,
   birthday: String.Or(Null),
   blurb: String.Or(Undefined),

@@ -41,9 +41,9 @@ const ArtistInsightTypeMapping = {
   biennials: { type: ArtistInsightType.getValue("BIENNIAL") },
 }
 
-const buildInsights = artist => {
+const buildInsights = (artist) => {
   const splitEntities = (entitiesString: string, delimiter): Array<string> => {
-    return entitiesString.split(delimiter).map(entity => {
+    return entitiesString.split(delimiter).map((entity) => {
       return entity.trim()
     })
   }
@@ -58,7 +58,7 @@ const buildInsights = artist => {
 
   return compact(
     // eslint-disable-next-line array-callback-return
-    Object.keys(ArtistInsightTypeMapping).map(key => {
+    Object.keys(ArtistInsightTypeMapping).map((key) => {
       const entitiesString = artist[key] && artist[key].trim()
 
       if (entitiesString) {
@@ -88,7 +88,7 @@ const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
 
 export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLList(ArtistInsight),
-  resolve: artist => {
+  resolve: (artist) => {
     return buildInsights(artist)
   },
 }

@@ -11,11 +11,7 @@ export const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
     id: {
       type: GraphQLString,
       description: InternalIDFields.id.description,
-      resolve: ({ href }) =>
-        href
-          .split("/")
-          .pop()
-          .split("?")[0],
+      resolve: ({ href }) => href.split("/").pop().split("?")[0],
     },
     href: {
       type: GraphQLString,

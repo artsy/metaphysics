@@ -105,7 +105,7 @@ const mustHave = {
   VORTEX_TOKEN,
 }
 
-Object.keys(mustHave).forEach(key => {
+Object.keys(mustHave).forEach((key) => {
   if (!mustHave[key]) {
     const file = chalk.whiteBright(".env.example")
     throw new Error(

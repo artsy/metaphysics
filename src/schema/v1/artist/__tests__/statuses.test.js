@@ -37,7 +37,7 @@ describe("Artist Statuses", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         artist: {
           statuses: {
@@ -62,7 +62,7 @@ describe("Artist Statuses", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         artist: {
           statuses: {

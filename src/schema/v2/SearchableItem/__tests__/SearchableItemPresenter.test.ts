@@ -100,7 +100,7 @@ describe("SearchableItemPresenter", () => {
     })
 
     describe("for a Fair or Auction types", () => {
-      const buildSearchableItem = label => {
+      const buildSearchableItem = (label) => {
         return {
           ...BASE_ITEM,
           start_at: "2018-05-16T10:00:00.000Z",
@@ -179,7 +179,7 @@ describe("SearchableItemPresenter", () => {
       })
 
       it("returns description if date attributes are unavailable", () => {
-        ;["Fair", "Sale"].forEach(label => {
+        ;["Fair", "Sale"].forEach((label) => {
           const presenter = new SearchableItemPresenter({
             ...BASE_ITEM,
             label: label,

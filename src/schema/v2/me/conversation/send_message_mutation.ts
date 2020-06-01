@@ -69,7 +69,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       reply_to_message_id,
       body_text,
     }).then(({ id: newMessageID }) => {
-      return conversationLoader(id).then(updatedConversation => {
+      return conversationLoader(id).then((updatedConversation) => {
         return {
           conversation: updatedConversation,
           // Because Impulse does not have the full new message object available immediately, we return an optimistic

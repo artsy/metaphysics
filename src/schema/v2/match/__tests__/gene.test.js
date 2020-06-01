@@ -38,7 +38,7 @@ xdescribe("MatchGene", () => {
 
     const matchGeneLoader = () => Promise.resolve(response)
 
-    return runQuery(query, { matchGeneLoader }).then(data => {
+    return runQuery(query, { matchGeneLoader }).then((data) => {
       expect(data).toEqual({
         matchGene: [{ slug: "pop-art", name: "Pop Art", internalID: "123456" }],
       })

@@ -62,7 +62,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           const gravityOptions = _.extend(parsedOptions, {
             exclude_artists_without_artworks: true,
           })
-          return geneArtistsLoader(id, gravityOptions).then(response => {
+          return geneArtistsLoader(id, gravityOptions).then((response) => {
             return connectionFromArraySlice(response, options, {
               arrayLength: counts.artists,
               sliceStart: gravityOptions.offset,
@@ -186,7 +186,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ id }, options, { trendingArtistsLoader }) => {
           return trendingArtistsLoader({
             gene: id,
-          }).then(artists => {
+          }).then((artists) => {
             if (_.has(options, "sample")) {
               return _.take(_.shuffle(artists), options.sample)
             }

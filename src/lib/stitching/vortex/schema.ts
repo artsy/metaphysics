@@ -33,7 +33,7 @@ export const executableVortexSchema = ({
           ),
         ]
       : []),
-    new RenameTypes(name => {
+    new RenameTypes((name) => {
       return `Analytics${name}`
     }),
     new RenameRootFields(

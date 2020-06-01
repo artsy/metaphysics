@@ -63,7 +63,7 @@ describe("PartnerShows type", () => {
           ),
       }
 
-      return runQuery(query, context).then(data => {
+      return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           partner_shows: [
             { id: "new-museum-solo-show", kind: "solo" },
@@ -79,7 +79,7 @@ describe("PartnerShows type", () => {
     const showsLoader = ({ id }) => {
       if (id) {
         return Promise.resolve(
-          id.map(_id => ({
+          id.map((_id) => ({
             _id,
             partner: {
               id: "new-museum",

@@ -19,7 +19,7 @@ export const deleteCreditCardMutation = mutationWithClientMutationId<
   outputFields: {
     creditCardOrError: {
       type: CreditCardMutationType,
-      resolve: result => result,
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: ({ id }, { deleteCreditCardLoader }) => {
@@ -28,8 +28,8 @@ export const deleteCreditCardMutation = mutationWithClientMutationId<
     }
 
     return deleteCreditCardLoader(id)
-      .then(result => result)
-      .catch(error => {
+      .then((result) => result)
+      .catch((error) => {
         const formattedErr = formatGravityError(error)
 
         if (formattedErr) {

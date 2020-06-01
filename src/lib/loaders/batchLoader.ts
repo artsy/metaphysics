@@ -37,7 +37,7 @@ export const cacheKeyFn = (key: IdWithParams): string => {
 export const serializeParams = (key: IdWithParams) => {
   const { id, ...params } = key
   return Object.entries(params)
-    .map(entry => entry.join("="))
+    .map((entry) => entry.join("="))
     .sort()
     .join("&")
 }
@@ -56,7 +56,7 @@ export const groupByParams = (params: IdWithParams[]): ParamGrouping => {
   const paramGrouping: ParamGrouping = chain(params)
     .groupBy(serializeParams)
     .entries()
-    .thru(entries => {
+    .thru((entries) => {
       const result: ParamGrouping = [[], []]
       for (let i = 0; i < entries.length; ++i) {
         result[0].push(entries[i][0])
@@ -76,7 +76,7 @@ export const groupByParams = (params: IdWithParams[]): ParamGrouping => {
  */
 export const flattenedParams = (keys: IdWithParams[]): BatchedParams => ({
   ...keys[0],
-  id: keys.map(key => key.id),
+  id: keys.map((key) => key.id),
 })
 
 interface BatchLoaderArgs {
@@ -107,7 +107,7 @@ export const batchLoader = ({
     async (idWithParamsList: IdWithParams[]) => {
       const [paramGroups, groupedParams] = groupByParams(idWithParamsList)
       const data = await Promise.all(
-        groupedParams.map(flattenedParams).map(params => {
+        groupedParams.map(flattenedParams).map((params) => {
           if (
             params.id.length === 1 &&
             singleLoader &&
@@ -119,10 +119,10 @@ export const batchLoader = ({
           }
         })
       )
-      const normalizedData = data.map(
-        datum => (Array.isArray(datum) ? datum.reverse() : [datum])
+      const normalizedData = data.map((datum) =>
+        Array.isArray(datum) ? datum.reverse() : [datum]
       )
-      const results = idWithParamsList.map(params => {
+      const results = idWithParamsList.map((params) => {
         const paramGroup = serializeParams(params)
         const groupIndex = paramGroups.indexOf(paramGroup)
         return normalizedData[groupIndex].pop()
@@ -157,19 +157,19 @@ export const batchLoader = ({
       if (key.id.length === 1) {
         return dl
           .load({ ...key, id: key.id[0] })
-          .then(
-            result => (result === undefined || result === null ? [] : [result])
+          .then((result) =>
+            result === undefined || result === null ? [] : [result]
           )
       }
 
       return dl
         .loadMany(
-          key.id.map(id => ({
+          key.id.map((id) => ({
             ...key,
             id: id,
           }))
         )
-        .then(results => results.filter(result => result !== null))
+        .then((results) => results.filter((result) => result !== null))
       /**
        * This section covers the case when a single resource endpoint is being requested.
        * Take the `sale` endpoint for example. `key` is expected to be a string of `id` or `slug`.

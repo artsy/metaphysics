@@ -38,7 +38,7 @@ describe("Submit Order With Offer Mutation", () => {
       },
     }
     context = mockxchange(resolvers)
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.ecommerceSubmitOrderWithOffer.orderOrError.order).toEqual(
         sampleOrder()
       )
@@ -58,7 +58,7 @@ describe("Submit Order With Offer Mutation", () => {
       },
     }
     context = mockxchange(resolvers)
-    return runQuery(mutation, context).then(data => {
+    return runQuery(mutation, context).then((data) => {
       expect(data!.ecommerceSubmitOrderWithOffer.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

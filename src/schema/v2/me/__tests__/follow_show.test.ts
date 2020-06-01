@@ -45,7 +45,7 @@ describe("FollowShow", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, context).then(value => {
+    return runAuthenticatedQuery(mutation, context).then((value) => {
       const { followShow } = value as Props
       expect(followShow).toEqual(expectedShowData)
     })
@@ -115,7 +115,7 @@ describe("FollowShow", () => {
 
     expect.assertions(1)
     return runAuthenticatedQuery(setup, context).then(() => {
-      return runAuthenticatedQuery(teardown, context).then(value => {
+      return runAuthenticatedQuery(teardown, context).then((value) => {
         const { followShow } = value as Props
         expect(followShow.show.slug).toEqual(expectedShowData.show.id)
       })

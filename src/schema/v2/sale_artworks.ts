@@ -52,7 +52,7 @@ const SaleArtworkCounts = {
       ),
     },
   }),
-  resolve: artist => artist,
+  resolve: (artist) => artist,
 }
 
 const SaleArtworksConnectionType = connectionWithCursorInfo({

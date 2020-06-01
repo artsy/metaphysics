@@ -23,7 +23,7 @@ export const getTypesFromSchema = async (schema: GraphQLSchema) => {
   }
 
   // Return the real data
-  return response.data!.__schema.types.map(t => t.name) as string[]
+  return response.data!.__schema.types.map((t) => t.name) as string[]
 }
 
 /**
@@ -52,7 +52,7 @@ export const getRootFieldsFromSchema = async (schema: GraphQLSchema) => {
   }
 
   // Return the real data
-  return response.data!.__schema.queryType.fields.map(t => t.name) as string[]
+  return response.data!.__schema.queryType.fields.map((t) => t.name) as string[]
 }
 
 /**
@@ -80,7 +80,7 @@ export const getFieldsForTypeFromSchema = async (
   }
 
   // Return the real data
-  return response.data!.__type.fields.map(t => t.name) as string[]
+  return response.data!.__type.fields.map((t) => t.name) as string[]
 }
 
 /**
@@ -108,6 +108,6 @@ export const getMutationFieldsFromSchema = async (schema: GraphQLSchema) => {
 
   // Return the real data
   return response.data!.__schema.mutationType.fields.map(
-    t => t.name
+    (t) => t.name
   ) as string[]
 }

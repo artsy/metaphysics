@@ -83,7 +83,7 @@ export const SaleArtworkCounts = {
       ),
     },
   }),
-  resolve: artist => artist,
+  resolve: (artist) => artist,
 }
 
 export const FilterSaleArtworksType = new GraphQLObjectType<

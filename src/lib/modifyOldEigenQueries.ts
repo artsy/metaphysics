@@ -66,7 +66,7 @@ export const rewriteEcommerceMutations = (query: string) => {
     "ecommerceCreateOrderWithArtwork: commerceCreateOrderWithArtwork(",
   ]
 
-  befores.forEach(before => {
+  befores.forEach((before) => {
     if (query.includes(before)) {
       const index = befores.indexOf(before)
       query = query.replace(before, afters[index])
