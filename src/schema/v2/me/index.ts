@@ -138,6 +138,17 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
         })
       },
     },
+    unreadConversationCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "The count of conversations with unread messages.",
+      resolve: (_root, _options, { conversationsLoader }) => {
+        if (!conversationsLoader) return 0
+        const expand = ["total_unread_count"]
+        return conversationsLoader({ page: 1, size: 0, expand }).then(
+          ({ total_unread_count }) => total_unread_count
+        )
+      },
+    },
   },
 })
 
