@@ -5634,22 +5634,11 @@ type Me implements Node {
   secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
   type: String
 
-  # A count of unread notifications.
-  unreadNotificationsCount: Int!
-
   # The count of conversations with unread messages.
   unreadConversationCount: Int!
-  secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
-  orders(
-    first: Int
-    last: Int
-    after: String
-    before: String
-    mode: CommerceOrderModeEnum
-    sellerId: String
-    sort: CommerceOrderConnectionSortEnum
-    state: CommerceOrderStateEnum
-  ): CommerceOrderConnectionWithTotalCount
+
+  # A count of unread notifications.
+  unreadNotificationsCount: Int!
 }
 
 # A message in a conversation.

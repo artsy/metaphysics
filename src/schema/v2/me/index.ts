@@ -37,7 +37,6 @@ import { SavedArtworks } from "./saved_artworks"
 import { ResolverContext } from "types/graphql"
 import { SaleArtworksConnectionField } from "../sale_artworks"
 import { IdentityVerification } from "./identity_verification"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
