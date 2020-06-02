@@ -4,15 +4,12 @@ import fetch from "node-fetch"
 import { warn, danger } from "danger"
 
 // If there is a breaking change between the local schema,
-// and the current Reaction one, warn.
+// and the current Force one, warn.
 export default async () => {
-  const forcePackageJSON = await (await fetch(
-    "https://raw.githubusercontent.com/artsy/force/master/package.json"
-  )).json()
-  const reactionVersion = forcePackageJSON["dependencies"]["@artsy/reaction"]
-  const reactionSchemaUrl = `https://github.com/artsy/reaction/raw/v${reactionVersion}/data/schema.graphql`
+  const forceSchemaUrl =
+    "https://github.com/artsy/force/raw/master/data/schema.graphql"
 
-  const reactionSchema = await (await fetch(reactionSchemaUrl)).text()
+  const forceSchema = await (await fetch(forceSchemaUrl)).text()
   const repo = danger.github.pr.head.repo.full_name
   const sha = danger.github.pr.head.sha
   const localSchema = await (await fetch(
@@ -20,15 +17,15 @@ export default async () => {
   )).text()
 
   const allChanges = schemaDiff(
-    buildSchema(reactionSchema),
+    buildSchema(forceSchema),
     buildSchema(localSchema)
   )
   const breakings = allChanges.filter(c => c.criticality.level === "BREAKING")
   const messages = breakings.map(c => c.message)
   if (messages.length) {
     warn(
-      `The V2 schema in this PR has breaking changes with Force. Remember to update Reaction if necessary.
-      
+      `The V2 schema in this PR has breaking changes with Force. Remember to update the Force schema if necessary.
+
 ${messages.join("\n")}`
     )
   }

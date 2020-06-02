@@ -314,7 +314,7 @@ input CreateViewingRoomInput {
   """
   Main text
   """
-  body: String!
+  body: String
 
   """
   A unique identifier for the client performing the mutation.
@@ -322,9 +322,14 @@ input CreateViewingRoomInput {
   clientMutationId: String
 
   """
+  End datetime
+  """
+  endAt: ISO8601DateTime
+
+  """
   Introduction
   """
-  introStatement: String!
+  introStatement: String
 
   """
   Partner Id
@@ -335,6 +340,16 @@ input CreateViewingRoomInput {
   Pullquote
   """
   pullQuote: String
+
+  """
+  Start datetime
+  """
+  startAt: ISO8601DateTime
+
+  """
+  Timezone
+  """
+  timeZone: String
 
   """
   Title
@@ -460,6 +475,7 @@ type EnableSecondFactorPayload {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
+  recoveryCodes: [String!]
   secondFactorOrErrors: SecondFactorOrErrorsUnion!
 }
 
@@ -1105,6 +1121,7 @@ type ViewingRoom {
   ID of the partner associated with this viewing room
   """
   partnerID: String!
+  published: Boolean!
   pullQuote: String
   slug: String!
 
@@ -1112,6 +1129,11 @@ type ViewingRoom {
   Datetime when the viewing room is viewable
   """
   startAt: ISO8601DateTime
+
+  """
+  Calculated field to reflect visibility and state of this viewing room
+  """
+  status: String!
   subsections: [ViewingRoomSubsection!]
   timeZone: String
 
