@@ -22,10 +22,12 @@ export const executableConvectionSchema = () => {
     Asset: "ConsignmentSubmissionCategoryAsset",
     Category: "ConsignmentSubmissionCategoryAggregation",
     Offer: "ConsignmentOffer",
+    OfferSort: "ConsignmentOfferSort",
     PageCursor: "ConsignmentPageCursor",
     PageCursors: "ConsignmentPageCursors",
     State: "ConsignmentSubmissionStateAggregation",
     Submission: "ConsignmentSubmission",
+    SubmissionSort: "ConsignmentSubmissionSort",
     SubmissionConnection: "ConsignmentSubmissionConnection",
   }
 
