@@ -147,7 +147,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    lotStandingLoader: gravityLoader("me/lot_standings"),
+    lotStandingLoader: gravityLoader("me/lot_standings", { size: 100 }),
     meBidderPositionLoader: gravityLoader(
       (id) => `me/bidder_position/${id}/`,
       {},
