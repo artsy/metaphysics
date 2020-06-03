@@ -3213,6 +3213,30 @@ type ConsignmentOffer {
   submission: ConsignmentSubmission!
 }
 
+# The connection type for Offer.
+type ConsignmentOfferConnection {
+  # A list of edges.
+  edges: [ConsignmentOfferEdge]
+
+  # A list of nodes.
+  nodes: [ConsignmentOffer]
+  pageCursors: ConsignmentPageCursors
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+  totalPages: Int
+}
+
+# An edge in a connection.
+type ConsignmentOfferEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: ConsignmentOffer
+}
+
 enum ConsignmentOfferSort {
   # sort by accepted_at in ascending order
   ACCEPTED_AT_ASC
@@ -6476,30 +6500,6 @@ interface Node {
   id: ID!
 }
 
-# The connection type for Offer.
-type OfferConnection {
-  # A list of edges.
-  edges: [OfferEdge]
-
-  # A list of nodes.
-  nodes: [ConsignmentOffer]
-  pageCursors: ConsignmentPageCursors
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-  totalPages: Int
-}
-
-# An edge in a connection.
-type OfferEdge {
-  # A cursor for use in pagination.
-  cursor: String!
-
-  # The item at the end of the edge.
-  node: ConsignmentOffer
-}
-
 type OpeningHoursArray {
   schedules: [FormattedDaySchedules]
 }
@@ -7314,7 +7314,7 @@ type Query {
 
     # Return only offers with matching states
     states: [String!]
-  ): OfferConnection
+  ): ConsignmentOfferConnection
 
   # An OrderedSet
   orderedSet(

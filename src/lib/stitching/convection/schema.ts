@@ -22,13 +22,15 @@ export const executableConvectionSchema = () => {
     Asset: "ConsignmentSubmissionCategoryAsset",
     Category: "ConsignmentSubmissionCategoryAggregation",
     Offer: "ConsignmentOffer",
+    OfferConnection: "ConsignmentOfferConnection",
+    OfferEdge: "ConsignmentOfferEdge",
     OfferSort: "ConsignmentOfferSort",
     PageCursor: "ConsignmentPageCursor",
     PageCursors: "ConsignmentPageCursors",
     State: "ConsignmentSubmissionStateAggregation",
     Submission: "ConsignmentSubmission",
-    SubmissionSort: "ConsignmentSubmissionSort",
     SubmissionConnection: "ConsignmentSubmissionConnection",
+    SubmissionSort: "ConsignmentSubmissionSort",
   }
 
   // Return the new modified schema
