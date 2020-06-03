@@ -44,7 +44,7 @@ describe("requestID (with the real data loaders)", () => {
     expect.assertions(1)
     await runAuthenticatedQuery(query, context)
 
-    expect(gravity).toBeCalledWith("me/lot_standings?", "secret", {
+    expect(gravity).toBeCalledWith("me/lot_standings?size=100", "secret", {
       requestIDs,
     })
   })
