@@ -59,8 +59,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     canRequestEmailConfirmation: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: "Whether user is allowed to request email confirmation",
-      resolve: ({ can_request_email_confirmation }) =>
-        can_request_email_confirmation,
+      resolve: () => false, // HOTFIX: Will be removed when we fix gravity.
     },
     followsAndSaves: {
       type: new GraphQLObjectType<any, ResolverContext>({
