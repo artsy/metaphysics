@@ -3153,10 +3153,10 @@ date-fns@^1.27.2:
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
   integrity sha512-lbTXWZ6M20cWH8N9S6afb0SBm6tMk+uUg6z3MqHPKE9atmsY3kJkTm8vKe93izJ2B2+q5MV990sM2CHgtAZaOw==
 
-dd-trace@0.20.3:
-  version "0.20.3"
-  resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-0.20.3.tgz#60e060bf57cba8a36feeccf2d361863f247188f5"
-  integrity sha512-MiZCdfcv2zLwQq9Eg8+M9L832ccO/SfXArTzZivdppHRkOx74xMEewzN4fsaOUPlDeps+UTqEHR8Yb9z7luo8w==
+dd-trace@0.21.0:
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-0.21.0.tgz#13c880270f00ca8f9bc4208b8707d07026e5f281"
+  integrity sha512-R+6GJCqfNdB9sdCicOM4lKuQ8yX5ji9TdcoTD04LSpmyAE0mrW5IefyKgEH6HFoXbHZcvXS+He1gAe0UAe1mxg==
   dependencies:
     "@types/node" "^10.12.18"
     container-info "^1.0.1"
