@@ -3514,6 +3514,7 @@ type ConsignmentSubmission {
   signature: Boolean
   state: ConsignmentSubmissionStateAggregation
   title: String
+  userAgent: String
   userId: String!
   width: String
   year: String
