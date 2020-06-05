@@ -138,6 +138,7 @@ input CreateSubmissionMutationInput {
   signature: Boolean
   state: State
   title: String
+  userAgent: String
   width: String
   year: String
 }
@@ -172,10 +173,18 @@ scalar JSON
 Mutation root for this schema
 """
 type Mutation {
-  addAssetToConsignmentSubmission(input: AddAssetToConsignmentSubmissionInput!): AddAssetToConsignmentSubmissionPayload
-  createConsignmentOffer(input: CreateOfferMutationInput!): CreateOfferMutationPayload
-  createConsignmentSubmission(input: CreateSubmissionMutationInput!): CreateSubmissionMutationPayload
-  updateConsignmentSubmission(input: UpdateSubmissionMutationInput!): UpdateSubmissionMutationPayload
+  addAssetToConsignmentSubmission(
+    input: AddAssetToConsignmentSubmissionInput!
+  ): AddAssetToConsignmentSubmissionPayload
+  createConsignmentOffer(
+    input: CreateOfferMutationInput!
+  ): CreateOfferMutationPayload
+  createConsignmentSubmission(
+    input: CreateSubmissionMutationInput!
+  ): CreateSubmissionMutationPayload
+  updateConsignmentSubmission(
+    input: UpdateSubmissionMutationInput!
+  ): UpdateSubmissionMutationPayload
 }
 
 """
@@ -677,6 +686,17 @@ type PageInfo {
 
 type Query {
   """
+  Get an Offer
+  """
+  offer(
+    """
+    Return offers for the given partner
+    """
+    gravityPartnerId: ID!
+    id: ID!
+  ): Offer
+
+  """
   List offers
   """
   offers(
@@ -1162,6 +1182,16 @@ enum SubmissionSort {
   sort by provenance in descending order
   """
   PROVENANCE_DESC
+
+  """
+  sort by published_at in ascending order
+  """
+  PUBLISHED_AT_ASC
+
+  """
+  sort by published_at in descending order
+  """
+  PUBLISHED_AT_DESC
 
   """
   sort by qualified in ascending order
