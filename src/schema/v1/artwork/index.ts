@@ -845,11 +845,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       published: {
         type: new GraphQLNonNull(GraphQLBoolean),
-        description: "Whether this artwork is published or not",
-      },
-      unlisted: {
-        type: GraphQLBoolean,
-        description: "Whether this artwork is unlisted or not",
+        description: "Whether this Artwork is Published of not",
       },
       website: {
         type: GraphQLString,
@@ -991,18 +987,9 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
       description: "The slug or ID of the Artwork",
     },
-    includeUnlisted: {
-      type: GraphQLBoolean,
-      description: "Include unlisted artwork or not",
-    },
   },
-  resolve: (_source, args, { artworkLoader }) => {
-    const { id } = args
-    const gravityParams = _.mapKeys(
-      _.pick(args, ["includeUnlisted"]),
-      (_v, k) => _.snakeCase(k)
-    )
-    return artworkLoader(id, gravityParams)
+  resolve: (_source, { id }, { artworkLoader }) => {
+    return artworkLoader(id)
   },
 }
 
