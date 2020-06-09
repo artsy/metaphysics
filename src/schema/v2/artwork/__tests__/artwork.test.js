@@ -49,6 +49,7 @@ describe("Artwork type", () => {
       attribution_class: "unique",
       dimensions: { in: "2 x 3in." },
       metric: "in",
+      unlisted: true,
     }
     context = {
       artworkLoader: sinon
@@ -2226,6 +2227,64 @@ describe("Artwork type", () => {
       }
       const data = await runQuery(query, context)
       expect(data.artwork.realizedPrice).toBe("$8,500")
+    })
+  })
+
+  describe("#unlisted", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          unlisted
+        }
+      }
+    `
+    it("returns unlisted", async () => {
+      let data = await runQuery(query, context)
+      expect(data.artwork.unlisted).toBe(true)
+      artwork.unlisted = false
+
+      data = await runQuery(query, context)
+      expect(data.artwork.unlisted).toBe(false)
+    })
+  })
+
+  describe("includeUnlisted argument", () => {
+    beforeEach(() => {
+      context = {
+        artworkLoader: jest.fn(() => Promise.resolve(artwork)),
+      }
+    })
+
+    it("passes includeUnlisted to artworkLoader when with the argument", async () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait", includeUnlisted: true) {
+            unlisted
+          }
+        }
+      `
+      await runQuery(query, context)
+      expect(context.artworkLoader).toBeCalledWith(
+        "richard-prince-untitled-portrait",
+        {
+          include_unlisted: true,
+        }
+      )
+    })
+
+    it("does not pass includeUnlisted to artworkLoader when without the argument", async () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            unlisted
+          }
+        }
+      `
+      await runQuery(query, context)
+      expect(context.artworkLoader).toBeCalledWith(
+        "richard-prince-untitled-portrait",
+        {}
+      )
     })
   })
 })
