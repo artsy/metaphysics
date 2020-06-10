@@ -3,7 +3,7 @@ FROM node:10.13.0
 WORKDIR /app
 
 # Set up deploy user and working directory
-RUN apt-get update && apt-get install \
+RUN apt-get update && apt-get install -y \
   dumb-init \
   libgpm2 \
   libslang2 \
