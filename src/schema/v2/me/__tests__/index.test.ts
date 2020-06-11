@@ -8,6 +8,7 @@ describe("me/index", () => {
       me {
         name
         email
+        phone
         paddleNumber
         identityVerified
         hasSecondFactorEnabled
@@ -19,6 +20,7 @@ describe("me/index", () => {
     const body = {
       name: "Test User",
       email: "test@email.com",
+      phone: "07892938949",
       paddle_number: "123456",
       identity_verified: true,
       second_factor_enabled: true,
@@ -31,6 +33,7 @@ describe("me/index", () => {
         me: {
           name: "Test User",
           email: "test@email.com",
+          phone: "07892938949",
           paddleNumber: "123456",
           identityVerified: true,
           hasSecondFactorEnabled: true,
