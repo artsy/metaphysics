@@ -117,6 +117,9 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ paddle_number }) => paddle_number,
     },
+    phone: {
+      type: GraphQLString
+    },
     recentlyViewedArtworkIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
       resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,
