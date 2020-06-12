@@ -34,8 +34,7 @@ import { CreditCard } from "./credit_card"
 // import ExternalPartner from "./external_partner"
 // import Fairs from "./fairs"
 import Genes from "./genes"
-// import GeneFamilies from "./gene_families"
-// import GeneFamily from "./gene_family"
+import GeneFamilies from "./gene_families"
 import OrderedSet from "./ordered_set"
 // import OrderedSets from "./ordered_sets"
 // import Profile from "./profile"
@@ -121,8 +120,7 @@ const rootFields = {
   gene: Gene,
   genes: Genes,
   // suggestedGenes: SuggestedGenes,
-  // geneFamilies: GeneFamilies,
-  // geneFamily: GeneFamily,
+  geneFamiliesConnection: GeneFamilies,
   highlights: HighlightsField,
   homePage: HomePage,
   // matchArtist: MatchArtist,
