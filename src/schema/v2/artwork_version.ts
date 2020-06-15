@@ -7,10 +7,11 @@ import {
 import { artistNames } from "./artwork/meta"
 import Image from "./image"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "./object_identification"
+import { InternalIDFields, NodeInterface } from "./object_identification"
 
 export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkVersion",
+  interfaces: [NodeInterface],
   fields: () => ({
     ...InternalIDFields,
 
@@ -70,3 +71,5 @@ export const ArtworkVersionResolver: GraphQLFieldConfig<
       ? authenticatedArtworkVersionLoader(id)
       : null,
 }
+
+export default ArtworkVersionResolver

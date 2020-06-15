@@ -1385,7 +1385,7 @@ enum ArtworkSorts {
   TITLE_DESC
 }
 
-type ArtworkVersion {
+type ArtworkVersion implements Node {
   # The names for the artists related to this Artwork Version
   artistNames: String
 
