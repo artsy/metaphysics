@@ -7,6 +7,7 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 
 import { UserType } from "../user"
+import Me from "./"
 import { ResolverContext } from "types/graphql"
 
 export const EditableLocationFields = new GraphQLInputObjectType({
@@ -119,6 +120,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: UserType,
       resolve: (user) => user,
     },
+    me: Me,
   },
   mutateAndGetPayload: (
     { collectorLevel, priceRangeMin, priceRangeMax, ..._user },
