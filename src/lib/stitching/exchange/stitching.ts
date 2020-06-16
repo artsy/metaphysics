@@ -2,6 +2,8 @@ import { GraphQLSchema } from "graphql"
 import { amountSDL, amount } from "schema/v1/fields/money"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
+import { delegateToSchema } from "@graphql-tools/delegate"
+import { ArtworkVersionType } from "schema/v2/artwork_version"
 
 const orderTotals = [
   "itemsTotal",
@@ -232,22 +234,18 @@ export const exchangeStitchingEnvironment = ({
           resolve: (parent, _args, context, info) => {
             const id = parent.artworkVersionId
             const globalID = toGlobalId("ArtworkVersion", id)
-            return info.mergeInfo
-              .delegateToSchema({
-                schema: localSchema,
-                operation: "query",
-                fieldName: "node",
-                args: {
-                  id: globalID,
-                },
-                context,
-                info,
-                transforms: exchangeSchema.transforms,
-              })
-              .then((result) => {
-                console.log("vvv", result)
-                return result
-              })
+            return delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "node",
+              args: {
+                id: globalID,
+              },
+              context,
+              info,
+              transforms: exchangeSchema.transforms,
+              returnType: ArtworkVersionType,
+            })
           },
         },
         ...totalsResolvers("CommerceLineItem", lineItemTotals),

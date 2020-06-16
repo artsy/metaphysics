@@ -1390,7 +1390,7 @@ type ArtworkVersion implements Node {
   artistNames: String
 
   # The artists related to this Artwork Version
-  artists: String
+  artists: [Artist]
 
   # The Image id
   defaultImageID: String
