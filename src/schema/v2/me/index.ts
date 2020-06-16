@@ -85,6 +85,10 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
         })
       },
     },
+    hasPassword: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ has_password }) => has_password,
+    },
     hasQualifiedCreditCards: {
       type: GraphQLBoolean,
       resolve: (_root, _options, { meCreditCardsLoader }) => {
@@ -118,7 +122,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ paddle_number }) => paddle_number,
     },
     phone: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     recentlyViewedArtworkIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),

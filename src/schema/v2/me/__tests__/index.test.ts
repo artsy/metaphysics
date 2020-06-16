@@ -12,6 +12,7 @@ describe("me/index", () => {
         paddleNumber
         identityVerified
         hasSecondFactorEnabled
+        hasPassword
       }
     }
   `
@@ -24,6 +25,7 @@ describe("me/index", () => {
       paddle_number: "123456",
       identity_verified: true,
       second_factor_enabled: true,
+      has_password: false,
     }
 
     return runAuthenticatedQuery(query, {
@@ -37,6 +39,7 @@ describe("me/index", () => {
           paddleNumber: "123456",
           identityVerified: true,
           hasSecondFactorEnabled: true,
+          hasPassword: false,
         },
       })
     })
