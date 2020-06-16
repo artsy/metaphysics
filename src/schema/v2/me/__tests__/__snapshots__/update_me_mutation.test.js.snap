@@ -3,6 +3,9 @@
 exports[`UpdateMeMutation updates the user profile and returns its new data payload 1`] = `
 Object {
   "updateMyUserProfile": Object {
+    "me": Object {
+      "name": "andy-warhol",
+    },
     "user": Object {
       "location": Object {
         "address": "123 my street",

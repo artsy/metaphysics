@@ -25,11 +25,24 @@ describe("UpdateMeMutation", () => {
             }
             priceRange
           }
+          me {
+            name
+          }
         }
       }
     `
 
     const context = {
+      meLoader: () =>
+        Promise.resolve({
+          id: "106",
+          name: "andy-warhol",
+          phone: "1234890",
+          location: {
+            address: "123 my street",
+          },
+          price_range: "-1:1000000000000",
+        }),
       updateMeLoader: () =>
         Promise.resolve({
           id: "106",
