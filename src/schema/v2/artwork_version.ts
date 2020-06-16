@@ -3,14 +3,17 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLFieldConfig,
+  GraphQLList,
 } from "graphql"
 import { artistNames } from "./artwork/meta"
 import Image from "./image"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "./object_identification"
+import { InternalIDFields, NodeInterface } from "./object_identification"
+import Artist from "./artist"
 
 export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkVersion",
+  interfaces: [NodeInterface],
   fields: () => ({
     ...InternalIDFields,
 
@@ -26,7 +29,7 @@ export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
     },
 
     artists: {
-      type: GraphQLString,
+      type: new GraphQLList(Artist.type),
       description: "The artists related to this Artwork Version",
       resolve: (version, _options, { artistsLoader }) =>
         artistsLoader({ ids: version.artist_ids }),
@@ -37,7 +40,7 @@ export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
       description: "The names for the artists related to this Artwork Version",
       resolve: async (version, _options, { artistsLoader }) => {
         const artists = await artistsLoader({ ids: version.artist_ids })
-        return artistNames(artists)
+        return artistNames({ artists })
       },
     },
 
@@ -70,3 +73,5 @@ export const ArtworkVersionResolver: GraphQLFieldConfig<
       ? authenticatedArtworkVersionLoader(id)
       : null,
 }
+
+export default ArtworkVersionResolver

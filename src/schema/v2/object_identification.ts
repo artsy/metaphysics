@@ -42,6 +42,7 @@ const SupportedTypes: any = {
     "./article",
     "./artist",
     "./artwork",
+    "./artwork_version",
     "./bidder",
     "./gene",
     "./filterArtworksConnection",

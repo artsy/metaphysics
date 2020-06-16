@@ -44,6 +44,7 @@
     "@babel/preset-env": "7.4.5",
     "@babel/preset-typescript": "7.3.3",
     "@babel/register": "7.4.4",
+    "@graphql-tools/delegate": "^6.0.10",
     "@heroku/foreman": "2.0.2",
     "accounting": "0.4.1",
     "apollo-link": "1.2.1",
