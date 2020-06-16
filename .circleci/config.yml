@@ -4,7 +4,7 @@ orbs:
   codecov: codecov/codecov@1.1.0
   hokusai: artsy/hokusai@0.7.4
   horizon: artsy/release@0.0.1
-  node: circleci/node@2.1.1
+  node: circleci/node@3.0.0
   yarn: artsy/yarn@4.0.2
 
 not_staging_or_release: &not_staging_or_release
