@@ -25,6 +25,7 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
         ): ArtworkConnection
+        calculatedEndAt: CalculatedEndAtType
         formattedEndAt: String
         partner: Partner
       }
@@ -79,6 +80,17 @@ export const gravityStitchingEnvironment = (
               context,
               info,
             })
+          },
+        },
+        calculatedEndAt: {
+          fragment: gql`
+			... on ViewingRoom {
+				startAt
+				endAt
+			}
+			`,
+          resolve: ({ startAt: _startAt, endAt: _endAt }) => {
+            return { days: 4 }
           },
         },
         formattedEndAt: {

@@ -57,6 +57,65 @@ describe("gravity/stitching", () => {
     })
   })
 
+  describe("#calculatedEndAt", () => {
+    it("extends the ViewingRoom type with a calculatedEndAt field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const fields = await getFieldsForTypeFromSchema(
+        "ViewingRoom",
+        mergedSchema
+      )
+
+      expect(fields).toContain("calculatedEndAt")
+    })
+
+    it("returns null if endAt date is greater than 30 days", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { calculatedEndAt } = resolvers.ViewingRoom
+
+      expect(
+        calculatedEndAt.resolve({
+          startAt: moment().add(1, "days"),
+          endAt: moment().add(32, "days"),
+        })
+      ).toEqual(null)
+    })
+
+    it("returns properly formatted distance string", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { calculatedEndAt } = resolvers.ViewingRoom
+
+      expect(
+        calculatedEndAt.resolve({
+          startAt: moment().subtract(1, "days"),
+          endAt: moment().add(2, "days"),
+        })
+      ).toEqual({
+        days: 2,
+      })
+
+      expect(
+        calculatedEndAt.resolve({
+          startAt: moment().subtract(1, "hour"),
+          endAt: moment().add(2, "hours"),
+        })
+      ).toEqual({ hours: 2 })
+
+      expect(
+        calculatedEndAt.resolve({
+          startAt: moment().subtract(1, "minute"),
+          endAt: moment().add(10, "minutes"),
+        })
+      ).toEqual({ minutes: 10 })
+
+      expect(
+        calculatedEndAt.resolve({
+          startAt: moment().subtract(1, "minute"),
+          endAt: moment().subtract(10, "minutes"),
+        })
+      ).toEqual(null)
+    })
+  })
+
   describe("#formattedEndAt", () => {
     it("extends the ViewingRoom type with a formattedEndAt field", async () => {
       const mergedSchema = await getGravityMergedSchema()
