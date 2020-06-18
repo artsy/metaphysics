@@ -63,7 +63,7 @@ staging:
 [copy_env]: https://github.com/jonallured/copy_env
 
 ```
-$ copy_env hokusai
+copy_env hokusai
 ```
 
 That command will dump the env vars from staging and do a find/replace on the
@@ -157,10 +157,10 @@ this:
 - Configure Hokusai
 
   ```
-  $ export AWS_ACCESS_KEY_ID={{ MY_AWS_ACCESS_KEY_ID }}
-  $ export AWS_SECRET_ACCESS_KEY={{ MY_AWS_SECRET_ACCESS_KEY }}
-  $ hokusai configure --kubectl-version {{ kubectl_version }} --s3-bucket {{ kubectl_config_s3_bucket }} --s3-key {{ kubectl_config_s3_key }}
-  $ hokusai check
+  export AWS_ACCESS_KEY_ID={{ MY_AWS_ACCESS_KEY_ID }}
+  export AWS_SECRET_ACCESS_KEY={{ MY_AWS_SECRET_ACCESS_KEY }}
+  hokusai configure --kubectl-version {{ kubectl_version }} --s3-bucket {{ kubectl_config_s3_bucket }} --s3-key {{ kubectl_config_s3_key }}
+  hokusai check
   ```
 
   Artsy staff should find follow the instructions in
@@ -171,7 +171,7 @@ this:
 - Run tests in the Docker Compose test stack via Hokusai:
 
   ```
-  $ hokusai test
+  hokusai test
   ```
 
 - Or, to run tests locally: `npm test` to run the entire suite `npm run watch`
