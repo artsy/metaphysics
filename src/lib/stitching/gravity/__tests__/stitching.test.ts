@@ -108,6 +108,39 @@ describe("gravity/stitching", () => {
       ).toEqual(null)
     })
 
+    it("returns days if endAt date is 30 days or less away", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { formattedEndAt } = resolvers.ViewingRoom
+
+      expect(
+        formattedEndAt.resolve({
+          startAt: moment().subtract(20, "minute"),
+          endAt: moment().add(40, "days"),
+        })
+      ).toEqual(null)
+
+      expect(
+        formattedEndAt.resolve({
+          startAt: moment().subtract(20, "minute"),
+          endAt: moment().add(31, "days"),
+        })
+      ).toEqual(null)
+
+      expect(
+        formattedEndAt.resolve({
+          startAt: moment().subtract(20, "minute"),
+          endAt: moment().add(30, "days"),
+        })
+      ).toEqual("30 days")
+
+      expect(
+        formattedEndAt.resolve({
+          startAt: moment().subtract(20, "minute"),
+          endAt: moment().add(29, "days"),
+        })
+      ).toEqual("29 days")
+    })
+
     it("returns properly formatted distance string", async () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { formattedEndAt } = resolvers.ViewingRoom
@@ -118,8 +151,8 @@ describe("gravity/stitching", () => {
       ]> = [
         [[2, "years"], null],
         [[2, "months"], null],
-        [[1, "month"], null],
-        [[30, "days"], null],
+        [[31, "days"], null],
+        [[30, "days"], "30 days"],
         [[29, "days"], "29 days"],
         [[1, "day"], "1 day"],
         [[2, "days"], "2 days"],

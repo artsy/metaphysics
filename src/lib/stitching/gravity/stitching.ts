@@ -109,7 +109,7 @@ export const gravityStitchingEnvironment = (
             const endAt = moment(_endAt)
             const now = moment()
 
-            if (now < startAt || endAt > now.clone().add(29, "days")) {
+            if (now < startAt || endAt > now.clone().add(30, "days")) {
               return null
             }
 
@@ -119,7 +119,7 @@ export const gravityStitchingEnvironment = (
 
             return `${moment
               .duration(endAt.diff(now))
-              .humanize(false, { ss: 1, d: 30 })}`
+              .humanize(false, { ss: 1, d: 31 })}`
           },
         },
         partner: {
