@@ -68,6 +68,25 @@ describe("gravity/stitching", () => {
       expect(fields).toContain("formattedEndAt")
     })
 
+    it("returns null if endAt date or startAt date is missing", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { formattedEndAt } = resolvers.ViewingRoom
+
+      expect(
+        formattedEndAt.resolve({
+          startAt: null,
+          endAt: moment().add(3, "days"),
+        })
+      ).toEqual(null)
+
+      expect(
+        formattedEndAt.resolve({
+          startAt: moment().subtract(20, "minute"),
+          endAt: null,
+        })
+      ).toEqual(null)
+    })
+
     it("returns null if endAt date is in the past or if startAt date is in the future", async () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { formattedEndAt } = resolvers.ViewingRoom

@@ -100,6 +100,11 @@ export const gravityStitchingEnvironment = (
                 yy: "%d years",
               },
             })
+
+            if (_startAt === null || _endAt === null) {
+              return null
+            }
+
             const startAt = moment(_startAt)
             const endAt = moment(_endAt)
             const now = moment()
