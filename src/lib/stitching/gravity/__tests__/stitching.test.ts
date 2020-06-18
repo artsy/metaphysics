@@ -112,7 +112,15 @@ describe("gravity/stitching", () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { formattedEndAt } = resolvers.ViewingRoom
 
-      const cases: Array<[[DurationInputArg1, DurationInputArg2], string]> = [
+      const cases: Array<[
+        [DurationInputArg1, DurationInputArg2],
+        string | null
+      ]> = [
+        [[2, "years"], null],
+        [[2, "months"], null],
+        [[1, "month"], null],
+        [[30, "days"], null],
+        [[29, "days"], "29 days"],
         [[1, "day"], "1 day"],
         [[2, "days"], "2 days"],
         [[1, "hour"], "1 hour"],
