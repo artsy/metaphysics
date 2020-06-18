@@ -3,7 +3,7 @@ import {
   getGravityMergedSchema,
   getGravityStitchedSchema,
 } from "./testingUtils"
-import moment from "moment"
+import moment, { DurationInputArg2, DurationInputArg1 } from "moment"
 
 describe("gravity/stitching", () => {
   describe("#artworksConnection", () => {
@@ -68,58 +68,49 @@ describe("gravity/stitching", () => {
       expect(fields).toContain("formattedEndAt")
     })
 
-    it("returns null if endAt date is greater than 30 days", async () => {
+    it("returns null if endAt date is in the past or if startAt date is in the future", async () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { formattedEndAt } = resolvers.ViewingRoom
 
+      // not opened yet
       expect(
         formattedEndAt.resolve({
           startAt: moment().add(1, "days"),
           endAt: moment().add(32, "days"),
         })
       ).toEqual(null)
-    })
 
-    // add test for the NaN years
+      // closed already
+      expect(
+        formattedEndAt.resolve({
+          startAt: moment().subtract(20, "minute"),
+          endAt: moment().subtract(10, "minutes"),
+        })
+      ).toEqual(null)
+    })
 
     it("returns properly formatted distance string", async () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { formattedEndAt } = resolvers.ViewingRoom
 
-      expect(
-        formattedEndAt.resolve({
-          startAt: moment().subtract(1, "days"),
-          endAt: moment().add(2, "days"),
-        })
-      ).toEqual("2 days")
-
-      expect(
-        formattedEndAt.resolve({
-          startAt: moment().subtract(1, "hour"),
-          endAt: moment().add(1, "hour"),
-        })
-      ).toEqual("1 hour")
-
-      expect(
-        formattedEndAt.resolve({
-          startAt: moment().subtract(1, "hour"),
-          endAt: moment().add(2, "hours"),
-        })
-      ).toEqual("2 hours")
-
-      expect(
-        formattedEndAt.resolve({
-          startAt: moment().subtract(1, "minute"),
-          endAt: moment().add(10, "minutes"),
-        })
-      ).toEqual("10 minutes")
-
-      expect(
-        formattedEndAt.resolve({
-          startAt: moment().subtract(1, "minute"),
-          endAt: moment().subtract(10, "minutes"),
-        })
-      ).toEqual(null)
+      const cases: Array<[[DurationInputArg1, DurationInputArg2], string]> = [
+        [[1, "day"], "1 day"],
+        [[2, "days"], "2 days"],
+        [[1, "hour"], "1 hour"],
+        [[2, "hours"], "2 hours"],
+        [[1, "minute"], "1 minute"],
+        [[10, "minutes"], "10 minutes"],
+        [[1, "second"], "1 second"],
+        [[20, "seconds"], "20 seconds"],
+      ]
+      cases.forEach((c) => {
+        expect(
+          formattedEndAt.resolve({
+            startAt: moment().subtract(1, "days"),
+            endAt: moment().add(...c[0]),
+          })
+        ).toEqual(c[1])
+      })
     })
   })
 

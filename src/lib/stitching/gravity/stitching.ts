@@ -84,6 +84,22 @@ export const gravityStitchingEnvironment = (
             }
           `,
           resolve: ({ startAt: _startAt, endAt: _endAt }) => {
+            moment.updateLocale("en", {
+              relativeTime: {
+                s: "%d second",
+                ss: "%d seconds",
+                m: "%d minute",
+                mm: "%d minutes",
+                h: "%d hour",
+                hh: "%d hours",
+                d: "%d day",
+                dd: "%d days",
+                M: "%d month",
+                MM: "%d months",
+                y: "%d year",
+                yy: "%d years",
+              },
+            })
             const startAt = moment(_startAt)
             const endAt = moment(_endAt)
             const now = moment()
@@ -91,14 +107,14 @@ export const gravityStitchingEnvironment = (
             if (now < startAt || endAt > now.clone().add(30, "days")) {
               return null
             }
+
             if (now > endAt) {
-              return "Closed"
+              return null
             }
 
-            return (
-              "Closes in " +
-              (moment.duration(endAt.diff(now)) as DistancePlugin).distance()
-            )
+            return `${moment
+              .duration(endAt.diff(now))
+              .humanize(false, { ss: 1 })}`
           },
         },
         partner: {
