@@ -24,6 +24,17 @@ input AppSecondFactorAttributes {
 # An app second factor or errors
 union AppSecondFactorOrErrorsUnion = AppSecondFactor | Errors
 
+type ArtistSeries {
+  description: String
+  featured: Boolean!
+
+  # Unique ID for this artist series
+  internalID: ID!
+  published: Boolean!
+  slug: String!
+  title: String!
+}
+
 # Backup Two-Factor Authentication factor
 type BackupSecondFactor implements SecondFactor {
   code: String!
@@ -371,6 +382,9 @@ type PageInfo {
 }
 
 type Query {
+  # Find an artist series by ID
+  artistSeries(id: ID!): ArtistSeries
+
   # Autocomplete resolvers.
   _unused_gravity_matchPartners(matchType: String, page: Int = 1, size: Int = 5, term: String!): [DoNotUseThisPartner!]
 
@@ -579,22 +593,17 @@ type ViewingRoom {
 
 # Basic viewing room attributes
 input ViewingRoomAttributes {
-  # Main text
   body: String
 
-  # End datetime
+  # Datetime (in UTC) when Viewing Room closes
   endAt: ISO8601DateTime
-
-  # Introduction
   introStatement: String
-
-  # Pullquote
   pullQuote: String
 
-  # Start datetime
+  # Datetime (in UTC) when Viewing Room opens
   startAt: ISO8601DateTime
 
-  # Timezone
+  # Time zone (tz database format, e.g. America/New_York) in which start_at/end_at attributes were input
   timeZone: String
 
   # Title

@@ -70,6 +70,19 @@ type ArtistEdge {
   node: Artist
 }
 
+type ArtistSeries {
+  description: String
+  featured: Boolean!
+
+  """
+  Unique ID for this artist series
+  """
+  internalID: ID!
+  published: Boolean!
+  slug: String!
+  title: String!
+}
+
 """
 Artwork or design object
 """
@@ -796,6 +809,11 @@ type Query {
   artist(id: ID!): Artist
 
   """
+  Find an artist series by ID
+  """
+  artistSeries(id: ID!): ArtistSeries
+
+  """
   Find artists by ID
   """
   artists(ids: [ID!]!): [Artist!]
@@ -1174,33 +1192,22 @@ type ViewingRoom {
 Basic viewing room attributes
 """
 input ViewingRoomAttributes {
-  """
-  Main text
-  """
   body: String
 
   """
-  End datetime
+  Datetime (in UTC) when Viewing Room closes
   """
   endAt: ISO8601DateTime
-
-  """
-  Introduction
-  """
   introStatement: String
-
-  """
-  Pullquote
-  """
   pullQuote: String
 
   """
-  Start datetime
+  Datetime (in UTC) when Viewing Room opens
   """
   startAt: ISO8601DateTime
 
   """
-  Timezone
+  Time zone (tz database format, e.g. America/New_York) in which start_at/end_at attributes were input
   """
   timeZone: String
 
