@@ -1,11 +1,6 @@
 import gql from "lib/gql"
 import { GraphQLSchema } from "graphql"
-import moment, { Duration } from "moment"
-import "moment.distance"
-
-interface DistancePlugin extends Duration {
-  distance(): string
-}
+import moment from "moment"
 
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
@@ -25,7 +20,6 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
         ): ArtworkConnection
-        calculatedEndAt: CalculatedEndAtType
         formattedEndAt: String
         partner: Partner
       }
@@ -80,17 +74,6 @@ export const gravityStitchingEnvironment = (
               context,
               info,
             })
-          },
-        },
-        calculatedEndAt: {
-          fragment: gql`
-			... on ViewingRoom {
-				startAt
-				endAt
-			}
-			`,
-          resolve: ({ startAt: _startAt, endAt: _endAt }) => {
-            return { days: 4 }
           },
         },
         formattedEndAt: {

@@ -92,7 +92,6 @@ import SaleArtwork from "./sale_artwork"
 import { SaleArtworksConnectionField } from "./sale_artworks"
 import Artworks from "./artworks"
 import { TargetSupply } from "./TargetSupply"
-import { CalculatedEndAtType } from "./types/calculated_end_at"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -212,7 +211,6 @@ export default new GraphQLSchema({
     PartnerArtworkGridType,
     RelatedArtworkGridType,
     ShowArtworkGridType,
-    CalculatedEndAtType,
   ],
   directives: specifiedDirectives.concat([PrincipalFieldDirective]),
 })
