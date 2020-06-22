@@ -57,51 +57,48 @@ describe("gravity/stitching", () => {
     })
   })
 
-  describe("#formattedStartAt", () => {
-    it("extends the ViewingRoom type with a formattedStartAt field", async () => {
+  describe("#distanceToOpen", () => {
+    it("extends the ViewingRoom type with a distanceToOpen field", async () => {
       const mergedSchema = await getGravityMergedSchema()
       const fields = await getFieldsForTypeFromSchema(
         "ViewingRoom",
         mergedSchema
       )
 
-      expect(fields).toContain("formattedStartAt")
+      expect(fields).toContain("distanceToOpen")
     })
 
     it("returns null if startAt date is missing", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { formattedStartAt } = resolvers.ViewingRoom
+      const { distanceToOpen } = resolvers.ViewingRoom
 
-      expect(formattedStartAt.resolve({ startAt: null }, {})).toEqual(null)
+      expect(distanceToOpen.resolve({ startAt: null }, {})).toEqual(null)
 
       expect(
-        formattedStartAt.resolve({ startAt: null }, { short: false })
+        distanceToOpen.resolve({ startAt: null }, { short: false })
       ).toEqual(null)
 
       expect(
-        formattedStartAt.resolve({ startAt: null }, { short: true })
+        distanceToOpen.resolve({ startAt: null }, { short: true })
       ).toEqual(null)
     })
 
     it("returns null if startAt date is in the past", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { formattedStartAt } = resolvers.ViewingRoom
+      const { distanceToOpen } = resolvers.ViewingRoom
       expect(
-        formattedStartAt.resolve(
-          { startAt: moment().subtract(1, "second") },
-          {}
-        )
+        distanceToOpen.resolve({ startAt: moment().subtract(1, "second") }, {})
       ).toEqual(null)
 
       expect(
-        formattedStartAt.resolve(
+        distanceToOpen.resolve(
           { startAt: moment().subtract(1, "second") },
           { short: false }
         )
       ).toEqual(null)
 
       expect(
-        formattedStartAt.resolve(
+        distanceToOpen.resolve(
           { startAt: moment().subtract(1, "second") },
           { short: true }
         )
@@ -110,7 +107,7 @@ describe("gravity/stitching", () => {
 
     it("returns properly formatted distance string for long timeframe", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { formattedStartAt } = resolvers.ViewingRoom
+      const { distanceToOpen } = resolvers.ViewingRoom
 
       const cases: Array<[
         [DurationInputArg1, DurationInputArg2],
@@ -133,7 +130,7 @@ describe("gravity/stitching", () => {
       ]
       cases.forEach((c) => {
         expect(
-          formattedStartAt.resolve(
+          distanceToOpen.resolve(
             { startAt: moment().add(...c[0]) },
             { short: false }
           )
@@ -143,7 +140,7 @@ describe("gravity/stitching", () => {
 
     it("returns properly formatted distance string for short timeframe", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { formattedStartAt } = resolvers.ViewingRoom
+      const { distanceToOpen } = resolvers.ViewingRoom
 
       const cases: Array<[
         [DurationInputArg1, DurationInputArg2],
@@ -166,7 +163,7 @@ describe("gravity/stitching", () => {
       ]
       cases.forEach((c) => {
         expect(
-          formattedStartAt.resolve(
+          distanceToOpen.resolve(
             { startAt: moment().add(...c[0]) },
             { short: true }
           )
@@ -175,37 +172,37 @@ describe("gravity/stitching", () => {
     })
   })
 
-  describe("#formattedEndAt", () => {
-    it("extends the ViewingRoom type with a formattedEndAt field", async () => {
+  describe("#distanceToClose", () => {
+    it("extends the ViewingRoom type with a distanceToClose field", async () => {
       const mergedSchema = await getGravityMergedSchema()
       const fields = await getFieldsForTypeFromSchema(
         "ViewingRoom",
         mergedSchema
       )
 
-      expect(fields).toContain("formattedEndAt")
+      expect(fields).toContain("distanceToClose")
     })
 
     it("returns null if endAt date is missing", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { formattedEndAt } = resolvers.ViewingRoom
+      const { distanceToClose } = resolvers.ViewingRoom
 
       expect(
-        formattedEndAt.resolve(
+        distanceToClose.resolve(
           { startAt: moment().subtract(2, "second"), endAt: null },
           {}
         )
       ).toEqual(null)
 
       expect(
-        formattedEndAt.resolve(
+        distanceToClose.resolve(
           { startAt: moment().subtract(2, "second"), endAt: null },
           { short: false }
         )
       ).toEqual(null)
 
       expect(
-        formattedEndAt.resolve(
+        distanceToClose.resolve(
           { startAt: moment().subtract(2, "second"), endAt: null },
           { short: true }
         )
@@ -214,9 +211,9 @@ describe("gravity/stitching", () => {
 
     it("returns null if endAt date is in the past", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { formattedEndAt } = resolvers.ViewingRoom
+      const { distanceToClose } = resolvers.ViewingRoom
       expect(
-        formattedEndAt.resolve(
+        distanceToClose.resolve(
           {
             startAt: moment().subtract(2, "second"),
             endAt: moment().subtract(1, "second"),
@@ -226,7 +223,7 @@ describe("gravity/stitching", () => {
       ).toEqual(null)
 
       expect(
-        formattedEndAt.resolve(
+        distanceToClose.resolve(
           {
             startAt: moment().subtract(2, "second"),
             endAt: moment().subtract(1, "second"),
@@ -236,7 +233,7 @@ describe("gravity/stitching", () => {
       ).toEqual(null)
 
       expect(
-        formattedEndAt.resolve(
+        distanceToClose.resolve(
           {
             startAt: moment().subtract(2, "second"),
             endAt: moment().subtract(1, "second"),
@@ -248,23 +245,23 @@ describe("gravity/stitching", () => {
 
     it("returns null if startAt date is in the future", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { formattedEndAt } = resolvers.ViewingRoom
+      const { distanceToClose } = resolvers.ViewingRoom
       expect(
-        formattedEndAt.resolve(
+        distanceToClose.resolve(
           { startAt: moment().add(1, "days"), endAt: moment().add(4, "days") },
           {}
         )
       ).toEqual(null)
 
       expect(
-        formattedEndAt.resolve(
+        distanceToClose.resolve(
           { startAt: moment().add(1, "days"), endAt: moment().add(4, "days") },
           { short: false }
         )
       ).toEqual(null)
 
       expect(
-        formattedEndAt.resolve(
+        distanceToClose.resolve(
           { startAt: moment().add(1, "days"), endAt: moment().add(4, "days") },
           { short: true }
         )
@@ -273,7 +270,7 @@ describe("gravity/stitching", () => {
 
     it("returns properly formatted distance string for long timeframe", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { formattedEndAt } = resolvers.ViewingRoom
+      const { distanceToClose } = resolvers.ViewingRoom
 
       const cases: Array<[
         [DurationInputArg1, DurationInputArg2],
@@ -295,7 +292,7 @@ describe("gravity/stitching", () => {
       ]
       cases.forEach((c) => {
         expect(
-          formattedEndAt.resolve(
+          distanceToClose.resolve(
             {
               startAt: moment().subtract(2, "second"),
               endAt: moment().add(...c[0]),
@@ -308,7 +305,7 @@ describe("gravity/stitching", () => {
 
     it("returns properly formatted distance string for short timeframe", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { formattedEndAt } = resolvers.ViewingRoom
+      const { distanceToClose } = resolvers.ViewingRoom
 
       const cases: Array<[
         [DurationInputArg1, DurationInputArg2],
@@ -330,7 +327,7 @@ describe("gravity/stitching", () => {
       ]
       cases.forEach((c) => {
         expect(
-          formattedEndAt.resolve(
+          distanceToClose.resolve(
             {
               startAt: moment().subtract(2, "second"),
               endAt: moment().add(...c[0]),

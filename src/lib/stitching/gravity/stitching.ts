@@ -20,8 +20,8 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
         ): ArtworkConnection
-        formattedStartAt(short: Boolean! = false): String
-        formattedEndAt(short: Boolean! = false): String
+        distanceToOpen(short: Boolean! = false): String
+        distanceToClose(short: Boolean! = false): String
         partner: Partner
       }
 
@@ -77,7 +77,7 @@ export const gravityStitchingEnvironment = (
             })
           },
         },
-        formattedStartAt: {
+        distanceToOpen: {
           fragment: gql`
             ... on ViewingRoom {
               startAt
@@ -141,7 +141,7 @@ export const gravityStitchingEnvironment = (
               .humanize(short, { ss: 1, d: 31 })}`
           },
         },
-        formattedEndAt: {
+        distanceToClose: {
           fragment: gql`
             ... on ViewingRoom {
               startAt
