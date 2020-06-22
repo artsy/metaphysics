@@ -148,7 +148,10 @@ export const gravityStitchingEnvironment = (
               endAt
             }
           `,
-          resolve: ({ startAt: _startAt, endAt: _endAt }) => {
+          resolve: (
+            { startAt: _startAt, endAt: _endAt },
+            { short = false }
+          ) => {
             moment.updateLocale("en", {
               relativeTime: {
                 s: "%d second",
@@ -174,12 +177,22 @@ export const gravityStitchingEnvironment = (
             const endAt = moment(_endAt)
             const now = moment()
 
-            if (now < startAt || endAt > now.clone().add(30, "days")) {
+            if (startAt > now) {
               return null
             }
 
-            if (now > endAt) {
+            if (endAt < now) {
               return null
+            }
+
+            if (short === false) {
+              if (endAt > now.clone().add(10, "days")) {
+                return null
+              }
+            } else {
+              if (endAt > now.clone().add(5, "days")) {
+                return null
+              }
             }
 
             return `${moment
