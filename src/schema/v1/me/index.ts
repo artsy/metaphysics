@@ -37,6 +37,7 @@ import SavedArtworks from "./saved_artworks"
 import SuggestedArtists from "./suggested_artists"
 import { ResolverContext } from "types/graphql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
+import { deprecate } from "lib/deprecation"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -92,6 +93,11 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     },
     invoice: {
       type: InvoiceType,
+      deprecationReason: deprecate({
+        inVersion: 2,
+        reason:
+          "Payment Request was deprecated. The field was kept for legacy client support.",
+      }),
       resolve: () => null,
     },
     lot_standing: LotStanding,
