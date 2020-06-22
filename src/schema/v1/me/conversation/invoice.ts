@@ -8,7 +8,7 @@ import {
 import { amount } from "../../fields/money"
 import { NodeInterface, InternalIDFields } from "../../object_identification"
 import { ResolverContext } from "types/graphql"
-import { deprecateType } from "lib/deprecation"
+import { deprecate, deprecateType } from "lib/deprecation"
 
 const InvoiceState = new GraphQLEnumType({
   name: "InvoiceState",
@@ -60,6 +60,11 @@ export const InvoiceType = deprecateType(
 const Invoice: GraphQLFieldConfig<void, ResolverContext> = {
   type: InvoiceType,
   description: "An invoice",
+  deprecationReason: deprecate({
+    inVersion: 2,
+    reason:
+      "Payment Request was deprecated. The field was kept for legacy client support.",
+  }),
   args: {
     conversationId: {
       type: new GraphQLNonNull(GraphQLString),

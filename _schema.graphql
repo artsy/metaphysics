@@ -8663,6 +8663,9 @@ type Me implements Node {
     # The ID of the invoice
     invoiceId: String!
   ): Invoice
+    @deprecated(
+      reason: "Payment Request was deprecated. The field was kept for legacy client support. [Will be removed in v2]"
+    )
 
   # The current user's status relating to bids on artworks
   lot_standing(
