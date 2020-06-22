@@ -1,9 +1,10 @@
-FROM node:10.13.0
+FROM node:12.13.0
 
 WORKDIR /app
 
 # Set up deploy user and working directory
 RUN apt-get update && apt-get install -y \
+  build-essential \
   dumb-init \
   libgpm2 \
   libslang2 \

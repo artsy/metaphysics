@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "https://github.com/artsy/metaphysics",
   "engines": {
-    "node": "10",
+    "node": "12",
     "npm": "5.6.0",
     "yarn": "1.*"
   },
@@ -51,7 +51,7 @@
     "apollo-link-context": "1.0.8",
     "apollo-link-http": "1.5.4",
     "apollo-server-express": "2.4.8",
-    "appmetrics": "4.0.0",
+    "appmetrics": "5.1.1",
     "artsy-morgan": "git://github.com/artsy/artsy-morgan.git",
     "babel-core": "7.0.0-bridge.0",
     "babel-plugin-module-resolver": "3.1.1",
@@ -76,7 +76,7 @@
     "graphql-relay": "0.5.4",
     "graphql-tools": "4.0.5",
     "graphql-type-json": "0.1.4",
-    "heapdump": "0.3.9",
+    "heapdump": "0.3.15",
     "hot-shots": "5.6.1",
     "http-shutdown": "1.2.1",
     "i": "0.3.6",
