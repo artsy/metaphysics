@@ -28,7 +28,7 @@ import FollowedArtists from "./followed_artists"
 import FollowedGenes from "./followed_genes"
 import FollowedShows from "./followed_shows"
 import FollowedFairs from "./followed_fairs"
-import Invoice from "./conversation/invoice"
+import { InvoiceType } from "./conversation/invoice"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
@@ -104,7 +104,10 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ second_factor_enabled }) => second_factor_enabled,
     },
-    invoice: Invoice,
+    invoice: {
+      type: InvoiceType,
+      resolve: () => null,
+    },
     identityVerification: IdentityVerification,
     identityVerified: {
       type: GraphQLBoolean,

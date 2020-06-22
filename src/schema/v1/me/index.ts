@@ -27,7 +27,7 @@ import FollowedArtists from "./followed_artists"
 import FollowedGenes from "./followed_genes"
 import FollowedShows from "./followed_shows"
 import FollowedFairs from "./followed_fairs"
-import Invoice from "./conversation/invoice"
+import { InvoiceType } from "./conversation/invoice"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import Notifications from "./notifications"
@@ -90,7 +90,10 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
-    invoice: Invoice,
+    invoice: {
+      type: InvoiceType,
+      resolve: () => null,
+    },
     lot_standing: LotStanding,
     lot_standings: LotStandings,
     name: {

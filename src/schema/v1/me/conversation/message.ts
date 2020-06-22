@@ -119,19 +119,7 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
     },
     invoice: {
       type: InvoiceType,
-      resolve: (
-        { metadata, conversation_id },
-        _options,
-        { conversationInvoiceLoader }
-      ) => {
-        if (!conversationInvoiceLoader || !isInvoiceMessage(metadata)) {
-          return null
-        }
-        return conversationInvoiceLoader({
-          conversation_id,
-          lewitt_invoice_id: metadata.lewitt_invoice_id,
-        })
-      },
+      resolve: () => null,
     },
     is_invoice: {
       description: "True if message is an invoice message",
