@@ -8273,18 +8273,33 @@ union InventoryHoldOrErrorUnion = Error | InventoryHold
 type Invoice implements Node {
   # A globally unique ID.
   __id: ID!
+    @deprecated(
+      reason: "Payment Request was deprecated. The type was kept for legacy client support. [Will be removed in v2]"
+    )
 
   # A type-specific ID likely used as a database ID.
   id: ID!
+    @deprecated(
+      reason: "Payment Request was deprecated. The type was kept for legacy client support. [Will be removed in v2]"
+    )
 
   # Lewitt's invoice id.
   lewitt_invoice_id: String!
+    @deprecated(
+      reason: "Payment Request was deprecated. The type was kept for legacy client support. [Will be removed in v2]"
+    )
 
   # Link to public checkout page.
   payment_url: String
+    @deprecated(
+      reason: "Payment Request was deprecated. The type was kept for legacy client support. [Will be removed in v2]"
+    )
 
   # Current state of invoice.
   state: InvoiceState
+    @deprecated(
+      reason: "Payment Request was deprecated. The type was kept for legacy client support. [Will be removed in v2]"
+    )
 
   # A formatted price with various currency formatting options.
   total(
@@ -8296,6 +8311,9 @@ type Invoice implements Node {
     symbol: String
     thousand: String = ","
   ): String
+    @deprecated(
+      reason: "Payment Request was deprecated. The type was kept for legacy client support. [Will be removed in v2]"
+    )
 }
 
 enum InvoiceState {
@@ -8645,6 +8663,9 @@ type Me implements Node {
     # The ID of the invoice
     invoiceId: String!
   ): Invoice
+    @deprecated(
+      reason: "Payment Request was deprecated. The field was kept for legacy client support. [Will be removed in v2]"
+    )
 
   # The current user's status relating to bids on artworks
   lot_standing(
@@ -8774,12 +8795,18 @@ type Message implements Node {
   # Impulse message id.
   impulse_id: String!
   invoice: Invoice
+    @deprecated(
+      reason: "Payment Request was deprecated. The field was kept for legacy client support. [Will be removed in v2]"
+    )
 
   # True if message is from the user to the partner.
   is_from_user: Boolean
 
   # True if message is an invoice message
   is_invoice: Boolean
+    @deprecated(
+      reason: "Payment Request was deprecated. The field was kept for legacy client support. [Will be removed in v2]"
+    )
 
   # Full unsanitized text.
   raw_text: String!

@@ -8,6 +8,7 @@ import {
 import { amount } from "../../fields/money"
 import { NodeInterface, InternalIDFields } from "../../object_identification"
 import { ResolverContext } from "types/graphql"
+import { deprecate, deprecateType } from "lib/deprecation"
 
 const InvoiceState = new GraphQLEnumType({
   name: "InvoiceState",
@@ -27,31 +28,43 @@ const InvoiceState = new GraphQLEnumType({
   },
 })
 
-export const InvoiceType = new GraphQLObjectType<any, ResolverContext>({
-  name: "Invoice",
-  description: "Fields of an invoice (currently from Lewitt)",
-  interfaces: [NodeInterface],
-  fields: {
-    ...InternalIDFields,
-    lewitt_invoice_id: {
-      description: "Lewitt's invoice id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    payment_url: {
-      description: "Link to public checkout page.",
-      type: GraphQLString,
-    },
-    state: {
-      description: "Current state of invoice.",
-      type: InvoiceState,
-    },
-    total: amount(({ total_cents }) => total_cents),
+export const InvoiceType = deprecateType(
+  {
+    inVersion: 2,
+    reason:
+      "Payment Request was deprecated. The type was kept for legacy client support.",
   },
-})
+  new GraphQLObjectType<any, ResolverContext>({
+    name: "Invoice",
+    description: "Fields of an invoice (currently from Lewitt)",
+    interfaces: [NodeInterface],
+    fields: {
+      ...InternalIDFields,
+      lewitt_invoice_id: {
+        description: "Lewitt's invoice id.",
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      payment_url: {
+        description: "Link to public checkout page.",
+        type: GraphQLString,
+      },
+      state: {
+        description: "Current state of invoice.",
+        type: InvoiceState,
+      },
+      total: amount(({ total_cents }) => total_cents),
+    },
+  })
+)
 
 const Invoice: GraphQLFieldConfig<void, ResolverContext> = {
   type: InvoiceType,
   description: "An invoice",
+  deprecationReason: deprecate({
+    inVersion: 2,
+    reason:
+      "Payment Request was deprecated. The field was kept for legacy client support.",
+  }),
   args: {
     conversationId: {
       type: new GraphQLNonNull(GraphQLString),
@@ -62,17 +75,7 @@ const Invoice: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The ID of the invoice",
     },
   },
-  resolve: (
-    _root,
-    { conversationId, invoiceId },
-    { conversationInvoiceLoader }
-  ) => {
-    if (!conversationInvoiceLoader) return null
-    return conversationInvoiceLoader({
-      conversation_id: conversationId,
-      lewitt_invoice_id: invoiceId,
-    })
-  },
+  resolve: () => null,
 }
 
 export default Invoice

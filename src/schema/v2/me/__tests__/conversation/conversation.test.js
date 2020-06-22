@@ -108,15 +108,6 @@ describe("Me", () => {
           message_details: messages,
         })
       },
-      conversationInvoiceLoader: () =>
-        Promise.resolve({
-          payment_url: "https://www.adopt-cats.org/adopt-all-the-cats",
-          state: "unpaid",
-          symbol: "$",
-          total_cents: 420000,
-          lewitt_invoice_id: "420",
-          id: "1",
-        }),
     }
 
     it("returns a conversation", () => {

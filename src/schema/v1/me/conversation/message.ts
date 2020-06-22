@@ -119,23 +119,21 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
     },
     invoice: {
       type: InvoiceType,
-      resolve: (
-        { metadata, conversation_id },
-        _options,
-        { conversationInvoiceLoader }
-      ) => {
-        if (!conversationInvoiceLoader || !isInvoiceMessage(metadata)) {
-          return null
-        }
-        return conversationInvoiceLoader({
-          conversation_id,
-          lewitt_invoice_id: metadata.lewitt_invoice_id,
-        })
-      },
+      deprecationReason: deprecate({
+        inVersion: 2,
+        reason:
+          "Payment Request was deprecated. The field was kept for legacy client support.",
+      }),
+      resolve: () => null,
     },
     is_invoice: {
       description: "True if message is an invoice message",
       type: GraphQLBoolean,
+      deprecationReason: deprecate({
+        inVersion: 2,
+        reason:
+          "Payment Request was deprecated. The field was kept for legacy client support.",
+      }),
       resolve: ({ metadata }) => isInvoiceMessage(metadata),
     },
     created_at: date,
