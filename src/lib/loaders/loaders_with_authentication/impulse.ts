@@ -40,7 +40,6 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     conversationMessagesLoader: impulseLoader("message_details"),
-    conversationInvoiceLoader: impulseLoader("invoice_detail"),
     conversationCreateMessageLoader: impulseLoader(
       (id) => `conversations/${id}/messages`,
       {
