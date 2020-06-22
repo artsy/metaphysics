@@ -12,3 +12,4 @@ yarn-error.log
 resourceRegistry.log
 tmp
 coverage*
+.hokusai-tmp

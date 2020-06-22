@@ -1,30 +1,31 @@
-FROM node:12.13.0
+FROM node:12.14-alpine
 
 WORKDIR /app
 
-# Set up deploy user and working directory
-RUN apt-get update && apt-get install -y \
-  build-essential \
+RUN apk --no-cache --quiet add \
+  build-base \
   dumb-init \
-  libgpm2 \
-  libslang2 \
-  mc \
-  mc-data \
-  unzip && \
-  adduser --disabled-password --gecos '' deploy
+  git \
+  python && \
+  adduser -D -g '' deploy
 
-# Install the packages
-COPY package.json yarn.lock ./
-COPY patches ./patches
-RUN yarn install
-
-# Copy application code
-COPY . ./
-
-RUN yarn build && chown -R deploy:deploy ./
+RUN chown deploy:deploy $(pwd)
 
 # Switch to deploy user
 USER deploy
+
+# Copy files required to install application dependencies
+COPY --chown=deploy:deploy package.json yarn.lock ./
+COPY --chown=deploy:deploy patches ./patches
+
+# Install packages
+RUN yarn install --frozen-lockfile --quiet && \
+  yarn cache clean --force
+
+# Copy application code
+COPY --chown=deploy:deploy . ./
+
+RUN yarn build
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["node", "build/index.js"]
