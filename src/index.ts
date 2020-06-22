@@ -106,7 +106,14 @@ function startApp(appSchema, path: string) {
   }
 
   if (enableSentry) {
-    raven.config(SENTRY_PRIVATE_DSN).install()
+    raven
+      .config(SENTRY_PRIVATE_DSN, {
+        ignoreErrors: [
+          "Response not successful: Received status code 404",
+          "Must provide query string",
+        ],
+      })
+      .install()
     app.use(raven.requestHandler())
   }
 
