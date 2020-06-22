@@ -27,7 +27,7 @@ import FollowedArtists from "./followed_artists"
 import FollowedGenes from "./followed_genes"
 import FollowedShows from "./followed_shows"
 import FollowedFairs from "./followed_fairs"
-import { InvoiceType } from "./conversation/invoice"
+import Invoice from "./conversation/invoice"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import Notifications from "./notifications"
@@ -37,7 +37,6 @@ import SavedArtworks from "./saved_artworks"
 import SuggestedArtists from "./suggested_artists"
 import { ResolverContext } from "types/graphql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
-import { deprecate } from "lib/deprecation"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -91,15 +90,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
-    invoice: {
-      type: InvoiceType,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        reason:
-          "Payment Request was deprecated. The field was kept for legacy client support.",
-      }),
-      resolve: () => null,
-    },
+    invoice: Invoice,
     lot_standing: LotStanding,
     lot_standings: LotStandings,
     name: {

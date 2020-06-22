@@ -28,7 +28,7 @@ import FollowedArtists from "./followed_artists"
 import FollowedGenes from "./followed_genes"
 import FollowedShows from "./followed_shows"
 import FollowedFairs from "./followed_fairs"
-import { InvoiceType } from "./conversation/invoice"
+import Invoice from "./conversation/invoice"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
@@ -37,7 +37,6 @@ import { SavedArtworks } from "./saved_artworks"
 import { ResolverContext } from "types/graphql"
 import { SaleArtworksConnectionField } from "../sale_artworks"
 import { IdentityVerification } from "./identity_verification"
-import { deprecate } from "lib/deprecation"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -105,15 +104,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ second_factor_enabled }) => second_factor_enabled,
     },
-    invoice: {
-      type: InvoiceType,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        reason:
-          "Payment Request was deprecated. The field was kept for legacy client support.",
-      }),
-      resolve: () => null,
-    },
+    invoice: Invoice,
     identityVerification: IdentityVerification,
     identityVerified: {
       type: GraphQLBoolean,

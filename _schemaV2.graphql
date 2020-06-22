@@ -6177,10 +6177,15 @@ type Me implements Node {
 
   # A type-specific ID.
   internalID: ID!
-  invoice: Invoice
-    @deprecated(
-      reason: "Payment Request was deprecated. The field was kept for legacy client support. [Will be removed in v2]"
-    )
+
+  # An invoice
+  invoice(
+    # The ID of the Conversation
+    conversationId: String!
+
+    # The ID of the invoice
+    invoiceId: String!
+  ): Invoice
 
   # Sale Artworks search results
   lotsByFollowedArtistsConnection(
