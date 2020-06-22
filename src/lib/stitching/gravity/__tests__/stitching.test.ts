@@ -57,6 +57,124 @@ describe("gravity/stitching", () => {
     })
   })
 
+  describe("#formattedStartAt", () => {
+    it("extends the ViewingRoom type with a formattedStartAt field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const fields = await getFieldsForTypeFromSchema(
+        "ViewingRoom",
+        mergedSchema
+      )
+
+      expect(fields).toContain("formattedStartAt")
+    })
+
+    it("returns null if startAt date is missing", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { formattedStartAt } = resolvers.ViewingRoom
+
+      expect(formattedStartAt.resolve({ startAt: null }, {})).toEqual(null)
+
+      expect(
+        formattedStartAt.resolve({ startAt: null }, { short: false })
+      ).toEqual(null)
+
+      expect(
+        formattedStartAt.resolve({ startAt: null }, { short: true })
+      ).toEqual(null)
+    })
+
+    it("returns null if startAt date is in the past", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { formattedStartAt } = resolvers.ViewingRoom
+      expect(
+        formattedStartAt.resolve(
+          { startAt: moment().subtract(1, "second") },
+          {}
+        )
+      ).toEqual(null)
+
+      expect(
+        formattedStartAt.resolve(
+          { startAt: moment().subtract(1, "second") },
+          { short: false }
+        )
+      ).toEqual(null)
+
+      expect(
+        formattedStartAt.resolve(
+          { startAt: moment().subtract(1, "second") },
+          { short: true }
+        )
+      ).toEqual(null)
+    })
+
+    it("returns properly formatted distance string for long timeframe", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { formattedStartAt } = resolvers.ViewingRoom
+
+      const cases: Array<[
+        [DurationInputArg1, DurationInputArg2],
+        string | null
+      ]> = [
+        [[2, "years"], null],
+        [[2, "months"], null],
+        [[40, "days"], null],
+        [[31, "days"], null],
+        [[30, "days"], "30 days"],
+        [[29, "days"], "29 days"],
+        [[2, "days"], "2 days"],
+        [[1, "day"], "1 day"],
+        [[2, "hours"], "2 hours"],
+        [[1, "hour"], "1 hour"],
+        [[10, "minutes"], "10 minutes"],
+        [[1, "minute"], "1 minute"],
+        [[20, "seconds"], "20 seconds"],
+        [[1, "second"], "1 second"],
+      ]
+      cases.forEach((c) => {
+        expect(
+          formattedStartAt.resolve(
+            { startAt: moment().add(...c[0]) },
+            { short: false }
+          )
+        ).toEqual(c[1])
+      })
+    })
+
+    it("returns properly formatted distance string for short timeframe", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { formattedStartAt } = resolvers.ViewingRoom
+
+      const cases: Array<[
+        [DurationInputArg1, DurationInputArg2],
+        string | null
+      ]> = [
+        [[2, "years"], "soon"],
+        [[2, "months"], "soon"],
+        [[40, "days"], "soon"],
+        [[31, "days"], "soon"],
+        [[30, "days"], "soon"],
+        [[29, "days"], "soon"],
+        [[2, "days"], "soon"],
+        [[1, "day"], "soon"],
+        [[2, "hours"], "soon"],
+        [[1, "hour"], "soon"],
+        [[10, "minutes"], "soon"],
+        [[1, "minute"], "soon"],
+        [[20, "seconds"], "soon"],
+        [[1, "second"], "soon"],
+      ]
+      cases.forEach((c) => {
+        expect(
+          formattedStartAt.resolve(
+            { startAt: moment().add(...c[0]) },
+            { short: true }
+          )
+        ).toEqual(c[1])
+      })
+    })
+  })
+
   describe("#formattedEndAt", () => {
     it("extends the ViewingRoom type with a formattedEndAt field", async () => {
       const mergedSchema = await getGravityMergedSchema()

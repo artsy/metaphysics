@@ -9318,7 +9318,8 @@ type ViewingRoom {
 
   # Datetime after which the viewing room is no longer viewable
   endAt: ISO8601DateTime
-  formattedEndAt: String
+  formattedEndAt(short: Boolean! = false): String
+  formattedStartAt(short: Boolean! = false): String
 
   # Image URL for hero image on viewing room home screen
   heroImageURL: String

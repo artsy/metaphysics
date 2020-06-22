@@ -20,7 +20,8 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
         ): ArtworkConnection
-        formattedEndAt: String
+        formattedStartAt(short: Boolean! = false): String
+        formattedEndAt(short: Boolean! = false): String
         partner: Partner
       }
 
@@ -74,6 +75,70 @@ export const gravityStitchingEnvironment = (
               context,
               info,
             })
+          },
+        },
+        formattedStartAt: {
+          fragment: gql`
+            ... on ViewingRoom {
+              startAt
+            }
+		  `,
+          resolve: ({ startAt: _startAt }, { short = false }) => {
+            if (short) {
+              moment.updateLocale("en", {
+                relativeTime: {
+                  future: "soon",
+                  s: "",
+                  ss: "",
+                  m: "",
+                  mm: "",
+                  h: "",
+                  hh: "",
+                  d: "",
+                  dd: "",
+                  M: "",
+                  MM: "",
+                  y: "",
+                  yy: "",
+                },
+              })
+            } else {
+              moment.updateLocale("en", {
+                relativeTime: {
+                  s: "%d second",
+                  ss: "%d seconds",
+                  m: "%d minute",
+                  mm: "%d minutes",
+                  h: "%d hour",
+                  hh: "%d hours",
+                  d: "%d day",
+                  dd: "%d days",
+                  M: "%d month",
+                  MM: "%d months",
+                  y: "%d year",
+                  yy: "%d years",
+                },
+              })
+            }
+
+            if (_startAt === null) {
+              return null
+            }
+
+            const startAt = moment(_startAt)
+            const now = moment()
+
+            if (startAt < now) {
+              return null
+            }
+
+            if (short === false && startAt > now.clone().add(30, "days")) {
+              return null
+            }
+
+            return `${moment
+              .duration(startAt.diff(now))
+              .humanize(short, { ss: 1, d: 31 })}`
           },
         },
         formattedEndAt: {
