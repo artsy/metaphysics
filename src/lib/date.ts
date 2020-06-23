@@ -1,4 +1,4 @@
-import moment from "moment"
+import moment from "moment-timezone"
 
 /**
  * Returns true if dates are on same day, timezone must be the same for both timestamps
