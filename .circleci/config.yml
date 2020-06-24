@@ -5,7 +5,7 @@ orbs:
   hokusai: artsy/hokusai@0.7.4
   horizon: artsy/release@0.0.1
   node: circleci/node@3.0.0
-  yarn: artsy/yarn@4.0.2
+  yarn: artsy/yarn@5.1.3
 
 not_staging_or_release: &not_staging_or_release
   filters:
@@ -38,7 +38,7 @@ jobs:
   push-schema-changes:
     executor:
       name: node/default
-      tag: "10.19"
+      tag: "12.14"
     steps:
       - run:
           name: Let hokusai modify /usr/local/bin
