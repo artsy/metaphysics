@@ -95,7 +95,7 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
     // Coming in the future (> 5 days away)
     if (isFuture) {
       return `ends ${moment(end_at)
-        .locale("en-auction-relative")
+        .locale(LocaleEnAuctionRelative)
         .format("MMM D")}`
     }
   }
