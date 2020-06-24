@@ -1,6 +1,46 @@
 import gql from "lib/gql"
 import { GraphQLSchema } from "graphql"
 import moment from "moment"
+import { defineCustomLocale } from "lib/helpers"
+
+const LocaleEnViewingroomRelativeShort = "en-viewingroom-relative-short"
+defineCustomLocale(LocaleEnViewingroomRelativeShort, {
+  parentLocale: "en",
+  relativeTime: {
+    future: "soon",
+    s: "",
+    ss: "",
+    m: "",
+    mm: "",
+    h: "",
+    hh: "",
+    d: "",
+    dd: "",
+    M: "",
+    MM: "",
+    y: "",
+    yy: "",
+  },
+})
+
+const LocaleEnViewingroomRelativeLong = "en-viewingroom-relative-long"
+defineCustomLocale(LocaleEnViewingroomRelativeLong, {
+  parentLocale: "en",
+  relativeTime: {
+    s: "%d second",
+    ss: "%d seconds",
+    m: "%d minute",
+    mm: "%d minutes",
+    h: "%d hour",
+    hh: "%d hours",
+    d: "%d day",
+    dd: "%d days",
+    M: "%d month",
+    MM: "%d months",
+    y: "%d year",
+    yy: "%d years",
+  },
+})
 
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
@@ -84,43 +124,6 @@ export const gravityStitchingEnvironment = (
             }
 		  `,
           resolve: ({ startAt: _startAt }, { short = false }) => {
-            if (short) {
-              moment.updateLocale("en", {
-                relativeTime: {
-                  future: "soon",
-                  s: "",
-                  ss: "",
-                  m: "",
-                  mm: "",
-                  h: "",
-                  hh: "",
-                  d: "",
-                  dd: "",
-                  M: "",
-                  MM: "",
-                  y: "",
-                  yy: "",
-                },
-              })
-            } else {
-              moment.updateLocale("en", {
-                relativeTime: {
-                  s: "%d second",
-                  ss: "%d seconds",
-                  m: "%d minute",
-                  mm: "%d minutes",
-                  h: "%d hour",
-                  hh: "%d hours",
-                  d: "%d day",
-                  dd: "%d days",
-                  M: "%d month",
-                  MM: "%d months",
-                  y: "%d year",
-                  yy: "%d years",
-                },
-              })
-            }
-
             if (_startAt === null) {
               return null
             }
@@ -136,9 +139,14 @@ export const gravityStitchingEnvironment = (
               return null
             }
 
-            return `${moment
-              .duration(startAt.diff(now))
-              .humanize(short, { ss: 1, d: 31 })}`
+            const distance = moment.duration(startAt.diff(now))
+            return distance
+              .locale(
+                short
+                  ? LocaleEnViewingroomRelativeShort
+                  : LocaleEnViewingroomRelativeLong
+              )
+              .humanize(short, { ss: 1, d: 31 })
           },
         },
         distanceToClose: {
@@ -152,23 +160,6 @@ export const gravityStitchingEnvironment = (
             { startAt: _startAt, endAt: _endAt },
             { short = false }
           ) => {
-            moment.updateLocale("en", {
-              relativeTime: {
-                s: "%d second",
-                ss: "%d seconds",
-                m: "%d minute",
-                mm: "%d minutes",
-                h: "%d hour",
-                hh: "%d hours",
-                d: "%d day",
-                dd: "%d days",
-                M: "%d month",
-                MM: "%d months",
-                y: "%d year",
-                yy: "%d years",
-              },
-            })
-
             if (_startAt === null || _endAt === null) {
               return null
             }
@@ -197,6 +188,7 @@ export const gravityStitchingEnvironment = (
 
             return `${moment
               .duration(endAt.diff(now))
+              .locale(LocaleEnViewingroomRelativeLong)
               .humanize(false, { ss: 1, d: 31 })}`
           },
         },
