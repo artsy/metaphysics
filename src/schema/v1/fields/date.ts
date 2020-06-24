@@ -1,4 +1,5 @@
-import moment from "moment-timezone"
+import moment from "moment"
+import "moment-timezone"
 import { GraphQLString, GraphQLBoolean, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 
