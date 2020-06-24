@@ -1,7 +1,9 @@
 import moment from "moment"
 import { defineCustomLocale } from "lib/helpers"
 
-defineCustomLocale("en-auction-relative", {
+const LocaleEnAuctionRelative = "en-auction-relative"
+defineCustomLocale(LocaleEnAuctionRelative, {
+  parentLocale: "en",
   relativeTime: {
     future: "in %s",
     past: "%s ago",
