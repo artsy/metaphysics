@@ -1,9 +1,5 @@
 import gql from "lib/gql"
 import { GraphQLSchema } from "graphql"
-
-interface DistancePlugin extends Duration {
-  distance(): string
-}
 import moment from "moment"
 
 export const gravityStitchingEnvironment = (
@@ -24,7 +20,8 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
         ): ArtworkConnection
-        formattedEndAt: String
+        distanceToOpen(short: Boolean! = false): String
+        distanceToClose(short: Boolean! = false): String
         partner: Partner
       }
 
@@ -80,29 +77,127 @@ export const gravityStitchingEnvironment = (
             })
           },
         },
-        formattedEndAt: {
+        distanceToOpen: {
+          fragment: gql`
+            ... on ViewingRoom {
+              startAt
+            }
+		  `,
+          resolve: ({ startAt: _startAt }, { short = false }) => {
+            if (short) {
+              moment.updateLocale("en", {
+                relativeTime: {
+                  future: "soon",
+                  s: "",
+                  ss: "",
+                  m: "",
+                  mm: "",
+                  h: "",
+                  hh: "",
+                  d: "",
+                  dd: "",
+                  M: "",
+                  MM: "",
+                  y: "",
+                  yy: "",
+                },
+              })
+            } else {
+              moment.updateLocale("en", {
+                relativeTime: {
+                  s: "%d second",
+                  ss: "%d seconds",
+                  m: "%d minute",
+                  mm: "%d minutes",
+                  h: "%d hour",
+                  hh: "%d hours",
+                  d: "%d day",
+                  dd: "%d days",
+                  M: "%d month",
+                  MM: "%d months",
+                  y: "%d year",
+                  yy: "%d years",
+                },
+              })
+            }
+
+            if (_startAt === null) {
+              return null
+            }
+
+            const startAt = moment(_startAt)
+            const now = moment()
+
+            if (startAt < now) {
+              return null
+            }
+
+            if (short === false && startAt > now.clone().add(30, "days")) {
+              return null
+            }
+
+            return `${moment
+              .duration(startAt.diff(now))
+              .humanize(short, { ss: 1, d: 31 })}`
+          },
+        },
+        distanceToClose: {
           fragment: gql`
             ... on ViewingRoom {
               startAt
               endAt
             }
           `,
-          resolve: ({ startAt: _startAt, endAt: _endAt }) => {
+          resolve: (
+            { startAt: _startAt, endAt: _endAt },
+            { short = false }
+          ) => {
+            moment.updateLocale("en", {
+              relativeTime: {
+                s: "%d second",
+                ss: "%d seconds",
+                m: "%d minute",
+                mm: "%d minutes",
+                h: "%d hour",
+                hh: "%d hours",
+                d: "%d day",
+                dd: "%d days",
+                M: "%d month",
+                MM: "%d months",
+                y: "%d year",
+                yy: "%d years",
+              },
+            })
+
+            if (_startAt === null || _endAt === null) {
+              return null
+            }
+
             const startAt = moment(_startAt)
             const endAt = moment(_endAt)
             const now = moment()
 
-            if (now < startAt || endAt > now.clone().add(30, "days")) {
+            if (startAt > now) {
               return null
             }
-            if (now > endAt) {
-              return "Closed"
+
+            if (endAt < now) {
+              return null
             }
 
-            return (
-              "Closes in " +
-              (moment.duration(endAt.diff(now)) as DistancePlugin).distance()
-            )
+            if (short === false) {
+              if (endAt > now.clone().add(10, "days")) {
+                return null
+              }
+            } else {
+              if (endAt > now.clone().add(5, "days")) {
+                return null
+              }
+            }
+
+            return `${moment
+              .duration(endAt.diff(now))
+              .humanize(false, { ss: 1, d: 31 })}`
           },
         },
         partner: {
