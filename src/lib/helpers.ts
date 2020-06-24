@@ -11,6 +11,7 @@ import {
   reject,
   trim,
 } from "lodash"
+import moment, { LocaleSpecification } from "moment"
 import now from "performance-now"
 import { stringify } from "qs"
 import { getPagingParameters, CursorPageable } from "relay-cursor-paging"
@@ -101,6 +102,7 @@ export const removeNulls = (object) => {
     (key) => object[key] == null && delete object[key]
   ) // eslint-disable-line eqeqeq, no-param-reassign, max-len
 }
+
 export const resolveBlueGreen = (
   resolveBlue: string,
   resolveGreen?: string,
@@ -112,4 +114,17 @@ export const resolveBlueGreen = (
     }
   }
   return resolveBlue
+}
+
+/**
+ * Uses `moment.defineLocale` to define a new locale, but it makes sure we revert to the locale we were before.
+ * `defineLocale` normally activates the new locale, so we need to make sure we set it back to what it was.
+ */
+export const defineCustomLocale = (
+  uniqueName: string,
+  localeSpec: LocaleSpecification
+) => {
+  const currentLocale = moment.locale()
+  moment.defineLocale(uniqueName, localeSpec)
+  moment.locale(currentLocale)
 }
