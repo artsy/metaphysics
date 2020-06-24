@@ -1,11 +1,10 @@
 import gql from "lib/gql"
 import { GraphQLSchema } from "graphql"
-import moment, { Duration } from "moment"
-import "moment.distance"
 
 interface DistancePlugin extends Duration {
   distance(): string
 }
+import moment from "moment"
 
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
