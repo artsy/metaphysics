@@ -1,6 +1,9 @@
 import moment from "moment"
+import { defineCustomLocale } from "lib/helpers"
 
-moment.updateLocale("en", {
+const LocaleEnAuctionRelative = "en-auction-relative"
+defineCustomLocale(LocaleEnAuctionRelative, {
+  parentLocale: "en",
   relativeTime: {
     future: "in %s",
     past: "%s ago",
@@ -53,9 +56,9 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
     if (!isRegistered) {
       const diff = moment().diff(moment(registration_ends_at), "hours")
       const format = diff > -24 ? "ha" : "MMM D, ha"
-      const label = `register by\n${moment(registration_ends_at).format(
-        format
-      )}`
+      const label = `register by\n${moment(registration_ends_at)
+        .locale(LocaleEnAuctionRelative)
+        .format(format)}`
       return label
     }
   }
@@ -91,7 +94,9 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
 
     // Coming in the future (> 5 days away)
     if (isFuture) {
-      return `ends ${moment(end_at).format("MMM D")}`
+      return `ends ${moment(end_at)
+        .locale(LocaleEnAuctionRelative)
+        .format("MMM D")}`
     }
   }
 }

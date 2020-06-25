@@ -1,11 +1,46 @@
 import gql from "lib/gql"
 import { GraphQLSchema } from "graphql"
-import moment, { Duration } from "moment"
-import "moment.distance"
+import moment from "moment"
+import { defineCustomLocale } from "lib/helpers"
 
-interface DistancePlugin extends Duration {
-  distance(): string
-}
+const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
+defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
+  parentLocale: "en",
+  relativeTime: {
+    future: "soon",
+    s: "",
+    ss: "",
+    m: "",
+    mm: "",
+    h: "",
+    hh: "",
+    d: "",
+    dd: "",
+    M: "",
+    MM: "",
+    y: "",
+    yy: "",
+  },
+})
+
+const LocaleEnViewingRoomRelativeLong = "en-viewing-room-relative-long"
+defineCustomLocale(LocaleEnViewingRoomRelativeLong, {
+  parentLocale: "en",
+  relativeTime: {
+    s: "%d second",
+    ss: "%d seconds",
+    m: "%d minute",
+    mm: "%d minutes",
+    h: "%d hour",
+    hh: "%d hours",
+    d: "%d day",
+    dd: "%d days",
+    M: "%d month",
+    MM: "%d months",
+    y: "%d year",
+    yy: "%d years",
+  },
+})
 
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
@@ -25,7 +60,8 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
         ): ArtworkConnection
-        formattedEndAt: String
+        distanceToOpen(short: Boolean! = false): String
+        distanceToClose(short: Boolean! = false): String
         partner: Partner
       }
 
@@ -81,29 +117,85 @@ export const gravityStitchingEnvironment = (
             })
           },
         },
-        formattedEndAt: {
+        distanceToOpen: {
+          fragment: gql`
+            ... on ViewingRoom {
+              startAt
+            }
+		  `,
+          resolve: (
+            { startAt: _startAt }: { startAt: string | null },
+            { short = false }: { short?: boolean }
+          ) => {
+            if (_startAt === null) {
+              return null
+            }
+
+            const startAt = moment(_startAt)
+            const now = moment()
+
+            if (startAt < now) {
+              return null
+            }
+
+            if (!short && startAt > now.clone().add(30, "days")) {
+              return null
+            }
+
+            const distance = moment.duration(startAt.diff(now))
+            return distance
+              .locale(
+                short
+                  ? LocaleEnViewingRoomRelativeShort
+                  : LocaleEnViewingRoomRelativeLong
+              )
+              .humanize(short, { ss: 1, d: 31 })
+          },
+        },
+        distanceToClose: {
           fragment: gql`
             ... on ViewingRoom {
               startAt
               endAt
             }
           `,
-          resolve: ({ startAt: _startAt, endAt: _endAt }) => {
+          resolve: (
+            {
+              startAt: _startAt,
+              endAt: _endAt,
+            }: { startAt: string | null; endAt: string | null },
+            { short = false }: { short?: boolean }
+          ) => {
+            if (_startAt === null || _endAt === null) {
+              return null
+            }
+
             const startAt = moment(_startAt)
             const endAt = moment(_endAt)
             const now = moment()
 
-            if (now < startAt || endAt > now.clone().add(30, "days")) {
+            if (startAt > now) {
               return null
             }
-            if (now > endAt) {
-              return "Closed"
+
+            if (endAt < now) {
+              return null
             }
 
-            return (
-              "Closes in " +
-              (moment.duration(endAt.diff(now)) as DistancePlugin).distance()
-            )
+            if (short) {
+              if (endAt > now.clone().add(5, "days")) {
+                return null
+              }
+            } else {
+              if (endAt > now.clone().add(10, "days")) {
+                return null
+              }
+            }
+
+            return `${moment
+              .duration(endAt.diff(now))
+              .locale(LocaleEnViewingRoomRelativeLong)
+              .humanize(false, { ss: 1, d: 31 })}`
           },
         },
         partner: {
