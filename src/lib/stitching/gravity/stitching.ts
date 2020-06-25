@@ -138,7 +138,7 @@ export const gravityStitchingEnvironment = (
               return null
             }
 
-            if (short === false && startAt > now.clone().add(30, "days")) {
+            if (!short && startAt > now.clone().add(30, "days")) {
               return null
             }
 
