@@ -3,8 +3,8 @@ import { GraphQLSchema } from "graphql"
 import moment from "moment"
 import { defineCustomLocale } from "lib/helpers"
 
-const LocaleEnViewingroomRelativeShort = "en-viewingroom-relative-short"
-defineCustomLocale(LocaleEnViewingroomRelativeShort, {
+const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
+defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
   parentLocale: "en",
   relativeTime: {
     future: "soon",
@@ -23,8 +23,8 @@ defineCustomLocale(LocaleEnViewingroomRelativeShort, {
   },
 })
 
-const LocaleEnViewingroomRelativeLong = "en-viewingroom-relative-long"
-defineCustomLocale(LocaleEnViewingroomRelativeLong, {
+const LocaleEnViewingRoomRelativeLong = "en-viewing-room-relative-long"
+defineCustomLocale(LocaleEnViewingRoomRelativeLong, {
   parentLocale: "en",
   relativeTime: {
     s: "%d second",
@@ -143,8 +143,8 @@ export const gravityStitchingEnvironment = (
             return distance
               .locale(
                 short
-                  ? LocaleEnViewingroomRelativeShort
-                  : LocaleEnViewingroomRelativeLong
+                  ? LocaleEnViewingRoomRelativeShort
+                  : LocaleEnViewingRoomRelativeLong
               )
               .humanize(short, { ss: 1, d: 31 })
           },
@@ -188,7 +188,7 @@ export const gravityStitchingEnvironment = (
 
             return `${moment
               .duration(endAt.diff(now))
-              .locale(LocaleEnViewingroomRelativeLong)
+              .locale(LocaleEnViewingRoomRelativeLong)
               .humanize(false, { ss: 1, d: 31 })}`
           },
         },
