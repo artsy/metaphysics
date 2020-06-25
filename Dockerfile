@@ -3,6 +3,7 @@ FROM node:12.14-alpine
 WORKDIR /app
 
 RUN apk --no-cache --quiet add \
+  bash \
   build-base \
   dumb-init \
   git \
