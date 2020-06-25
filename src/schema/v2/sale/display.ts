@@ -57,7 +57,7 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
       const diff = moment().diff(moment(registration_ends_at), "hours")
       const format = diff > -24 ? "ha" : "MMM D, ha"
       const label = `register by\n${moment(registration_ends_at)
-        .locale("en-auction-relative")
+        .locale(LocaleEnAuctionRelative)
         .format(format)}`
       return label
     }
