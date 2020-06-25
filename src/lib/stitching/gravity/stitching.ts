@@ -182,12 +182,12 @@ export const gravityStitchingEnvironment = (
               return null
             }
 
-            if (short === false) {
-              if (endAt > now.clone().add(10, "days")) {
+            if (short) {
+              if (endAt > now.clone().add(5, "days")) {
                 return null
               }
             } else {
-              if (endAt > now.clone().add(5, "days")) {
+              if (endAt > now.clone().add(10, "days")) {
                 return null
               }
             }
