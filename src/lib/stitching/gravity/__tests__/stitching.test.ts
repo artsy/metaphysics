@@ -5,6 +5,17 @@ import {
 } from "./testingUtils"
 import moment, { DurationInputArg2, DurationInputArg1 } from "moment"
 
+const momentAdd = (...args) => {
+  return moment()
+    .add(...args)
+    .toISOString()
+}
+const momentSubtract = (...args) => {
+  return moment()
+    .subtract(...args)
+    .toISOString()
+}
+
 describe("gravity/stitching", () => {
   describe("#artworksConnection", () => {
     it("extends the ViewingRoom type with an artworksConnection field", async () => {
@@ -87,19 +98,19 @@ describe("gravity/stitching", () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { distanceToOpen } = resolvers.ViewingRoom
       expect(
-        distanceToOpen.resolve({ startAt: moment().subtract(1, "second") }, {})
+        distanceToOpen.resolve({ startAt: momentSubtract(1, "second") }, {})
       ).toEqual(null)
 
       expect(
         distanceToOpen.resolve(
-          { startAt: moment().subtract(1, "second") },
+          { startAt: momentSubtract(1, "second") },
           { short: false }
         )
       ).toEqual(null)
 
       expect(
         distanceToOpen.resolve(
-          { startAt: moment().subtract(1, "second") },
+          { startAt: momentSubtract(1, "second") },
           { short: true }
         )
       ).toEqual(null)
@@ -131,7 +142,7 @@ describe("gravity/stitching", () => {
       cases.forEach((c) => {
         expect(
           distanceToOpen.resolve(
-            { startAt: moment().add(...c[0]) },
+            { startAt: momentAdd(...c[0]) },
             { short: false }
           )
         ).toEqual(c[1])
@@ -164,7 +175,7 @@ describe("gravity/stitching", () => {
       cases.forEach((c) => {
         expect(
           distanceToOpen.resolve(
-            { startAt: moment().add(...c[0]) },
+            { startAt: momentAdd(...c[0]) },
             { short: true }
           )
         ).toEqual(c[1])
@@ -189,21 +200,21 @@ describe("gravity/stitching", () => {
 
       expect(
         distanceToClose.resolve(
-          { startAt: moment().subtract(2, "second"), endAt: null },
+          { startAt: momentSubtract(2, "seconds"), endAt: null },
           {}
         )
       ).toEqual(null)
 
       expect(
         distanceToClose.resolve(
-          { startAt: moment().subtract(2, "second"), endAt: null },
+          { startAt: momentSubtract(2, "seconds"), endAt: null },
           { short: false }
         )
       ).toEqual(null)
 
       expect(
         distanceToClose.resolve(
-          { startAt: moment().subtract(2, "second"), endAt: null },
+          { startAt: momentSubtract(2, "seconds"), endAt: null },
           { short: true }
         )
       ).toEqual(null)
@@ -215,8 +226,8 @@ describe("gravity/stitching", () => {
       expect(
         distanceToClose.resolve(
           {
-            startAt: moment().subtract(2, "second"),
-            endAt: moment().subtract(1, "second"),
+            startAt: momentSubtract(2, "seconds"),
+            endAt: momentSubtract(1, "second"),
           },
           {}
         )
@@ -225,8 +236,8 @@ describe("gravity/stitching", () => {
       expect(
         distanceToClose.resolve(
           {
-            startAt: moment().subtract(2, "second"),
-            endAt: moment().subtract(1, "second"),
+            startAt: momentSubtract(2, "seconds"),
+            endAt: momentSubtract(1, "second"),
           },
           { short: false }
         )
@@ -235,8 +246,8 @@ describe("gravity/stitching", () => {
       expect(
         distanceToClose.resolve(
           {
-            startAt: moment().subtract(2, "second"),
-            endAt: moment().subtract(1, "second"),
+            startAt: momentSubtract(2, "seconds"),
+            endAt: momentSubtract(1, "second"),
           },
           { short: true }
         )
@@ -248,21 +259,21 @@ describe("gravity/stitching", () => {
       const { distanceToClose } = resolvers.ViewingRoom
       expect(
         distanceToClose.resolve(
-          { startAt: moment().add(1, "days"), endAt: moment().add(4, "days") },
+          { startAt: momentAdd(1, "days"), endAt: momentAdd(4, "days") },
           {}
         )
       ).toEqual(null)
 
       expect(
         distanceToClose.resolve(
-          { startAt: moment().add(1, "days"), endAt: moment().add(4, "days") },
+          { startAt: momentAdd(1, "days"), endAt: momentAdd(4, "days") },
           { short: false }
         )
       ).toEqual(null)
 
       expect(
         distanceToClose.resolve(
-          { startAt: moment().add(1, "days"), endAt: moment().add(4, "days") },
+          { startAt: momentAdd(1, "days"), endAt: momentAdd(4, "days") },
           { short: true }
         )
       ).toEqual(null)
@@ -294,8 +305,8 @@ describe("gravity/stitching", () => {
         expect(
           distanceToClose.resolve(
             {
-              startAt: moment().subtract(2, "second"),
-              endAt: moment().add(...c[0]),
+              startAt: momentSubtract(2, "second"),
+              endAt: momentAdd(...c[0]),
             },
             { short: false }
           )
@@ -329,8 +340,8 @@ describe("gravity/stitching", () => {
         expect(
           distanceToClose.resolve(
             {
-              startAt: moment().subtract(2, "second"),
-              endAt: moment().add(...c[0]),
+              startAt: momentSubtract(2, "second"),
+              endAt: momentAdd(...c[0]),
             },
             { short: true }
           )
