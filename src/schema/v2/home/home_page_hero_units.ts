@@ -53,8 +53,15 @@ const HomePageHeroUnitType = new GraphQLObjectType<any, ResolverContext>({
     },
     title: {
       type: GraphQLString,
-      resolve: ({ mobile_title, name, platform }) => {
-        return platform === "desktop" ? name : mobile_title
+      resolve: ({ mobile_title, name, platform, app_title }) => {
+        switch (platform) {
+          case "desktop":
+            return name
+          case "mobile":
+            return app_title
+          case "martsy":
+            return mobile_title
+        }
       },
     },
     titleImageURL: {
@@ -70,8 +77,20 @@ const HomePageHeroUnitType = new GraphQLObjectType<any, ResolverContext>({
     },
     subtitle: {
       type: GraphQLString,
-      resolve: ({ mobile_description, description, platform }) => {
-        return platform === "desktop" ? description : mobile_description
+      resolve: ({
+        app_description,
+        mobile_description,
+        description,
+        platform,
+      }) => {
+        switch (platform) {
+          case "desktop":
+            return description
+          case "martsy":
+            return mobile_description
+          case "mobile":
+            return app_description
+        }
       },
     },
     linkText: {
@@ -102,9 +121,20 @@ const HomePageHeroUnitType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       resolve: (
-        { platform, background_image_url, background_image_mobile_url },
+        {
+          platform,
+          background_image_url,
+          background_image_mobile_url,
+          background_image_app_phone_url,
+          background_image_app_tablet_url,
+        },
         { version }
       ) => {
+        if (platform === "mobile") {
+          return version === "wide"
+            ? background_image_app_tablet_url
+            : background_image_app_phone_url
+        }
         if (version) {
           return version === "wide"
             ? background_image_url
@@ -142,8 +172,7 @@ const HomePageHeroUnits: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_, { platform }, { heroUnitsLoader }) => {
-    const params = { enabled: true }
-    params[platform] = true
+    const params = { enabled: true, [platform]: true }
     return heroUnitsLoader(params).then((units) => {
       return units.map((unit) => Object.assign({ platform }, unit))
     })

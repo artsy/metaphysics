@@ -9,14 +9,18 @@ describe("HomePageHeroUnits", () => {
       link: "/artrio-2016",
       heading: "Featured Fair",
       name: "ArtRio 2016",
-      mobile_title: "ArtRio 2016",
+      mobile_title: "Mobile ArtRio 2016",
+      app_title: "App ArtRio 2016",
       background_image_url: "wide.jpg",
       background_image_mobile_url: "narrow.jpg",
+      background_image_app_phone_url: "app-narrow.jpg",
+      background_image_app_tablet_url: "app-wide.jpg",
       description: "Discover works on your laptop",
       mobile_description: "Discover works on your phone",
+      app_description: "Discover works in the artsy app",
     },
   ]
-  ;[("mobile", "desktop")].forEach((platform) => {
+  ;[("martsy", "desktop")].forEach((platform) => {
     it(`picks subtitle for ${platform}`, () => {
       const params = { enabled: true }
       params[platform] = true
@@ -95,7 +99,7 @@ describe("HomePageHeroUnits", () => {
     const query = `
       {
         homePage {
-          heroUnits(platform: MOBILE) {
+          heroUnits(platform: MARTSY) {
             backgroundImageURL(version: WIDE)
           }
         }
@@ -108,6 +112,76 @@ describe("HomePageHeroUnits", () => {
           backgroundImageURL: "wide.jpg",
         },
       ])
+    })
+  })
+
+  it("returns the correct wide image on 'mobile'", async () => {
+    const context = {
+      heroUnitsLoader: sinon.stub().returns(Promise.resolve(payload)),
+    }
+
+    const backgroundImageWideResult = await runQuery(
+      `
+      {
+        homePage {
+          heroUnits(platform: MOBILE) {
+            backgroundImageURL(version: WIDE)
+          }
+        }
+      }
+    `,
+      context
+    )
+
+    expect(
+      backgroundImageWideResult.homePage.heroUnits[0].backgroundImageURL
+    ).toBe("app-wide.jpg")
+  })
+
+  it("returns the correct narrow image on 'mobile'", async () => {
+    const context = {
+      heroUnitsLoader: sinon.stub().returns(Promise.resolve(payload)),
+    }
+
+    const backgroundImageNarrowResult = await runQuery(
+      `
+      {
+        homePage {
+          heroUnits(platform: MOBILE) {
+            backgroundImageURL(version: NARROW)
+          }
+        }
+      }
+    `,
+      context
+    )
+
+    expect(
+      backgroundImageNarrowResult.homePage.heroUnits[0].backgroundImageURL
+    ).toBe("app-narrow.jpg")
+  })
+  it("returns the correct title and subtitle on 'mobile'", async () => {
+    const context = {
+      heroUnitsLoader: sinon.stub().returns(Promise.resolve(payload)),
+    }
+
+    const result = await runQuery(
+      `
+      {
+        homePage {
+          heroUnits(platform: MOBILE) {
+            title
+            subtitle
+          }
+        }
+      }
+    `,
+      context
+    )
+
+    expect(result.homePage.heroUnits[0]).toEqual({
+      title: "App ArtRio 2016",
+      subtitle: "Discover works in the artsy app",
     })
   })
 })
