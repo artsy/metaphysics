@@ -123,7 +123,10 @@ export const gravityStitchingEnvironment = (
               startAt
             }
 		  `,
-          resolve: ({ startAt: _startAt }, { short = false }) => {
+          resolve: (
+            { startAt: _startAt }: { startAt: string | null },
+            { short = false }: { short?: boolean }
+          ) => {
             if (_startAt === null) {
               return null
             }
@@ -157,8 +160,11 @@ export const gravityStitchingEnvironment = (
             }
           `,
           resolve: (
-            { startAt: _startAt, endAt: _endAt },
-            { short = false }
+            {
+              startAt: _startAt,
+              endAt: _endAt,
+            }: { startAt: string | null; endAt: string | null },
+            { short = false }: { short?: boolean }
           ) => {
             if (_startAt === null || _endAt === null) {
               return null
