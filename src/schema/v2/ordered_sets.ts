@@ -4,7 +4,6 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLBoolean,
-  GraphQLInt,
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
@@ -20,14 +19,6 @@ const OrderedSets: GraphQLFieldConfig<void, ResolverContext> = {
     public: {
       type: GraphQLBoolean,
       defaultValue: true,
-    },
-    page: {
-      type: GraphQLInt,
-      defaultValue: 1,
-    },
-    size: {
-      type: GraphQLInt,
-      defaultValue: 10,
     },
   },
   resolve: async (_root, args, { setsLoader }) => {
