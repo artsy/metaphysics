@@ -37,7 +37,7 @@ import Genes from "./genes"
 // import GeneFamilies from "./gene_families"
 // import GeneFamily from "./gene_family"
 import OrderedSet from "./ordered_set"
-// import OrderedSets from "./ordered_sets"
+import OrderedSets from "./ordered_sets"
 // import Profile from "./profile"
 // import Partner from "./partner"
 // import Partners from "./partners"
@@ -130,7 +130,7 @@ const rootFields = {
   me: Me,
   node: ObjectIdentification.NodeField,
   orderedSet: OrderedSet,
-  // orderedSets: OrderedSets,
+  orderedSets: OrderedSets,
   partner: Partner,
   // partnerCategories: PartnerCategories,
   // partnerCategory: PartnerCategory,

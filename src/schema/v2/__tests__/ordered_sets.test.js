@@ -1,10 +1,10 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 
-xdescribe("OrderedSets type", () => {
+describe("OrderedSets type", () => {
   const query = `
   {
-    orderedSets(key: "artists:featured-genes", page: 1, size: 5) {
+    orderedSets(key: "artists:featured-genes") {
       internalID
       name
       description
@@ -32,11 +32,13 @@ xdescribe("OrderedSets type", () => {
       })
     ),
     setItemsLoader: sinon.stub().returns(
-      Promise.resolve([
-        {
-          name: "Painting",
-        },
-      ])
+      Promise.resolve({
+        body: [
+          {
+            name: "Painting",
+          },
+        ],
+      })
     ),
   }
 
