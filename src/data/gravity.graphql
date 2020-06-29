@@ -71,6 +71,10 @@ type ArtistEdge {
 }
 
 type ArtistSeries {
+  """
+  List of Mongo IDs for associated Artists
+  """
+  artistIDs: [String!]!
   description: String
   featured: Boolean!
 
