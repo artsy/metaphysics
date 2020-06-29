@@ -46,7 +46,7 @@
     "@babel/register": "7.4.4",
     "@graphql-tools/delegate": "6.0.10",
     "@heroku/foreman": "2.0.2",
-    "@sentry/node": "^5.18.1",
+    "@sentry/node": "5.18.1",
     "accounting": "0.4.1",
     "apollo-link": "1.2.1",
     "apollo-link-context": "1.0.8",
