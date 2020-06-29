@@ -1,4 +1,3 @@
-import raven from "raven"
 import { get } from "lodash"
 import { error as log } from "lib/loggers"
 import { GraphQLTimeoutError } from "lib/graphqlTimeoutMiddleware"
@@ -6,6 +5,7 @@ import { Request } from "../../node_modules/@types/express"
 import config from "config"
 import { GraphQLError, GraphQLFormattedError } from "graphql/error"
 import { HTTPError } from "./HTTPError"
+import * as Sentry from "@sentry/node"
 
 const blacklistHttpStatuses = [401, 403, 404]
 
@@ -80,17 +80,22 @@ const reportErrorToSentry = (
   const encodedQuery = encodeURIComponent(query)
   const href = `${baseURL}/graphiql?variables=${encodedVars}&query=${encodedQuery}`
 
-  raven.captureException(error.originalError || error, {
-    tags: { graphql: "exec_error" },
-    extra: {
-      source: (error.source && error.source.body) || query,
-      positions: error.positions,
-      path: error.path,
-      variables,
-      href,
-    },
-    ...raven.parsers.parseRequest(req),
-  })
+  Sentry.captureException(
+    error.originalError || error,
+    Sentry.Handlers.parseRequest(
+      {
+        tags: { graphql: "exec_error" },
+        extra: {
+          source: (error.source && error.source.body) || query,
+          positions: error.positions,
+          path: error.path,
+          variables,
+          href,
+        },
+      },
+      req
+    )
+  )
 }
 
 type WriteablePartial<T> = { -readonly [P in keyof T]+?: T[P] }

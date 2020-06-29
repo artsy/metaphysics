@@ -12,7 +12,6 @@ import { schema as schemaV1 } from "./schema/v1"
 import { schema as schemaV2 } from "./schema/v2"
 import moment from "moment-timezone"
 import morgan from "artsy-morgan"
-import raven from "raven"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import {
   fetchLoggerSetup,
@@ -34,6 +33,7 @@ import { ErrorExtension } from "./extensions/errorExtension"
 import { LoggingExtension } from "./extensions/loggingExtension"
 import { principalFieldDirectiveExtension } from "./extensions/principalFieldDirectiveExtension"
 import { principalFieldDirectiveValidation } from "validations/principalFieldDirectiveValidation"
+import * as Sentry from "@sentry/node"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -100,21 +100,16 @@ function startApp(appSchema, path: string) {
     )
   }
 
+  if (enableSentry) {
+    Sentry.init({
+      dsn: SENTRY_PRIVATE_DSN,
+    })
+    app.use(Sentry.Handlers.requestHandler())
+  }
+
   app.use(requestIDsAdder)
   if (PRODUCTION_ENV) {
     app.set("trust proxy", true)
-  }
-
-  if (enableSentry) {
-    raven
-      .config(SENTRY_PRIVATE_DSN, {
-        ignoreErrors: [
-          "Response not successful: Received status code 404",
-          "Must provide query string",
-        ],
-      })
-      .install()
-    app.use(raven.requestHandler())
   }
 
   app.use(
@@ -249,7 +244,7 @@ function startApp(appSchema, path: string) {
   }
 
   if (enableSentry) {
-    app.use(raven.errorHandler())
+    app.use(Sentry.Handlers.errorHandler())
   }
 
   return app
