@@ -1,7 +1,7 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-xdescribe("Partners", () => {
+describe("Partners", () => {
   it("returns a list of partners matching array of ids", async () => {
     const partnersLoader = ({ id }) => {
       if (id) {
@@ -19,11 +19,17 @@ xdescribe("Partners", () => {
     const query = gql`
       {
         partners(ids: ["5a958e8e7622dd49f4f4176d"]) {
-          internalID
+          edges {
+            node {
+              internalID
+            }
+          }
         }
       }
     `
     const { partners } = await runQuery(query, { partnersLoader })
-    expect(partners[0].internalID).toEqual("5a958e8e7622dd49f4f4176d")
+    expect(partners.edges[0].node.internalID).toEqual(
+      "5a958e8e7622dd49f4f4176d"
+    )
   })
 })
