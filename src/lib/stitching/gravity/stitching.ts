@@ -61,7 +61,7 @@ export const gravityStitchingEnvironment = (
         `,
           resolve: ({ artistIDs: ids }, args, context, info) => {
             if (ids.length === 0) {
-              ids = [null]
+              return []
             }
 
             return info.mergeInfo.delegateToSchema({
