@@ -7405,6 +7405,39 @@ type Query {
     id: String!
   ): Partner
 
+  # A list of Partners
+  partners(
+    defaultProfilePublic: Boolean
+    eligibleForCarousel: Boolean
+
+    # Indicates an active subscription
+    eligibleForListing: Boolean
+
+    # Indicates tier 1/2 for gallery, 1 for institution
+    eligibleForPrimaryBucket: Boolean
+
+    # Indicates tier 3/4 for gallery, 2 for institution
+    eligibleForSecondaryBucket: Boolean
+    hasFullProfile: Boolean
+    ids: [String]
+
+    # Coordinates to find partners closest to
+    near: String
+    page: Int
+
+    #
+    #         Only return partners of the specified partner categories.
+    #         Accepts list of slugs.
+    #
+    partnerCategories: [String]
+    size: Int
+    sort: PartnersSortType
+
+    # term used for searching Partners
+    term: String
+    type: [PartnerClassification]
+  ): [Partner]
+
   # A Sale
   sale(
     # The slug or ID of the Sale
@@ -9256,6 +9289,39 @@ type Viewer {
     # The slug or ID of the Partner
     id: String!
   ): Partner
+
+  # A list of Partners
+  partners(
+    defaultProfilePublic: Boolean
+    eligibleForCarousel: Boolean
+
+    # Indicates an active subscription
+    eligibleForListing: Boolean
+
+    # Indicates tier 1/2 for gallery, 1 for institution
+    eligibleForPrimaryBucket: Boolean
+
+    # Indicates tier 3/4 for gallery, 2 for institution
+    eligibleForSecondaryBucket: Boolean
+    hasFullProfile: Boolean
+    ids: [String]
+
+    # Coordinates to find partners closest to
+    near: String
+    page: Int
+
+    #
+    #         Only return partners of the specified partner categories.
+    #         Accepts list of slugs.
+    #
+    partnerCategories: [String]
+    size: Int
+    sort: PartnersSortType
+
+    # term used for searching Partners
+    term: String
+    type: [PartnerClassification]
+  ): [Partner]
 
   # A Sale
   sale(
