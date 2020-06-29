@@ -1416,7 +1416,7 @@
     "@sentry/types" "5.18.1"
     tslib "^1.9.3"
 
-"@sentry/node@^5.18.1":
+"@sentry/node@5.18.1":
   version "5.18.1"
   resolved "https://registry.yarnpkg.com/@sentry/node/-/node-5.18.1.tgz#9c126735e7a27a9353ff9ecc71059e8781657f8c"
   integrity sha512-faIKb/1i0MYKkWL6crtnIuw1WTwvnQZFaOX4zjZeqZ+z7Q72YfnLWMTaJMe8Q38P/obWf75YRffIJrezkT9lXw==
