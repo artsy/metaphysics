@@ -7124,9 +7124,7 @@ type Query {
   artwork(
     # The slug or ID of the Artwork
     id: String!
-
-    # Include unlisted artwork or not
-    includeUnlisted: Boolean
+    includeUnlisted: Boolean! = false
   ): Artwork
 
   # List of all artwork attribution classes
@@ -7138,6 +7136,7 @@ type Query {
     before: String
     first: Int
     ids: [String]
+    includeUnlisted: Boolean! = false
     last: Int
   ): ArtworkConnection
     @deprecated(
@@ -9086,9 +9085,7 @@ type Viewer {
   artwork(
     # The slug or ID of the Artwork
     id: String!
-
-    # Include unlisted artwork or not
-    includeUnlisted: Boolean
+    includeUnlisted: Boolean! = false
   ): Artwork
 
   # List of all artwork attribution classes
@@ -9100,6 +9097,7 @@ type Viewer {
     before: String
     first: Int
     ids: [String]
+    includeUnlisted: Boolean! = false
     last: Int
   ): ArtworkConnection
     @deprecated(
@@ -9368,6 +9366,7 @@ type ViewingRoom {
     after: String
     before: String
     first: Int
+    includeUnlisted: Boolean! = false
     last: Int
   ): ArtworkConnection
 

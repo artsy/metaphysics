@@ -59,6 +59,7 @@ export const gravityStitchingEnvironment = (
           last: Int
           after: String
           before: String
+          includeUnlisted: Boolean! = false
         ): ArtworkConnection
         distanceToOpen(short: Boolean! = false): String
         distanceToClose(short: Boolean! = false): String
@@ -130,6 +131,7 @@ export const gravityStitchingEnvironment = (
             // Note that we can't easily change this globally as there are multiple places
             // clients are sending params of empty array but expecting Gravity to return
             // non-empty data. This only fixes the issue for viewing room artworks.
+
             if (ids.length === 0) {
               ids = [null]
             }
