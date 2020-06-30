@@ -1,5 +1,5 @@
 import _ from "lodash"
-import Partners from "./partners"
+import { Partners } from "./partners"
 import {
   FilterPartnersType,
   PartnersAggregation,

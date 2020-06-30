@@ -14,7 +14,7 @@ import { ResolverContext } from "types/graphql"
 export const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerCategory",
   fields: () => {
-    const Partners = require("./partners").default
+    const { Partners } = require("./partners")
     return {
       ...SlugAndInternalIDFields,
       cached,

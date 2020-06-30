@@ -1,5 +1,5 @@
 import { clone } from "lodash"
-import Partner from "./partner"
+import Partner, { PartnerType } from "./partner"
 import PartnerTypeType from "./input_fields/partner_type_type"
 import {
   GraphQLString,
@@ -10,8 +10,15 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
+import {
+  connectionWithCursorInfo,
+  createPageCursors,
+} from "./fields/pagination"
+import { connectionFromArray } from "graphql-relay"
 
-const Partners: GraphQLFieldConfig<void, ResolverContext> = {
+export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Partner.type),
   description: "A list of Partners",
   args: {
@@ -129,4 +136,29 @@ const Partners: GraphQLFieldConfig<void, ResolverContext> = {
   },
 }
 
-export default Partners
+export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
+  type: connectionWithCursorInfo({ nodeType: PartnerType }).connectionType,
+  description: "A list of Partners",
+  args: pageable({
+    ids: {
+      type: new GraphQLList(GraphQLString),
+    },
+  }),
+  resolve: (_root, { ..._options }, { partnersLoader }) => {
+    const { page, size } = convertConnectionArgsToGravityArgs(_options)
+    const options: any = {
+      id: _options.ids,
+      page,
+      size,
+    }
+
+    return partnersLoader(options).then((body) => {
+      const totalCount = body.length
+      return {
+        totalCount,
+        pageCursors: createPageCursors({ page, size }, totalCount),
+        ...connectionFromArray(body, options),
+      }
+    })
+  },
+}

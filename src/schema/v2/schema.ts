@@ -40,7 +40,7 @@ import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
 // import Profile from "./profile"
 // import Partner from "./partner"
-// import Partners from "./partners"
+import { PartnersConnection } from "./partners"
 // import FilterPartners from "./filter_partners"
 import { filterArtworksConnection } from "./filterArtworksConnection"
 // import PartnerCategory from "./partner_category"
@@ -135,7 +135,7 @@ const rootFields = {
   partner: Partner,
   // partnerCategories: PartnerCategories,
   // partnerCategory: PartnerCategory,
-  // partners: Partners,
+  partnersConnection: PartnersConnection,
   // profile: Profile,
   sale: Sale,
   saleArtwork: SaleArtwork,
