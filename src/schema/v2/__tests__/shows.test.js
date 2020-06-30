@@ -1,5 +1,5 @@
 import gql from "lib/gql"
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 
 describe("Shows", () => {
   it("returns a list of shows matching array of ids", async () => {
@@ -16,7 +16,7 @@ describe("Shows", () => {
 
     const query = gql`
       {
-        shows(ids: ["5c406911d545090509a857b9"]) {
+        showsConnection(ids: ["5c406911d545090509a857b9"]) {
           edges {
             node {
               internalID
@@ -25,7 +25,9 @@ describe("Shows", () => {
         }
       }
     `
-    const { shows } = await runQuery(query, { showsLoader })
-    expect(shows.edges[0].node.internalID).toEqual("5c406911d545090509a857b9")
+    const { showsConnection } = await runQuery(query, { showsLoader })
+    expect(showsConnection.edges[0].node.internalID).toEqual(
+      "5c406911d545090509a857b9"
+    )
   })
 })

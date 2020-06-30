@@ -143,7 +143,7 @@ const rootFields = {
   salesConnection: SalesConnectionField,
   searchConnection: Search,
   show: Show,
-  shows: Shows,
+  showsConnection: Shows,
   staticContent: StaticContent,
   // status: Status,
   system: System,
