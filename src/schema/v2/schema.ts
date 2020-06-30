@@ -134,7 +134,7 @@ const rootFields = {
   partner: Partner,
   // partnerCategories: PartnerCategories,
   // partnerCategory: PartnerCategory,
-  partners: PartnersConnection,
+  partnersConnection: PartnersConnection,
   // profile: Profile,
   sale: Sale,
   saleArtwork: SaleArtwork,

@@ -7426,7 +7426,7 @@ type Query {
   ): Partner
 
   # A list of Partners
-  partners(
+  partnersConnection(
     after: String
     before: String
     first: Int
@@ -9287,7 +9287,7 @@ type Viewer {
   ): Partner
 
   # A list of Partners
-  partners(
+  partnersConnection(
     after: String
     before: String
     first: Int

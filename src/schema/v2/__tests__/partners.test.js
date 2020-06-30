@@ -16,7 +16,7 @@ describe("PartnersConnection", () => {
 
     const query = gql`
       {
-        partners(ids: ["5a958e8e7622dd49f4f4176d"]) {
+        partnersConnection(ids: ["5a958e8e7622dd49f4f4176d"]) {
           edges {
             node {
               internalID
@@ -25,8 +25,8 @@ describe("PartnersConnection", () => {
         }
       }
     `
-    const { partners } = await runQuery(query, { partnersLoader })
-    expect(partners.edges[0].node.internalID).toEqual(
+    const { partnersConnection } = await runQuery(query, { partnersLoader })
+    expect(partnersConnection.edges[0].node.internalID).toEqual(
       "5a958e8e7622dd49f4f4176d"
     )
   })
