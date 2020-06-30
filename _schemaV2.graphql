@@ -6881,8 +6881,6 @@ type PartnerCategory {
   internalID: ID!
   name: String
   partners(
-    after: String
-    before: String
     defaultProfilePublic: Boolean
     eligibleForCarousel: Boolean
 
@@ -6894,10 +6892,8 @@ type PartnerCategory {
 
     # Indicates tier 3/4 for gallery, 2 for institution
     eligibleForSecondaryBucket: Boolean
-    first: Int
     hasFullProfile: Boolean
     ids: [String]
-    last: Int
 
     # Coordinates to find partners closest to
     near: String
@@ -6914,7 +6910,7 @@ type PartnerCategory {
     # term used for searching Partners
     term: String
     type: [PartnerClassification]
-  ): PartnerConnection
+  ): [Partner]
 
   # A slug ID.
   slug: ID!
@@ -6934,17 +6930,6 @@ enum PartnerClassification {
   INSTITUTIONAL_SELLER
   PRIVATE_COLLECTOR
   PRIVATE_DEALER
-}
-
-# A connection to a list of items.
-type PartnerConnection {
-  # A list of edges.
-  edges: [PartnerEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
 }
 
 type PartnerCounts {
@@ -7003,15 +6988,6 @@ type PartnerCounts {
     format: String
     label: String
   ): FormattedNumber
-}
-
-# An edge in a connection.
-type PartnerEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Partner
 }
 
 enum PartnerShowPartnerType {
@@ -7428,43 +7404,6 @@ type Query {
     # The slug or ID of the Partner
     id: String!
   ): Partner
-
-  # A list of Partners
-  partners(
-    after: String
-    before: String
-    defaultProfilePublic: Boolean
-    eligibleForCarousel: Boolean
-
-    # Indicates an active subscription
-    eligibleForListing: Boolean
-
-    # Indicates tier 1/2 for gallery, 1 for institution
-    eligibleForPrimaryBucket: Boolean
-
-    # Indicates tier 3/4 for gallery, 2 for institution
-    eligibleForSecondaryBucket: Boolean
-    first: Int
-    hasFullProfile: Boolean
-    ids: [String]
-    last: Int
-
-    # Coordinates to find partners closest to
-    near: String
-    page: Int
-
-    #
-    #         Only return partners of the specified partner categories.
-    #         Accepts list of slugs.
-    #
-    partnerCategories: [String]
-    size: Int
-    sort: PartnersSortType
-
-    # term used for searching Partners
-    term: String
-    type: [PartnerClassification]
-  ): PartnerConnection
 
   # A Sale
   sale(
@@ -9317,43 +9256,6 @@ type Viewer {
     # The slug or ID of the Partner
     id: String!
   ): Partner
-
-  # A list of Partners
-  partners(
-    after: String
-    before: String
-    defaultProfilePublic: Boolean
-    eligibleForCarousel: Boolean
-
-    # Indicates an active subscription
-    eligibleForListing: Boolean
-
-    # Indicates tier 1/2 for gallery, 1 for institution
-    eligibleForPrimaryBucket: Boolean
-
-    # Indicates tier 3/4 for gallery, 2 for institution
-    eligibleForSecondaryBucket: Boolean
-    first: Int
-    hasFullProfile: Boolean
-    ids: [String]
-    last: Int
-
-    # Coordinates to find partners closest to
-    near: String
-    page: Int
-
-    #
-    #         Only return partners of the specified partner categories.
-    #         Accepts list of slugs.
-    #
-    partnerCategories: [String]
-    size: Int
-    sort: PartnersSortType
-
-    # term used for searching Partners
-    term: String
-    type: [PartnerClassification]
-  ): PartnerConnection
 
   # A Sale
   sale(

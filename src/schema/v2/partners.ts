@@ -1,4 +1,5 @@
-import { PartnerType } from "./partner"
+import { clone } from "lodash"
+import Partner from "./partner"
 import PartnerTypeType from "./input_fields/partner_type_type"
 import {
   GraphQLString,
@@ -9,18 +10,11 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import {
-  connectionWithCursorInfo,
-  createPageCursors,
-} from "./fields/pagination"
-import { connectionFromArray } from "graphql-relay"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { pageable } from "relay-cursor-paging"
 
-const Partners: GraphQLFieldConfig<void, ResolverContext> = {
-  type: connectionWithCursorInfo({ nodeType: PartnerType }).connectionType,
+export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
+  type: new GraphQLList(Partner.type),
   description: "A list of Partners",
-  args: pageable({
+  args: {
     defaultProfilePublic: {
       type: GraphQLBoolean,
     },
@@ -100,11 +94,10 @@ const Partners: GraphQLFieldConfig<void, ResolverContext> = {
     type: {
       type: new GraphQLList(PartnerTypeType),
     },
-  }),
-  resolve: async (
+  },
+  resolve: (
     _root,
     {
-      ids,
       defaultProfilePublic,
       eligibleForCarousel,
       eligibleForListing,
@@ -116,9 +109,7 @@ const Partners: GraphQLFieldConfig<void, ResolverContext> = {
     },
     { partnersLoader }
   ) => {
-    const { page, size } = convertConnectionArgsToGravityArgs(_options)
     const options: any = {
-      id: ids,
       default_profile_public: defaultProfilePublic,
       eligible_for_carousel: eligibleForCarousel,
       eligible_for_listing: eligibleForListing,
@@ -128,16 +119,14 @@ const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       partner_categories: partnerCategories,
       ..._options,
     }
-    delete options.ids
-    return partnersLoader(options).then((body) => {
-      const totalCount = body.length
-      return {
-        totalCount,
-        pageCursors: createPageCursors({ page, size }, totalCount),
-        ...connectionFromArray(body, options),
-      }
-    })
+    const cleanedOptions = clone(options)
+    // make ids singular to match gravity :id
+    if (options.ids) {
+      cleanedOptions.id = options.ids
+      delete cleanedOptions.ids
+    }
+    return partnersLoader(cleanedOptions)
   },
 }
 
-export default Partners
+// export default Partners
