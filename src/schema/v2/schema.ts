@@ -91,6 +91,7 @@ import Articles from "./articles"
 import SaleArtwork from "./sale_artwork"
 import { SaleArtworksConnectionField } from "./sale_artworks"
 import Artworks from "./artworks"
+import ViewingRoomArtworks from "./viewingRoomArtworks"
 import { TargetSupply } from "./TargetSupply"
 
 const PrincipalFieldDirective = new GraphQLDirective({
@@ -150,6 +151,7 @@ const rootFields = {
   targetSupply: TargetSupply,
   // trendingArtists: TrendingArtists,
   user: UserField,
+  viewingRoomArtworks: ViewingRoomArtworks,
   // users: Users,
   // popularArtists: PopularArtists,
 }

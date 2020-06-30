@@ -33,34 +33,12 @@ describe("gravity/stitching", () => {
       const { artworksConnection } = resolvers.ViewingRoom
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-      artworksConnection.resolve(
-        { artworkIDs: ["1", "2", "3"] },
-        { first: 2 },
-        {},
-        info
-      )
+      artworksConnection.resolve({ internalID: "1" }, { first: 2 }, {}, info)
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { ids: ["1", "2", "3"], first: 2 },
+        args: { viewingRoomID: "1", first: 2 },
         operation: "query",
-        fieldName: "artworks",
-        schema: expect.anything(),
-        context: expect.anything(),
-        info: expect.anything(),
-      })
-    })
-
-    it("converts empty artworkIDs argument", async () => {
-      const { resolvers } = await getGravityStitchedSchema()
-      const { artworksConnection } = resolvers.ViewingRoom
-      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
-
-      artworksConnection.resolve({ artworkIDs: [] }, { first: 2 }, {}, info)
-
-      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { ids: [null], first: 2 },
-        operation: "query",
-        fieldName: "artworks",
+        fieldName: "viewingRoomArtworks",
         schema: expect.anything(),
         context: expect.anything(),
         info: expect.anything(),

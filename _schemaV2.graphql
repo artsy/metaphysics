@@ -7541,6 +7541,19 @@ type Query {
   # Find a viewing room by ID
   viewingRoom(id: ID!): ViewingRoom
 
+  # A list of Viewing Room artworks
+  viewingRoomArtworks(
+    after: String
+    before: String
+    first: Int
+    includeUnlisted: Boolean = false
+    last: Int
+    viewingRoomID: String
+  ): ArtworkConnection
+    @deprecated(
+      reason: "This is only for use in resolving stitched queries, not for first-class client use."
+    )
+
   # List viewing rooms
   viewingRooms(
     # Returns the elements in the list that come after the specified cursor.
@@ -9356,6 +9369,19 @@ type Viewer {
     # ID of the user
     id: String
   ): User
+
+  # A list of Viewing Room artworks
+  viewingRoomArtworks(
+    after: String
+    before: String
+    first: Int
+    includeUnlisted: Boolean = false
+    last: Int
+    viewingRoomID: String
+  ): ArtworkConnection
+    @deprecated(
+      reason: "This is only for use in resolving stitched queries, not for first-class client use."
+    )
 }
 
 # An artwork viewing room

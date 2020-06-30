@@ -45,6 +45,13 @@ export default (opts) => {
     >(({ artwork_id, image_id }) => `artwork/${artwork_id}/image/${image_id}`),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
     artworksLoader: gravityLoader("artworks"),
+    viewingRoomArtworksLoader: gravityLoader<
+      any,
+      { viewingRoomID: string; includeUnlisted: boolean }
+    >(
+      ({ viewingRoomID, includeUnlisted }) =>
+        `viewing_room/${viewingRoomID}/artworks?include_unlisted=${includeUnlisted}`
+    ),
     bidderLoader: gravityLoader((id) => `bidder/${id}`),
     exchangeRatesLoader: gravityLoader(
       "exchange_rates",
