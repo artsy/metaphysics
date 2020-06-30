@@ -7487,6 +7487,15 @@ type Query {
     id: String!
   ): Show
 
+  # A list of Shows
+  shows(
+    after: String
+    before: String
+    first: Int
+    ids: [String]
+    last: Int
+  ): ShowConnection
+
   # Content for a specific page or view
   staticContent(
     # The slug or id for the view
@@ -9338,6 +9347,15 @@ type Viewer {
     # The slug or ID of the Show
     id: String!
   ): Show
+
+  # A list of Shows
+  shows(
+    after: String
+    before: String
+    first: Int
+    ids: [String]
+    last: Int
+  ): ShowConnection
 
   # Content for a specific page or view
   staticContent(

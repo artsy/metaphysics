@@ -92,6 +92,7 @@ import SaleArtwork from "./sale_artwork"
 import { SaleArtworksConnectionField } from "./sale_artworks"
 import Artworks from "./artworks"
 import { TargetSupply } from "./TargetSupply"
+import { Shows } from "./shows"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -142,6 +143,7 @@ const rootFields = {
   salesConnection: SalesConnectionField,
   searchConnection: Search,
   show: Show,
+  shows: Shows,
   staticContent: StaticContent,
   // status: Status,
   system: System,
