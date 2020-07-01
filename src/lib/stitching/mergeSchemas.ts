@@ -53,7 +53,7 @@ export const incrementalMergeSchemas = (
   schemas.push(gravitySchema)
 
   useStitchingEnvironment(
-    gravityStitchingEnvironment(localSchema, gravitySchema)
+    gravityStitchingEnvironment(localSchema, gravitySchema, version)
   )
 
   if (ENABLE_COMMERCE_STITCHING) {
