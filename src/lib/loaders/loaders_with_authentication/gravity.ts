@@ -163,6 +163,11 @@ export default (accessToken, userID, opts) => {
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
+    partnerArtworksLoader: gravityLoader(
+      (id) => `partner/${id}/artworks`,
+      {},
+      { headers: true }
+    ),
     popularArtistsLoader: gravityLoader("artists/popular"),
     recordArtworkViewLoader: gravityLoader(
       "me/recently_viewed_artworks",

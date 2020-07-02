@@ -92,6 +92,7 @@ import { SaleArtworksConnectionField } from "./sale_artworks"
 import Artworks from "./artworks"
 import { TargetSupply } from "./TargetSupply"
 import { Shows } from "./shows"
+import PartnerArtworks from "./partnerArtworks"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -131,6 +132,7 @@ const rootFields = {
   orderedSet: OrderedSet,
   orderedSets: OrderedSets,
   partner: Partner,
+  partnerArtworks: PartnerArtworks,
   // partnerCategories: PartnerCategories,
   // partnerCategory: PartnerCategory,
   partnersConnection: PartnersConnection,

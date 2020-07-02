@@ -60,6 +60,12 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
         ): ArtworkConnection
+        partnerArtworksConnection(
+          first: Int
+          last: Int
+          after: String
+          before: String
+        ): ArtworkConnection
         distanceToOpen(short: Boolean! = false): String
         distanceToClose(short: Boolean! = false): String
         partner: Partner
@@ -70,7 +76,7 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Partner {
-        viewingRoomsConnection: ViewingRoomConnection
+        viewingRoomsConnection(published: Boolean = true): ViewingRoomConnection
       }
     `,
     resolvers: {
@@ -140,6 +146,33 @@ export const gravityStitchingEnvironment = (
               fieldName: "artworks",
               args: {
                 ids,
+                ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+        partnerArtworksConnection: {
+          fragment: gql`
+            ... on ViewingRoom {
+              internalID
+              partnerID
+            }
+          `,
+          resolve: (
+            { internalID: viewingRoomID, partnerID },
+            args,
+            context,
+            info
+          ) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "partnerArtworks",
+              args: {
+                viewingRoomID,
+                partnerID,
                 ...args,
               },
               context,
@@ -255,13 +288,13 @@ export const gravityStitchingEnvironment = (
               internalID
             }
           `,
-          resolve: ({ internalID: partnerId }, args, context, info) => {
+          resolve: ({ internalID: partnerID }, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,
               operation: "query",
               fieldName: "viewingRooms",
               args: {
-                partnerId,
+                partnerID,
                 ...args,
               },
               context,
