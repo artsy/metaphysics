@@ -616,7 +616,7 @@ describe("Show type", () => {
     const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
-          pressRelease(format: MARKDOWN)
+          pressRelease(format: HTML)
         }
       }
     `
