@@ -8,7 +8,7 @@ type Format = "html" | "markdown"
 type Value = string | null | undefined
 
 export const formatMarkdownValue = (value: string, format: Format): string => {
-  if (format === "html" || format === "markdown") {
+  if (format === "html") {
     const renderer = new marked.Renderer()
 
     marked.setOptions({
