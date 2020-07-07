@@ -29,7 +29,7 @@ describe(markdown, () => {
       "
     `)
   })
-  it("resolves markdown as html", () => {
+  it("resolves markdown as markdown", () => {
     expect(
       markdown().resolve?.(
         { description: "Here's a **description** with some *emphasis* !" },
