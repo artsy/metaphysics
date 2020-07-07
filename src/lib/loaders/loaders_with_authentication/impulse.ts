@@ -39,7 +39,9 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
-    conversationMessagesLoader: impulseLoader("message_details"),
+    conversationMessagesLoader: impulseLoader("message_details", {
+      include_delivery_pending: true,
+    }),
     conversationCreateMessageLoader: impulseLoader(
       (id) => `conversations/${id}/messages`,
       {
