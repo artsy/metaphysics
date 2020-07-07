@@ -204,7 +204,12 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLBoolean,
     description: "When true, will only return exact keyword match",
   },
+  artistSeriesID: {
+    type: GraphQLString,
+  },
 }
+
+export const pageableFilterArtworksArgs = pageable(filterArtworksArgs)
 
 export const FilterArtworksFields = () => {
   return {
@@ -368,6 +373,7 @@ const filterArtworksConnectionTypeFactory = (
       aggregationPartnerCities,
       artistID,
       artistIDs,
+      artistSeriesID,
       atAuction,
       attributionClass,
       sizes,
@@ -398,6 +404,7 @@ const filterArtworksConnectionTypeFactory = (
       aggregation_partner_cities: aggregationPartnerCities,
       artist_id: artistID,
       artist_ids: artistIDs,
+      artist_series_id: artistSeriesID,
       at_auction: atAuction,
       attribution_class: attributionClass,
       sizes: sizes,

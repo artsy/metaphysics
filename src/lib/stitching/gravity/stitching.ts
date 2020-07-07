@@ -1,7 +1,15 @@
 import gql from "lib/gql"
-import { GraphQLSchema } from "graphql"
+import {
+  GraphQLSchema,
+  GraphQLFieldConfigArgumentMap,
+  GraphQLType,
+  isScalarType,
+  isListType,
+  isEnumType,
+} from "graphql"
 import moment from "moment"
 import { defineCustomLocale } from "lib/helpers"
+import { pageableFilterArtworksArgs } from "schema/v2/filterArtworksConnection"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -42,9 +50,30 @@ defineCustomLocale(LocaleEnViewingRoomRelativeLong, {
   },
 })
 
+function argsToSDL(args: GraphQLFieldConfigArgumentMap) {
+  const result: string[] = []
+  Object.keys(args).forEach((argName) => {
+    result.push(`${argName}: ${printType(args[argName].type)}`)
+  })
+  return result
+}
+
+function printType(type: GraphQLType): string {
+  if (isScalarType(type)) {
+    return type.name
+  } else if (isListType(type)) {
+    return `[${printType(type.ofType)}]`
+  } else if (isEnumType(type)) {
+    return type.name
+  } else {
+    throw new Error(`Unknown type: ${JSON.stringify(type)}`)
+  }
+}
+
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
-  gravitySchema: GraphQLSchema & { transforms: any }
+  gravitySchema: GraphQLSchema & { transforms: any },
+  schemaVersion: number
 ) => {
   return {
     // The SDL used to declare how to stitch an object
@@ -73,6 +102,13 @@ export const gravityStitchingEnvironment = (
 
       extend type ArtistSeries {
         artists(page: Int, size: Int): [Artist]
+        ${
+          schemaVersion === 2
+            ? `filterArtworksConnection(${argsToSDL(
+                pageableFilterArtworksArgs
+              ).join("\n")}): FilterArtworksConnection`
+            : ""
+        }
       }
 
       extend type Partner {
@@ -119,6 +155,28 @@ export const gravityStitchingEnvironment = (
             })
           },
         },
+        ...(schemaVersion === 2 && {
+          filterArtworksConnection: {
+            fragment: `
+          ... on ArtistSeries {
+            internalID
+          }
+        `,
+            resolve: ({ internalID: artistSeriesID }, args, context, info) => {
+              return info.mergeInfo.delegateToSchema({
+                schema: localSchema,
+                operation: "query",
+                fieldName: "artworksConnection",
+                args: {
+                  artistSeriesID,
+                  ...args,
+                },
+                context,
+                info,
+              })
+            },
+          },
+        }),
       },
       ViewingRoom: {
         artworksConnection: {

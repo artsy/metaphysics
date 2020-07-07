@@ -17,6 +17,57 @@ const momentSubtract = (...args) => {
 }
 
 describe("gravity/stitching", () => {
+  describe("filterArtworksConnection", () => {
+    it("extends the ArtistSeries type with a filterArtworksConnection field for the V2 schema", async () => {
+      const schemaVersion = 2
+      const mergedSchema = await getGravityMergedSchema(schemaVersion)
+      const artistSeriesFields = await getFieldsForTypeFromSchema(
+        "ArtistSeries",
+        mergedSchema
+      )
+      expect(artistSeriesFields).toContain("filterArtworksConnection")
+    })
+
+    it("does not extend the ArtistSeries type with a filterArtworksConnection field for the V1 schema", async () => {
+      const schemaVersion = 1
+      const mergedSchema = await getGravityMergedSchema(schemaVersion)
+      const artistSeriesFields = await getFieldsForTypeFromSchema(
+        "ArtistSeries",
+        mergedSchema
+      )
+      expect(artistSeriesFields).not.toContain("filterArtworksConnection")
+    })
+
+    it("resolves the filterArtworksConnection field on ArtistSeries for the V2 schema", async () => {
+      const schemaVersion = 2
+      const { resolvers } = await getGravityStitchedSchema(schemaVersion)
+      const { filterArtworksConnection } = resolvers.ArtistSeries
+      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+      filterArtworksConnection.resolve(
+        { internalID: "abc123" },
+        { first: 2 },
+        {},
+        info
+      )
+
+      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+        args: { artistSeriesID: "abc123", first: 2 },
+        operation: "query",
+        fieldName: "artworksConnection",
+        schema: expect.anything(),
+        context: expect.anything(),
+        info: expect.anything(),
+      })
+    })
+
+    it("does not resolve the filterArtworksConnection field on ArtistSeries for the V1 schema", async () => {
+      const schemaVersion = 1
+      const { resolvers } = await getGravityStitchedSchema(schemaVersion)
+      expect(resolvers.ArtistSeries.filterArtworksConnection).toBeUndefined()
+    })
+  })
+
   describe("#artworksConnection", () => {
     it("extends the ViewingRoom type with an artworksConnection field", async () => {
       const mergedSchema = await getGravityMergedSchema()
