@@ -1,7 +1,7 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-xdescribe("Users", () => {
+describe("Users", () => {
   it("returns a list of users matching array of ids", async () => {
     const usersLoader = (data) => {
       if (data.id) {
