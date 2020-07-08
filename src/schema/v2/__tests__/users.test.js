@@ -11,12 +11,20 @@ describe("Users", () => {
     }
     const query = gql`
       {
-        users(ids: ["5a9075da8b3b817ede4f8767"]) {
-          internalID
+        usersConnection(ids: ["5a9075da8b3b817ede4f8767"]) {
+          edges {
+            node {
+              internalID
+            }
+          }
         }
       }
     `
-    const { users } = await runAuthenticatedQuery(query, { usersLoader })
-    expect(users[0].internalID).toEqual("5a9075da8b3b817ede4f8767")
+    const { usersConnection } = await runAuthenticatedQuery(query, {
+      usersLoader,
+    })
+    expect(usersConnection.edges[0].node.internalID).toEqual(
+      "5a9075da8b3b817ede4f8767"
+    )
   })
 })

@@ -9,6 +9,7 @@ import cached from "./fields/cached"
 import { InternalIDFields } from "./object_identification"
 import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
+import { connectionWithCursorInfo } from "./fields/pagination"
 
 export const UserType = new GraphQLObjectType<any, ResolverContext>({
   name: "User",
@@ -86,3 +87,5 @@ export const UserField: GraphQLFieldConfig<void, ResolverContext> = {
       })
   },
 }
+
+export const UsersConnection = connectionWithCursorInfo({ nodeType: UserType })
