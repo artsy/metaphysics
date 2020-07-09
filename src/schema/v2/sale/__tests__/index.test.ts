@@ -8,10 +8,10 @@ import sinon from "sinon"
 
 jest.mock("lib/all.ts")
 import { allViaLoader as _allViaLoader } from "lib/all"
-const allViaLoader = _allViaLoader
+const allViaLoader = _allViaLoader as jest.Mock<typeof _allViaLoader>
 
 describe("Sale type", () => {
-  const sale = {
+  const sale: any = {
     id: "foo-foo",
     _id: "123",
     currency: "$",
@@ -693,7 +693,7 @@ describe("Sale type", () => {
     it("returns proper labels", async () => {
       const results = await Promise.all(
         testData.map(async ([input, _label, is_registered]) => {
-          let bidders = []
+          let bidders: Array<any> = []
           if (is_registered) {
             bidders = [{}]
           }
@@ -702,7 +702,7 @@ describe("Sale type", () => {
             {
               currency: "$",
               is_auction: true,
-              ...input,
+              ...(input as any),
             },
             { meBiddersLoader: () => Promise.resolve(bidders) }
           )
@@ -832,8 +832,9 @@ describe("Sale type", () => {
       const context = {
         saleLoader: () => Promise.resolve(sale),
         meBiddersLoader: (params) =>
-          _.isEqual(params, { saleID: "foo-foo" }) &&
-          Promise.resolve([{ qualifiedForBidding: true }]),
+          _.isEqual(params, { saleID: "foo-foo" })
+            ? Promise.resolve([{ qualifiedForBidding: true }])
+            : Promise.resolve([]),
       }
 
       const data = await runAuthenticatedQuery(query, context)
@@ -1018,7 +1019,7 @@ describe("Sale type", () => {
       sale.eligible_sale_artworks_count = 20
 
       const context = {
-        saleLoader: () => Promise.resolve(sale),
+        saleLoader: () => Promise.resolve(sale as any),
         saleArtworksLoader: () =>
           Promise.resolve({
             body: fill(Array(sale.eligible_sale_artworks_count), {
@@ -1026,7 +1027,7 @@ describe("Sale type", () => {
                 id: "some-id",
               },
             }),
-          }),
+          } as any),
       }
 
       const data = await runAuthenticatedQuery(query, context)
