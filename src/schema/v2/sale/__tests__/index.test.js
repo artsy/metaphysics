@@ -4,9 +4,10 @@ import _ from "lodash"
 import { fill } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import sinon from "sinon"
 
 jest.mock("lib/all.ts")
-import { MAX_GRAPHQL_INT, allViaLoader as _allViaLoader } from "lib/all"
+import { allViaLoader as _allViaLoader } from "lib/all"
 const allViaLoader = _allViaLoader
 
 describe("Sale type", () => {
@@ -217,7 +218,7 @@ describe("Sale type", () => {
   })
 
   describe("saleArtworksConnection", () => {
-    it("returns data from gravity", () => {
+    it("returns data from gravity", async () => {
       const query = `
         {
           sale(id: "foo-foo") {
@@ -247,12 +248,11 @@ describe("Sale type", () => {
         ),
       }
 
-      return runAuthenticatedQuery(query, context).then((data) => {
-        expect(data).toMatchSnapshot()
-      })
+      const data = await runAuthenticatedQuery(query, context)
+      expect(data).toMatchSnapshot()
     })
 
-    it("accepts the internalIDs argument", () => {
+    it("accepts the internalIDs argument", async () => {
       const query = `
         {
           sale(id: "foo-foo") {
@@ -277,17 +277,16 @@ describe("Sale type", () => {
         saleArtworksLoader: saleArtworksLoaderMock,
       }
 
-      return runAuthenticatedQuery(query, context).then((data) => {
-        expect(saleArtworksLoaderMock.mock.calls[0][1].ids).toEqual([
-          "sa-id-0",
-          "sa-id-1",
-        ])
+      const data = await runAuthenticatedQuery(query, context)
+      expect(saleArtworksLoaderMock.mock.calls[0][1].ids).toEqual([
+        "sa-id-0",
+        "sa-id-1",
+      ])
 
-        expect(data).toMatchSnapshot()
-      })
+      expect(data).toMatchSnapshot()
     })
 
-    it("returns and empty array if the internalIDs argument is []", () => {
+    it("returns and empty array if the internalIDs argument is []", async () => {
       const query = `
       {
         sale(id: "foo-foo") {
@@ -305,9 +304,8 @@ describe("Sale type", () => {
         saleLoader: () => Promise.resolve(sale),
       }
 
-      return runAuthenticatedQuery(query, context).then((data) => {
-        expect(data.sale.saleArtworksConnection.edges).toEqual([])
-      })
+      const data = await runAuthenticatedQuery(query, context)
+      expect(data.sale.saleArtworksConnection.edges).toEqual([])
     })
 
     it("accepts the all argument", async () => {
@@ -397,14 +395,13 @@ describe("Sale type", () => {
         },
       }
 
-      return runAuthenticatedQuery(query, context).then((data) => {
-        expect(
-          data.sale.saleArtworksConnection[0].increments.cents.slice(0, 5)
-        ).toEqual([400000, 410000, 420000, 430000, 440000])
-        expect(
-          data.sale.saleArtworksConnection[1].increments.cents.slice(0, 5)
-        ).toEqual([20000, 25000, 30000, 35000, 40000])
-      })
+      const data = await runAuthenticatedQuery(query, context)
+      expect(
+        data.sale.saleArtworksConnection[0].increments.cents.slice(0, 5)
+      ).toEqual([400000, 410000, 420000, 430000, 440000])
+      expect(
+        data.sale.saleArtworksConnection[1].increments.cents.slice(0, 5)
+      ).toEqual([20000, 25000, 30000, 35000, 40000])
     })
   })
 
@@ -1000,7 +997,7 @@ describe("Sale type", () => {
   })
 
   describe("artworksConnection", () => {
-    it("returns data from gravity", () => {
+    it("returns data from gravity", async () => {
       const query = `
           {
             sale(id: "foo-foo") {
@@ -1032,10 +1029,9 @@ describe("Sale type", () => {
           }),
       }
 
-      return runAuthenticatedQuery(query, context).then((data) => {
-        expect(data.sale.artworksConnection.pageInfo.hasNextPage).toBe(true)
-        expect(data).toMatchSnapshot()
-      })
+      const data = await runAuthenticatedQuery(query, context)
+      expect(data.sale.artworksConnection.pageInfo.hasNextPage).toBe(true)
+      expect(data).toMatchSnapshot()
     })
   })
 })
