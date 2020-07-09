@@ -11,7 +11,11 @@ import moment from "moment"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import { formattedStartDateTime } from "lib/date"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
-import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
+import {
+  connectionFromArraySlice,
+  connectionDefinitions,
+  connectionFromArray,
+} from "graphql-relay"
 import { amount } from "schema/v2/fields/money"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { map } from "lodash"
@@ -33,6 +37,7 @@ import {
 
 import config from "config"
 import { ResolverContext } from "types/graphql"
+import { allViaLoader } from "lib/all"
 
 const { PREDICTION_ENDPOINT } = config
 
@@ -309,6 +314,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             type: new GraphQLList(GraphQLID),
             description: "List of sale artwork internal IDs to fetch",
           },
+          all: { type: GraphQLBoolean, defaultValue: false },
         }),
         resolve: (sale, options, { saleArtworksLoader }) => {
           const { limit: size, offset } = getPagingParameters(options)
@@ -320,26 +326,31 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             })
           }
 
-          return saleArtworksLoader(sale.id, {
-            size,
-            offset,
-            ids,
-          }).then(({ body }) => {
-            let meta
-            if (ids) {
-              meta = {
-                arrayLength: body && body.length,
-                sliceStart: 0,
+          if (options.all) {
+            return allViaLoader(saleArtworksLoader, {
+              path: sale.id,
+            }).then((body) => connectionFromArray(body, {}))
+          } else {
+            return saleArtworksLoader(sale.id, {
+              size,
+              offset,
+              ids,
+            }).then(({ body }) => {
+              let meta
+              if (ids) {
+                meta = {
+                  arrayLength: body && body.length,
+                  sliceStart: 0,
+                }
+              } else {
+                meta = {
+                  arrayLength: sale.eligible_sale_artworks_count,
+                  sliceStart: offset,
+                }
               }
-            } else {
-              meta = {
-                arrayLength: sale.eligible_sale_artworks_count,
-                sliceStart: offset,
-              }
-            }
-
-            return connectionFromArraySlice(body, options, meta)
-          })
+              return connectionFromArraySlice(body, options, meta)
+            })
+          }
         },
       },
       saleType: {
