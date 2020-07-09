@@ -1,26 +1,38 @@
-import { clone } from "lodash"
-import { UserType } from "./user"
-import { GraphQLList, GraphQLString, GraphQLFieldConfig } from "graphql"
+import { GraphQLFieldConfig, GraphQLList, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { createPageCursors } from "./fields/pagination"
+import { UsersConnection } from "./user"
+import { pageable } from "relay-cursor-paging"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { connectionFromArray } from "graphql-relay"
 
-const Users: GraphQLFieldConfig<void, ResolverContext> = {
-  type: new GraphQLList(UserType),
+/**
+ * Root field used (only) by Positron to fetch users (authors) on articles
+ */
+export const Users: GraphQLFieldConfig<void, ResolverContext> = {
+  type: UsersConnection.connectionType,
   description: "A list of Users",
-  args: {
+  args: pageable({
     ids: {
       type: new GraphQLList(GraphQLString),
     },
-  },
-  resolve: (_root, options, { usersLoader }) => {
+  }),
+  resolve: (_root, { ..._options }, { usersLoader }) => {
     if (!usersLoader) return null
-    const cleanedOptions = clone(options)
-    // make ids singular to match gravity :id
-    if (options.ids) {
-      cleanedOptions.id = options.ids
-      delete cleanedOptions.ids
+    const { page, size } = convertConnectionArgsToGravityArgs(_options)
+    const options: any = {
+      id: _options.ids,
+      page,
+      size,
     }
-    return usersLoader(cleanedOptions)
+
+    return usersLoader(options).then((body) => {
+      const totalCount = body.length
+      return {
+        totalCount,
+        pageCursors: createPageCursors({ page, size }, totalCount),
+        ...connectionFromArray(body, options),
+      }
+    })
   },
 }
-
-export default Users
