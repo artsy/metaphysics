@@ -34,6 +34,7 @@ import { LoggingExtension } from "./extensions/loggingExtension"
 import { principalFieldDirectiveExtension } from "./extensions/principalFieldDirectiveExtension"
 import { principalFieldDirectiveValidation } from "validations/principalFieldDirectiveValidation"
 import * as Sentry from "@sentry/node"
+import { decodeUnverifiedJWT } from "./lib/decodeUnverifiedJWT"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -209,9 +210,13 @@ function startApp(appSchema, path: string) {
           appToken,
         })
 
+        const decodedToken = accessToken && decodeUnverifiedJWT(accessToken)
+        const userRoles = (decodedToken && decodedToken.roles.split(",")) || []
+
         const context: ResolverContext = {
           accessToken,
           userID,
+          userRoles,
           defaultTimezone,
           ...loaders,
           // For stitching purposes
