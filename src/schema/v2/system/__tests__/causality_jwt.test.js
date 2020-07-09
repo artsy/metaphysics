@@ -6,7 +6,7 @@ import config from "config"
 
 const { HMAC_SECRET } = config
 
-xdescribe("CausalityJWT", () => {
+describe("CausalityJWT", () => {
   let context
 
   const sale = {
@@ -44,10 +44,14 @@ xdescribe("CausalityJWT", () => {
 
   it("encodes a bidder JWT for logged in registered users", () => {
     const query = `{
-      causalityJWT(role: PARTICIPANT, saleID: "foo")
+      system {
+        causalityJWT(role: PARTICIPANT, saleID: "foo")
+      }
     }`
     return runAuthenticatedQuery(query, context).then((data) => {
-      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
+      expect(
+        omit(jwt.decode(data.system.causalityJWT, HMAC_SECRET), "iat")
+      ).toEqual({
         aud: "auctions",
         role: "bidder",
         userId: "craig",
@@ -59,10 +63,14 @@ xdescribe("CausalityJWT", () => {
 
   it("works with a sale slug", () => {
     const query = `{
-      causalityJWT(role: PARTICIPANT, saleID: "slug")
+      system {
+        causalityJWT(role: PARTICIPANT, saleID: "slug")
+      }
     }`
     return runAuthenticatedQuery(query, context).then((data) => {
-      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
+      expect(
+        omit(jwt.decode(data.system.causalityJWT, HMAC_SECRET), "iat")
+      ).toEqual({
         aud: "auctions",
         role: "bidder",
         userId: "craig",
@@ -74,10 +82,14 @@ xdescribe("CausalityJWT", () => {
 
   it("allows an anonymous user to be an observer", () => {
     const query = `{
-      causalityJWT(role: PARTICIPANT, saleID: "slug")
+      system {
+        causalityJWT(role: PARTICIPANT, saleID: "slug")
+      }
     }`
     return runQuery(query, { saleLoader: context.saleLoader }).then((data) => {
-      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
+      expect(
+        omit(jwt.decode(data.system.causalityJWT, HMAC_SECRET), "iat")
+      ).toEqual({
         aud: "auctions",
         role: "observer",
         userId: null,
@@ -89,11 +101,15 @@ xdescribe("CausalityJWT", () => {
 
   it("falls back to observer if not registered to the sale", () => {
     const query = `{
-      causalityJWT(role: PARTICIPANT, saleID: "bar")
+      system {
+        causalityJWT(role: PARTICIPANT, saleID: "bar")
+      }
     }`
     context.meBiddersLoader = sinon.stub().returns(Promise.resolve([]))
     return runAuthenticatedQuery(query, context).then((data) => {
-      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
+      expect(
+        omit(jwt.decode(data.system.causalityJWT, HMAC_SECRET), "iat")
+      ).toEqual({
         aud: "auctions",
         role: "observer",
         userId: "craig",
@@ -105,7 +121,9 @@ xdescribe("CausalityJWT", () => {
 
   it("falls back to observer if disqualified for bidding", () => {
     const query = `{
-      causalityJWT(role: PARTICIPANT, saleID: "foo")
+      system {
+        causalityJWT(role: PARTICIPANT, saleID: "foo")
+      }
     }`
     context.meBiddersLoader = sinon.stub().returns(
       Promise.resolve([
@@ -117,7 +135,9 @@ xdescribe("CausalityJWT", () => {
       ])
     )
     return runAuthenticatedQuery(query, context).then((data) => {
-      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
+      expect(
+        omit(jwt.decode(data.system.causalityJWT, HMAC_SECRET), "iat")
+      ).toEqual({
         aud: "auctions",
         role: "observer",
         userId: "craig",
@@ -131,7 +151,9 @@ xdescribe("CausalityJWT", () => {
     expect.assertions(1)
 
     const query = `{
-      causalityJWT(role: OPERATOR, saleID: "foo")
+      system {
+        causalityJWT(role: OPERATOR, saleID: "foo")
+      }
     }`
     context.saleLoader = sinon.stub().returns(
       Promise.resolve({
@@ -149,7 +171,9 @@ xdescribe("CausalityJWT", () => {
     expect.assertions(1)
 
     const query = `{
-      causalityJWT(role: OPERATOR, saleID: "foo")
+      system {
+        causalityJWT(role: OPERATOR, saleID: "foo")
+      }
     }`
 
     context.saleLoader = sinon.stub().returns(
@@ -169,10 +193,14 @@ xdescribe("CausalityJWT", () => {
 
   it("allows a user associated with the sale partner to be an external operator for that sale", () => {
     const query = `{
-      causalityJWT(role: OPERATOR, saleID: "foo")
+      system {
+        causalityJWT(role: OPERATOR, saleID: "foo")
+      }
     }`
     return runAuthenticatedQuery(query, context).then((data) => {
-      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
+      expect(
+        omit(jwt.decode(data.system.causalityJWT, HMAC_SECRET), "iat")
+      ).toEqual({
         aud: "auctions",
         role: "externalOperator",
         userId: "craig",
