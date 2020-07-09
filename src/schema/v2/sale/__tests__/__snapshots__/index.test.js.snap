@@ -64,6 +64,27 @@ Object {
 }
 `;
 
+exports[`Sale type saleArtworksConnection accepts the all argument 1`] = `
+Object {
+  "sale": Object {
+    "saleArtworksConnection": Object {
+      "edges": Array [
+        Object {
+          "node": Object {
+            "slug": "sa-slug-0",
+          },
+        },
+        Object {
+          "node": Object {
+            "slug": "sa-slug-1",
+          },
+        },
+      ],
+    },
+  },
+}
+`;
+
 exports[`Sale type saleArtworksConnection accepts the internalIDs argument 1`] = `
 Object {
   "sale": Object {

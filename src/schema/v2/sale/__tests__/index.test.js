@@ -5,6 +5,10 @@ import { fill } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
+jest.mock("lib/all.ts")
+import { MAX_GRAPHQL_INT, allViaLoader as _allViaLoader } from "lib/all"
+const allViaLoader = _allViaLoader
+
 describe("Sale type", () => {
   const sale = {
     id: "foo-foo",
@@ -23,6 +27,10 @@ describe("Sale type", () => {
       ...context,
     })
   }
+
+  afterEach(() => {
+    allViaLoader.mockReset()
+  })
 
   describe("sale timeZone", () => {
     const query = `
@@ -278,10 +286,9 @@ describe("Sale type", () => {
         expect(data).toMatchSnapshot()
       })
     })
-  })
 
-  it("returns and empty array if the internalIDs argument is []", () => {
-    const query = `
+    it("returns and empty array if the internalIDs argument is []", () => {
+      const query = `
       {
         sale(id: "foo-foo") {
           saleArtworksConnection(internalIDs: []) {
@@ -294,12 +301,41 @@ describe("Sale type", () => {
         }
       }
     `
-    const context = {
-      saleLoader: () => Promise.resolve(sale),
-    }
+      const context = {
+        saleLoader: () => Promise.resolve(sale),
+      }
 
-    return runAuthenticatedQuery(query, context).then((data) => {
-      expect(data.sale.saleArtworksConnection.edges).toEqual([])
+      return runAuthenticatedQuery(query, context).then((data) => {
+        expect(data.sale.saleArtworksConnection.edges).toEqual([])
+      })
+    })
+
+    it("accepts the all argument", async () => {
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            saleArtworksConnection(all: true) {
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const saleArtworks = [{ id: "sa-slug-0" }, { id: "sa-slug-1" }]
+      allViaLoader.mockResolvedValue(saleArtworks)
+      const context = {
+        saleLoader: () => Promise.resolve(sale),
+        saleArtworksLoader: jest.fn(),
+        allViaLoader,
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+      expect(allViaLoader.mock.calls[0][1]).toEqual({ path: "foo-foo" })
+      expect(data).toMatchSnapshot()
     })
   })
 
