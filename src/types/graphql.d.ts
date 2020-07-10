@@ -6,8 +6,6 @@ export interface ResolverContextValues {
   accessToken?: string
   /** Optionally you can include a user token for a logged in user */
   userID?: string
-  /** Decoded roles from access token */
-  userRoles: string[]
   /** Optionally you should include a timezone for the user */
   defaultTimezone?: string
 

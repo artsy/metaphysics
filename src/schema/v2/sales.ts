@@ -31,38 +31,30 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
     isAuction: {
       description: "Limit by auction.",
       type: GraphQLBoolean,
+      defaultValue: true,
     },
     live: {
       description: "Limit by live status.",
       type: GraphQLBoolean,
+      defaultValue: true,
     },
     published: {
       description: "Limit by published status.",
       type: GraphQLBoolean,
+      defaultValue: true,
     },
     sort: SaleSorts,
   }),
   resolve: async (
     _root,
     { ids, isAuction, live, published, sort, ...paginationArgs },
-    {
-      userRoles,
-      unauthenticatedLoaders: { salesLoaderWithHeaders: loaderUnauthenticated },
-      authenticatedLoaders: { salesLoaderWithHeaders: loaderAuthenticated },
-    }
+    { salesLoaderWithHeaders }
   ) => {
-    paginationArgs.first = paginationArgs.first || 20
     const { page, size, offset } = convertConnectionArgsToGravityArgs(
       paginationArgs
     )
-    let loader
-    if (userRoles.includes("team") && ids.length) {
-      loader = loaderAuthenticated
-    } else {
-      loader = loaderUnauthenticated
-    }
 
-    const { body: sales, headers } = ((await loader(
+    const { body: sales, headers } = ((await salesLoaderWithHeaders(
       {
         id: ids,
         is_auction: isAuction,
