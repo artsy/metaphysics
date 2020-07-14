@@ -130,7 +130,10 @@ const ImageType = new GraphQLObjectType<any, ResolverContext>({
 
 const Image: GraphQLFieldConfig<ImageData, ResolverContext> = {
   type: ImageType,
-  resolve: normalize,
+  resolve: (parent, _args, { imageData }) => {
+    const resolvedData = imageData || parent
+    return normalize(resolvedData)
+  },
 }
 
 export default Image

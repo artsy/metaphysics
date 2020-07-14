@@ -102,6 +102,7 @@ export const gravityStitchingEnvironment = (
 
       extend type ArtistSeries {
         artists(page: Int, size: Int): [Artist]
+        image: Image
         ${
           schemaVersion === 2
             ? `filterArtworksConnection(${argsToSDL(
@@ -131,6 +132,26 @@ export const gravityStitchingEnvironment = (
         },
       },
       ArtistSeries: {
+        image: {
+          fragment: gql`
+          ... on ArtistSeries {
+            image_url: imageURL
+            original_height: imageHeight
+            original_width: imageWidth
+          }
+          `,
+          resolve: (parent, _args, context, info) => {
+            context.imageData = parent
+
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "_do_not_use_image",
+              context,
+              info,
+            })
+          },
+        },
         artists: {
           fragment: gql`
           ... on ArtistSeries {
