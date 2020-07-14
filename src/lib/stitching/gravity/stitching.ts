@@ -114,6 +114,10 @@ export const gravityStitchingEnvironment = (
       extend type Partner {
         viewingRoomsConnection(published: Boolean = true): ViewingRoomConnection
       }
+
+      extend type Artist {
+        artistSeriesConnection: ArtistSeriesConnection
+      }
     `,
     resolvers: {
       Me: {
@@ -353,6 +357,28 @@ export const gravityStitchingEnvironment = (
               fieldName: "viewingRooms",
               args: {
                 partnerID,
+                ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Artist: {
+        artistSeriesConnection: {
+          fragment: gql`
+            ... on Artist {
+              internalID
+            }
+          `,
+          resolve: ({ internalID: artistID }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "artistSeriesConnection",
+              args: {
+                artistID,
                 ...args,
               },
               context,
