@@ -13702,6 +13702,7 @@ input ViewingRoomAttributes {
   # Datetime (in UTC) when Viewing Room closes
   endAt: ISO8601DateTime
   introStatement: String
+  published: Boolean
   pullQuote: String
 
   # Datetime (in UTC) when Viewing Room opens

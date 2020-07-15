@@ -1347,6 +1347,7 @@ input ViewingRoomAttributes {
   """
   endAt: ISO8601DateTime
   introStatement: String
+  published: Boolean
   pullQuote: String
 
   """
