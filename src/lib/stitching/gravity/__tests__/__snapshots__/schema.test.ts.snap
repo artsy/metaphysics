@@ -413,7 +413,7 @@ type Query {
   artistSeries(id: ID!): ArtistSeries
 
   # List all artist series, optionally filtered by artist
-  _unused_gravity_artistSeriesConnection(
+  artistSeriesConnection(
     # Returns the elements in the list that come after the specified cursor.
     after: String
 

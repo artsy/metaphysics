@@ -624,6 +624,7 @@ type Artist implements Node & Searchable {
     # The number of Artists to return
     size: Int
   ): [Artist]
+  artistSeriesConnection: ArtistSeriesConnection
   artworks(
     exclude: [String]
     filter: [ArtistArtworksFilters]
@@ -10690,24 +10691,6 @@ type ProfileCounts {
 }
 
 type Query {
-  # List all artist series, optionally filtered by artist
-  _unused_gravity_artistSeriesConnection(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # ID of the artist by which to filter results
-    artistID: ID
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): ArtistSeriesConnection
-
   # Autocomplete resolvers.
   _unused_gravity_match_partners(
     match_type: String
@@ -10775,6 +10758,24 @@ type Query {
 
   # Find an artist series by ID
   artistSeries(id: ID!): ArtistSeries
+
+  # List all artist series, optionally filtered by artist
+  artistSeriesConnection(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # ID of the artist by which to filter results
+    artistID: ID
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+  ): ArtistSeriesConnection
 
   # An Artwork
   artwork(
