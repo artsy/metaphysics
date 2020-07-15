@@ -29,12 +29,37 @@ type ArtistSeries {
   artistIDs: [String!]!
   description: String
   featured: Boolean!
+  imageHeight: Int
+  imageURL: String
+  imageWidth: Int
 
   # Unique ID for this artist series
   internalID: ID!
   published: Boolean!
+  representativeArtworkID: ID
   slug: String!
   title: String!
+}
+
+# The connection type for ArtistSeries.
+type ArtistSeriesConnection {
+  # A list of edges.
+  edges: [ArtistSeriesEdge]
+
+  # A list of nodes.
+  nodes: [ArtistSeries]
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+}
+
+# An edge in a connection.
+type ArtistSeriesEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: ArtistSeries
 }
 
 # Backup Two-Factor Authentication factor
@@ -386,6 +411,24 @@ type PageInfo {
 type Query {
   # Find an artist series by ID
   artistSeries(id: ID!): ArtistSeries
+
+  # List all artist series, optionally filtered by artist
+  artistSeriesConnection(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # ID of the artist by which to filter results
+    artistID: ID
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+  ): ArtistSeriesConnection
 
   # Autocomplete resolvers.
   _unused_gravity_matchPartners(matchType: String, page: Int = 1, size: Int = 5, term: String!): [DoNotUseThisPartner!]
