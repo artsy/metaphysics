@@ -92,6 +92,7 @@ import Artworks from "./artworks"
 import { TargetSupply } from "./TargetSupply"
 import { Shows } from "./shows"
 import PartnerArtworks from "./partnerArtworks"
+import Image from "./image"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -123,6 +124,11 @@ const rootFields = {
   geneFamiliesConnection: GeneFamilies,
   highlights: HighlightsField,
   homePage: HomePage,
+  _do_not_use_image: {
+    type: Image.type,
+    resolve: Image.resolve,
+    description: "Do not use (only used internally for stitching)",
+  },
   // matchArtist: MatchArtist,
   // matchGene: MatchGene,
   me: Me,
