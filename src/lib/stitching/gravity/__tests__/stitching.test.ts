@@ -518,4 +518,68 @@ describe("gravity/stitching", () => {
       })
     })
   })
+
+  describe("#image", () => {
+    it("includes an image for an artist series", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { image } = resolvers.ArtistSeries
+      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+      const artistSeriesData = {
+        image_url: "cat.jpg",
+        original_height: 200,
+        original_width: 200,
+        representativeArtworkID: "artwork-id",
+      }
+      image.resolve(artistSeriesData, {}, {}, info)
+
+      const imageData = {
+        image_url: "cat.jpg",
+        original_height: 200,
+        original_width: 200,
+      }
+      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+        args: expect.anything(),
+        operation: "query",
+        fieldName: "_do_not_use_image",
+        schema: expect.anything(),
+        context: { imageData },
+        info: expect.anything(),
+      })
+    })
+
+    it("uses the representative artwork for an artist series if no image is set", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { image } = resolvers.ArtistSeries
+      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+      const artistSeriesData = {
+        image_url: null,
+        original_height: null,
+        original_width: null,
+        representativeArtworkID: "artwork-id",
+      }
+
+      const imageData = {
+        image_url: "cat.jpg",
+        original_height: 200,
+        original_width: 200,
+      }
+      const artworkLoader = () =>
+        Promise.resolve({
+          images: [imageData],
+        })
+      const context = {
+        artworkLoader,
+      }
+      await image.resolve(artistSeriesData, {}, context, info)
+
+      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+        args: expect.anything(),
+        operation: "query",
+        fieldName: "_do_not_use_image",
+        schema: expect.anything(),
+        context: expect.objectContaining({ imageData }),
+        info: expect.anything(),
+      })
+    })
+  })
 })
