@@ -110,7 +110,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       description: "This user should receive lot opening notifications",
       type: GraphQLBoolean,
     },
-    receiveSaleOpeningNotification: {
+    receiveSaleOpeningClosingNotification: {
       description:
         "This user should receive sale opening/closing notifications",
       type: GraphQLBoolean,

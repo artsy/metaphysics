@@ -6383,7 +6383,7 @@ type Me implements Node {
   receivePurchaseNotification: Boolean
 
   # This user should receive sale opening/closing notifications
-  receiveSaleOpeningNotification: Boolean
+  receiveSaleOpeningClosingNotification: Boolean
   recentlyViewedArtworkIds: [String]!
 
   # A list of the current user’s recently viewed artworks.
@@ -9197,7 +9197,7 @@ input UpdateMyProfileInput {
   receivePurchaseNotification: Boolean
 
   # This user should receive sale opening/closing notifications
-  receiveSaleOpeningNotification: Boolean
+  receiveSaleOpeningClosingNotification: Boolean
 }
 
 type UpdateMyProfilePayload {
@@ -9356,7 +9356,7 @@ type User {
   receivePurchaseNotification: Boolean
 
   # This user should receive sale opening/closing notifications
-  receiveSaleOpeningNotification: Boolean
+  receiveSaleOpeningClosingNotification: Boolean
 
   # Check whether a user exists by email address before creating an account.
   userAlreadyExists: Boolean

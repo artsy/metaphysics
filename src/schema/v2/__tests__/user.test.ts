@@ -65,7 +65,7 @@ describe("User", () => {
       receive_purchase_notification: false,
       receive_outbid_notification: false,
       receive_lot_opening_soon_notification: false,
-      receive_sale_opening_notification: false,
+      receive_sale_opening_closing_notification: false,
       receive_new_works_notification: true,
       receive_new_sales_notification: false,
       receive_promotion_notification: false,
@@ -87,7 +87,7 @@ describe("User", () => {
           receivePurchaseNotification
           receiveOutbidNotification
           receiveLotOpeningSoonNotification
-          receiveSaleOpeningNotification
+          receiveSaleOpeningClosingNotification
           receiveNewWorksNotification
           receiveNewSalesNotification
           receivePromotionNotification
@@ -102,7 +102,7 @@ describe("User", () => {
     expect(user.receivePurchaseNotification).toEqual(false)
     expect(user.receiveOutbidNotification).toEqual(false)
     expect(user.receiveLotOpeningSoonNotification).toEqual(false)
-    expect(user.receiveSaleOpeningNotification).toEqual(false)
+    expect(user.receiveSaleOpeningClosingNotification).toEqual(false)
     expect(user.receiveNewWorksNotification).toEqual(true)
     expect(user.receiveNewSalesNotification).toEqual(false)
     expect(user.receivePromotionNotification).toEqual(false)

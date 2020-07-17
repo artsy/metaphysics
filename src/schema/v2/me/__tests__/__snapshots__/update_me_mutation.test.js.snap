@@ -20,7 +20,7 @@ Object {
       "receiveOutbidNotification": false,
       "receivePromotionNotification": false,
       "receivePurchaseNotification": false,
-      "receiveSaleOpeningNotification": false,
+      "receiveSaleOpeningClosingNotification": false,
     },
   },
 }

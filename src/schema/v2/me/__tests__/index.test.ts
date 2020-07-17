@@ -16,7 +16,7 @@ describe("me/index", () => {
         receivePurchaseNotification
         receiveOutbidNotification
         receiveLotOpeningSoonNotification
-        receiveSaleOpeningNotification
+        receiveSaleOpeningClosingNotification
         receiveNewWorksNotification
         receiveNewSalesNotification
         receivePromotionNotification
@@ -36,7 +36,7 @@ describe("me/index", () => {
       receive_purchase_notification: false,
       receive_outbid_notification: true,
       receive_lot_opening_soon_notification: false,
-      receive_sale_opening_notification: false,
+      receive_sale_opening_closing_notification: false,
       receive_new_works_notification: false,
       receive_new_sales_notification: true,
       receive_promotion_notification: false,
@@ -57,7 +57,7 @@ describe("me/index", () => {
           receivePurchaseNotification: false,
           receiveOutbidNotification: true,
           receiveLotOpeningSoonNotification: false,
-          receiveSaleOpeningNotification: false,
+          receiveSaleOpeningClosingNotification: false,
           receiveNewWorksNotification: false,
           receiveNewSalesNotification: true,
           receivePromotionNotification: false,

@@ -63,12 +63,12 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ receive_lot_opening_soon_notification }) =>
         receive_lot_opening_soon_notification,
     },
-    receiveSaleOpeningNotification: {
+    receiveSaleOpeningClosingNotification: {
       description:
         "This user should receive sale opening/closing notifications",
       type: GraphQLBoolean,
-      resolve: ({ receive_sale_opening_notification }) =>
-        receive_sale_opening_notification,
+      resolve: ({ receive_sale_opening_closing_notification }) =>
+        receive_sale_opening_closing_notification,
     },
     receiveNewWorksNotification: {
       description: "This user should receive new works notifications",
