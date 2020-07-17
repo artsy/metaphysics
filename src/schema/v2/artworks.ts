@@ -16,10 +16,11 @@ const Artworks: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLList(GraphQLString),
     },
   }),
-  resolve: (_root, options, { artworksLoader }) => {
+  // @ts-ignore
+  resolve: (_root, options, { artworksLoader, respectParamsOrder = false }) => {
     const { ids } = options
     const { page, size } = convertConnectionArgsToGravityArgs(options)
-    return artworksLoader({ ids }).then((body) => {
+    return artworksLoader({ ids, batched: respectParamsOrder }).then((body) => {
       const totalCount = body.length
       return {
         totalCount,

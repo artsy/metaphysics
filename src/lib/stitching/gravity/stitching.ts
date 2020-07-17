@@ -258,7 +258,10 @@ export const gravityStitchingEnvironment = (
                 ids,
                 ...args,
               },
-              context,
+              context: {
+                ...context,
+                respectParamsOrder: true,
+              },
               info,
             })
           },
