@@ -153,13 +153,32 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     me: Me,
   },
   mutateAndGetPayload: (
-    { collectorLevel, priceRangeMin, priceRangeMax, ..._user },
+    {
+      collectorLevel,
+      priceRangeMin,
+      priceRangeMax,
+      receivePurchaseNotification,
+      receiveOutbidNotification,
+      receiveLotOpeningSoonNotification,
+      receiveSaleOpeningClosingNotification,
+      receiveNewWorksNotification,
+      receiveNewSalesNotification,
+      receivePromotionNotification,
+      ..._user
+    },
     { updateMeLoader }
   ) => {
     const user: any = {
       collector_level: collectorLevel,
       price_range_min: priceRangeMin,
       price_range_max: priceRangeMax,
+      receive_purchase_notification: receivePurchaseNotification,
+      receive_outbid_notification: receiveOutbidNotification,
+      receive_lot_opening_soon_notification: receiveLotOpeningSoonNotification,
+      receive_sale_opening_closing_notification: receiveSaleOpeningClosingNotification,
+      receive_new_works_notification: receiveNewWorksNotification,
+      receive_new_sales_notification: receiveNewSalesNotification,
+      receive_promotion_notification: receivePromotionNotification,
       ..._user,
     }
     if (!updateMeLoader) {
