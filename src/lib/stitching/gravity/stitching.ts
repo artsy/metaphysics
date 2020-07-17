@@ -120,6 +120,10 @@ export const gravityStitchingEnvironment = (
       extend type Artist {
         artistSeriesConnection: ArtistSeriesConnection
       }
+
+      extend type Viewer {
+        viewingRoomsConnection(first: Int, after: String): ViewingRoomConnection
+      }
     `,
     resolvers: {
       Me: {
@@ -381,6 +385,24 @@ export const gravityStitchingEnvironment = (
               args: {
                 id,
               },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Viewer: {
+        viewingRoomsConnection: {
+          fragment: `
+          ... on Viewer {
+            __typename
+          }`,
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "viewingRooms",
+              args,
               context,
               info,
             })
