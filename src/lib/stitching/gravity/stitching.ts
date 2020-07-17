@@ -11,6 +11,7 @@ import moment from "moment"
 import { defineCustomLocale } from "lib/helpers"
 import { pageableFilterArtworksArgs } from "schema/v2/filterArtworksConnection"
 import { normalizeImageData, getDefault } from "schema/v2/image"
+import { toGlobalId } from "graphql-relay"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -119,6 +120,10 @@ export const gravityStitchingEnvironment = (
 
       extend type Artist {
         artistSeriesConnection: ArtistSeriesConnection
+      }
+
+      extend type Viewer {
+        viewingRoomsConnection(first: Int, after: String): ViewingRoomConnection
       }
     `,
     resolvers: {
@@ -381,6 +386,24 @@ export const gravityStitchingEnvironment = (
               args: {
                 id,
               },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Viewer: {
+        viewingRoomsConnection: {
+          fragment: `
+          ... on Viewer {
+            __typename
+          }`,
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "viewingRooms",
+              args,
               context,
               info,
             })

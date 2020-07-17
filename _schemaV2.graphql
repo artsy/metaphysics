@@ -9695,6 +9695,7 @@ type Viewer {
     ids: [String]
     last: Int
   ): UserConnection
+  viewingRoomsConnection: ViewingRoomConnection
 }
 
 # An artwork viewing room
