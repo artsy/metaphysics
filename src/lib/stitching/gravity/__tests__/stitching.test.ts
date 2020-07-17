@@ -92,7 +92,7 @@ describe("gravity/stitching", () => {
       )
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { ids: ["1", "2", "3"], first: 2 },
+        args: { ids: ["1", "2", "3"], respectParamsOrder: true, first: 2 },
         operation: "query",
         fieldName: "artworks",
         schema: expect.anything(),
@@ -109,7 +109,7 @@ describe("gravity/stitching", () => {
       artworksConnection.resolve({ artworkIDs: [] }, { first: 2 }, {}, info)
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { ids: [null], first: 2 },
+        args: { ids: [null], respectParamsOrder: true, first: 2 },
         operation: "query",
         fieldName: "artworks",
         schema: expect.anything(),

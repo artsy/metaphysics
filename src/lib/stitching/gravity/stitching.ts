@@ -256,12 +256,10 @@ export const gravityStitchingEnvironment = (
               fieldName: "artworks",
               args: {
                 ids,
+                respectParamsOrder: true,
                 ...args,
               },
-              context: {
-                ...context,
-                respectParamsOrder: true,
-              },
+              context,
               info,
             })
           },
