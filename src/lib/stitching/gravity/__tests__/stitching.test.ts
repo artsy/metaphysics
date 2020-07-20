@@ -506,10 +506,15 @@ describe("gravity/stitching", () => {
       const { artistSeriesConnection } = resolvers.Artist
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-      artistSeriesConnection.resolve({ internalID: "fakeid" }, {}, {}, info)
+      artistSeriesConnection.resolve(
+        { internalID: "fakeid" },
+        { first: 5 },
+        {},
+        info
+      )
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { artistID: "fakeid" },
+        args: { artistID: "fakeid", first: 5 },
         operation: "query",
         fieldName: "artistSeriesConnection",
         schema: expect.anything(),

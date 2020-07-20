@@ -118,7 +118,12 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Artist {
-        artistSeriesConnection: ArtistSeriesConnection
+        artistSeriesConnection(
+          first: Int
+          last: Int
+          after: String
+          before: String
+          ): ArtistSeriesConnection
       }
 
       extend type Viewer {

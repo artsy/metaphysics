@@ -624,7 +624,12 @@ type Artist implements Node & Searchable {
     # The number of Artists to return
     size: Int
   ): [Artist]
-  artistSeriesConnection: ArtistSeriesConnection
+  artistSeriesConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtistSeriesConnection
   artworks(
     exclude: [String]
     filter: [ArtistArtworksFilters]
