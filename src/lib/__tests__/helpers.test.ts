@@ -65,6 +65,16 @@ describe("toKey", () => {
     ).toBe("foo/bar?size=10&sleep=false&sort=asc")
   })
 
+  it("does not include undefined options in path", () => {
+    expect(
+      toKey("foo/bar", {
+        sort: "asc",
+        sleep: undefined,
+        size: 10,
+      })
+    ).toBe("foo/bar?size=10&sort=asc")
+  })
+
   it("sorts the option keys in alphabetical order", () => {
     expect(
       toKey("foo/bar", {
