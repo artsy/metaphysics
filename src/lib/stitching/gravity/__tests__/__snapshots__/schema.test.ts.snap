@@ -29,6 +29,7 @@ type ArtistSeries {
   artistIDs: [String!]!
   description: String
   featured: Boolean!
+  forSaleArtworksCount: Int!
   imageHeight: Int
   imageURL: String
   imageWidth: Int

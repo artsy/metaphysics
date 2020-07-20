@@ -1263,6 +1263,7 @@ type ArtistSeries {
   artists(page: Int, size: Int): [Artist]
   description: String
   featured: Boolean!
+  forSaleArtworksCount: Int!
   image: Image
   imageHeight: Int
   imageURL: String
