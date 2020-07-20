@@ -13,6 +13,13 @@ describe("me/index", () => {
         identityVerified
         hasSecondFactorEnabled
         hasPassword
+        receivePurchaseNotification
+        receiveOutbidNotification
+        receiveLotOpeningSoonNotification
+        receiveSaleOpeningClosingNotification
+        receiveNewWorksNotification
+        receiveNewSalesNotification
+        receivePromotionNotification
       }
     }
   `
@@ -26,6 +33,13 @@ describe("me/index", () => {
       identity_verified: true,
       second_factor_enabled: true,
       has_password: false,
+      receive_purchase_notification: false,
+      receive_outbid_notification: true,
+      receive_lot_opening_soon_notification: false,
+      receive_sale_opening_closing_notification: false,
+      receive_new_works_notification: false,
+      receive_new_sales_notification: true,
+      receive_promotion_notification: false,
     }
 
     return runAuthenticatedQuery(query, {
@@ -40,6 +54,13 @@ describe("me/index", () => {
           identityVerified: true,
           hasSecondFactorEnabled: true,
           hasPassword: false,
+          receivePurchaseNotification: false,
+          receiveOutbidNotification: true,
+          receiveLotOpeningSoonNotification: false,
+          receiveSaleOpeningClosingNotification: false,
+          receiveNewWorksNotification: false,
+          receiveNewSalesNotification: true,
+          receivePromotionNotification: false,
         },
       })
     })

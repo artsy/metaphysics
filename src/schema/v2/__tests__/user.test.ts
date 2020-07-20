@@ -3,7 +3,7 @@ import gql from "lib/gql"
 import { HTTPError } from "lib/HTTPError"
 
 describe("User", () => {
-  it("returns true if a user exist", async () => {
+  it("returns true if a user exists", async () => {
     const foundUser = {
       id: "123456",
       _id: "000012345",
@@ -53,5 +53,58 @@ describe("User", () => {
     `
     const { user } = await runAuthenticatedQuery(query, { userByEmailLoader })
     expect(user.userAlreadyExists).toEqual(false)
+  })
+
+  it("returns push notification settings for a user", async () => {
+    const foundUser = {
+      id: "123456",
+      _id: "000012345",
+      name: "foo bar",
+      pin: "3141",
+      paddle_number: "314159",
+      receive_purchase_notification: false,
+      receive_outbid_notification: false,
+      receive_lot_opening_soon_notification: false,
+      receive_sale_opening_closing_notification: false,
+      receive_new_works_notification: true,
+      receive_new_sales_notification: false,
+      receive_promotion_notification: false,
+    }
+
+    const userByEmailLoader = (data) => {
+      if (data) {
+        return Promise.resolve(foundUser)
+      }
+      throw new Error("Unexpected invocation")
+    }
+
+    const query = gql`
+      {
+        user(email: "foo@bar.com") {
+          pin
+          paddleNumber
+          userAlreadyExists
+          receivePurchaseNotification
+          receiveOutbidNotification
+          receiveLotOpeningSoonNotification
+          receiveSaleOpeningClosingNotification
+          receiveNewWorksNotification
+          receiveNewSalesNotification
+          receivePromotionNotification
+        }
+      }
+    `
+
+    const { user } = await runAuthenticatedQuery(query, { userByEmailLoader })
+    expect(user.pin).toEqual("3141")
+    expect(user.paddleNumber).toEqual("314159")
+    expect(user.userAlreadyExists).toEqual(true)
+    expect(user.receivePurchaseNotification).toEqual(false)
+    expect(user.receiveOutbidNotification).toEqual(false)
+    expect(user.receiveLotOpeningSoonNotification).toEqual(false)
+    expect(user.receiveSaleOpeningClosingNotification).toEqual(false)
+    expect(user.receiveNewWorksNotification).toEqual(true)
+    expect(user.receiveNewSalesNotification).toEqual(false)
+    expect(user.receivePromotionNotification).toEqual(false)
   })
 })

@@ -243,5 +243,7 @@ export default (accessToken, userID, opts) => {
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
     usersLoader: gravityLoader("users"),
+    userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
+    userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
   }
 }

@@ -14,6 +14,13 @@ Object {
       "name": "andy-warhol",
       "phone": "1234890",
       "priceRange": "-1:1000000000000",
+      "receiveLotOpeningSoonNotification": false,
+      "receiveNewSalesNotification": false,
+      "receiveNewWorksNotification": true,
+      "receiveOutbidNotification": false,
+      "receivePromotionNotification": false,
+      "receivePurchaseNotification": false,
+      "receiveSaleOpeningClosingNotification": false,
     },
   },
 }

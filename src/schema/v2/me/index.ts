@@ -124,6 +124,48 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     phone: {
       type: GraphQLString,
     },
+    receivePurchaseNotification: {
+      description: "This user should receive purchase notifications",
+      type: GraphQLBoolean,
+      resolve: ({ receive_purchase_notification }) =>
+        receive_purchase_notification,
+    },
+    receiveOutbidNotification: {
+      description: "This user should receive outbid notifications",
+      type: GraphQLBoolean,
+      resolve: ({ receive_outbid_notification }) => receive_outbid_notification,
+    },
+    receiveLotOpeningSoonNotification: {
+      description: "This user should receive lot opening notifications",
+      type: GraphQLBoolean,
+      resolve: ({ receive_lot_opening_soon_notification }) =>
+        receive_lot_opening_soon_notification,
+    },
+    receiveSaleOpeningClosingNotification: {
+      description:
+        "This user should receive sale opening/closing notifications",
+      type: GraphQLBoolean,
+      resolve: ({ receive_sale_opening_closing_notification }) =>
+        receive_sale_opening_closing_notification,
+    },
+    receiveNewWorksNotification: {
+      description: "This user should receive new works notifications",
+      type: GraphQLBoolean,
+      resolve: ({ receive_new_works_notification }) =>
+        receive_new_works_notification,
+    },
+    receiveNewSalesNotification: {
+      description: "This user should receive new sales notifications",
+      type: GraphQLBoolean,
+      resolve: ({ receive_new_sales_notification }) =>
+        receive_new_sales_notification,
+    },
+    receivePromotionNotification: {
+      description: "This user should receive promotional notifications",
+      type: GraphQLBoolean,
+      resolve: ({ receive_promotion_notification }) =>
+        receive_promotion_notification,
+    },
     recentlyViewedArtworkIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
       resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,
@@ -184,6 +226,13 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "lotsByFollowedArtistsConnection",
       "identityVerification",
       "unreadNotificationsCount",
+      "receivePurchaseNotification",
+      "receiveOutbidNotification",
+      "receiveLotOpeningSoonNotification",
+      "receiveSaleOpeningClosingNotification",
+      "receiveNewWorksNotification",
+      "receiveNewSalesNotification",
+      "receivePromotionNotification",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader()
