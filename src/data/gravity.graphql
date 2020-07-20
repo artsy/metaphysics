@@ -882,6 +882,11 @@ type Query {
     before: String
 
     """
+    Array of IDs of artist series that should be excluded from results
+    """
+    excludeIDs: [ID!]
+
+    """
     Returns the first _n_ elements from the list.
     """
     first: Int
@@ -1280,6 +1285,7 @@ type ViewingRoom {
   Image URL for hero image on viewing room home screen
   """
   heroImageURL: String
+  href: String
 
   """
   Unique ID for this room
