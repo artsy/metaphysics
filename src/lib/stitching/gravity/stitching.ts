@@ -126,6 +126,15 @@ export const gravityStitchingEnvironment = (
           ): ArtistSeriesConnection
       }
 
+      extend type Artwork {
+        artistSeriesConnection(
+          first: Int
+          last: Int
+          after: String
+          before: String
+          ): ArtistSeriesConnection
+      }
+
       extend type Viewer {
         viewingRoomsConnection(first: Int, after: String): ViewingRoomConnection
       }
@@ -451,6 +460,28 @@ export const gravityStitchingEnvironment = (
               fieldName: "artistSeriesConnection",
               args: {
                 artistID,
+                ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Artwork: {
+        artistSeriesConnection: {
+          fragment: gql`
+            ... on Artwork {
+              internalID
+            }
+            `,
+          resolve: ({ internalID: artworkID }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "artistSeriesConnection",
+              args: {
+                artworkID,
                 ...args,
               },
               context,

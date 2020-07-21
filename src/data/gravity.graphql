@@ -75,6 +75,7 @@ type ArtistSeries {
   List of Mongo IDs for associated Artists
   """
   artistIDs: [String!]!
+  artworkIDs: [ID!]!
   description: String
   featured: Boolean!
   forSaleArtworksCount: Int!
@@ -890,7 +891,7 @@ type Query {
   artistSeries(id: ID!): ArtistSeries
 
   """
-  List all artist series, optionally filtered by artist
+  List all artist series, optionally filtered by artist or artwork
   """
   artistSeriesConnection(
     """
@@ -902,6 +903,11 @@ type Query {
     ID of the artist by which to filter results
     """
     artistID: ID
+
+    """
+    ID of the artwork by which to filter results
+    """
+    artworkID: ID
 
     """
     Returns the elements in the list that come before the specified cursor.

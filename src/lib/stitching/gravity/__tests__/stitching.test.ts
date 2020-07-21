@@ -524,6 +524,37 @@ describe("gravity/stitching", () => {
     })
   })
 
+  describe("#artwork", () => {
+    it("extends the Artwork type with an artistSeriesConnection field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const artwork = await getFieldsForTypeFromSchema("Artwork", mergedSchema)
+
+      expect(artwork).toContain("artistSeriesConnection")
+    })
+
+    it("resolves the artistSeriesConnection field on Artwork", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { artistSeriesConnection } = resolvers.Artwork
+      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+      artistSeriesConnection.resolve(
+        { internalID: "fakeid" },
+        { first: 5 },
+        {},
+        info
+      )
+
+      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+        args: { artworkID: "fakeid", first: 5 },
+        operation: "query",
+        fieldName: "artistSeriesConnection",
+        schema: expect.anything(),
+        context: expect.anything(),
+        info: expect.anything(),
+      })
+    })
+  })
+
   describe("#image", () => {
     it("includes an image for an artist series", async () => {
       const { resolvers } = await getGravityStitchedSchema()
