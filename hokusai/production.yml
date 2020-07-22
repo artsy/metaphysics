@@ -31,7 +31,7 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
             - name: NODE_OPTIONS
-              value: "--max_old_space_size=1024"
+              value: "--max_old_space_size=768"
           envFrom:
             - configMapRef:
                 name: metaphysics-environment
@@ -42,10 +42,10 @@ spec:
               containerPort: 3000
           resources:
             requests:
-              cpu: "1"
-              memory: 1536Mi
+              cpu: 1000m
+              memory: 768Mi
             limits:
-              memory: 1536Mi
+              memory: 1.5Gi
           readinessProbe:
             httpGet:
               port: mp-http
@@ -114,8 +114,8 @@ spec:
     kind: Deployment
     name: metaphysics-web
   minReplicas: 10
-  maxReplicas: 20
-  targetCPUUtilizationPercentage: 60
+  maxReplicas: 25
+  targetCPUUtilizationPercentage: 70
 
 ---
 apiVersion: v1
