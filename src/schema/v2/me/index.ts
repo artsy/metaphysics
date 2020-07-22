@@ -226,13 +226,6 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "lotsByFollowedArtistsConnection",
       "identityVerification",
       "unreadNotificationsCount",
-      "receivePurchaseNotification",
-      "receiveOutbidNotification",
-      "receiveLotOpeningSoonNotification",
-      "receiveSaleOpeningClosingNotification",
-      "receiveNewWorksNotification",
-      "receiveNewSalesNotification",
-      "receivePromotionNotification",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader()
