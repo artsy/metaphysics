@@ -206,6 +206,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ is_gallery_auction }) => is_gallery_auction,
       },
+      isArtsyLicensed: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: ({ is_artsy_licensed }) => is_artsy_licensed,
+      },
       isAuctionPromo: {
         type: GraphQLBoolean,
         resolve: ({ sale_type }) => sale_type === "auction promo",

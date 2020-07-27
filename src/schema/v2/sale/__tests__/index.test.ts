@@ -15,6 +15,7 @@ describe("Sale type", () => {
     id: "foo-foo",
     _id: "123",
     currency: "$",
+    is_artsy_licensed: false,
     is_auction: true,
     is_preliminary: false,
     increment_strategy: "default",
@@ -56,6 +57,7 @@ describe("Sale type", () => {
       {
         sale(id: "foo-foo") {
           internalID
+          isArtsyLicensed
           isPreview
           isOpen
           isLiveOpen
@@ -74,6 +76,7 @@ describe("Sale type", () => {
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
+          isArtsyLicensed: false,
           isPreview: false,
           isOpen: false,
           isLiveOpen: false,
@@ -92,6 +95,7 @@ describe("Sale type", () => {
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
+          isArtsyLicensed: false,
           isPreview: true,
           isOpen: false,
           isLiveOpen: false,
@@ -111,6 +115,7 @@ describe("Sale type", () => {
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
+          isArtsyLicensed: false,
           isPreview: false,
           isOpen: true,
           isLiveOpen: false,
@@ -130,6 +135,7 @@ describe("Sale type", () => {
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
+          isArtsyLicensed: false,
           isPreview: false,
           isOpen: true,
           isLiveOpen: true,
@@ -149,6 +155,7 @@ describe("Sale type", () => {
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
+          isArtsyLicensed: false,
           isPreview: false,
           isOpen: true,
           isLiveOpen: true,
