@@ -13851,6 +13851,7 @@ type ViewingRoomSubsection {
 # Attributes for creating or updating a viewing room subsection
 input ViewingRoomSubsectionAttributes {
   body: String
+  caption: String
   title: String
 }
 
