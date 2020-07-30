@@ -85,7 +85,6 @@ describe("when handling resolver delegation", () => {
 
     expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
       args: { id: "USER-ID" },
-      operation: "query",
       fieldName: "user",
       ...restOfResolveArgs,
     })
@@ -103,7 +102,6 @@ describe("when handling resolver delegation", () => {
 
     expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
       args: { id: "PARTNER-ID" },
-      operation: "query",
       fieldName: "partner",
       ...restOfResolveArgs,
     })
@@ -120,7 +118,6 @@ it("delegates to the local schema for an LineItem's artwork", async () => {
   expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
     args: { id: "ARTWORK-ID" },
     fieldName: "artwork",
-    operation: "query",
     ...restOfResolveArgs,
   })
 })
@@ -135,7 +132,6 @@ it("delegates to the local schema for an Order's creditCard", async () => {
   expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
     args: { id: "CC-1" },
     fieldName: "credit_card",
-    operation: "query",
     ...restOfResolveArgs,
   })
 })
@@ -150,7 +146,6 @@ it("doesn't delegate to the local schema for an Order's creditCard if creditCard
   expect(mergeInfo.delegateToSchema).not.toHaveBeenCalledWith({
     args: { id: null },
     fieldName: "credit_card",
-    operation: "query",
     ...restOfResolveArgs,
   })
 })

@@ -197,8 +197,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           height: { type: GraphQLInt, defaultValue: 450 },
           autoplay: { type: GraphQLBoolean, defaultValue: false },
         },
-        resolve: ({ website }, options: any) =>
-          isEmbeddedVideo ? embed(website, options) : null,
+        resolve: ({ website, category }, options: any) =>
+          isEmbeddedVideo({ website, category })
+            ? embed(website, options)
+            : null,
       },
       edition_of: {
         type: GraphQLString,
