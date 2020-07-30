@@ -43,7 +43,7 @@ export default async () => {
   // Find which APIs have corresponding, on a prod deploy we would
   // want to check every service.
   const servicesWhichAreChangedInThisPR = allUpstreamGraphQLAPIs.filter(
-    service =>
+    (service) =>
       isProductionDeployPR ||
       danger.git.modified_files.includes(serviceMap[service].localSchemaPath)
   )
@@ -58,6 +58,7 @@ export default async () => {
   const {
     downloadSchemaFromURL,
     getBreakingChanges,
+    // @ts-ignore
   } = await import("./schemaValidatorUtils")
 
   // This is a separate set of the endpoints with breaking changes

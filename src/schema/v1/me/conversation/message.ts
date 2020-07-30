@@ -7,7 +7,6 @@ import {
   GraphQLNonNull,
 } from "graphql"
 import {
-  GlobalIDField,
   NodeInterface,
   InternalIDFields,
 } from "schema/v1/object_identification"
@@ -40,7 +39,6 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
   description: "A message in a conversation.",
   interfaces: [NodeInterface],
   fields: {
-    __id: GlobalIDField,
     ...InternalIDFields,
     // This alias exists specifically because our fork of Relay Classic did not yet properly support using `__id`
     // instead of `id`, which lead to Relay overwriting `id` fields with the `__id` value. Thus using a completely

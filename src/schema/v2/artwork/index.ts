@@ -184,8 +184,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           height: { type: GraphQLInt, defaultValue: 450 },
           autoplay: { type: GraphQLBoolean, defaultValue: false },
         },
-        resolve: ({ website }, options: any) =>
-          isEmbeddedVideo ? embed(website, options) : null,
+        // TODO: Does this replicate the intended behavior?
+        resolve: ({ website, category }, options: any) =>
+          isEmbeddedVideo({ website, category })
+            ? embed(website, options)
+            : null,
       },
       editionOf: {
         type: GraphQLString,
