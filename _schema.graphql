@@ -638,6 +638,7 @@ type Artist implements Node & Searchable {
   artistSeriesConnection(
     after: String
     before: String
+    excludeIDs: [ID]
     first: Int
     last: Int
   ): ArtistSeriesConnection
@@ -1363,6 +1364,7 @@ type Artwork implements Node & Searchable & Sellable {
   artistSeriesConnection(
     after: String
     before: String
+    excludeIDs: [ID]
     first: Int
     last: Int
   ): ArtistSeriesConnection

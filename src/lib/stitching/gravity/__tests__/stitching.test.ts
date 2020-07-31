@@ -531,13 +531,13 @@ describe("gravity/stitching", () => {
 
       artistSeriesConnection.resolve(
         { internalID: "fakeid" },
-        { first: 5 },
+        { first: 5, excludeIDs: ["abc123"] },
         {},
         info
       )
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { artistID: "fakeid", first: 5 },
+        args: { artistID: "fakeid", first: 5, excludeIDs: ["abc123"] },
         operation: "query",
         fieldName: "artistSeriesConnection",
         schema: expect.anything(),
@@ -562,13 +562,13 @@ describe("gravity/stitching", () => {
 
       artistSeriesConnection.resolve(
         { internalID: "fakeid" },
-        { first: 5 },
+        { first: 5, excludeIDs: ["abc123"] },
         {},
         info
       )
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { artworkID: "fakeid", first: 5 },
+        args: { artworkID: "fakeid", first: 5, excludeIDs: ["abc123"] },
         operation: "query",
         fieldName: "artistSeriesConnection",
         schema: expect.anything(),

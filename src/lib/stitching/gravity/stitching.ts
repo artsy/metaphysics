@@ -124,6 +124,7 @@ export const gravityStitchingEnvironment = (
           last: Int
           after: String
           before: String
+          excludeIDs: [ID]
           ): ArtistSeriesConnection
       }
 
@@ -133,6 +134,7 @@ export const gravityStitchingEnvironment = (
           last: Int
           after: String
           before: String
+          excludeIDs: [ID]
           ): ArtistSeriesConnection
       }
 
