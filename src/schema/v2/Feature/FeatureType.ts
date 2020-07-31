@@ -18,6 +18,7 @@ import {
   ORDERED_SET_SORTS,
 } from "../OrderedSet/OrderedSetSortsEnum"
 import Image from "../image"
+import { FeatureMetaType } from "./FeatureMeta"
 
 export const FeatureType = new GraphQLObjectType<
   Gravity.Feature,
@@ -38,6 +39,10 @@ export const FeatureType = new GraphQLObjectType<
     subheadline: markdown(),
     callout: markdown(),
     image: Image,
+    meta: {
+      type: new GraphQLNonNull(FeatureMetaType),
+      resolve: (feature) => feature,
+    },
     setsConnection: {
       type: OrderedSetConnection.connectionType,
       args: pageable({
