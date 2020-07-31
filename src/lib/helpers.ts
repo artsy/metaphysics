@@ -56,6 +56,7 @@ export const truncate = (string, length, append = "…") => {
   const limit = ~~length
   return x.length > limit ? x.slice(0, limit) + append : x
 }
+
 export const toQueryString = (options = {}) =>
   /**
    * In the case of batched requests we want to explicitly _not_ sort the
@@ -71,14 +72,17 @@ export const toQueryString = (options = {}) =>
         sort: (a, b) => a.localeCompare(b),
       })
 export const toKey = (path, options = {}) => `${path}?${toQueryString(options)}`
+
 export const exclude = (values?: any[], property?: any) => (xs) =>
   reject(xs, (x) => includes(values, x[property]))
+
 export const stripTags = (str?: string) => {
   if (!str) return ""
   return String(str).replace(/<\/?[^>]+>/g, "")
 }
-export const markdownToText = (str) => {
-  return stripTags(formatMarkdownValue(str, "html"))
+
+export const markdownToText = (str: string) => {
+  return stripTags(formatMarkdownValue(str, "html")).trim()
 }
 
 export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(
