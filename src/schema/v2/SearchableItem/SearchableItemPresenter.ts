@@ -33,6 +33,7 @@ export class SearchableItemPresenter {
       case "City":
         return `Browse current exhibitions in ${display}`
       case "Collection":
+      case "ArtistSeries":
         return stripTags(description)
       default:
         return undefined
@@ -57,6 +58,8 @@ export class SearchableItemPresenter {
       case "Booth":
       case "PartnerShow":
         return `/show/${id}`
+      case "ArtistSeries":
+        return `/artist-series/${id}`
       default:
         return `/${model}/${id}`
     }
@@ -89,6 +92,8 @@ export class SearchableItemPresenter {
         return fair_id ? "Booth" : "Show"
       case "MarketingCollection":
         return "Collection"
+      case "ArtistSeries":
+        return "Artist Series"
       default:
         return label
     }
