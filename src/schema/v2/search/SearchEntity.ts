@@ -6,6 +6,9 @@ export const SearchEntity = new GraphQLEnumType({
     ARTIST: {
       value: "Artist",
     },
+    ARTIST_SERIES: {
+      value: "ArtistSeries",
+    },
     ARTWORK: {
       value: "Artwork",
     },
