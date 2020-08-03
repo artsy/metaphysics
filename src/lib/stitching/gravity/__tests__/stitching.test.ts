@@ -503,14 +503,19 @@ describe("gravity/stitching", () => {
       const { artists } = resolvers.ArtistSeries
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-      artists.resolve({ artistIDs: ["fakeid"] }, {}, {}, info)
+      artists.resolve(
+        { artistIDs: ["fakeid"], internalID: "abc123" },
+        {},
+        {},
+        info
+      )
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
         args: { ids: ["fakeid"] },
         operation: "query",
         fieldName: "artists",
         schema: expect.anything(),
-        context: expect.anything(),
+        context: { currentArtistSeriesInternalID: "abc123" },
         info: expect.anything(),
       })
     })
@@ -531,18 +536,43 @@ describe("gravity/stitching", () => {
 
       artistSeriesConnection.resolve(
         { internalID: "fakeid" },
-        { first: 5, excludeIDs: ["abc123"] },
+        { first: 5 },
         {},
         info
       )
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { artistID: "fakeid", first: 5, excludeIDs: ["abc123"] },
+        args: { artistID: "fakeid", first: 5 },
         operation: "query",
         fieldName: "artistSeriesConnection",
         schema: expect.anything(),
         context: expect.anything(),
         info: expect.anything(),
+      })
+    })
+
+    describe("with an artistSeriesConnection with a current artist series in context", () => {
+      it("resolves the artistSeriesConnection and excludes the current artist series", async () => {
+        const context = { currentArtistSeriesInternalID: "abc123" }
+        const { resolvers } = await getGravityStitchedSchema()
+        const { artistSeriesConnection } = resolvers.Artist
+        const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+        artistSeriesConnection.resolve(
+          { internalID: "fakeid" },
+          { first: 5 },
+          context,
+          info
+        )
+
+        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+          args: { artistID: "fakeid", first: 5, excludeIDs: ["abc123"] },
+          operation: "query",
+          fieldName: "artistSeriesConnection",
+          schema: expect.anything(),
+          context: expect.anything(),
+          info: expect.anything(),
+        })
       })
     })
   })
@@ -562,13 +592,13 @@ describe("gravity/stitching", () => {
 
       artistSeriesConnection.resolve(
         { internalID: "fakeid" },
-        { first: 5, excludeIDs: ["abc123"] },
+        { first: 5 },
         {},
         info
       )
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { artworkID: "fakeid", first: 5, excludeIDs: ["abc123"] },
+        args: { artworkID: "fakeid", first: 5 },
         operation: "query",
         fieldName: "artistSeriesConnection",
         schema: expect.anything(),
