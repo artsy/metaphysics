@@ -11541,6 +11541,9 @@ type Query {
     last: Int
     partnerID: ID
     published: Boolean = true
+
+    # Returns only viewing rooms with these statuses
+    statuses: [ViewingRoomStatusEnum!] = []
   ): ViewingRoomConnection
 }
 
@@ -13781,6 +13784,7 @@ type ViewingRoom {
 type ViewingRoomArtwork {
   artworkID: ID!
   internalID: ID!
+  published: Boolean!
 }
 
 # An input type for a Viewing Room artwork
@@ -13833,6 +13837,13 @@ type ViewingRoomEdge {
 
 # A viewing room or errors object
 union ViewingRoomOrErrorsUnion = Errors | ViewingRoom
+
+enum ViewingRoomStatusEnum {
+  closed
+  draft
+  live
+  scheduled
+}
 
 # Title, image, text, and caption for a viewing room section
 type ViewingRoomSubsection {
