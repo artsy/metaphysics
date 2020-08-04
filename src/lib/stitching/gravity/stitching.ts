@@ -124,7 +124,6 @@ export const gravityStitchingEnvironment = (
           last: Int
           after: String
           before: String
-          excludeIDs: [ID]
           ): ArtistSeriesConnection
       }
 
@@ -134,7 +133,6 @@ export const gravityStitchingEnvironment = (
           last: Int
           after: String
           before: String
-          excludeIDs: [ID]
           ): ArtistSeriesConnection
       }
 
@@ -224,12 +222,15 @@ export const gravityStitchingEnvironment = (
           fragment: gql`
           ... on ArtistSeries {
             artistIDs
+            internalID
           }
         `,
-          resolve: ({ artistIDs: ids }, args, context, info) => {
+          resolve: ({ artistIDs: ids, internalID }, args, context, info) => {
             if (ids.length === 0) {
               return []
             }
+
+            context.currentArtistSeriesInternalID = internalID
 
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
@@ -484,6 +485,12 @@ export const gravityStitchingEnvironment = (
               args: {
                 artistID,
                 ...args,
+                // Exclude the current artist series so that lists of
+                // artist series by the artist don't include the current series
+                // if there is one.
+                ...(!!context.currentArtistSeriesInternalID && {
+                  excludeIDs: [context.currentArtistSeriesInternalID],
+                }),
               },
               context,
               info,
