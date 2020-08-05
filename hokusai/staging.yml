@@ -55,6 +55,43 @@ spec:
                   value: https
             initialDelaySeconds: 5
             periodSeconds: 5
+        - name: metaphysics-web-alt
+          env:
+            - name: PORT
+              value: "3001"
+            - name: DD_TRACER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: STATSD_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: NODE_OPTIONS
+              value: "--max_old_space_size=256"
+          envFrom:
+            - configMapRef:
+                name: metaphysics-environment
+          image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:staging
+          imagePullPolicy: Always
+          ports:
+            - name: mp-http-alt
+              containerPort: 3001
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              port: mp-http-alt
+              path: /health
+              httpHeaders:
+                - name: X-FORWARDED-PROTO
+                  value: https
+            initialDelaySeconds: 5
+            periodSeconds: 5
         - name: metaphysics-nginx
           image: artsy/docker-nginx:1.14.2
           ports:
