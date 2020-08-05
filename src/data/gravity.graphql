@@ -64,6 +64,11 @@ type ArtistConnection {
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
+
+  """
+  Total count of matching nodes, before pagination
+  """
+  totalCount: Int!
 }
 
 """
@@ -122,6 +127,11 @@ type ArtistSeriesConnection {
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
+
+  """
+  Total count of matching nodes, before pagination
+  """
+  totalCount: Int!
 }
 
 """
@@ -205,6 +215,11 @@ type ArtworkConnection {
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
+
+  """
+  Total count of matching nodes, before pagination
+  """
+  totalCount: Int!
 }
 
 """
@@ -723,6 +738,11 @@ type InventoryHoldItemConnection {
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
+
+  """
+  Total count of matching nodes, before pagination
+  """
+  totalCount: Int!
 }
 
 """
@@ -1459,6 +1479,11 @@ type ViewingRoomConnection {
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
+
+  """
+  Total count of matching nodes, before pagination
+  """
+  totalCount: Int!
 }
 
 """
