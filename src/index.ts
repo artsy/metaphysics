@@ -226,7 +226,7 @@ function startApp(appSchema, path: string) {
 
         return {
           schema: appSchema,
-          graphiql: true,
+          graphiql: !PRODUCTION_ENV,
           context,
           rootValue: {},
           customFormatErrorFn: graphqlErrorHandler(enableSentry, {
