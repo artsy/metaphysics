@@ -173,10 +173,18 @@ scalar JSON
 Mutation root for this schema
 """
 type Mutation {
-  addAssetToConsignmentSubmission(input: AddAssetToConsignmentSubmissionInput!): AddAssetToConsignmentSubmissionPayload
-  createConsignmentOffer(input: CreateOfferMutationInput!): CreateOfferMutationPayload
-  createConsignmentSubmission(input: CreateSubmissionMutationInput!): CreateSubmissionMutationPayload
-  updateConsignmentSubmission(input: UpdateSubmissionMutationInput!): UpdateSubmissionMutationPayload
+  addAssetToConsignmentSubmission(
+    input: AddAssetToConsignmentSubmissionInput!
+  ): AddAssetToConsignmentSubmissionPayload
+  createConsignmentOffer(
+    input: CreateOfferMutationInput!
+  ): CreateOfferMutationPayload
+  createConsignmentSubmission(
+    input: CreateSubmissionMutationInput!
+  ): CreateSubmissionMutationPayload
+  updateConsignmentSubmission(
+    input: UpdateSubmissionMutationInput!
+  ): UpdateSubmissionMutationPayload
 }
 
 """
@@ -822,6 +830,7 @@ type Submission {
   offers(gravityPartnerId: ID!): [Offer!]!
   primaryImage: Asset
   provenance: String
+  publishedAt: ISO8601DateTime
   signature: Boolean
   state: State
   title: String

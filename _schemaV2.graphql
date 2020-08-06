@@ -3625,6 +3625,7 @@ type ConsignmentSubmission {
   offers(gravityPartnerId: ID!): [ConsignmentOffer!]!
   primaryImage: ConsignmentSubmissionCategoryAsset
   provenance: String
+  publishedAt: ISO8601DateTime
   signature: Boolean
   state: ConsignmentSubmissionStateAggregation
   title: String
