@@ -139,11 +139,11 @@ spec:
     - port: 443
       protocol: TCP
       name: https
-      targetPort: mp-http
+      targetPort: nginx-http
     - port: 80
       protocol: TCP
       name: http
-      targetPort: mp-http
+      targetPort: nginx-http
   selector:
     app: metaphysics
     layer: application
