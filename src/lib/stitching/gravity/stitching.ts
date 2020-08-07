@@ -8,9 +8,10 @@ import {
   isEnumType,
 } from "graphql"
 import moment from "moment"
-import { defineCustomLocale } from "lib/helpers"
+import { defineCustomLocale, isExisty } from "lib/helpers"
 import { pageableFilterArtworksArgs } from "schema/v2/filterArtworksConnection"
 import { normalizeImageData, getDefault } from "schema/v2/image"
+import { formatMarkdownValue } from "schema/v2/fields/markdown"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -112,6 +113,7 @@ export const gravityStitchingEnvironment = (
               ).join("\n")}): FilterArtworksConnection`
             : ""
         }
+        descriptionFormatted(format: Format): String
       }
 
       extend type Partner {
@@ -174,6 +176,25 @@ export const gravityStitchingEnvironment = (
               context,
               info,
             })
+          },
+        },
+        descriptionFormatted: {
+          fragment: gql`
+            ... on ArtistSeries {
+              description
+            }
+          `,
+          resolve: async ({ description }, { format }) => {
+            if (!isExisty(description) || typeof description !== "string")
+              return null
+
+            const formats = {
+              HTML: "html",
+              PLAIN: "plain",
+              MARKDOWN: "markdown",
+            }
+
+            return formatMarkdownValue(description, formats[format])
           },
         },
         image: {
