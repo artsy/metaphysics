@@ -470,6 +470,12 @@ type AnalyticsShow {
   entityId: String!
 }
 
+# Statistics for users
+type AnalyticsUserStats {
+  numberOfPurchases: Int!
+  userId: String!
+}
+
 type AnalyticsVisitorsByCountry {
   metric: String!
   name: String!
@@ -10817,6 +10823,9 @@ type Query {
 
   # Find PartnerStats
   analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStats
+
+  # Query UserStats
+  analyticsUserStats(userId: String!): AnalyticsUserStats
 
   # An Article
   article(
