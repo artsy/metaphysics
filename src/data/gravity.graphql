@@ -810,18 +810,30 @@ union MoneyOrErrorUnion = Error | Money
 type Mutation {
   captureHold(input: CaptureHoldInput!): CaptureHoldPayload
   confirmPassword(input: ConfirmPasswordInput!): ConfirmPasswordPayload
-  createAppSecondFactor(input: CreateAppSecondFactorInput!): CreateAppSecondFactorPayload
-  createBackupSecondFactors(input: CreateBackupSecondFactorsInput!): CreateBackupSecondFactorsPayload
+  createAppSecondFactor(
+    input: CreateAppSecondFactorInput!
+  ): CreateAppSecondFactorPayload
+  createBackupSecondFactors(
+    input: CreateBackupSecondFactorsInput!
+  ): CreateBackupSecondFactorsPayload
   createImage(input: CreateImageInput!): CreateImagePayload
-  createSmsSecondFactor(input: CreateSmsSecondFactorInput!): CreateSmsSecondFactorPayload
+  createSmsSecondFactor(
+    input: CreateSmsSecondFactorInput!
+  ): CreateSmsSecondFactorPayload
   createViewingRoom(input: CreateViewingRoomInput!): CreateViewingRoomPayload
 
   """
   Deduct from the partner's exemption balance, against which they can make sales and not pay commission
   """
-  debitCommissionExemption(input: DebitCommissionExemptionInput!): DebitCommissionExemptionPayload
-  deliverSecondFactor(input: DeliverSecondFactorInput!): DeliverSecondFactorPayload
-  disableSecondFactor(input: DisableSecondFactorInput!): DisableSecondFactorPayload
+  debitCommissionExemption(
+    input: DebitCommissionExemptionInput!
+  ): DebitCommissionExemptionPayload
+  deliverSecondFactor(
+    input: DeliverSecondFactorInput!
+  ): DeliverSecondFactorPayload
+  disableSecondFactor(
+    input: DisableSecondFactorInput!
+  ): DisableSecondFactorPayload
   enableSecondFactor(input: EnableSecondFactorInput!): EnableSecondFactorPayload
   holdInventory(input: HoldInventoryInput!): HoldInventoryPayload
   publishViewingRoom(input: PublishViewingRoomInput!): PublishViewingRoomPayload
@@ -830,14 +842,28 @@ type Mutation {
   """
   Refund commission exemption for a previous transaction
   """
-  refundCommissionExemption(input: RefundCommissionExemptionInput!): RefundCommissionExemptionPayload
-  requestConditionReport(input: RequestConditionReportInput!): RequestConditionReportPayload
-  unpublishViewingRoom(input: UnpublishViewingRoomInput!): UnpublishViewingRoomPayload
-  updateAppSecondFactor(input: UpdateAppSecondFactorInput!): UpdateAppSecondFactorPayload
-  updateSmsSecondFactor(input: UpdateSmsSecondFactorInput!): UpdateSmsSecondFactorPayload
+  refundCommissionExemption(
+    input: RefundCommissionExemptionInput!
+  ): RefundCommissionExemptionPayload
+  requestConditionReport(
+    input: RequestConditionReportInput!
+  ): RequestConditionReportPayload
+  unpublishViewingRoom(
+    input: UnpublishViewingRoomInput!
+  ): UnpublishViewingRoomPayload
+  updateAppSecondFactor(
+    input: UpdateAppSecondFactorInput!
+  ): UpdateAppSecondFactorPayload
+  updateSmsSecondFactor(
+    input: UpdateSmsSecondFactorInput!
+  ): UpdateSmsSecondFactorPayload
   updateViewingRoom(input: UpdateViewingRoomInput!): UpdateViewingRoomPayload
-  updateViewingRoomArtworks(input: UpdateViewingRoomArtworksInput!): UpdateViewingRoomArtworksPayload
-  updateViewingRoomSubsections(input: UpdateViewingRoomSubsectionsInput!): UpdateViewingRoomSubsectionsPayload
+  updateViewingRoomArtworks(
+    input: UpdateViewingRoomArtworksInput!
+  ): UpdateViewingRoomArtworksPayload
+  updateViewingRoomSubsections(
+    input: UpdateViewingRoomSubsectionsInput!
+  ): UpdateViewingRoomSubsectionsPayload
 }
 
 """
@@ -991,12 +1017,22 @@ type Query {
   """
   Autocomplete resolvers.
   """
-  matchPartners(matchType: String, page: Int = 1, size: Int = 5, term: String!): [Partner!]
+  matchPartners(
+    matchType: String
+    page: Int = 1
+    size: Int = 5
+    term: String!
+  ): [Partner!]
 
   """
   Autocomplete resolvers.
   """
-  match_partners(match_type: String, page: Int = 1, size: Int = 5, term: String!): [Partner!] @deprecated(reason: "Use matchPartners")
+  match_partners(
+    match_type: String
+    page: Int = 1
+    size: Int = 5
+    term: String!
+  ): [Partner!] @deprecated(reason: "Use matchPartners")
 
   """
   Find partners by IDs
@@ -1006,7 +1042,9 @@ type Query {
   """
   List enabled Two-Factor Authentication factors
   """
-  secondFactors(kinds: [SecondFactorKind!] = [app, sms, backup]): [SecondFactor!]!
+  secondFactors(
+    kinds: [SecondFactorKind!] = [app, sms, backup]
+  ): [SecondFactor!]!
 
   """
   Find a viewing room by ID
@@ -1038,12 +1076,16 @@ type Query {
     """
     last: Int
     partnerID: ID
-    published: Boolean = true
+
+    """
+    (Deprecated) Use statuses
+    """
+    published: Boolean
 
     """
     Returns only viewing rooms with these statuses
     """
-    statuses: [ViewingRoomStatusEnum!] = []
+    statuses: [ViewingRoomStatusEnum!] = [live]
   ): ViewingRoomConnection
 }
 
