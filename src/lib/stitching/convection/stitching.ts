@@ -1,4 +1,10 @@
 import { GraphQLSchema } from "graphql"
+import {
+  amount,
+  amountSDL,
+  symbolFromCurrencyCode,
+} from "schema/v2/fields/money"
+import gql from "lib/gql"
 
 export const consignmentStitchingEnvironment = (
   localSchema: GraphQLSchema,
@@ -8,6 +14,11 @@ export const consignmentStitchingEnvironment = (
   extensionSchema: `
     extend type ConsignmentSubmission {
       artist: Artist
+    }
+
+    extend type ConsignmentOffer {
+      ${amountSDL("lowEstimateAmount")}
+      ${amountSDL("highEstimateAmount")}
     }
   `,
 
@@ -30,6 +41,41 @@ export const consignmentStitchingEnvironment = (
             transforms: convectionSchema.transforms,
           })
         },
+      },
+    },
+
+    ConsignmentOffer: {
+      lowEstimateAmount: {
+        fragment: gql`
+          fragment ConsignmentOfferLowEstimateAmount on ConsignmentOffer {
+            currency
+            lowEstimateCents
+          }
+        `,
+        resolve: (parent, args) =>
+          amount((_) => parent.lowEstimateCents).resolve(
+            {},
+            {
+              ...args,
+              symbol: symbolFromCurrencyCode(parent.currency),
+            }
+          ),
+      },
+      highEstimateAmount: {
+        fragment: gql`
+          fragment ConsignmentOfferLowEstimateAmount on ConsignmentOffer {
+            currency
+            highEstimateCents
+          }
+        `,
+        resolve: (parent, args) =>
+          amount((_) => parent.highEstimateCents).resolve(
+            {},
+            {
+              ...args,
+              symbol: symbolFromCurrencyCode(parent.currency),
+            }
+          ),
       },
     },
   },
