@@ -496,6 +496,11 @@ type Query {
     category: PricingContextCategoryEnum!
     sizeScore: Int!
   ): PricingContext
+
+  """
+  Query UserStats
+  """
+  userStats(userId: String!): UserStats
 }
 
 enum QueryPeriodEnum {
@@ -583,6 +588,14 @@ union RankedStatsUnion = Artist | Artwork | Show
 
 type Show {
   entityId: String!
+}
+
+"""
+Statistics for users
+"""
+type UserStats {
+  numberOfPurchases: Int!
+  userId: String!
 }
 
 type VisitorsByCountry {

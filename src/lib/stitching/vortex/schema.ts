@@ -20,7 +20,7 @@ export const executableVortexSchema = ({
     link: vortexLink,
   })
 
-  const removeRootFieldList = ["pricingContext", "partnerStat"]
+  const removeRootFieldList = ["pricingContext", "partnerStat", "userStat"]
 
   // Return the new modified schema
   return transformSchema(schema, [
