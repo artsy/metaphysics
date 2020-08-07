@@ -60,9 +60,13 @@ export const amount = (centsResolver) => ({
       return null
     }
 
+    const factor =
+      currencyCodes[obj?.currencyCode?.toLowerCase()]?.subunit_to_unit ?? 100
+    const major = cents / factor
+
     // Some objects return a currencyCode instead of a symbol.
     return formatMoney(
-      cents / 100,
+      major,
       assign({}, options, {
         symbol,
       })

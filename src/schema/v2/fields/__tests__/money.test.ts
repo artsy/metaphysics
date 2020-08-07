@@ -47,6 +47,15 @@ describe(amount, () => {
     ).toMatchInlineSnapshot(`"£12.34"`)
   })
 
+  it("respects major / minor unit conversion ratio if currencyCode passed in", () => {
+    expect(
+      getResult({
+        obj: { currencyCode: "CLF" },
+        args: {},
+      })
+    ).toMatchInlineSnapshot(`"UF0.12"`)
+  })
+
   it("prefers object symbol over currencyCode", () => {
     expect(
       getResult({
