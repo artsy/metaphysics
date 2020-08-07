@@ -13749,7 +13749,11 @@ type Viewer {
 
   # A list of Users
   users(ids: [String]): [User]
-  viewingRoomsConnection(after: String, first: Int): ViewingRoomConnection
+  viewingRoomsConnection(
+    after: String
+    first: Int
+    statuses: [ViewingRoomStatusEnum!]
+  ): ViewingRoomConnection
 }
 
 # An artwork viewing room
