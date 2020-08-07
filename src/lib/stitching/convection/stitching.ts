@@ -1,9 +1,5 @@
 import { GraphQLSchema } from "graphql"
-import {
-  amount,
-  amountSDL,
-  symbolFromCurrencyCode,
-} from "schema/v2/fields/money"
+import { amount, amountSDL } from "schema/v2/fields/money"
 import gql from "lib/gql"
 
 export const consignmentStitchingEnvironment = (
@@ -54,11 +50,10 @@ export const consignmentStitchingEnvironment = (
         `,
         resolve: (parent, args) =>
           amount((_) => parent.lowEstimateCents).resolve(
-            {},
             {
-              ...args,
-              symbol: symbolFromCurrencyCode(parent.currency),
-            }
+              currencyCode: parent.currency,
+            },
+            args
           ),
       },
       highEstimateAmount: {
@@ -70,11 +65,10 @@ export const consignmentStitchingEnvironment = (
         `,
         resolve: (parent, args) =>
           amount((_) => parent.highEstimateCents).resolve(
-            {},
             {
-              ...args,
-              symbol: symbolFromCurrencyCode(parent.currency),
-            }
+              currencyCode: parent.currency,
+            },
+            args
           ),
       },
     },
