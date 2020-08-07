@@ -453,7 +453,7 @@ describe("gravity/stitching", () => {
     })
   })
 
-  describe("#viewingRoomsConnection", () => {
+  describe("#viewingRoomsConnection in Partner", () => {
     it("extends the Partner type with a viewingRoomsConnection field", async () => {
       const mergedSchema = await getGravityMergedSchema()
       const partnerFields = await getFieldsForTypeFromSchema(
@@ -484,6 +484,18 @@ describe("gravity/stitching", () => {
         context: expect.anything(),
         info: expect.anything(),
       })
+    })
+  })
+
+  describe("#viewingRoomsConnection in Viewer", () => {
+    it("extends the Viewer type with a viewingRoomsConnection field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const viewerFields = await getFieldsForTypeFromSchema(
+        "Viewer",
+        mergedSchema
+      )
+
+      expect(viewerFields).toContain("viewingRoomsConnection")
     })
   })
 
