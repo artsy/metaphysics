@@ -472,7 +472,7 @@ type AnalyticsShow {
 
 # Statistics for users
 type AnalyticsUserStats {
-  numberOfPurchases: Int!
+  totalPurchaseCount: Int!
   userId: String!
 }
 
