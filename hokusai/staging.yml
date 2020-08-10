@@ -6,8 +6,8 @@ metadata:
 spec:
   strategy:
     rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 20%
+      maxSurge: 1
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
@@ -55,6 +55,10 @@ spec:
                   value: https
             initialDelaySeconds: 5
             periodSeconds: 5
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "sleep 10"]
         - name: metaphysics-nginx
           image: artsy/docker-nginx:1.14.2
           ports:
@@ -71,7 +75,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/usr/sbin/nginx", "-s", "quit"]
+                command: ["sh", "-c", "sleep 5 && /usr/sbin/nginx -s quit"]
           env:
             - name: "NGINX_DEFAULT_CONF"
               valueFrom:
