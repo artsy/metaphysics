@@ -195,14 +195,6 @@ export const gravityStitchingEnvironment = (
               ?.find((e) => e.name === format)?.value
 
             return formatMarkdownValue(description, desiredFormat)
-
-            const formats = {
-              HTML: "html",
-              PLAIN: "plain",
-              MARKDOWN: "markdown",
-            }
-
-            return formatMarkdownValue(description, formats[format])
           },
         },
         image: {
