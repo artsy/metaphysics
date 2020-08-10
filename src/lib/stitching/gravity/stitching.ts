@@ -12,6 +12,7 @@ import { defineCustomLocale, isExisty } from "lib/helpers"
 import { pageableFilterArtworksArgs } from "schema/v2/filterArtworksConnection"
 import { normalizeImageData, getDefault } from "schema/v2/image"
 import { formatMarkdownValue } from "schema/v2/fields/markdown"
+import Format from "schema/v2/input_fields/format"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -187,6 +188,13 @@ export const gravityStitchingEnvironment = (
           resolve: async ({ description }, { format }) => {
             if (!isExisty(description) || typeof description !== "string")
               return null
+
+            const { type: formatType } = Format
+            const desiredFormat = formatType
+              ?.getValues()
+              ?.find((e) => e.name === format)?.value
+
+            return formatMarkdownValue(description, desiredFormat)
 
             const formats = {
               HTML: "html",
