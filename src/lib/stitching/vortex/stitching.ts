@@ -45,6 +45,9 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     extend type Partner {
       analytics: AnalyticsPartnerStats
     }
+    extend type User {
+      analytics: AnalyticsUserStats
+    }
     extend type AnalyticsPartnerSalesStats {
       total(
         decimal: String = "."
@@ -253,6 +256,24 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             schema: vortexSchema,
             operation: "query",
             fieldName: "analyticsPartnerStats",
+            args,
+            context,
+            info,
+          })
+        },
+      },
+    },
+    User: {
+      analytics: {
+        fragment: gql`... on User {
+          internalID
+        }`,
+        resolve: async (source, _, context, info) => {
+          const args = { userId: source.internalID }
+          return await info.mergeInfo.delegateToSchema({
+            schema: vortexSchema,
+            operation: "query",
+            fieldName: "analyticsUserStats",
             args,
             context,
             info,
