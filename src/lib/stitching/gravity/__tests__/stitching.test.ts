@@ -683,4 +683,28 @@ describe("gravity/stitching", () => {
       })
     })
   })
+
+  describe("#descriptionFormatted", () => {
+    it("converts from markdown to HTML", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { descriptionFormatted } = resolvers.ArtistSeries
+      const formattedDescription = await descriptionFormatted.resolve(
+        { description: "**Bold Type**" },
+        { format: "HTML" }
+      )
+      expect(formattedDescription).toEqual(
+        "<p><strong>Bold Type</strong></p>\n"
+      )
+    })
+
+    it("keeps markdown", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { descriptionFormatted } = resolvers.ArtistSeries
+      const formattedDescription = await descriptionFormatted.resolve(
+        { description: "**Bold Type**" },
+        { format: "MARKDOWN" }
+      )
+      expect(formattedDescription).toEqual("**Bold Type**")
+    })
+  })
 })
