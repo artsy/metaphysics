@@ -7,6 +7,7 @@ import {
   Null,
   Undefined,
   Static,
+  Literal,
 } from "runtypes"
 
 export const Feature = Record({
@@ -16,6 +17,7 @@ export const Feature = Record({
   description: String.Or(Null),
   subheadline: String.Or(Null),
   callout: String.Or(Null),
+  layout: Literal("default").Or(Literal("full")),
   active: Boolean,
   original_width: Number.Or(Null),
   original_height: Number.Or(Null),

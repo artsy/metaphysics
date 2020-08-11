@@ -19,6 +19,7 @@ import {
 } from "../OrderedSet/OrderedSetSortsEnum"
 import Image from "../image"
 import { FeatureMetaType } from "./FeatureMeta"
+import { FeatureLayoutsEnum } from "./FeatureLayoutsEnum"
 
 export const FeatureType = new GraphQLObjectType<
   Gravity.Feature,
@@ -38,6 +39,9 @@ export const FeatureType = new GraphQLObjectType<
     description: markdown(),
     subheadline: markdown(),
     callout: markdown(),
+    layout: {
+      type: new GraphQLNonNull(FeatureLayoutsEnum),
+    },
     image: Image,
     meta: {
       type: new GraphQLNonNull(FeatureMetaType),
