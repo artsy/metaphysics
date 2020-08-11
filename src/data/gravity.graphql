@@ -1078,11 +1078,6 @@ type Query {
     partnerID: ID
 
     """
-    (Deprecated) Use statuses
-    """
-    published: Boolean
-
-    """
     Returns only viewing rooms with these statuses
     """
     statuses: [ViewingRoomStatusEnum!] = [live]
