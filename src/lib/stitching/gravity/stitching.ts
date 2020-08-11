@@ -420,7 +420,7 @@ export const gravityStitchingEnvironment = (
                 return null
               }
             } else {
-              if (endAt > now.clone().add(10, "days")) {
+              if (endAt > now.clone().add(30, "days")) {
                 return null
               }
             }
