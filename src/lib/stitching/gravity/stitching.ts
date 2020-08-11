@@ -118,7 +118,7 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Partner {
-        viewingRoomsConnection(published: Boolean = true): ViewingRoomConnection
+        viewingRoomsConnection(statuses: [ViewingRoomStatusEnum!]): ViewingRoomConnection
       }
 
       extend type Artist {

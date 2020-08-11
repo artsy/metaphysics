@@ -10224,7 +10224,9 @@ type Partner implements Node {
     status: EventStatus
   ): [PartnerShow]
   type: String
-  viewingRoomsConnection(published: Boolean = true): ViewingRoomConnection
+  viewingRoomsConnection(
+    statuses: [ViewingRoomStatusEnum!]
+  ): ViewingRoomConnection
 
   # The gallery partner's web address
   website: String
