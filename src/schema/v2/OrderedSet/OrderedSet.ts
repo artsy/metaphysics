@@ -1,6 +1,6 @@
-import cached from "./fields/cached"
-import { OrderedSetItemType, OrderedSetItemConnection } from "./item"
-import { IDFields } from "./object_identification"
+import cached from "../fields/cached"
+import { OrderedSetItemType, OrderedSetItemConnection } from "../item"
+import { IDFields } from "../object_identification"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -9,14 +9,14 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { artworkConnection } from "./artwork"
+import { artworkConnection } from "../artwork"
 import { connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { Gravity } from "types/runtime"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { connectionWithCursorInfo } from "./fields/pagination"
+import { connectionWithCursorInfo } from "../fields/pagination"
 import { Array } from "runtypes"
-import { markdown } from "./fields/markdown"
+import { markdown } from "../fields/markdown"
 
 export const OrderedSetType = new GraphQLObjectType<
   Gravity.OrderedSet & { cached: number },
@@ -105,7 +105,7 @@ export const OrderedSetType = new GraphQLObjectType<
   }),
 })
 
-const OrderedSet: GraphQLFieldConfig<void, ResolverContext> = {
+export const OrderedSet: GraphQLFieldConfig<void, ResolverContext> = {
   type: OrderedSetType,
   description: "An OrderedSet",
   args: {
