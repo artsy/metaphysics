@@ -11,7 +11,7 @@ import {
 import { ResolverContext } from "types/graphql"
 
 const moduleTitle: HomePageArtworkModuleResolvers<string> = {
-  active_bids: () => "Your Active Bids",
+  active_bids: () => "Your active bids",
   current_fairs: ({ fairsLoader }) => {
     return featuredFair(fairsLoader).then((fair) => fair && fair.name)
   },
@@ -21,8 +21,8 @@ const moduleTitle: HomePageArtworkModuleResolvers<string> = {
       (artist) => artist && artist.name
     )
   },
-  followed_artists: () => "New Works by Artists You Follow",
-  followed_galleries: () => "Works from Galleries You Follow",
+  followed_artists: () => "New works by artists you follow",
+  followed_galleries: () => "Works from galleries you follow",
   generic_gene: (_context, params) => {
     if (isGenericGeneArtworkModuleParams(params)) {
       return params.title
@@ -46,18 +46,18 @@ const moduleTitle: HomePageArtworkModuleResolvers<string> = {
       (auction) => auction && auction.name
     )
   },
-  popular_artists: () => "Works by Popular Artists",
-  recommended_works: () => "Recommended Works for You",
+  popular_artists: () => "Works by popular artists",
+  recommended_works: () => "Recommended works for you",
   related_artists: ({ artistLoader }, params) => {
     if (!isRelatedArtistArtworkModuleParams(params)) return null
     return artistLoader(params.related_artist_id).then(
       (artist) => artist && artist.name
     )
   },
-  saved_works: () => "Recently Saved",
-  similar_to_saved_works: () => "Similar to Works You’ve Saved",
-  recently_viewed_works: () => "Recently Viewed",
-  similar_to_recently_viewed: () => "Similar to Works You’ve Viewed",
+  saved_works: () => "Recently saved",
+  similar_to_saved_works: () => "Similar to works you’ve saved",
+  recently_viewed_works: () => "Recently viewed",
+  similar_to_recently_viewed: () => "Similar to works you’ve viewed",
 }
 
 const Title: GraphQLFieldConfig<
