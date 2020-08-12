@@ -17,6 +17,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionWithCursorInfo } from "../fields/pagination"
 import { Array } from "runtypes"
 import { markdown } from "../fields/markdown"
+import { OrderedSetLayoutsEnum } from "./OrderedSetLayoutsEnum"
 
 export const OrderedSetType = new GraphQLObjectType<
   Gravity.OrderedSet & { cached: number },
@@ -29,6 +30,12 @@ export const OrderedSetType = new GraphQLObjectType<
     description: markdown(),
     key: {
       type: GraphQLString,
+    },
+    name: {
+      type: GraphQLString,
+    },
+    layout: {
+      type: new GraphQLNonNull(OrderedSetLayoutsEnum),
     },
     itemType: {
       type: GraphQLString,
@@ -44,7 +51,6 @@ export const OrderedSetType = new GraphQLObjectType<
         })
       },
     },
-
     orderedItemsConnection: {
       type: new GraphQLNonNull(OrderedSetItemConnection.connectionType),
       args: pageable(),
@@ -70,7 +76,6 @@ export const OrderedSetType = new GraphQLObjectType<
         }
       },
     },
-
     itemsConnection: {
       deprecationReason: "Utilize `orderedItemsConnection` for union type",
       type: artworkConnection.connectionType,
@@ -98,9 +103,6 @@ export const OrderedSetType = new GraphQLObjectType<
           throw new Error("Can only return a connection for sets of Artworks.")
         }
       },
-    },
-    name: {
-      type: GraphQLString,
     },
   }),
 })
