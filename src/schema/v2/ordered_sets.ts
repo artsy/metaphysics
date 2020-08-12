@@ -1,4 +1,4 @@
-import OrderedSet from "./ordered_set"
+import { OrderedSet } from "./OrderedSet"
 import {
   GraphQLString,
   GraphQLNonNull,

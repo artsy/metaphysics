@@ -11,7 +11,7 @@ import { Gravity } from "types/runtime"
 import { ResolverContext } from "types/graphql"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import { markdown } from "schema/v2/fields/markdown"
-import { OrderedSetConnection } from "../ordered_set"
+import { OrderedSetConnection } from "../OrderedSet"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import {
   OrderedSetSortsEnum,

@@ -21,6 +21,7 @@ export const OrderedSet = Record({
     .Or(Literal("Feature"))
     .Or(Literal("Post"))
     .Or(Null),
+  layout: Literal("default").Or(Literal("full")),
   display_on_desktop: Boolean,
   display_on_mobile: Boolean,
   display_on_martsy: Boolean,

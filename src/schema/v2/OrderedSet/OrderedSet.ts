@@ -1,6 +1,6 @@
-import cached from "./fields/cached"
-import { OrderedSetItemType, OrderedSetItemConnection } from "./item"
-import { IDFields } from "./object_identification"
+import cached from "../fields/cached"
+import { OrderedSetItemType, OrderedSetItemConnection } from "../item"
+import { IDFields } from "../object_identification"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -9,14 +9,15 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { artworkConnection } from "./artwork"
+import { artworkConnection } from "../artwork"
 import { connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { Gravity } from "types/runtime"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { connectionWithCursorInfo } from "./fields/pagination"
+import { connectionWithCursorInfo } from "../fields/pagination"
 import { Array } from "runtypes"
-import { markdown } from "./fields/markdown"
+import { markdown } from "../fields/markdown"
+import { OrderedSetLayoutsEnum } from "./OrderedSetLayoutsEnum"
 
 export const OrderedSetType = new GraphQLObjectType<
   Gravity.OrderedSet & { cached: number },
@@ -29,6 +30,12 @@ export const OrderedSetType = new GraphQLObjectType<
     description: markdown(),
     key: {
       type: GraphQLString,
+    },
+    name: {
+      type: GraphQLString,
+    },
+    layout: {
+      type: new GraphQLNonNull(OrderedSetLayoutsEnum),
     },
     itemType: {
       type: GraphQLString,
@@ -44,7 +51,6 @@ export const OrderedSetType = new GraphQLObjectType<
         })
       },
     },
-
     orderedItemsConnection: {
       type: new GraphQLNonNull(OrderedSetItemConnection.connectionType),
       args: pageable(),
@@ -70,7 +76,6 @@ export const OrderedSetType = new GraphQLObjectType<
         }
       },
     },
-
     itemsConnection: {
       deprecationReason: "Utilize `orderedItemsConnection` for union type",
       type: artworkConnection.connectionType,
@@ -99,13 +104,10 @@ export const OrderedSetType = new GraphQLObjectType<
         }
       },
     },
-    name: {
-      type: GraphQLString,
-    },
   }),
 })
 
-const OrderedSet: GraphQLFieldConfig<void, ResolverContext> = {
+export const OrderedSet: GraphQLFieldConfig<void, ResolverContext> = {
   type: OrderedSetType,
   description: "An OrderedSet",
   args: {
