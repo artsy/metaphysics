@@ -267,6 +267,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         "This field is no longer required. Prefer the first message from the MessageConnection.",
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ initial_message, from_name }) => {
+        if (!initial_message) return ""
         const parts = initial_message.split(
           "Message from " + from_name + ":\n\n"
         )
