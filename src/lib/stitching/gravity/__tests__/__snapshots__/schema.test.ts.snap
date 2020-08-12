@@ -39,6 +39,7 @@ type ArtistSeries {
   # List of Mongo IDs for associated Artists
   artistIDs: [String!]!
   artworkIDs: [ID!]!
+  artworksCount: Int!
   description: String
   featured: Boolean!
   forSaleArtworksCount: Int!

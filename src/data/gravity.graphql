@@ -92,6 +92,7 @@ type ArtistSeries {
   """
   artistIDs: [String!]!
   artworkIDs: [ID!]!
+  artworksCount: Int!
   description: String
   featured: Boolean!
   forSaleArtworksCount: Int!
