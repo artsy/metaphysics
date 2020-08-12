@@ -185,6 +185,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    salesLoaderWithHeaders: gravityLoader("sales", {}, { headers: true }),
     saveArtworkLoader: gravityLoader(
       (id) => `collection/saved-artwork/artwork/${id}`,
       {},

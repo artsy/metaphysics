@@ -54,13 +54,17 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (
     _root,
     { ids, isAuction, live, published, sort, registered, ...paginationArgs },
-    { salesLoaderWithHeaders }
+    {
+      unauthenticatedLoaders: { salesLoaderWithHeaders: loaderWithCache },
+      authenticatedLoaders: { salesLoaderWithHeaders: loaderWithoutCache },
+    }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(
       paginationArgs
     )
 
-    const { body: sales, headers } = ((await salesLoaderWithHeaders(
+    const loader = registered ? loaderWithoutCache : loaderWithCache
+    const { body: sales, headers } = ((await loader!(
       {
         id: ids,
         is_auction: isAuction,
