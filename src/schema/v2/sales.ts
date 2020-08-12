@@ -43,11 +43,17 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLBoolean,
       defaultValue: true,
     },
+    registered: {
+      description:
+        "Returns sales the user has registered for if true, returns sales the user has not registered for if false.",
+      type: GraphQLBoolean,
+      defaultValue: undefined,
+    },
     sort: SaleSorts,
   }),
   resolve: async (
     _root,
-    { ids, isAuction, live, published, sort, ...paginationArgs },
+    { ids, isAuction, live, published, sort, registered, ...paginationArgs },
     { salesLoaderWithHeaders }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(
@@ -61,6 +67,7 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
         live,
         published,
         sort,
+        registered,
         page,
         size,
         total_count: true,
