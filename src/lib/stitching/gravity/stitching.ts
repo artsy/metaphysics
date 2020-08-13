@@ -115,6 +115,11 @@ export const gravityStitchingEnvironment = (
             : ""
         }
         descriptionFormatted(format: Format): String
+        """
+        A formatted string that shows the number of available works or
+        (as a fallback) the number of works in general.
+        """
+        artworksCountMessage: String
       }
 
       extend type Partner {
@@ -195,6 +200,27 @@ export const gravityStitchingEnvironment = (
               ?.find((e) => e.name === format)?.value
 
             return formatMarkdownValue(description, desiredFormat)
+          },
+        },
+        artworksCountMessage: {
+          fragment: gql`
+            ... on ArtistSeries {
+              forSaleArtworksCount
+              artworksCount
+            }
+          `,
+          resolve: async ({ forSaleArtworksCount, artworksCount }) => {
+            let artworksCountMessage
+
+            if (forSaleArtworksCount) {
+              artworksCountMessage = `${forSaleArtworksCount} available`
+            } else {
+              artworksCountMessage = `${artworksCount} ${
+                artworksCount === 1 ? "work" : "works"
+              }`
+            }
+
+            return artworksCountMessage
           },
         },
         image: {

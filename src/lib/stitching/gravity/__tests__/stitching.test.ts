@@ -710,4 +710,48 @@ describe("gravity/stitching", () => {
       expect(formattedDescription).toEqual("**Bold Type**")
     })
   })
+
+  describe("#artworksCountMessage", () => {
+    it("prefers for-sale artworks count", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { artworksCountMessage } = resolvers.ArtistSeries
+      const value = await artworksCountMessage.resolve({
+        forSaleArtworksCount: 20,
+        artworksCount: 10,
+      })
+      expect(value).toEqual("20 available")
+    })
+
+    it("falls back to general artworks count", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { artworksCountMessage } = resolvers.ArtistSeries
+      const value = await artworksCountMessage.resolve({
+        forSaleArtworksCount: 0,
+        artworksCount: 10,
+      })
+      expect(value).toEqual("10 works")
+    })
+
+    it("pluralizes correctly", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { artworksCountMessage } = resolvers.ArtistSeries
+
+      const zero = await artworksCountMessage.resolve({
+        forSaleArtworksCount: 0,
+        artworksCount: 0,
+      })
+      const one = await artworksCountMessage.resolve({
+        forSaleArtworksCount: 0,
+        artworksCount: 1,
+      })
+      const many = await artworksCountMessage.resolve({
+        forSaleArtworksCount: 0,
+        artworksCount: 42,
+      })
+
+      expect(zero).toEqual("0 works")
+      expect(one).toEqual("1 work")
+      expect(many).toEqual("42 works")
+    })
+  })
 })
