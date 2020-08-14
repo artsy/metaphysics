@@ -867,6 +867,38 @@ type Mutation {
   ): UpdateViewingRoomSubsectionsPayload
 }
 
+type PageCursor {
+  """
+  first cursor on the page
+  """
+  cursor: String!
+
+  """
+  is this the current page?
+  """
+  isCurrent: Boolean!
+
+  """
+  page number out of totalPages
+  """
+  page: Int!
+}
+
+type PageCursors {
+  around: [PageCursor!]!
+
+  """
+  optional, may be included in field around
+  """
+  first: PageCursor
+
+  """
+  optional, may be included in field around
+  """
+  last: PageCursor
+  previous: PageCursor
+}
+
 """
 Information about pagination in a connection.
 """
@@ -1517,16 +1549,14 @@ type ViewingRoomConnection {
   A list of nodes.
   """
   nodes: [ViewingRoom]
+  pageCursors: PageCursors
 
   """
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
-
-  """
-  Total count of matching nodes, before pagination
-  """
-  totalCount: Int!
+  totalCount: Int
+  totalPages: Int
 }
 
 """

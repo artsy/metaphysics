@@ -7006,19 +7006,23 @@ type organizer {
 }
 
 type PageCursor {
+  # first cursor on the page
   cursor: String!
+
+  # is this the current page?
   isCurrent: Boolean!
+
+  # page number out of totalPages
   page: Int!
 }
 
 type PageCursors {
-  # Always includes current page
   around: [PageCursor!]!
 
-  # Optional, may be included in `around` (if current page is near the beginning).
+  # optional, may be included in field around
   first: PageCursor
 
-  # Optional, may be included in `around` (if current page is near the end).
+  # optional, may be included in field around
   last: PageCursor
   previous: PageCursor
 }
@@ -10104,12 +10108,12 @@ type ViewingRoomConnection {
 
   # A list of nodes.
   nodes: [ViewingRoom]
+  pageCursors: PageCursors
 
   # Information to aid in pagination.
   pageInfo: PageInfo!
-
-  # Total count of matching nodes, before pagination
-  totalCount: Int!
+  totalCount: Int
+  totalPages: Int
 }
 
 # An edge in a connection.
