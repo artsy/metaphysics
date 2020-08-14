@@ -12,16 +12,11 @@ describe("salesConnection", () => {
             .stub()
             .withArgs("sales", {
               first: 5,
-              isAuction: true,
-              live: true,
-              published: true,
               registered: true,
             })
             .returns(
               Promise.resolve({
-                headers: {
-                  "x-total-count": 1,
-                },
+                headers: { "x-total-count": 1 },
                 body: [
                   {
                     name: "Heritage: Photographs",
@@ -36,13 +31,50 @@ describe("salesConnection", () => {
 
       const query = gql`
         {
-          salesConnection(
-            first: 5
-            isAuction: true
-            live: true
-            published: true
-            registered: true
-          ) {
+          salesConnection(first: 5, registered: true) {
+            edges {
+              node {
+                name
+              }
+            }
+          }
+        }
+      `
+
+      const { salesConnection } = await runQuery(query, context as any)
+
+      expect(salesConnection.edges).toEqual([
+        { node: { name: "Heritage: Photographs" } },
+      ])
+    })
+
+    it("resolves a connection with an authenticated loader", async () => {
+      const context = {
+        authenticatedLoaders: {
+          salesLoaderWithHeaders: sinon
+            .stub()
+            .withArgs("sales", {
+              first: 5,
+              registered: false,
+            })
+            .returns(
+              Promise.resolve({
+                headers: { "x-total-count": 1 },
+                body: [
+                  {
+                    name: "Heritage: Photographs",
+                    slug: "heritage-photographs-14",
+                  },
+                ],
+              })
+            ),
+        },
+        unauthenticatedLoaders: {},
+      }
+
+      const query = gql`
+        {
+          salesConnection(first: 5, registered: false) {
             edges {
               node {
                 name

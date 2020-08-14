@@ -63,7 +63,8 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
       paginationArgs
     )
 
-    const loader = registered ? loaderWithoutCache : loaderWithCache
+    const loader =
+      typeof registered === "boolean" ? loaderWithoutCache : loaderWithCache
     const { body: sales, headers } = ((await loader!(
       {
         id: ids,
