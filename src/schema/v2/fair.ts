@@ -34,6 +34,7 @@ import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 import { ResolverContext } from "types/graphql"
 import { sponsoredContentForFair } from "lib/sponsoredContent"
 import { connectionWithCursorInfo } from "./fields/pagination"
+import { markdown } from "./fields/markdown"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -179,9 +180,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ has_listing }) => has_listing,
       },
-      hours: {
-        type: GraphQLString,
-      },
+      hours: markdown(),
       href: {
         type: GraphQLString,
         resolve: ({ default_profile_id, organizer }) => {
@@ -199,9 +198,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           return now.isAfter(activeStart)
         },
       },
-      links: {
-        type: GraphQLString,
-      },
+      links: markdown(),
       mobileImage: {
         /**
          * cannot use Image normalizer because it will grab other image versions; mobile icon is expected to be correctly
@@ -288,6 +285,11 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       startAt: date,
+      summary: {
+        type: GraphQLString,
+      },
+      tickets: markdown(),
+      contact: markdown(),
       endAt: date,
       activeStartAt: date,
       organizer: {
