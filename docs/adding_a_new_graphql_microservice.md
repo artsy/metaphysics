@@ -14,7 +14,7 @@ Let's pretend we're mapping a GraphQL API called `Three Body` but provides its o
    ```
 
    These will need to be added to : Your `.env`, `.env.example`, `.env.test` and
-   the live environments, as well as included in `./src/config.js`
+   the live environments, as well as included in `./src/config.ts`
 
 1. Export your schema from your API into Metaphysics
 

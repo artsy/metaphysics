@@ -1876,6 +1876,275 @@ type CaptureHoldPayload {
   holdOrError: InventoryHoldOrErrorUnion!
 }
 
+type CausalityArtsyBidder {
+  id: ID!
+  paddleNumber: ID!
+  userId: ID
+}
+
+# an online (Artsy) bidder, or an offline bidder in the auction
+union CausalityBidder = CausalityArtsyBidder | CausalityOfflineBidder
+
+# DateTime is a scalar value that represents an ISO8601 formatted date and time.
+scalar CausalityDateTime
+
+# A permanent schedule of increments to use in for upcoming asking prices for a lot.
+type CausalityIncrementPolicy {
+  id: ID!
+  groupTag: ID!
+  subgroupTag: ID!
+  createdAt: CausalityDateTime!
+  initialIncrementCents: CausalityLong!
+  changes: [CausalityIncrementPolicyChange!]!
+
+  # Generate a list of asking prices across a given range.
+  enumerate(
+    from: CausalityLong = 0
+    until: CausalityLong = 0
+
+    # Defines treatment of off-increment `from` values.
+    nextIncrementRule: CausalityNextIncrementRule = SnapToPresetIncrements
+  ): [CausalityMoney!]!
+}
+
+# Change thresholds and amounts for IncrementPolicy.
+type CausalityIncrementPolicyChange {
+  thresholdCents: CausalityLong!
+  incrementCents: CausalityLong!
+  threshold: CausalityMoney!
+  increment: CausalityMoney!
+}
+
+# A change in increment amount, to take effect at the given threshold.
+input CausalityIncrementPolicyChangeInput {
+  thresholdCents: CausalityLong!
+  incrementCents: CausalityLong!
+}
+
+# A groupTag and list of IncrementPolicySubgroups
+type CausalityIncrementPolicyGroup {
+  groupTag: ID!
+  subgroupTags: [ID!]!
+  subgroups: [CausalityIncrementPolicySubgroup!]!
+}
+
+type CausalityIncrementPolicySubgroup {
+  subgroupTag: ID!
+  group: CausalityIncrementPolicyGroup!
+  revisions: [CausalityIncrementPolicy!]!
+}
+
+# a long is like an int, figure out why it wasn't included here
+scalar CausalityLong
+
+# A lot in a sale
+type CausalityLot {
+  # The Gravity Lot ID.
+  id: ID!
+
+  # The Gravity Sale ID.
+  saleId: ID!
+
+  # total number of bids placed on the lot
+  bidCount: Int!
+
+  # selling price on the live auction floor
+  floorSellingPrice: CausalityMoney
+
+  # The bidder currently winning the online portion of the auction
+  floorWinningBidder: CausalityBidder
+
+  # asking price for online bidders
+  onlineAskingPrice: CausalityMoney!
+
+  # The bidder currently winning the online portion of the auction
+  onlineSellingToBidder: CausalityBidder
+
+  # Whether the lot is sold, for sale or passed
+  soldStatus: CausalitySoldStatus!
+
+  # The current reserve status for the lot
+  reserveStatus: CausalityReserveStatus!
+}
+
+# A user's position on a lot
+type CausalityLotStanding implements CausalityNode {
+  # The ID of an object
+  id: ID!
+  rawId: String!
+
+  # The current leading bid on the lot, whether it is winning or not
+  leadingBidAmount: CausalityMoney!
+
+  # whether this user has the leading bid
+  isHighestBidder: Boolean!
+
+  # whether this user has the leading bid
+  lot: CausalityLot!
+}
+
+# A connection to a list of items.
+type CausalityLotStandingConnectionConnection {
+  # Information to aid in pagination.
+  pageInfo: CausalityPageInfo!
+
+  # A list of edges.
+  edges: [CausalityLotStandingConnectionEdge]
+}
+
+# An edge in a connection.
+type CausalityLotStandingConnectionEdge {
+  # The item at the end of the edge.
+  node: CausalityLotStanding!
+
+  # A cursor for use in pagination.
+  cursor: String!
+}
+
+# Represents currency units and formatting
+type CausalityMoney {
+  units: CausalityLong!
+
+  # Formatted string version of currency amount
+  displayAmount(
+    # Number of decimal places for the currency.
+    fractionalDigits: Int = 2
+
+    # The 1000s separator.
+    groupingSeparator: String = ","
+
+    # The decimal separator.
+    decimalSeparator: String = "."
+
+    # Whether to show the fractional units.
+    showFractionalDigits: Boolean = true
+  ): String!
+}
+
+# A draft schedule of increments to use in for upcoming asking prices for a lot.
+type CausalityNewIncrementPolicy {
+  id: ID
+  groupTag: ID!
+  subgroupTag: ID!
+  initialIncrementCents: CausalityLong!
+  changes: [CausalityIncrementPolicyChange!]!
+
+  # A listing of increments by tier
+  enumeratedIncrements: [[CausalityMoney!]!]!
+
+  # A listing of increments by tier
+  prettyPrintedIncrements(
+    # Number of decimal places for the currency.
+    fractionalDigits: Int = 2
+  ): [String!]!
+
+  # The minimum percentage change between increments (~4% is typical).
+  minPercentChange: Float!
+
+  # The maximum percentage change between increments (~10% is typical).
+  maxPercentChange: Float!
+
+  # Any non-fatal warnings to check before committing the increment policy.
+  warnings: [String!]!
+}
+
+input CausalityNewIncrementPolicyInput {
+  id: ID
+  groupTag: ID!
+  subgroupTag: ID!
+  initialIncrementCents: CausalityLong!
+  changes: [CausalityIncrementPolicyChangeInput!]!
+}
+
+enum CausalityNextIncrementRule {
+  AddToPastValue
+  SnapToPresetIncrements
+}
+
+# An object with an ID
+interface CausalityNode {
+  # The id of the object.
+  id: ID!
+}
+
+# An offline bidder (in the auction room)
+type CausalityOfflineBidder {
+  singletonDummyField: String
+}
+
+# Information about pagination in a connection.
+type CausalityPageInfo {
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
+}
+
+enum CausalityReserveStatus {
+  NoReserve
+  ReserveMet
+  ReserveNotMet
+}
+
+# A collection of lots.
+type CausalitySale {
+  # Users not allowed to participate in the sale
+  bannedUsers: [CausalityUser!]!
+
+  # The current lot on block.
+  currentLot: CausalityLot
+
+  # The Gravity Sale ID.
+  id: ID!
+
+  # The lots belonging to this sale.
+  lots: [CausalityLot!]!
+
+  # Lot ids without a FairWarning event
+  lotIdsWithoutFairWarning: [String!]!
+
+  # Lot ids without a FinalCall event
+  lotIdsWithoutFinalCall: [String!]!
+
+  # Lot ids that had an Artsy bid that was the highest bid on the lot but did not win
+  lotIdsWithHigherArtsyBidNotWon: [String!]!
+
+  # Lot ids that had an Artsy bid that was the same max bid as the hammer price on the lot but did not win
+  lotIdsWithSameArtsyBidNotWon: [String!]!
+
+  # Passed lot ids with bids from Artsy bidders
+  passedLotIdsWithArtsyBids: [String!]!
+
+  # Re-opened lots ids
+  reopenedLotIds: [String!]!
+
+  # Total Artsy GMV for the sale
+  totalSoldGMVCents: CausalityLong!
+}
+
+enum CausalitySoldStatus {
+  ForSale
+  Passed
+  Sold
+}
+
+# An Artsy User
+type CausalityUser implements CausalityNode {
+  # The ID of an object
+  id: ID!
+  rawId: String!
+
+  # The user's id
+  userId: ID!
+}
+
 type City {
   coordinates: LatLng
   fairsConnection(
@@ -6622,6 +6891,22 @@ type Mutation {
     input: AddAssetToConsignmentSubmissionInput!
   ): AddAssetToConsignmentSubmissionPayload
   captureHold(input: CaptureHoldInput!): CaptureHoldPayload
+<<<<<<< HEAD
+=======
+  holdInventory(input: HoldInventoryInput!): HoldInventoryPayload
+  recordArtworkView(input: RecordArtworkViewInput!): RecordArtworkViewPayload
+  requestConditionReport(
+    input: RequestConditionReportInput!
+  ): RequestConditionReportPayload
+
+  # Permanently add a new increment policy to the database. It cannot be removed once added
+  causalityAddIncrementPolicy(
+    newIncrementPolicy: CausalityNewIncrementPolicyInput!
+  ): CausalityIncrementPolicy
+  causalityAddSale(id: ID!): CausalitySale
+  causalityBanUserFromSale(saleId: ID!, userId: ID!): CausalitySale
+  causalityUnbanUserFromSale(userId: ID!, saleId: ID!): CausalitySale
+>>>>>>> set up graphql stitching [wip]
   commerceAddInitialOfferToOrder(
     input: CommerceAddInitialOfferToOrderInput!
   ): CommerceAddInitialOfferToOrderPayload

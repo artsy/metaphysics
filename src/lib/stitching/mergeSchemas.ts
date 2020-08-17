@@ -1,5 +1,6 @@
 import { mergeSchemas as _mergeSchemas } from "graphql-tools"
 import { executableGravitySchema } from "lib/stitching/gravity/schema"
+import { executableCausalitySchema } from "lib/stitching/causality/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
 import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitching"
 import {
@@ -33,6 +34,7 @@ export const incrementalMergeSchemas = (
   const {
     ENABLE_COMMERCE_STITCHING,
     ENABLE_CONSIGNMENTS_STITCHING,
+    ENABLE_CAUSALITY_STITCHING,
   } = environment
 
   const schemas = [localSchema] as GraphQLSchema[]
@@ -55,6 +57,11 @@ export const incrementalMergeSchemas = (
   useStitchingEnvironment(
     gravityStitchingEnvironment(localSchema, gravitySchema, version)
   )
+
+  if (ENABLE_CAUSALITY_STITCHING) {
+    const causalitySchema = executableCausalitySchema()
+    schemas.push(causalitySchema)
+  }
 
   if (ENABLE_COMMERCE_STITCHING) {
     const exchangeSchema = executableExchangeSchema(transformsForExchange)
