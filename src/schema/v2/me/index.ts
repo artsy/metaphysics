@@ -33,10 +33,11 @@ import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 // import SaleRegistrations from "./sale_registrations"
-import { SavedArtworks } from "./saved_artworks"
+import { SavedArtworks } from "./savedArtworks"
 import { ResolverContext } from "types/graphql"
 import { SaleArtworksConnectionField } from "../sale_artworks"
 import { IdentityVerification } from "./identity_verification"
+import { MyCollection } from "./myCollection"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -69,9 +70,9 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
           bundledArtworksByArtistConnection: FollowedArtistsArtworkGroups,
           artistsConnection: FollowedArtists,
           artworksConnection: SavedArtworks,
-          showsConnection: FollowedShows,
           fairsConnection: FollowedFairs,
           genesConnection: FollowedGenes,
+          showsConnection: FollowedShows,
         },
       }),
       resolve: () => ({}),
@@ -113,6 +114,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     lotsByFollowedArtistsConnection: SaleArtworksConnectionField,
     lotStanding: LotStanding,
     lotStandings: LotStandings,
+    myCollectionConnection: MyCollection,
     name: {
       type: GraphQLString,
     },

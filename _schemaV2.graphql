@@ -6451,6 +6451,12 @@ type Me implements Node {
     # Only the lot standings for a specific auction
     saleID: String
   ): [LotStanding]
+  myCollectionConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): MyCollectionConnection
   name: String
   orders(
     after: String
@@ -6792,6 +6798,31 @@ type Mutation {
   updateViewingRoomSubsections(
     input: UpdateViewingRoomSubsectionsInput!
   ): UpdateViewingRoomSubsectionsPayload
+}
+
+# A connection to a list of items.
+type MyCollectionConnection {
+  default: Boolean!
+  description: String!
+
+  # A list of edges.
+  edges: [MyCollectionEdge]
+  name: String!
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  private: Boolean!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type MyCollectionEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Artwork
 }
 
 input Near {

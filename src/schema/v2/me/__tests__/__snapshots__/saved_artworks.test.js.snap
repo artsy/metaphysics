@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`me { saved_artwork Handles getting collection metadata returns artworks for a collection 1`] = `
-Object {
-  "me": null,
-}
-`;
