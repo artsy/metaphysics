@@ -7310,6 +7310,8 @@ type Profile {
   isPubliclyVisible: Boolean
   isPublished: Boolean
   name: String
+  ownerID: String
+  ownerType: String
 
   # A slug ID.
   slug: ID!
@@ -7759,6 +7761,12 @@ type Query {
     ids: [String]
     last: Int
   ): PartnerConnection
+
+  # A Profile
+  profile(
+    # The slug or ID of the Profile
+    id: String!
+  ): Profile
 
   # A Sale
   sale(
@@ -9806,6 +9814,12 @@ type Viewer {
     ids: [String]
     last: Int
   ): PartnerConnection
+
+  # A Profile
+  profile(
+    # The slug or ID of the Profile
+    id: String!
+  ): Profile
 
   # A Sale
   sale(

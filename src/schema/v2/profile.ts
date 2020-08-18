@@ -57,6 +57,14 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ owner }) => owner.name,
     },
+    ownerID: {
+      type: GraphQLString,
+      resolve: ({ owner }) => owner.id,
+    },
+    ownerType: {
+      type: GraphQLString,
+      resolve: ({ owner }) => owner.type,
+    },
     isPubliclyVisible: {
       type: GraphQLBoolean,
       resolve: (profile) => profile && profile.published && !profile.private,
