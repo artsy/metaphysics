@@ -35,6 +35,8 @@ import { ResolverContext } from "types/graphql"
 import { sponsoredContentForFair } from "lib/sponsoredContent"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { markdown } from "./fields/markdown"
+import { articleConnection } from "./article"
+import ArticleSorts from "./sorts/article_sorts"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -409,6 +411,32 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           },
         }),
         resolve: (fair) => sponsoredContentForFair(fair.id),
+      },
+      articlesConnection: {
+        type: articleConnection.connectionType,
+        args: pageable({ sort: ArticleSorts }),
+        resolve: async ({ _id }, args, { articlesLoader }) => {
+          const { size, offset, sort } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const { results, count } = await articlesLoader({
+            published: true,
+            fair_id: _id,
+            limit: size,
+            count: true,
+            offset,
+            sort,
+          })
+
+          return {
+            totalCount: count,
+            ...connectionFromArraySlice(results, args, {
+              arrayLength: count,
+              sliceStart: offset,
+            }),
+          }
+        },
       },
     }
   },
