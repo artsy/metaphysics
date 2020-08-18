@@ -7762,12 +7762,6 @@ type Query {
     last: Int
   ): PartnerConnection
 
-  # A Profile
-  profile(
-    # The slug or ID of the Profile
-    id: String!
-  ): Profile
-
   # A Sale
   sale(
     # The slug or ID of the Sale
@@ -7924,6 +7918,12 @@ type Query {
     ids: [String]
     last: Int
   ): UserConnection
+
+  # A Partner or Fair
+  vanityURLEntity(
+    # The slug or ID of the Profile to get a partner or fair for
+    id: String!
+  ): VanityURLEntityType
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
@@ -9558,6 +9558,8 @@ type UserEdge {
   node: User
 }
 
+union VanityURLEntityType = Fair | Partner
+
 # A wildcard used to support complex root queries in Relay
 type Viewer {
   # Do not use (only used internally for stitching)
@@ -9815,12 +9817,6 @@ type Viewer {
     last: Int
   ): PartnerConnection
 
-  # A Profile
-  profile(
-    # The slug or ID of the Profile
-    id: String!
-  ): Profile
-
   # A Sale
   sale(
     # The slug or ID of the Sale
@@ -9944,6 +9940,12 @@ type Viewer {
     ids: [String]
     last: Int
   ): UserConnection
+
+  # A Partner or Fair
+  vanityURLEntity(
+    # The slug or ID of the Profile to get a partner or fair for
+    id: String!
+  ): VanityURLEntityType
   viewingRoomsConnection(
     after: String
     first: Int
