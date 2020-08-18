@@ -123,7 +123,7 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Partner {
-        viewingRoomsConnection(published: Boolean = true): ViewingRoomConnection
+        viewingRoomsConnection(published: Boolean = true, first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
       }
 
       extend type Artist {
@@ -145,7 +145,7 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Viewer {
-        viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomConnection
+        viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
       }
     `,
     resolvers: {
@@ -487,7 +487,7 @@ export const gravityStitchingEnvironment = (
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,
               operation: "query",
-              fieldName: "viewingRooms",
+              fieldName: "_unused_gravity_viewingRoomsConnection",
               args,
               context,
               info,
@@ -506,7 +506,7 @@ export const gravityStitchingEnvironment = (
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,
               operation: "query",
-              fieldName: "viewingRooms",
+              fieldName: "_unused_gravity_viewingRoomsConnection",
               args: {
                 partnerID,
                 ...args,
