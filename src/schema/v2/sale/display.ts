@@ -100,3 +100,59 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
     }
   }
 }
+
+/**
+ * Get sale ending urgency tag
+ * @example
+ * 2 days left, 12 hours left
+ * Auction closed
+ */
+
+export const displayUrgencyTag = ({
+  endAt,
+  auctionState,
+}: {
+  endAt: string
+  auctionState: string
+}): string | null => {
+  if (auctionState !== "open" || moment(endAt).isSameOrBefore(moment())) {
+    return null
+  }
+
+  const timeUntilSaleEnd = getTimeUntil(endAt)
+  return `${timeUntilSaleEnd.timeUntilByByUnit} ${timeUntilSaleEnd.unit} left`
+}
+
+export enum TIME_UNITS {
+  Months = "months",
+  Weeks = "weeks",
+  Days = "days",
+  Hours = "hours",
+  Minutes = "minutes",
+}
+
+export const UNITS = [
+  TIME_UNITS.Months,
+  TIME_UNITS.Weeks,
+  TIME_UNITS.Days,
+  TIME_UNITS.Hours,
+  TIME_UNITS.Minutes,
+]
+
+/**
+ * Get time until a given date
+ * @example
+ * { timeUntilByByUnit: 3, unit: days }
+ */
+export const getTimeUntil = (
+  date: string,
+  unit: TIME_UNITS = TIME_UNITS.Months
+): { timeUntilByByUnit: number; unit: TIME_UNITS } => {
+  const timeUntilByByUnit = moment(date).diff(moment(), unit)
+
+  if (timeUntilByByUnit > 1 || unit === "minutes") {
+    return { timeUntilByByUnit, unit }
+  }
+
+  return getTimeUntil(date, UNITS[UNITS.indexOf(unit) + 1])
+}

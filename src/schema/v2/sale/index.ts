@@ -20,7 +20,7 @@ import { amount } from "schema/v2/fields/money"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { map } from "lodash"
 import { NodeInterface } from "schema/v2/object_identification"
-import { isLiveOpen, displayTimelyAt } from "./display"
+import { isLiveOpen, displayTimelyAt, displayUrgencyTag } from "./display"
 import { flatten, isEmpty } from "lodash"
 
 import {
@@ -164,6 +164,15 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: (sale, _options, { meBiddersLoader }) => {
           return displayTimelyAt({ sale, meBiddersLoader })
+        },
+      },
+      displayUrgencyTag: {
+        type: GraphQLString,
+        resolve: ({ end_at, auction_state }) => {
+          return displayUrgencyTag({
+            endAt: end_at,
+            auctionState: auction_state,
+          })
         },
       },
       eligibleSaleArtworksCount: {
