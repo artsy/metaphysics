@@ -11,6 +11,7 @@ import { readFileSync } from "fs"
 
 const blacklistedTypes: string[] = []
 const whitelistedRootFields: string[] = [
+  "lotStandings",
   // "auctionIncrementPolicy",
   // "auctionIncrementPolicies",
   // "auctionIncrementPolicyGroups",
@@ -33,7 +34,7 @@ export const executableCausalitySchema = () => {
       // We are currently obscuring all root fields
       if (operation === "Query") return whitelistedRootFields.includes(name)
       if (operation === "Mutation") return false
-      return false
+      return true
     }),
     new RenameTypes((name) => {
       // this could be left as AuctionsLong, it is just a scalar (same as int?)

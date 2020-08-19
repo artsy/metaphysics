@@ -6597,6 +6597,7 @@ type Me implements Node {
     first: Int
     last: Int
   ): ArtworkInquiryConnection
+  auctionsLotStandings: AuctionsLotStandingConnectionConnection
 
   # Returns a single bidder position
   bidderPosition(id: String!): BidderPositionResult
@@ -7891,6 +7892,15 @@ type Query {
     tagID: String
     width: String
   ): FilterArtworksConnection
+
+  # Lot standings for a user
+  auctionsLotStandings(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    userId: ID!
+  ): AuctionsLotStandingConnectionConnection!
 
   # A city-based entry point for local discovery
   city(

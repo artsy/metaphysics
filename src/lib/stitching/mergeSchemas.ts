@@ -20,6 +20,7 @@ import { executableVortexSchema } from "lib/stitching/vortex/schema"
 import { vortexStitchingEnvironment as vortexStitchingEnvironmentv1 } from "./vortex/stitchingv1"
 import { vortexStitchingEnvironment as vortexStitchingEnvironmentv2 } from "./vortex/stitching"
 import { gravityStitchingEnvironment } from "./gravity/stitching"
+import { causalityStitchingEnvironment } from "./causality/stitching"
 
 /**
  * Incrementally merges in schemas according to `process.env`
@@ -61,6 +62,10 @@ export const incrementalMergeSchemas = (
   if (ENABLE_CAUSALITY_STITCHING) {
     const causalitySchema = executableCausalitySchema()
     schemas.push(causalitySchema)
+
+    useStitchingEnvironment(
+      causalityStitchingEnvironment({ localSchema, causalitySchema })
+    )
   }
 
   if (ENABLE_COMMERCE_STITCHING) {

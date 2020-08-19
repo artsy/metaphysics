@@ -8955,6 +8955,7 @@ type Me implements Node {
     first: Int
     last: Int
   ): ArtworkInquiryConnection
+  auctionsLotStandings: AuctionsLotStandingConnectionConnection
 
   # Returns a single bidder position
   bidder_position(id: String!): BidderPositionResult
@@ -11215,6 +11216,15 @@ type Query {
     # The ID of the ArtworkVersion
     id: String!
   ): ArtworkVersion
+
+  # Lot standings for a user
+  auctionsLotStandings(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    userId: ID!
+  ): AuctionsLotStandingConnectionConnection!
 
   # Creates, and authorizes, a JWT custom for Causality
   causality_jwt(
