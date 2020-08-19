@@ -13799,6 +13799,8 @@ type Viewer {
   viewingRoomsConnection(
     after: String
     first: Int
+    partnerID: ID
+    published: Boolean = true
     statuses: [ViewingRoomStatusEnum!]
   ): ViewingRoomsConnection
 }
