@@ -12,9 +12,11 @@
     "noUnusedParameters": true,
     "rootDir": "./src",
     "pretty": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
     "target": "es5"
   },
+  "include": ["src/types/**/*.d.ts"],
   "exclude": ["build", "node_modules", "**/node_modules/*", "dangerfile.ts"]
 }

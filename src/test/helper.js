@@ -11,6 +11,8 @@ if (fs.existsSync(".env.test")) {
 import sinon from "sinon"
 global.sinon = sinon
 
+global.__TEST__ = true
+
 // prettier-ignore
 
 /**

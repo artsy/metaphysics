@@ -25,6 +25,8 @@ const {
 
 global.Promise = Bluebird
 
+global.__TEST__ = false
+
 const port = PORT
 const isDevelopment = NODE_ENV === "development"
 const enableAsyncStackTraces = ENABLE_ASYNC_STACK_TRACES === "true"
@@ -62,7 +64,7 @@ const app = require("express")()
 
 app.use(compression())
 
-xapp.on("error", err => {
+xapp.on("error", (err) => {
   error(
     "Could not start Metaphysics because it could not set up the xapp token, this is likely due to your `GRAVITY_*` env vars:"
   )
@@ -102,10 +104,7 @@ function bootApp() {
   app.use(bodyParser.json())
 
   app.get("/favicon.ico", (_req, res) => {
-    res
-      .status(200)
-      .set({ "Content-Type": "image/x-icon" })
-      .end()
+    res.status(200).set({ "Content-Type": "image/x-icon" }).end()
   })
 
   app.get("/health", (req, res) => {
@@ -114,10 +113,10 @@ function bootApp() {
     }
     cache
       .isAvailable()
-      .then(stats => {
+      .then((stats) => {
         return res.status(200).end()
       })
-      .catch(err => {
+      .catch((err) => {
         return res.status(503).end()
       })
   })
@@ -148,7 +147,7 @@ function gracefulExit() {
   if (isShuttingDown) return
   isShuttingDown = true
   console.log("Received signal SIGTERM, shutting down")
-  server.shutdown(function() {
+  server.shutdown(function () {
     console.log("Closed existing connections.")
     process.exit(0)
   })

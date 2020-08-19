@@ -40,6 +40,7 @@
     "expect": false,
     "schema": false,
     "sinon": false,
+    "__TEST__": false,
     "expectPromiseRejectionToMatch": false
   },
   "settings": {

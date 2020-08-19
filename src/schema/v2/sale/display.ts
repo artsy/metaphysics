@@ -101,6 +101,10 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
   }
 }
 
+const defaultStartAt = !__TEST__
+  ? new Date().toISOString()
+  : "2020-08-20T02:50:09+00:00"
+
 /**
  * Get sale ending urgency tag
  * @example
@@ -111,15 +115,20 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
 export const displayUrgencyTag = ({
   endAt,
   auctionState,
+  startAt = defaultStartAt,
 }: {
   endAt: string
   auctionState: string
+  startAt?: string
 }): string | null => {
-  if (auctionState !== "open" || moment(endAt).isSameOrBefore(moment())) {
+  if (
+    auctionState !== "open" ||
+    moment(endAt).isSameOrBefore(moment(startAt))
+  ) {
     return null
   }
 
-  const timeUntilSaleEnd = getTimeUntil(endAt)
+  const timeUntilSaleEnd = getTimeUntil({ endAt })
   return `${timeUntilSaleEnd.timeUntilByByUnit} ${timeUntilSaleEnd.unit} left`
 }
 
@@ -144,15 +153,20 @@ export const UNITS = [
  * @example
  * { timeUntilByByUnit: 3, unit: days }
  */
-export const getTimeUntil = (
-  date: string,
-  unit: TIME_UNITS = TIME_UNITS.Months
-): { timeUntilByByUnit: number; unit: TIME_UNITS } => {
-  const timeUntilByByUnit = moment(date).diff(moment(), unit)
+export const getTimeUntil = ({
+  startAt = defaultStartAt,
+  endAt,
+  unit = TIME_UNITS.Months,
+}: {
+  startAt?: string
+  endAt: string
+  unit?: TIME_UNITS
+}): { timeUntilByByUnit: number; unit: TIME_UNITS } => {
+  const timeUntilByByUnit = moment(endAt).diff(moment(startAt), unit)
 
   if (timeUntilByByUnit > 1 || unit === "minutes") {
     return { timeUntilByByUnit, unit }
   }
 
-  return getTimeUntil(date, UNITS[UNITS.indexOf(unit) + 1])
+  return getTimeUntil({ endAt, unit: UNITS[UNITS.indexOf(unit) + 1] })
 }

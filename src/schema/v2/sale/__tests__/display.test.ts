@@ -16,9 +16,9 @@ describe(displayUrgencyTag, () => {
     ).toEqual(null)
   })
 
-  it("returns time until when a sale is still not closed and has a future endDate", async () => {
+  it("returns time until when a sale is not closed and has a future endDate", async () => {
     const sale = {
-      end_at: "2020-08-20T02:50:09+00:00",
+      end_at: "2020-08-20T02:59:09+00:00",
       auction_state: "open",
     }
 
@@ -27,10 +27,24 @@ describe(displayUrgencyTag, () => {
         endAt: sale.end_at,
         auctionState: sale.auction_state,
       })
-    ).toEqual("33 hours left")
+    ).toEqual("9 minutes left")
   })
 
-  it("return time until when a sale is still not closed and has a past endDate", async () => {
+  it("returns null when a sale is not closed and has a past endDate", async () => {
+    const sale = {
+      end_at: "2020-07-20T02:50:09+00:00",
+      auction_state: "open",
+    }
+
+    expect(
+      displayUrgencyTag({
+        endAt: sale.end_at,
+        auctionState: sale.auction_state,
+      })
+    ).toEqual(null)
+  })
+
+  it("return null when a sale is not closed and the endDate is equal to the date now", async () => {
     const sale = {
       end_at: "2020-07-20T02:50:09+00:00",
       auction_state: "open",
