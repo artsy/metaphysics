@@ -7310,8 +7310,6 @@ type Profile {
   isPubliclyVisible: Boolean
   isPublished: Boolean
   name: String
-  ownerID: String
-  ownerType: String
 
   # A slug ID.
   slug: ID!
