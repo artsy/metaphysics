@@ -162,6 +162,11 @@ export default (accessToken, userID, opts) => {
     ),
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
+    myCollectionArtworksLoader: gravityLoader(
+      "my-collection/artworks",
+      {},
+      { headers: true }
+    ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     partnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,

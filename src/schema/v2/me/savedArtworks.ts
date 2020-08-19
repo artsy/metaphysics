@@ -12,14 +12,7 @@ import CollectionSorts from "../sorts/collection_sorts"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
 
-// Forward this directly to the collection resolver with known defaults.
-
-// const SavedArtworks: GraphQLFieldConfig<void, ResolverContext> = {
-//   type: CollectionType,
-//   resolve: collectionResolverFactory("saved-artwork"),
-// }
-
-// export default SavedArtworks
+const COLLECTION_ID = "saved-artwork"
 
 export const SavedArtworksConnection = connectionWithCursorInfo({
   name: "SavedArtworks",
@@ -62,7 +55,7 @@ export const SavedArtworks: GraphQLFieldConfig<any, ResolverContext> = {
     // Adds a default case for the sort
     gravityOptions.sort = gravityOptions.sort || "-position"
     delete gravityOptions.page // this can't also be used with the offset in gravity
-    return collectionArtworksLoader("saved-artwork", gravityOptions)
+    return collectionArtworksLoader(COLLECTION_ID, gravityOptions)
       .then(({ body, headers }) => {
         return connectionFromArraySlice(body, options, {
           arrayLength: parseInt(headers["x-total-count"] || "0", 10),
