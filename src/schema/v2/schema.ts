@@ -57,7 +57,9 @@ import { UserField } from "./user"
 import UpdateConversationMutation from "./me/conversation/update_conversation_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
-import SaveArtworkMutation from "./me/save_artwork_mutation"
+import saveArtworkMutation from "./me/saveArtworkMutation"
+import { myCollectionCreateArtworkMutation } from "./me/myCollectionCreateArtworkMutation"
+import { myCollectionUpdateArtworkMutation } from "./me/myCollectionUpdateArtworkMutation"
 import { endSaleMutation } from "./sale/end_sale_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
@@ -181,22 +183,24 @@ export default new GraphQLSchema({
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
       createCreditCard: createCreditCardMutation,
+      createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       deleteCreditCard: deleteCreditCardMutation,
+      endSale: endSaleMutation,
       followArtist: FollowArtist,
-      followProfile: FollowProfile,
       followGene: FollowGene,
+      followProfile: FollowProfile,
       followShow: FollowShow,
-      updateCollectorProfile: UpdateCollectorProfile,
-      updateMyUserProfile: UpdateMyUserProfileMutation,
-      updateConversation: UpdateConversationMutation,
+      myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
+      myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
+      requestCredentialsForAssetUpload: CreateAssetRequestLoader,
+      saveArtwork: saveArtworkMutation,
       sendConfirmationEmail: sendConfirmationEmailMutation,
       sendConversationMessage: SendConversationMessageMutation,
       sendFeedback: sendFeedbackMutation,
-      saveArtwork: SaveArtworkMutation,
-      endSale: endSaleMutation,
-      requestCredentialsForAssetUpload: CreateAssetRequestLoader,
-      createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       startIdentityVerification: startIdentityVerificationMutation,
+      updateCollectorProfile: UpdateCollectorProfile,
+      updateConversation: UpdateConversationMutation,
+      updateMyUserProfile: UpdateMyUserProfileMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
