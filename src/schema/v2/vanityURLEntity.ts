@@ -34,13 +34,19 @@ const VanityURLEntity: GraphQLFieldConfig<void, ResolverContext> = {
   },
   resolve: (_root, { id }, { profileLoader, partnerLoader, fairLoader }) =>
     profileLoader(id).then((profile) => {
-      const ownerType = profile.owner?.type ?? profile.owner_type // what is the difference between these fields?
-      switch (ownerType) {
+      switch (profile.owner_type) {
         case "Gallery":
-        case "PartnerGallery":
+        case "Partner":
         case "Institution":
+        case "PartnerArtistDocument":
+        case "PartnerAuction":
+        case "PartnerBrand":
+        case "PartnerDemo":
+        case "PartnerGallery":
         case "PartnerInstitution":
         case "PartnerInstitutionalSeller":
+        case "PartnerPrivateCollector":
+        case "PartnerPrivateDealer":
           return partnerLoader(profile.owner.id).then((partner) => {
             return { ...partner, context_type: "Partner" }
           })
@@ -53,7 +59,7 @@ const VanityURLEntity: GraphQLFieldConfig<void, ResolverContext> = {
             return { ...fair, context_type: "Fair" }
           })
         default:
-          throw new Error(`Unrecognized profile type: ${ownerType}`)
+          throw new Error(`Unrecognized profile type: ${profile.owner_type}`)
       }
     }),
 }
