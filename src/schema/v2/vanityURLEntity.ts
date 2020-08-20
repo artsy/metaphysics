@@ -35,9 +35,6 @@ const VanityURLEntity: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: (_root, { id }, { profileLoader, partnerLoader, fairLoader }) =>
     profileLoader(id).then((profile) => {
       switch (profile.owner_type) {
-        case "Gallery":
-        case "Partner":
-        case "Institution":
         case "PartnerArtistDocument":
         case "PartnerAuction":
         case "PartnerBrand":

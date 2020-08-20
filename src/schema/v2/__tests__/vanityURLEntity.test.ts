@@ -59,7 +59,7 @@ describe("vanityURLEntity", () => {
   it("returns a partner for a profile id associated with a partner type", async () => {
     const profile = {
       id: "some-profile-id",
-      owner_type: "Gallery",
+      owner_type: "PartnerGallery",
       owner: {
         id: "some-owner-id",
       },
