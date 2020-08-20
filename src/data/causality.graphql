@@ -10,7 +10,6 @@ union Bidder = ArtsyBidder | OfflineBidder
 "DateTime is a scalar value that represents an ISO8601 formatted date and time."
 scalar DateTime
 
-"a long is like an int, figure out why it wasn't included here"
 scalar Long
 
 "A permanent schedule of increments to use in for upcoming asking prices for a lot."
@@ -64,6 +63,9 @@ type Lot {
   "The Gravity Lot ID."
   id: ID!
 
+  "The Gravity Lot ID."
+  internalID: ID!
+
   "The Gravity Sale ID."
   saleId: ID!
 
@@ -106,16 +108,16 @@ type LotStanding implements Node {
 }
 
 "A connection to a list of items."
-type LotStandingConnectionConnection {
+type LotStandingConnection {
   "Information to aid in pagination."
   pageInfo: PageInfo!
 
   "A list of edges."
-  edges: [LotStandingConnectionEdge]
+  edges: [LotStandingEdge]
 }
 
 "An edge in a connection."
-type LotStandingConnectionEdge {
+type LotStandingEdge {
   "The item at the end of the edge."
   node: LotStanding!
 
@@ -227,7 +229,7 @@ type Query {
     after: String
     first: Int
     last: Int
-  ): LotStandingConnectionConnection!
+  ): LotStandingConnection!
 
   "Returns an increment policy with specific `id`."
   incrementPolicy(id: ID!): IncrementPolicy
@@ -243,11 +245,11 @@ type Query {
   "All increment polices by Group"
   incrementPolicyGroups: [IncrementPolicyGroup!]!
 
-  "Returns a sale with specific `id`."
-  sale(id: ID!): Sale
-
   "Returns a lot with specific `id`."
   lot(id: ID!): Lot
+
+  "Returns a sale with specific `id`."
+  sale(id: ID!): Sale
 
   "Fetches an object given its ID"
   node("The ID of an object" id: ID!): Node
@@ -272,6 +274,9 @@ type Sale {
 
   "The Gravity Sale ID."
   id: ID!
+
+  "The Gravity Lot ID."
+  internalID: ID!
 
   "The lots belonging to this sale."
   lots: [Lot!]!
@@ -312,4 +317,7 @@ type User implements Node {
 
   "The user's id"
   userId: ID!
+
+  "The user's gravity id"
+  internalID: ID!
 }

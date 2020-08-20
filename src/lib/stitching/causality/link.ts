@@ -40,7 +40,6 @@ export const createCausalityLink = () => {
           }
         })
       }
-      // Exchange uses no authentication for now
       return { headers }
     }
   )

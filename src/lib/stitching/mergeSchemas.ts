@@ -64,7 +64,7 @@ export const incrementalMergeSchemas = (
     schemas.push(causalitySchema)
 
     useStitchingEnvironment(
-      causalityStitchingEnvironment({ localSchema, causalitySchema })
+      causalityStitchingEnvironment({ causalitySchema, localSchema })
     )
   }
 

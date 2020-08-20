@@ -1734,8 +1734,42 @@ type AuctionsIncrementPolicySubgroup {
   subgroupTag: ID!
 }
 
+# A user's position on a lot
+type AuctionsLotStanding implements AuctionsNode {
+  # The ID of an object
+  id: ID!
+
+  # whether this user has the leading bid
+  isHighestBidder: Boolean!
+
+  # The current leading bid on the lot, whether it is winning or not
+  leadingBidAmount: AuctionsMoney!
+
+  # whether this user has the leading bid
+  lot: AuctionsLotState!
+  rawId: String!
+}
+
+# A connection to a list of items.
+type AuctionsLotStandingConnection {
+  # A list of edges.
+  edges: [AuctionsLotStandingEdge]
+
+  # Information to aid in pagination.
+  pageInfo: AuctionsPageInfo!
+}
+
+# An edge in a connection.
+type AuctionsLotStandingEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: AuctionsLotStanding!
+}
+
 # A lot in a sale
-type AuctionsLot {
+type AuctionsLotState {
   # total number of bids placed on the lot
   bidCount: Int!
 
@@ -1747,6 +1781,9 @@ type AuctionsLot {
 
   # The Gravity Lot ID.
   id: ID!
+
+  # The Gravity Lot ID.
+  internalID: ID!
 
   # asking price for online bidders
   onlineAskingPrice: AuctionsMoney!
@@ -1762,40 +1799,6 @@ type AuctionsLot {
 
   # Whether the lot is sold, for sale or passed
   soldStatus: AuctionsSoldStatus!
-}
-
-# A user's position on a lot
-type AuctionsLotStanding implements AuctionsNode {
-  # The ID of an object
-  id: ID!
-
-  # whether this user has the leading bid
-  isHighestBidder: Boolean!
-
-  # The current leading bid on the lot, whether it is winning or not
-  leadingBidAmount: AuctionsMoney!
-
-  # whether this user has the leading bid
-  lot: AuctionsLot!
-  rawId: String!
-}
-
-# A connection to a list of items.
-type AuctionsLotStandingConnectionConnection {
-  # A list of edges.
-  edges: [AuctionsLotStandingConnectionEdge]
-
-  # Information to aid in pagination.
-  pageInfo: AuctionsPageInfo!
-}
-
-# An edge in a connection.
-type AuctionsLotStandingConnectionEdge {
-  # A cursor for use in pagination.
-  cursor: String!
-
-  # The item at the end of the edge.
-  node: AuctionsLotStanding!
 }
 
 # Represents currency units and formatting
@@ -1890,15 +1893,18 @@ enum AuctionsReserveStatus {
 }
 
 # A collection of lots.
-type AuctionsSale {
+type AuctionsSaleState {
   # Users not allowed to participate in the sale
   bannedUsers: [AuctionsUser!]!
 
   # The current lot on block.
-  currentLot: AuctionsLot
+  currentLot: AuctionsLotState
 
   # The Gravity Sale ID.
   id: ID!
+
+  # The Gravity Lot ID.
+  internalID: ID!
 
   # Lot ids that had an Artsy bid that was the highest bid on the lot but did not win
   lotIdsWithHigherArtsyBidNotWon: [String!]!
@@ -1913,7 +1919,7 @@ type AuctionsSale {
   lotIdsWithSameArtsyBidNotWon: [String!]!
 
   # The lots belonging to this sale.
-  lots: [AuctionsLot!]!
+  lots: [AuctionsLotState!]!
 
   # Passed lot ids with bids from Artsy bidders
   passedLotIdsWithArtsyBids: [String!]!
@@ -1935,6 +1941,9 @@ enum AuctionsSoldStatus {
 type AuctionsUser implements AuctionsNode {
   # The ID of an object
   id: ID!
+
+  # The user's gravity id
+  internalID: ID!
   rawId: String!
 
   # The user's id
@@ -6387,7 +6396,6 @@ type LocationEdge {
   node: Location
 }
 
-# a long is like an int, figure out why it wasn't included here
 scalar Long
 
 type LotStanding {
@@ -6597,7 +6605,7 @@ type Me implements Node {
     first: Int
     last: Int
   ): ArtworkInquiryConnection
-  auctionsLotStandings: AuctionsLotStandingConnectionConnection
+  auctionsLotStandings: AuctionsLotStandingConnection
 
   # Returns a single bidder position
   bidderPosition(id: String!): BidderPositionResult
@@ -7692,6 +7700,15 @@ type Query {
   # Do not use (only used internally for stitching)
   _do_not_use_image: Image
 
+  # Lot standings for a user
+  _unused_auctionsLotStandings(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    userId: ID!
+  ): AuctionsLotStandingConnection!
+
   # Autocomplete resolvers.
   _unused_gravity_match_partners(
     match_type: String
@@ -7892,15 +7909,6 @@ type Query {
     tagID: String
     width: String
   ): FilterArtworksConnection
-
-  # Lot standings for a user
-  auctionsLotStandings(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    userId: ID!
-  ): AuctionsLotStandingConnectionConnection!
 
   # A city-based entry point for local discovery
   city(
