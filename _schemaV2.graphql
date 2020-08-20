@@ -1748,6 +1748,7 @@ type AuctionsLotStanding implements AuctionsNode {
   # whether this user has the leading bid
   lot: AuctionsLotState!
   rawId: String!
+  saleArtwork: SaleArtwork
 }
 
 # A connection to a list of items.
