@@ -95,6 +95,7 @@ import { TargetSupply } from "./TargetSupply"
 import { Shows } from "./shows"
 import PartnerArtworks from "./partnerArtworks"
 import Image from "./image"
+import VanityURLEntity from "./vanityURLEntity"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -160,6 +161,7 @@ const rootFields = {
   user: UserField,
   usersConnection: Users,
   // popularArtists: PopularArtists,
+  vanityURLEntity: VanityURLEntity,
 }
 
 // FIXME: Remove type once Reaction MPv2 migration is complete
