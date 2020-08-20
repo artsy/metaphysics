@@ -8073,6 +8073,7 @@ type Sale implements Node {
   currency: String
   description: String
   displayTimelyAt: String
+  displayUrgencyTag: String
   eligibleSaleArtworksCount: Int
   endAt(
     format: String

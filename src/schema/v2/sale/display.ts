@@ -79,10 +79,10 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
   // Timed Auction
   if (start_at) {
     const range = moment().add(5, "days")
-    const startAt = moment(start_at)
-    const isInProgress = startAt < moment()
-    const isNearFuture = startAt > moment() && startAt < range
-    const isFuture = startAt > range
+    const currentTime = moment(start_at)
+    const isInProgress = currentTime < moment()
+    const isNearFuture = currentTime > moment() && currentTime < range
+    const isFuture = currentTime > range
     const dateLabel = (saleDate) => {
       return moment(saleDate).fromNow(true)
     }
@@ -101,9 +101,8 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
   }
 }
 
-const defaultStartAt = !__TEST__
-  ? new Date().toISOString()
-  : "2020-08-20T02:50:09+00:00"
+const getCurrentTime = () =>
+  !__TEST__ ? new Date().toISOString() : "2020-08-20T02:50:09+00:00"
 
 /**
  * Get sale ending urgency tag
@@ -115,20 +114,20 @@ const defaultStartAt = !__TEST__
 export const displayUrgencyTag = ({
   endAt,
   auctionState,
-  startAt = defaultStartAt,
 }: {
   endAt: string
   auctionState: string
-  startAt?: string
+  currentTime?: string
 }): string | null => {
+  const currentTime = getCurrentTime()
   if (
     auctionState !== "open" ||
-    moment(endAt).isSameOrBefore(moment(startAt))
+    moment(endAt).isSameOrBefore(moment(currentTime))
   ) {
     return null
   }
 
-  const timeUntilSaleEnd = getTimeUntil({ endAt })
+  const timeUntilSaleEnd = getTimeUntil({ endAt, currentTime })
   return `${timeUntilSaleEnd.timeUntilByByUnit} ${timeUntilSaleEnd.unit} left`
 }
 
@@ -154,19 +153,23 @@ export const UNITS = [
  * { timeUntilByByUnit: 3, unit: days }
  */
 export const getTimeUntil = ({
-  startAt = defaultStartAt,
+  currentTime,
   endAt,
   unit = TIME_UNITS.Months,
 }: {
-  startAt?: string
+  currentTime: string
   endAt: string
   unit?: TIME_UNITS
 }): { timeUntilByByUnit: number; unit: TIME_UNITS } => {
-  const timeUntilByByUnit = moment(endAt).diff(moment(startAt), unit)
+  const timeUntilByByUnit = moment(endAt).diff(moment(currentTime), unit)
 
   if (timeUntilByByUnit > 1 || unit === "minutes") {
     return { timeUntilByByUnit, unit }
   }
 
-  return getTimeUntil({ endAt, unit: UNITS[UNITS.indexOf(unit) + 1] })
+  return getTimeUntil({
+    currentTime,
+    endAt,
+    unit: UNITS[UNITS.indexOf(unit) + 1],
+  })
 }
