@@ -4831,6 +4831,13 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+  articlesConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    sort: ArticleSorts
+  ): ArticleConnection
   artistsConnection(
     after: String
     before: String
@@ -6454,6 +6461,12 @@ type Me implements Node {
     # Only the lot standings for a specific auction
     saleID: String
   ): [LotStanding]
+  myCollectionConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): MyCollectionConnection
   name: String
   orders(
     after: String
@@ -6732,6 +6745,16 @@ type Mutation {
   # Follow (or unfollow) a show
   followShow(input: FollowShowInput!): FollowShowPayload
   holdInventory(input: HoldInventoryInput!): HoldInventoryPayload
+
+  # Create an artwork in my collection
+  myCollectionCreateArtwork(
+    input: MyCollectionCreateArtworkInput!
+  ): MyCollectionCreateArtworkPayload
+
+  # Update an artwork in my collection
+  myCollectionUpdateArtwork(
+    input: MyCollectionUpdateArtworkInput!
+  ): MyCollectionUpdateArtworkPayload
   publishViewingRoom(input: PublishViewingRoomInput!): PublishViewingRoomPayload
   recordArtworkView(input: RecordArtworkViewInput!): RecordArtworkViewPayload
   requestConditionReport(
@@ -6795,6 +6818,56 @@ type Mutation {
   updateViewingRoomSubsections(
     input: UpdateViewingRoomSubsectionsInput!
   ): UpdateViewingRoomSubsectionsPayload
+}
+
+# A connection to a list of items.
+type MyCollectionConnection {
+  default: Boolean!
+  description: String!
+
+  # A list of edges.
+  edges: [MyCollectionEdge]
+  name: String!
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  private: Boolean!
+  totalCount: Int
+}
+
+input MyCollectionCreateArtworkInput {
+  artistIds: [String]!
+  clientMutationId: String
+  dimensions: String!
+  medium: String!
+}
+
+type MyCollectionCreateArtworkPayload {
+  artwork: Artwork
+  clientMutationId: String
+}
+
+# An edge in a connection.
+type MyCollectionEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Artwork
+}
+
+input MyCollectionUpdateArtworkInput {
+  artistIds: [String]
+  artworkId: String!
+  clientMutationId: String
+  dimensions: String
+  medium: String
+}
+
+type MyCollectionUpdateArtworkPayload {
+  artwork: Artwork
+  clientMutationId: String
 }
 
 input Near {
@@ -6933,19 +7006,23 @@ type organizer {
 }
 
 type PageCursor {
+  # first cursor on the page
   cursor: String!
+
+  # is this the current page?
   isCurrent: Boolean!
+
+  # page number out of totalPages
   page: Int!
 }
 
 type PageCursors {
-  # Always includes current page
   around: [PageCursor!]!
 
-  # Optional, may be included in `around` (if current page is near the beginning).
+  # optional, may be included in field around
   first: PageCursor
 
-  # Optional, may be included in `around` (if current page is near the end).
+  # optional, may be included in field around
   last: PageCursor
   previous: PageCursor
 }
@@ -7046,7 +7123,12 @@ type Partner implements Node {
   # A slug ID.
   slug: ID!
   type: String
-  viewingRoomsConnection(published: Boolean = true): ViewingRoomConnection
+  viewingRoomsConnection(
+    after: String
+    first: Int
+    published: Boolean = true
+    statuses: [ViewingRoomStatusEnum!]
+  ): ViewingRoomsConnection
 
   # The gallery partner's web address
   website: String
@@ -7364,6 +7446,29 @@ type Query {
   _unused_gravity_secondFactors(
     kinds: [SecondFactorKind!] = [app, sms, backup]
   ): [SecondFactor!]!
+
+  # List viewing rooms
+  _unused_gravity_viewingRoomsConnection(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+    featured: Boolean
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    partnerID: ID
+
+    # (Deprecated) Use statuses
+    published: Boolean
+
+    # Returns only viewing rooms with these statuses
+    statuses: [ViewingRoomStatusEnum!] = [live]
+  ): ViewingRoomsConnection
 
   # Find PartnerStats
   analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStats
@@ -7929,7 +8034,7 @@ type Query {
   # Find a viewing room by ID
   viewingRoom(id: ID!): ViewingRoom
 
-  # List viewing rooms
+  # (Deprecate) use viewingRoomsConnection
   viewingRooms(
     # Returns the elements in the list that come after the specified cursor.
     after: String
@@ -7950,7 +8055,7 @@ type Query {
 
     # Returns only viewing rooms with these statuses
     statuses: [ViewingRoomStatusEnum!] = [live]
-  ): ViewingRoomConnection
+  ): ViewingRoomConnection @deprecated(reason: "Use viewingRoomsConnection")
 }
 
 # Autogenerated input type of RecordArtworkView
@@ -9947,8 +10052,10 @@ type Viewer {
   viewingRoomsConnection(
     after: String
     first: Int
+    partnerID: ID
+    published: Boolean = true
     statuses: [ViewingRoomStatusEnum!]
-  ): ViewingRoomConnection
+  ): ViewingRoomsConnection
 }
 
 # An artwork viewing room
@@ -10064,6 +10171,30 @@ type ViewingRoomEdge {
 
 # A viewing room or errors object
 union ViewingRoomOrErrorsUnion = Errors | ViewingRoom
+
+# The connection type for ViewingRoom.
+type ViewingRoomsConnection {
+  # A list of edges.
+  edges: [ViewingRoomsEdge]
+
+  # A list of nodes.
+  nodes: [ViewingRoom]
+  pageCursors: PageCursors
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+  totalPages: Int
+}
+
+# An edge in a connection.
+type ViewingRoomsEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: ViewingRoom
+}
 
 enum ViewingRoomStatusEnum {
   closed

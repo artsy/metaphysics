@@ -17,11 +17,6 @@ export default (accessToken, userID, opts) => {
     identityVerificationLoader: gravityLoader(
       (id) => `identity_verification/${id}`
     ),
-    createAccountRequestLoader: gravityLoader(
-      "account_requests",
-      {},
-      { method: "POST" }
-    ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
     authenticatedArtworkVersionLoader: gravityLoader(
       (id) => `artwork_version/${id}`
@@ -35,6 +30,11 @@ export default (accessToken, userID, opts) => {
       user_id: userID,
     }),
     collectorProfileLoader: gravityLoader("me/collector_profile"),
+    createAccountRequestLoader: gravityLoader(
+      "account_requests",
+      {},
+      { method: "POST" }
+    ),
     createBidderLoader: gravityLoader("bidder", {}, { method: "POST" }),
     createBidderPositionLoader: gravityLoader(
       "me/bidder_position",
@@ -162,6 +162,35 @@ export default (accessToken, userID, opts) => {
     ),
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
+    myCollectionArtworksLoader: gravityLoader(
+      "my-collection/artworks",
+      {},
+      { headers: true }
+    ),
+    myCollectionArtworkLoader: gravityLoader(
+      (id) => `my-collection/artworks/${id}`,
+      {
+        user_id: userID,
+        private: true,
+      },
+      { method: "GET" }
+    ),
+    myCollectionCreateArtworkLoader: gravityLoader(
+      "my-collection/artworks",
+      {
+        user_id: userID,
+        private: true,
+      },
+      { method: "POST" }
+    ),
+    myCollectionUpdateArtworkLoader: gravityLoader(
+      (id) => `my-collection/artworks/${id}`,
+      {
+        user_id: userID,
+        private: true,
+      },
+      { method: "PUT" }
+    ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     partnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,
