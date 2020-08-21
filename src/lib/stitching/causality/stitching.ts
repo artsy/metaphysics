@@ -16,7 +16,7 @@ export const causalityStitchingEnvironment = ({
           last: Int
           after: String
           before: String
-        ): AuctionsLotStandingConnection
+        ): AuctionsLotStandingConnection!
       }
 
       extend type AuctionsLotStanding {

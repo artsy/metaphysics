@@ -1695,30 +1695,30 @@ type AuctionsIncrementPolicy {
 
   # Generate a list of asking prices across a given range.
   enumerate(
-    from: Long = 0
+    from: AuctionsLong = 0
 
     # Defines treatment of off-increment `from` values.
     nextIncrementRule: AuctionsNextIncrementRule = SnapToPresetIncrements
-    until: Long = 0
+    until: AuctionsLong = 0
   ): [AuctionsMoney!]!
   groupTag: ID!
   id: ID!
-  initialIncrementCents: Long!
+  initialIncrementCents: AuctionsLong!
   subgroupTag: ID!
 }
 
 # Change thresholds and amounts for IncrementPolicy.
 type AuctionsIncrementPolicyChange {
   increment: AuctionsMoney!
-  incrementCents: Long!
+  incrementCents: AuctionsLong!
   threshold: AuctionsMoney!
-  thresholdCents: Long!
+  thresholdCents: AuctionsLong!
 }
 
 # A change in increment amount, to take effect at the given threshold.
 input AuctionsIncrementPolicyChangeInput {
-  incrementCents: Long!
-  thresholdCents: Long!
+  incrementCents: AuctionsLong!
+  thresholdCents: AuctionsLong!
 }
 
 # A groupTag and list of IncrementPolicySubgroups
@@ -1733,6 +1733,8 @@ type AuctionsIncrementPolicySubgroup {
   revisions: [AuctionsIncrementPolicy!]!
   subgroupTag: ID!
 }
+
+scalar AuctionsLong
 
 # A user's position on a lot
 type AuctionsLotStanding implements AuctionsNode {
@@ -1818,7 +1820,7 @@ type AuctionsMoney {
     # Whether to show the fractional units.
     showFractionalDigits: Boolean = true
   ): String!
-  units: Long!
+  units: AuctionsLong!
 }
 
 # A draft schedule of increments to use in for upcoming asking prices for a lot.
@@ -1829,7 +1831,7 @@ type AuctionsNewIncrementPolicy {
   enumeratedIncrements: [[AuctionsMoney!]!]!
   groupTag: ID!
   id: ID
-  initialIncrementCents: Long!
+  initialIncrementCents: AuctionsLong!
 
   # The maximum percentage change between increments (~10% is typical).
   maxPercentChange: Float!
@@ -1852,7 +1854,7 @@ input AuctionsNewIncrementPolicyInput {
   changes: [AuctionsIncrementPolicyChangeInput!]!
   groupTag: ID!
   id: ID
-  initialIncrementCents: Long!
+  initialIncrementCents: AuctionsLong!
   subgroupTag: ID!
 }
 
@@ -1929,7 +1931,7 @@ type AuctionsSaleState {
   reopenedLotIds: [String!]!
 
   # Total Artsy GMV for the sale
-  totalSoldGMVCents: Long!
+  totalSoldGMVCents: AuctionsLong!
 }
 
 enum AuctionsSoldStatus {
@@ -6397,8 +6399,6 @@ type LocationEdge {
   node: Location
 }
 
-scalar Long
-
 type LotStanding {
   # Your bid if it is currently winning
   activeBid: BidderPosition
@@ -6611,7 +6611,7 @@ type Me implements Node {
     before: String
     first: Int
     last: Int
-  ): AuctionsLotStandingConnection
+  ): AuctionsLotStandingConnection!
 
   # Returns a single bidder position
   bidderPosition(id: String!): BidderPositionResult
