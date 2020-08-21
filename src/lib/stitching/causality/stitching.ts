@@ -11,7 +11,12 @@ export const causalityStitchingEnvironment = ({
   return {
     extensionSchema: gql`
       extend type Me {
-        auctionsLotStandings: AuctionsLotStandingConnection
+        auctionsLotStandings(
+          first: Int
+          last: Int
+          after: String
+          before: String
+        ): AuctionsLotStandingConnection
       }
 
       extend type AuctionsLotStanding {
@@ -54,13 +59,13 @@ export const causalityStitchingEnvironment = ({
           // The function to handle getting the lot standings correctly, we
           // use the root query `auctionsLotStandings` to grab the data from the local
           // metaphysics schema
-          resolve: (parent, _args, context, info) => {
-            console.log("Fetching lot standings for " + parent.internalID)
+          resolve: (parent, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
               schema: causalitySchema,
               operation: "query",
               fieldName: "_unused_auctionsLotStandings",
               args: {
+                ...args,
                 userId: parent.internalID,
               },
               context,

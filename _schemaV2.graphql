@@ -6606,7 +6606,12 @@ type Me implements Node {
     first: Int
     last: Int
   ): ArtworkInquiryConnection
-  auctionsLotStandings: AuctionsLotStandingConnection
+  auctionsLotStandings(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): AuctionsLotStandingConnection
 
   # Returns a single bidder position
   bidderPosition(id: String!): BidderPositionResult
