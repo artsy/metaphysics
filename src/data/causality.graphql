@@ -1,3 +1,6 @@
+# Type not included by sangria's SchemaRenderer
+scalar Long
+
 type ArtsyBidder {
   id: ID!
   paddleNumber: ID!
@@ -9,8 +12,6 @@ union Bidder = ArtsyBidder | OfflineBidder
 
 "DateTime is a scalar value that represents an ISO8601 formatted date and time."
 scalar DateTime
-
-scalar Long
 
 "A permanent schedule of increments to use in for upcoming asking prices for a lot."
 type IncrementPolicy {
@@ -104,7 +105,7 @@ type LotStanding implements Node {
   isHighestBidder: Boolean!
 
   "whether this user has the leading bid"
-  lot: Lot!
+  lotState: Lot!
 }
 
 "A connection to a list of items."
@@ -223,7 +224,7 @@ type PageInfo {
 
 type Query {
   "Lot standings for a user"
-  lotStandings(
+  lotStandingConnection(
     userId: ID!
     before: String
     after: String

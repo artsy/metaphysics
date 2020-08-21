@@ -11,7 +11,7 @@ export const causalityStitchingEnvironment = ({
   return {
     extensionSchema: gql`
       extend type Me {
-        auctionsLotStandings(
+        auctionsLotStandingConnection(
           first: Int
           last: Int
           after: String
@@ -48,7 +48,7 @@ export const causalityStitchingEnvironment = ({
         },
       },
       Me: {
-        auctionsLotStandings: {
+        auctionsLotStandingConnection: {
           // The required query to get access to the object, e.g. we have to
           // request `id` on a Me in order to access the user's lot standings
           fragment: gql`
@@ -63,7 +63,7 @@ export const causalityStitchingEnvironment = ({
             return info.mergeInfo.delegateToSchema({
               schema: causalitySchema,
               operation: "query",
-              fieldName: "_unused_auctionsLotStandings",
+              fieldName: "_unused_auctionsLotStandingConnection",
               args: {
                 ...args,
                 userId: parent.internalID,

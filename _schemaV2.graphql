@@ -1746,7 +1746,7 @@ type AuctionsLotStanding implements AuctionsNode {
   leadingBidAmount: AuctionsMoney!
 
   # whether this user has the leading bid
-  lot: AuctionsLotState!
+  lotState: AuctionsLotState!
   rawId: String!
   saleArtwork: SaleArtwork
 }
@@ -6606,7 +6606,7 @@ type Me implements Node {
     first: Int
     last: Int
   ): ArtworkInquiryConnection
-  auctionsLotStandings(
+  auctionsLotStandingConnection(
     after: String
     before: String
     first: Int
@@ -7705,15 +7705,6 @@ type PublishViewingRoomPayload {
 type Query {
   # Do not use (only used internally for stitching)
   _do_not_use_image: Image
-
-  # Lot standings for a user
-  _unused_auctionsLotStandings(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    userId: ID!
-  ): AuctionsLotStandingConnection!
 
   # Autocomplete resolvers.
   _unused_gravity_match_partners(
