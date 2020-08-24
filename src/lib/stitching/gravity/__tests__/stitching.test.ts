@@ -69,75 +69,105 @@ describe("gravity/stitching", () => {
   })
 
   describe("#artworksConnection", () => {
-    it("extends the ViewingRoom type with an artworksConnection field", async () => {
-      const mergedSchema = await getGravityMergedSchema()
-      const artworkConnectionFields = await getFieldsForTypeFromSchema(
-        "ViewingRoom",
-        mergedSchema
-      )
+    describe("ViewingRoom", () => {
+      it("extends the ViewingRoom type with an artworksConnection field", async () => {
+        const mergedSchema = await getGravityMergedSchema()
+        const artworkConnectionFields = await getFieldsForTypeFromSchema(
+          "ViewingRoom",
+          mergedSchema
+        )
 
-      expect(artworkConnectionFields).toContain("artworksConnection")
-    })
+        expect(artworkConnectionFields).toContain("artworksConnection")
+      })
 
-    it("resolves the artworks field on ViewingRoom as a paginated list", async () => {
-      const { resolvers } = await getGravityStitchedSchema()
-      const { artworksConnection } = resolvers.ViewingRoom
-      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+      it("resolves the artworks field on ViewingRoom as a paginated list", async () => {
+        const { resolvers } = await getGravityStitchedSchema()
+        const { artworksConnection } = resolvers.ViewingRoom
+        const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-      artworksConnection.resolve(
-        { artworkIDs: ["1", "2", "3"] },
-        { first: 2 },
-        {},
-        info
-      )
+        artworksConnection.resolve(
+          { artworkIDs: ["1", "2", "3"] },
+          { first: 2 },
+          {},
+          info
+        )
 
-      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { ids: ["1", "2", "3"], respectParamsOrder: true, first: 2 },
-        operation: "query",
-        fieldName: "artworks",
-        schema: expect.anything(),
-        context: expect.anything(),
-        info: expect.anything(),
+        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+          args: { ids: ["1", "2", "3"], respectParamsOrder: true, first: 2 },
+          operation: "query",
+          fieldName: "artworks",
+          schema: expect.anything(),
+          context: expect.anything(),
+          info: expect.anything(),
+        })
+      })
+
+      it("converts empty artworkIDs argument", async () => {
+        const { resolvers } = await getGravityStitchedSchema()
+        const { artworksConnection } = resolvers.ViewingRoom
+        const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+        artworksConnection.resolve({ artworkIDs: [] }, { first: 2 }, {}, info)
+
+        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+          args: { ids: [null], respectParamsOrder: true, first: 2 },
+          operation: "query",
+          fieldName: "artworks",
+          schema: expect.anything(),
+          context: expect.anything(),
+          info: expect.anything(),
+        })
       })
     })
 
-    it("converts empty artworkIDs argument", async () => {
-      const { resolvers } = await getGravityStitchedSchema()
-      const { artworksConnection } = resolvers.ViewingRoom
-      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+    describe("ArtistSeries", () => {
+      it("resolves the artworksConnection field on ArtistSeries for the V2 schema", async () => {
+        const schemaVersion = 2
+        const { resolvers } = await getGravityStitchedSchema(schemaVersion)
+        const { artworksConnection } = resolvers.ArtistSeries
+        const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-      artworksConnection.resolve({ artworkIDs: [] }, { first: 2 }, {}, info)
+        artworksConnection.resolve(
+          { artworkIDs: ["abc123"] },
+          { first: 2 },
+          {},
+          info
+        )
 
-      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { ids: [null], respectParamsOrder: true, first: 2 },
-        operation: "query",
-        fieldName: "artworks",
-        schema: expect.anything(),
-        context: expect.anything(),
-        info: expect.anything(),
+        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+          args: { ids: ["abc123"], first: 2 },
+          operation: "query",
+          fieldName: "artworks",
+          schema: expect.anything(),
+          context: expect.anything(),
+          info: expect.anything(),
+        })
       })
-    })
 
-    it("resolves the artworksConnection field on ArtistSeries for the V2 schema", async () => {
-      const schemaVersion = 2
-      const { resolvers } = await getGravityStitchedSchema(schemaVersion)
-      const { artworksConnection } = resolvers.ArtistSeries
-      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+      describe("with a current artwork in context", () => {
+        it("excludes the current artwork from the artworksConnection query", async () => {
+          const context = { currentArtworkID: "xyz456" }
+          const schemaVersion = 2
+          const { resolvers } = await getGravityStitchedSchema(schemaVersion)
+          const { artworksConnection } = resolvers.ArtistSeries
+          const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-      artworksConnection.resolve(
-        { artworkIDs: ["abc123"] },
-        { first: 2 },
-        {},
-        info
-      )
+          artworksConnection.resolve(
+            { artworkIDs: ["abc123", "xyz456"] },
+            { first: 2 },
+            context,
+            info
+          )
 
-      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { ids: ["abc123"], first: 2 },
-        operation: "query",
-        fieldName: "artworks",
-        schema: expect.anything(),
-        context: expect.anything(),
-        info: expect.anything(),
+          expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+            args: { ids: ["abc123"], first: 2 },
+            operation: "query",
+            fieldName: "artworks",
+            schema: expect.anything(),
+            context: expect.anything(),
+            info: expect.anything(),
+          })
+        })
       })
     })
   })
@@ -617,7 +647,7 @@ describe("gravity/stitching", () => {
         operation: "query",
         fieldName: "artistSeriesConnection",
         schema: expect.anything(),
-        context: expect.anything(),
+        context: { currentArtworkID: "fakeid" },
         info: expect.anything(),
       })
     })
