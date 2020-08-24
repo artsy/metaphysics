@@ -171,9 +171,14 @@ export const gravityStitchingEnvironment = (
           }
           `,
           resolve: async ({ artworkIDs: ids }, _args, context, info) => {
+            // Exclude the current artwork in a series so that lists of
+            // other artworks in the same series don't show the artwork.
+            const filteredIDs = context.currentArtworkID
+              ? ids.filter((id) => id !== context.currentArtworkID)
+              : ids
             return await info.mergeInfo.delegateToSchema({
               args: {
-                ids,
+                ids: filteredIDs,
                 ..._args,
               },
               schema: localSchema,
@@ -553,6 +558,7 @@ export const gravityStitchingEnvironment = (
             }
             `,
           resolve: ({ internalID: artworkID }, args, context, info) => {
+            context.currentArtworkID = artworkID
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,
               operation: "query",
