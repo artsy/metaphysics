@@ -61,7 +61,6 @@ export const causalityStitchingEnvironment = ({
           // (eg first, after, last, before) are forwarded automatically, so we only
           // need the userId.
           resolve: (parent, _args, context, info) => {
-            console.log(causalitySchema.transforms)
             return info.mergeInfo.delegateToSchema({
               schema: causalitySchema,
               operation: "query",
