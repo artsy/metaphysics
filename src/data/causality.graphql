@@ -1,0 +1,324 @@
+# Type not included by sangria's SchemaRenderer
+scalar Long
+
+type ArtsyBidder {
+  id: ID!
+  paddleNumber: ID!
+  userId: ID
+}
+
+"an online (Artsy) bidder, or an offline bidder in the auction"
+union Bidder = ArtsyBidder | OfflineBidder
+
+"DateTime is a scalar value that represents an ISO8601 formatted date and time."
+scalar DateTime
+
+"A permanent schedule of increments to use in for upcoming asking prices for a lot."
+type IncrementPolicy {
+  id: ID!
+  groupTag: ID!
+  subgroupTag: ID!
+  createdAt: DateTime!
+  initialIncrementCents: Long!
+  changes: [IncrementPolicyChange!]!
+
+  "Generate a list of asking prices across a given range."
+  enumerate(
+    from: Long = 0
+    until: Long = 0
+
+    "Defines treatment of off-increment `from` values."
+    nextIncrementRule: NextIncrementRule = SnapToPresetIncrements
+  ): [Money!]!
+}
+
+"Change thresholds and amounts for IncrementPolicy."
+type IncrementPolicyChange {
+  thresholdCents: Long!
+  incrementCents: Long!
+  threshold: Money!
+  increment: Money!
+}
+
+"A change in increment amount, to take effect at the given threshold."
+input IncrementPolicyChangeInput {
+  thresholdCents: Long!
+  incrementCents: Long!
+}
+
+"A groupTag and list of IncrementPolicySubgroups"
+type IncrementPolicyGroup {
+  groupTag: ID!
+  subgroupTags: [ID!]!
+  subgroups: [IncrementPolicySubgroup!]!
+}
+
+type IncrementPolicySubgroup {
+  subgroupTag: ID!
+  group: IncrementPolicyGroup!
+  revisions: [IncrementPolicy!]!
+}
+
+"A lot in a sale"
+type Lot {
+  "The Gravity Lot ID."
+  id: ID!
+
+  "The Gravity Lot ID."
+  internalID: ID!
+
+  "The Gravity Sale ID."
+  saleId: ID!
+
+  "total number of bids placed on the lot"
+  bidCount: Int!
+
+  "selling price on the live auction floor"
+  floorSellingPrice: Money
+
+  "The bidder currently winning the online portion of the auction"
+  floorWinningBidder: Bidder
+
+  "asking price for online bidders"
+  onlineAskingPrice: Money!
+
+  "The bidder currently winning the online portion of the auction"
+  onlineSellingToBidder: Bidder
+
+  "Whether the lot is sold, for sale or passed"
+  soldStatus: SoldStatus!
+
+  "The current reserve status for the lot"
+  reserveStatus: ReserveStatus!
+}
+
+"A user's position on a lot"
+type LotStanding implements Node {
+  "The ID of an object"
+  id: ID!
+  rawId: String!
+
+  "The current leading bid on the lot, whether it is winning or not"
+  leadingBidAmount: Money!
+
+  "whether this user has the leading bid"
+  isHighestBidder: Boolean!
+
+  "whether this user has the leading bid"
+  lotState: Lot!
+}
+
+"A connection to a list of items."
+type LotStandingConnection {
+  "Information to aid in pagination."
+  pageInfo: PageInfo!
+
+  "A list of edges."
+  edges: [LotStandingEdge]
+}
+
+"An edge in a connection."
+type LotStandingEdge {
+  "The item at the end of the edge."
+  node: LotStanding!
+
+  "A cursor for use in pagination."
+  cursor: String!
+}
+
+"Represents currency units and formatting"
+type Money {
+  units: Long!
+
+  "Formatted string version of currency amount"
+  displayAmount(
+    "Number of decimal places for the currency."
+    fractionalDigits: Int = 2
+
+    "The 1000s separator."
+    groupingSeparator: String = ","
+
+    "The decimal separator."
+    decimalSeparator: String = "."
+
+    "Whether to show the fractional units."
+    showFractionalDigits: Boolean = true
+  ): String!
+}
+
+type Mutation {
+  "Permanently add a new increment policy to the database. It cannot be removed once added"
+  addIncrementPolicy(
+    newIncrementPolicy: NewIncrementPolicyInput!
+  ): IncrementPolicy
+  addSale(id: ID!): Sale
+  banUserFromSale(saleId: ID!, userId: ID!): Sale
+  unbanUserFromSale(userId: ID!, saleId: ID!): Sale
+}
+
+"A draft schedule of increments to use in for upcoming asking prices for a lot."
+type NewIncrementPolicy {
+  id: ID
+  groupTag: ID!
+  subgroupTag: ID!
+  initialIncrementCents: Long!
+  changes: [IncrementPolicyChange!]!
+
+  "A listing of increments by tier"
+  enumeratedIncrements: [[Money!]!]!
+
+  "A listing of increments by tier"
+  prettyPrintedIncrements(
+    "Number of decimal places for the currency."
+    fractionalDigits: Int = 2
+  ): [String!]!
+
+  "The minimum percentage change between increments (~4% is typical)."
+  minPercentChange: Float!
+
+  "The maximum percentage change between increments (~10% is typical)."
+  maxPercentChange: Float!
+
+  "Any non-fatal warnings to check before committing the increment policy."
+  warnings: [String!]!
+}
+
+input NewIncrementPolicyInput {
+  id: ID
+  groupTag: ID!
+  subgroupTag: ID!
+  initialIncrementCents: Long!
+  changes: [IncrementPolicyChangeInput!]!
+}
+
+enum NextIncrementRule {
+  AddToPastValue
+  SnapToPresetIncrements
+}
+
+"An object with an ID"
+interface Node {
+  "The id of the object."
+  id: ID!
+}
+
+"An offline bidder (in the auction room)"
+type OfflineBidder {
+  singletonDummyField: String
+}
+
+"Information about pagination in a connection."
+type PageInfo {
+  "When paginating forwards, are there more items?"
+  hasNextPage: Boolean!
+
+  "When paginating backwards, are there more items?"
+  hasPreviousPage: Boolean!
+
+  "When paginating backwards, the cursor to continue."
+  startCursor: String
+
+  "When paginating forwards, the cursor to continue."
+  endCursor: String
+}
+
+type Query {
+  "Lot standings for a user"
+  lotStandingConnection(
+    userId: ID!
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): LotStandingConnection!
+
+  "Returns an increment policy with specific `id`."
+  incrementPolicy(id: ID!): IncrementPolicy
+
+  "Previews a draft of a new increment policy."
+  previewIncrementPolicy(
+    newIncrementPolicy: NewIncrementPolicyInput!
+  ): NewIncrementPolicy!
+
+  "All increment polices"
+  incrementPolicies: [IncrementPolicy!]!
+
+  "All increment polices by Group"
+  incrementPolicyGroups: [IncrementPolicyGroup!]!
+
+  "Returns a lot with specific `id`."
+  lot(id: ID!): Lot
+
+  "Returns a sale with specific `id`."
+  sale(id: ID!): Sale
+
+  "Fetches an object given its ID"
+  node("The ID of an object" id: ID!): Node
+
+  "Fetches objects given their IDs"
+  nodes("The IDs of objects" ids: [ID!]!): [Node]!
+}
+
+enum ReserveStatus {
+  NoReserve
+  ReserveMet
+  ReserveNotMet
+}
+
+"A collection of lots."
+type Sale {
+  "Users not allowed to participate in the sale"
+  bannedUsers: [User!]!
+
+  "The current lot on block."
+  currentLot: Lot
+
+  "The Gravity Sale ID."
+  id: ID!
+
+  "The Gravity Lot ID."
+  internalID: ID!
+
+  "The lots belonging to this sale."
+  lots: [Lot!]!
+
+  "Lot ids without a FairWarning event"
+  lotIdsWithoutFairWarning: [String!]!
+
+  "Lot ids without a FinalCall event"
+  lotIdsWithoutFinalCall: [String!]!
+
+  "Lot ids that had an Artsy bid that was the highest bid on the lot but did not win"
+  lotIdsWithHigherArtsyBidNotWon: [String!]!
+
+  "Lot ids that had an Artsy bid that was the same max bid as the hammer price on the lot but did not win"
+  lotIdsWithSameArtsyBidNotWon: [String!]!
+
+  "Passed lot ids with bids from Artsy bidders"
+  passedLotIdsWithArtsyBids: [String!]!
+
+  "Re-opened lots ids"
+  reopenedLotIds: [String!]!
+
+  "Total Artsy GMV for the sale"
+  totalSoldGMVCents: Long!
+}
+
+enum SoldStatus {
+  ForSale
+  Passed
+  Sold
+}
+
+"An Artsy User"
+type User implements Node {
+  "The ID of an object"
+  id: ID!
+  rawId: String!
+
+  "The user's id"
+  userId: ID!
+
+  "The user's gravity id"
+  internalID: ID!
+}
