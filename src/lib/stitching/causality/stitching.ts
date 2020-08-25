@@ -29,7 +29,7 @@ export const causalityStitchingEnvironment = ({
         saleArtwork: {
           fragment: gql`
             fragment AuctionsLotStandingSaleArtwork on AuctionsLotStanding {
-              lot {
+              lotState {
                 internalID
               }
             }
@@ -39,8 +39,7 @@ export const causalityStitchingEnvironment = ({
               schema: localSchema,
               operation: "query",
               fieldName: "saleArtwork",
-              args: { id: parent.lot.internalID },
-              transforms: causalitySchema.transforms,
+              args: { id: parent.lotState.internalID },
               context,
               info,
             })
@@ -57,15 +56,17 @@ export const causalityStitchingEnvironment = ({
             }
           `,
           // The function to handle getting the lot standings correctly, we
-          // use the root query `auctionsLotStandings` to grab the data from the local
-          // metaphysics schema
-          resolve: (parent, args, context, info) => {
+          // use the root query `_unused_auctionsLotStandingConnection` to grab
+          // the data from the local causality schema. Other args from the field
+          // (eg first, after, last, before) are forwarded automatically, so we only
+          // need the userId.
+          resolve: (parent, _args, context, info) => {
+            console.log(causalitySchema.transforms)
             return info.mergeInfo.delegateToSchema({
               schema: causalitySchema,
               operation: "query",
               fieldName: "_unused_auctionsLotStandingConnection",
               args: {
-                ...args,
                 userId: parent.internalID,
               },
               context,

@@ -11,7 +11,7 @@ import { readFileSync } from "fs"
 
 const blacklistedTypes: string[] = []
 const whitelistedRootFields: string[] = []
-const privateFields: string[] = ["lotStandings"]
+const privateFields: string[] = ["lotStandingConnection"]
 const permittedRootFields = [...whitelistedRootFields, ...privateFields]
 
 export const executableCausalitySchema = () => {
@@ -34,6 +34,7 @@ export const executableCausalitySchema = () => {
       return permittedRootFields.includes(name)
     }),
     new RenameTypes((name) => {
+      if (name === "Long") return "Long"
       if (name === "Lot") name = "LotState"
       if (name === "Sale") name = "SaleState"
       return `Auctions${name}`

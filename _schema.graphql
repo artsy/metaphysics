@@ -2937,30 +2937,30 @@ type AuctionsIncrementPolicy {
 
   # Generate a list of asking prices across a given range.
   enumerate(
-    from: AuctionsLong = 0
+    from: Long = 0
 
     # Defines treatment of off-increment `from` values.
     nextIncrementRule: AuctionsNextIncrementRule = SnapToPresetIncrements
-    until: AuctionsLong = 0
+    until: Long = 0
   ): [AuctionsMoney!]!
   groupTag: ID!
   id: ID!
-  initialIncrementCents: AuctionsLong!
+  initialIncrementCents: Long!
   subgroupTag: ID!
 }
 
 # Change thresholds and amounts for IncrementPolicy.
 type AuctionsIncrementPolicyChange {
   increment: AuctionsMoney!
-  incrementCents: AuctionsLong!
+  incrementCents: Long!
   threshold: AuctionsMoney!
-  thresholdCents: AuctionsLong!
+  thresholdCents: Long!
 }
 
 # A change in increment amount, to take effect at the given threshold.
 input AuctionsIncrementPolicyChangeInput {
-  incrementCents: AuctionsLong!
-  thresholdCents: AuctionsLong!
+  incrementCents: Long!
+  thresholdCents: Long!
 }
 
 # A groupTag and list of IncrementPolicySubgroups
@@ -2975,8 +2975,6 @@ type AuctionsIncrementPolicySubgroup {
   revisions: [AuctionsIncrementPolicy!]!
   subgroupTag: ID!
 }
-
-scalar AuctionsLong
 
 # A user's position on a lot
 type AuctionsLotStanding implements AuctionsNode {
@@ -3062,7 +3060,7 @@ type AuctionsMoney {
     # Whether to show the fractional units.
     showFractionalDigits: Boolean = true
   ): String!
-  units: AuctionsLong!
+  units: Long!
 }
 
 # A draft schedule of increments to use in for upcoming asking prices for a lot.
@@ -3073,7 +3071,7 @@ type AuctionsNewIncrementPolicy {
   enumeratedIncrements: [[AuctionsMoney!]!]!
   groupTag: ID!
   id: ID
-  initialIncrementCents: AuctionsLong!
+  initialIncrementCents: Long!
 
   # The maximum percentage change between increments (~10% is typical).
   maxPercentChange: Float!
@@ -3096,7 +3094,7 @@ input AuctionsNewIncrementPolicyInput {
   changes: [AuctionsIncrementPolicyChangeInput!]!
   groupTag: ID!
   id: ID
-  initialIncrementCents: AuctionsLong!
+  initialIncrementCents: Long!
   subgroupTag: ID!
 }
 
@@ -3173,7 +3171,7 @@ type AuctionsSaleState {
   reopenedLotIds: [String!]!
 
   # Total Artsy GMV for the sale
-  totalSoldGMVCents: AuctionsLong!
+  totalSoldGMVCents: Long!
 }
 
 enum AuctionsSoldStatus {
@@ -8760,6 +8758,8 @@ type Location {
   summary: String
 }
 
+scalar Long
+
 type LotStanding {
   # Your bid if it is currently winning
   active_bid: BidderPosition
@@ -11095,6 +11095,15 @@ type PublishViewingRoomPayload {
 }
 
 type Query {
+  # Lot standings for a user
+  _unused_auctionsLotStandingConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    userId: ID!
+  ): AuctionsLotStandingConnection!
+
   # Autocomplete resolvers.
   _unused_gravity_match_partners(
     match_type: String
