@@ -8,11 +8,17 @@ import {
   isEnumType,
 } from "graphql"
 import moment from "moment"
-import { defineCustomLocale, isExisty } from "lib/helpers"
+import {
+  defineCustomLocale,
+  isExisty,
+  convertConnectionArgsToGravityArgs,
+} from "lib/helpers"
 import { pageableFilterArtworksArgs } from "schema/v2/filterArtworksConnection"
 import { normalizeImageData, getDefault } from "schema/v2/image"
 import { formatMarkdownValue } from "schema/v2/fields/markdown"
 import Format from "schema/v2/input_fields/format"
+import { connectionFromArray } from "graphql-relay"
+import { createPageCursors } from "schema/v2/fields/pagination"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -328,16 +334,15 @@ export const gravityStitchingEnvironment = (
             }
           `,
           resolve: ({ artworkIDs: ids }, args, context, info) => {
-            // qs ignores empty array/object and prevents us from sending `?array[]=`.
-            // This is a workaround to map an empty array to `[null]` so it gets treated
-            // as an empty string.
-            // https://github.com/ljharb/qs/issues/362
-            //
-            // Note that we can't easily change this globally as there are multiple places
-            // clients are sending params of empty array but expecting Gravity to return
-            // non-empty data. This only fixes the issue for viewing room artworks.
+            // For the degenerate case of no `ids`, we just return an empty
+            // connection constructed here.
+            const { page, size } = convertConnectionArgsToGravityArgs(args)
             if (ids.length === 0) {
-              ids = [null]
+              return {
+                totalCount: 0,
+                pageCursors: createPageCursors({ page, size }, 0),
+                ...connectionFromArray([], args),
+              }
             }
 
             return info.mergeInfo.delegateToSchema({

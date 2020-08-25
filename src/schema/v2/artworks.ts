@@ -7,7 +7,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
-import { connectionFromArray } from "graphql-relay"
+import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { createPageCursors } from "./fields/pagination"
 
@@ -26,14 +26,22 @@ const Artworks: GraphQLFieldConfig<void, ResolverContext> = {
     },
   }),
   resolve: (_root, options, { artworksLoader }) => {
-    const { ids, respectParamsOrder } = options
-    const { page, size } = convertConnectionArgsToGravityArgs(options)
+    const { ids: allIDs, respectParamsOrder } = options
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
+
+    // Since `allIDs` can be a very long list, it must be truncated.
+    // We have `page and `size`, and we optimistically assume all of
+    // the artworks are published, so we first paginate the list of `ids`.
+    const ids = allIDs.slice((page - 1) * size - 1, size)
+    const totalCount = allIDs.length
     return artworksLoader({ ids, batched: respectParamsOrder }).then((body) => {
-      const totalCount = body.length
       return {
         totalCount,
         pageCursors: createPageCursors({ page, size }, totalCount),
-        ...connectionFromArray(body, options),
+        ...connectionFromArraySlice(body, options, {
+          arrayLength: totalCount,
+          sliceStart: offset,
+        }),
       }
     })
   },
