@@ -127,6 +127,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   dimensionRange: {
     type: GraphQLString,
   },
+  excludeArtworkIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
   extraAggregationGeneIDs: {
     type: new GraphQLList(GraphQLString),
   },
@@ -378,6 +381,7 @@ const filterArtworksConnectionTypeFactory = (
       attributionClass,
       sizes,
       dimensionRange,
+      excludeArtworkIDs,
       extraAggregationGeneIDs,
       includeArtworksByFollowedArtists,
       includeMediumFilterInAggregation,
@@ -409,6 +413,7 @@ const filterArtworksConnectionTypeFactory = (
       attribution_class: attributionClass,
       sizes: sizes,
       dimension_range: dimensionRange,
+      exclude_artwork_ids: excludeArtworkIDs,
       extra_aggregation_gene_ids: extraAggregationGeneIDs,
       include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
       include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
