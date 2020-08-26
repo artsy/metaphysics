@@ -311,6 +311,9 @@ export const gravityStitchingEnvironment = (
                 fieldName: "artworksConnection",
                 args: {
                   artistSeriesID,
+                  ...(!!context.currentArtworkID && {
+                    excludeArtworkIDs: [context.currentArtworkID],
+                  }),
                   ...args,
                 },
                 context,
