@@ -47,12 +47,16 @@ describe("gravity/stitching", () => {
       filterArtworksConnection.resolve(
         { internalID: "abc123" },
         { first: 2 },
-        {},
+        { currentArtworkID: "catty-artwork" },
         info
       )
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { artistSeriesID: "abc123", first: 2 },
+        args: {
+          artistSeriesID: "abc123",
+          first: 2,
+          excludeArtworkIDs: ["catty-artwork"],
+        },
         operation: "query",
         fieldName: "artworksConnection",
         schema: expect.anything(),
