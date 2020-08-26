@@ -1,4 +1,5 @@
 import moment from "moment"
+import { NODE_ENV } from "config"
 import { defineCustomLocale } from "lib/helpers"
 
 const LocaleEnAuctionRelative = "en-auction-relative"
@@ -102,7 +103,7 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
 }
 
 const getCurrentTime = () =>
-  !__TEST__ ? new Date().toISOString() : "2020-08-20T02:50:09+00:00"
+  NODE_ENV === "test" ? new Date().toISOString() : "2020-08-20T02:50:09+00:00"
 
 /**
  * Get sale ending urgency tag

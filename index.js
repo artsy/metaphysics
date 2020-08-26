@@ -25,8 +25,6 @@ const {
 
 global.Promise = Bluebird
 
-global.__TEST__ = false
-
 const port = PORT
 const isDevelopment = NODE_ENV === "development"
 const enableAsyncStackTraces = ENABLE_ASYNC_STACK_TRACES === "true"
