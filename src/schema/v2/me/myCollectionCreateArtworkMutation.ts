@@ -21,6 +21,12 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     medium: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    title: {
+      type: GraphQLString,
+    },
+    year: {
+      type: GraphQLString,
+    },
   },
   outputFields: {
     artwork: {
@@ -33,7 +39,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: (
-    { artistIds, dimensions, medium },
+    { artistIds, dimensions, medium, title, year },
     { myCollectionCreateArtworkLoader }
   ) => {
     if (!myCollectionCreateArtworkLoader) {
@@ -44,6 +50,8 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       artist_ids: artistIds,
       dimensions,
       medium,
+      title,
+      year,
     }).then(({ id }) => {
       return {
         id,
