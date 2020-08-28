@@ -304,6 +304,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: (partner_show) => partner_show,
       },
+      createdAt: date,
       description: {
         description: "A description of the show",
         type: GraphQLString,

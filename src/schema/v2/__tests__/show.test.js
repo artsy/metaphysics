@@ -13,6 +13,7 @@ describe("Show type", () => {
     showData = {
       id: "new-museum-1-2015-triennial-surround-audience",
       _id: "abcdefg123456",
+      created_at: "2015-02-24T12:00:00+00:00",
       start_at: "2015-02-25T12:00:00+00:00",
       end_at: "2015-05-24T12:00:00+00:00",
       press_release: "**foo** *bar*",
@@ -557,11 +558,12 @@ describe("Show type", () => {
     })
   })
 
-  it("includes a formattable start and end date", async () => {
+  it("includes a formattable create, start, and end date", async () => {
     const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           slug
+          createdAt(format: "MM/DD/YYYY")
           startAt(format: "dddd, MMMM Do YYYY, h:mm:ss a")
           endAt(format: "YYYY")
         }
@@ -572,6 +574,7 @@ describe("Show type", () => {
     expect(data).toEqual({
       show: {
         slug: "new-museum-1-2015-triennial-surround-audience",
+        createdAt: "02/24/2015",
         startAt: "Wednesday, February 25th 2015, 12:00:00 pm",
         endAt: "2015",
       },
