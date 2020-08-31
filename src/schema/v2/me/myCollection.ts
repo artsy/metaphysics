@@ -32,6 +32,11 @@ const MyCollectionConnection = connectionWithCursorInfo({
   },
 })
 
+export const {
+  connectionType: MyCollectionConnectionType,
+  edgeType: MyCollectionEdgeType,
+} = MyCollectionConnection
+
 export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   type: MyCollectionConnection.connectionType,
   args: pageable({}),
