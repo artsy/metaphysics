@@ -18,6 +18,11 @@ describe("myCollectionUpdateArtworkMutation", () => {
           artwork {
             medium
           }
+          artworkEdge {
+            node {
+              medium
+            }
+          }
         }
       }
     `
@@ -34,6 +39,11 @@ describe("myCollectionUpdateArtworkMutation", () => {
       myCollectionUpdateArtwork: {
         artwork: {
           medium: "Updated",
+        },
+        artworkEdge: {
+          node: {
+            medium: "Updated",
+          },
         },
       },
     })

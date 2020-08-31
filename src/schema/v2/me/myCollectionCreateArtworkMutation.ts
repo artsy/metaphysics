@@ -1,8 +1,12 @@
 import { GraphQLString, GraphQLList } from "graphql"
-import { mutationWithClientMutationId } from "graphql-relay"
+import {
+  mutationWithClientMutationId,
+  cursorForObjectInConnection,
+} from "graphql-relay"
 import { ArtworkType } from "schema/v2/artwork/index"
 import { ResolverContext } from "types/graphql"
 import { GraphQLNonNull } from "graphql"
+import { MyCollectionEdgeType } from "./myCollection"
 
 export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   any,
@@ -35,6 +39,20 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         if (myCollectionArtworkLoader) {
           return myCollectionArtworkLoader(id)
         }
+      },
+    },
+    artworkEdge: {
+      type: MyCollectionEdgeType,
+      resolve: async ({ id }, _, { myCollectionArtworkLoader }) => {
+        if (!myCollectionArtworkLoader) {
+          return null
+        }
+        const artwork = await myCollectionArtworkLoader(id)
+        const edge = {
+          cursor: cursorForObjectInConnection([artwork], artwork),
+          node: artwork,
+        }
+        return edge
       },
     },
   },

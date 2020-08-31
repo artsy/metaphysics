@@ -7136,6 +7136,7 @@ input MyCollectionCreateArtworkInput {
 
 type MyCollectionCreateArtworkPayload {
   artwork: Artwork
+  artworkEdge: MyCollectionEdge
   clientMutationId: String
 }
 

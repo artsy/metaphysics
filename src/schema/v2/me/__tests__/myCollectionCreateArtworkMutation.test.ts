@@ -17,6 +17,11 @@ describe("myCollectionCreateArtworkMutation", () => {
           artwork {
             medium
           }
+          artworkEdge {
+            node {
+              medium
+            }
+          }
         }
       }
     `
@@ -33,6 +38,11 @@ describe("myCollectionCreateArtworkMutation", () => {
       myCollectionCreateArtwork: {
         artwork: {
           medium: "Painting",
+        },
+        artworkEdge: {
+          node: {
+            medium: "Painting",
+          },
         },
       },
     })
