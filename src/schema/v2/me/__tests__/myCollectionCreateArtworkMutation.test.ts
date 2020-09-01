@@ -2,29 +2,61 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("myCollectionCreateArtworkMutation", () => {
-  it("creates an artwork", async () => {
-    const mutation = gql`
-      mutation {
-        myCollectionCreateArtwork(
-          input: {
-            artistIds: ["4d8b92b34eb68a1b2c0003f4"]
-            medium: "Painting"
-            dimensions: "20x20"
-            title: "hey now"
-            year: "1990"
-          }
-        ) {
-          artwork {
-            medium
-          }
-          artworkEdge {
-            node {
+  const mutation = gql`
+    mutation {
+      myCollectionCreateArtwork(
+        input: {
+          artistIds: ["4d8b92b34eb68a1b2c0003f4"]
+          medium: "Painting"
+          dimensions: "20x20"
+          title: "hey now"
+          year: "1990"
+        }
+      ) {
+        artworkOrError {
+          ... on MyCollectionArtworkMutationSuccess {
+            artwork {
               medium
+            }
+            artworkEdge {
+              node {
+                medium
+              }
+            }
+          }
+          ... on MyCollectionArtworkMutationFailure {
+            mutationError {
+              message
             }
           }
         }
       }
-    `
+    }
+  `
+
+  it("returns an error", async () => {
+    const context = {
+      myCollectionCreateArtworkLoader: () =>
+        Promise.reject(
+          new Error(
+            `https://stagingapi.artsy.net/api/v1/my_collection?id=foo - {"error":"Error creating artwork"}`
+          )
+        ),
+    }
+
+    const data = await runAuthenticatedQuery(mutation, context)
+    expect(data).toEqual({
+      myCollectionCreateArtwork: {
+        artworkOrError: {
+          mutationError: {
+            message: "Error creating artwork",
+          },
+        },
+      },
+    })
+  })
+
+  it("creates an artwork", async () => {
     const context = {
       myCollectionCreateArtworkLoader: () => Promise.resolve({ id: "foo" }),
       myCollectionArtworkLoader: () =>
@@ -36,12 +68,14 @@ describe("myCollectionCreateArtworkMutation", () => {
     const data = await runAuthenticatedQuery(mutation, context)
     expect(data).toEqual({
       myCollectionCreateArtwork: {
-        artwork: {
-          medium: "Painting",
-        },
-        artworkEdge: {
-          node: {
+        artworkOrError: {
+          artwork: {
             medium: "Painting",
+          },
+          artworkEdge: {
+            node: {
+              medium: "Painting",
+            },
           },
         },
       },

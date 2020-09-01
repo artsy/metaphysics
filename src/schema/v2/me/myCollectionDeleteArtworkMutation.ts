@@ -1,34 +1,19 @@
-import { GraphQLString, GraphQLList, GraphQLNonNull } from "graphql"
+import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { formatGravityError } from "lib/gravityErrorHandler"
 
-export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
+export const myCollectionDeleteArtworkMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "MyCollectionUpdateArtwork",
-  description: "Update an artwork in my collection",
+  name: "MyCollectionDeleteArtwork",
+  description: "Deletes an artwork from my collection",
   inputFields: {
     artworkId: {
       type: new GraphQLNonNull(GraphQLString),
-    },
-    artistIds: {
-      type: new GraphQLList(GraphQLString),
-    },
-    dimensions: {
-      type: GraphQLString,
-    },
-    medium: {
-      type: GraphQLString,
-    },
-    title: {
-      type: GraphQLString,
-    },
-    year: {
-      type: GraphQLString,
     },
   },
   outputFields: {
@@ -38,28 +23,28 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkId, artistIds, dimensions, medium, title, year },
-    { myCollectionUpdateArtworkLoader }
+    { artworkId },
+    { myCollectionDeleteArtworkLoader }
   ) => {
-    if (!myCollectionUpdateArtworkLoader) {
+    if (!myCollectionDeleteArtworkLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const response = await myCollectionUpdateArtworkLoader(artworkId, {
-        artist_ids: artistIds,
-        dimensions,
-        medium,
-        title,
-        year,
-      })
+      const response = await myCollectionDeleteArtworkLoader(artworkId)
+
+      // Response from DELETE isn't internalID of deleted artwork and as such
+      // we don't want to match on the MyCollectionArtworkMutationSuccess  type,
+      // which looks for an `id` property.
+      delete response.id
 
       return {
         ...response,
-        id: artworkId,
+        artworkId: artworkId,
       }
     } catch (error) {
       const formattedErr = formatGravityError(error)
+
       if (formattedErr) {
         return { ...formattedErr, _type: "GravityMutationError" }
       } else {
