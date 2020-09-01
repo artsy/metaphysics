@@ -1,12 +1,9 @@
 import { GraphQLString, GraphQLList } from "graphql"
-import {
-  mutationWithClientMutationId,
-  cursorForObjectInConnection,
-} from "graphql-relay"
-import { ArtworkType } from "schema/v2/artwork/index"
+import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { GraphQLNonNull } from "graphql"
-import { MyCollectionEdgeType } from "./myCollection"
+import { MyCollectionArtworkMutationType } from "./myCollection"
+import { formatGravityError } from "lib/gravityErrorHandler"
 
 export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   any,
@@ -33,30 +30,12 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    artwork: {
-      type: ArtworkType,
-      resolve: ({ id }, _, { myCollectionArtworkLoader }) => {
-        if (myCollectionArtworkLoader) {
-          return myCollectionArtworkLoader(id)
-        }
-      },
-    },
-    artworkEdge: {
-      type: MyCollectionEdgeType,
-      resolve: async ({ id }, _, { myCollectionArtworkLoader }) => {
-        if (!myCollectionArtworkLoader) {
-          return null
-        }
-        const artwork = await myCollectionArtworkLoader(id)
-        const edge = {
-          cursor: cursorForObjectInConnection([artwork], artwork),
-          node: artwork,
-        }
-        return edge
-      },
+    artworkOrError: {
+      type: MyCollectionArtworkMutationType,
+      resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: (
+  mutateAndGetPayload: async (
     { artistIds, dimensions, medium, title, year },
     { myCollectionCreateArtworkLoader }
   ) => {
@@ -64,16 +43,23 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       return new Error("You need to be signed in to perform this action")
     }
 
-    return myCollectionCreateArtworkLoader({
-      artist_ids: artistIds,
-      dimensions,
-      medium,
-      title,
-      year,
-    }).then(({ id }) => {
-      return {
-        id,
+    try {
+      const response = await myCollectionCreateArtworkLoader({
+        artist_ids: artistIds,
+        dimensions,
+        medium,
+        title,
+        year,
+      })
+
+      return response
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
       }
-    })
+    }
   },
 })

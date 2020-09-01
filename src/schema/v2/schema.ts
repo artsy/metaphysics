@@ -96,6 +96,7 @@ import { Shows } from "./shows"
 import PartnerArtworks from "./partnerArtworks"
 import Image from "./image"
 import VanityURLEntity from "./vanityURLEntity"
+import { myCollectionDeleteArtworkMutation } from "./me/myCollectionDeleteArtworkMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -194,6 +195,7 @@ export default new GraphQLSchema({
       followShow: FollowShow,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
+      myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       saveArtwork: saveArtworkMutation,
       sendConfirmationEmail: sendConfirmationEmailMutation,

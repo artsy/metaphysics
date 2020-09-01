@@ -1,7 +1,11 @@
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
+import {
+  connectionFromArraySlice,
+  connectionFromArray,
+  cursorForObjectInConnection,
+} from "graphql-relay"
 
 import { connectionWithCursorInfo } from "../fields/pagination"
 import { ArtworkType } from "../artwork"
@@ -11,7 +15,10 @@ import {
   GraphQLNonNull,
   GraphQLString,
   GraphQLBoolean,
+  GraphQLObjectType,
+  GraphQLUnionType,
 } from "graphql"
+import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 
 const MyCollectionConnection = connectionWithCursorInfo({
   name: "MyCollection",
@@ -70,3 +77,80 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       })
   },
 }
+
+/**
+ * Mutations
+ */
+
+const MyCollectionArtworkMutationSuccessType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "MyCollectionArtworkMutationSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    artwork: {
+      type: ArtworkType,
+      resolve: ({ id }, _, { myCollectionArtworkLoader }) => {
+        if (myCollectionArtworkLoader) {
+          return myCollectionArtworkLoader(id)
+        }
+      },
+    },
+    artworkEdge: {
+      type: MyCollectionEdgeType,
+      resolve: async ({ id }, _, { myCollectionArtworkLoader }) => {
+        if (!myCollectionArtworkLoader) {
+          return null
+        }
+        const artwork = await myCollectionArtworkLoader(id)
+        const edge = {
+          cursor: cursorForObjectInConnection([artwork], artwork),
+          node: artwork,
+        }
+        return edge
+      },
+    },
+  }),
+})
+
+const MyCollectionArtworkMutationDeleteSuccess = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "MyCollectionArtworkMutationDeleteSuccess",
+  isTypeOf: (data) => {
+    return data.name === "My Collection"
+  },
+  fields: () => ({
+    success: {
+      type: GraphQLBoolean,
+      resolve: () => true,
+    },
+  }),
+})
+
+const MyCollectionArtworkMutationFailureType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "MyCollectionArtworkMutationFailure",
+  isTypeOf: (data) => {
+    return data._type === "GravityMutationError"
+  },
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+export const MyCollectionArtworkMutationType = new GraphQLUnionType({
+  name: "MyCollectionArtworkMutationType",
+  types: [
+    MyCollectionArtworkMutationSuccessType,
+    MyCollectionArtworkMutationDeleteSuccess,
+    MyCollectionArtworkMutationFailureType,
+  ],
+})

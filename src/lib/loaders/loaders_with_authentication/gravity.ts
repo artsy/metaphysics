@@ -191,6 +191,14 @@ export default (accessToken, userID, opts) => {
       },
       { method: "PUT" }
     ),
+    myCollectionDeleteArtworkLoader: gravityLoader(
+      (id) => `my-collection/artworks/${id}`,
+      {
+        user_id: userID,
+        private: true,
+      },
+      { method: "DELETE" }
+    ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     partnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,
