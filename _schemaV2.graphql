@@ -6755,6 +6755,7 @@ type Me implements Node {
     before: String
     first: Int
     last: Int
+    sort: ArtworkSorts
   ): MyCollectionConnection
   name: String
   orders(
@@ -7114,6 +7115,10 @@ type Mutation {
   ): UpdateViewingRoomSubsectionsPayload
 }
 
+type MyCollectionArtworkMutationDeleteSuccess {
+  success: Boolean
+}
+
 type MyCollectionArtworkMutationFailure {
   mutationError: GravityMutationError
 }
@@ -7124,7 +7129,8 @@ type MyCollectionArtworkMutationSuccess {
 }
 
 union MyCollectionArtworkMutationType =
-    MyCollectionArtworkMutationFailure
+    MyCollectionArtworkMutationDeleteSuccess
+  | MyCollectionArtworkMutationFailure
   | MyCollectionArtworkMutationSuccess
 
 # A connection to a list of items.

@@ -19,6 +19,7 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
+import ArtworkSorts from "../sorts/artwork_sorts"
 
 const MyCollectionConnection = connectionWithCursorInfo({
   name: "MyCollection",
@@ -46,7 +47,9 @@ export const {
 
 export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   type: MyCollectionConnection.connectionType,
-  args: pageable({}),
+  args: pageable({
+    sort: ArtworkSorts,
+  }),
   resolve: ({ id: userId }, options, { myCollectionArtworksLoader }) => {
     if (!myCollectionArtworksLoader) {
       return null
