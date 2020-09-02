@@ -1,6 +1,6 @@
-import { GraphQLError, BREAK } from "graphql"
+import { GraphQLError, BREAK, ASTVisitor } from "graphql"
 
-export const principalFieldDirectiveValidation = (context) => {
+export const principalFieldDirectiveValidation = (context): ASTVisitor => {
   let directivesSeen = 0
   return {
     Directive(node) {

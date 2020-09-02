@@ -33,6 +33,7 @@ import { ErrorExtension } from "./extensions/errorExtension"
 import { LoggingExtension } from "./extensions/loggingExtension"
 import { principalFieldDirectiveExtension } from "./extensions/principalFieldDirectiveExtension"
 import { principalFieldDirectiveValidation } from "validations/principalFieldDirectiveValidation"
+import { NoSchemaIntrospectionCustomRule } from "validations/noSchemaIntrospectionCustomRule"
 import * as Sentry from "@sentry/node"
 
 const {
@@ -44,6 +45,7 @@ const {
   RESOLVER_TIMEOUT_MS,
   SENTRY_PRIVATE_DSN,
   ENABLE_APOLLO,
+  INTROSPECT_TOKEN,
 } = config
 
 const enableSentry = !!SENTRY_PRIVATE_DSN
@@ -220,7 +222,17 @@ function startApp(appSchema, path: string) {
           userAgent,
         }
 
-        const validationRules = [principalFieldDirectiveValidation]
+        const validationRules = [
+          principalFieldDirectiveValidation,
+
+          // require Authorization header for introspection (in production if configured)
+          ...(PRODUCTION_ENV &&
+          INTROSPECT_TOKEN &&
+          req.headers["authorization"] !== `Bearer ${INTROSPECT_TOKEN}`
+            ? [NoSchemaIntrospectionCustomRule]
+            : []),
+        ]
+
         if (QUERY_DEPTH_LIMIT)
           validationRules.push(depthLimit(QUERY_DEPTH_LIMIT))
 
