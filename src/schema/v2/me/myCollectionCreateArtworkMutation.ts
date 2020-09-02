@@ -16,16 +16,24 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     artistIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
     },
-    dimensions: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
     medium: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    title: {
+    width: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    height: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    depth: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+
+    // Optional
+    date: {
       type: GraphQLString,
     },
-    year: {
+    title: {
       type: GraphQLString,
     },
   },
@@ -36,7 +44,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artistIds, dimensions, medium, title, year },
+    { artistIds, ...rest },
     { myCollectionCreateArtworkLoader }
   ) => {
     if (!myCollectionCreateArtworkLoader) {
@@ -46,10 +54,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     try {
       const response = await myCollectionCreateArtworkLoader({
         artist_ids: artistIds,
-        dimensions,
-        medium,
-        title,
-        year,
+        ...rest,
       })
 
       return response

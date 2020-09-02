@@ -8,9 +8,11 @@ describe("myCollectionCreateArtworkMutation", () => {
         input: {
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
           medium: "Painting"
-          dimensions: "20x20"
+          width: "20"
+          height: "20"
+          depth: "20"
           title: "hey now"
-          year: "1990"
+          date: "1990"
         }
       ) {
         artworkOrError {
