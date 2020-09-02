@@ -18,16 +18,22 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     artistIds: {
       type: new GraphQLList(GraphQLString),
     },
-    dimensions: {
+    date: {
+      type: GraphQLString,
+    },
+    width: {
+      type: GraphQLString,
+    },
+    height: {
+      type: GraphQLString,
+    },
+    depth: {
       type: GraphQLString,
     },
     medium: {
       type: GraphQLString,
     },
     title: {
-      type: GraphQLString,
-    },
-    year: {
       type: GraphQLString,
     },
   },
@@ -38,7 +44,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkId, artistIds, dimensions, medium, title, year },
+    { artworkId, artistIds, ...rest },
     { myCollectionUpdateArtworkLoader }
   ) => {
     if (!myCollectionUpdateArtworkLoader) {
@@ -48,10 +54,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     try {
       const response = await myCollectionUpdateArtworkLoader(artworkId, {
         artist_ids: artistIds,
-        dimensions,
-        medium,
-        title,
-        year,
+        ...rest,
       })
 
       return {
