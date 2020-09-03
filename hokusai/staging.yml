@@ -174,8 +174,29 @@ spec:
       protocol: TCP
       name: https
       targetPort: nginx-https
+    - port: 3000
+      protocol: TCP
+      name: mp-http
+      targetPort: mp-http
   selector:
     app: metaphysics
     layer: application
     component: web
   type: ClusterIP
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: metaphysics
+  annotations:
+    nginx.ingress.kubernetes.io/whitelist-source-range: "{{ (cloudflareIpSourceRanges + kubernetesNetworkCIDR)|join(',') }}"
+spec:
+  rules:
+    - host: metaphysics-staging.artsy.net
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: metaphysics-web-internal
+              servicePort: mp-http
