@@ -36,9 +36,12 @@ async function updateSchemaFile(repo, dest = "data/schema.graphql") {
         execSync(`cp _schemaV2.graphql '${repoDest}'`)
         execSync("./node_modules/.bin/relay-compiler", { cwd: repoDir })
       }
-      execSync(`./node_modules/.bin/prettier --write ${dest}`, {
-        cwd: repoDir,
-      })
+      execSync(
+        `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier --write ${dest}`,
+        {
+          cwd: repoDir,
+        }
+      )
     },
   })
 }
@@ -52,6 +55,7 @@ async function main() {
     await updateSchemaFile("eigen")
     await updateSchemaFile("force")
     await updateSchemaFile("volt", "vendor/graphql/schema/metaphysics.json")
+    await updateSchemaFile("pulse", "vendor/graphql/schema/metaphysics.json")
   } catch (error) {
     console.error(error)
     process.exit(1)
