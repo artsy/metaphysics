@@ -5,9 +5,10 @@ import config from "config"
 
 const { DIFFUSION_API_BASE, DIFFUSION_TOKEN } = config
 
-export default (path, _accessToken, fetchOptions = {}) => {
+export default (path, accessToken, fetchOptions = {}) => {
   const headers = { Accept: "application/json" }
-  assign(headers, { Authorization: `Bearer ${DIFFUSION_TOKEN}` })
+  const token = accessToken || DIFFUSION_TOKEN
+  assign(headers, { Authorization: `Bearer ${token}` })
   return fetch(
     urljoin(DIFFUSION_API_BASE, path),
     assign({}, fetchOptions, { headers })
