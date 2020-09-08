@@ -18,6 +18,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     artistIds: {
       type: new GraphQLList(GraphQLString),
     },
+    category: {
+      type: GraphQLString,
+    },
     date: {
       type: GraphQLString,
     },

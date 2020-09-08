@@ -6,14 +6,15 @@ describe("myCollectionUpdateArtworkMutation", () => {
     mutation {
       myCollectionUpdateArtwork(
         input: {
-          artworkId: "foo"
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
-          medium: "Painting"
-          width: "20"
-          height: "20"
-          depth: "20"
-          title: "hey now"
+          artworkId: "foo"
+          category: "some strange category"
           date: "1990"
+          depth: "20"
+          height: "20"
+          medium: "Painting"
+          title: "hey now"
+          width: "20"
         }
       ) {
         artworkOrError {

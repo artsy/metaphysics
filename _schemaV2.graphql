@@ -7350,6 +7350,7 @@ type MyCollectionConnection {
 
 input MyCollectionCreateArtworkInput {
   artistIds: [String]!
+  category: String
   clientMutationId: String
   date: String
   depth: String!
@@ -7386,6 +7387,7 @@ type MyCollectionEdge {
 input MyCollectionUpdateArtworkInput {
   artistIds: [String]
   artworkId: String!
+  category: String
   clientMutationId: String
   date: String
   depth: String

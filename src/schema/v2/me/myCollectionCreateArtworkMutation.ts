@@ -30,6 +30,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
 
     // Optional
+    category: {
+      type: GraphQLString,
+    },
     date: {
       type: GraphQLString,
     },
