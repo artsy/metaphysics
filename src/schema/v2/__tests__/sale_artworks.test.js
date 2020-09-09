@@ -44,7 +44,10 @@ describe("Sale Artworks", () => {
         },
       },
     } = await execute(gravityResponse, query, {
-      saleArtworksAllLoader: () => Promise.resolve(gravityResponse),
+      saleArtworksAllLoader: ({ include_artworks_by_followed_artists }) => {
+        expect(include_artworks_by_followed_artists).toBeTruthy()
+        return Promise.resolve(gravityResponse)
+      },
     })
     expect(total).toEqual(totalCount)
     expect(edges.length).toEqual(hits.length)
@@ -275,6 +278,43 @@ describe("Sale Artworks", () => {
     expect(aggregations.length).toBeGreaterThan(0)
     aggregations.forEach((aggregation) => {
       expect(aggregation.counts.length).toBeGreaterThan(0)
+    })
+  })
+
+  it("works as a root field", async () => {
+    const hits = _.fill(Array(10), { id: "foo" })
+    const totalCount = hits.length * 2
+    const gravityResponse = {
+      hits,
+      aggregations: {
+        total: {
+          value: totalCount,
+        },
+      },
+    }
+    const query = gql`
+      {
+        saleArtworksConnection(saleID: "some-sale-id") {
+          edges {
+            node {
+              slug
+            }
+          }
+        }
+      }
+    `
+    expect.hasAssertions()
+    const {
+      saleArtworksConnection: { edges },
+    } = await execute(gravityResponse, query, {
+      saleArtworksFilterLoader: ({
+        include_artworks_by_followed_artists,
+        sale_id,
+      }) => {
+        expect(sale_id).toEqual("some-sale-id")
+        expect(include_artworks_by_followed_artists).toBeFalsy()
+        return Promise.resolve(gravityResponse)
+      },
     })
   })
 })
