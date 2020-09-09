@@ -226,8 +226,7 @@ function startApp(appSchema, path: string) {
           principalFieldDirectiveValidation,
 
           // require Authorization header for introspection (in production if configured)
-          ...(PRODUCTION_ENV &&
-          INTROSPECT_TOKEN &&
+          ...(INTROSPECT_TOKEN &&
           req.headers["authorization"] !== `Bearer ${INTROSPECT_TOKEN}`
             ? [NoSchemaIntrospectionCustomRule]
             : []),
