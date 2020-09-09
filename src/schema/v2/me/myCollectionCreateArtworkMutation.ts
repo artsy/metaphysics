@@ -19,15 +19,6 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     medium: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    width: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    height: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    depth: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
 
     // Optional
     category: {
@@ -36,7 +27,19 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     date: {
       type: GraphQLString,
     },
+    depth: {
+      type: GraphQLString,
+    },
+    height: {
+      type: GraphQLString,
+    },
+    metric: {
+      type: GraphQLString,
+    },
     title: {
+      type: GraphQLString,
+    },
+    width: {
       type: GraphQLString,
     },
   },

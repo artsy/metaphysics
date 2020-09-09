@@ -24,19 +24,22 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     date: {
       type: GraphQLString,
     },
-    width: {
+    depth: {
       type: GraphQLString,
     },
     height: {
       type: GraphQLString,
     },
-    depth: {
-      type: GraphQLString,
-    },
     medium: {
       type: GraphQLString,
     },
+    metric: {
+      type: GraphQLString,
+    },
     title: {
+      type: GraphQLString,
+    },
+    width: {
       type: GraphQLString,
     },
   },

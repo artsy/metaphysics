@@ -7353,11 +7353,12 @@ input MyCollectionCreateArtworkInput {
   category: String
   clientMutationId: String
   date: String
-  depth: String!
-  height: String!
+  depth: String
+  height: String
   medium: String!
+  metric: String
   title: String
-  width: String!
+  width: String
 }
 
 type MyCollectionCreateArtworkPayload {
@@ -7393,6 +7394,7 @@ input MyCollectionUpdateArtworkInput {
   depth: String
   height: String
   medium: String
+  metric: String
   title: String
   width: String
 }

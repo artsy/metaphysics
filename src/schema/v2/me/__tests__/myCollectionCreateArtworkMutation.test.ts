@@ -12,6 +12,7 @@ describe("myCollectionCreateArtworkMutation", () => {
           depth: "20"
           height: "20"
           medium: "Painting"
+          metric: "in"
           title: "hey now"
           width: "20"
         }
