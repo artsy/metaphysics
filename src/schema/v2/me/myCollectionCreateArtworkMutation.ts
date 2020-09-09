@@ -19,21 +19,27 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     medium: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    width: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    height: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    depth: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
 
     // Optional
+    category: {
+      type: GraphQLString,
+    },
     date: {
       type: GraphQLString,
     },
+    depth: {
+      type: GraphQLString,
+    },
+    height: {
+      type: GraphQLString,
+    },
+    metric: {
+      type: GraphQLString,
+    },
     title: {
+      type: GraphQLString,
+    },
+    width: {
       type: GraphQLString,
     },
   },

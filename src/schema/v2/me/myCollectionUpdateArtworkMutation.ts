@@ -18,22 +18,28 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     artistIds: {
       type: new GraphQLList(GraphQLString),
     },
+    category: {
+      type: GraphQLString,
+    },
     date: {
-      type: GraphQLString,
-    },
-    width: {
-      type: GraphQLString,
-    },
-    height: {
       type: GraphQLString,
     },
     depth: {
       type: GraphQLString,
     },
+    height: {
+      type: GraphQLString,
+    },
     medium: {
       type: GraphQLString,
     },
+    metric: {
+      type: GraphQLString,
+    },
     title: {
+      type: GraphQLString,
+    },
+    width: {
       type: GraphQLString,
     },
   },
