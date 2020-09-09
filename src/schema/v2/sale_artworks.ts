@@ -115,7 +115,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     _root,
     {
       // artistIDs,
-      // includeArtworksByFollowedArtists,
+      includeArtworksByFollowedArtists = true,
       liveSale,
       isAuction,
       geneIDs,
@@ -127,8 +127,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
   ) => {
     const args = {
       // artist_ids: artistIDs,
-      // include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
-      include_artworks_by_followed_artists: true,
+      include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
       live_sale: liveSale,
       is_auction: isAuction,
       gene_ids: geneIDs,
