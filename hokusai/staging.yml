@@ -59,37 +59,6 @@ spec:
             preStop:
               exec:
                 command: ["sh", "-c", "sleep 10"]
-        - name: metaphysics-nginx
-          image: artsy/docker-nginx:1.14.2
-          ports:
-            - name: nginx-http
-              containerPort: 80
-            - name: nginx-https
-              containerPort: 443
-          readinessProbe:
-            tcpSocket:
-              port: nginx-http
-            initialDelaySeconds: 5
-            periodSeconds: 15
-            timeoutSeconds: 10
-          lifecycle:
-            preStop:
-              exec:
-                command: ["sh", "-c", "sleep 5 && /usr/sbin/nginx -s quit"]
-          env:
-            - name: "NGINX_DEFAULT_CONF"
-              valueFrom:
-                configMapKeyRef:
-                  name: nginx-config
-                  key: metaphysics
-          volumeMounts:
-            - name: nginx-secrets
-              mountPath: /etc/nginx/ssl
-      volumes:
-        - name: nginx-secrets
-          secret:
-            secretName: nginx-secrets
-            defaultMode: 420
       dnsPolicy: ClusterFirst
       dnsConfig:
         options:
@@ -128,52 +97,10 @@ metadata:
     app: metaphysics
     layer: application
     component: web
-  name: metaphysics-web
-  namespace: default
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ artsyNetWildcardSSLCert }}
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
-    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
-    service.beta.kubernetes.io/aws-load-balancer-connection-draining-enabled: "true"
-    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
-spec:
-  ports:
-    - port: 443
-      protocol: TCP
-      name: https
-      targetPort: nginx-http
-    - port: 80
-      protocol: TCP
-      name: http
-      targetPort: nginx-http
-  selector:
-    app: metaphysics
-    layer: application
-    component: web
-  sessionAffinity: None
-  type: LoadBalancer
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: metaphysics
-    layer: application
-    component: web
   name: metaphysics-web-internal
   namespace: default
 spec:
   ports:
-    - port: 80
-      protocol: TCP
-      name: http
-      targetPort: nginx-http
-    - port: 443
-      protocol: TCP
-      name: https
-      targetPort: nginx-https
     - port: 3000
       protocol: TCP
       name: mp-http
