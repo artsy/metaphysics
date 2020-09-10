@@ -55,7 +55,7 @@ const SaleArtworkCounts = {
   resolve: (artist) => artist,
 }
 
-const SaleArtworksConnectionType = connectionWithCursorInfo({
+export const SaleArtworksConnectionType = connectionWithCursorInfo({
   name: "SaleArtworks",
   nodeType: ArtworkType,
   edgeType: SaleArtworkType,
@@ -71,12 +71,10 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
   ResolverContext
 > = {
   args: pageable({
-    // TODO: For now this will be the default as it's only being used under `me`
-    //       If this gets used elsewhere in the future, be sure to *not* expose
-    //       these arguments under `me`, as they make no sense there.
-    //
     includeArtworksByFollowedArtists: {
       type: GraphQLBoolean,
+      description:
+        "When called under the Me field, this defaults to true. Otherwise it defaults to false",
     },
     artistIDs: {
       type: new GraphQLList(GraphQLString),
@@ -114,8 +112,8 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
   resolve: async (
     _root,
     {
-      // artistIDs,
-      // includeArtworksByFollowedArtists,
+      artistIDs,
+      includeArtworksByFollowedArtists: requestIncludeArtworksByFollowedArtists,
       liveSale,
       isAuction,
       geneIDs,
@@ -123,12 +121,27 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       saleID,
       ..._args
     },
-    { saleArtworksFilterLoader, saleArtworksAllLoader }
+    { saleArtworksFilterLoader, saleArtworksAllLoader },
+    info
   ) => {
+    /*
+    This is kind of weird, so here's what happened. During the v1 -> v2 migration,
+    this type was only accessible under `Me` and includeArtworksByFollowedArtists
+    was always true. A TODO (see below) was left to clean this up, but before it
+    could be cleaned up, the type was already being used elsewhere. We need to keep
+    the schema backwards-compatible while also allowing non-`Me` uses to have undefined
+    for this argument. So we use this workaround.
+
+    See: https://github.com/artsy/metaphysics/blob/e1c227edc16ac0f38ab28db73c32c26bd8b9d5d7/src/schema/v2/sale_artworks.ts#L74-L77
+     */
+    let includeArtworksByFollowedArtists = requestIncludeArtworksByFollowedArtists
+    if (info.parentType.name === "Me") {
+      includeArtworksByFollowedArtists = true
+    }
+
     const args = {
-      // artist_ids: artistIDs,
-      // include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
-      include_artworks_by_followed_artists: true,
+      artist_ids: artistIDs,
+      include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
       live_sale: liveSale,
       is_auction: isAuction,
       gene_ids: geneIDs,
