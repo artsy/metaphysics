@@ -30,7 +30,7 @@ export const isLiveOpen = (sale) => {
 }
 
 const hasEnded = (end_at) => {
-  return end_at && end_at < moment()
+  return end_at && moment(end_at) < moment()
 }
 
 export async function displayTimelyAt({ sale, meBiddersLoader }) {
@@ -44,7 +44,7 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
   // Sale requires registration.
   // Display 'register by' label if there is an unregistered bidder
   // and the registration period is open.
-  if (registration_ends_at > moment()) {
+  if (registration_ends_at && moment(registration_ends_at) > moment()) {
     let isRegistered = false
 
     // Check if there is a logged in user which is registered.
