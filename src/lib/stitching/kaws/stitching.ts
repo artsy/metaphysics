@@ -110,6 +110,9 @@ export const kawsStitchingEnvironmentV2 = (
     extend type Artist {
       marketingCollections(slugs: [String!], category: String, randomizationSeed: String, size: Int, isFeaturedArtistContent: Boolean, showOnEditorial: Boolean): [MarketingCollection]
     }
+    extend type Fair {
+      marketingCollections(size: Int): [MarketingCollection]!
+    }
     extend type Viewer {
       marketingCollections(slugs: [String!], category: String, randomizationSeed: String, size: Int, isFeaturedArtistContent: Boolean, showOnEditorial: Boolean, artistID: String): [MarketingCollection]
     }
@@ -145,6 +148,29 @@ export const kawsStitchingEnvironmentV2 = (
 
               args: {
                 artistID,
+                ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Fair: {
+        marketingCollections: {
+          fragment: `
+          ... on Fair {
+            kawsCollectionSlugs
+          }
+        `,
+          resolve: ({ kawsCollectionSlugs: slugs }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: kawsSchema,
+              operation: "query",
+              fieldName: "marketingCollections",
+
+              args: {
+                slugs,
                 ...args,
               },
               context,

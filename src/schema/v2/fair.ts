@@ -200,6 +200,10 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           return now.isAfter(activeStart)
         },
       },
+      kawsCollectionSlugs: {
+        type: new GraphQLNonNull(GraphQLList(GraphQLString)),
+        resolve: ({ kaws_collection_slugs }) => kaws_collection_slugs,
+      },
       links: markdown(),
       mobileImage: {
         /**
