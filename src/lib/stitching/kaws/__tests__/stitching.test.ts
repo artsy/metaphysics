@@ -59,5 +59,26 @@ describe("KAWS Stitching", () => {
         })
       )
     })
+
+    it("passes through slugs when stitched under a fair", async () => {
+      const { resolvers } = await getKawsStitchedSchema()
+      const marketingCollectionsResolver =
+        resolvers.Fair.marketingCollections.resolve
+      const mergeInfo = { delegateToSchema: jest.fn() }
+
+      await marketingCollectionsResolver(
+        { kawsCollectionSlugs: ["catty-collection"] },
+        {},
+        {},
+        { mergeInfo }
+      )
+
+      expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+        expect.objectContaining({
+          args: { slugs: ["catty-collection"] },
+          fieldName: "marketingCollections",
+        })
+      )
+    })
   })
 })
