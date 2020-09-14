@@ -8240,7 +8240,7 @@ react-is@^16.8.4:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.6.tgz#5bbc1e2d29141c9fbdfed456343fe2bc430a6a16"
   integrity sha512-aUk3bHfZ2bRSVFFbbeVS4i+lNPZr3/WM5jT2J5omUVV1zzcs1nAaf3l51ctA5FFvCRbhrH0bdAsRRQddFJZPtA==
 
-react-relay-network-modern@^4.7.7:
+react-relay-network-modern@4.7.7:
   version "4.7.7"
   resolved "https://registry.yarnpkg.com/react-relay-network-modern/-/react-relay-network-modern-4.7.7.tgz#e0e9c42a6af0066a934c88328b8510091a8e5803"
   integrity sha512-QzuZZwUhzVhNzgn7ACh8l0ckSxbFXzh32YFVa2nqTK/6n9eGx1a5e2ezvbGv1hRywYcXJ+7bRAdBTjzz/ymMHQ==
@@ -8480,7 +8480,7 @@ relay-cursor-paging@0.2.0:
   dependencies:
     "@types/graphql-relay" "^0.4.0"
 
-relay-runtime@^10.0.1:
+relay-runtime@10.0.1:
   version "10.0.1"
   resolved "https://registry.yarnpkg.com/relay-runtime/-/relay-runtime-10.0.1.tgz#c83bd7e6e37234ece2a62a254e37dd199a4f74f9"
   integrity sha512-sPYiuosq+5gQ7zXs2EKg2O8qRSsF8vmMYo6SIHEi4juBLg1HrdTEvqcaNztc2ZFmUc4vYZpTbbS4j/TZCtHuyA==
