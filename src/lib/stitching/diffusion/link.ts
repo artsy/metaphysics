@@ -19,8 +19,14 @@ export const createDiffusionLink = () => {
 
   const authMiddleware = setContext(
     (_request, { graphqlContext }: { graphqlContext: ResolverContext }) => {
+      const tokenLoader = graphqlContext && graphqlContext.diffusionTokenLoader
       const headers = {
         ...(graphqlContext && requestIDHeaders(graphqlContext.requestIDs)),
+      }
+      if (tokenLoader) {
+        return tokenLoader().then(({ token }) => ({
+          headers: Object.assign(headers, { Authorization: `Bearer ${token}` }),
+        }))
       }
       return { headers }
     }
