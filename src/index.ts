@@ -26,6 +26,7 @@ import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiterMiddleware } from "./lib/rateLimiter"
 import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
+import { graphqlBatchHTTPWrapper } from "react-relay-network-modern"
 
 import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
@@ -183,75 +184,74 @@ function startApp(appSchema, path: string) {
     server.applyMiddleware({ app, path })
   } else {
     const graphqlHTTP = require("express-graphql")
-    app.use(
-      graphqlHTTP((req, res, params) => {
-        const accessToken = req.headers["x-access-token"] as string | undefined
-        const appToken = req.headers["x-xapp-token"] as string | undefined
-        const userID = req.headers["x-user-id"] as string | undefined
-        const timezone = req.headers["x-timezone"] as string | undefined
-        const userAgent = req.headers["user-agent"]
+    const graphqlServer = graphqlHTTP((req, res, params) => {
+      const accessToken = req.headers["x-access-token"] as string | undefined
+      const appToken = req.headers["x-xapp-token"] as string | undefined
+      const userID = req.headers["x-user-id"] as string | undefined
+      const timezone = req.headers["x-timezone"] as string | undefined
+      const userAgent = req.headers["user-agent"]
 
-        const { requestIDs } = res.locals
-        const requestID = requestIDs.requestID
+      const { requestIDs } = res.locals
+      const requestID = requestIDs.requestID
 
-        if (enableRequestLogging) {
-          fetchLoggerSetup(requestID)
-        }
+      if (enableRequestLogging) {
+        fetchLoggerSetup(requestID)
+      }
 
-        // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
-        // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-        let defaultTimezone
-        if (timezone && moment.tz.zone(timezone)) {
-          defaultTimezone = timezone
-        }
+      // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
+      // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      let defaultTimezone
+      if (timezone && moment.tz.zone(timezone)) {
+        defaultTimezone = timezone
+      }
 
-        const loaders = createLoaders(accessToken, userID, {
-          requestIDs,
-          userAgent,
-          appToken,
-        })
-
-        const context: ResolverContext = {
-          accessToken,
-          userID,
-          defaultTimezone,
-          ...loaders,
-          // For stitching purposes
-          exchangeSchema,
-          requestIDs,
-          userAgent,
-        }
-
-        const validationRules = [
-          principalFieldDirectiveValidation,
-
-          // require Authorization header for introspection (in production if configured)
-          ...(INTROSPECT_TOKEN &&
-          req.headers["authorization"] !== `Bearer ${INTROSPECT_TOKEN}`
-            ? [NoSchemaIntrospectionCustomRule]
-            : []),
-        ]
-
-        if (QUERY_DEPTH_LIMIT)
-          validationRules.push(depthLimit(QUERY_DEPTH_LIMIT))
-
-        return {
-          schema: appSchema,
-          graphiql: !PRODUCTION_ENV,
-          context,
-          rootValue: {},
-          customFormatErrorFn: graphqlErrorHandler(enableSentry, {
-            req,
-            // Why the checking on params? Do we reach this code if params is falsy?
-            variables: params && params.variables,
-            query: (params && params.query)!,
-          }),
-          validationRules,
-          extensions: ({ document, result }) =>
-            createExtensions(document, result, requestID),
-        }
+      const loaders = createLoaders(accessToken, userID, {
+        requestIDs,
+        userAgent,
+        appToken,
       })
-    )
+
+      const context: ResolverContext = {
+        accessToken,
+        userID,
+        defaultTimezone,
+        ...loaders,
+        // For stitching purposes
+        exchangeSchema,
+        requestIDs,
+        userAgent,
+      }
+
+      const validationRules = [
+        principalFieldDirectiveValidation,
+
+        // require Authorization header for introspection (in production if configured)
+        ...(INTROSPECT_TOKEN &&
+        req.headers["authorization"] !== `Bearer ${INTROSPECT_TOKEN}`
+          ? [NoSchemaIntrospectionCustomRule]
+          : []),
+      ]
+      if (QUERY_DEPTH_LIMIT) validationRules.push(depthLimit(QUERY_DEPTH_LIMIT))
+
+      return {
+        schema: appSchema,
+        graphiql: !PRODUCTION_ENV,
+        context,
+        rootValue: {},
+        customFormatErrorFn: graphqlErrorHandler(enableSentry, {
+          req,
+          // Why the checking on params? Do we reach this code if params is falsy?
+          variables: params && params.variables,
+          query: (params && params.query)!,
+        }),
+        validationRules,
+        extensions: ({ document, result }) =>
+          createExtensions(document, result, requestID),
+      }
+    })
+
+    app.use("/batch", bodyParser.json(), graphqlBatchHTTPWrapper(graphqlServer))
+    app.use(graphqlServer)
   }
 
   if (enableSentry) {
