@@ -173,6 +173,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ cultural_maker }) => cultural_maker,
       },
       date: { type: GraphQLString },
+      depth: {
+        description: "The depth as expressed by the original input metric",
+        type: GraphQLString,
+      },
       description: markdown(({ blurb }) => blurb),
       dimensions: Dimensions,
       embed: {
@@ -244,6 +248,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             partner && partner.name,
           ]).join(", ")
         },
+      },
+      height: {
+        description: "The height as expressed by the original input metric",
+        type: GraphQLString,
       },
       highlights: {
         type: new GraphQLList(ArtworkHighlightType),
@@ -477,6 +485,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       manufacturer: markdown(),
       medium: { type: GraphQLString },
       meta: Meta,
+      metric: {
+        description:
+          "The unit of length of the artwork, expressed in `in` or `cm`",
+        type: GraphQLString,
+      },
       myLotStanding: {
         type: new GraphQLList(new GraphQLNonNull(LotStandingType)),
         args: { live: { type: GraphQLBoolean, defaultValue: null } },
@@ -865,6 +878,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             return null
           }
         },
+      },
+      width: {
+        description: "The width as expressed by the original input metric",
+        type: GraphQLString,
       },
       widthCm: {
         description:
