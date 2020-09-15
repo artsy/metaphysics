@@ -82,8 +82,6 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
 
     return myCollectionArtworksLoader(gravityOptions)
       .then(({ body, headers }) => {
-        console.log(body)
-
         return connectionFromArraySlice(body, options, {
           arrayLength: parseInt(headers["x-total-count"] || "0", 10),
           sliceStart: gravityOptions.offset,
