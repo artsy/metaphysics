@@ -343,6 +343,17 @@ export const gravityStitchingEnvironment = (
               ids = [null]
             }
 
+            // We can't send more than 100 artwork ids to /api/v1/artworks
+            let limit = 100
+            // Allow override of "first" and "last", but not if it's greater than 100
+            const arg_limit = args["first"] || args["last"]
+            if (arg_limit < limit) {
+              limit = arg_limit
+            }
+            if (limit < ids.length) {
+              ids = ids.slice(0, limit)
+            }
+
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
               operation: "query",
