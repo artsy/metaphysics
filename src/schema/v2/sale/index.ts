@@ -157,6 +157,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           }))
         },
       },
+      collectPayments: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: ({ collect_payments }) => collect_payments,
+      },
       coverImage: Image,
       currency: { type: GraphQLString },
       description: { type: GraphQLString },
