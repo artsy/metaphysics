@@ -14,6 +14,7 @@ describe("Sale type", () => {
   const sale: any = {
     id: "foo-foo",
     _id: "123",
+    collect_payments: true,
     currency: "$",
     is_artsy_licensed: false,
     is_auction: true,
@@ -57,6 +58,7 @@ describe("Sale type", () => {
       {
         sale(id: "foo-foo") {
           internalID
+          collectPayments
           isArtsyLicensed
           isPreview
           isOpen
@@ -76,6 +78,7 @@ describe("Sale type", () => {
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
+          collectPayments: true,
           isArtsyLicensed: false,
           isPreview: false,
           isOpen: false,
@@ -95,6 +98,7 @@ describe("Sale type", () => {
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
+          collectPayments: true,
           isArtsyLicensed: false,
           isPreview: true,
           isOpen: false,
@@ -115,6 +119,7 @@ describe("Sale type", () => {
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
+          collectPayments: true,
           isArtsyLicensed: false,
           isPreview: false,
           isOpen: true,
@@ -135,6 +140,7 @@ describe("Sale type", () => {
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
+          collectPayments: true,
           isArtsyLicensed: false,
           isPreview: false,
           isOpen: true,
@@ -155,6 +161,7 @@ describe("Sale type", () => {
       expect(await execute(query)).toEqual({
         sale: {
           internalID: "123",
+          collectPayments: true,
           isArtsyLicensed: false,
           isPreview: false,
           isOpen: true,
