@@ -43,6 +43,7 @@ export const myCollectionDeleteArtworkMutation = mutationWithClientMutationId<
         artworkId: artworkId,
       }
     } catch (error) {
+      console.error(error)
       const formattedErr = formatGravityError(error)
 
       if (formattedErr) {
