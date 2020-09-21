@@ -9,6 +9,8 @@ describe("myCollectionUpdateArtworkMutation", () => {
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
           artworkId: "foo"
           category: "some strange category"
+          costCurrencyCode: "USD"
+          costMinor: 200
           date: "1990"
           depth: "20"
           height: "20"

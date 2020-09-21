@@ -117,8 +117,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             limit: size,
           }).then(({ results }) => results),
       },
-      availability: { type: GraphQLString },
-      category: { type: GraphQLString },
       attributionClass: {
         type: AttributionClass,
         description: "Attribution class object",
@@ -128,6 +126,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      availability: { type: GraphQLString },
+      category: { type: GraphQLString },
       collectingInstitution: {
         type: GraphQLString,
         resolve: ({ collecting_institution }) =>
@@ -168,6 +168,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       context: Context,
       contextGrids: ArtworkContextGrids,
+      costCurrencyCode: {
+        description: "The currency code used to pay for the artwork",
+        type: GraphQLString,
+        resolve: ({ cost_currency_code }) => cost_currency_code,
+      },
+      costMinor: {
+        description: "The amount paid for the artwork, in cents",
+        type: GraphQLInt,
+        resolve: ({ cost_minor }) => cost_minor,
+      },
       culturalMaker: {
         type: GraphQLString,
         resolve: ({ cultural_maker }) => cultural_maker,

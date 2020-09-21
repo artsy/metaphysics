@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLList } from "graphql"
+import { GraphQLString, GraphQLList, GraphQLInt } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { GraphQLNonNull } from "graphql"
@@ -23,6 +23,12 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     // Optional
     category: {
       type: GraphQLString,
+    },
+    costCurrencyCode: {
+      type: GraphQLString,
+    },
+    costMinor: {
+      type: GraphQLInt,
     },
     date: {
       type: GraphQLString,
@@ -50,7 +56,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artistIds, ...rest },
+    { artistIds, costCurrencyCode, costMinor, ...rest },
     { myCollectionCreateArtworkLoader }
   ) => {
     if (!myCollectionCreateArtworkLoader) {
@@ -60,12 +66,15 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     try {
       const response = await myCollectionCreateArtworkLoader({
         artist_ids: artistIds,
+        cost_currency_code: costCurrencyCode,
+        cost_minor: costMinor,
         ...rest,
       })
 
       return response
     } catch (error) {
       const formattedErr = formatGravityError(error)
+
       if (formattedErr) {
         return { ...formattedErr, _type: "GravityMutationError" }
       } else {
