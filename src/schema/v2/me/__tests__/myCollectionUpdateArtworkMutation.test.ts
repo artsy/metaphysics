@@ -11,6 +11,8 @@ describe("myCollectionUpdateArtworkMutation", () => {
           category: "some strange category"
           costCurrencyCode: "USD"
           costMinor: 200
+          editionNumber: 5
+          editionSize: "100x100x100"
           date: "1990"
           depth: "20"
           height: "20"
