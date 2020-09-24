@@ -36,7 +36,10 @@ import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import { SavedArtworks } from "./savedArtworks"
 import { ResolverContext } from "types/graphql"
 import { SaleArtworksConnectionField } from "../sale_artworks"
-import { IdentityVerification } from "./identity_verification"
+import {
+  IdentityVerification,
+  PendingIdentityVerification,
+} from "./identity_verification"
 import { MyCollection } from "./myCollection"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
@@ -123,6 +126,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ paddle_number }) => paddle_number,
     },
+    pendingIdentityVerification: PendingIdentityVerification,
     phone: {
       type: GraphQLString,
     },

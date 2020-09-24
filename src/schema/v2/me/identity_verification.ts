@@ -7,6 +7,8 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "schema/v2/object_identification"
 import dateField, { date } from "../fields/date"
+import config from "config"
+const { FORCE_URL } = config
 
 export type IdentityVerificationGravityResponse = {
   id: string
@@ -47,6 +49,11 @@ const IdentityVerificationType = new GraphQLObjectType<
       resolve: ({ user_id }) => user_id,
     },
     invitationExpiresAt: dateFieldForVerificationExpiresAt,
+    flowURL: {
+      description: "Verification flow entry point",
+      type: GraphQLString,
+      resolve: ({ id }) => `${FORCE_URL}/identity-verification/${id}`,
+    },
   },
 })
 
@@ -62,5 +69,20 @@ export const IdentityVerification: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: (_root, { id }, { identityVerificationLoader }) => {
     if (!identityVerificationLoader) return null
     return identityVerificationLoader(id)
+  },
+}
+
+export const PendingIdentityVerification: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
+  type: IdentityVerificationType,
+  description:
+    "The user's most current pending identity verification, if it exists",
+  resolve: (user, _args, { identityVerificationLoader }) => {
+    const { pending_identity_verification_id } = user
+    if (!(identityVerificationLoader && pending_identity_verification_id))
+      return null
+    return identityVerificationLoader(user.pending_identity_verification_id)
   },
 }
