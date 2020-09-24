@@ -33,6 +33,12 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     depth: {
       type: GraphQLString,
     },
+    editionNumber: {
+      type: GraphQLInt,
+    },
+    editionSize: {
+      type: GraphQLString,
+    },
     height: {
       type: GraphQLString,
     },
@@ -56,7 +62,15 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { artworkId, artistIds, costCurrencyCode, costMinor, ...rest },
+    {
+      artworkId,
+      artistIds,
+      costCurrencyCode,
+      costMinor,
+      editionNumber,
+      editionSize,
+      ...rest
+    },
     { myCollectionUpdateArtworkLoader }
   ) => {
     if (!myCollectionUpdateArtworkLoader) {
@@ -68,6 +82,8 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         artist_ids: artistIds,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
+        edition_number: editionNumber,
+        edition_size: editionSize,
         ...rest,
       })
 
