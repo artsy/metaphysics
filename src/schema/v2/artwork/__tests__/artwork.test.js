@@ -411,7 +411,6 @@ describe("Artwork type", () => {
     })
   })
 
-  describe("#edition_sets", () => {
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
@@ -435,11 +434,11 @@ describe("Artwork type", () => {
           availability: "permanent collection",
         },
         {
-          availabilitiy: "for sale",
+          availability: "for sale",
           price: "$1,000",
         },
         {
-          availabilitiy: "not for sale",
+          availability: "not for sale",
         },
         { forsale: true },
       ]
