@@ -1,7 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
-
 describe("me/index", () => {
   const query = gql`
     query {
@@ -23,6 +22,37 @@ describe("me/index", () => {
       }
     }
   `
+
+  it("loads a user's pending identity verification", () => {
+    const meLoader = () =>
+      Promise.resolve({ pending_identity_verification_id: "idv-id" })
+    const identityVerificationLoader = (id) =>
+      Promise.resolve({
+        id: id,
+      })
+
+    const query = gql`
+      query {
+        me {
+          pendingIdentityVerification {
+            flowURL
+          }
+        }
+      }
+    `
+    return runAuthenticatedQuery(query, {
+      meLoader,
+      identityVerificationLoader,
+    }).then((data) => {
+      expect(data).toEqual({
+        me: {
+          pendingIdentityVerification: {
+            flowURL: "https://www.force.biz/identity-verification/idv-id",
+          },
+        },
+      })
+    })
+  })
 
   it("loads data from meLoader", () => {
     const body = {
