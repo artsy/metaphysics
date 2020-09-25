@@ -93,7 +93,6 @@ const mustHave = {
   CONVECTION_API_BASE,
   CONVECTION_APP_ID,
   DELTA_API_BASE,
-  FORCE_URL,
   GEMINI_API_BASE,
   GEMINI_ENDPOINT,
   GRAVITY_API_BASE,
@@ -170,7 +169,7 @@ export default {
       ? true
       : ENABLE_COMMERCE_STITCHING === "true",
   ENABLE_HEAPDUMPS,
-  FORCE_URL,
+  FORCE_URL: FORCE_URL || "https://artsy.net",
   GALAXY_API_BASE,
   GALAXY_TOKEN,
   GEMINI_API_BASE,
