@@ -35,7 +35,7 @@ describe("me/index", () => {
       query {
         me {
           pendingIdentityVerification {
-            flowURL
+            internalID
           }
         }
       }
@@ -47,7 +47,7 @@ describe("me/index", () => {
       expect(data).toEqual({
         me: {
           pendingIdentityVerification: {
-            flowURL: "https://www.force.biz/identity-verification/idv-id",
+            internalID: "idv-id",
           },
         },
       })

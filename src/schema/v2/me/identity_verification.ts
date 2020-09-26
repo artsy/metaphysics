@@ -7,8 +7,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "schema/v2/object_identification"
 import dateField, { date } from "../fields/date"
-import config from "config"
-const { FORCE_URL } = config
 
 export type IdentityVerificationGravityResponse = {
   id: string
@@ -49,11 +47,6 @@ const IdentityVerificationType = new GraphQLObjectType<
       resolve: ({ user_id }) => user_id,
     },
     invitationExpiresAt: dateFieldForVerificationExpiresAt,
-    flowURL: {
-      description: "Verification flow entry point",
-      type: GraphQLString,
-      resolve: ({ id }) => `${FORCE_URL}/identity-verification/${id}`,
-    },
   },
 })
 
