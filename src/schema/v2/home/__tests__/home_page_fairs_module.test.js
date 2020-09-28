@@ -1,6 +1,8 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 
+// FIXME: These tests seem to be failing in CI. Revisit and investigate why.
+
 describe("HomePageFairsModule", () => {
   xit("works", () => {
     const runningFairs = [
