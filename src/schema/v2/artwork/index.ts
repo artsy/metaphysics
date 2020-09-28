@@ -218,12 +218,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ edition_sets }) => edition_sets?.[0]?.edition_size,
       },
       editionNumber: {
-        type: GraphQLInt,
-        resolve: ({ edition_sets }) => {
-          if (edition_sets?.[0]?.available_editions?.[0]) {
-            return Number(edition_sets?.[0]?.available_editions?.[0])
-          }
-        },
+        type: GraphQLString,
+        resolve: ({ edition_sets }) =>
+          edition_sets?.[0]?.available_editions?.[0],
       },
       editionSets: {
         type: new GraphQLList(EditionSet.type),
