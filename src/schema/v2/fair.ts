@@ -82,9 +82,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     const { filterArtworksConnection } = require("./filterArtworksConnection")
     return {
       ...SlugAndInternalIDFields,
-      about: {
-        type: GraphQLString,
-      },
+      about: markdown(),
       followedContent: {
         type: FollowedContentType,
         resolve: (
@@ -291,9 +289,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       startAt: date,
-      summary: {
-        type: GraphQLString,
-      },
+      summary: markdown(),
       tickets: markdown(),
       contact: markdown(),
       endAt: date,
