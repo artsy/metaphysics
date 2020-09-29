@@ -1250,6 +1250,42 @@ describe("Artwork type", () => {
       })
     })
   })
+  describe("#inquiryQuestions", () => {
+    const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            isInquireable
+            inquiryQuestions {
+              internalID
+              question
+            }
+          }
+        }
+      `
+    beforeEach(() => {
+      artwork.inquireable = true
+      artwork.ecommerce = false
+    })
+
+    it("returns available inquiry questions", () => {
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.inquiryQuestions).toEqual([
+          {
+            internalID: "price_and_availability",
+            question: "Price & Availability",
+          },
+          {
+            internalID: "shipping",
+            question: "Shipping",
+          },
+          {
+            internalID: "condition_and_provenance",
+            question: "Condition & Provenance",
+          },
+        ])
+      })
+    })
+  })
   describe("markdown fields", () => {
     describe("#signature", () => {
       const query = `
