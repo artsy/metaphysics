@@ -53,6 +53,7 @@ import Show from "schema/v2/show"
 import { ArtworkContextGrids } from "./artworkContextGrids"
 import { PageInfoType } from "graphql-relay"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
+import InquiryQuestionType from "../inquiry_question"
 
 const has_price_range = (price) => {
   return new RegExp(/\-/).test(price)
@@ -332,6 +333,30 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ images }, { size }) => {
           const sorted = _.sortBy(images, "position")
           return normalizeImageData(size ? _.take(sorted, size) : sorted)
+        },
+      },
+      inquiryQuestions: {
+        type: new GraphQLList(InquiryQuestionType),
+        description:
+          "Structured questions a collector can inquire on about this work",
+        resolve: ({ ecommerce, inquireable }) => {
+          if (!ecommerce && inquireable) {
+            return [
+              {
+                id: "price_and_availability",
+                question: "Price & Availability",
+              },
+              {
+                id: "shipping",
+                question: "Shipping",
+              },
+              {
+                id: "condition_and_provenance",
+                question: "Condition & Provenance",
+              },
+            ]
+          }
+          return null
         },
       },
       inventoryId: {
