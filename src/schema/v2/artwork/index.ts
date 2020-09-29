@@ -341,6 +341,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "Structured questions a collector can inquire on about this work",
         resolve: ({ ecommerce, inquireable }) => {
           if (!ecommerce && inquireable) {
+            /**
+             * TODO: This is temporary, fixture data hardcoded to enable the
+             * first inquiry project to be broken down into parallel tasks. Will
+             * be followed w/ a PR to hook it up to a soon to be built gravity
+             * hook.
+             */
             return [
               {
                 id: "price_and_availability",
