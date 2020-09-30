@@ -11,7 +11,7 @@ describe("myCollectionCreateArtworkMutation", () => {
           costCurrencyCode: "USD"
           costMinor: 200
           editionSize: "10x10x10"
-          editionNumber: 1
+          editionNumber: "1"
           date: "1990"
           depth: "20"
           height: "20"
