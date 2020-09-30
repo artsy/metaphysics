@@ -266,11 +266,13 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             sort: string
             cursor?: string
             section: string
+            artworks: boolean
           }
           const gravityOptions: GravityOptions = {
             sort: options.sort || "-featured",
             section: options.section,
             size: options.first,
+            artworks: true,
           }
           if (!!options.after) {
             gravityOptions.cursor = options.after
