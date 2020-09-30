@@ -78,7 +78,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
 
     try {
       const response = await myCollectionCreateArtworkLoader({
-        artist_ids: artistIds,
+        artists: artistIds,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
         edition_size: editionSize,
