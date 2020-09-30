@@ -80,5 +80,21 @@ describe("KAWS Stitching", () => {
         })
       )
     })
+
+    it("returns an empty list when there are no kawsCollectionSlugs", async () => {
+      const { resolvers } = await getKawsStitchedSchema()
+      const marketingCollectionsResolver =
+        resolvers.Fair.marketingCollections.resolve
+      const mergeInfo = { delegateToSchema: jest.fn() }
+
+      const result = await marketingCollectionsResolver(
+        { kawsCollectionSlugs: [] },
+        {},
+        {},
+        { mergeInfo }
+      )
+
+      expect(result).toEqual([])
+    })
   })
 })

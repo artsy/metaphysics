@@ -164,6 +164,7 @@ export const kawsStitchingEnvironmentV2 = (
           }
         `,
           resolve: ({ kawsCollectionSlugs: slugs }, args, context, info) => {
+            if (slugs.length === 0) return []
             return info.mergeInfo.delegateToSchema({
               schema: kawsSchema,
               operation: "query",
