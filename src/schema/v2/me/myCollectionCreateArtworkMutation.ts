@@ -37,7 +37,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
     },
     editionNumber: {
-      type: GraphQLInt,
+      type: GraphQLString,
     },
     editionSize: {
       type: GraphQLString,
