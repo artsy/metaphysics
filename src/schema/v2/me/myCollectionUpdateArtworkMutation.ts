@@ -79,7 +79,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
 
     try {
       const response = await myCollectionUpdateArtworkLoader(artworkId, {
-        artist_ids: artistIds,
+        artists: artistIds,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
         edition_number: editionNumber,
