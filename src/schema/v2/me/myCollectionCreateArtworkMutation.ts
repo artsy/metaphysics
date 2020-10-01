@@ -42,6 +42,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     editionSize: {
       type: GraphQLString,
     },
+    externalImageUrls: {
+      type: new GraphQLList(GraphQLString),
+    },
     height: {
       type: GraphQLString,
     },
@@ -68,11 +71,12 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       costMinor,
       editionSize,
       editionNumber,
+      externalImageUrls = [],
       ...rest
     },
-    { myCollectionCreateArtworkLoader }
+    { myCollectionCreateArtworkLoader, myCollectionCreateImageLoader }
   ) => {
-    if (!myCollectionCreateArtworkLoader) {
+    if (!myCollectionCreateArtworkLoader || !myCollectionCreateImageLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
@@ -84,6 +88,18 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         edition_size: editionSize,
         edition_number: editionNumber,
         ...rest,
+      })
+
+      const artworkId = response.id
+      const regex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
+
+      await externalImageUrls.forEach(async (url) => {
+        const { sourceBucket, sourceKey } = url.match(regex).groups
+
+        await myCollectionCreateImageLoader(artworkId, {
+          source_bucket: sourceBucket,
+          source_key: sourceKey,
+        })
       })
 
       return response

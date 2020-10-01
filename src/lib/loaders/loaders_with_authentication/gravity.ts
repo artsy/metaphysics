@@ -183,6 +183,11 @@ export default (accessToken, userID, opts) => {
       },
       { method: "POST" }
     ),
+    myCollectionCreateImageLoader: gravityLoader(
+      (id) => `artwork/${id}/image`,
+      {},
+      { method: "POST" }
+    ),
     myCollectionUpdateArtworkLoader: gravityLoader(
       (id) => `my-collection/artworks/${id}`,
       {
