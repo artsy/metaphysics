@@ -3,7 +3,12 @@ import { InternalIDFields } from "schema/v2/object_identification"
 
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions } from "graphql-relay"
-import { GraphQLObjectType, GraphQLBoolean, GraphQLFieldConfig } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
 
@@ -22,9 +27,14 @@ const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
 
 const FollowedArtists: GraphQLFieldConfig<void, ResolverContext> = {
   type: connectionDefinitions({ nodeType: FollowArtistType }).connectionType,
-  args: pageable({}),
+  args: pageable({
+    fairID: {
+      type: GraphQLString,
+    },
+  }),
   description: "A Connection of followed artists by current user",
-  resolve: (_parent, args, context) => followArtistsResolver({}, args, context),
+  resolve: (_parent, { fairID, ...connectionArgs }, context) =>
+    followArtistsResolver({ fair_id: fairID }, connectionArgs, context),
 }
 
 export default FollowedArtists

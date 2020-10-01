@@ -16,7 +16,12 @@ it("returns artists for a user", () => {
 
   const followedArtistsLoader = sinon
     .stub()
-    .withArgs("me/follow/artists", { size: 10, offset: 0, total_count: true })
+    .withArgs("me/follow/artists", {
+      size: 10,
+      offset: 0,
+      total_count: true,
+      fair_id: "blah",
+    })
     .returns(
       Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } })
     )
@@ -25,7 +30,7 @@ it("returns artists for a user", () => {
     {
       me {
         followsAndSaves {
-          artistsConnection(first: 10) {
+          artistsConnection(fairID: "blah", first: 10) {
             edges {
               node {
                 artist {

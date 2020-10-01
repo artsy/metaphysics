@@ -3,9 +3,10 @@ import { connectionFromArraySlice } from "graphql-relay"
 
 // options are connection related arguments
 // params are params passed into gravity to scope the results
-const followArtistsResolver = (params, options, config) => {
+const followArtistsResolver = (params, connectionOptions, config) => {
   if (!config.followedArtistsLoader) return null
-  const { limit: size, offset } = getPagingParameters(options)
+  const { limit: size, offset } = getPagingParameters(connectionOptions)
+
   const gravityArgs = {
     size,
     offset,
@@ -13,7 +14,7 @@ const followArtistsResolver = (params, options, config) => {
     ...params,
   }
   return config.followedArtistsLoader(gravityArgs).then(({ body, headers }) => {
-    return connectionFromArraySlice(body, options, {
+    return connectionFromArraySlice(body, connectionOptions, {
       arrayLength: parseInt(headers["x-total-count"] || "0", 10),
       sliceStart: offset,
     })
