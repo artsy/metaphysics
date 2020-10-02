@@ -2,20 +2,12 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 const newArtwork = { id: "some-artwork-id" }
-const successfulCreateArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
+const createArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
 
-const serverError = "Error creating artwork"
-const error = new Error(
-  `https://stagingapi.artsy.net/api/v1/my_collection?id=some-artwork-id - {"error":"${serverError}"}`
-)
-const failureCreateArtworkLoader = jest.fn().mockRejectedValue(error)
+const artworkDetails = { medium: "Painting" }
+const artworkLoader = jest.fn().mockResolvedValue(artworkDetails)
 
-const additionalArtworkDetails = { medium: "Painting" }
-const additionalArtworkDetailsLoader = jest
-  .fn()
-  .mockResolvedValue(additionalArtworkDetails)
-
-const mockCreateImageLoader = jest.fn()
+const createImageLoader = jest.fn()
 
 const computeMutationInput = (externalImageUrls: string[] = []): string => {
   const mutation = gql`
@@ -63,9 +55,9 @@ const computeMutationInput = (externalImageUrls: string[] = []): string => {
 }
 
 const defaultContext = {
-  myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
-  myCollectionArtworkLoader: additionalArtworkDetailsLoader,
-  myCollectionCreateImageLoader: mockCreateImageLoader,
+  myCollectionCreateArtworkLoader: createArtworkLoader,
+  myCollectionArtworkLoader: artworkLoader,
+  myCollectionCreateImageLoader: createImageLoader,
 }
 
 describe("myCollectionCreateArtworkMutation", () => {
@@ -77,9 +69,15 @@ describe("myCollectionCreateArtworkMutation", () => {
     it("returns that error", async () => {
       const mutation = computeMutationInput()
 
+      const serverError = "Error creating artwork"
+      const url =
+        "https://stagingapi.artsy.net/api/v1/my_collection?id=some-artwork-id"
+      const error = new Error(`${url} - {"error":"${serverError}"}`)
+      const failureLoader = jest.fn().mockRejectedValue(error)
+
       const context = {
         ...defaultContext,
-        myCollectionCreateArtworkLoader: failureCreateArtworkLoader,
+        myCollectionCreateArtworkLoader: failureLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
@@ -119,7 +117,7 @@ describe("myCollectionCreateArtworkMutation", () => {
 
       expect(artworkOrError).toHaveProperty("artwork")
       expect(artworkOrError).not.toHaveProperty("error")
-      expect(mockCreateImageLoader).not.toBeCalled()
+      expect(createImageLoader).not.toBeCalled()
     })
 
     it("does nothing with an image url that doesn't match", async () => {
@@ -131,7 +129,7 @@ describe("myCollectionCreateArtworkMutation", () => {
 
       expect(artworkOrError).toHaveProperty("artwork")
       expect(artworkOrError).not.toHaveProperty("error")
-      expect(mockCreateImageLoader).not.toBeCalled()
+      expect(createImageLoader).not.toBeCalled()
     })
 
     it("creates an additional image with bucket and key with a valid image url", async () => {
@@ -145,13 +143,36 @@ describe("myCollectionCreateArtworkMutation", () => {
 
       expect(artworkOrError).toHaveProperty("artwork")
       expect(artworkOrError).not.toHaveProperty("error")
-      expect(mockCreateImageLoader).toBeCalledWith(newArtwork.id, {
+      expect(createImageLoader).toBeCalledWith(newArtwork.id, {
         source_bucket: "test-upload-bucket",
         source_key: "path/to/image.jpg",
       })
     })
 
-    // it("returns an error when the additional image can't be created")
+    it("returns an error when the additional image can't be created", async () => {
+      const externalImageUrls = [
+        "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
+      ]
+      const mutation = computeMutationInput(externalImageUrls)
+
+      const serverError = "Error creating image"
+      const url =
+        "https://stagingapi.artsy.net/api/v1/artwork/some-artwork-id/images"
+      const error = new Error(`${url} - {"error":"${serverError}"}`)
+      const failureLoader = jest.fn().mockRejectedValue(error)
+
+      const context = {
+        ...defaultContext,
+        myCollectionCreateImageLoader: failureLoader,
+      }
+
+      const data = await runAuthenticatedQuery(mutation, context)
+      const { artworkOrError } = data.myCollectionCreateArtwork
+      const { message } = artworkOrError.mutationError
+
+      expect(message).toEqual(serverError)
+    })
+
     it("tries to create each image even if some are invalid", async () => {
       const externalImageUrls = [
         "http://example.com/path/to/image.jpg",
@@ -164,8 +185,7 @@ describe("myCollectionCreateArtworkMutation", () => {
 
       expect(artworkOrError).toHaveProperty("artwork")
       expect(artworkOrError).not.toHaveProperty("error")
-      expect(mockCreateImageLoader).toBeCalledTimes(1)
-      expect(mockCreateImageLoader).toBeCalledWith(newArtwork.id, {
+      expect(createImageLoader).toBeCalledWith(newArtwork.id, {
         source_bucket: "test-upload-bucket",
         source_key: "path/to/image.jpg",
       })
