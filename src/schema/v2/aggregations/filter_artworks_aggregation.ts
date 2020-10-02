@@ -6,6 +6,9 @@ import { ResolverContext } from "types/graphql"
 export const ArtworksAggregation = new GraphQLEnumType({
   name: "ArtworkAggregation",
   values: {
+    ARTIST: {
+      value: "artist",
+    },
     COLOR: {
       value: "color",
     },
