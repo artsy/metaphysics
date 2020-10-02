@@ -1,43 +1,7 @@
-import dateField, { date, DateSource } from "./fields/date"
-import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
+import dateField from "./fields/date"
+import { GraphQLString, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { dateRange, dateTimeRange } from "lib/date"
-import { snakeCase } from "lodash"
-
-const hasOldEmissionUserAgentString = (userAgent: string | string[]): boolean =>
-  userAgent!.indexOf("Artsy-Mobile/4.4") > 0 ||
-  userAgent!.indexOf("Artsy-Mobile/5.0.0") > 0 ||
-  userAgent!.indexOf("Artsy-Mobile/5.0.1") > 0
-
-const isOlderEmissionVersion = (userAgent: string | string[]): boolean => {
-  let result = false
-  if (typeof userAgent === "string") {
-    result = hasOldEmissionUserAgentString(userAgent)
-  } else if (Array.isArray(userAgent)) {
-    result = userAgent.some(hasOldEmissionUserAgentString)
-  }
-  return result
-}
-
-const dateFieldForShowEvent: GraphQLFieldConfig<DateSource, ResolverContext> = {
-  ...dateField,
-  resolve: (
-    obj,
-    { format, timezone },
-    { defaultTimezone, userAgent },
-    { fieldName }
-  ) => {
-    const rawDate = obj[snakeCase(fieldName)]
-
-    if (userAgent && isOlderEmissionVersion(userAgent)) {
-      const dateWithoutOffset = rawDate.replace(/[-+]\d\d:\d\d$/, "")
-      return dateWithoutOffset
-    }
-
-    const timezoneString = timezone ? timezone : defaultTimezone
-    return date(rawDate, format, timezoneString)
-  },
-}
 
 const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowEventType",
@@ -54,8 +18,8 @@ const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
     title: {
       type: GraphQLString,
     },
-    startAt: dateFieldForShowEvent,
-    endAt: dateFieldForShowEvent,
+    startAt: dateField,
+    endAt: dateField,
     dateTimeRange: {
       type: GraphQLString,
       description: "A formatted description of the dates with hours",
