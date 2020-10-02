@@ -1,7 +1,7 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-const computeMutationInput = (): string => {
+const computeMutationInput = (externalImageUrls: string[] = []): string => {
   const mutation = gql`
     mutation {
       myCollectionCreateArtwork(
@@ -10,10 +10,11 @@ const computeMutationInput = (): string => {
           category: "some strange category"
           costCurrencyCode: "USD"
           costMinor: 200
-          editionSize: "10x10x10"
-          editionNumber: "1"
           date: "1990"
           depth: "20"
+          editionNumber: "1"
+          editionSize: "10x10x10"
+          externalImageUrls: ${JSON.stringify(externalImageUrls)}
           height: "20"
           medium: "Painting"
           metric: "in"
@@ -108,5 +109,93 @@ describe("myCollectionCreateArtworkMutation", () => {
         },
       })
     })
+  })
+
+  describe("creating additional images", () => {
+    it("does nothing when there are no image urls", async () => {
+      const mutation = computeMutationInput([])
+
+      const newArtwork = { id: "some-artwork-id" }
+      const mockLoader = jest.fn().mockResolvedValue(newArtwork)
+
+      const additionalArtworkDetails = { medium: "Painting" }
+      const anotherMockLoader = jest
+        .fn()
+        .mockResolvedValue(additionalArtworkDetails)
+
+      const yetAnotherMockLoader = jest.fn()
+
+      const context = {
+        myCollectionCreateArtworkLoader: mockLoader,
+        myCollectionArtworkLoader: anotherMockLoader,
+        myCollectionCreateImageLoader: yetAnotherMockLoader,
+      }
+
+      const data = await runAuthenticatedQuery(mutation, context)
+      const { artworkOrError } = data.myCollectionCreateArtwork
+      expect(artworkOrError).toHaveProperty("artwork")
+      expect(artworkOrError).not.toHaveProperty("error")
+
+      expect(yetAnotherMockLoader).not.toBeCalled()
+    })
+
+    it("does nothing with an image url that doesn't match", async () => {
+      const externalImageUrls = ["http://example.com/path/to/image.jpg"]
+      const mutation = computeMutationInput(externalImageUrls)
+
+      const newArtwork = { id: "some-artwork-id" }
+      const mockLoader = jest.fn().mockResolvedValue(newArtwork)
+
+      const additionalArtworkDetails = { medium: "Painting" }
+      const anotherMockLoader = jest
+        .fn()
+        .mockResolvedValue(additionalArtworkDetails)
+
+      const yetAnotherMockLoader = jest.fn()
+
+      const context = {
+        myCollectionCreateArtworkLoader: mockLoader,
+        myCollectionArtworkLoader: anotherMockLoader,
+        myCollectionCreateImageLoader: yetAnotherMockLoader,
+      }
+
+      const data = await runAuthenticatedQuery(mutation, context)
+      const { artworkOrError } = data.myCollectionCreateArtwork
+      expect(artworkOrError).toHaveProperty("artwork")
+      expect(artworkOrError).not.toHaveProperty("error")
+      expect(yetAnotherMockLoader).not.toBeCalled()
+    })
+
+    it("creates an additional image with bucket and key with a valid image url", async () => {
+      const externalImageUrls = [
+        "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
+      ]
+      const mutation = computeMutationInput(externalImageUrls)
+
+      const newArtwork = { id: "some-artwork-id" }
+      const mockLoader = jest.fn().mockResolvedValue(newArtwork)
+
+      const additionalArtworkDetails = { medium: "Painting" }
+      const anotherMockLoader = jest
+        .fn()
+        .mockResolvedValue(additionalArtworkDetails)
+
+      const yetAnotherMockLoader = jest.fn()
+
+      const context = {
+        myCollectionCreateArtworkLoader: mockLoader,
+        myCollectionArtworkLoader: anotherMockLoader,
+        myCollectionCreateImageLoader: yetAnotherMockLoader,
+      }
+
+      await runAuthenticatedQuery(mutation, context)
+      expect(yetAnotherMockLoader).toBeCalledWith(newArtwork.id, {
+        source_bucket: "test-upload-bucket",
+        source_key: "path/to/image.jpg",
+      })
+    })
+
+    // it("returns an error when the additional image can't be created")
+    // it("tries to create each image even if some are invalid")
   })
 })
