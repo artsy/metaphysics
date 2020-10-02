@@ -152,6 +152,23 @@ describe("myCollectionCreateArtworkMutation", () => {
     })
 
     // it("returns an error when the additional image can't be created")
-    // it("tries to create each image even if some are invalid")
+    it("tries to create each image even if some are invalid", async () => {
+      const externalImageUrls = [
+        "http://example.com/path/to/image.jpg",
+        "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
+      ]
+      const mutation = computeMutationInput(externalImageUrls)
+
+      const data = await runAuthenticatedQuery(mutation, defaultContext)
+      const { artworkOrError } = data.myCollectionCreateArtwork
+
+      expect(artworkOrError).toHaveProperty("artwork")
+      expect(artworkOrError).not.toHaveProperty("error")
+      expect(mockCreateImageLoader).toBeCalledTimes(1)
+      expect(mockCreateImageLoader).toBeCalledWith(newArtwork.id, {
+        source_bucket: "test-upload-bucket",
+        source_key: "path/to/image.jpg",
+      })
+    })
   })
 })
