@@ -15,6 +15,8 @@ const additionalArtworkDetailsLoader = jest
   .fn()
   .mockResolvedValue(additionalArtworkDetails)
 
+const mockCreateImageLoader = jest.fn()
+
 const computeMutationInput = (externalImageUrls: string[] = []): string => {
   const mutation = gql`
     mutation {
@@ -61,6 +63,10 @@ const computeMutationInput = (externalImageUrls: string[] = []): string => {
 }
 
 describe("myCollectionCreateArtworkMutation", () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe("when the server responds with an error", () => {
     it("returns that error", async () => {
       const mutation = computeMutationInput()
@@ -106,12 +112,10 @@ describe("myCollectionCreateArtworkMutation", () => {
     it("does nothing when there are no image urls", async () => {
       const mutation = computeMutationInput([])
 
-      const yetAnotherMockLoader = jest.fn()
-
       const context = {
         myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
         myCollectionArtworkLoader: additionalArtworkDetailsLoader,
-        myCollectionCreateImageLoader: yetAnotherMockLoader,
+        myCollectionCreateImageLoader: mockCreateImageLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
@@ -119,19 +123,17 @@ describe("myCollectionCreateArtworkMutation", () => {
 
       expect(artworkOrError).toHaveProperty("artwork")
       expect(artworkOrError).not.toHaveProperty("error")
-      expect(yetAnotherMockLoader).not.toBeCalled()
+      expect(mockCreateImageLoader).not.toBeCalled()
     })
 
     it("does nothing with an image url that doesn't match", async () => {
       const externalImageUrls = ["http://example.com/path/to/image.jpg"]
       const mutation = computeMutationInput(externalImageUrls)
 
-      const yetAnotherMockLoader = jest.fn()
-
       const context = {
         myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
         myCollectionArtworkLoader: additionalArtworkDetailsLoader,
-        myCollectionCreateImageLoader: yetAnotherMockLoader,
+        myCollectionCreateImageLoader: mockCreateImageLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
@@ -139,7 +141,7 @@ describe("myCollectionCreateArtworkMutation", () => {
 
       expect(artworkOrError).toHaveProperty("artwork")
       expect(artworkOrError).not.toHaveProperty("error")
-      expect(yetAnotherMockLoader).not.toBeCalled()
+      expect(mockCreateImageLoader).not.toBeCalled()
     })
 
     it("creates an additional image with bucket and key with a valid image url", async () => {
@@ -148,12 +150,10 @@ describe("myCollectionCreateArtworkMutation", () => {
       ]
       const mutation = computeMutationInput(externalImageUrls)
 
-      const yetAnotherMockLoader = jest.fn()
-
       const context = {
         myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
         myCollectionArtworkLoader: additionalArtworkDetailsLoader,
-        myCollectionCreateImageLoader: yetAnotherMockLoader,
+        myCollectionCreateImageLoader: mockCreateImageLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
@@ -161,7 +161,7 @@ describe("myCollectionCreateArtworkMutation", () => {
 
       expect(artworkOrError).toHaveProperty("artwork")
       expect(artworkOrError).not.toHaveProperty("error")
-      expect(yetAnotherMockLoader).toBeCalledWith(newArtwork.id, {
+      expect(mockCreateImageLoader).toBeCalledWith(newArtwork.id, {
         source_bucket: "test-upload-bucket",
         source_key: "path/to/image.jpg",
       })
