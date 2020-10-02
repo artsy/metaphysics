@@ -10,6 +10,11 @@ const error = new Error(
 )
 const failureCreateArtworkLoader = jest.fn().mockRejectedValue(error)
 
+const additionalArtworkDetails = { medium: "Painting" }
+const additionalArtworkDetailsLoader = jest
+  .fn()
+  .mockResolvedValue(additionalArtworkDetails)
+
 const computeMutationInput = (externalImageUrls: string[] = []): string => {
   const mutation = gql`
     mutation {
@@ -76,14 +81,9 @@ describe("myCollectionCreateArtworkMutation", () => {
     it("returns details of the new artwork", async () => {
       const mutation = computeMutationInput()
 
-      const additionalArtworkDetails = { medium: "Painting" }
-      const anotherMockLoader = jest
-        .fn()
-        .mockResolvedValue(additionalArtworkDetails)
-
       const context = {
         myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
-        myCollectionArtworkLoader: anotherMockLoader,
+        myCollectionArtworkLoader: additionalArtworkDetailsLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
@@ -106,16 +106,11 @@ describe("myCollectionCreateArtworkMutation", () => {
     it("does nothing when there are no image urls", async () => {
       const mutation = computeMutationInput([])
 
-      const additionalArtworkDetails = { medium: "Painting" }
-      const anotherMockLoader = jest
-        .fn()
-        .mockResolvedValue(additionalArtworkDetails)
-
       const yetAnotherMockLoader = jest.fn()
 
       const context = {
         myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
-        myCollectionArtworkLoader: anotherMockLoader,
+        myCollectionArtworkLoader: additionalArtworkDetailsLoader,
         myCollectionCreateImageLoader: yetAnotherMockLoader,
       }
 
@@ -131,16 +126,11 @@ describe("myCollectionCreateArtworkMutation", () => {
       const externalImageUrls = ["http://example.com/path/to/image.jpg"]
       const mutation = computeMutationInput(externalImageUrls)
 
-      const additionalArtworkDetails = { medium: "Painting" }
-      const anotherMockLoader = jest
-        .fn()
-        .mockResolvedValue(additionalArtworkDetails)
-
       const yetAnotherMockLoader = jest.fn()
 
       const context = {
         myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
-        myCollectionArtworkLoader: anotherMockLoader,
+        myCollectionArtworkLoader: additionalArtworkDetailsLoader,
         myCollectionCreateImageLoader: yetAnotherMockLoader,
       }
 
@@ -158,16 +148,11 @@ describe("myCollectionCreateArtworkMutation", () => {
       ]
       const mutation = computeMutationInput(externalImageUrls)
 
-      const additionalArtworkDetails = { medium: "Painting" }
-      const anotherMockLoader = jest
-        .fn()
-        .mockResolvedValue(additionalArtworkDetails)
-
       const yetAnotherMockLoader = jest.fn()
 
       const context = {
         myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
-        myCollectionArtworkLoader: anotherMockLoader,
+        myCollectionArtworkLoader: additionalArtworkDetailsLoader,
         myCollectionCreateImageLoader: yetAnotherMockLoader,
       }
 
