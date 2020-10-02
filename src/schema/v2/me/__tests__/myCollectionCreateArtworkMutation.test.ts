@@ -1,7 +1,7 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("myCollectionCreateArtworkMutation", () => {
+const computeMutationInput = (): string => {
   const mutation = gql`
     mutation {
       myCollectionCreateArtwork(
@@ -42,51 +42,63 @@ describe("myCollectionCreateArtworkMutation", () => {
     }
   `
 
-  it("returns an error", async () => {
-    const context = {
-      myCollectionCreateArtworkLoader: () =>
-        Promise.reject(
-          new Error(
-            `https://stagingapi.artsy.net/api/v1/my_collection?id=foo - {"error":"Error creating artwork"}`
-          )
-        ),
-    }
+  return mutation
+}
 
-    const data = await runAuthenticatedQuery(mutation, context)
-    expect(data).toEqual({
-      myCollectionCreateArtwork: {
-        artworkOrError: {
-          mutationError: {
-            message: "Error creating artwork",
-          },
-        },
-      },
-    })
-  })
+describe("myCollectionCreateArtworkMutation", () => {
+  describe("when the server response is not successful", () => {
+    it("returns an error", async () => {
+      const mutation = computeMutationInput()
 
-  it("creates an artwork", async () => {
-    const context = {
-      myCollectionCreateArtworkLoader: () => Promise.resolve({ id: "foo" }),
-      myCollectionArtworkLoader: () =>
-        Promise.resolve({
-          medium: "Painting",
-        }),
-    }
+      const context = {
+        myCollectionCreateArtworkLoader: () =>
+          Promise.reject(
+            new Error(
+              `https://stagingapi.artsy.net/api/v1/my_collection?id=foo - {"error":"Error creating artwork"}`
+            )
+          ),
+      }
 
-    const data = await runAuthenticatedQuery(mutation, context)
-    expect(data).toEqual({
-      myCollectionCreateArtwork: {
-        artworkOrError: {
-          artwork: {
-            medium: "Painting",
-          },
-          artworkEdge: {
-            node: {
-              medium: "Painting",
+      const data = await runAuthenticatedQuery(mutation, context)
+      expect(data).toEqual({
+        myCollectionCreateArtwork: {
+          artworkOrError: {
+            mutationError: {
+              message: "Error creating artwork",
             },
           },
         },
-      },
+      })
+    })
+  })
+
+  describe("when the server response is successful", () => {
+    it("returns the artwork", async () => {
+      const mutation = computeMutationInput()
+
+      const context = {
+        myCollectionCreateArtworkLoader: () => Promise.resolve({ id: "foo" }),
+        myCollectionArtworkLoader: () =>
+          Promise.resolve({
+            medium: "Painting",
+          }),
+      }
+
+      const data = await runAuthenticatedQuery(mutation, context)
+      expect(data).toEqual({
+        myCollectionCreateArtwork: {
+          artworkOrError: {
+            artwork: {
+              medium: "Painting",
+            },
+            artworkEdge: {
+              node: {
+                medium: "Painting",
+              },
+            },
+          },
+        },
+      })
     })
   })
 })
