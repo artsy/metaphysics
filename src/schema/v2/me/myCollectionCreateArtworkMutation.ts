@@ -93,20 +93,24 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       const artworkId = response.id
       const regex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
-      const createImagePromises = externalImageUrls
+      const imageSources = externalImageUrls
         .map((url) => {
           const match = url.match(regex)
 
           if (!match) return
 
-          const { sourceBucket, sourceKey } = url.match(regex).groups
+          const { sourceBucket, sourceKey } = match.groups
 
-          return myCollectionCreateImageLoader(artworkId, {
+          return {
             source_bucket: sourceBucket,
             source_key: sourceKey,
-          })
+          }
         })
         .filter(Boolean)
+
+      const createImagePromises = imageSources.map((source) => {
+        return myCollectionCreateImageLoader(artworkId, source)
+      })
 
       await Promise.all(createImagePromises)
 
