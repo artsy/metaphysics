@@ -46,17 +46,20 @@ const computeMutationInput = (): string => {
 }
 
 describe("myCollectionCreateArtworkMutation", () => {
-  describe("when the server response is not successful", () => {
-    it("returns an error", async () => {
+  describe("when the server responds with an error", () => {
+    it("returns that error", async () => {
       const mutation = computeMutationInput()
 
+      const serverError = "Error creating artwork"
+
+      const error = new Error(
+        `https://stagingapi.artsy.net/api/v1/my_collection?id=some-artwork-id - {"error":"${serverError}"}`
+      )
+
+      const mockLoader = jest.fn().mockRejectedValue(error)
+
       const context = {
-        myCollectionCreateArtworkLoader: () =>
-          Promise.reject(
-            new Error(
-              `https://stagingapi.artsy.net/api/v1/my_collection?id=foo - {"error":"Error creating artwork"}`
-            )
-          ),
+        myCollectionCreateArtworkLoader: mockLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
@@ -64,7 +67,7 @@ describe("myCollectionCreateArtworkMutation", () => {
         myCollectionCreateArtwork: {
           artworkOrError: {
             mutationError: {
-              message: "Error creating artwork",
+              message: serverError,
             },
           },
         },
@@ -73,15 +76,20 @@ describe("myCollectionCreateArtworkMutation", () => {
   })
 
   describe("when the server response is successful", () => {
-    it("returns the artwork", async () => {
+    it("returns details of the new artwork", async () => {
       const mutation = computeMutationInput()
 
+      const newArtwork = { id: "some-artwork-id" }
+      const mockLoader = jest.fn().mockResolvedValue(newArtwork)
+
+      const additionalArtworkDetails = { medium: "Painting" }
+      const anotherMockLoader = jest
+        .fn()
+        .mockResolvedValue(additionalArtworkDetails)
+
       const context = {
-        myCollectionCreateArtworkLoader: () => Promise.resolve({ id: "foo" }),
-        myCollectionArtworkLoader: () =>
-          Promise.resolve({
-            medium: "Painting",
-          }),
+        myCollectionCreateArtworkLoader: mockLoader,
+        myCollectionArtworkLoader: anotherMockLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
