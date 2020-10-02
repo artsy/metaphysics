@@ -62,6 +62,12 @@ const computeMutationInput = (externalImageUrls: string[] = []): string => {
   return mutation
 }
 
+const defaultContext = {
+  myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
+  myCollectionArtworkLoader: additionalArtworkDetailsLoader,
+  myCollectionCreateImageLoader: mockCreateImageLoader,
+}
+
 describe("myCollectionCreateArtworkMutation", () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -72,6 +78,7 @@ describe("myCollectionCreateArtworkMutation", () => {
       const mutation = computeMutationInput()
 
       const context = {
+        ...defaultContext,
         myCollectionCreateArtworkLoader: failureCreateArtworkLoader,
       }
 
@@ -87,12 +94,7 @@ describe("myCollectionCreateArtworkMutation", () => {
     it("returns details of the new artwork", async () => {
       const mutation = computeMutationInput()
 
-      const context = {
-        myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
-        myCollectionArtworkLoader: additionalArtworkDetailsLoader,
-      }
-
-      const data = await runAuthenticatedQuery(mutation, context)
+      const data = await runAuthenticatedQuery(mutation, defaultContext)
       const { artworkOrError } = data.myCollectionCreateArtwork
 
       expect(artworkOrError).toEqual({
@@ -112,13 +114,7 @@ describe("myCollectionCreateArtworkMutation", () => {
     it("does nothing when there are no image urls", async () => {
       const mutation = computeMutationInput([])
 
-      const context = {
-        myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
-        myCollectionArtworkLoader: additionalArtworkDetailsLoader,
-        myCollectionCreateImageLoader: mockCreateImageLoader,
-      }
-
-      const data = await runAuthenticatedQuery(mutation, context)
+      const data = await runAuthenticatedQuery(mutation, defaultContext)
       const { artworkOrError } = data.myCollectionCreateArtwork
 
       expect(artworkOrError).toHaveProperty("artwork")
@@ -130,13 +126,7 @@ describe("myCollectionCreateArtworkMutation", () => {
       const externalImageUrls = ["http://example.com/path/to/image.jpg"]
       const mutation = computeMutationInput(externalImageUrls)
 
-      const context = {
-        myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
-        myCollectionArtworkLoader: additionalArtworkDetailsLoader,
-        myCollectionCreateImageLoader: mockCreateImageLoader,
-      }
-
-      const data = await runAuthenticatedQuery(mutation, context)
+      const data = await runAuthenticatedQuery(mutation, defaultContext)
       const { artworkOrError } = data.myCollectionCreateArtwork
 
       expect(artworkOrError).toHaveProperty("artwork")
@@ -150,13 +140,7 @@ describe("myCollectionCreateArtworkMutation", () => {
       ]
       const mutation = computeMutationInput(externalImageUrls)
 
-      const context = {
-        myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
-        myCollectionArtworkLoader: additionalArtworkDetailsLoader,
-        myCollectionCreateImageLoader: mockCreateImageLoader,
-      }
-
-      const data = await runAuthenticatedQuery(mutation, context)
+      const data = await runAuthenticatedQuery(mutation, defaultContext)
       const { artworkOrError } = data.myCollectionCreateArtwork
 
       expect(artworkOrError).toHaveProperty("artwork")
