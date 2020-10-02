@@ -1,6 +1,15 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
+const newArtwork = { id: "some-artwork-id" }
+const successfulCreateArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
+
+const serverError = "Error creating artwork"
+const error = new Error(
+  `https://stagingapi.artsy.net/api/v1/my_collection?id=some-artwork-id - {"error":"${serverError}"}`
+)
+const failureCreateArtworkLoader = jest.fn().mockRejectedValue(error)
+
 const computeMutationInput = (externalImageUrls: string[] = []): string => {
   const mutation = gql`
     mutation {
@@ -51,28 +60,15 @@ describe("myCollectionCreateArtworkMutation", () => {
     it("returns that error", async () => {
       const mutation = computeMutationInput()
 
-      const serverError = "Error creating artwork"
-
-      const error = new Error(
-        `https://stagingapi.artsy.net/api/v1/my_collection?id=some-artwork-id - {"error":"${serverError}"}`
-      )
-
-      const mockLoader = jest.fn().mockRejectedValue(error)
-
       const context = {
-        myCollectionCreateArtworkLoader: mockLoader,
+        myCollectionCreateArtworkLoader: failureCreateArtworkLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
-      expect(data).toEqual({
-        myCollectionCreateArtwork: {
-          artworkOrError: {
-            mutationError: {
-              message: serverError,
-            },
-          },
-        },
-      })
+      const { artworkOrError } = data.myCollectionCreateArtwork
+      const { message } = artworkOrError.mutationError
+
+      expect(message).toEqual(serverError)
     })
   })
 
@@ -80,31 +76,26 @@ describe("myCollectionCreateArtworkMutation", () => {
     it("returns details of the new artwork", async () => {
       const mutation = computeMutationInput()
 
-      const newArtwork = { id: "some-artwork-id" }
-      const mockLoader = jest.fn().mockResolvedValue(newArtwork)
-
       const additionalArtworkDetails = { medium: "Painting" }
       const anotherMockLoader = jest
         .fn()
         .mockResolvedValue(additionalArtworkDetails)
 
       const context = {
-        myCollectionCreateArtworkLoader: mockLoader,
+        myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
         myCollectionArtworkLoader: anotherMockLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
-      expect(data).toEqual({
-        myCollectionCreateArtwork: {
-          artworkOrError: {
-            artwork: {
-              medium: "Painting",
-            },
-            artworkEdge: {
-              node: {
-                medium: "Painting",
-              },
-            },
+      const { artworkOrError } = data.myCollectionCreateArtwork
+
+      expect(artworkOrError).toEqual({
+        artwork: {
+          medium: "Painting",
+        },
+        artworkEdge: {
+          node: {
+            medium: "Painting",
           },
         },
       })
@@ -115,9 +106,6 @@ describe("myCollectionCreateArtworkMutation", () => {
     it("does nothing when there are no image urls", async () => {
       const mutation = computeMutationInput([])
 
-      const newArtwork = { id: "some-artwork-id" }
-      const mockLoader = jest.fn().mockResolvedValue(newArtwork)
-
       const additionalArtworkDetails = { medium: "Painting" }
       const anotherMockLoader = jest
         .fn()
@@ -126,16 +114,16 @@ describe("myCollectionCreateArtworkMutation", () => {
       const yetAnotherMockLoader = jest.fn()
 
       const context = {
-        myCollectionCreateArtworkLoader: mockLoader,
+        myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
         myCollectionArtworkLoader: anotherMockLoader,
         myCollectionCreateImageLoader: yetAnotherMockLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
       const { artworkOrError } = data.myCollectionCreateArtwork
+
       expect(artworkOrError).toHaveProperty("artwork")
       expect(artworkOrError).not.toHaveProperty("error")
-
       expect(yetAnotherMockLoader).not.toBeCalled()
     })
 
@@ -143,9 +131,6 @@ describe("myCollectionCreateArtworkMutation", () => {
       const externalImageUrls = ["http://example.com/path/to/image.jpg"]
       const mutation = computeMutationInput(externalImageUrls)
 
-      const newArtwork = { id: "some-artwork-id" }
-      const mockLoader = jest.fn().mockResolvedValue(newArtwork)
-
       const additionalArtworkDetails = { medium: "Painting" }
       const anotherMockLoader = jest
         .fn()
@@ -154,13 +139,14 @@ describe("myCollectionCreateArtworkMutation", () => {
       const yetAnotherMockLoader = jest.fn()
 
       const context = {
-        myCollectionCreateArtworkLoader: mockLoader,
+        myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
         myCollectionArtworkLoader: anotherMockLoader,
         myCollectionCreateImageLoader: yetAnotherMockLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
       const { artworkOrError } = data.myCollectionCreateArtwork
+
       expect(artworkOrError).toHaveProperty("artwork")
       expect(artworkOrError).not.toHaveProperty("error")
       expect(yetAnotherMockLoader).not.toBeCalled()
@@ -172,9 +158,6 @@ describe("myCollectionCreateArtworkMutation", () => {
       ]
       const mutation = computeMutationInput(externalImageUrls)
 
-      const newArtwork = { id: "some-artwork-id" }
-      const mockLoader = jest.fn().mockResolvedValue(newArtwork)
-
       const additionalArtworkDetails = { medium: "Painting" }
       const anotherMockLoader = jest
         .fn()
@@ -183,12 +166,16 @@ describe("myCollectionCreateArtworkMutation", () => {
       const yetAnotherMockLoader = jest.fn()
 
       const context = {
-        myCollectionCreateArtworkLoader: mockLoader,
+        myCollectionCreateArtworkLoader: successfulCreateArtworkLoader,
         myCollectionArtworkLoader: anotherMockLoader,
         myCollectionCreateImageLoader: yetAnotherMockLoader,
       }
 
-      await runAuthenticatedQuery(mutation, context)
+      const data = await runAuthenticatedQuery(mutation, context)
+      const { artworkOrError } = data.myCollectionCreateArtwork
+
+      expect(artworkOrError).toHaveProperty("artwork")
+      expect(artworkOrError).not.toHaveProperty("error")
       expect(yetAnotherMockLoader).toBeCalledWith(newArtwork.id, {
         source_bucket: "test-upload-bucket",
         source_key: "path/to/image.jpg",
