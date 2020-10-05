@@ -21,7 +21,7 @@ describe("myCollectionDeleteArtworkMutation", () => {
 
   it("returns an error", async () => {
     const context = {
-      myCollectionDeleteArtworkLoader: () =>
+      deleteArtworkLoader: () =>
         Promise.reject(
           new Error(
             `https://stagingapi.artsy.net/api/v1/my_collection/artworks/foo - {"error":"Error deleting artwork"}`
@@ -43,8 +43,7 @@ describe("myCollectionDeleteArtworkMutation", () => {
 
   it("deletes an artwork", async () => {
     const context = {
-      myCollectionDeleteArtworkLoader: () =>
-        Promise.resolve({ name: "My Collection" }),
+      deleteArtworkLoader: () => Promise.resolve({ deleted: true }),
     }
 
     const data = await runAuthenticatedQuery(mutation, context)

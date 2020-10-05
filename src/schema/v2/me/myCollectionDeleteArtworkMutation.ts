@@ -22,16 +22,13 @@ export const myCollectionDeleteArtworkMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (
-    { artworkId },
-    { myCollectionDeleteArtworkLoader }
-  ) => {
-    if (!myCollectionDeleteArtworkLoader) {
+  mutateAndGetPayload: async ({ artworkId }, { deleteArtworkLoader }) => {
+    if (!deleteArtworkLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const response = await myCollectionDeleteArtworkLoader(artworkId)
+      const response = await deleteArtworkLoader(artworkId)
 
       // Response from DELETE isn't internalID of deleted artwork and as such
       // we don't want to match on the MyCollectionArtworkMutationSuccess  type,
