@@ -47,7 +47,7 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     creditCardLoader: gravityLoader((id) => `credit_card/${id}`),
-    deleteArtworkLoader: gravityLoader(
+    deleteSavedArtworkLoader: gravityLoader(
       (id) => `collection/saved-artwork/artwork/${id}`,
       {},
       { method: "DELETE" }

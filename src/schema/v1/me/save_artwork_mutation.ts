@@ -24,13 +24,13 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   },
   mutateAndGetPayload: (
     { artwork_id, remove },
-    { userID, saveArtworkLoader, deleteArtworkLoader }
+    { userID, saveArtworkLoader, deleteSavedArtworkLoader }
   ) => {
-    if (!deleteArtworkLoader || !saveArtworkLoader) {
+    if (!deleteSavedArtworkLoader || !saveArtworkLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
-    const loader = remove ? deleteArtworkLoader : saveArtworkLoader
+    const loader = remove ? deleteSavedArtworkLoader : saveArtworkLoader
     return loader(artwork_id, { user_id: userID }).then(() => ({ artwork_id }))
   },
 })
