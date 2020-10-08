@@ -192,7 +192,7 @@ export const exchangeStitchingEnvironment = ({
     }
 
     extend type Me {
-      orders(first: Int, last: Int, after: String, before: String, mode: CommerceOrderModeEnum, sellerId: String, sort: CommerceOrderConnectionSortEnum, state: CommerceOrderStateEnum): CommerceOrderConnectionWithTotalCount
+      orders(first: Int, last: Int, after: String, before: String, mode: CommerceOrderModeEnum, sellerId: String, sort: CommerceOrderConnectionSortEnum, states: [CommerceOrderStateEnum!]): CommerceOrderConnectionWithTotalCount
     }
   `,
 
