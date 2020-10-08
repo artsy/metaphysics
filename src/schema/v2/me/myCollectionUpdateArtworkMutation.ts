@@ -3,6 +3,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { formatGravityError } from "lib/gravityErrorHandler"
+import { computeImageSources } from "./myCollectionCreateArtworkMutation"
 
 export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
   any,
@@ -39,6 +40,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     editionSize: {
       type: GraphQLString,
     },
+    externalImageUrls: {
+      type: new GraphQLList(GraphQLString),
+    },
     height: {
       type: GraphQLString,
     },
@@ -69,11 +73,12 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       costMinor,
       editionNumber,
       editionSize,
+      externalImageUrls = [],
       ...rest
     },
-    { myCollectionUpdateArtworkLoader }
+    { myCollectionUpdateArtworkLoader, myCollectionCreateImageLoader }
   ) => {
-    if (!myCollectionUpdateArtworkLoader) {
+    if (!myCollectionUpdateArtworkLoader || !myCollectionCreateImageLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
@@ -86,6 +91,14 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         edition_size: editionSize,
         ...rest,
       })
+
+      const imageSources = computeImageSources(externalImageUrls)
+
+      const createImagePromises = imageSources.map((source) => {
+        return myCollectionCreateImageLoader(artworkId, source)
+      })
+
+      await Promise.all(createImagePromises)
 
       return {
         ...response,

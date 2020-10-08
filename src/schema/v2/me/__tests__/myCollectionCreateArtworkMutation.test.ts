@@ -1,3 +1,4 @@
+import { computeImageSources } from "../myCollectionCreateArtworkMutation"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
@@ -109,29 +110,6 @@ describe("myCollectionCreateArtworkMutation", () => {
   })
 
   describe("creating additional images", () => {
-    it("does nothing when there are no image urls", async () => {
-      const mutation = computeMutationInput([])
-
-      const data = await runAuthenticatedQuery(mutation, defaultContext)
-      const { artworkOrError } = data.myCollectionCreateArtwork
-
-      expect(artworkOrError).toHaveProperty("artwork")
-      expect(artworkOrError).not.toHaveProperty("error")
-      expect(createImageLoader).not.toBeCalled()
-    })
-
-    it("does nothing with an image url that doesn't match", async () => {
-      const externalImageUrls = ["http://example.com/path/to/image.jpg"]
-      const mutation = computeMutationInput(externalImageUrls)
-
-      const data = await runAuthenticatedQuery(mutation, defaultContext)
-      const { artworkOrError } = data.myCollectionCreateArtwork
-
-      expect(artworkOrError).toHaveProperty("artwork")
-      expect(artworkOrError).not.toHaveProperty("error")
-      expect(createImageLoader).not.toBeCalled()
-    })
-
     it("creates an additional image with bucket and key with a valid image url", async () => {
       const externalImageUrls = [
         "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
@@ -172,23 +150,38 @@ describe("myCollectionCreateArtworkMutation", () => {
 
       expect(message).toEqual(serverError)
     })
+  })
+})
 
-    it("tries to create each image even if some are invalid", async () => {
-      const externalImageUrls = [
-        "http://example.com/path/to/image.jpg",
-        "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
-      ]
-      const mutation = computeMutationInput(externalImageUrls)
+describe("computeImageSources", () => {
+  it("returns and empty array with an empty list of external urls", () => {
+    const externalImageUrls = []
+    const imageSources = computeImageSources(externalImageUrls)
+    expect(imageSources).toEqual([])
+  })
 
-      const data = await runAuthenticatedQuery(mutation, defaultContext)
-      const { artworkOrError } = data.myCollectionCreateArtwork
+  it("filters out urls that don't match the regex", () => {
+    const externalImageUrls = ["http://example.com/path/to/image.jpg"]
+    const imageSources = computeImageSources(externalImageUrls)
+    expect(imageSources).toEqual([])
+  })
 
-      expect(artworkOrError).toHaveProperty("artwork")
-      expect(artworkOrError).not.toHaveProperty("error")
-      expect(createImageLoader).toBeCalledWith(newArtwork.id, {
-        source_bucket: "test-upload-bucket",
-        source_key: "path/to/image.jpg",
-      })
-    })
+  it("returns source params for urls that match the regex", () => {
+    const externalImageUrls = [
+      "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
+    ]
+    const imageSources = computeImageSources(externalImageUrls)
+    expect(imageSources).toEqual([
+      { source_bucket: "test-upload-bucket", source_key: "path/to/image.jpg" },
+    ])
+  })
+
+  it("tests all passed URLs", () => {
+    const externalImageUrls = [
+      "http://example.com/path/to/image.jpg",
+      "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
+    ]
+    const imageSources = computeImageSources(externalImageUrls)
+    expect(imageSources.length).toEqual(1)
   })
 })
