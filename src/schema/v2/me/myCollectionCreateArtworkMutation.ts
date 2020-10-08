@@ -5,6 +5,26 @@ import { GraphQLNonNull } from "graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { formatGravityError } from "lib/gravityErrorHandler"
 
+const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
+
+export const computeImageSources = (externalImageUrls) => {
+  const imageSources = externalImageUrls.map((url) => {
+    const match = url.match(externalUrlRegex)
+
+    if (!match) return
+
+    const { sourceBucket, sourceKey } = match.groups
+
+    return {
+      source_bucket: sourceBucket,
+      source_key: sourceKey,
+    }
+  })
+
+  const filteredImageSources = imageSources.filter(Boolean)
+  return filteredImageSources
+}
+
 export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   any,
   any,
@@ -91,23 +111,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       })
 
       const artworkId = response.id
-      const regex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
-
-      const imageSources = externalImageUrls
-        .map((url) => {
-          const match = url.match(regex)
-
-          if (!match) return
-
-          const { sourceBucket, sourceKey } = match.groups
-
-          return {
-            source_bucket: sourceBucket,
-            source_key: sourceKey,
-          }
-        })
-        .filter(Boolean)
-
+      const imageSources = computeImageSources(externalImageUrls)
       const createImagePromises = imageSources.map((source) => {
         return myCollectionCreateImageLoader(artworkId, source)
       })
