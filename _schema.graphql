@@ -11520,7 +11520,7 @@ type Query {
     mode: CommerceOrderModeEnum
     sellerId: String
     sort: CommerceOrderConnectionSortEnum
-    state: CommerceOrderStateEnum
+    states: [CommerceOrderStateEnum!]
   ): CommerceOrderConnectionWithTotalCount
 
   # Find an order by ID

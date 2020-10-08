@@ -1169,7 +1169,7 @@ type Query {
     mode: OrderModeEnum
     sellerId: String
     sort: OrderConnectionSortEnum
-    state: OrderStateEnum
+    states: [OrderStateEnum!]
   ): OrderConnectionWithTotalCount
 
   """
