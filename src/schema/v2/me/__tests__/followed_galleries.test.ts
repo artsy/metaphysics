@@ -1,5 +1,4 @@
 /* eslint-disable promise/always-return */
-import { assign } from "lodash"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("Me", () => {
