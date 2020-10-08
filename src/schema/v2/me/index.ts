@@ -41,6 +41,7 @@ import {
   PendingIdentityVerification,
 } from "./identity_verification"
 import { MyCollection } from "./myCollection"
+import FollowedGalleries from "./followed_galleries"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -74,6 +75,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
           artistsConnection: FollowedArtists,
           artworksConnection: SavedArtworks,
           fairsConnection: FollowedFairs,
+          galleriesConnection: FollowedGalleries,
           genesConnection: FollowedGenes,
           showsConnection: FollowedShows,
         },
