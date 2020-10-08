@@ -34,6 +34,7 @@ export class SearchableItemPresenter {
         return `Browse current exhibitions in ${display}`
       case "Collection":
       case "ArtistSeries":
+      case "ViewingRoom":
         return stripTags(description)
       default:
         return undefined
@@ -60,6 +61,8 @@ export class SearchableItemPresenter {
         return `/show/${id}`
       case "ArtistSeries":
         return `/artist-series/${id}`
+      case "ViewingRoom":
+        return `/viewing-room/${id}`
       default:
         return `/${model}/${id}`
     }
@@ -94,6 +97,8 @@ export class SearchableItemPresenter {
         return "Collection"
       case "ArtistSeries":
         return "Artist Series"
+      case "ViewingRoom":
+        return "Viewing Room"
       default:
         return label
     }
