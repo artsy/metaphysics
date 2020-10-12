@@ -39,7 +39,7 @@ describe("SaveArtworkMutation", () => {
     return runAuthenticatedQuery(mutation, {
       saveArtworkLoader,
       artworkLoader,
-      deleteArtworkLoader: jest.fn(),
+      deleteSavedArtworkLoader: jest.fn(),
     }).then(({ saveArtwork }) => {
       expect(saveArtwork).toEqual(expectedArtworkData)
     })
@@ -76,12 +76,12 @@ describe("SaveArtworkMutation", () => {
       },
     }
 
-    const deleteArtworkLoader = () => Promise.resolve(mutationResponse)
+    const deleteSavedArtworkLoader = () => Promise.resolve(mutationResponse)
     const artworkLoader = () => Promise.resolve(artwork)
 
     expect.assertions(1)
     return runAuthenticatedQuery(mutation, {
-      deleteArtworkLoader,
+      deleteSavedArtworkLoader,
       artworkLoader,
       saveArtworkLoader: jest.fn(),
     }).then(({ saveArtwork }) => {

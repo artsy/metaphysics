@@ -141,7 +141,7 @@ const MyCollectionArtworkMutationDeleteSuccess = new GraphQLObjectType<
 >({
   name: "MyCollectionArtworkMutationDeleteSuccess",
   isTypeOf: (data) => {
-    return data.name === "My Collection"
+    return data.deleted
   },
   fields: () => ({
     success: {
