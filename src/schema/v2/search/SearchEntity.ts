@@ -51,6 +51,9 @@ export const SearchEntity = new GraphQLEnumType({
     TAG: {
       value: "Tag",
     },
+    VIEWING_ROOM: {
+      value: "ViewingRoom",
+    },
   },
 })
 
