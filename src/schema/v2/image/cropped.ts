@@ -1,4 +1,3 @@
-import _ from "lodash"
 import proxy from "./proxies"
 import { setVersion } from "./normalize"
 import {
@@ -10,39 +9,69 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { OriginalImage } from "./index"
 
-export const croppedImageUrl = (image, options) => {
-  const opts = _.defaults(options, {
-    version: ["large"],
-  })
+type CroppedImageArguments = {
+  version?: string[]
+  width: number
+  height: number
+}
 
-  const { width, height } = opts
-  const src = setVersion(image, opts.version)
-  const url = proxy(src, "crop", width, height)
+type CroppedImageUrl = {
+  width: number
+  height: number
+  url: string
+  src: string
+  srcSet: string
+}
+
+export const croppedImageUrl = (
+  image: OriginalImage,
+  { version = ["large"], width, height }: CroppedImageArguments
+): CroppedImageUrl => {
+  const src = setVersion(image as any, version)
+
+  const url1x = proxy(src, "crop", width, height)
+  const url2x = proxy(src, "crop", width * 2, height * 2)
 
   return {
     width,
     height,
-    url,
+    url: url1x,
+    src: url1x,
+    srcSet: `${url1x} 1x, ${url2x} 2x`,
   }
 }
 
-const CroppedImageUrlType = new GraphQLObjectType<any, ResolverContext>({
+const CroppedImageUrlType = new GraphQLObjectType<
+  CroppedImageUrl,
+  ResolverContext
+>({
   name: "CroppedImageUrl",
   fields: {
     width: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
     height: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
     url: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    src: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    srcSet: {
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
 })
 
-const Cropped: GraphQLFieldConfig<void, ResolverContext> = {
+const Cropped: GraphQLFieldConfig<
+  OriginalImage,
+  ResolverContext,
+  CroppedImageArguments
+> = {
   args: {
     width: {
       type: new GraphQLNonNull(GraphQLInt),
