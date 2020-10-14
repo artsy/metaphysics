@@ -10,7 +10,7 @@ services:
       - ../.env.shared
       - ../.env
     ports:
-      - 5001:5001
+      - 3000:3000
     depends_on:
       - metaphysics-memcached
   metaphysics-memcached:
