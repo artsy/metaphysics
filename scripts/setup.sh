@@ -1,28 +1,32 @@
-#!/bin/bash
 # This assumes you have general prerequisites installed as by:
 # https://github.com/artsy/potential/blob/master/scripts/setup
-
-# Exit if any subcommand fails
-set -e
+#
+# Run like:
+#   source scripts/setup.sh
+#
+# Commands that may fail have "|| return" to avoid continuing or interfering with terminal.
 
 if [ ! -z $NVM_DIR ]; then # skip nvm steps if not available
-  echo "Configuring node 12"
+  echo 'Configuring node 12...'
   source ~/.nvm/nvm.sh
-  nvm install
+  nvm install || return
 fi
 
-echo 'Install yarn and memchached'
-brew bundle
+echo 'Installing yarn and memcached...'
+brew bundle || return
 
-echo 'Using yarn to install required node packages'
-yarn install
+echo 'Installing node packages...'
+yarn install || return
 
-echo 'Copy the example env to the end file'
-cp .env.example .env
+if [ -e ".env" ]; then
+  echo '.env file already exists, so skipping initialization...'
+else
+  echo 'Initializing .env from .env.example (for any custom configuration)...'
+  cp .env.example .env
+fi
 
-echo 'Aws fetch the shared config file'
-aws s3 cp s3://artsy-citadel/dev/.env.metaphysics .env.shared
+echo 'Updating .env.shared file (for shared configuration)...'
+aws s3 cp s3://artsy-citadel/dev/.env.metaphysics .env.shared || return
 
-cat .env.shared  > .env
-
-echo 'Now run: yarn dev'
+echo 'Setup complete! To start the server, run:
+  yarn dev'

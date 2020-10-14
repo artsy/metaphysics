@@ -84,9 +84,6 @@ const {
 } = process.env
 
 const mustHave = {
-  // Runtime Deps
-  MEMCACHED_URL,
-
   // Reliant Artsy Services
   CAUSALITY_API_BASE,
   CONVECTION_API_BASE,
@@ -193,7 +190,7 @@ export default {
   IP_BLACKLIST: IP_BLACKLIST || "",
   LOG_QUERY_DETAILS_THRESHOLD,
   MEMCACHED_MAX_POOL: Number(MEMCACHED_MAX_POOL) || 10,
-  MEMCACHED_URL,
+  MEMCACHED_URL: MEMCACHED_URL || "localhost:11211",
   METAPHYSICS_STAGING_ENDPOINT,
   METAPHYSICS_PRODUCTION_ENDPOINT,
   NODE_ENV: NODE_ENV || "development",

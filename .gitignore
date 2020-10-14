@@ -14,3 +14,4 @@ resourceRegistry.log
 tmp
 coverage*
 .hokusai-tmp
+Brewfile.lock.json
