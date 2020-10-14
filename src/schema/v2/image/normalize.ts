@@ -18,7 +18,7 @@ export const grab: any = flow(pick, values, first)
 export const setVersion = (
   { image_url, image_urls, image_versions = [] },
   versions
-) => {
+): string => {
   const version =
     find(versions, curry(includes)(image_versions)) ||
     last(image_versions.filter((version) => version !== "normalized"))

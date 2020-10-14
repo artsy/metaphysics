@@ -1,4 +1,4 @@
-import _ from "lodash"
+import { scale } from "proportional-scale"
 import proxy from "./proxies"
 import { setVersion } from "./normalize"
 import {
@@ -8,46 +8,92 @@ import {
   GraphQLString,
   GraphQLList,
   GraphQLFieldConfig,
+  GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { OriginalImage } from "./index"
 
-export const resizedImageUrl = (image, options) => {
-  const opts = _.defaults(options, {
-    version: ["large"],
-  })
+type ResizedImageArguments = {
+  version?: string[]
+  width?: number
+  height?: number
+}
 
-  const desired = _.pick(opts, "width", "height")
-  const factor =
-    _.min(
-      _.map(desired, (value, attr) => {
-        return value / image[`original_${attr}`]
-      })
-    ) || Infinity
+type ResizedImageUrl = {
+  factor: number
+  width: number | null
+  height: number | null
+  url: string
+  src: string
+  srcSet: string
+}
 
-  let width: number | null = null
-  let height: number | null = null
+export const resizedImageUrl = (
+  image: OriginalImage,
+  {
+    version = ["large"],
+    width: targetWidth,
+    height: targetHeight,
+  }: ResizedImageArguments = {}
+): ResizedImageUrl => {
+  const src = setVersion(image as any, version)
 
-  if (_.isFinite(factor)) {
-    width = Math.floor(image.original_width * factor)
-    height = Math.floor(image.original_height * factor)
+  const {
+    original_width: originalWidth,
+    original_height: originalHeight,
+  } = image
+
+  // If there is no input `width` or `height`, just return the `src`
+  if (!targetWidth && !targetHeight) {
+    return {
+      factor: 1,
+      width: originalWidth ?? null,
+      height: originalHeight ?? null,
+      url: src,
+      src,
+      srcSet: `${src} 1x`,
+    }
   }
 
-  const src = setVersion(image, opts.version)
-  const url = proxy(src, "resize", width || opts.width, height || opts.height)
+  const scaleTo = !!targetWidth
+    ? { maxWidth: targetWidth! }
+    : { maxHeight: targetHeight! }
+
+  const scaled = scale({
+    width: originalWidth ?? 0,
+    height: originalHeight ?? 0,
+    ...scaleTo,
+  })
+
+  const proxiedWidth = scaled.width || targetWidth
+  const proxiedHeight = scaled.height || targetHeight
+
+  const url1x = proxy(src, "resize", proxiedWidth, proxiedHeight)
+  const url2x = proxy(
+    src,
+    "resize",
+    (proxiedWidth || 0) * 2 || undefined,
+    (proxiedHeight || 0) * 2 || undefined
+  )
 
   return {
-    factor,
-    width,
-    height,
-    url,
+    factor: scaled.scale,
+    width: scaled.width || null,
+    height: scaled.height || null,
+    url: url1x,
+    src: url1x,
+    srcSet: `${url1x} 1x, ${url2x} 2x`,
   }
 }
 
-const ResizedImageUrlType = new GraphQLObjectType<any, ResolverContext>({
+const ResizedImageUrlType = new GraphQLObjectType<
+  ResizedImageUrl,
+  ResolverContext
+>({
   name: "ResizedImageUrl",
   fields: {
     factor: {
-      type: GraphQLFloat,
+      type: new GraphQLNonNull(GraphQLFloat),
     },
     width: {
       type: GraphQLInt,
@@ -56,12 +102,22 @@ const ResizedImageUrlType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLInt,
     },
     url: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    src: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    srcSet: {
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
 })
 
-const Resized: GraphQLFieldConfig<void, ResolverContext> = {
+const Resized: GraphQLFieldConfig<
+  OriginalImage,
+  ResolverContext,
+  ResizedImageArguments
+> = {
   args: {
     width: {
       type: GraphQLInt,

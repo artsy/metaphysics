@@ -17,6 +17,14 @@ import ResizedUrl from "./resized"
 import VersionedUrl from "./versioned"
 import { NullableIDField } from "schema/v2/object_identification"
 
+export type OriginalImage = {
+  original_width?: number
+  original_height?: number
+  image_url?: string
+  image_urls?: string[]
+  image_versions?: string[]
+}
+
 export { normalize as normalizeImageData } from "./normalize"
 
 export const getDefault = (images) => {
