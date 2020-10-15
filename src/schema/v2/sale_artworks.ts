@@ -81,6 +81,8 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     },
     aggregations: {
       type: new GraphQLList(SaleArtworksAggregation),
+      description:
+        "Please make sure to supply the TOTAL aggregation if you will be setting any aggregations",
     },
     liveSale: {
       type: GraphQLBoolean,
