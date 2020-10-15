@@ -54,17 +54,9 @@ cd metaphysics
 source ./scripts/setup.sh
 ```
 
-For Artsy staff wanting to expand on your `.env`, you can use `hokusai staging env get` to see staging's env vars. Or better yet, use [copy_env][] to match
-staging:
-
-[copy_env]: https://github.com/jonallured/copy_env
-
-```
-copy_env hokusai
-```
-
-That command will dump the env vars from staging and do a find/replace on the
-keys from staging that are listed as REPLACE in the example file.
+This will pull the environment variables from aws into .env.shared. 
+It will also overwrite .env with the values in .env.example. If you need to override any of these values
+or add new .env values place them in the .env file.
 
 ### Development
 
@@ -73,9 +65,6 @@ With your dependencies set up, you can run Metaphysics by running:
 ```sh
 yarn dev
 ```
-
-This will pull the needed environment variables into .env.shared. If you need to override any of these values
-or add new .env values place them in the .env file.
 
 Which will start the server on http://localhost:3000
 
@@ -88,12 +77,6 @@ You can also use hokusai by running the below command.
 Be sure that memcached is no longer running before starting hokusai by running
 
 ```brew services stop memcached
-
-```
-
-To test run
-
-```hokusai test
 
 ```
 
