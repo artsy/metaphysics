@@ -6,9 +6,11 @@ services:
       service: metaphysics
     environment:
       - MEMCACHED_URL=metaphysics-memcached:11211
-    env_file: ../.env
+    env_file:
+      - ../.env.shared
+      - ../.env
     ports:
-      - 5001:5001
+      - 3000:3000
     depends_on:
       - metaphysics-memcached
   metaphysics-memcached:

@@ -1,5 +1,6 @@
 .env
 .env.staging
+.env.shared
 .DS_Store
 build
 node_modules
@@ -13,3 +14,4 @@ resourceRegistry.log
 tmp
 coverage*
 .hokusai-tmp
+Brewfile.lock.json

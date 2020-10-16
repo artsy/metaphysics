@@ -16,7 +16,7 @@
     "build:remote-schemas": "cp src/data/*.graphql build/src/data/",
     "build": "yarn build:lib && yarn build:index && yarn build:fixtures && yarn build:remote-schemas",
     "ci": "yarn test",
-    "dev": "DEBUG=info,warn,error nf start --procfile Procfile.dev -w",
+    "dev": "DEBUG=info,warn,error PORT=3000 nf start --env .env.shared,.env --procfile Procfile.dev -w",
     "dump-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-schema.ts",
     "dump:local": "yarn dump-schema v1 _schema.graphql & yarn dump-schema v2 _schemaV2.graphql & wait",
     "dump:staging": "node scripts/dump-staging-schema.js",
