@@ -70,14 +70,14 @@ Which will start the server on http://localhost:3000
 
 You can also use hokusai by running the below command.
 
-```hokusai dev start
-
+```sh
+hokusai dev start
 ```
 
 Be sure that memcached is no longer running before starting hokusai by running
 
-```brew services stop memcached
-
+```sh
+brew services stop memcached
 ```
 
 _Recommended:_ You can run the commands inside the terminal in VS Code, then the
