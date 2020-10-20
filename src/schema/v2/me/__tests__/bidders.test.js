@@ -52,5 +52,32 @@ describe("Me", () => {
         }
       )
     })
+
+    it("calls the gravity endpoint with the `filter` param if included", () => {
+      const query = `
+        {
+          me {
+            bidders(active: true) {
+              internalID
+            }
+          }
+        }
+      `
+      const response = () =>
+        Promise.resolve([{ id: "Foo ID" }, { id: "Bar ID" }])
+      const meBiddersLoader = jest.fn(response)
+
+      return runAuthenticatedQuery(query, { meBiddersLoader }).then(
+        ({ me: { bidders } }) => {
+          expect(meBiddersLoader).toBeCalledWith(
+            expect.objectContaining({ active: true })
+          )
+          expect(bidders).toEqual([
+            { internalID: "Foo ID" },
+            { internalID: "Bar ID" },
+          ])
+        }
+      )
+    })
   })
 })
