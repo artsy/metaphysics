@@ -21,7 +21,7 @@ const FollowedFairs: GraphQLFieldConfig<void, ResolverContext> = {
       size,
       offset,
       total_count: true,
-      ownerType: "FAIR",
+      owner_types: "Fair",
     }
 
     return followedFairsLoader(gravityArgs).then(({ body, headers }) => {

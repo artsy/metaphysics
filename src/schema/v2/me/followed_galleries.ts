@@ -9,7 +9,7 @@ export const FollowedGalleryConnection = connectionDefinitions({
   nodeType: PartnerType,
 })
 
-export const GALLERY_OWNER_TYPE = "Gallery"
+export const GALLERY_OWNER_TYPE = "PartnerGallery"
 
 const FollowedGalleries: GraphQLFieldConfig<void, ResolverContext> = {
   type: FollowedGalleryConnection.connectionType,
@@ -24,7 +24,7 @@ const FollowedGalleries: GraphQLFieldConfig<void, ResolverContext> = {
       size,
       offset,
       total_count: true,
-      ownerType: GALLERY_OWNER_TYPE,
+      owner_types: GALLERY_OWNER_TYPE,
     }
 
     return followedPartnersLoader(gravityArgs).then(({ body, headers }) => {
