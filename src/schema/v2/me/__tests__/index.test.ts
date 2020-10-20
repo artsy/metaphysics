@@ -12,6 +12,7 @@ describe("me/index", () => {
         identityVerified
         hasSecondFactorEnabled
         hasPassword
+        labFeatures
         receivePurchaseNotification
         receiveOutbidNotification
         receiveLotOpeningSoonNotification
@@ -63,6 +64,7 @@ describe("me/index", () => {
       identity_verified: true,
       second_factor_enabled: true,
       has_password: false,
+      lab_features: ["CMS Batch Edit", "Collector Resume"],
       receive_purchase_notification: false,
       receive_outbid_notification: true,
       receive_lot_opening_soon_notification: false,
@@ -84,6 +86,7 @@ describe("me/index", () => {
           identityVerified: true,
           hasSecondFactorEnabled: true,
           hasPassword: false,
+          labFeatures: ["CMS Batch Edit", "Collector Resume"],
           receivePurchaseNotification: false,
           receiveOutbidNotification: true,
           receiveLotOpeningSoonNotification: false,
