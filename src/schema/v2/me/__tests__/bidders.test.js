@@ -63,8 +63,7 @@ describe("Me", () => {
           }
         }
       `
-      const response = () =>
-        Promise.resolve([{ id: "Foo ID" }, { id: "Bar ID" }])
+      const response = () => Promise.resolve([])
       const meBiddersLoader = jest.fn(response)
 
       return runAuthenticatedQuery(query, { meBiddersLoader }).then(
@@ -72,10 +71,6 @@ describe("Me", () => {
           expect(meBiddersLoader).toBeCalledWith(
             expect.objectContaining({ active: true })
           )
-          expect(bidders).toEqual([
-            { internalID: "Foo ID" },
-            { internalID: "Bar ID" },
-          ])
         }
       )
     })
