@@ -188,12 +188,9 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    myCollectionUpdateArtworkLoader: gravityLoader(
-      (id) => `my-collection/artworks/${id}`,
-      {
-        user_id: userID,
-        private: true,
-      },
+    updateArtworkLoader: gravityLoader(
+      (id) => `artwork/${id}`,
+      {},
       { method: "PUT" }
     ),
     deleteArtworkLoader: gravityLoader(
