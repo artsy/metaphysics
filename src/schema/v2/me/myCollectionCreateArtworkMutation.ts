@@ -94,15 +94,16 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       externalImageUrls = [],
       ...rest
     },
-    { myCollectionCreateArtworkLoader, myCollectionCreateImageLoader }
+    { createArtworkLoader, myCollectionCreateImageLoader }
   ) => {
-    if (!myCollectionCreateArtworkLoader || !myCollectionCreateImageLoader) {
+    if (!createArtworkLoader || !myCollectionCreateImageLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const response = await myCollectionCreateArtworkLoader({
+      const response = await createArtworkLoader({
         artists: artistIds,
+        collection_id: "my-collection",
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
         edition_size: editionSize,

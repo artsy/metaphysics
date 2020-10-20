@@ -175,25 +175,15 @@ export default (accessToken, userID, opts) => {
       },
       { method: "GET" }
     ),
-    myCollectionCreateArtworkLoader: gravityLoader(
-      "my-collection/artworks",
-      {
-        user_id: userID,
-        private: true,
-      },
-      { method: "POST" }
-    ),
+    createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
     myCollectionCreateImageLoader: gravityLoader(
       (id) => `artwork/${id}/image`,
       {},
       { method: "POST" }
     ),
-    myCollectionUpdateArtworkLoader: gravityLoader(
-      (id) => `my-collection/artworks/${id}`,
-      {
-        user_id: userID,
-        private: true,
-      },
+    updateArtworkLoader: gravityLoader(
+      (id) => `artwork/${id}`,
+      {},
       { method: "PUT" }
     ),
     deleteArtworkLoader: gravityLoader(
