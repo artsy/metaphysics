@@ -1,5 +1,10 @@
 import Bidder from "schema/v2/bidder"
-import { GraphQLList, GraphQLString, GraphQLFieldConfig } from "graphql"
+import {
+  GraphQLList,
+  GraphQLString,
+  GraphQLFieldConfig,
+  GraphQLBoolean,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 
 const Bidders: GraphQLFieldConfig<void, ResolverContext> = {
@@ -10,10 +15,15 @@ const Bidders: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLString,
       description: "The slug or ID of a Sale",
     },
+    active: {
+      type: GraphQLBoolean,
+      description: "Limit results to bidders in active auctions",
+    },
   },
-  resolve: (_root, { saleID }, { meBiddersLoader }) => {
+  resolve: (_root, { saleID, active }, { meBiddersLoader }) => {
     const options: any = {
       sale_id: saleID,
+      active,
     }
     if (!meBiddersLoader) return null
     return meBiddersLoader(options)
