@@ -56,6 +56,7 @@ import { UserField } from "./user"
 
 import UpdateConversationMutation from "./me/conversation/update_conversation_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
+import { submitInquiryRequestMutation } from "./me/conversation/submit_inquiry_request_mutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
 import saveArtworkMutation from "./me/saveArtworkMutation"
 import { myCollectionCreateArtworkMutation } from "./me/myCollectionCreateArtworkMutation"
@@ -200,6 +201,7 @@ export default new GraphQLSchema({
       saveArtwork: saveArtworkMutation,
       sendConfirmationEmail: sendConfirmationEmailMutation,
       sendConversationMessage: SendConversationMessageMutation,
+      submitInquiryRequestMutation,
       sendFeedback: sendFeedbackMutation,
       startIdentityVerification: startIdentityVerificationMutation,
       updateCollectorProfile: UpdateCollectorProfile,
