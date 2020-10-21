@@ -116,6 +116,11 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ identity_verified }) => identity_verified,
     },
+    labFeatures: {
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
+      description: "List of lab features for this user",
+      resolve: ({ lab_features }) => lab_features || [],
+    },
     lotsByFollowedArtistsConnection: SaleArtworksConnectionField,
     lotStanding: LotStanding,
     lotStandings: LotStandings,
