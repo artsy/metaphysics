@@ -53,7 +53,7 @@ import Show from "schema/v2/show"
 import { ArtworkContextGrids } from "./artworkContextGrids"
 import { PageInfoType } from "graphql-relay"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
-import InquiryQuestionType from "../inquiry_question"
+import { InquiryQuestionType } from "../inquiry_question"
 
 const has_price_range = (price) => {
   return new RegExp(/\-/).test(price)
@@ -339,30 +339,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(InquiryQuestionType),
         description:
           "Structured questions a collector can inquire on about this work",
-        resolve: ({ ecommerce, inquireable }) => {
-          if (!ecommerce && inquireable) {
-            /**
-             * TODO: This is temporary, fixture data hardcoded to enable the
-             * first inquiry project to be broken down into parallel tasks. Will
-             * be followed w/ a PR to hook it up to a soon to be built gravity
-             * hook.
-             */
-            return [
-              {
-                id: "price_and_availability",
-                question: "Price & Availability",
-              },
-              {
-                id: "shipping",
-                question: "Shipping",
-              },
-              {
-                id: "condition_and_provenance",
-                question: "Condition & Provenance",
-              },
-            ]
-          }
-          return null
+        resolve: ({ id }, _params, { inquiryRequestQuestionsLoader }) => {
+          return inquiryRequestQuestionsLoader({
+            inquireable_id: id,
+            inquireable_type: "Artwork",
+          })
         },
       },
       inventoryId: {

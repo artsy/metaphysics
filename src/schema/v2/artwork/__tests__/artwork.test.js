@@ -1254,7 +1254,6 @@ describe("Artwork type", () => {
     const query = `
         {
           artwork(id: "richard-prince-untitled-portrait") {
-            isInquireable
             inquiryQuestions {
               internalID
               question
@@ -1262,12 +1261,30 @@ describe("Artwork type", () => {
           }
         }
       `
-    beforeEach(() => {
-      artwork.inquireable = true
-      artwork.ecommerce = false
-    })
 
     it("returns available inquiry questions", () => {
+      const context = {
+        artworkLoader: () => {
+          return Promise.resolve({ id: "blah" })
+        },
+        inquiryRequestQuestionsLoader: () => {
+          return Promise.resolve([
+            {
+              id: "price_and_availability",
+              question: "Price & Availability",
+            },
+            {
+              id: "shipping",
+              question: "Shipping",
+            },
+            {
+              id: "condition_and_provenance",
+              question: "Condition & Provenance",
+            },
+          ])
+        },
+      }
+
       return runQuery(query, context).then((data) => {
         expect(data.artwork.inquiryQuestions).toEqual([
           {
