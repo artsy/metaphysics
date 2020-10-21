@@ -147,6 +147,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    submitArtworkInquiryRequestLoader: gravityLoader(
+      "me/artwork_inquiry_request",
+      {},
+      { method: "POST" }
+    ),
     lotStandingLoader: gravityLoader("me/lot_standings", { size: 100 }),
     meBidderPositionLoader: gravityLoader(
       (id) => `me/bidder_position/${id}/`,

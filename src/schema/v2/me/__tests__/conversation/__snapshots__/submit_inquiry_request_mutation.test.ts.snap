@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SubmitInquiryRequestMutation when only message is present calls gravity loader with only message 1`] = `
+Object {
+  "inquiryRequest": Object {
+    "inquireable": Object {
+      "__typename": "Artwork",
+      "artists": Array [
+        Object {
+          "birthday": "1929",
+          "name": "Bob Ross",
+        },
+      ],
+      "title": "Happy little accident",
+    },
+    "inquirer": Object {
+      "email": "rob@ross.com",
+      "name": "Rob Ross",
+    },
+    "questions": null,
+    "shippingLocation": null,
+  },
+}
+`;
+
+exports[`SubmitInquiryRequestMutation when question is present calls gravity loader with questions and address 1`] = `
+Object {
+  "inquiryRequest": Object {
+    "inquireable": Object {
+      "__typename": "Artwork",
+      "artists": Array [
+        Object {
+          "birthday": "1929",
+          "name": "Bob Ross",
+        },
+      ],
+      "title": "Happy little accident",
+    },
+    "inquirer": Object {
+      "email": "rob@ross.com",
+      "name": "Rob Ross",
+    },
+    "questions": Array [
+      "price_and_availability",
+      "shipping_quote",
+    ],
+    "shippingLocation": Object {
+      "address": "112 Main st Brooklyn NY 11211",
+      "city": null,
+      "country": null,
+    },
+  },
+}
+`;
