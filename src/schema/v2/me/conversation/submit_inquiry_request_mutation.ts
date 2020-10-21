@@ -67,7 +67,7 @@ export const InquiryRequest = new GraphQLObjectType<any, ResolverContext>({
       type: LocationType,
       resolve: ({ inquiry_shipping_location }) => inquiry_shipping_location,
     },
-    inquiryQuestions: {
+    questions: {
       type: new GraphQLList(GraphQLString),
       resolve: ({ inquiry_questions }) => inquiry_questions,
     },

@@ -17,7 +17,7 @@ Object {
       "email": "rob@ross.com",
       "name": "Rob Ross",
     },
-    "inquiryQuestions": null,
+    "questions": null,
     "shippingLocation": null,
   },
 }
@@ -40,7 +40,7 @@ Object {
       "email": "rob@ross.com",
       "name": "Rob Ross",
     },
-    "inquiryQuestions": Array [
+    "questions": Array [
       "price_and_availability",
       "shipping_quote",
     ],

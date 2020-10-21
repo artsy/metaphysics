@@ -6471,10 +6471,10 @@ type InquiryRequest {
   id: ID!
   inquireable: InquiryItemType
   inquirer: User
-  inquiryQuestions: [String]
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
+  questions: [String]
   shippingLocation: Location
 }
 

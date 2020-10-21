@@ -55,7 +55,7 @@ describe("SubmitInquiryRequestMutation", () => {
                 city
                 country
               }
-              inquiryQuestions
+              questions
             }
           }
         }
@@ -133,7 +133,7 @@ describe("SubmitInquiryRequestMutation", () => {
                 city
                 country
               }
-              inquiryQuestions
+              questions
             }
           }
         }
