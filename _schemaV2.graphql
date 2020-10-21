@@ -6472,10 +6472,10 @@ type InquiryRequest {
   inquireable: InquiryItemType
   inquirer: User
   inquiryQuestions: [String]
-  inquiryShippingLocation: Location
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
+  shippingLocation: Location
 }
 
 enum Intents {

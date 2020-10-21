@@ -63,7 +63,7 @@ export const InquiryRequest = new GraphQLObjectType<any, ResolverContext>({
         return userByIDLoader(id)
       },
     },
-    inquiryShippingLocation: {
+    shippingLocation: {
       type: LocationType,
       resolve: ({ inquiry_shipping_location }) => inquiry_shipping_location,
     },
@@ -112,13 +112,13 @@ export const submitInquiryRequestMutation = mutationWithClientMutationId<
   ) => {
     if (inquireableType === "Artwork") {
       if (!submitArtworkInquiryRequestLoader) return null
-      const locationQuestion = questions.find(
+      const locationQuestion = questions?.find(
         (question) => question.questionID === "shipping_quote"
       )
       let inquiryShippingLocation
       if (locationQuestion) {
         try {
-          inquiryShippingLocation = JSON.parse(locationQuestion.details) // TODO: data massaging?
+          inquiryShippingLocation = JSON.parse(locationQuestion.details)
         } catch (e) {
           console.log(`Invalid location detail ${locationQuestion.details}`)
         }
@@ -126,7 +126,7 @@ export const submitInquiryRequestMutation = mutationWithClientMutationId<
       return submitArtworkInquiryRequestLoader({
         artwork: inquireableID,
         message,
-        inquiry_questions: questions.map((question) => question.questionID),
+        inquiry_questions: questions?.map((question) => question.questionID),
         inquiry_shipping_location: inquiryShippingLocation,
       })
     } else if (inquireableType === "Show") {

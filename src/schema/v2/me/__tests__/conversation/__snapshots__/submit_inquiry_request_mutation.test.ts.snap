@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SubmitInquiryRequestMutation calls gravity loader with correct params 1`] = `
+Object {
+  "inquiryRequest": Object {
+    "inquireable": Object {
+      "__typename": "Artwork",
+      "artists": Array [
+        Object {
+          "birthday": "1929",
+          "name": "Bob Ross",
+        },
+      ],
+      "title": "Happy little accident",
+    },
+    "inquirer": Object {
+      "email": "rob@ross.com",
+      "name": "Rob Ross",
+    },
+    "inquiryQuestions": Array [
+      "price_and_availability",
+      "shipping_quote",
+    ],
+    "shippingLocation": Object {
+      "address": "112 Main st Brooklyn NY 11211",
+      "city": null,
+      "country": null,
+    },
+  },
+}
+`;
