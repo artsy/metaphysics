@@ -79,6 +79,7 @@ export default (opts) => {
     genesLoader: gravityLoader("genes"),
     heroUnitsLoader: gravityLoader("site_hero_units"),
     incrementsLoader: gravityLoader("increments"),
+    inquiryRequestQuestionsLoader: gravityLoader(`inquiry_request_questions`),
     matchArtistsLoader: gravityLoader("match/artists"),
     matchGeneLoader: gravityLoader("match/genes"),
     partnerArtistLoader: gravityLoader<
