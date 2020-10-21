@@ -126,6 +126,10 @@ export const gravityStitchingEnvironment = (
         viewingRoomsConnection(published: Boolean = true, first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
       }
 
+      extend type Show {
+        viewingRoomsConnection: ViewingRoomsConnection
+      }
+
       extend type Artist {
         artistSeriesConnection(
           first: Int
@@ -518,6 +522,29 @@ export const gravityStitchingEnvironment = (
               args: {
                 partnerID,
                 ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Show: {
+        viewingRoomsConnection: {
+          fragment: gql`
+            ... on Show {
+              viewingRoomIDs
+            }
+          `,
+          resolve: ({ viewingRoomIDs: ids }, _args, context, info) => {
+            if (ids.length === 0) return null
+
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_viewingRoomsConnection",
+              args: {
+                ids,
               },
               context,
               info,

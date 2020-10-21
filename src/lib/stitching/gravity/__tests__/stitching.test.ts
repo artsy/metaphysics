@@ -524,6 +524,37 @@ describe("gravity/stitching", () => {
     })
   })
 
+  describe("#viewingRoomsConnection in Show", () => {
+    it("extends the Show type with a viewingRoomsConnection field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const showFields = await getFieldsForTypeFromSchema("Show", mergedSchema)
+
+      expect(showFields).toContain("viewingRoomsConnection")
+    })
+
+    it("resolves the viewingRoomsConnection field on Show", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { viewingRoomsConnection } = resolvers.Show
+      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+      viewingRoomsConnection.resolve(
+        { viewingRoomIDs: ["view-lots-of-cats-id"] },
+        {},
+        {},
+        info
+      )
+
+      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+        args: { ids: ["view-lots-of-cats-id"] },
+        operation: "query",
+        fieldName: "_unused_gravity_viewingRoomsConnection",
+        schema: expect.anything(),
+        context: expect.anything(),
+        info: expect.anything(),
+      })
+    })
+  })
+
   describe("#viewingRoomsConnection in Viewer", () => {
     it("extends the Viewer type with a viewingRoomsConnection field", async () => {
       const mergedSchema = await getGravityMergedSchema()

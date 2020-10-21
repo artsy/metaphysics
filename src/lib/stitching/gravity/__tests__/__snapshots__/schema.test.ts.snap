@@ -586,6 +586,7 @@ type Query {
 
     # Returns the first _n_ elements from the list.
     first: Int
+    ids: [ID!]
 
     # Returns the last _n_ elements from the list.
     last: Int
