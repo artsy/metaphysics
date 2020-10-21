@@ -594,6 +594,12 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (show, args, context) =>
           followArtistsResolver({ show_id: show.id }, args, context),
       },
+      viewingRoomIDs: {
+        type: new GraphQLNonNull(
+          GraphQLList(new GraphQLNonNull(GraphQLString))
+        ),
+        resolve: ({ viewing_room_ids }) => viewing_room_ids,
+      },
     }
   },
 })
