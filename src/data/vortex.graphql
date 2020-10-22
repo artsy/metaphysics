@@ -189,6 +189,10 @@ Inquiry stats of a partner
 """
 type PartnerInquiryStats {
   inquiryCount: Int!
+
+  """
+  Inquiry response time in seconds
+  """
   inquiryResponseTime: Int
   partnerId: String!
   period: QueryPeriodEnum!
@@ -204,6 +208,10 @@ Sales stats of a partner
 """
 type PartnerSalesStats {
   orderCount: Int!
+
+  """
+  Order response time in seconds
+  """
   orderResponseTime: Int
   partnerId: String!
   period: QueryPeriodEnum!
@@ -232,7 +240,15 @@ type PartnerStats {
   """
   Time series data on number of artworks published
   """
+  artworkPublished(period: QueryPeriodEnum!): PartnerStatsArtworksPublished
+
+  """
+  Time series data on number of artworks published
+  """
   artworksPublished(period: QueryPeriodEnum!): ArtworksPublishedStats
+    @deprecated(
+      reason: "Use artworkPublished for refactored time series bucket code"
+    )
 
   """
   Audience stats
@@ -275,7 +291,13 @@ type PartnerStats {
   """
   Different types of partner pageviews
   """
+  pageview(period: QueryPeriodEnum!): PartnerStatsPageviews
+
+  """
+  Different types of partner pageviews
+  """
   pageviews(period: QueryPeriodEnum!): PageviewStats
+    @deprecated(reason: "Use pageview for refactored time series bucket code")
   partnerId: String!
 
   """
@@ -341,6 +363,60 @@ type PartnerStats {
   """
   uniqueVisitors(period: QueryPeriodEnum!): Int
     @deprecated(reason: "Use audience() { uniqueVisitors } instead")
+}
+
+"""
+Publish artwork Series Stats
+"""
+type PartnerStatsArtworksPublished {
+  partnerId: String!
+  percentageChanged: Int!
+  period: QueryPeriodEnum!
+
+  """
+  Partner artworks published count time series
+  """
+  timeSeries(
+    cumulative: Boolean = false
+  ): [PartnerStatsArtworksPublishedTimeSeries!]!
+  totalCount: Int!
+}
+
+"""
+Artworks published time series data of a partner
+"""
+type PartnerStatsArtworksPublishedTimeSeries {
+  count: Int
+  endTime: DateTime
+  startTime: DateTime
+}
+
+"""
+Stats for pageviews of partner content
+"""
+type PartnerStatsPageviews {
+  artworkViews: Int!
+  galleryViews: Int!
+  partnerId: String!
+  percentageChanged: Int!
+  period: QueryPeriodEnum!
+  showViews: Int!
+
+  """
+  Pageviews time series
+  """
+  timeSeries(cumulative: Boolean = false): [PartnerStatsPageviewsTimeSeries!]
+  totalCount: Int!
+  uniqueVisitors: Int!
+}
+
+"""
+Pageviews time series data of a partner
+"""
+type PartnerStatsPageviewsTimeSeries {
+  count: Int
+  endTime: DateTime
+  startTime: DateTime
 }
 
 """
@@ -483,6 +559,11 @@ enum PricingContextDimensionEnum {
 }
 
 type Query {
+  """
+  Last updated timestamp
+  """
+  lastUpdatedAt: DateTime
+
   """
   Find PartnerStats
   """
