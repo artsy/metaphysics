@@ -340,12 +340,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "Structured questions a collector can inquire on about this work",
         resolve: (
-          { inquireable, id },
+          { sale_ids, id },
           _params,
           { inquiryRequestQuestionsLoader }
         ) => {
           // Sale artworks are not inquirable
-          if (!inquireable) {
+          if (!sale_ids.length) {
             return inquiryRequestQuestionsLoader({
               inquireable_id: id,
               inquireable_type: "Artwork",
