@@ -5482,6 +5482,10 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
   # Are we currently in the fair's active period?
   isActive: Boolean
   isPublished: Boolean
+
+  # All fairs have profiles. If the profile 403s, then the entire fair shouldn't
+  # be publicly visible on the frontend. This is only "enforced" on the frontend.
+  isVisible: Boolean!
   kawsCollectionSlugs: [String]!
   links(format: Format): String
   location: Location

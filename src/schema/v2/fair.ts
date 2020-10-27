@@ -215,6 +215,28 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ published }) => published,
       },
+      isVisible: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: `All fairs have profiles. If the profile 403s, then the entire fair shouldn't be publicly visible on the frontend. This is only "enforced" on the frontend.`,
+        resolve: async (
+          { default_profile_id, organizer },
+          _options,
+          { profileLoader }
+        ) => {
+          const id = default_profile_id ?? organizer?.profile_id
+
+          if (!id) {
+            return false
+          }
+
+          try {
+            await profileLoader(id)
+            return true
+          } catch {
+            return false
+          }
+        },
+      },
       location: {
         type: LocationType,
         resolve: ({ id, location, published }, options, { fairLoader }) => {
