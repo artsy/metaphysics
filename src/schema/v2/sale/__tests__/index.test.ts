@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import moment from "moment"
+import moment from "moment-timezone"
 import _ from "lodash"
 import { fill } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
@@ -611,10 +611,10 @@ describe("Sale type", () => {
       [
         {
           start_at: moment().subtract(10, "days").toISOString(),
-          live_start_at: moment().add(2, "minutes").toISOString(),
+          live_start_at: moment().add(1, "minutes").toISOString(),
           registration_ends_at: moment().subtract(2, "days").toISOString(),
         },
-        "live in 2m",
+        "live in a minute",
       ],
       [
         {
@@ -622,7 +622,7 @@ describe("Sale type", () => {
           live_start_at: moment().add(10, "minutes").toISOString(),
           registration_ends_at: moment().subtract(2, "days").toISOString(),
         },
-        "live in 10m",
+        "live in 10 minutes",
       ],
       [
         {
@@ -630,7 +630,7 @@ describe("Sale type", () => {
           live_start_at: moment().add(20, "minutes").toISOString(),
           registration_ends_at: moment().subtract(2, "days").toISOString(),
         },
-        "live in 20m",
+        "live in 20 minutes",
       ],
       [
         {
@@ -638,15 +638,22 @@ describe("Sale type", () => {
           live_start_at: moment().add(20, "days").toISOString(),
           registration_ends_at: moment().add(10, "minutes").toISOString(),
         },
-        `register by\n${moment(moment().add(10, "minutes")).format("ha")}`,
+        `register by\n${moment(moment().tz("UTC").add(10, "minutes")).format(
+          "ha"
+        )}`,
       ],
       [
         {
-          start_at: moment().subtract(10, "days").toISOString(),
-          live_start_at: moment().add(30, "days").toISOString(),
-          registration_ends_at: moment().add(10, "days").toISOString(),
+          start_at: moment().tz("UTC").subtract(10, "days").toISOString(),
+          live_start_at: moment().tz("UTC").add(30, "days").toISOString(),
+          registration_ends_at: moment()
+            .tz("UTC")
+            .add(10, "days")
+            .toISOString(),
         },
-        `register by\n${moment(moment().add(10, "days")).format("MMM D, ha")}`,
+        `register by\n${moment(moment().tz("UTC").add(10, "days")).format(
+          "MMM D, ha"
+        )}`,
       ],
       [
         {
@@ -654,7 +661,7 @@ describe("Sale type", () => {
           live_start_at: moment().add(20, "days").toISOString(),
           registration_ends_at: moment().add(10, "days").toISOString(),
         },
-        "live in 20d",
+        "live in 20 days",
         true, // used to fake registered bidder for this scenario
       ],
       [
@@ -662,42 +669,42 @@ describe("Sale type", () => {
           start_at: moment().add(1, "minutes").toISOString(),
           end_at: moment().add(10, "minutes").toISOString(),
         },
-        "ends in 10m",
+        "ends in 10 minutes",
       ],
       [
         {
           start_at: moment().add(10, "minutes").toISOString(),
           end_at: moment().add(20, "minutes").toISOString(),
         },
-        "ends in 20m",
+        "ends in 20 minutes",
       ],
       [
         {
           start_at: moment().add(1, "hours").toISOString(),
           end_at: moment().add(10, "hours").toISOString(),
         },
-        "ends in 10h",
+        "ends in 10 hours",
       ],
       [
         {
           start_at: moment().add(2, "hours").toISOString(),
           end_at: moment().add(20, "hours").toISOString(),
         },
-        "ends in 20h",
+        "ends in 20 hours",
       ],
       [
         {
           start_at: moment().add(1, "days").toISOString(),
           end_at: moment().add(2, "days").toISOString(),
         },
-        "ends in 2d",
+        "ends in 2 days",
       ],
       [
         {
           start_at: moment().add(1, "days").toISOString(),
           end_at: moment().add(5, "days").toISOString(),
         },
-        "ends in 5d",
+        "ends in 5 days",
       ],
       [
         {

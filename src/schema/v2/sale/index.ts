@@ -166,8 +166,14 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       description: { type: GraphQLString },
       displayTimelyAt: {
         type: GraphQLString,
-        resolve: (sale, _options, { meBiddersLoader }) => {
-          return displayTimelyAt({ sale, meBiddersLoader })
+        resolve: (sale, _options, { meBiddersLoader, defaultTimezone }) => {
+          const DEFAULT_TZ = "UTC"
+
+          return displayTimelyAt({
+            sale,
+            meBiddersLoader,
+            timeZone: defaultTimezone || DEFAULT_TZ,
+          })
         },
       },
       eligibleSaleArtworksCount: {

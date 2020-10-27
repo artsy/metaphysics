@@ -1,4 +1,4 @@
-import moment from "moment"
+import moment from "moment-timezone"
 import { defineCustomLocale } from "lib/helpers"
 
 const LocaleEnAuctionRelative = "en-auction-relative"
@@ -33,7 +33,7 @@ const hasEnded = (end_at) => {
   return end_at && moment(end_at) < moment()
 }
 
-export async function displayTimelyAt({ sale, meBiddersLoader }) {
+export async function displayTimelyAt({ sale, meBiddersLoader, timeZone }) {
   const { live_start_at, registration_ends_at, start_at, end_at } = sale
 
   // Don't display any info for past auctions.
@@ -57,6 +57,7 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
       const diff = moment().diff(moment(registration_ends_at), "hours")
       const format = diff > -24 ? "ha" : "MMM D, ha"
       const label = `register by\n${moment(registration_ends_at)
+        .tz(timeZone)
         .locale(LocaleEnAuctionRelative)
         .format(format)}`
       return label
@@ -95,6 +96,7 @@ export async function displayTimelyAt({ sale, meBiddersLoader }) {
     // Coming in the future (> 5 days away)
     if (isFuture) {
       return `ends ${moment(end_at)
+        .tz(timeZone)
         .locale(LocaleEnAuctionRelative)
         .format("MMM D")}`
     }
