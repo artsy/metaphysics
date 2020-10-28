@@ -1,9 +1,7 @@
 version: "2"
 services:
   metaphysics:
-    extends:
-      file: build.yml
-      service: metaphysics
+{% include 'templates/docker-compose-service.yml.j2' %}
     environment:
       - MEMCACHED_URL=metaphysics-memcached:11211
     env_file:
