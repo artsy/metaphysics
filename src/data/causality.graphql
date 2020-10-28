@@ -59,7 +59,7 @@ type IncrementPolicySubgroup {
   revisions: [IncrementPolicy!]!
 }
 
-"A lot in a sale"
+"The state of a lot"
 type Lot {
   "The Gravity Lot ID."
   id: ID!
@@ -73,14 +73,14 @@ type Lot {
   "total number of bids placed on the lot"
   bidCount: Int!
 
-  "selling price on the live auction floor"
-  floorSellingPrice: Money
+  "selling price, in minor unit, on the live auction floor"
+  floorSellingPriceCents: Long
 
   "The bidder currently winning the online portion of the auction"
   floorWinningBidder: Bidder
 
-  "asking price for online bidders"
-  onlineAskingPrice: Money!
+  "asking price, in minor unit, for online bidders"
+  onlineAskingPriceCents: Long!
 
   "The bidder currently winning the online portion of the auction"
   onlineSellingToBidder: Bidder
@@ -105,7 +105,10 @@ type LotStanding implements Node {
   isHighestBidder: Boolean!
 
   "whether this user has the leading bid"
-  lotState: Lot!
+  lotState: Lot! @deprecated(reason: "prefer `lot`")
+
+  "whether this user has the leading bid"
+  lot: Lot!
 }
 
 "A connection to a list of items."
@@ -151,7 +154,7 @@ type Mutation {
   addIncrementPolicy(
     newIncrementPolicy: NewIncrementPolicyInput!
   ): IncrementPolicy
-  addSale(id: ID!): Sale
+  addSale(id: String!): Sale
   banUserFromSale(saleId: ID!, userId: ID!): Sale
   unbanUserFromSale(userId: ID!, saleId: ID!): Sale
 }
@@ -233,7 +236,7 @@ type Query {
   ): LotStandingConnection!
 
   "Returns an increment policy with specific `id`."
-  incrementPolicy(id: ID!): IncrementPolicy
+  incrementPolicy(id: String!): IncrementPolicy
 
   "Previews a draft of a new increment policy."
   previewIncrementPolicy(
@@ -247,10 +250,13 @@ type Query {
   incrementPolicyGroups: [IncrementPolicyGroup!]!
 
   "Returns a lot with specific `id`."
-  lot(id: ID!): Lot
+  lot(id: String!): Lot
+
+  "Returns a list of lots"
+  lots(ids: [String!]!): [Lot!]!
 
   "Returns a sale with specific `id`."
-  sale(id: ID!): Sale
+  sale(id: String!): Sale
 
   "Fetches an object given its ID"
   node("The ID of an object" id: ID!): Node
@@ -265,7 +271,7 @@ enum ReserveStatus {
   ReserveNotMet
 }
 
-"A collection of lots."
+"The state of a sale"
 type Sale {
   "Users not allowed to participate in the sale"
   bannedUsers: [User!]!
@@ -276,7 +282,7 @@ type Sale {
   "The Gravity Sale ID."
   id: ID!
 
-  "The Gravity Lot ID."
+  "The Gravity Sale ID."
   internalID: ID!
 
   "The lots belonging to this sale."

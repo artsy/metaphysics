@@ -32,7 +32,7 @@ export async function useCausalityStitching() {
 }
 
 /**
- * The following is used for internal setup, initializing convection's schema /
+ * The following is used for internal setup, initializing causality's schema /
  * stitching environment and then caching the results.
  */
 
@@ -41,7 +41,7 @@ let stitchedSchema: ReturnType<typeof causalityStitchingEnvironment>
 let mergedSchema: GraphQLSchema & { transforms: any }
 
 /**
- * Gets a cached copy of the transformed convection schema
+ * Gets a cached copy of the transformed causality schema
  */
 const getCausalityTransformedSchema = async () => {
   if (!cachedSchema) {
@@ -66,7 +66,7 @@ const getCausalityStitchedSchema = async () => {
 }
 
 /**
- * Gets a cached fully setup schema with convection and the localSchema
+ * Gets a cached fully setup schema with causality and the localSchema
  */
 const getCausalityMergedSchema = async () => {
   if (!stitchedSchema) {
