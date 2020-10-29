@@ -116,7 +116,7 @@ export const submitInquiryRequestMutation = mutationWithClientMutationId<
         (question) => question.questionID === "shipping_quote"
       )
       let inquiryShippingLocation
-      if (locationQuestion) {
+      if (locationQuestion && locationQuestion.details) {
         try {
           inquiryShippingLocation = JSON.parse(locationQuestion.details)
         } catch (e) {
