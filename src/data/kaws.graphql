@@ -1,7 +1,6 @@
 # Object representing a collection page
 type Collection {
   id: ID!
-  internalID: ID!
 
   # slug version of title, used for pretty URLs (e.g. `kaws-prints` for Kaws Prints
   slug: String!

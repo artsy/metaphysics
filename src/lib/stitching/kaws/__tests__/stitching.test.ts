@@ -38,6 +38,24 @@ describe("KAWS Stitching", () => {
     })
   })
 
+  describe("MarketingCollection", () => {
+    it("extends the HomePageMarketingCollectionsModule object", async () => {
+      const mergedSchema = await getKawsMergedSchema()
+      const fields = await getFieldsForTypeFromSchema(
+        "MarketingCollection",
+        mergedSchema
+      )
+      expect(fields).toContain("internalID")
+    })
+
+    it("returns the id", async () => {
+      const { resolvers } = await getKawsStitchedSchema()
+      const resolver = resolvers.MarketingCollection.internalID.resolve
+      const result = resolver({ id: "percy" }, {}, {}, {})
+      expect(result).toEqual("percy")
+    })
+  })
+
   describe("marketingCollections", () => {
     it("passes artist internalID to kaws' artistID arg when querying `... on Artist`", async () => {
       const { resolvers } = await getKawsStitchedSchema()

@@ -25,6 +25,7 @@ export const kawsStitchingEnvironmentV1 = (
       marketingCollections(size: Int): [MarketingCollection]
     }
     extend type MarketingCollection {
+      internalID: ID!
       artworks(${argsToSDL(filterArtworksArgsV1).join("\n")}): FilterArtworks
     }
   `,
@@ -94,6 +95,14 @@ export const kawsStitchingEnvironmentV1 = (
             })
           },
         },
+        internalID: {
+          fragment: `
+          fragment MarketingCollectionIDQuery on MarketingCollection {
+            id
+          }
+        `,
+          resolve: ({ id }, _args, _context, _info) => id,
+        },
       },
     },
   }
@@ -117,6 +126,7 @@ export const kawsStitchingEnvironmentV2 = (
       marketingCollections(slugs: [String!], category: String, randomizationSeed: String, size: Int, isFeaturedArtistContent: Boolean, showOnEditorial: Boolean, artistID: String): [MarketingCollection]
     }
     extend type MarketingCollection {
+      internalID: ID!
       artworksConnection(${argsToSDL(filterArtworksArgsV2).join(
         "\n"
       )}): FilterArtworksConnection
@@ -284,6 +294,14 @@ export const kawsStitchingEnvironmentV2 = (
               info,
             })
           },
+        },
+        internalID: {
+          fragment: `
+          fragment MarketingCollectionIDQuery on MarketingCollection {
+            id
+          }
+        `,
+          resolve: ({ id }, _args, _context, _info) => id,
         },
       },
     },
