@@ -112,19 +112,19 @@ const MyCollectionArtworkMutationSuccessType = new GraphQLObjectType<
   fields: () => ({
     artwork: {
       type: ArtworkType,
-      resolve: ({ id }, _, { myCollectionArtworkLoader }) => {
-        if (myCollectionArtworkLoader) {
-          return myCollectionArtworkLoader(id)
+      resolve: ({ id }, _, { artworkLoader }) => {
+        if (artworkLoader) {
+          return artworkLoader(id)
         }
       },
     },
     artworkEdge: {
       type: MyCollectionEdgeType,
-      resolve: async ({ id }, _, { myCollectionArtworkLoader }) => {
-        if (!myCollectionArtworkLoader) {
+      resolve: async ({ id }, _, { artworkLoader }) => {
+        if (!artworkLoader) {
           return null
         }
-        const artwork = await myCollectionArtworkLoader(id)
+        const artwork = await artworkLoader(id)
         const edge = {
           cursor: cursorForObjectInConnection([artwork], artwork),
           node: artwork,

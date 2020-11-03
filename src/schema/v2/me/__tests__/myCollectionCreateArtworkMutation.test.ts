@@ -57,7 +57,7 @@ const computeMutationInput = (externalImageUrls: string[] = []): string => {
 
 const defaultContext = {
   createArtworkLoader,
-  myCollectionArtworkLoader: artworkLoader,
+  artworkLoader: artworkLoader,
   createArtworkImageLoader: createImageLoader,
 }
 

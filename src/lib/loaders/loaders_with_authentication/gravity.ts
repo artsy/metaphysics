@@ -172,14 +172,6 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    myCollectionArtworkLoader: gravityLoader(
-      (id) => `my-collection/artworks/${id}`,
-      {
-        user_id: userID,
-        private: true,
-      },
-      { method: "GET" }
-    ),
     createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
     createArtworkImageLoader: gravityLoader(
       (id) => `artwork/${id}/image`,
