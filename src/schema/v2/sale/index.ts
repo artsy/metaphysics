@@ -61,7 +61,6 @@ const BidIncrement = new GraphQLObjectType<any, ResolverContext>({
 const BuyersPremium = new GraphQLObjectType<any, ResolverContext>({
   name: "BuyersPremium",
   fields: {
-    ...SlugAndInternalIDFields,
     amount: amount(({ cents }) => cents),
     cents: {
       type: GraphQLInt,
