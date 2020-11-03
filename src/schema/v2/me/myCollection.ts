@@ -68,8 +68,8 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       }),
     },
   }),
-  resolve: ({ id: userId }, options, { myCollectionArtworksLoader }) => {
-    if (!myCollectionArtworksLoader) {
+  resolve: ({ id: userId }, options, { collectionArtworksLoader }) => {
+    if (!collectionArtworksLoader) {
       return null
     }
     const gravityOptions = Object.assign(
@@ -80,7 +80,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
     // This can't also be used with the offset in gravity
     delete gravityOptions.page
 
-    return myCollectionArtworksLoader(gravityOptions)
+    return collectionArtworksLoader("my-collection", gravityOptions)
       .then(({ body, headers }) => {
         return connectionFromArraySlice(body, options, {
           arrayLength: parseInt(headers["x-total-count"] || "0", 10),
