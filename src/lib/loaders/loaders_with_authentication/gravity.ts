@@ -181,7 +181,7 @@ export default (accessToken, userID, opts) => {
       { method: "GET" }
     ),
     createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
-    myCollectionCreateImageLoader: gravityLoader(
+    createArtworkImageLoader: gravityLoader(
       (id) => `artwork/${id}/image`,
       {},
       { method: "POST" }

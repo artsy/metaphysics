@@ -76,9 +76,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       externalImageUrls = [],
       ...rest
     },
-    { updateArtworkLoader, myCollectionCreateImageLoader }
+    { updateArtworkLoader, createArtworkImageLoader }
   ) => {
-    if (!updateArtworkLoader || !myCollectionCreateImageLoader) {
+    if (!updateArtworkLoader || !createArtworkImageLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
@@ -95,7 +95,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       const imageSources = computeImageSources(externalImageUrls)
 
       const createImagePromises = imageSources.map((source) => {
-        return myCollectionCreateImageLoader(artworkId, source)
+        return createArtworkImageLoader(artworkId, source)
       })
 
       await Promise.all(createImagePromises)

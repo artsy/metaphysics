@@ -58,7 +58,7 @@ const computeMutationInput = (externalImageUrls: string[] = []): string => {
 const defaultContext = {
   createArtworkLoader,
   myCollectionArtworkLoader: artworkLoader,
-  myCollectionCreateImageLoader: createImageLoader,
+  createArtworkImageLoader: createImageLoader,
 }
 
 describe("myCollectionCreateArtworkMutation", () => {
@@ -141,7 +141,7 @@ describe("myCollectionCreateArtworkMutation", () => {
 
       const context = {
         ...defaultContext,
-        myCollectionCreateImageLoader: failureLoader,
+        createArtworkImageLoader: failureLoader,
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
