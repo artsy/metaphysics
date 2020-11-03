@@ -263,4 +263,84 @@ describe("Artist type", () => {
       })
     })
   })
+
+  describe("priceRealized", () => {
+    function givenAnAuctionResultResponseWith(specs) {
+      context.auctionLotLoader = jest
+        .fn()
+        .mockReturnValueOnce(Promise.resolve(auctionResultResponse(specs)))
+    }
+
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResultsConnection(recordsTrusted: true, first: 1) {
+            edges {
+              node {
+                priceRealized {
+                  display(format: "0a")
+                  cents
+                  centsUSD
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("returns 0 for all priceRealized fields when price is 0", () => {
+      givenAnAuctionResultResponseWith({
+        price_realized_cents: 0,
+        price_realized_cents_usd: 0,
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toMatchObject({
+          artist: {
+            auctionResultsConnection: {
+              edges: [
+                {
+                  node: {
+                    priceRealized: {
+                      display: "JPY ¥0",
+                      cents: 0,
+                      centsUSD: 0,
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        })
+      })
+    })
+
+    it("returns null for all priceRealized fields when price is undefined", () => {
+      givenAnAuctionResultResponseWith({
+        price_realized_cents: undefined,
+        price_realized_cents_usd: undefined,
+      })
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toMatchObject({
+          artist: {
+            auctionResultsConnection: {
+              edges: [
+                {
+                  node: {
+                    priceRealized: {
+                      display: null,
+                      cents: null,
+                      centsUSD: null,
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        })
+      })
+    })
+  })
 })

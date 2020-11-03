@@ -9,7 +9,7 @@ import {
   GraphQLEnumType,
   GraphQLBoolean,
 } from "graphql"
-import { indexOf } from "lodash"
+import { indexOf, isNil } from "lodash"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import Image, { normalizeImageData } from "schema/v2/image"
 import { ResolverContext } from "types/graphql"
@@ -212,6 +212,10 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
               },
             },
             resolve: ({ currency, price_realized_cents }, { format }) => {
+              if (isNil(price_realized_cents)) {
+                return null
+              }
+
               const { symbol, subunit_to_unit } = currencyCodes[
                 currency.toLowerCase()
               ]
