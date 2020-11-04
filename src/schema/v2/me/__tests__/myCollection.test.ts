@@ -23,7 +23,7 @@ describe("me.myCollection", () => {
         Promise.resolve({
           id: "some-user-id",
         }),
-      myCollectionArtworksLoader: () =>
+      collectionArtworksLoader: () =>
         Promise.resolve({
           body: [
             {
