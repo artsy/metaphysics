@@ -15,7 +15,7 @@ describe("Sale type", () => {
     id: "foo-foo",
     _id: "123",
     collect_payments: true,
-    currency: "$",
+    currency: "USD",
     is_artsy_licensed: false,
     is_auction: true,
     is_preliminary: false,
