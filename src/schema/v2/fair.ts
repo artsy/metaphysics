@@ -259,6 +259,10 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             type: ShowSorts,
             description: "Sorts for shows in a fair",
           },
+          totalCount: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+          },
         }),
         resolve: ({ id }, options, { fairBoothsLoader }) => {
           interface GravityOptions {
@@ -267,12 +271,14 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             cursor?: string
             section: string
             artworks: boolean
+            total_count: boolean
           }
           const gravityOptions: GravityOptions = {
             sort: options.sort || "-featured",
             section: options.section,
             size: options.first,
             artworks: true,
+            total_count: !!options.totalCount,
           }
           if (!!options.after) {
             gravityOptions.cursor = options.after
