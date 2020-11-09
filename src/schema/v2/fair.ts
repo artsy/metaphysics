@@ -183,9 +183,8 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       hours: markdown(),
       href: {
         type: GraphQLString,
-        resolve: ({ default_profile_id, organizer }) => {
-          const id = default_profile_id || (organizer && organizer.profile_id)
-          return `/${id}`
+        resolve: ({ id }) => {
+          return `/fair/${id}`
         },
       },
       image: Image,

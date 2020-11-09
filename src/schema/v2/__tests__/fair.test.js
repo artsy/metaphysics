@@ -76,6 +76,20 @@ describe("Fair type", () => {
     })
   })
 
+  it("returns the href", async () => {
+    const hrefQuery = gql`
+      {
+        fair(id: "the-armory-show-2017") {
+          href
+        }
+      }
+    `
+
+    const result = await runQuery(hrefQuery, context)
+
+    expect(result.fair.href).toEqual("/fair/the-armory-show-2017")
+  })
+
   it("is_publically_visible returns false when profile is not published", () => {
     const profile = {
       id: "context",
