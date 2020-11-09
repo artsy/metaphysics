@@ -42,4 +42,66 @@ describe("me.myCollection", () => {
       "some title"
     )
   })
+
+  it("ignores collection not found errors and returns an empty array", async () => {
+    const query = gql`
+      {
+        me {
+          myCollectionConnection(first: 10) {
+            edges {
+              node {
+                internalID
+                title
+              }
+            }
+          }
+        }
+      }
+    `
+    console.error = jest.fn() // Suppress error output
+    const context: Partial<ResolverContext> = {
+      meLoader: () =>
+        Promise.resolve({
+          id: "some-user-id",
+        }),
+      collectionArtworksLoader: () =>
+        Promise.reject(new Error("Collection Not Found")),
+    }
+
+    const data = await runAuthenticatedQuery(query, context)
+    expect(data.me.myCollectionConnection.edges).toEqual([])
+  })
+
+  it("fails with all other errors", async () => {
+    const query = gql`
+      {
+        me {
+          myCollectionConnection(first: 10) {
+            edges {
+              node {
+                internalID
+                title
+              }
+            }
+          }
+        }
+      }
+    `
+    console.error = jest.fn() // Suppress error output
+    const context: Partial<ResolverContext> = {
+      meLoader: () =>
+        Promise.resolve({
+          id: "some-user-id",
+        }),
+      collectionArtworksLoader: () =>
+        Promise.reject(new Error("Some other error")),
+    }
+
+    expect.assertions(1)
+    try {
+      await runAuthenticatedQuery(query, context)
+    } catch (e) {
+      expect(e.message).toMatch("Some other error")
+    }
+  })
 })

@@ -90,11 +90,15 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       .catch((error) => {
         console.error("[schema/v2/me/my_collection] Error:", error)
 
-        // For some users with no items, Gravity produces an error of
-        // "Collection Not Found". This can cause the Gravity endpoint to
-        // produce a 404, so we will intercept the error and return an empty
-        // list instead.
-        return connectionFromArray([], options)
+        if (error.message == "Collection Not Found") {
+          // For some users with no items, Gravity produces an error of
+          // "Collection Not Found". This can cause the Gravity endpoint to
+          // produce a 404, so we will intercept the error and return an empty
+          // list instead.
+          return connectionFromArray([], options)
+        } else {
+          throw error
+        }
       })
   },
 }
