@@ -34,7 +34,7 @@ export class SearchableItemPresenter {
         return `Browse current exhibitions in ${display}`
       case "Collection":
       case "ArtistSeries":
-      case "ViewingRoom":
+      case "Viewing Room":
         return stripTags(description)
       default:
         return undefined
