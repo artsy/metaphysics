@@ -342,6 +342,22 @@ describe("SearchableItemPresenter", () => {
         )
       })
     })
+
+    describe("for a ViewingRoom type", () => {
+      it("returns a formatted description for a past show", () => {
+        const searchableItem = {
+          ...BASE_ITEM,
+          label: "ViewingRoom",
+          description: "A pretty neat viewing room with some sweet artworks",
+        }
+
+        const presenter = new SearchableItemPresenter(searchableItem)
+        const description = presenter.formattedDescription()
+        expect(description).toBe(
+          "A pretty neat viewing room with some sweet artworks"
+        )
+      })
+    })
   })
 
   describe("#imageUrl", () => {
