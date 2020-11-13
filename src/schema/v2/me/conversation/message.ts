@@ -93,7 +93,6 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({
         body,
         original_text,
-        conversation_from_name,
         conversation_initial_message,
         is_first_message,
       }) => {
@@ -101,10 +100,7 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
           if (!conversation_initial_message) {
             return null
           }
-          const parts = conversation_initial_message.split(
-            "Message from " + conversation_from_name + ":\n\n"
-          )
-          return parts[parts.length - 1]
+          return conversation_initial_message
         }
         if (original_text) {
           return original_text
