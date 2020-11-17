@@ -545,7 +545,10 @@ describe("gravity/stitching", () => {
       )
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-        args: { ids: ["view-lots-of-cats-id"] },
+        args: {
+          ids: ["view-lots-of-cats-id"],
+          statuses: ["scheduled", "live", "closed"],
+        },
         operation: "query",
         fieldName: "_unused_gravity_viewingRoomsConnection",
         schema: expect.anything(),

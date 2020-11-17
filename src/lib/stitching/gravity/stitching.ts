@@ -545,6 +545,7 @@ export const gravityStitchingEnvironment = (
               fieldName: "_unused_gravity_viewingRoomsConnection",
               args: {
                 ids,
+                statuses: ["scheduled", "live", "closed"],
               },
               context,
               info,
