@@ -561,13 +561,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ pickup_available }) => pickup_available,
       },
       listPrice,
+      price: {
+        type: GraphQLString,
+        resolve: ({ price }) => price,
+      },
       priceCurrency: {
         type: GraphQLString,
         resolve: ({ price_currency }) => price_currency,
-      },
-      priceDisplay: {
-        type: GraphQLString,
-        resolve: ({ price }) => price,
       },
       priceIncludesTax: {
         type: GraphQLBoolean,

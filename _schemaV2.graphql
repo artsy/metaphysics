@@ -1379,8 +1379,8 @@ type Artwork implements Node & Searchable & Sellable {
     shallow: Boolean
   ): Partner
   pickupAvailable: Boolean
+  price: String
   priceCurrency: String
-  priceDisplay: String
   priceIncludesTax: Boolean
   priceIncludesTaxDisplay: String
   pricingContext: AnalyticsPricingContext
