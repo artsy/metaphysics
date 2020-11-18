@@ -1279,6 +1279,7 @@ type Artwork implements Node & Searchable & Sellable {
   description(format: Format): String
   dimensions: dimensions
   displayLabel: String
+  displayPriceRange: Boolean
   editionNumber: String
   editionOf: String
   editionSets(sort: EditionSetSorts): [EditionSet]
@@ -1379,6 +1380,7 @@ type Artwork implements Node & Searchable & Sellable {
   ): Partner
   pickupAvailable: Boolean
   priceCurrency: String
+  priceDisplay: String
   priceIncludesTax: Boolean
   priceIncludesTaxDisplay: String
   pricingContext: AnalyticsPricingContext

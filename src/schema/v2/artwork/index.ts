@@ -407,6 +407,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return false
         },
       },
+      displayPriceRange: {
+        type: GraphQLBoolean,
+        resolve: ({ display_price_range }) => display_price_range,
+      },
       isBuyNowable: {
         type: GraphQLBoolean,
         description: "When in an auction, can the work be bought immediately",
@@ -560,6 +564,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       priceCurrency: {
         type: GraphQLString,
         resolve: ({ price_currency }) => price_currency,
+      },
+      priceDisplay: {
+        type: GraphQLString,
+        resolve: ({ price }) => price,
       },
       priceIncludesTax: {
         type: GraphQLBoolean,
