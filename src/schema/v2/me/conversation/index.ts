@@ -266,20 +266,20 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       deprecationReason:
         "This field is no longer required. Prefer the first message from the MessageConnection.",
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ initial_message, from_name }) => {
+      resolve: ({ initial_message }) => {
         if (!initial_message) return ""
-        const parts = initial_message.split(
-          "Message from " + from_name + ":\n\n"
-        )
-        return parts[parts.length - 1]
+        return initial_message
       },
     },
     lastMessage: {
       type: GraphQLString,
       description: "This is a snippet of text from the last message.",
-      resolve: ({ _embedded = {} }) => {
+      resolve: ({ initial_message, _embedded = {} }) => {
         const lastMessage = _embedded.last_message || {}
-        return lastMessage.snippet.split("About this collector")[0].trim()
+        if (lastMessage.order == 1) {
+          return initial_message
+        }
+        return lastMessage.snippet
       },
     },
     lastMessageAt: date,
