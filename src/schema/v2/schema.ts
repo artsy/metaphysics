@@ -98,6 +98,7 @@ import PartnerArtworks from "./partnerArtworks"
 import Image from "./image"
 import VanityURLEntity from "./vanityURLEntity"
 import { myCollectionDeleteArtworkMutation } from "./me/myCollectionDeleteArtworkMutation"
+import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -227,6 +228,7 @@ export default new GraphQLSchema({
     PartnerArtworkGridType,
     RelatedArtworkGridType,
     ShowArtworkGridType,
+    ArtworkOrEditionSetType,
   ],
   directives: specifiedDirectives.concat([PrincipalFieldDirective]),
 })
