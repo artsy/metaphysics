@@ -159,7 +159,7 @@ export const exchangeStitchingEnvironment = ({
     extend type CommerceLineItem {
       artwork: Artwork
       artworkVersion: ArtworkVersion
-      artworkOrEditionSet: ArtworkOrEditionSetType
+      ${version === 2 ? "artworkOrEditionSet: ArtworkOrEditionSetType" : ""}
       ${lineItemTotalsSDL.join("\n")}
     }
 
@@ -250,18 +250,65 @@ export const exchangeStitchingEnvironment = ({
             })
           },
         },
-        artworkOrEditionSet: {
-          fragment: gql`
+        ...(version === 2 && {
+          artworkOrEditionSet: {
+            fragment: gql`
             ... on CommerceLineItem {
               artworkId
               editionSetId
             }
           `,
-          resolve: async (parent, _args, context, info) => {
-            const artworkId = parent.artworkId
-            const editionSetId = parent.editionSetId
+            resolve: async (parent, _args, context, info) => {
+              const artworkId = parent.artworkId
+              const editionSetId = parent.editionSetId
 
-            if (editionSetId) {
+              if (editionSetId) {
+                return info.mergeInfo.delegateToSchema({
+                  schema: localSchema,
+                  operation: "query",
+                  fieldName: "artwork",
+                  args: {
+                    id: artworkId,
+                  },
+                  context,
+                  info,
+                  transforms: [
+                    // Wrap document takes a subtree as an AST node
+                    new WrapQuery(
+                      // path at which to apply wrapping and extracting
+                      ["artwork"],
+                      (subtree: SelectionSetNode) => ({
+                        // we create a wrapping AST Field
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "editionSet",
+                        },
+                        arguments: [
+                          {
+                            kind: Kind.ARGUMENT,
+                            name: {
+                              kind: Kind.NAME,
+                              value: "id",
+                            },
+                            value: {
+                              kind: Kind.STRING,
+                              value: editionSetId,
+                            },
+                          },
+                        ],
+                        // Inside the field selection
+                        selectionSet: subtree,
+                      }),
+                      // how to process the data result at path
+                      (result) => {
+                        return result.editionSet
+                      }
+                    ),
+                  ],
+                })
+              }
+
               return info.mergeInfo.delegateToSchema({
                 schema: localSchema,
                 operation: "query",
@@ -271,61 +318,10 @@ export const exchangeStitchingEnvironment = ({
                 },
                 context,
                 info,
-                transforms: [
-                  // Wrap document takes a subtree as an AST node
-                  new WrapQuery(
-                    // path at which to apply wrapping and extracting
-                    ["artwork"],
-                    (subtree: SelectionSetNode) => ({
-                      // we create a wrapping AST Field
-                      kind: Kind.FIELD,
-                      name: {
-                        kind: Kind.NAME,
-                        value: "editionSetById",
-                      },
-                      arguments: [
-                        {
-                          kind: Kind.ARGUMENT,
-                          name: {
-                            kind: Kind.NAME,
-                            value: "id",
-                          },
-                          value: {
-                            kind: Kind.STRING,
-                            value: editionSetId,
-                          },
-                        },
-                      ],
-                      // Inside the field selection
-                      selectionSet: subtree,
-                    }),
-                    // how to process the data result at path
-                    (result) => {
-                      return result.editionSetById
-                    }
-                  ),
-                ],
               })
-            }
-
-            return info.mergeInfo
-              .delegateToSchema({
-                schema: localSchema,
-                operation: "query",
-                fieldName: "artwork",
-                args: {
-                  id: artworkId,
-                },
-                context,
-                info,
-                transforms: exchangeSchema.transforms,
-              })
-              .then((response) => {
-                response.__typename = "Artwork"
-                return response
-              })
+            },
           },
-        },
+        }),
         ...totalsResolvers("CommerceLineItem", lineItemTotals),
       },
       CommerceOrder: {

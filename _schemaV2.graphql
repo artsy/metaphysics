@@ -1282,7 +1282,7 @@ type Artwork implements Node & Searchable & Sellable {
   displayPriceRange: Boolean
   editionNumber: String
   editionOf: String
-  editionSetById(id: String!): EditionSet
+  editionSet(id: String!): EditionSet
   editionSets(sort: EditionSetSorts): [EditionSet]
   editionSize: String
 

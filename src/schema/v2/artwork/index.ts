@@ -223,7 +223,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ edition_sets }) =>
           edition_sets?.[0]?.available_editions?.[0],
       },
-      editionSetById: {
+      editionSet: {
         type: EditionSet.type,
         args: { id: { type: GraphQLNonNull(GraphQLString) } },
         resolve: ({ edition_sets }, { id }) =>
@@ -569,7 +569,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       listPrice,
       price: {
         type: GraphQLString,
-        resolve: ({ price }) => price,
       },
       priceCurrency: {
         type: GraphQLString,

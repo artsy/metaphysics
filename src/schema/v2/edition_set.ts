@@ -65,7 +65,6 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
     listPrice,
     price: {
       type: GraphQLString,
-      resolve: ({ price }) => price,
     },
     sizeScore: {
       description: "score assigned to an artwork based on its dimensions",

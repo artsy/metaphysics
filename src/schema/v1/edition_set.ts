@@ -33,7 +33,7 @@ const EditionSetAvailabilities = [
   "permanent collection",
 ]
 
-export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
+const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
   name: "EditionSet",
   interfaces: [Sellable],
   fields: {

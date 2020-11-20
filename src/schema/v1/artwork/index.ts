@@ -211,12 +211,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
-      editionSetById: {
-        type: EditionSet.type,
-        args: { id: { type: GraphQLNonNull(GraphQLString) } },
-        resolve: ({ edition_sets }, { id }) =>
-          (edition_sets ?? []).find((edition) => edition.id === id),
-      },
       edition_sets: {
         type: new GraphQLList(EditionSet.type),
         args: { sort: EditionSetSorts },

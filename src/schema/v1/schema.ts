@@ -107,7 +107,6 @@ import { AuctionArtworkGridType } from "./artwork/artworkContextGrids/AuctionArt
 import { PartnerArtworkGridType } from "./artwork/artworkContextGrids/PartnerArtworkGrid"
 import { RelatedArtworkGridType } from "./artwork/artworkContextGrids/RelatedArtworkGrid"
 import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGrid"
-import { ArtworkOrEditionSetType } from "./artwork_or_edition_set"
 
 const rootFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   artworkAttributionClasses: ArtworkAttributionClasses,
@@ -272,7 +271,6 @@ export default new GraphQLSchema({
     PartnerArtworkGridType,
     RelatedArtworkGridType,
     ShowArtworkGridType,
-    ArtworkOrEditionSetType,
   ],
   directives: specifiedDirectives.concat([PrincipalFieldDirective]),
 })
