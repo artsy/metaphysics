@@ -123,7 +123,7 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Partner {
-        viewingRoomsConnection(published: Boolean = true, first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
+        viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
       }
 
       extend type Show {
@@ -149,7 +149,7 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Viewer {
-        viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!], published: Boolean = true, partnerID: ID): ViewingRoomsConnection
+        viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!], partnerID: ID): ViewingRoomsConnection
       }
     `,
     resolvers: {
