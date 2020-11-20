@@ -18,8 +18,8 @@ const mapEnvBooleans = {
   queryTracing: !!config.ENABLE_QUERY_TRACING,
   heapDumps: !!config.ENABLE_HEAPDUMPS,
   stitching: !config.DISABLE_SCHEMA_STITCHING,
-  stitchingConvection: !!config.ENABLE_CONSIGNMENTS_STITCHING,
-  stitchingExchange: !!config.ENABLE_COMMERCE_STITCHING,
+  stitchingConvection: true,
+  stitchingExchange: true,
   stitchingGravity: true,
   stitchingKaws: true,
 }

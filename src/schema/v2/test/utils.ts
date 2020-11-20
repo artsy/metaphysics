@@ -127,10 +127,7 @@ export const runQueryMerged = async (
   const { incrementalMergeSchemas } = require("lib/stitching/mergeSchemas")
 
   if (!mergedSchema) {
-    mergedSchema = await incrementalMergeSchemas({
-      ENABLE_COMMERCE_STITCHING: true,
-      ENABLE_CONSIGNMENTS_STITCHING: true,
-    })
+    mergedSchema = await incrementalMergeSchemas()
   }
   return graphql(mergedSchema, query, null, context).then((result) => {
     if (result.errors) {

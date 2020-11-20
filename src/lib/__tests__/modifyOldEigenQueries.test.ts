@@ -123,16 +123,8 @@ describe(nameOldEigenQueries, () => {
 })
 
 describe(shouldRewriteEcommerceMutations, () => {
-  it("doesn't re-write when flag is off", () => {
-    expect(shouldRewriteEcommerceMutations({}, beforeOffer)).toBeFalsy()
-  })
-  it("does re-write when flag is on", () => {
-    expect(
-      shouldRewriteEcommerceMutations(
-        { ENABLE_COMMERCE_STITCHING: true },
-        beforeOffer
-      )
-    ).toBeTruthy()
+  it("shoud re-write", () => {
+    expect(shouldRewriteEcommerceMutations(beforeOffer)).toBeTruthy()
   })
 })
 
