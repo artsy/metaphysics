@@ -8,7 +8,6 @@ services:
       - CI_PULL_REQUEST=$CI_PULL_REQUEST
       - CIRCLE_PULL_REQUEST=$CIRCLE_PULL_REQUEST
       - CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM
-      - ENABLE_CONSIGNMENTS_STITCHING=true
     env_file: ../.env.test
     depends_on:
       - metaphysics-memcached

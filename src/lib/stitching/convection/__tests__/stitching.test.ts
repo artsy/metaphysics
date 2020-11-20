@@ -64,9 +64,7 @@ describe("convection/stitching", () => {
 })
 
 it("resolves an Artist on a Consignment Submission", async () => {
-  const allMergedSchemas = await incrementalMergeSchemas(schema, 1, {
-    ENABLE_CONSIGNMENTS_STITCHING: true,
-  })
+  const allMergedSchemas = await incrementalMergeSchemas(schema, 1)
 
   // This test is that a submission gets the artist by stitching a MP
   // Artist into the ConsignmentSubmission inside the schema

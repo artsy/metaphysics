@@ -13,7 +13,6 @@ import {
   kawsStitchingEnvironmentV1,
   kawsStitchingEnvironmentV2,
 } from "lib/stitching/kaws/stitching"
-import config from "config"
 
 import { GraphQLSchema } from "graphql"
 import { exchangeStitchingEnvironment } from "./exchange/stitching"
@@ -26,18 +25,7 @@ import { causalityStitchingEnvironment } from "./causality/stitching"
 /**
  * Incrementally merges in schemas according to `process.env`
  */
-export const incrementalMergeSchemas = (
-  localSchema,
-  version: 1 | 2,
-  testConfig?: any
-) => {
-  const environment = testConfig || config
-
-  const {
-    ENABLE_COMMERCE_STITCHING,
-    ENABLE_CONSIGNMENTS_STITCHING,
-  } = environment
-
+export const incrementalMergeSchemas = (localSchema, version: 1 | 2) => {
   const schemas = [localSchema] as GraphQLSchema[]
   const extensionSchemas = [] as string[]
   const extensionResolvers = {} as any
@@ -69,23 +57,19 @@ export const incrementalMergeSchemas = (
     causalityStitchingEnvironment({ causalitySchema, localSchema })
   )
 
-  if (ENABLE_COMMERCE_STITCHING) {
-    const exchangeSchema = executableExchangeSchema(transformsForExchange)
-    schemas.push(exchangeSchema)
+  const exchangeSchema = executableExchangeSchema(transformsForExchange)
+  schemas.push(exchangeSchema)
 
-    useStitchingEnvironment(
-      exchangeStitchingEnvironment({ localSchema, exchangeSchema, version })
-    )
-  }
+  useStitchingEnvironment(
+    exchangeStitchingEnvironment({ localSchema, exchangeSchema, version })
+  )
 
-  if (ENABLE_CONSIGNMENTS_STITCHING) {
-    const convectionSchema = executableConvectionSchema()
-    schemas.push(convectionSchema)
+  const convectionSchema = executableConvectionSchema()
+  schemas.push(convectionSchema)
 
-    useStitchingEnvironment(
-      consignmentStitchingEnvironment(localSchema, convectionSchema)
-    )
-  }
+  useStitchingEnvironment(
+    consignmentStitchingEnvironment(localSchema, convectionSchema)
+  )
 
   const vortexSchema = executableVortexSchema()
   schemas.push(vortexSchema)
