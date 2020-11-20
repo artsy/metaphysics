@@ -223,6 +223,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ edition_sets }) =>
           edition_sets?.[0]?.available_editions?.[0],
       },
+      editionSet: {
+        type: EditionSet.type,
+        args: { id: { type: GraphQLNonNull(GraphQLString) } },
+        resolve: ({ edition_sets }, { id }) =>
+          (edition_sets ?? []).find((edition) => edition.id === id),
+      },
       editionSets: {
         type: new GraphQLList(EditionSet.type),
         args: { sort: EditionSetSorts },
@@ -407,6 +413,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return false
         },
       },
+      displayPriceRange: {
+        type: GraphQLBoolean,
+        resolve: ({ display_price_range }) => display_price_range,
+      },
       isBuyNowable: {
         type: GraphQLBoolean,
         description: "When in an auction, can the work be bought immediately",
@@ -557,6 +567,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ pickup_available }) => pickup_available,
       },
       listPrice,
+      price: {
+        type: GraphQLString,
+      },
       priceCurrency: {
         type: GraphQLString,
         resolve: ({ price_currency }) => price_currency,
