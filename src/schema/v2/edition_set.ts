@@ -64,6 +64,11 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLFloat,
       resolve: ({ size_score }) => size_score,
     },
+    sizeBucket: {
+      description: "size bucket assigned to an artwork based on its dimensions",
+      type: GraphQLString,
+      resolve: ({ size_bucket }) => size_bucket,
+    },
     saleMessage: {
       type: GraphQLString,
       resolve: ({ availability, availability_hidden, price, forsale }) => {

@@ -135,6 +135,41 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("sizeBucket", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          sizeBucket
+        }
+      }
+    `
+
+    beforeEach(() => {
+      artwork = {
+        ...artwork,
+        size_bucket: "large",
+      }
+      context = {
+        artworkLoader: sinon
+          .stub()
+          .withArgs(artwork.id)
+          .returns(Promise.resolve(artwork)),
+      }
+    })
+
+    it("returns sizeBucket", () => {
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            sizeBucket: "large",
+          },
+        })
+      })
+    })
+  })
+
   describe("#is_downloadable", () => {
     const query = `
       {
