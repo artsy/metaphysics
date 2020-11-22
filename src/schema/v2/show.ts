@@ -4,6 +4,7 @@ import {
   connectionFromArraySlice,
   connectionFromArray,
   connectionDefinitions,
+  Connection,
 } from "graphql-relay"
 import {
   isExisty,
@@ -510,9 +511,8 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           const results = connectionFromArraySlice(cities, args, {
             arrayLength: parseInt(headers["x-total-count"] || "0", 10),
             sliceStart: gravityOptions.offset,
-          })
+          }) as Connection<any> & { totalCount: number }
           // This is in our schema, so might as well fill it
-          // @ts-ignore
           results.totalCount = parseInt(headers["x-total-count"] || "0", 10)
           return results
         },
