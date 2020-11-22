@@ -69,15 +69,13 @@ interface ContextSource {
 
 const moduleContext: HomePageArtworkModuleResolvers<ContextSource> = {
   popular_artists: async ({ deltaLoader }) => {
-    const trending = (await popularArtists(deltaLoader)) as {}
+    const trending = await popularArtists(deltaLoader)
     return { ...trending, context_type: TrendingArtistsType }
   },
   active_bids: () => null,
   followed_artists: async ({ followedArtistsLoader }) => {
     if (!followedArtistsLoader) return null
-    const { body } = (await followedArtistsLoader({ size: 9, page: 1 })) as {
-      body: {}
-    }
+    const { body } = await followedArtistsLoader({ size: 9, page: 1 })
     return { ...body, context_type: FollowArtistsType }
   },
   followed_galleries: () => null,

@@ -32,7 +32,9 @@ export const incrementalMergeSchemas = (localSchema, version: 1 | 2) => {
 
   const useStitchingEnvironment = ({ extensionSchema, resolvers }) => {
     extensionSchemas.push(extensionSchema)
-    for (const [type, fieldResolvers] of Object.entries(resolvers as object)) {
+    for (const [type, fieldResolvers] of Object.entries(
+      resolvers as Record<string, Record<string, unknown>>
+    )) {
       extensionResolvers[type] = {
         ...extensionResolvers[type],
         ...fieldResolvers,
