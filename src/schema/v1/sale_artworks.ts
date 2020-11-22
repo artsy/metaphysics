@@ -38,6 +38,7 @@ const SaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     let response
 
     if (saleArtworksAllLoader && options.live_sale) {
+      // @ts-expect-error FIXME: Make `page` an optional parameter of `params`
       delete params.page
       const { body, headers } = await saleArtworksAllLoader({
         ...params,

@@ -499,8 +499,10 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             has_location: true,
             total_count: true,
           }
+          // @ts-expect-error FIXME: Make `page` an optional parameter on `gravityOptions`
           delete gravityOptions.page
           if (args.discoverable) {
+            // @ts-expect-error FIXME: Make `displayable` an optional parameter on `gravityOptions`
             delete gravityOptions.displayable
           }
           const response = await showsWithHeadersLoader(gravityOptions)
