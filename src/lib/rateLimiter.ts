@@ -14,7 +14,7 @@ export const skip = (req: Request) => !!req.headers["x-datadog-trace-id"]
 export const rateLimiterMiddleware = async (req, res, next) => {
   if (!config.RATE_LIMIT_MAX) return next()
   try {
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       // Timeout handler, will reject if hit.
       let timeoutId: NodeJS.Timer | null = setTimeout(() => {
         timeoutId = null
