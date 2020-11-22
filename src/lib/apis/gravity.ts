@@ -11,7 +11,11 @@ const {
   GRAVITY_API_PERCENT_REDIRECT,
 } = config
 
-export default (path, accessToken, fetchOptions: any = {}) => {
+export default function gravity(
+  path,
+  accessToken?: string | null,
+  fetchOptions: any = {}
+) {
   const headers = {
     "X-XAPP-TOKEN": fetchOptions.appToken || config.GRAVITY_XAPP_TOKEN,
   }
