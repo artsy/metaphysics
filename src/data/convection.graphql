@@ -439,6 +439,11 @@ input CreateSubmissionMutationInput {
   minimumPriceDollars: Int
   provenance: String
   signature: Boolean
+
+  """
+  If this artwork exists in Gravity, its ID
+  """
+  sourceArtworkID: String
   state: State
   title: String
   userAgent: String
@@ -693,6 +698,16 @@ enum OfferSort {
   sort by notes in descending order
   """
   NOTES_DESC
+
+  """
+  sort by offer_responses_count in ascending order
+  """
+  OFFER_RESPONSES_COUNT_ASC
+
+  """
+  sort by offer_responses_count in descending order
+  """
+  OFFER_RESPONSES_COUNT_DESC
 
   """
   sort by offer_type in ascending order
@@ -1175,6 +1190,11 @@ type Submission {
   provenance: String
   publishedAt: ISO8601DateTime
   signature: Boolean
+
+  """
+  If this artwork exists in Gravity, its ID
+  """
+  sourceArtworkID: String
   state: State
   title: String
   userAgent: String
@@ -1601,6 +1621,16 @@ enum SubmissionSort {
   sort by signature in descending order
   """
   SIGNATURE_DESC
+
+  """
+  sort by source_artwork_id in ascending order
+  """
+  SOURCE_ARTWORK_ID_ASC
+
+  """
+  sort by source_artwork_id in descending order
+  """
+  SOURCE_ARTWORK_ID_DESC
 
   """
   sort by state in ascending order
