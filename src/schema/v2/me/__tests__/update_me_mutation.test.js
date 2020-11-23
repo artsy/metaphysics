@@ -39,6 +39,9 @@ describe("UpdateMeMutation", () => {
             receiveNewSalesNotification
             receivePromotionNotification
           }
+          userOrError {
+            name
+          }
           me {
             name
           }

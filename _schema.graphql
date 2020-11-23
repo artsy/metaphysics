@@ -7903,6 +7903,7 @@ type GeneItem implements Node {
 type GravityMutationError {
   detail: String
   error: String
+  fieldErrors: UpdateMyProfileMutationFieldError
   message: String
   type: String
 }
@@ -13990,6 +13991,11 @@ input UpdateMyProfileInput {
 
   # The minimum price collector has selected
   price_range_min: Int
+}
+
+type UpdateMyProfileMutationFieldError {
+  email: [String]
+  password: [String]
 }
 
 type UpdateMyProfilePayload {
