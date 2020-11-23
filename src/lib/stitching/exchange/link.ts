@@ -40,7 +40,13 @@ export const createExchangeLink = () => {
   )
 
   const analyticsMiddleware = setContext(
-    (_request, context: { headers: {}; graphqlContext: ResolverContext }) => {
+    (
+      _request,
+      context: {
+        headers: Record<string, unknown>
+        graphqlContext: ResolverContext
+      }
+    ) => {
       if (!context.graphqlContext) return context
       const userAgent = context.graphqlContext.userAgent
       const headers = {

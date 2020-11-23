@@ -13,8 +13,6 @@ const StatusType = new GraphQLObjectType<any, ResolverContext>({
           ping: {
             type: GraphQLBoolean,
             resolve: () =>
-              // FIXME:  Expected 2-3 arguments, but got 1.
-              // @ts-ignore
               gravity("system/ping").then(
                 ({ body: { ping } }) => ping === "pong"
               ),

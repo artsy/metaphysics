@@ -103,5 +103,5 @@ export interface HomePageArtworkModuleResolvers {
   [field: string]: (
     context: ResolverContext,
     params: HomePageArtworkModuleDetails["params"]
-  ) => {} | null
+  ) => unknown | null
 }

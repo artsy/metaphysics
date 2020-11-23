@@ -54,6 +54,7 @@ export const SavedArtworks: GraphQLFieldConfig<any, ResolverContext> = {
     )
     // Adds a default case for the sort
     gravityOptions.sort = gravityOptions.sort || "-position"
+    // @ts-expect-error FIXME: Make `page` an optional parameter on `gravityOptions`
     delete gravityOptions.page // this can't also be used with the offset in gravity
     return collectionArtworksLoader(COLLECTION_ID, gravityOptions)
       .then(({ body, headers }) => {

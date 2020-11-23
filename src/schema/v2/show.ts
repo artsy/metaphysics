@@ -4,6 +4,7 @@ import {
   connectionFromArraySlice,
   connectionFromArray,
   connectionDefinitions,
+  Connection,
 } from "graphql-relay"
 import {
   isExisty,
@@ -499,8 +500,10 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             has_location: true,
             total_count: true,
           }
+          // @ts-expect-error FIXME: Make `page` an optional parameter on `gravityOptions`
           delete gravityOptions.page
           if (args.discoverable) {
+            // @ts-expect-error FIXME: Make `displayable` an optional parameter on `gravityOptions`
             delete gravityOptions.displayable
           }
           const response = await showsWithHeadersLoader(gravityOptions)
@@ -508,9 +511,8 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           const results = connectionFromArraySlice(cities, args, {
             arrayLength: parseInt(headers["x-total-count"] || "0", 10),
             sliceStart: gravityOptions.offset,
-          })
+          }) as Connection<any> & { totalCount: number }
           // This is in our schema, so might as well fill it
-          // @ts-ignore
           results.totalCount = parseInt(headers["x-total-count"] || "0", 10)
           return results
         },

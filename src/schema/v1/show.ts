@@ -558,9 +558,11 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           has_location: true,
           total_count: true,
         }
+        // @ts-expect-error FIXME: Make `page` an optional param of gravityOptions
         delete gravityOptions.page
 
         if (args.discoverable) {
+          // @ts-expect-error FIXME: Make `displayable` an optional param of gravityOptions
           delete gravityOptions.displayable
         }
 

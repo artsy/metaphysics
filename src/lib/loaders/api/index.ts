@@ -13,8 +13,8 @@ import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_wi
 
 export type API = (
   path: string,
-  token: string | null,
-  apiOptions: any
+  token?: string | null,
+  apiOptions?: any
 ) => Promise<any>
 
 export interface APIOptions {

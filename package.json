@@ -126,8 +126,8 @@
     "@types/node-fetch": "2.1.7",
     "@types/qs": "6.5.1",
     "@types/request": "2.0.8",
-    "@typescript-eslint/eslint-plugin": "2.10.0",
-    "@typescript-eslint/parser": "2.10.0",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
     "babel-eslint": "10.0.1",
     "babel-jest": "24.8.0",
     "danger": "7.0.14",
@@ -146,7 +146,7 @@
     "sinon": "1.17.7",
     "superagent": "3.8.3",
     "supertest": "3.1.0",
-    "typescript": "3.9.7"
+    "typescript": "4.1.2"
   },
   "jest": {
     "setupFilesAfterEnv": [

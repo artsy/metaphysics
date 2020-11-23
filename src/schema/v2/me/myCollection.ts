@@ -78,6 +78,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
     )
 
     // This can't also be used with the offset in gravity
+    // @ts-expect-error FIXME: Make `page` is an optional param of `gravityOptions`
     delete gravityOptions.page
 
     return collectionArtworksLoader("my-collection", gravityOptions)
