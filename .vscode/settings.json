@@ -5,7 +5,6 @@
   "[json]": {
     "editor.formatOnSave": false
   },
-  "eslint.autoFixOnSave": false,
   "javascript.validate.enable": true,
   "search.exclude": {
     "**/node_modules": true,
@@ -43,5 +42,9 @@
   ],
   "debug.node.autoAttach": "on",
   "eslint.validate": ["typescript"],
-  "typescript.surveys.enabled": false
+  "typescript.surveys.enabled": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.fixAll.stylelint": true
+  }
 }
