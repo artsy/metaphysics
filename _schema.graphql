@@ -7195,6 +7195,11 @@ type Feedback {
   message: String!
 }
 
+type FieldErrorResults {
+  message: String!
+  name: String!
+}
+
 type FilterArtworks implements Node {
   # The ID of the object.
   __id: ID!
@@ -7903,6 +7908,7 @@ type GeneItem implements Node {
 type GravityMutationError {
   detail: String
   error: String
+  fieldErrors: [FieldErrorResults]
   message: String
   type: String
 }

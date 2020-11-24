@@ -4,12 +4,18 @@ import {
   GraphQLFloat,
   GraphQLInt,
   GraphQLInputObjectType,
+  GraphQLUnionType,
+  GraphQLObjectType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
 import { UserType } from "../user"
 import Me from "./"
 import { ResolverContext } from "types/graphql"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
 
 export const EditableLocationFields = new GraphQLInputObjectType({
   name: "EditableLocation",
@@ -64,6 +70,44 @@ export const EditableLocationFields = new GraphQLInputObjectType({
     };
   }
   */,
+})
+
+const UpdateMyProfileMutationSuccessType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "UpdateMyProfileMutationSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    user: {
+      type: UserType,
+      resolve: (user) => user,
+    },
+  }),
+})
+
+const UpdateMyProfileMutationFailureType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "UpdateMyProfileMutationFailure",
+  isTypeOf: (data) => {
+    return data._type === "GravityMutationError"
+  },
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const UpdateMyProfileMutationType = new GraphQLUnionType({
+  name: "UpdateMyProfileMutation",
+  types: [
+    UpdateMyProfileMutationSuccessType,
+    UpdateMyProfileMutationFailureType,
+  ],
 })
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({
@@ -150,6 +194,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: UserType,
       resolve: (user) => user,
     },
+    userOrError: {
+      type: UpdateMyProfileMutationType,
+      resolve: (result) => result,
+    },
     me: Me,
   },
   mutateAndGetPayload: (
@@ -185,5 +233,15 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       throw new Error("No updateMeLoader loader found in root values")
     }
     return updateMeLoader(user)
+      .then((result) => result)
+      .catch((error) => {
+        const formattedErr = formatGravityError(error)
+
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      })
   },
 })

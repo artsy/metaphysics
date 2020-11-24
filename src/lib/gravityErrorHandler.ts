@@ -1,4 +1,10 @@
-import { GraphQLString, GraphQLObjectType } from "graphql"
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLNonNull,
+  GraphQLList,
+} from "graphql"
+import { isArray, omit, pickBy } from "lodash"
 import { ResolverContext } from "types/graphql"
 
 export const GravityMutationErrorType = new GraphQLObjectType<
@@ -19,20 +25,37 @@ export const GravityMutationErrorType = new GraphQLObjectType<
     error: {
       type: GraphQLString,
     },
+    fieldErrors: {
+      type: GraphQLList(FieldErrorResultsType),
+    },
   }),
 })
 
 export const formatGravityError = (error) => {
-  const errorSplit = error.message.split(" - ")
+  const errorSplit = error.message?.split(" - ")
 
   if (errorSplit && errorSplit.length > 1) {
     try {
       const parsedError = JSON.parse(errorSplit[1])
-      if (parsedError.error) {
+      const { error, detail, text } = parsedError
+      // check if error message format is an array
+      // see https://github.com/artsy/gravity/blob/master/app/api/util/error_handlers.rb#L32
+      const fieldErrorResults =
+        detail && Object.keys(pickBy(detail, isArray))?.length
+
+      if (fieldErrorResults) {
+        const fieldErrors = formatGravityErrorDetails(detail)
+        return {
+          fieldErrors,
+          ...omit(parsedError, "detail"),
+        }
+      }
+
+      if (error) {
         return {
           type: "error",
-          message: parsedError.error,
-          detail: parsedError.text,
+          message: error,
+          detail: text,
         }
       } else {
         return { ...parsedError }
@@ -43,4 +66,38 @@ export const formatGravityError = (error) => {
   } else {
     return null
   }
+}
+
+export const FieldErrorResultsType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "FieldErrorResults",
+  fields: () => ({
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    message: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  }),
+})
+
+type FieldErrorType = {
+  name: string
+  message: string
+}
+
+const formatGravityErrorDetails = (
+  detail: Record<string, string[]>
+): FieldErrorType[] => {
+  const fieldErrors: FieldErrorType[] = []
+
+  Object.keys(detail).forEach((key) => {
+    fieldErrors.push({
+      name: key,
+      message: detail[key].join(", "),
+    })
+  })
+  return fieldErrors
 }

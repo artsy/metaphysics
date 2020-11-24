@@ -22,6 +22,11 @@ Object {
       "receivePurchaseNotification": false,
       "receiveSaleOpeningClosingNotification": false,
     },
+    "userOrError": Object {
+      "user": Object {
+        "internalID": "106",
+      },
+    },
   },
 }
 `;

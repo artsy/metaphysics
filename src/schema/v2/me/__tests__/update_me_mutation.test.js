@@ -39,6 +39,22 @@ describe("UpdateMeMutation", () => {
             receiveNewSalesNotification
             receivePromotionNotification
           }
+          userOrError {
+            ... on UpdateMyProfileMutationSuccess {
+              user {
+                internalID
+              }
+            }
+            ... on UpdateMyProfileMutationFailure {
+              mutationError {
+                type
+                fieldErrors {
+                  name
+                  message
+                }
+              }
+            }
+          }
           me {
             name
           }

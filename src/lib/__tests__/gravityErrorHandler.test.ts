@@ -25,6 +25,24 @@ describe("gravityErrorHandler", () => {
         type: "error",
       })
     })
+
+    it("returns a parsed error with a field error array", () => {
+      const expectedErrorFormat = {
+        message: `https://stagingapi.artsy.net/api/v1/me/credit_cards?provider=stripe&token=tok_chargeDeclinedExpiredCard - {"type":"param_error","message":"Email foo@artsymail.com is not an @artsy address.","detail":{"email":["foo@artsymail.com is not an @artsy address"]}}`,
+        statusCode: 404,
+      }
+      expect(formatGravityError(expectedErrorFormat)).toEqual({
+        detail: undefined,
+        fieldErrors: [
+          {
+            name: "email",
+            message: "foo@artsymail.com is not an @artsy address",
+          },
+        ],
+        message: "Email foo@artsymail.com is not an @artsy address.",
+        type: "param_error",
+      })
+    })
     it("returns an unparsed error if the format is different", () => {
       const unexpectedErrorFormat = {
         message: `https://stagingapi.artsy.net/api/v1/me/credit_cards?provider=stripe&token=tok_chargeDeclinedExpiredCard - {"fooError"`,
