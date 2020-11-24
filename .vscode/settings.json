@@ -1,11 +1,12 @@
 {
-  "editor.rulers": [80],
+  "editor.rulers": [
+    80
+  ],
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
   "[json]": {
     "editor.formatOnSave": false
   },
-  "eslint.autoFixOnSave": false,
   "javascript.validate.enable": true,
   "search.exclude": {
     "**/node_modules": true,
@@ -42,6 +43,12 @@
     "urljoin"
   ],
   "debug.node.autoAttach": "on",
-  "eslint.validate": ["typescript"],
-  "typescript.surveys.enabled": false
+  "eslint.validate": [
+    "typescript"
+  ],
+  "typescript.surveys.enabled": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }
