@@ -38,6 +38,8 @@ export const formatGravityError = (error) => {
     try {
       const parsedError = JSON.parse(errorSplit[1])
       const { error, detail, text } = parsedError
+      // check if error message format is an array
+      // see https://github.com/artsy/gravity/blob/master/app/api/util/error_handlers.rb#L32
       const fieldErrorResults =
         detail && Object.keys(pickBy(detail, isArray))?.length
 
