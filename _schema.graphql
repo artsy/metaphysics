@@ -7195,6 +7195,11 @@ type Feedback {
   message: String!
 }
 
+type FieldErrorResults {
+  message: String!
+  name: String!
+}
+
 type FilterArtworks implements Node {
   # The ID of the object.
   __id: ID!
@@ -7903,7 +7908,7 @@ type GeneItem implements Node {
 type GravityMutationError {
   detail: String
   error: String
-  fieldErrors: UpdateMyProfileMutationFieldError
+  fieldErrors: [FieldErrorResults]
   message: String
   type: String
 }
@@ -13991,11 +13996,6 @@ input UpdateMyProfileInput {
 
   # The minimum price collector has selected
   price_range_min: Int
-}
-
-type UpdateMyProfileMutationFieldError {
-  email: [String]
-  password: [String]
 }
 
 type UpdateMyProfilePayload {

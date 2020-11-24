@@ -1,6 +1,10 @@
-import { GraphQLString, GraphQLObjectType } from "graphql"
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLNonNull,
+  GraphQLList,
+} from "graphql"
 import { isArray, omit, pickBy } from "lodash"
-import { UpdateMyProfileMutationFieldErrorType } from "schema/v2/me/update_me_mutation"
 import { ResolverContext } from "types/graphql"
 
 export const GravityMutationErrorType = new GraphQLObjectType<
@@ -22,8 +26,7 @@ export const GravityMutationErrorType = new GraphQLObjectType<
       type: GraphQLString,
     },
     fieldErrors: {
-      // FIXME: Currently only one use case, but should be union type
-      type: UpdateMyProfileMutationFieldErrorType,
+      type: GraphQLList(FieldErrorResultsType),
     },
   }),
 })
@@ -35,15 +38,14 @@ export const formatGravityError = (error) => {
     try {
       const parsedError = JSON.parse(errorSplit[1])
       const { error, detail, text } = parsedError
+      const fieldErrorResults =
+        detail && Object.keys(pickBy(detail, isArray))?.length
 
-      if (detail) {
-        // Parse form errors, an object with array of errors keyed by field
-        const hasFieldErrors = pickBy(detail, isArray)
-        if (hasFieldErrors) {
-          return {
-            fieldErrors: detail,
-            ...omit(parsedError, "detail"),
-          }
+      if (fieldErrorResults) {
+        const fieldErrors = formatGravityErrorDetails(detail)
+        return {
+          fieldErrors,
+          ...omit(parsedError, "detail"),
         }
       }
 
@@ -62,4 +64,38 @@ export const formatGravityError = (error) => {
   } else {
     return null
   }
+}
+
+export const FieldErrorResultsType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "FieldErrorResults",
+  fields: () => ({
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    message: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  }),
+})
+
+type FieldErrorType = {
+  name: string
+  message: string
+}
+
+const formatGravityErrorDetails = (
+  detail: Record<string, string[]>
+): FieldErrorType[] => {
+  const fieldErrors: FieldErrorType[] = []
+
+  Object.keys(detail).forEach((key) => {
+    fieldErrors.push({
+      name: key,
+      message: detail[key].join(", "),
+    })
+  })
+  return fieldErrors
 }

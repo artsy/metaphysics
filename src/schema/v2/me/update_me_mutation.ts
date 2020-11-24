@@ -6,7 +6,6 @@ import {
   GraphQLInputObjectType,
   GraphQLUnionType,
   GraphQLObjectType,
-  GraphQLList,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
@@ -101,21 +100,6 @@ const UpdateMyProfileMutationFailureType = new GraphQLObjectType<
       resolve: (err) => err,
     },
   }),
-})
-
-export const UpdateMyProfileMutationFieldErrorType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "UpdateMyProfileMutationFieldError",
-  fields: {
-    email: {
-      type: GraphQLList(GraphQLString),
-    },
-    password: {
-      type: GraphQLList(GraphQLString),
-    },
-  },
 })
 
 const UpdateMyProfileMutationType = new GraphQLUnionType({

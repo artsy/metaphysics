@@ -5722,6 +5722,11 @@ type Feedback {
   message: String!
 }
 
+type FieldErrorResults {
+  message: String!
+  name: String!
+}
+
 # A connection to a list of items.
 type FilterArtworksConnection implements ArtworkConnectionInterface & Node {
   # Returns aggregation counts for the given filter query.
@@ -6245,7 +6250,7 @@ type GeneFamilyEdge {
 type GravityMutationError {
   detail: String
   error: String
-  fieldErrors: UpdateMyProfileMutationFieldError
+  fieldErrors: [FieldErrorResults]
   message: String
   type: String
 }
@@ -10548,11 +10553,6 @@ union UpdateMyProfileMutation =
 
 type UpdateMyProfileMutationFailure {
   mutationError: GravityMutationError
-}
-
-type UpdateMyProfileMutationFieldError {
-  email: [String]
-  password: [String]
 }
 
 type UpdateMyProfileMutationSuccess {
