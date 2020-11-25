@@ -503,9 +503,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       isSaved: {
         type: GraphQLBoolean,
-        resolve: ({ id }, {}, { savedArtworkLoader }) => {
+        resolve: ({ _id }, {}, { savedArtworkLoader }) => {
           if (!savedArtworkLoader) return false
-          return savedArtworkLoader(id).then(({ is_saved }) => is_saved)
+          return savedArtworkLoader(_id).then(({ is_saved }) => is_saved)
         },
       },
       isShareable: {

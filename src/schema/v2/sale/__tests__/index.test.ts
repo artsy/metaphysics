@@ -583,142 +583,141 @@ describe("Sale type", () => {
   })
 
   describe("display_timely_at", () => {
+    const _now = moment()
+    const now = () => moment(_now)
     const testData = [
       [
         {
           auction_state: "open",
-          live_start_at: moment().subtract(1, "days").toISOString(),
-          registration_ends_at: moment().subtract(2, "days").toISOString(),
+          live_start_at: now().subtract(1, "days").toISOString(),
+          registration_ends_at: now().subtract(2, "days").toISOString(),
         },
         "in progress",
       ],
       [
         {
-          end_at: moment().subtract(1, "days").toISOString(),
-          start_at: moment().subtract(10, "days").toISOString(),
+          end_at: now().subtract(1, "days").toISOString(),
+          start_at: now().subtract(10, "days").toISOString(),
         },
         null,
       ],
       [
         {
           auction_state: "open",
-          start_at: moment().subtract(10, "days").toISOString(),
-          live_start_at: moment().subtract(2, "days").toISOString(),
-          registration_ends_at: moment().subtract(3, "days").toISOString(),
+          start_at: now().subtract(10, "days").toISOString(),
+          live_start_at: now().subtract(2, "days").toISOString(),
+          registration_ends_at: now().subtract(3, "days").toISOString(),
         },
         "in progress",
       ],
       [
         {
-          start_at: moment().subtract(10, "days").toISOString(),
-          live_start_at: moment().add(1, "minutes").toISOString(),
-          registration_ends_at: moment().subtract(2, "days").toISOString(),
+          start_at: now().subtract(10, "days").toISOString(),
+          live_start_at: now().add(1, "minutes").toISOString(),
+          registration_ends_at: now().subtract(2, "days").toISOString(),
         },
         "live in a minute",
       ],
       [
         {
-          start_at: moment().subtract(10, "days").toISOString(),
-          live_start_at: moment().add(10, "minutes").toISOString(),
-          registration_ends_at: moment().subtract(2, "days").toISOString(),
+          start_at: now().subtract(10, "days").toISOString(),
+          live_start_at: now().add(10, "minutes").toISOString(),
+          registration_ends_at: now().subtract(2, "days").toISOString(),
         },
         "live in 10 minutes",
       ],
       [
         {
-          start_at: moment().subtract(10, "days").toISOString(),
-          live_start_at: moment().add(20, "minutes").toISOString(),
-          registration_ends_at: moment().subtract(2, "days").toISOString(),
+          start_at: now().subtract(10, "days").toISOString(),
+          live_start_at: now().add(20, "minutes").toISOString(),
+          registration_ends_at: now().subtract(2, "days").toISOString(),
         },
         "live in 20 minutes",
       ],
       [
         {
-          start_at: moment().subtract(10, "days").toISOString(),
-          live_start_at: moment().add(20, "days").toISOString(),
-          registration_ends_at: moment().add(10, "minutes").toISOString(),
+          start_at: now().subtract(10, "days").toISOString(),
+          live_start_at: now().add(20, "days").toISOString(),
+          registration_ends_at: now().add(10, "minutes").toISOString(),
         },
-        `register by\n${moment(moment().tz("UTC").add(10, "minutes")).format(
+        `register by\n${moment(now().tz("UTC").add(10, "minutes")).format(
           "ha"
         )}`,
       ],
       [
         {
-          start_at: moment().tz("UTC").subtract(10, "days").toISOString(),
-          live_start_at: moment().tz("UTC").add(30, "days").toISOString(),
-          registration_ends_at: moment()
-            .tz("UTC")
-            .add(10, "days")
-            .toISOString(),
+          start_at: now().tz("UTC").subtract(10, "days").toISOString(),
+          live_start_at: now().tz("UTC").add(30, "days").toISOString(),
+          registration_ends_at: now().tz("UTC").add(10, "days").toISOString(),
         },
-        `register by\n${moment(moment().tz("UTC").add(10, "days")).format(
+        `register by\n${moment(now().tz("UTC").add(10, "days")).format(
           "MMM D, ha"
         )}`,
       ],
       [
         {
-          start_at: moment().subtract(10, "days").toISOString(),
-          live_start_at: moment().add(20, "days").toISOString(),
-          registration_ends_at: moment().add(10, "days").toISOString(),
+          start_at: now().subtract(10, "days").toISOString(),
+          live_start_at: now().add(20, "days").toISOString(),
+          registration_ends_at: now().add(10, "days").toISOString(),
         },
         "live in 20 days",
         true, // used to fake registered bidder for this scenario
       ],
       [
         {
-          start_at: moment().add(1, "minutes").toISOString(),
-          end_at: moment().add(10, "minutes").toISOString(),
+          start_at: now().add(1, "minutes").toISOString(),
+          end_at: now().add(10, "minutes").toISOString(),
         },
         "ends in 10 minutes",
       ],
       [
         {
-          start_at: moment().add(10, "minutes").toISOString(),
-          end_at: moment().add(20, "minutes").toISOString(),
+          start_at: now().add(10, "minutes").toISOString(),
+          end_at: now().add(20, "minutes").toISOString(),
         },
         "ends in 20 minutes",
       ],
       [
         {
-          start_at: moment().add(1, "hours").toISOString(),
-          end_at: moment().add(10, "hours").toISOString(),
+          start_at: now().add(1, "hours").toISOString(),
+          end_at: now().add(10, "hours").toISOString(),
         },
         "ends in 10 hours",
       ],
       [
         {
-          start_at: moment().add(2, "hours").toISOString(),
-          end_at: moment().add(20, "hours").toISOString(),
+          start_at: now().add(2, "hours").toISOString(),
+          end_at: now().add(20, "hours").toISOString(),
         },
         "ends in 20 hours",
       ],
       [
         {
-          start_at: moment().add(1, "days").toISOString(),
-          end_at: moment().add(2, "days").toISOString(),
+          start_at: now().add(1, "days").toISOString(),
+          end_at: now().add(2, "days").toISOString(),
         },
         "ends in 2 days",
       ],
       [
         {
-          start_at: moment().add(1, "days").toISOString(),
-          end_at: moment().add(5, "days").toISOString(),
+          start_at: now().add(1, "days").toISOString(),
+          end_at: now().add(5, "days").toISOString(),
         },
         "ends in 5 days",
       ],
       [
         {
-          start_at: moment().add(20, "days").toISOString(),
-          end_at: moment().add(30, "days").toISOString(),
+          start_at: now().add(20, "days").toISOString(),
+          end_at: now().add(30, "days").toISOString(),
         },
-        `ends ${moment(moment().add(30, "days")).format("MMM D")}`,
+        `ends ${moment(now().add(30, "days")).format("MMM D")}`,
       ],
       [
         {
-          start_at: moment().add(30, "days").toISOString(),
-          end_at: moment().add(40, "days").toISOString(),
+          start_at: now().add(30, "days").toISOString(),
+          end_at: now().add(40, "days").toISOString(),
         },
-        `ends ${moment(moment().add(40, "days")).format("MMM D")}`,
+        `ends ${moment(now().add(40, "days")).format("MMM D")}`,
       ],
     ]
 
