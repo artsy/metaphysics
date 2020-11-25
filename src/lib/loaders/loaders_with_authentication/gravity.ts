@@ -220,6 +220,7 @@ export default (accessToken, userID, opts) => {
       {
         paramKey: "artworks",
         trackingKey: "is_saved",
+        entityIDKeyPath: "_id",
       }
     ),
     savedArtworksLoader: gravityLoader("collection/saved-artwork/artworks", {
