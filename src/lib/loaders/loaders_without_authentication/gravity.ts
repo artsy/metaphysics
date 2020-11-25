@@ -39,6 +39,11 @@ export default (opts) => {
     artistGenesLoader: gravityLoader((id) => `artist/${id}/genome/genes`),
     artistLoader: gravityLoader((id) => `artist/${id}`),
     artistsLoader: gravityLoader("artists", {}, { headers: true }),
+    artistsByLetterLoader: gravityLoader(
+      (letter) => `artists/${letter}`,
+      {},
+      { headers: true }
+    ),
     artworkImageLoader: gravityLoader<
       any,
       { artwork_id: string; image_id: string }
