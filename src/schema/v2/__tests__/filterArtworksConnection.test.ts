@@ -455,9 +455,10 @@ describe("artworksConnection", () => {
         artistsLoader: jest.fn(
           // mock implementation to filter over the mock results above
           ({ ids }) =>
-            Promise.resolve(
-              mockArtistResults.filter(({ _id }) => ids.includes(_id))
-            )
+            Promise.resolve({
+              body: mockArtistResults.filter(({ _id }) => ids.includes(_id)),
+              headers: {},
+            })
         ),
       }
     })

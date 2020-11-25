@@ -11,16 +11,20 @@ describe("Artists", () => {
         }
       }
     `
+
     const artistsLoader = ({ page, size }: any) => {
       if (page === 1 && size === 1) {
-        return Promise.resolve([
-          {
-            id: "han-myung-ok",
-            name: "Han Myung-Ok",
-            birthday: "1958",
-            artworks_count: 12,
-          },
-        ])
+        return Promise.resolve({
+          body: [
+            {
+              id: "han-myung-ok",
+              name: "Han Myung-Ok",
+              birthday: "1958",
+              artworks_count: 12,
+            },
+          ],
+          headers: {},
+        })
       }
       throw new Error("Unexpected invocation")
     }
@@ -31,7 +35,10 @@ describe("Artists", () => {
   it("returns a list of artists matching array of ids", async () => {
     const artistsLoader = ({ ids }: any) => {
       if (ids) {
-        return Promise.resolve(ids.map((_id) => ({ _id })))
+        return Promise.resolve({
+          body: ids.map((_id) => ({ _id })),
+          headers: {},
+        })
       }
       throw new Error("Unexpected invocation")
     }

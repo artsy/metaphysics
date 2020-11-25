@@ -224,12 +224,15 @@ describe("Fair", () => {
         })
       ),
       artistsLoader: jest.fn().mockReturnValue(
-        Promise.resolve([
-          {
-            name: "Foo Artist",
-            id: "foo-artist",
-          },
-        ])
+        Promise.resolve({
+          headers: {},
+          body: [
+            {
+              name: "Foo Artist",
+              id: "foo-artist",
+            },
+          ],
+        })
       ),
       fairPartnersLoader: sinon.stub().returns(
         Promise.resolve({

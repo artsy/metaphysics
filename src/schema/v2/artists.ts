@@ -36,10 +36,10 @@ const Artists: GraphQLFieldConfig<void, ResolverContext> = {
     },
     sort: ArtistSorts,
   },
-  resolve: (_root, options, { artistLoader, artistsLoader }) => {
-    if (options.slugs) {
+  resolve: (_root, args, { artistLoader, artistsLoader }) => {
+    if (args.slugs) {
       return Promise.all(
-        options.slugs.map((slug) =>
+        args.slugs.map((slug) =>
           artistLoader(
             slug,
             {},
@@ -51,7 +51,7 @@ const Artists: GraphQLFieldConfig<void, ResolverContext> = {
       )
     }
 
-    return artistsLoader(options)
+    return artistsLoader(args).then(({ body }) => body)
   },
 }
 

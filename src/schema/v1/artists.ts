@@ -51,7 +51,7 @@ const Artists: GraphQLFieldConfig<void, ResolverContext> = {
       )
     }
 
-    return artistsLoader(options)
+    return artistsLoader(options).then(({ body }) => body)
   },
 }
 
