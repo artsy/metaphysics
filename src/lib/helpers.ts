@@ -1,3 +1,4 @@
+import { ConnectionArguments } from "graphql-relay"
 import {
   assign,
   camelCase,
@@ -8,6 +9,7 @@ import {
   isObject,
   isString,
   omit,
+  pick,
   reject,
   trim,
 } from "lodash"
@@ -99,6 +101,20 @@ export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(
     page,
     offset,
   } as any
+}
+
+export const convertGravityToConnectionArgs = <
+  T extends { page?: number; size?: number; offset?: number } & Partial<
+    ConnectionArguments
+  >
+>(
+  options: T
+): ConnectionArguments => {
+  if (!options.first && !options.last && options.size !== undefined) {
+    return { first: options.size, ...pick(options, ["before", "after"]) }
+  }
+
+  return pick(options, ["first", "after", "last", "before"])
 }
 
 export const removeNulls = (object) => {
