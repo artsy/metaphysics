@@ -170,7 +170,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
         }
         return artistsLoader({
           ids: keys(aggregations.merchandisable_artists),
-        })
+        }).then(({ body }) => body)
       },
     },
     total: {

@@ -13,7 +13,7 @@ import {
   PathGenerator,
 } from "./api/loader_interface"
 
-type ResponseHeaders = { [header: string]: string }
+export type ResponseHeaders = { [header: string]: string }
 
 export type BodyAndHeaders<B = any, H = ResponseHeaders> = {
   body: B

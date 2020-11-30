@@ -28,7 +28,7 @@ import System from "./system"
 
 // import Status from "./status"
 import Article from "./article"
-import Artists from "./artists"
+import Artists, { artistsConnection } from "./artists"
 // import Collection from "./collection"
 import { CreditCard } from "./credit_card"
 // import ExternalPartner from "./external_partner"
@@ -115,6 +115,7 @@ const rootFields = {
   artworks: Artworks,
   artist: Artist,
   artists: Artists,
+  artistsConnection,
   city: City,
   // collection: Collection,
   creditCard: CreditCard,

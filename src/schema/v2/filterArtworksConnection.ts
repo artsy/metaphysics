@@ -302,9 +302,9 @@ export const FilterArtworksFields = () => {
           aggregations.merchandisable_artists
         ).slice(0, size)
 
-        return artistsLoader({
-          ids: artistIdsToReturn,
-        })
+        return artistsLoader({ ids: artistIdsToReturn }).then(
+          ({ body }) => body
+        )
       },
     },
     facet: {

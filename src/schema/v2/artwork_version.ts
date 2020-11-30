@@ -32,14 +32,16 @@ export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLList(Artist.type),
       description: "The artists related to this Artwork Version",
       resolve: (version, _options, { artistsLoader }) =>
-        artistsLoader({ ids: version.artist_ids }),
+        artistsLoader({ ids: version.artist_ids }).then(({ body }) => body),
     },
 
     artistNames: {
       type: GraphQLString,
       description: "The names for the artists related to this Artwork Version",
       resolve: async (version, _options, { artistsLoader }) => {
-        const artists = await artistsLoader({ ids: version.artist_ids })
+        const artists = await artistsLoader({ ids: version.artist_ids }).then(
+          ({ body }) => body
+        )
         return artistNames({ artists })
       },
     },
