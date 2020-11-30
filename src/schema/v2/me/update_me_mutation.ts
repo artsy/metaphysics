@@ -122,6 +122,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       description: "The given email of the user.",
       type: GraphQLString,
     },
+    password: {
+      description: "The user's password, required to change email address.",
+      type: GraphQLString,
+    },
     phone: {
       description: "The given phone number of the user.",
       type: GraphQLString,
