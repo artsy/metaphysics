@@ -60,14 +60,17 @@ describe("Delete card mutation", () => {
   })
 
   it("throws an error if there is one we don't recognize", async () => {
+    expect.assertions(1)
+
     const errorRootValue = {
       deleteCreditCardLoader: () => {
         throw new Error("ETIMEOUT service unreachable")
       },
     }
-    runAuthenticatedQuery(query, errorRootValue).catch((error) => {
-      expect(error.message).toEqual("ETIMEOUT service unreachable")
-    })
+
+    await expect(runAuthenticatedQuery(query, errorRootValue)).rejects.toThrow(
+      "ETIMEOUT service unreachable"
+    )
   })
 
   it("deletes a credit card successfully", async () => {

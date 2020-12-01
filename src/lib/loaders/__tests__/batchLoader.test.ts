@@ -13,14 +13,18 @@ describe("batchLoader", () => {
     })
 
     it("should return a single loader if one is provided", () => {
-      const singleLoader = () => {}
+      const singleLoader = () => {
+        // noop
+      }
       expect(batchLoader({ singleLoader, multipleLoader: null })).toBe(
         singleLoader
       )
     })
 
     it("should return a multipleLoader if no singleLoader provided", () => {
-      const multipleLoader = () => {}
+      const multipleLoader = () => {
+        // noop
+      }
       expect(batchLoader({ multipleLoader })).toBe(multipleLoader)
     })
   })

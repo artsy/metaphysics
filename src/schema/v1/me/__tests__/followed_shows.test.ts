@@ -1,4 +1,3 @@
-/* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 import cityData from "schema/v1/city/cityDataSortedByDisplayPreference.json"
@@ -41,7 +40,7 @@ describe("returns followed shows for a user", () => {
   })
 
   describe("filter by status", () => {
-    const assert_status_supported = async (status) => {
+    const assertStatusSupported = async (status) => {
       const query = generate_query(
         `(first: 10, status: ${status.toUpperCase()})`
       )
@@ -54,7 +53,7 @@ describe("returns followed shows for a user", () => {
       })
     }
 
-    const assert_invalid_status_fails = async (status) => {
+    const assertInvalidStatusFails = async (status) => {
       const query = generate_query(
         `(first: 10, status: ${status.toUpperCase()})`
       )
@@ -66,15 +65,15 @@ describe("returns followed shows for a user", () => {
     }
 
     it("handles all supported status definitions", async () => {
-      await assert_status_supported("closed")
-      await assert_status_supported("running")
-      await assert_status_supported("upcoming")
-      await assert_status_supported("closing_soon")
-      await assert_status_supported("running_and_upcoming")
+      await assertStatusSupported("closed")
+      await assertStatusSupported("running")
+      await assertStatusSupported("upcoming")
+      await assertStatusSupported("closing_soon")
+      await assertStatusSupported("running_and_upcoming")
     })
 
     it("throws an error if an unsupported status is supplied", async () => {
-      await assert_invalid_status_fails("random_invalid_status")
+      await assertInvalidStatusFails("random_invalid_status")
     })
   })
 

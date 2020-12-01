@@ -780,7 +780,7 @@ describe("Sale type", () => {
       expect(response.sale.formattedStartDateTime).toContain("Ended")
     })
 
-    it("returns End time when end_at is in the past", async () => {
+    it("returns End time when end_at is in the past (2)", async () => {
       const response = await execute(query, {
         start_at: moment().subtract(2, "hours"),
         end_at: null,
@@ -883,7 +883,7 @@ describe("Sale type", () => {
 
   describe("userNeedsIdentityVerification", () => {
     describe("when the sale doesn't requires identity verification", () => {
-      let sale = {
+      const sale = {
         id: "foo-foo",
         _id: "123",
         currency: "$",
@@ -913,7 +913,7 @@ describe("Sale type", () => {
     })
 
     describe("when the sale does require identity verification", () => {
-      let sale = {
+      const sale = {
         id: "foo-foo",
         _id: "123",
         currency: "$",

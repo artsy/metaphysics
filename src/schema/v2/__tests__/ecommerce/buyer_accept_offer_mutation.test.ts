@@ -29,7 +29,7 @@ describe("BuyerAcceptOffer Mutation", () => {
     }
   `
 
-  it("accepts the seller offer", () => {
+  it("accepts the seller offer", async () => {
     const resolvers = {
       Mutation: {
         buyerAcceptOffer: () => ({
@@ -40,14 +40,14 @@ describe("BuyerAcceptOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then((data) => {
-      expect(data!.ecommerceBuyerAcceptOffer.orderOrError.order).toEqual(
-        sampleOrder()
-      )
-    })
+    const data = await runQuery(mutation, context)
+
+    expect(data!.ecommerceBuyerAcceptOffer.orderOrError.order).toEqual(
+      sampleOrder()
+    )
   })
 
-  it("returns an error if there is one", () => {
+  it("returns an error if there is one", async () => {
     const resolvers = {
       Mutation: {
         buyerAcceptOffer: () => ({
@@ -63,12 +63,12 @@ describe("BuyerAcceptOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then((data) => {
-      expect(data!.ecommerceBuyerAcceptOffer.orderOrError.error).toEqual({
-        type: "application_error",
-        code: "404",
-        data: null,
-      })
+    const data = await runQuery(mutation, context)
+
+    expect(data!.ecommerceBuyerAcceptOffer.orderOrError.error).toEqual({
+      type: "application_error",
+      code: "404",
+      data: null,
     })
   })
 })

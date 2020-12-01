@@ -23,11 +23,9 @@ mutation {
 
 describe("starting an identity verification", () => {
   it("requires an access token", async () => {
-    runQuery(mutation).catch((error) => {
-      expect(error.message).toEqual(
-        "You need to be signed in to perform this action"
-      )
-    })
+    await expect(runQuery(mutation)).rejects.toThrow(
+      "You need to be signed in to perform this action"
+    )
   })
 
   it("returns the given identity verification ID and flow URL from Gravity", async () => {
@@ -78,15 +76,15 @@ describe("starting an identity verification", () => {
     })
   })
 
-  it("throws an error if there is an unrecognizable error", () => {
+  it("throws an error if there is an unrecognizable error", async () => {
     const errorRootValue = {
       startIdentityVerificationLoader: () => {
         throw new Error("ETIMEOUT service unreachable")
       },
     }
 
-    runAuthenticatedQuery(mutation, errorRootValue).catch((error) => {
-      expect(error.message).toEqual("ETIMEOUT service unreachable")
-    })
+    await expect(
+      runAuthenticatedQuery(mutation, errorRootValue)
+    ).rejects.toThrow("ETIMEOUT service unreachable")
   })
 })

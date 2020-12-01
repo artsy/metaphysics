@@ -15,7 +15,7 @@ import {
 } from "lib/date"
 
 describe("date formatting", () => {
-  describe(timeRange, () => {
+  describe("timeRange", () => {
     it("includes only one am or pm if within same am/pm", () => {
       const period = timeRange(
         "2022-12-30T08:00:00+00:00",
@@ -44,7 +44,7 @@ describe("date formatting", () => {
     })
   })
 
-  describe(datesAreSameDay, () => {
+  describe("datesAreSameDay", () => {
     it("returns true if dates are the same day", () => {
       const period = datesAreSameDay(
         "2022-12-30T20:00:00+00:00",
@@ -82,7 +82,7 @@ describe("date formatting", () => {
     })
   })
 
-  describe(formattedStartDateTime, () => {
+  describe("formattedStartDateTime", () => {
     const realNow = Date.now
     beforeEach(() => {
       Date.now = () => new Date("2018-01-30T03:24:00") as any
@@ -121,7 +121,7 @@ describe("date formatting", () => {
       expect(period).toBe("Ended Dec 30, 2016")
     })
 
-    it("includes 'Starts' when event starts in the future", () => {
+    it("includes 'Starts' when event starts in the future (2)", () => {
       const period = formattedStartDateTime(
         "2045-12-05T20:00:00+00:00",
         "2050-12-30T17:00:00+00:00",
@@ -148,7 +148,7 @@ describe("date formatting", () => {
     })
   })
 
-  describe(formattedOpeningHours, () => {
+  describe("formattedOpeningHours", () => {
     const realNow = Date.now
     beforeEach(() => {
       Date.now = () => new Date("2018-01-30T03:24:00") as any
@@ -185,7 +185,7 @@ describe("date formatting", () => {
     })
   })
 
-  describe(singleTime, () => {
+  describe("singleTime", () => {
     it("includes hour using default UTC timezone", () => {
       const period = singleTime("2018-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("8:00pm UTC")
@@ -197,7 +197,7 @@ describe("date formatting", () => {
     })
   })
 
-  describe(singleDateTime, () => {
+  describe("singleDateTime", () => {
     const realNow = Date.now
     beforeEach(() => {
       Date.now = () => new Date("2018-01-30T03:24:00") as any
@@ -225,7 +225,7 @@ describe("date formatting", () => {
     })
   })
 
-  describe(singleDate, () => {
+  describe("singleDate", () => {
     const realNow = Date.now
     beforeEach(() => {
       Date.now = () => new Date("2018-01-30T03:24:00") as any
@@ -245,7 +245,7 @@ describe("date formatting", () => {
     })
   })
 
-  describe(singleDateWithDay, () => {
+  describe("singleDateWithDay", () => {
     const realNow = Date.now
     beforeEach(() => {
       Date.now = () => new Date("2018-01-30T03:24:00") as any
@@ -265,7 +265,7 @@ describe("date formatting", () => {
     })
   })
 
-  describe(dateTimeRange, () => {
+  describe("dateTimeRange", () => {
     const realNow = Date.now
     beforeEach(() => {
       Date.now = () => new Date("2018-01-30T03:24:00") as any
@@ -391,7 +391,7 @@ describe("date formatting", () => {
     })
   })
 
-  describe(dateRange, () => {
+  describe("dateRange", () => {
     it("includes month day and both years when years are different years", () => {
       const period = dateRange("2011-01-01", "2014-04-19", "UTC")
       expect(period).toBe("Jan 1, 2011 – Apr 19, 2014")
@@ -422,7 +422,7 @@ describe("date formatting", () => {
     })
   })
 
-  describe(exhibitionStatus, () => {
+  describe("exhibitionStatus", () => {
     let today: Moment = null as any
 
     beforeEach(() => {

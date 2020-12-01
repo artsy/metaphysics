@@ -3,7 +3,7 @@ import { Source, parse } from "graphql"
 
 const queryToAst = (query) => parse(new Source(query))
 
-describe(getPrincipalFieldDirectivePath, () => {
+describe("getPrincipalFieldDirectivePath", () => {
   it("returns an empty array when the directive is not used", () => {
     const query = `
       {

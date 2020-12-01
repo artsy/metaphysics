@@ -1,5 +1,4 @@
 import {
-  nameOldEigenQueries,
   rewriteEcommerceMutations,
   shouldRewriteEcommerceMutations,
   shouldAddQueryToMutations,
@@ -8,7 +7,7 @@ import gql from "lib/gql"
 
 let beforeOffer: string
 let beforeOrder: string
-let savedArtworksQuery = gql`
+const savedArtworksQuery = gql`
   {
     me {
       saved_artworks {
@@ -23,7 +22,7 @@ let savedArtworksQuery = gql`
   }
 `
 
-describe(nameOldEigenQueries, () => {
+describe("nameOldEigenQueries", () => {
   beforeAll(() => {
     beforeOffer = gql`
       mutation createOfferOrder($artworkId: String!, $quantity: Int) {
@@ -122,13 +121,13 @@ describe(nameOldEigenQueries, () => {
   })
 })
 
-describe(shouldRewriteEcommerceMutations, () => {
+describe("shouldRewriteEcommerceMutations", () => {
   it("shoud re-write", () => {
     expect(shouldRewriteEcommerceMutations(beforeOffer)).toBeTruthy()
   })
 })
 
-describe(shouldAddQueryToMutations, () => {
+describe("shouldAddQueryToMutations", () => {
   it("doesn't do it on an offer mutation", () => {
     expect(shouldAddQueryToMutations(beforeOffer)).toBeFalsy()
   })

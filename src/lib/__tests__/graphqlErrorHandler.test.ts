@@ -9,7 +9,7 @@ import config from "config"
 import { ServerError } from "apollo-link-http-common"
 
 describe("graphqlErrorHandler", () => {
-  describe(shouldReportError, () => {
+  describe("shouldReportError", () => {
     it("reports when the error is null", () => {
       expect(shouldReportError(null)).toBeTruthy()
     })
@@ -59,7 +59,7 @@ describe("graphqlErrorHandler", () => {
     })
   })
 
-  describe(formattedGraphQLError, () => {
+  describe("formattedGraphQLError", () => {
     describe("stack traces", () => {
       it("are not present in production", () => {
         config.PRODUCTION_ENV = true

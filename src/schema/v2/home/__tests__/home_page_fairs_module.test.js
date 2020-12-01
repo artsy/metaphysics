@@ -2,9 +2,8 @@
 import { runQuery } from "schema/v2/test/utils"
 
 // FIXME: These tests seem to be failing in CI. Revisit and investigate why.
-
 describe("HomePageFairsModule", () => {
-  xit("works", () => {
+  it.skip("works", () => {
     const runningFairs = [
       {
         id: "artissima-2017",
@@ -59,7 +58,7 @@ describe("HomePageFairsModule", () => {
     })
   })
 
-  xit("puts fairs that haven't started yet at the end of the results", async () => {
+  it.skip("puts fairs that haven't started yet at the end of the results", async () => {
     const fairs = [
       {
         id: "future-fair",
@@ -88,14 +87,14 @@ describe("HomePageFairsModule", () => {
     `
 
     const fairModule = await runQuery(query, {
-      fairsLoader: (options) => Promise.resolve({ body: fairs }),
+      fairsLoader: () => Promise.resolve({ body: fairs }),
     })
     const results = fairModule.homePage.fairsModule.results
     expect(results[0].slug).toEqual("current-fair")
     expect(results[1].slug).toEqual("future-fair")
   })
 
-  xit("does not request past fairs if it has 8 running ones", () => {
+  it.skip("does not request past fairs if it has 8 running ones", () => {
     const aFair = {
       id: "artissima-2017",
       name: "Artissima 2017",

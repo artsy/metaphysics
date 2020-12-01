@@ -155,12 +155,12 @@ describe("SearchableItemPresenter", () => {
       })
 
       it("prefers live_start_at to start_at date", () => {
-        let presenter = new SearchableItemPresenter({
+        const presenter = new SearchableItemPresenter({
           ...buildSearchableItem("Auction"),
           live_start_at: "2018-05-30T12:00:00.000Z",
           end_at: "",
         })
-        let description = presenter.formattedDescription()
+        const description = presenter.formattedDescription()
 
         expect(description).toBe("Sale opening May 30th, 2018 (at 8:00am EDT)")
       })

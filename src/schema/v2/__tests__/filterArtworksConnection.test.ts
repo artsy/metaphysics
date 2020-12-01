@@ -1,4 +1,3 @@
-/* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 import { toGlobalId } from "graphql-relay"
 import gql from "lib/gql"
@@ -348,6 +347,8 @@ describe("artworksConnection", () => {
     })
 
     it("throws an error when `first`, `last` and `size` are missing", async () => {
+      expect.assertions(1)
+
       const query = gql`
         {
           artworksConnection(aggregations: [TOTAL]) {
@@ -358,14 +359,9 @@ describe("artworksConnection", () => {
         }
       `
 
-      expect.assertions(1)
-      try {
-        await runQuery(query, context)
-      } catch (e) {
-        expect(e.message).toMatch(
-          "You must pass either `first`, `last` or `size`."
-        )
-      }
+      await expect(runQuery(query, context)).rejects.toThrow(
+        "You must pass either `first`, `last` or `size`."
+      )
     })
   })
 

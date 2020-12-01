@@ -1,4 +1,3 @@
-/* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("Delete card mutation", () => {
@@ -64,9 +63,12 @@ describe("Delete card mutation", () => {
         throw new Error("ETIMEOUT service unreachable")
       },
     }
-    runAuthenticatedQuery(query, errorRootValue).catch((error) => {
-      expect(error.message).toEqual("ETIMEOUT service unreachable")
-    })
+
+    expect.assertions(1)
+
+    await expect(runAuthenticatedQuery(query, errorRootValue)).rejects.toThrow(
+      "ETIMEOUT service unreachable"
+    )
   })
 
   it("deletes a credit card successfully", async () => {

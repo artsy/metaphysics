@@ -38,7 +38,7 @@ describe("City", () => {
   })
 
   describe("finding by slug", () => {
-    it("finds a city by its slug", () => {
+    it("finds a city by its slug", async () => {
       const query = gql`
         {
           city(slug: "sacramende-ca-usa") {
@@ -47,15 +47,15 @@ describe("City", () => {
         }
       `
 
-      return runQuery(query).then((result) => {
-        expect(result!.city).toEqual({
-          name: "Sacramende",
-        })
+      const result = await runQuery(query)
+      expect(result!.city).toEqual({
+        name: "Sacramende",
       })
     })
 
-    it("returns a helpful error for unknown slugs", () => {
+    it("returns a helpful error for unknown slugs", async () => {
       expect.assertions(1)
+
       const query = gql`
         {
           city(slug: "sacramundo") {
@@ -63,14 +63,15 @@ describe("City", () => {
           }
         }
       `
-      return runQuery(query).catch((e) =>
-        expect(e.message).toMatch(/City sacramundo not found in:/)
+
+      await expect(runQuery(query)).rejects.toThrow(
+        /City sacramundo not found in:/
       )
     })
   })
 
   describe("finding by lat/lng", () => {
-    it("finds the city nearest to a supplied point", () => {
+    it("finds the city nearest to a supplied point", async () => {
       const pointNearSmallville = "{ lat: 40, lng: -100 }"
       const query = `
         {
@@ -80,14 +81,13 @@ describe("City", () => {
         }
       `
 
-      return runQuery(query).then((result) => {
-        expect(result!.city).toEqual({
-          name: "Smallville",
-        })
+      const result = await runQuery(query)
+      expect(result!.city).toEqual({
+        name: "Smallville",
       })
     })
 
-    it("returns null if no cities are within a defined threshold", () => {
+    it("returns null if no cities are within a defined threshold", async () => {
       const veryRemotePoint = "{ lat: 90, lng: 0 }"
       const query = gql`
         {
@@ -97,9 +97,8 @@ describe("City", () => {
         }
       `
 
-      return runQuery(query).then((result) => {
-        expect(result!.city).toBeNull()
-      })
+      const result = await runQuery(query)
+      expect(result!.city).toBeNull()
     })
   })
 
@@ -133,26 +132,24 @@ describe("City", () => {
       }
     })
 
-    it("resolves nearby shows", () => {
-      return runQuery(query, context).then((result) => {
-        expect(result!.city).toEqual({
-          name: "Sacramende",
-          shows: {
-            edges: [
-              {
-                node: mockShows[0],
-              },
-            ],
-          },
-        })
-
-        expect(mockShowsLoader).toHaveBeenCalledWith(
-          expect.objectContaining({
-            near: "38.5,-121.8",
-            total_count: true,
-          })
-        )
+    it("resolves nearby shows", async () => {
+      const result = await runQuery(query, context)
+      expect(result!.city).toEqual({
+        name: "Sacramende",
+        shows: {
+          edges: [
+            {
+              node: mockShows[0],
+            },
+          ],
+        },
       })
+      expect(mockShowsLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          near: "38.5,-121.8",
+          total_count: true,
+        })
+      )
     })
 
     it("requests displayable shows, by default", async () => {
@@ -387,7 +384,7 @@ describe("City", () => {
       }
     })
 
-    it("resolves nearby fairs", () => {
+    it("resolves nearby fairs", async () => {
       const query = gql`
         {
           city(slug: "sacramende-ca-usa") {
@@ -403,21 +400,19 @@ describe("City", () => {
         }
       `
 
-      return runQuery(query, context).then((result) => {
-        expect(result!.city).toEqual({
-          name: "Sacramende",
-          fairs: {
-            edges: [{ node: { id: "first-fair" } }],
-          },
-        })
-
-        expect(mockFairsLoader).toHaveBeenCalledWith(
-          expect.objectContaining({
-            near: "38.5,-121.8",
-            total_count: true,
-          })
-        )
+      const result = await runQuery(query, context)
+      expect(result!.city).toEqual({
+        name: "Sacramende",
+        fairs: {
+          edges: [{ node: { id: "first-fair" } }],
+        },
       })
+      expect(mockFairsLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          near: "38.5,-121.8",
+          total_count: true,
+        })
+      )
     })
 
     it("can request all shows [that match other filter parameters]", async () => {

@@ -2,7 +2,7 @@ import { runQuery } from "schema/v2/test/utils"
 
 jest.mock("lib/apis/fetch", () => jest.fn())
 
-xdescribe("SystemTime type", () => {
+describe.skip("SystemTime type", () => {
   const systemTimeData = {
     time: "2018-07-02 20:58:58 UTC",
     day: 2,

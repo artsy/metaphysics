@@ -38,7 +38,18 @@
     ],
     "@typescript-eslint/no-use-before-define": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
-    "prefer-const": ["error", { "ignoreReadBeforeAssign": true }]
+    "prefer-const": ["error", { "ignoreReadBeforeAssign": true }],
+    "jest/expect-expect": [
+      "warn",
+      {
+        "assertFunctionNames": [
+          "expect",
+          "expectPromiseRejectionToMatch",
+          "assertStatusSupported",
+          "assertInvalidStatusFails"
+        ]
+      }
+    ]
   },
   "globals": {
     "expect": false,

@@ -29,7 +29,7 @@ const schema = transformSchema(originalSchema, [
   new ReplaceCommerceDateTimeType(),
 ])
 
-describe(ReplaceCommerceDateTimeType, () => {
+describe("ReplaceCommerceDateTimeType", () => {
   it("replaces CommerceDateTime fields", async () => {
     const data = await runQueryOrThrow({
       schema,

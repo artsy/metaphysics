@@ -50,7 +50,7 @@ describe("BuyerRejectOffer Mutation", () => {
     }
   `
 
-  it("rejects the seller offer with a reason", () => {
+  it("rejects the seller offer with a reason", async () => {
     const resolvers = {
       Mutation: {
         buyerRejectOffer: () => ({
@@ -61,14 +61,14 @@ describe("BuyerRejectOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutationWithRejectReason, context).then((data) => {
-      expect(data!.ecommerceBuyerRejectOffer.orderOrError.order).toEqual(
-        sampleOrder()
-      )
-    })
+    const data = await runQuery(mutationWithRejectReason, context)
+
+    expect(data!.ecommerceBuyerRejectOffer.orderOrError.order).toEqual(
+      sampleOrder()
+    )
   })
 
-  it("rejects the seller offer without a reason", () => {
+  it("rejects the seller offer without a reason", async () => {
     const resolvers = {
       Mutation: {
         buyerRejectOffer: () => ({
@@ -79,14 +79,14 @@ describe("BuyerRejectOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutationWithoutRejectReason, context).then((data) => {
-      expect(data!.ecommerceBuyerRejectOffer.orderOrError.order).toEqual(
-        sampleOrder()
-      )
-    })
+    const data = await runQuery(mutationWithoutRejectReason, context)
+
+    expect(data!.ecommerceBuyerRejectOffer.orderOrError.order).toEqual(
+      sampleOrder()
+    )
   })
 
-  it("returns an error if an error occurs", () => {
+  it("returns an error if an error occurs", async () => {
     const resolvers = {
       Mutation: {
         buyerRejectOffer: () => ({
@@ -102,12 +102,12 @@ describe("BuyerRejectOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutationWithoutRejectReason, context).then((data) => {
-      expect(data!.ecommerceBuyerRejectOffer.orderOrError.error).toEqual({
-        type: "application_error",
-        code: "404",
-        data: null,
-      })
+    const data = await runQuery(mutationWithoutRejectReason, context)
+
+    expect(data!.ecommerceBuyerRejectOffer.orderOrError.error).toEqual({
+      type: "application_error",
+      code: "404",
+      data: null,
     })
   })
 })

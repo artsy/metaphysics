@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 
-xdescribe("Article type", () => {
+describe.skip("Article type", () => {
   let article = null
   let context = null
 

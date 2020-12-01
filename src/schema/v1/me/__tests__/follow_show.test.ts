@@ -15,8 +15,8 @@ describe("FollowShow", () => {
     `
     interface Props {
       followShow: {
-        id: String
-        name: String
+        id: string
+        name: string
       }
     }
 
@@ -73,10 +73,10 @@ describe("FollowShow", () => {
 
     interface Props {
       followShow: {
-        id: String
-        name: String
+        id: string
+        name: string
         show: {
-          id: String
+          id: string
         }
       }
     }

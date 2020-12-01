@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-xdescribe("Me", () => {
+describe.skip("Me", () => {
   describe("SaleRegistrations", () => {
     it("returns the sales along with the registration status", () => {
       const query = `

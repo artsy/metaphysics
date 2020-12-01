@@ -29,7 +29,7 @@ describe("BuyerCounterOffer Mutation", () => {
     }
   `
 
-  it("counters sellers offer", () => {
+  it("counters sellers offer", async () => {
     const resolvers = {
       Mutation: {
         buyerCounterOffer: () => ({
@@ -40,18 +40,18 @@ describe("BuyerCounterOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then((data) => {
-      expect(data!.ecommerceBuyerCounterOffer.orderOrError.order).toEqual(
-        sampleOrder({
-          mode: "OFFER",
-          includeOfferFields: true,
-          includeCreditCard: true,
-        })
-      )
-    })
+    const data = await runQuery(mutation, context)
+
+    expect(data!.ecommerceBuyerCounterOffer.orderOrError.order).toEqual(
+      sampleOrder({
+        mode: "OFFER",
+        includeOfferFields: true,
+        includeCreditCard: true,
+      })
+    )
   })
 
-  it("returns an error if there is one", () => {
+  it("returns an error if there is one", async () => {
     const resolvers = {
       Mutation: {
         buyerCounterOffer: () => ({
@@ -67,12 +67,12 @@ describe("BuyerCounterOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then((data) => {
-      expect(data!.ecommerceBuyerCounterOffer.orderOrError.error).toEqual({
-        type: "application_error",
-        code: "404",
-        data: null,
-      })
+    const data = await runQuery(mutation, context)
+
+    expect(data!.ecommerceBuyerCounterOffer.orderOrError.error).toEqual({
+      type: "application_error",
+      code: "404",
+      data: null,
     })
   })
 })

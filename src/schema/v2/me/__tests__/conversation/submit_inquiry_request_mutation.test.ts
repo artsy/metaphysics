@@ -19,7 +19,7 @@ describe("SubmitInquiryRequestMutation", () => {
   })
 
   describe("when question is present", () => {
-    it("calls gravity loader with questions and address", () => {
+    it("calls gravity loader with questions and address", async () => {
       const mutation = gql`
         mutation {
           submitInquiryRequestMutation(
@@ -86,24 +86,24 @@ describe("SubmitInquiryRequestMutation", () => {
       }
 
       expect.assertions(4)
-      return runAuthenticatedQuery(mutation, context).then(
-        ({ submitInquiryRequestMutation }) => {
-          expect(submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
-            artwork: "artwork-id",
-            inquiry_questions: ["price_and_availability", "shipping_quote"],
-            inquiry_shipping_location: {
-              address: "112 Main st Brooklyn NY 11211",
-            },
-          })
-          expect(userByIDLoader).toHaveBeenCalledWith("rob-ross")
-          expect(artistLoader).toHaveBeenCalledWith("bob-ross")
-          expect(submitInquiryRequestMutation).toMatchSnapshot()
-        }
+      const { submitInquiryRequestMutation } = await runAuthenticatedQuery(
+        mutation,
+        context
       )
+      expect(submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
+        artwork: "artwork-id",
+        inquiry_questions: ["price_and_availability", "shipping_quote"],
+        inquiry_shipping_location: {
+          address: "112 Main st Brooklyn NY 11211",
+        },
+      })
+      expect(userByIDLoader).toHaveBeenCalledWith("rob-ross")
+      expect(artistLoader).toHaveBeenCalledWith("bob-ross")
+      expect(submitInquiryRequestMutation).toMatchSnapshot()
     })
   })
   describe("when only message is present", () => {
-    it("calls gravity loader with only message", () => {
+    it("calls gravity loader with only message", async () => {
       const mutation = gql`
         mutation {
           submitInquiryRequestMutation(
@@ -160,17 +160,17 @@ describe("SubmitInquiryRequestMutation", () => {
       }
 
       expect.assertions(4)
-      return runAuthenticatedQuery(mutation, context).then(
-        ({ submitInquiryRequestMutation }) => {
-          expect(submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
-            artwork: "artwork-id",
-            message: "do you have sunset paintings?",
-          })
-          expect(userByIDLoader).toHaveBeenCalledWith("rob-ross")
-          expect(artistLoader).toHaveBeenCalledWith("bob-ross")
-          expect(submitInquiryRequestMutation).toMatchSnapshot()
-        }
+      const { submitInquiryRequestMutation } = await runAuthenticatedQuery(
+        mutation,
+        context
       )
+      expect(submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
+        artwork: "artwork-id",
+        message: "do you have sunset paintings?",
+      })
+      expect(userByIDLoader).toHaveBeenCalledWith("rob-ross")
+      expect(artistLoader).toHaveBeenCalledWith("bob-ross")
+      expect(submitInquiryRequestMutation).toMatchSnapshot()
     })
   })
 })

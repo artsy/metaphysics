@@ -4,7 +4,7 @@ import { assign } from "lodash"
 
 describe("Default Context", () => {
   let context: any
-  let parentArtwork = {} as any
+  const parentArtwork = {} as any
 
   const query = gql`
     {
@@ -81,14 +81,13 @@ describe("Default Context", () => {
       Promise.resolve(artistArtworks)
     )
 
-    await runAuthenticatedQuery(query, context).then((data) => {
-      expect(data.artwork.contextGrids.length).toEqual(3)
-      expect(context.artistArtworksLoader).toHaveBeenCalledWith("andy-warhol", {
-        exclude_ids: ["abc123"],
-        page: 1,
-        size: 2,
-        sort: "-merchandisability",
-      })
+    const data = await runAuthenticatedQuery(query, context)
+    expect(data.artwork.contextGrids.length).toEqual(3)
+    expect(context.artistArtworksLoader).toHaveBeenCalledWith("andy-warhol", {
+      exclude_ids: ["abc123"],
+      page: 1,
+      size: 2,
+      sort: "-merchandisability",
     })
     expect.assertions(2)
   })
@@ -97,24 +96,21 @@ describe("Default Context", () => {
     parentArtwork.partner = null
     context.partnerArtworksLoader = Promise.resolve(null)
 
-    await runAuthenticatedQuery(query, context).then((data) => {
-      // Should have one artist grid and one related grid with 0 works
-      expect(data.artwork.contextGrids.length).toEqual(2)
-      const {
-        title,
-        ctaTitle,
-        ctaHref,
-        artworksConnection,
-      } = data.artwork.contextGrids[0]
-
-      expect(title).toEqual("Other works by Andy Warhol")
-      expect(ctaTitle).toEqual("View all works by Andy Warhol")
-      expect(ctaHref).toEqual("/artist/andy-warhol")
-      expect(artworksConnection.edges.length).toEqual(2)
-
-      // Related artworks grid should have no artworks
-      expect(data.artwork.contextGrids[1].artworksConnection).toEqual(null)
-    })
+    const data = await runAuthenticatedQuery(query, context)
+    // Should have one artist grid and one related grid with 0 works
+    expect(data.artwork.contextGrids.length).toEqual(2)
+    const {
+      title,
+      ctaTitle,
+      ctaHref,
+      artworksConnection,
+    } = data.artwork.contextGrids[0]
+    expect(title).toEqual("Other works by Andy Warhol")
+    expect(ctaTitle).toEqual("View all works by Andy Warhol")
+    expect(ctaHref).toEqual("/artist/andy-warhol")
+    expect(artworksConnection.edges.length).toEqual(2)
+    // Related artworks grid should have no artworks
+    expect(data.artwork.contextGrids[1].artworksConnection).toEqual(null)
     expect.assertions(6)
   })
 
@@ -122,23 +118,21 @@ describe("Default Context", () => {
     parentArtwork.artist = null
     context.artistArtworksLoader = Promise.resolve(null)
 
-    await runAuthenticatedQuery(query, context).then((data) => {
-      // Should have one partner grid and one related grid with 0 works
-      expect(data.artwork.contextGrids.length).toEqual(2)
-      const {
-        title,
-        ctaTitle,
-        ctaHref,
-        artworksConnection,
-      } = data.artwork.contextGrids[0]
-      expect(title).toEqual("Other works from CAMA Gallery")
-      expect(ctaTitle).toEqual("View all works from CAMA Gallery")
-      expect(ctaHref).toEqual("/cama-gallery")
-      expect(artworksConnection.edges.length).toEqual(2)
-
-      // Related artworks grid should have no artworks
-      expect(data.artwork.contextGrids[1].artworksConnection).toEqual(null)
-    })
+    const data = await runAuthenticatedQuery(query, context)
+    // Should have one partner grid and one related grid with 0 works
+    expect(data.artwork.contextGrids.length).toEqual(2)
+    const {
+      title,
+      ctaTitle,
+      ctaHref,
+      artworksConnection,
+    } = data.artwork.contextGrids[0]
+    expect(title).toEqual("Other works from CAMA Gallery")
+    expect(ctaTitle).toEqual("View all works from CAMA Gallery")
+    expect(ctaHref).toEqual("/cama-gallery")
+    expect(artworksConnection.edges.length).toEqual(2)
+    // Related artworks grid should have no artworks
+    expect(data.artwork.contextGrids[1].artworksConnection).toEqual(null)
     expect.assertions(6)
   })
 
@@ -151,58 +145,49 @@ describe("Default Context", () => {
         { id: "relatedArtwork3", title: "Related Artwork 3" },
       ])
 
-    await runAuthenticatedQuery(query, context).then((data) => {
-      // Should have one artist grid and one related grid with 0 works
-      expect(data.artwork.contextGrids.length).toEqual(3)
-
-      // The first grid should include artist-related metadata
-      const {
-        title: artistTitle,
-        ctaTitle: artistCtaTitle,
-        ctaHref: artistctaHref,
-        artworksConnection: artistArtworks,
-      } = data.artwork.contextGrids[0]
-
-      expect(artistTitle).toEqual("Other works by Andy Warhol")
-      expect(artistCtaTitle).toEqual("View all works by Andy Warhol")
-      expect(artistctaHref).toEqual("/artist/andy-warhol")
-      expect(artistArtworks.edges.map(({ node }) => node.slug)).toEqual([
-        "artwork1",
-        "artwork2",
-      ])
-
-      // The second grid should include partner-related metadata
-      const {
-        title: partnerTitle,
-        ctaTitle: partnerCtaTitle,
-        ctaHref: partnerctaHref,
-        artworksConnection: partnerArtworks,
-      } = data.artwork.contextGrids[1]
-
-      expect(partnerTitle).toEqual("Other works from CAMA Gallery")
-      expect(partnerCtaTitle).toEqual("View all works from CAMA Gallery")
-      expect(partnerctaHref).toEqual("/cama-gallery")
-      expect(partnerArtworks.edges.map(({ node }) => node.slug)).toEqual([
-        "partnerArtwork1",
-        "partnerArtwork2",
-      ])
-
-      // The third grid should include related artworks
-      const {
-        title: relatedTitle,
-        ctaTitle: relatedCtaTitle,
-        ctaHref: relatedctaHref,
-        artworksConnection: relatedArtworks,
-      } = data.artwork.contextGrids[2]
-
-      expect(relatedTitle).toEqual("Related works")
-      expect(relatedCtaTitle).toEqual(null)
-      expect(relatedctaHref).toEqual(null)
-      expect(relatedArtworks.edges.map(({ node }) => node.slug)).toEqual([
-        "relatedArtwork1",
-        "relatedArtwork2",
-      ])
-    })
+    const data = await runAuthenticatedQuery(query, context)
+    // Should have one artist grid and one related grid with 0 works
+    expect(data.artwork.contextGrids.length).toEqual(3)
+    // The first grid should include artist-related metadata
+    const {
+      title: artistTitle,
+      ctaTitle: artistCtaTitle,
+      ctaHref: artistctaHref,
+      artworksConnection: artistArtworks,
+    } = data.artwork.contextGrids[0]
+    expect(artistTitle).toEqual("Other works by Andy Warhol")
+    expect(artistCtaTitle).toEqual("View all works by Andy Warhol")
+    expect(artistctaHref).toEqual("/artist/andy-warhol")
+    expect(artistArtworks.edges.map(({ node }) => node.slug)).toEqual([
+      "artwork1",
+      "artwork2",
+    ])
+    // The second grid should include partner-related metadata
+    const {
+      title: partnerTitle,
+      ctaTitle: partnerCtaTitle,
+      ctaHref: partnerctaHref,
+      artworksConnection: partnerArtworks,
+    } = data.artwork.contextGrids[1]
+    expect(partnerTitle).toEqual("Other works from CAMA Gallery")
+    expect(partnerCtaTitle).toEqual("View all works from CAMA Gallery")
+    expect(partnerctaHref).toEqual("/cama-gallery")
+    expect(
+      partnerArtworks.edges.map(({ node: node_1 }) => node_1.slug)
+    ).toEqual(["partnerArtwork1", "partnerArtwork2"])
+    // The third grid should include related artworks
+    const {
+      title: relatedTitle,
+      ctaTitle: relatedCtaTitle,
+      ctaHref: relatedctaHref,
+      artworksConnection: relatedArtworks,
+    } = data.artwork.contextGrids[2]
+    expect(relatedTitle).toEqual("Related works")
+    expect(relatedCtaTitle).toEqual(null)
+    expect(relatedctaHref).toEqual(null)
+    expect(
+      relatedArtworks.edges.map(({ node: node_2 }) => node_2.slug)
+    ).toEqual(["relatedArtwork1", "relatedArtwork2"])
     expect.assertions(13)
   })
 })

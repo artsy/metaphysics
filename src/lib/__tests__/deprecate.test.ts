@@ -2,7 +2,7 @@ import { deprecate, shouldBeRemoved, deprecateType } from "../deprecation"
 import { GraphQLObjectType, GraphQLString } from "graphql"
 
 describe("deprecation", () => {
-  describe(deprecate, () => {
+  describe("deprecate", () => {
     it("generates a deprecation reason that encodes the version from whence the field will be removed", () => {
       expect(
         deprecate({ inVersion: 2, preferUsageOf: "foo" })
@@ -18,7 +18,7 @@ describe("deprecation", () => {
     })
   })
 
-  describe(deprecateType, () => {
+  describe("deprecateType", () => {
     it("marks all fields of a type as deprecated", () => {
       const type = deprecateType(
         { inVersion: 2, preferUsageOf: "AnotherType" },
@@ -77,7 +77,7 @@ describe("deprecation", () => {
     })
   })
 
-  describe(shouldBeRemoved, () => {
+  describe("shouldBeRemoved", () => {
     it("should not be removed if there is no deprecation reason", () => {
       expect(
         shouldBeRemoved({

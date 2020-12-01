@@ -233,7 +233,7 @@ describe("PricingContext type", () => {
     expect(result.artwork.pricingContext).toBeNull()
   })
 
-  it("it works when the user is not authenticated", async () => {
+  it("works when the user is not authenticated", async () => {
     const { meLoader, ...others } = context
     const result = (await runQuery(query, others)) as any
     expect(result).toMatchInlineSnapshot(`

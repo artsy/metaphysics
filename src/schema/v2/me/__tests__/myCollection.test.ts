@@ -98,10 +98,9 @@ describe("me.myCollection", () => {
     }
 
     expect.assertions(1)
-    try {
-      await runAuthenticatedQuery(query, context)
-    } catch (e) {
-      expect(e.message).toMatch("Some other error")
-    }
+
+    await expect(runAuthenticatedQuery(query, context)).rejects.toThrow(
+      "Some other error"
+    )
   })
 })
