@@ -22,6 +22,58 @@ describe("causality/stitching", () => {
     })
   })
 
+  describe("AuctionsLotState", () => {
+    it("extends the AuctionsLotState type with a floorSellingPrice field", async () => {
+      const { getFields } = await useCausalityStitching()
+      expect(await getFields("AuctionsLotState")).toContain("floorSellingPrice")
+    })
+
+    it("extends the AuctionsLotState type with a onlineAskingPrice field", async () => {
+      const { getFields } = await useCausalityStitching()
+      expect(await getFields("AuctionsLotState")).toContain("onlineAskingPrice")
+    })
+
+    it("resolves floorSellingPrice field as a Money type", async () => {
+      const { resolvers } = await useCausalityStitching()
+      const saleArtworkRootLoader = jest.fn(() => {
+        return { currency: "USD" }
+      })
+      const floorSellingPrice = await resolvers.AuctionsLotState.floorSellingPrice.resolve(
+        { internalID: "123", floorSellingPriceCents: 10000 },
+        {},
+        { saleArtworkRootLoader },
+        {}
+      )
+
+      expect(floorSellingPrice).toEqual({
+        major: 100,
+        minor: 10000,
+        currencyCode: "USD",
+        display: "$100.00",
+      })
+    })
+
+    it("resolves onlineAskingPrice field as a Money type", async () => {
+      const { resolvers } = await useCausalityStitching()
+      const saleArtworkRootLoader = jest.fn(() => {
+        return { currency: "JPY" }
+      })
+      const onlineAskingPrice = await resolvers.AuctionsLotState.onlineAskingPrice.resolve(
+        { internalID: "123", onlineAskingPriceCents: 10000 },
+        {},
+        { saleArtworkRootLoader },
+        {}
+      )
+
+      expect(onlineAskingPrice).toEqual({
+        major: 10000,
+        minor: 10000,
+        currencyCode: "JPY",
+        display: "¥10,000.00",
+      })
+    })
+  })
+
   it("resolves a SaleArtwork on an AuctionsLotStanding", async () => {
     const allMergedSchemas = await incrementalMergeSchemas(schema, 1)
 
