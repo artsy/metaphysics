@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 
-xdescribe("CreditCard type", () => {
+describe.skip("CreditCard type", () => {
   let creditCard: any
   let context: any
 

@@ -1,6 +1,6 @@
 import { formatMarkdownValue, markdown } from "../markdown"
 
-describe(formatMarkdownValue, () => {
+describe("formatMarkdownValue", () => {
   it("formats markdown as html", () => {
     expect(formatMarkdownValue("Here's some *emphasis* !", "html"))
       .toMatchInlineSnapshot(`
@@ -15,7 +15,7 @@ describe(formatMarkdownValue, () => {
   })
 })
 
-describe(markdown, () => {
+describe("markdown", () => {
   it("resolves markdown as html", () => {
     expect(
       markdown().resolve?.(

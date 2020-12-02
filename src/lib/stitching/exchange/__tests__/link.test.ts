@@ -19,8 +19,8 @@ const runLinkChain = (link, op, complete) =>
   link.request(op).subscribe({ complete })
 
 // FIXME: This seems to be hitting the actual network and thus fails without it.
-xdescribe("exchange link", () => {
-  it("passes request ID headers to the fetch", (done) => {
+describe.skip("exchange link", () => {
+  it("passes request ID headers to the fetch", () => {
     expect.assertions(1)
 
     const link = createExchangeLink()
@@ -37,7 +37,7 @@ xdescribe("exchange link", () => {
       getContext: () => defaultContext,
     }
 
-    runLinkChain(link, op, () => {
+    return runLinkChain(link, op, () => {
       expect(op.setContext).toBeCalledWith({
         headers: {
           "x-request-id": "req123",
@@ -45,12 +45,11 @@ xdescribe("exchange link", () => {
           "x-datadog-trace-id": "trace123",
         },
       })
-      done()
     })
   })
 
   describe("when authenticated", () => {
-    it("also gravity auth HTTP headers to the fetch", (done) => {
+    it("also gravity auth HTTP headers to the fetch", () => {
       expect.assertions(1)
 
       // The difference here is that locals will now include a dataloader named exchangeTokenLoader
@@ -69,7 +68,7 @@ xdescribe("exchange link", () => {
         setContext: jest.fn(),
         getContext: () => defaultContext,
       }
-      runLinkChain(link, op, () => {
+      return runLinkChain(link, op, () => {
         expect(op.setContext).toBeCalledWith({
           headers: {
             Authorization: "Bearer token_123",
@@ -78,7 +77,6 @@ xdescribe("exchange link", () => {
             "x-datadog-trace-id": "trace123",
           },
         })
-        done()
       })
     })
   })

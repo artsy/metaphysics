@@ -7,7 +7,7 @@ import fetch from "../../apis/fetch"
 declare const expectPromiseRejectionToMatch: any
 
 it("tries to parse the response when there is a String and resolves with it", async () => {
-  let reqResponse = {
+  const reqResponse = {
     statusCode: 200,
     body: `{ "foo": "bar" }`,
   }
@@ -29,8 +29,8 @@ it("rejects request errors", async () => {
   expectPromiseRejectionToMatch(fetch("foo/bar"), /bad/)
 })
 
-it("tries to parse the response when there is a String and resolves with it", async () => {
-  let reqResponse = {
+it("tries to parse the response when there is a String and resolves with it (2)", async () => {
+  const reqResponse = {
     statusCode: 200,
     body: `{ not json }`,
   }
@@ -42,8 +42,8 @@ it("tries to parse the response when there is a String and resolves with it", as
   return expectPromiseRejectionToMatch(fetch("foo/bar"), /Unexpected token/)
 })
 
-it("tries to parse the response when there is a String and resolves with it", (done) => {
-  let reqResponse = {
+it("tries to parse the response when there is a String and resolves with it (3)", () => {
+  const reqResponse = {
     statusCode: 400,
     request: {
       uri: {
@@ -57,7 +57,9 @@ it("tries to parse the response when there is a String and resolves with it", (d
     callback(null, reqResponse)
   )
 
-  fetch("foo/bar").catch((error) => {
+  expect.assertions(3)
+
+  return fetch("foo/bar").catch((error) => {
     expect(error.message).toEqual(
       `http://api.artsy.net/api/v1/me - { "type": "other_error", "message": "undefined method \`[]' for nil:NilClass" }`
     )
@@ -65,6 +67,5 @@ it("tries to parse the response when there is a String and resolves with it", (d
     expect(error.body).toEqual(
       `{ "type": "other_error", "message": "undefined method \`[]' for nil:NilClass" }`
     )
-    done()
   })
 })

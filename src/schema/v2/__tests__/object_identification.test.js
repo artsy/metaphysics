@@ -68,11 +68,11 @@ describe("Object Identification", () => {
     }
 
     describe(`for a ${typeName}`, () => {
-      xit("generates a Global ID", () => {
+      it.skip("generates a Global ID", () => {
         const query = `
           {
             ${fieldName}(id: "foo-bar") {
-              id 
+              id
             }
           }
         `
@@ -92,7 +92,7 @@ describe("Object Identification", () => {
             node(id: "${toGlobalId(typeName, "foo-bar")}") {
               __typename
               ... on ${typeName} {
-                slug 
+                slug
               }
             }
           }

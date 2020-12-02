@@ -1,9 +1,9 @@
 import { amount } from "../money"
 
-describe(amount, () => {
+describe("amount", () => {
   const getResult = ({
     obj = {},
-    args = { symbol: "$" } as object,
+    args = { symbol: "$" } as Record<string, unknown>,
     amountCents = 1234 as any,
   }) => amount(() => amountCents).resolve(obj, args)
 

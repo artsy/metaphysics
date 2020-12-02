@@ -109,6 +109,7 @@ describe("API loaders", () => {
           })
           .catch(() => {
             // swallow the error, because this is the expected code-path
+            expect(true).toBe(true)
           })
       })
     })
@@ -143,6 +144,7 @@ describe("API loaders", () => {
           })
           .catch(() => {
             // swallow the error, because this is the expected code-path
+            expect(true).toBe(true)
           })
       })
     })

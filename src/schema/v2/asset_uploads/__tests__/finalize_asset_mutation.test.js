@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 // FIXME: We're now stitching. Remove these files once this work settles
-xdescribe("CreateGeminiEntryForAsset", () => {
+describe.skip("CreateGeminiEntryForAsset", () => {
   it("creates a submission and returns its new data payload", () => {
     const mutation = gql`
       mutation {

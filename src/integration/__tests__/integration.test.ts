@@ -13,7 +13,7 @@ describe("integration tests", () => {
     mockFetch.mockReset()
   })
 
-  it("It should bail for an unknown GET request", async () => {
+  it("should bail for an unknown GET request", async () => {
     const response = await request(app).get("/")
     expect(response.statusCode).toBe(400)
   })

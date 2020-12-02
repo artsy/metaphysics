@@ -32,7 +32,7 @@ describe("PartnersConnection", () => {
   })
 })
 
-xdescribe("Partners", () => {
+describe.skip("Partners", () => {
   it("returns a list of partners matching array of ids", async () => {
     const partnersLoader = ({ id }) => {
       if (id) {

@@ -146,14 +146,13 @@ describe("vanityURLEntity", () => {
       }
     `
     expect.assertions(1)
-    try {
-      await runAuthenticatedQuery(query, {
+
+    await expect(
+      runAuthenticatedQuery(query, {
         profileLoader,
         partnerLoader,
         fairLoader,
       })
-    } catch (e) {
-      expect(e.message).toMatch("Unrecognized profile type: UnknownType")
-    }
+    ).rejects.toThrow("Unrecognized profile type: UnknownType")
   })
 })

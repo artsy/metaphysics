@@ -5,7 +5,7 @@ const schema = require("schema/v1").default
 
 const queryToAst = (query) => parse(new Source(query))
 
-describe(principalFieldDirectiveValidation, () => {
+describe("principalFieldDirectiveValidation", () => {
   it("errors when used more than once", () => {
     const query = `
       {

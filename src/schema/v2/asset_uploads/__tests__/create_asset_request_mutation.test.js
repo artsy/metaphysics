@@ -2,7 +2,7 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 // FIXME: We're now stitching. Remove these files once this work settles
-xdescribe("addAssetToConsignmentSubmission", () => {
+describe.skip("addAssetToConsignmentSubmission", () => {
   it("creates a submission and returns its new data payload", async () => {
     const mutation = `
       mutation {

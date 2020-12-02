@@ -70,7 +70,7 @@ describe("when handling resolver delegation", () => {
     })
   })
 
-  it("calls a user or partner when looking up party details ", async () => {
+  it("calls a user or partner when looking up party details", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
     const { buyerDetails } = resolvers.CommerceBuyOrder
     const info = { mergeInfo: { delegateToSchema: jest.fn() } }

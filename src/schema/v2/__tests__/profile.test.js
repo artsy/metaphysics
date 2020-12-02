@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 
-xdescribe("Profile type", () => {
+describe.skip("Profile type", () => {
   let profileData = null
   let context = null
 

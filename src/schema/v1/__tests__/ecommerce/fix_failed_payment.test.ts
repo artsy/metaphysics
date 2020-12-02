@@ -29,7 +29,7 @@ describe("FixFailedPayment Mutation", () => {
     }
   `
 
-  it("does not fail", () => {
+  it("does not fail", async () => {
     const resolvers = {
       Mutation: {
         fixFailedPayment: () => ({
@@ -40,14 +40,14 @@ describe("FixFailedPayment Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then((data) => {
-      expect(data!.ecommerceFixFailedPayment.orderOrError.order).toEqual(
-        sampleOrder({ includeCreditCard: true })
-      )
-    })
+    const data = await runQuery(mutation, context)
+
+    expect(data!.ecommerceFixFailedPayment.orderOrError.order).toEqual(
+      sampleOrder({ includeCreditCard: true })
+    )
   })
 
-  it("returns an error if there is one", () => {
+  it("returns an error if there is one", async () => {
     const resolvers = {
       Mutation: {
         fixFailedPayment: () => ({
@@ -63,12 +63,12 @@ describe("FixFailedPayment Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then((data) => {
-      expect(data!.ecommerceFixFailedPayment.orderOrError.error).toEqual({
-        type: "application_error",
-        code: "404",
-        data: null,
-      })
+    const data = await runQuery(mutation, context)
+
+    expect(data!.ecommerceFixFailedPayment.orderOrError.error).toEqual({
+      type: "application_error",
+      code: "404",
+      data: null,
     })
   })
 })

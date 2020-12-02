@@ -6,12 +6,13 @@
     "jasmine": true,
     "es6": true
   },
-  "plugins": ["promise", "@typescript-eslint"],
+  "plugins": ["promise", "@typescript-eslint", "jest"],
   "extends": [
     "plugin:promise/recommended",
     "plugin:import/errors",
     "plugin:import/typescript",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:jest/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "rules": {
@@ -37,7 +38,18 @@
     ],
     "@typescript-eslint/no-use-before-define": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
-    "prefer-const": ["error", { "ignoreReadBeforeAssign": true }]
+    "prefer-const": ["error", { "ignoreReadBeforeAssign": true }],
+    "jest/expect-expect": [
+      "warn",
+      {
+        "assertFunctionNames": [
+          "expect",
+          "expectPromiseRejectionToMatch",
+          "assertStatusSupported",
+          "assertInvalidStatusFails"
+        ]
+      }
+    ]
   },
   "globals": {
     "expect": false,
