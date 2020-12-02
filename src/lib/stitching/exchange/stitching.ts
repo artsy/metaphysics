@@ -227,7 +227,6 @@ export const exchangeStitchingEnvironment = ({
               },
               context,
               info,
-              transforms: exchangeSchema.transforms,
             })
           },
         },

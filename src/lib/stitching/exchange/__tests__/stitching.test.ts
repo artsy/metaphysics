@@ -66,7 +66,10 @@ describe("when handling resolver delegation", () => {
     expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
       args: { id: "ARTWORK-ID" },
       fieldName: "artwork",
-      ...restOfResolveArgs,
+      operation: "query",
+      schema: expect.anything(),
+      context: expect.anything(),
+      info: expect.anything(),
     })
   })
 
@@ -118,7 +121,10 @@ it("delegates to the local schema for an LineItem's artwork", async () => {
   expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
     args: { id: "ARTWORK-ID" },
     fieldName: "artwork",
-    ...restOfResolveArgs,
+    operation: "query",
+    schema: expect.anything(),
+    context: expect.anything(),
+    info: expect.anything(),
   })
 })
 
