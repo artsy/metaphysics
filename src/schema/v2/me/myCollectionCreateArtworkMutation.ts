@@ -71,6 +71,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     metric: {
       type: GraphQLString,
     },
+    provenance: {
+      type: GraphQLString,
+    },
     title: {
       type: GraphQLString,
     },

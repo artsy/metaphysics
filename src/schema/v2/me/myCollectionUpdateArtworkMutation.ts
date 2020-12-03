@@ -52,6 +52,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     metric: {
       type: GraphQLString,
     },
+    provenance: {
+      type: GraphQLString,
+    },
     title: {
       type: GraphQLString,
     },
