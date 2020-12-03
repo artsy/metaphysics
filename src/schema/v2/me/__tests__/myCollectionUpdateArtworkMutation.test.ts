@@ -27,6 +27,7 @@ const computeMutationInput = (externalImageUrls: string[] = []): string => {
           height: "20"
           medium: "Updated"
           metric: "in"
+          provenance: "Pat Hearn Gallery"
           title: "hey now"
           width: "20"
         }
