@@ -1448,6 +1448,10 @@ type Artwork implements Node & Searchable & Sellable {
   cached: Int
   can_share_image: Boolean
     @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
+
+  # Represents the "**medium type**", such as _Painting_. (This field is also
+  # commonly referred to as just "medium", but should not be confused with the
+  # artwork attribute called `medium`.)
   category: String
 
   # Returns the display label and detail for artwork certificate of authenticity
@@ -1554,6 +1558,10 @@ type Artwork implements Node & Searchable & Sellable {
   listPrice: ListPrice
   literature(format: Format): String
   manufacturer(format: Format): String
+
+  # Represents the **materials** used in this work, such as _oil and acrylic on
+  # canvas_. (This should not be confused with the artwork attribute called
+  # `category`, which is commonly referred to as "medium" or "medium type")
   medium: String
   meta: ArtworkMeta
   metric: String
@@ -2509,6 +2517,10 @@ type ArtworkItem implements Node & Searchable & Sellable {
   cached: Int
   can_share_image: Boolean
     @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
+
+  # Represents the "**medium type**", such as _Painting_. (This field is also
+  # commonly referred to as just "medium", but should not be confused with the
+  # artwork attribute called `medium`.)
   category: String
 
   # Returns the display label and detail for artwork certificate of authenticity
@@ -2615,6 +2627,10 @@ type ArtworkItem implements Node & Searchable & Sellable {
   listPrice: ListPrice
   literature(format: Format): String
   manufacturer(format: Format): String
+
+  # Represents the **materials** used in this work, such as _oil and acrylic on
+  # canvas_. (This should not be confused with the artwork attribute called
+  # `category`, which is commonly referred to as "medium" or "medium type")
   medium: String
   meta: ArtworkMeta
   metric: String

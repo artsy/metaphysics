@@ -128,7 +128,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       availability: { type: GraphQLString },
-      category: { type: GraphQLString },
+      category: {
+        type: GraphQLString,
+        description:
+          'Represents the "**medium type**", such as _Painting_. (This field is also commonly referred to as just "medium", but should not be confused with the artwork attribute called `medium`.)',
+      },
       collectingInstitution: {
         type: GraphQLString,
         resolve: ({ collecting_institution }) =>
@@ -532,7 +536,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         literature.replace(/^literature:\s+/i, "")
       ),
       manufacturer: markdown(),
-      medium: { type: GraphQLString },
+      medium: {
+        type: GraphQLString,
+        description:
+          'Represents the **materials** used in this work, such as _oil and acrylic on canvas_. (This should not be confused with the artwork attribute called `category`, which is commonly referred to as "medium" or "medium type")',
+      },
       meta: Meta,
       metric: {
         description:
