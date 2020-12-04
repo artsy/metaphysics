@@ -104,10 +104,10 @@ type LotStanding implements Node {
   "whether this user has the leading bid"
   isHighestBidder: Boolean!
 
-  "whether this user has the leading bid"
+  "Current lot state"
   lotState: Lot! @deprecated(reason: "prefer `lot`")
 
-  "whether this user has the leading bid"
+  "Current lot state"
   lot: Lot!
 }
 
@@ -154,7 +154,7 @@ type Mutation {
   addIncrementPolicy(
     newIncrementPolicy: NewIncrementPolicyInput!
   ): IncrementPolicy
-  addSale(id: String!): Sale
+  addSale(id: ID!): Sale
   banUserFromSale(saleId: ID!, userId: ID!): Sale
   unbanUserFromSale(userId: ID!, saleId: ID!): Sale
 }
@@ -236,7 +236,7 @@ type Query {
   ): LotStandingConnection!
 
   "Returns an increment policy with specific `id`."
-  incrementPolicy(id: String!): IncrementPolicy
+  incrementPolicy(id: ID!): IncrementPolicy
 
   "Previews a draft of a new increment policy."
   previewIncrementPolicy(
@@ -250,13 +250,13 @@ type Query {
   incrementPolicyGroups: [IncrementPolicyGroup!]!
 
   "Returns a lot with specific `id`."
-  lot(id: String!): Lot
+  lot(id: ID!): Lot
 
   "Returns a list of lots"
-  lots(ids: [String!]!): [Lot!]!
+  lots(ids: [ID!]!): [Lot!]!
 
   "Returns a sale with specific `id`."
-  sale(id: String!): Sale
+  sale(id: ID!): Sale
 
   "Fetches an object given its ID"
   node("The ID of an object" id: ID!): Node
