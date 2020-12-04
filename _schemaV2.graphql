@@ -1244,7 +1244,7 @@ type Artwork implements Node & Searchable & Sellable {
     last: Int
   ): ArtistSeriesConnection
 
-  # Attribution class object
+  # Represents the "**classification**" of an artwork, such as _limited edition_
   attributionClass: AttributionClass
   availability: String
   cached: Int

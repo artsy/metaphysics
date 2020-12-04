@@ -141,7 +141,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       attribution_class: {
         type: AttributionClass,
-        description: "Attribution class object",
+        description:
+          'Represents the "**classification**" of an artwork, such as _limited edition_',
         resolve: ({ attribution_class }) => {
           if (attribution_class) {
             return attributionClasses[attribution_class]

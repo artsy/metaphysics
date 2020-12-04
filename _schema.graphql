@@ -1442,7 +1442,7 @@ type Artwork implements Node & Searchable & Sellable {
     last: Int
   ): ArtistSeriesConnection
 
-  # Attribution class object
+  # Represents the "**classification**" of an artwork, such as _limited edition_
   attribution_class: AttributionClass
   availability: String
   cached: Int
@@ -2511,7 +2511,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
     shallow: Boolean
   ): [Artist]
 
-  # Attribution class object
+  # Represents the "**classification**" of an artwork, such as _limited edition_
   attribution_class: AttributionClass
   availability: String
   cached: Int
