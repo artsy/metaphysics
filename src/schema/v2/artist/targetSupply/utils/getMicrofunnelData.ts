@@ -2,11 +2,6 @@ import { flatten, groupBy } from "lodash"
 import { staticCSVToJSONData } from "./staticCSVToJSONData"
 
 interface ArtistConsignment {
-  artworks: Array<{
-    internalID: string
-    realizedPrice: string
-    [key: string]: string
-  }>
   metadata: {
     highestRealized: string
     realized: string
@@ -20,9 +15,11 @@ interface ArtistConsignment {
 }
 
 /**
- * Massage CSVtoJSON data to be more usable
+ * Return data from microfunnel CSV and add metadata to artist
  */
-export function getMicrofunnelData(pathname: string): ArtistConsignment {
+export function getArtistMicrofunnelMetadata(
+  artistPathname: string
+): ArtistConsignment {
   const dataGroupedByURL = groupBy(staticCSVToJSONData, "url")
 
   const mappedData = Object.entries(dataGroupedByURL).reduce(
@@ -36,11 +33,6 @@ export function getMicrofunnelData(pathname: string): ArtistConsignment {
       const recentlySoldArtworkIDs = flatten(
         artworks.map((artwork: any) => {
           const id = artwork["Artwork ids (recently sold) (comma separated)"]
-          const realizedPrice = artwork["Realized Price (in dollars)"]
-
-          // Create aliases that map to GraphQL types
-          artwork.internalID = id
-          artwork.realizedPrice = realizedPrice
           return id
         })
       )
@@ -59,7 +51,6 @@ export function getMicrofunnelData(pathname: string): ArtistConsignment {
       return {
         ...acc,
         [key]: {
-          artworks,
           metadata: {
             views,
             roundedViews,
@@ -76,10 +67,12 @@ export function getMicrofunnelData(pathname: string): ArtistConsignment {
     {}
   )
 
-  const microfunnelData = mappedData[pathname]
-  return microfunnelData
+  const artistMicrofunnelMetadata = mappedData[artistPathname]
+  return artistMicrofunnelMetadata
 }
 
+// For individual fields on an artwork type we need to use this function to
+// resolve data.
 export function getMicrofunnelDataByArtworkInternalID(internalID: string) {
   const dataGroupedByInternalID = groupBy(
     staticCSVToJSONData,

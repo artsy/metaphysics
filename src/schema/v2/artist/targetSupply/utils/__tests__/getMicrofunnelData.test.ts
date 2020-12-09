@@ -1,7 +1,7 @@
-import { getMicrofunnelData } from "../getMicrofunnelData"
+import { getArtistMicrofunnelMetadata } from "../getMicrofunnelData"
 
 describe("getConsignmentData", () => {
   it("returns undefined if artist href does not exist in CSV", () => {
-    expect(getMicrofunnelData("/artist/not-found")).toEqual(undefined)
+    expect(getArtistMicrofunnelMetadata("/artist/not-found")).toEqual(undefined)
   })
 })
