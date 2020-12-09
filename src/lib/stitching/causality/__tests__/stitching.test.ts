@@ -49,7 +49,7 @@ describe("causality/stitching", () => {
         major: 100,
         minor: 10000,
         currencyCode: "USD",
-        display: "$100.00",
+        display: "$100",
       })
     })
 
@@ -69,7 +69,7 @@ describe("causality/stitching", () => {
         major: 10000,
         minor: 10000,
         currencyCode: "JPY",
-        display: "¥10,000.00",
+        display: "¥10,000",
       })
     })
   })
