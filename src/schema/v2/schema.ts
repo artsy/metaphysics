@@ -99,6 +99,7 @@ import Image from "./image"
 import VanityURLEntity from "./vanityURLEntity"
 import { myCollectionDeleteArtworkMutation } from "./me/myCollectionDeleteArtworkMutation"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
+import { AuctionResult } from "./auction_result"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -107,6 +108,7 @@ const PrincipalFieldDirective = new GraphQLDirective({
 
 const rootFields = {
   artworkAttributionClasses: ArtworkAttributionClasses,
+  auctionResult: AuctionResult,
   article: Article,
   articles: Articles,
   artwork: Artwork,
