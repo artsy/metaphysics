@@ -34,10 +34,10 @@ const mockAuctionResult = {
 const auctionLotLoader = (_id: string) => Promise.resolve(mockAuctionResult)
 
 describe.skip("AuctionResult type", () => {
-  it("fetches an article by ID", async () => {
+  it("fetches auction by ID", async () => {
     const query = `
       {
-        article(id: "foo-bar") {
+        auctionResult(id: "foo-bar") {
           currency
           saleDateText
         }
