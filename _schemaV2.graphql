@@ -7486,6 +7486,11 @@ type Mutation {
     input: MyCollectionDeleteArtworkInput!
   ): MyCollectionDeleteArtworkPayload
 
+  # Deletes an image from an artwork in my collection
+  MyCollectionDeleteArtworkImage(
+    input: MyCollectionDeleteArtworkImageInput!
+  ): MyCollectionDeleteArtworkImagePayload
+
   # Update an artwork in my collection
   myCollectionUpdateArtwork(
     input: MyCollectionUpdateArtworkInput!
@@ -7621,6 +7626,17 @@ input MyCollectionCreateArtworkInput {
 }
 
 type MyCollectionCreateArtworkPayload {
+  artworkOrError: MyCollectionArtworkMutationType
+  clientMutationId: String
+}
+
+input MyCollectionDeleteArtworkImageInput {
+  artworkId: String!
+  clientMutationId: String
+  imageId: String!
+}
+
+type MyCollectionDeleteArtworkImagePayload {
   artworkOrError: MyCollectionArtworkMutationType
   clientMutationId: String
 }
