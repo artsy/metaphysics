@@ -16,7 +16,7 @@ const resolveLotCentsFieldToMoney = (centsField) => {
       major,
       minor: cents,
       currencyCode: currency,
-      display: formatMoney(major, symbolFromCurrencyCode(currency)),
+      display: formatMoney(major, symbolFromCurrencyCode(currency), 0),
     }
   }
 }
