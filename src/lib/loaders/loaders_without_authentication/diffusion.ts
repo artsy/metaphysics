@@ -5,7 +5,8 @@ export default (opts) => {
   const diffusionLoader = diffusionLoaderWithoutAuthenticationFactory
 
   return {
-    auctionLotLoader: diffusionLoader("lots"),
+    auctionLotsLoader: diffusionLoader("lots"),
+    auctionLotLoader: diffusionLoader((id) => `lots/${id}`),
     auctionCreatedYearRangeLoader: diffusionLoader("lots/created_dates"),
   }
 }

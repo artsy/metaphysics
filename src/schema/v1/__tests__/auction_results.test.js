@@ -43,7 +43,7 @@ const auctionResultResponse = (item = {}) => {
 
 describe("Artist type", () => {
   beforeEach(() => {
-    context.auctionLotLoader = jest
+    context.auctionLotsLoader = jest
       .fn()
       .mockReturnValueOnce(Promise.resolve(auctionResultResponse()))
   })
@@ -240,7 +240,7 @@ describe("Artist type", () => {
       }
     `
 
-    context.auctionLotLoader = jest
+    context.auctionLotsLoader = jest
       .fn()
       .mockReturnValueOnce(
         Promise.resolve(auctionResultResponse({ images: null }))

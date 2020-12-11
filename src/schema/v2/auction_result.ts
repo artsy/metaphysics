@@ -8,6 +8,7 @@ import {
   GraphQLObjectType,
   GraphQLEnumType,
   GraphQLBoolean,
+  GraphQLFieldConfig,
 } from "graphql"
 import { indexOf, isNil } from "lodash"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
@@ -242,6 +243,23 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
     },
   }),
 })
+
+export const AuctionResult: GraphQLFieldConfig<void, ResolverContext> = {
+  type: AuctionResultType,
+  description: "An auction result",
+  args: {
+    id: {
+      description: "The ID of the auction result",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+  resolve: (_root, { id }, { auctionLotLoader }) => {
+    if (!auctionLotLoader) {
+      return null
+    }
+    return auctionLotLoader(id)
+  },
+}
 
 export const auctionResultConnection = connectionWithCursorInfo({
   nodeType: AuctionResultType,

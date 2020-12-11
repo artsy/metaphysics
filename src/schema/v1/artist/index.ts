@@ -247,7 +247,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
               "When true, will only return records for allowed artists.",
           },
         }),
-        resolve: ({ _id }, options, { auctionLotLoader }) => {
+        resolve: ({ _id }, options, { auctionLotsLoader }) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
             return null
           }
@@ -262,7 +262,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             artist_id: _id,
             sort: options.sort,
           }
-          return auctionLotLoader(diffusionArgs).then(
+          return auctionLotsLoader(diffusionArgs).then(
             ({ total_count, _embedded }) => {
               const totalPages = Math.ceil(total_count / size)
               return merge(

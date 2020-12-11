@@ -239,7 +239,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
               "Filter auction results by empty artwork created date values",
           },
         }),
-        resolve: ({ _id }, options, { auctionLotLoader }) => {
+        resolve: ({ _id }, options, { auctionLotsLoader }) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
             return null
           }
@@ -265,7 +265,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             sizes,
             sort: options.sort,
           }
-          return auctionLotLoader(diffusionArgs).then(
+          return auctionLotsLoader(diffusionArgs).then(
             ({ total_count, _embedded }) => {
               const totalPages = Math.ceil(total_count / size)
               return merge(
