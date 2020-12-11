@@ -3,13 +3,13 @@ import { runQuery } from "schema/v2/test/utils"
 
 const mockAuctionResult = {
   id: "foo-bar",
-  saleDateText: "10-12-2020",
-  saleTitle: "sale-title",
+  sale_date_text: "10-12-2020",
+  sale_title: "sale-title",
   title: "title",
-  dimensionText: "20 x 20",
+  dimension_text: "20 x 20",
   organization: "Christie's",
-  categoryText: "an old guitar",
-  saleDate: "yesterday",
+  category_text: "an old guitar",
+  sale_date: "yesterday",
   images: [
     {
       thumbnail: "https://path.to.thumbnail.jpg",
@@ -19,9 +19,9 @@ const mockAuctionResult = {
   currency: "EUR",
   priceRealized_cents: 420000,
   priceRealized_cents_usd: 100000,
-  lowEstimateCents: 200000,
-  highEstimateCents: 500000,
-  priceRealized: {
+  low_estimate_cents: 200000,
+  high_estimate_cents: 500000,
+  price_realized: {
     cents: 420000,
     centsUSD: 100000,
     display: "JPY ¥420k",
@@ -31,10 +31,8 @@ const mockAuctionResult = {
   },
 }
 
-const auctionLotLoader = (_id: string) => Promise.resolve(mockAuctionResult)
-
-describe.skip("AuctionResult type", () => {
-  it("fetches auction by ID", async () => {
+describe("AuctionResult type", () => {
+  it("fetches an auctionResult by ID", () => {
     const query = `
       {
         auctionResult(id: "foo-bar") {
@@ -44,12 +42,13 @@ describe.skip("AuctionResult type", () => {
       }
     `
 
-    const data = await runQuery(query, { auctionLotLoader })
-    expect(data).toEqual({
-      auctionResult: {
-        currency: "EUR",
-        saleDateText: "10-12-2020",
-      },
+    const context = {
+      auctionLotLoader: jest.fn(() => Promise.resolve(mockAuctionResult)),
+    }
+
+    return runQuery(query, context!).then((data) => {
+      expect(data.auctionResult.currency).toBe("EUR")
+      expect(data.auctionResult.saleDateText).toEqual("10-12-2020")
     })
   })
 })
