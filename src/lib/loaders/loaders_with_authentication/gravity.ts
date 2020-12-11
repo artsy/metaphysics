@@ -183,6 +183,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deleteArtworkImageLoader: gravityLoader<
+      any,
+      { artworkID: string; imageID: string }
+    >(
+      ({ artworkID, imageID }) => `artwork/${artworkID}/image/${imageID}`,
+      {},
+      { method: "DELETE" }
+    ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     partnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,
