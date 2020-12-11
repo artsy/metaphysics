@@ -130,6 +130,7 @@ export const causalityStitchingEnvironment = ({
                 info,
               })
               .then(async (lotStandingsConnection) => {
+                throw new Error("BAD!")
                 console.log("standing connection", lotStandingsConnection)
                 const promisedSaleArtworks = lotStandingsConnection.edges.map(
                   ({ node: { lot } }) => {

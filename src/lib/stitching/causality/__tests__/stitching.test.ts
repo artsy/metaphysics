@@ -97,8 +97,6 @@ describe("causality/stitching", () => {
   it("resolves a SaleArtwork on an AuctionsLotStanding", async () => {
     const allMergedSchemas = await incrementalMergeSchemas(schema, 1)
 
-    // This test is that a submission gets the artist by stitching a MP
-    // Artist into the ConsignmentSubmission inside the schema
     const query = gql`
       {
         _unused_auctionsLotStandingConnection(userId: "123") {
@@ -153,6 +151,73 @@ describe("causality/stitching", () => {
               },
             },
           ],
+        },
+      },
+    })
+  })
+
+  it("gracefully handles missing sale artwork but removes the lot standing from result", async () => {
+    const allMergedSchemas = await incrementalMergeSchemas(schema, 1)
+
+    const query = gql`
+      {
+        me {
+          auctionsLotStandingConnection {
+            edges {
+              node {
+                isHighestBidder
+              }
+            }
+          }
+        }
+      }
+    `
+
+    // Mock the resolvers for just a user's lot standings so we can see the
+    // stitched SaleArtwork data inside.
+    addMockFunctionsToSchema({
+      schema: allMergedSchemas,
+      mocks: {
+        Me: () => ({
+          _unused_auctionsLotStandingConnection: (_root, _params) => {
+            return {
+              edges: [
+                {
+                  node: {
+                    isHighestBidder: true,
+                    lotState: {
+                      id: "xxx",
+                    },
+                  },
+                },
+              ],
+            }
+          },
+        }),
+      },
+    })
+
+    const result = await graphql(
+      allMergedSchemas,
+      query,
+      {
+        accessToken: null,
+        userID: null,
+      },
+      {
+        meLoader: () => Promise.resolve({ internalID: "foo" }),
+        saleArtworkRootLoader: jest.fn(() =>
+          Promise.reject("im unpublished :0")
+        ),
+      }
+    )
+
+    expect(result).toEqual({
+      data: {
+        me: {
+          auctionsLotStandingConnection: {
+            edges: [],
+          },
         },
       },
     })
