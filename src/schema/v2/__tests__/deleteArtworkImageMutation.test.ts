@@ -1,17 +1,15 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("MyCollectionDeleteArtworkImageMutation", () => {
+describe("DeleteArtworkImageMutation", () => {
   const mutation = gql`
     mutation {
-      MyCollectionDeleteArtworkImage(
-        input: { artworkId: "foo", imageId: "image1" }
-      ) {
+      deleteArtworkImage(input: { artworkID: "foo", imageID: "image1" }) {
         artworkOrError {
-          ... on MyCollectionArtworkMutationDeleteSuccess {
+          ... on ArtworkMutationDeleteSuccess {
             success
           }
-          ... on MyCollectionArtworkMutationFailure {
+          ... on ArtworkMutationFailure {
             mutationError {
               message
             }
@@ -33,7 +31,7 @@ describe("MyCollectionDeleteArtworkImageMutation", () => {
 
     const data = await runAuthenticatedQuery(mutation, context)
     expect(data).toEqual({
-      MyCollectionDeleteArtworkImage: {
+      deleteArtworkImage: {
         artworkOrError: {
           mutationError: {
             message: "Error deleting artwork image",
@@ -50,7 +48,7 @@ describe("MyCollectionDeleteArtworkImageMutation", () => {
 
     const data = await runAuthenticatedQuery(mutation, context)
     expect(data).toEqual({
-      MyCollectionDeleteArtworkImage: {
+      deleteArtworkImage: {
         artworkOrError: {
           success: true,
         },

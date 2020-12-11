@@ -1582,6 +1582,24 @@ type ArtworkMeta {
   title: String
 }
 
+type ArtworkMutationDeleteSuccess {
+  success: Boolean
+}
+
+type ArtworkMutationFailure {
+  mutationError: GravityMutationError
+}
+
+type ArtworkMutationSuccess {
+  artwork: Artwork
+  artworkEdge: ArtworkEdgeInterface
+}
+
+union ArtworkMutationType =
+    ArtworkMutationDeleteSuccess
+  | ArtworkMutationFailure
+  | ArtworkMutationSuccess
+
 union ArtworkOrEditionSetType = Artwork | EditionSet
 
 # The results for one of the requested aggregations
@@ -5119,6 +5137,17 @@ type DeepZoomImageSize {
   Width: Int
 }
 
+input DeleteArtworkImageInput {
+  artworkID: String!
+  clientMutationId: String
+  imageID: String!
+}
+
+type DeleteArtworkImagePayload {
+  artworkOrError: ArtworkMutationType
+  clientMutationId: String
+}
+
 input DeleteCreditCardInput {
   clientMutationId: String
   id: String!
@@ -7449,6 +7478,9 @@ type Mutation {
   ): CreateSmsSecondFactorPayload
   createViewingRoom(input: CreateViewingRoomInput!): CreateViewingRoomPayload
 
+  # Deletes an image from an artwork in my collection
+  deleteArtworkImage(input: DeleteArtworkImageInput!): DeleteArtworkImagePayload
+
   # Remove a credit card
   deleteCreditCard(input: DeleteCreditCardInput!): DeleteCreditCardPayload
   deleteViewingRoom(input: DeleteViewingRoomInput!): DeleteViewingRoomPayload
@@ -7485,11 +7517,6 @@ type Mutation {
   myCollectionDeleteArtwork(
     input: MyCollectionDeleteArtworkInput!
   ): MyCollectionDeleteArtworkPayload
-
-  # Deletes an image from an artwork in my collection
-  MyCollectionDeleteArtworkImage(
-    input: MyCollectionDeleteArtworkImageInput!
-  ): MyCollectionDeleteArtworkImagePayload
 
   # Update an artwork in my collection
   myCollectionUpdateArtwork(
@@ -7626,17 +7653,6 @@ input MyCollectionCreateArtworkInput {
 }
 
 type MyCollectionCreateArtworkPayload {
-  artworkOrError: MyCollectionArtworkMutationType
-  clientMutationId: String
-}
-
-input MyCollectionDeleteArtworkImageInput {
-  artworkId: String!
-  clientMutationId: String
-  imageId: String!
-}
-
-type MyCollectionDeleteArtworkImagePayload {
   artworkOrError: MyCollectionArtworkMutationType
   clientMutationId: String
 }

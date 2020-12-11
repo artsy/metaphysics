@@ -3,7 +3,6 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { formatGravityError } from "lib/gravityErrorHandler"
-import { MyCollectionDeleteArtworkImageResponse } from "lib/loaders/loaders_with_authentication/gravity"
 
 export const myCollectionDeleteArtworkMutation = mutationWithClientMutationId<
   any,
@@ -29,9 +28,7 @@ export const myCollectionDeleteArtworkMutation = mutationWithClientMutationId<
     }
 
     try {
-      const response: MyCollectionDeleteArtworkImageResponse = await deleteArtworkLoader(
-        artworkId
-      )
+      const response = await deleteArtworkLoader(artworkId)
 
       // Response from DELETE isn't internalID of deleted artwork and as such
       // we don't want to match on the MyCollectionArtworkMutationSuccess  type,

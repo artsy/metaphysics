@@ -13,17 +13,6 @@ export default (accessToken, userID, opts) => {
     gravityAccessTokenLoader
   )
 
-  type MyCollectionDeleteArtworkImageResponse = {
-    MyCollectionDeleteArtworkImage: {
-      artworkOrError: {
-        mutationError: {
-          message: string
-        }
-        success: boolean
-      }
-    }
-  }
-
   return {
     identityVerificationLoader: gravityLoader(
       (id) => `identity_verification/${id}`
@@ -195,7 +184,7 @@ export default (accessToken, userID, opts) => {
       { method: "DELETE" }
     ),
     deleteArtworkImageLoader: gravityLoader<
-      MyCollectionDeleteArtworkImageResponse,
+      any,
       { artworkID: string; imageID: string }
     >(
       ({ artworkID, imageID }) => `artwork/${artworkID}/image/${imageID}`,

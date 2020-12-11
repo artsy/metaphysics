@@ -98,7 +98,7 @@ import PartnerArtworks from "./partnerArtworks"
 import Image from "./image"
 import VanityURLEntity from "./vanityURLEntity"
 import { myCollectionDeleteArtworkMutation } from "./me/myCollectionDeleteArtworkMutation"
-import { MyCollectionDeleteArtworkImageMutation } from "./me/myCollectionDeleteArtworkImageMutation"
+import { DeleteArtworkImageMutation } from "./deleteArtworkImageMutation"
 
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 
@@ -201,7 +201,7 @@ export default new GraphQLSchema({
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
-      MyCollectionDeleteArtworkImage: MyCollectionDeleteArtworkImageMutation,
+      deleteArtworkImage: DeleteArtworkImageMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       saveArtwork: saveArtworkMutation,
       sendConfirmationEmail: sendConfirmationEmailMutation,

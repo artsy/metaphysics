@@ -27,17 +27,6 @@ export default (opts) => {
     currency: string
   }
 
-  type MyCollectionDeleteArtworkImageResponse = {
-    MyCollectionDeleteArtworkImage: {
-      artworkOrError: {
-        mutationError: {
-          message: string
-        }
-        success: boolean
-      }
-    }
-  }
-
   return {
     featureLoader: (id: string) =>
       gravityLoader((id) => `feature/${id}`)(id).then(Gravity.Feature.check),
