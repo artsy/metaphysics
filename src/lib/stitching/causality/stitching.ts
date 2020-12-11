@@ -44,7 +44,10 @@ export const causalityStitchingEnvironment = ({
       }
 
       extend type AuctionsLotState {
+        "current high bid recognized on the live auction floor"
         floorSellingPrice: Money
+        "current high bid"
+        sellingPrice: Money
         onlineAskingPrice: Money
       }
     `,
@@ -80,6 +83,15 @@ export const causalityStitchingEnvironment = ({
             }
           `,
           resolve: resolveLotCentsFieldToMoney("floorSellingPriceCents"),
+        },
+        sellingPrice: {
+          fragment: gql`
+            ... on AuctionsLotState {
+              internalID
+              sellingPriceCents
+            }
+          `,
+          resolve: resolveLotCentsFieldToMoney("sellingPriceCents"),
         },
         onlineAskingPrice: {
           fragment: gql`

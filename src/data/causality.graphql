@@ -70,13 +70,16 @@ type Lot {
   "The Gravity Sale ID."
   saleId: ID!
 
-  "total number of bids placed on the lot"
+  "total number of actual bids placed by users on the lot"
   bidCount: Int!
+
+  "current bid amount in minor unit, whether reserve is met or not"
+  sellingPriceCents: Long!
 
   "selling price, in minor unit, on the live auction floor"
   floorSellingPriceCents: Long
 
-  "The bidder currently winning the online portion of the auction"
+  "The bidder currently winning the live floor portion of the auction"
   floorWinningBidder: Bidder
 
   "asking price, in minor unit, for online bidders"
@@ -267,8 +270,8 @@ type Query {
 
 enum ReserveStatus {
   NoReserve
-  ReserveMet
   ReserveNotMet
+  ReserveMet
 }
 
 "The state of a sale"
@@ -312,8 +315,8 @@ type Sale {
 
 enum SoldStatus {
   ForSale
-  Passed
   Sold
+  Passed
 }
 
 "An Artsy User"

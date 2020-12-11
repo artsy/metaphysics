@@ -33,6 +33,26 @@ describe("causality/stitching", () => {
       expect(await getFields("AuctionsLotState")).toContain("onlineAskingPrice")
     })
 
+    it("resolves sellingPrice field as a Money type", async () => {
+      const { resolvers } = await useCausalityStitching()
+      const saleArtworkRootLoader = jest.fn(() => {
+        return { currency: "USD" }
+      })
+      const sellingPrice = await resolvers.AuctionsLotState.sellingPrice.resolve(
+        { internalID: "123", sellingPriceCents: 10000 },
+        {},
+        { saleArtworkRootLoader },
+        {}
+      )
+
+      expect(sellingPrice).toEqual({
+        major: 100,
+        minor: 10000,
+        currencyCode: "USD",
+        display: "$100",
+      })
+    })
+
     it("resolves floorSellingPrice field as a Money type", async () => {
       const { resolvers } = await useCausalityStitching()
       const saleArtworkRootLoader = jest.fn(() => {
