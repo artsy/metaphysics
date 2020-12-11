@@ -116,6 +116,9 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ bought_in }) => bought_in,
     },
+    location: {
+      type: GraphQLString,
+    },
     images: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "AuctionLotImages",
