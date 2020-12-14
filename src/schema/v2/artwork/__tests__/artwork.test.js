@@ -2333,6 +2333,46 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#realizedToEstimate", () => {
+    it("returns null if there is no realizedToEstimate value", async () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            realizedToEstimate
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+      expect(data.artwork.realizedToEstimate).toBe(null)
+    })
+
+    it("returns realizedToEstimate", async () => {
+      getMicrofunnelDataByArtworkInternalID.mockImplementation(() => ({
+        "Artwork ids (recently sold) (comma separated)":
+          "5d126f9bba46ba0012c3134f",
+        "Artwork realized / estimate multiplier": "2.2",
+      }))
+      const query = `
+        {
+          artwork(id: "alex-katz-luna-park-2-maravell-67-schroder-68") {
+            realizedToEstimate
+          }
+        }
+      `
+      const context = {
+        artworkLoader: () => {
+          return Promise.resolve({
+            _id: "5d9ca6fe8f1aee0011475cf7",
+            id: "alex-katz-luna-park-2-maravell-67-schroder-68",
+          })
+        },
+      }
+      const data = await runQuery(query, context)
+      expect(data.artwork.realizedToEstimate).toBe("2.2")
+    })
+  })
+
   describe("#unlisted", () => {
     const query = `
       {

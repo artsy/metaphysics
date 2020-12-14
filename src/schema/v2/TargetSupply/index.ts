@@ -2,7 +2,7 @@ import { ResolverContext } from "types/graphql"
 import { GraphQLObjectType, GraphQLFieldConfig, GraphQLList } from "graphql"
 import { ArtistType } from "../artist"
 import {
-  getMicrofunnelData,
+  getArtistMicrofunnelMetadata,
   getTargetSupplyArtists,
 } from "../artist/targetSupply/utils/getMicrofunnelData"
 import {
@@ -45,9 +45,11 @@ const TargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
       ),
       resolve: (data) => {
         const results = data.microfunnel.map((slug) => {
-          const microfunnelData = getMicrofunnelData(`/artist/${slug}`)
+          const artistMicrofunnelMetadata = getArtistMicrofunnelMetadata(
+            `/artist/${slug}`
+          )
           return {
-            ...microfunnelData,
+            ...artistMicrofunnelMetadata,
             slug,
           }
         })

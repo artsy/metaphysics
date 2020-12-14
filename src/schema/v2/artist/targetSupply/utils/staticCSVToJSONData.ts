@@ -53,6 +53,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "2.5",
   },
   {
     url: "/artist/alex-katz",
@@ -266,6 +267,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "3.0",
   },
   {
     url: "/artist/damien-hirst",
@@ -359,6 +361,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "2.0",
   },
   {
     url: "/artist/david-hockney",
@@ -375,6 +378,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "3.0",
   },
   {
     url: "/artist/david-hockney",
@@ -422,6 +426,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "2.2",
   },
   {
     url: "/artist/david-shrigley",
@@ -595,6 +600,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "7.3",
   },
   {
     url: "/artist/ed-ruscha",
@@ -702,6 +708,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "2.4",
   },
   {
     url: "/artist/eddie-martinez",
@@ -889,6 +896,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "2.1",
   },
   {
     url: "/artist/harland-miller",
@@ -1091,6 +1099,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "4.3",
   },
   {
     url: "/artist/katherine-bernhardt",
@@ -1107,6 +1116,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "2.4",
   },
   {
     url: "/artist/katherine-bernhardt",
@@ -1263,6 +1273,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "2.2",
   },
   {
     url: "/artist/kaws",
@@ -1278,6 +1289,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "3.4",
   },
   {
     url: "/artist/kaws",
@@ -1542,6 +1554,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "12.5",
   },
   {
     url: "/artist/nina-chanel-abney",
@@ -1591,6 +1604,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "3.0",
   },
   {
     url: "/artist/roy-lichtenstein",
@@ -1654,6 +1668,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "3.0",
   },
   {
     url: "/artist/roy-lichtenstein",
@@ -1716,6 +1731,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "1.4",
   },
   {
     url: "/artist/sterling-ruby",
@@ -1795,6 +1811,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "2.2",
   },
   {
     url: "/artist/sterling-ruby",
@@ -1980,6 +1997,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "2.8",
   },
   {
     url: "/artist/takashi-murakami",
@@ -2012,6 +2030,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "2.4",
   },
   {
     url: "/artist/takashi-murakami",
@@ -2122,6 +2141,7 @@ export const staticCSVToJSONData = [
     "STR (last 12 months)": "",
     "Realized / estimate": "",
     "Highest realized price": "",
+    "Artwork realized / estimate multiplier": "1.4",
   },
   {
     url: "/artist/tomoo-gokita",

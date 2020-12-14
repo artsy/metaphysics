@@ -571,6 +571,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return partnerLoader(partner.id).catch(() => null)
         },
       },
+      realizedToEstimate: {
+        type: GraphQLString,
+        resolve: (artwork) => {
+          const microfunnelArtwork = getMicrofunnelDataByArtworkInternalID(
+            artwork._id
+          )
+          return microfunnelArtwork?.["Artwork realized / estimate multiplier"]
+        },
+      },
       pickupAvailable: {
         type: GraphQLBoolean,
         resolve: ({ pickup_available }) => pickup_available,
