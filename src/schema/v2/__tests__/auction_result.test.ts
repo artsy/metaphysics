@@ -17,6 +17,7 @@ const mockAuctionResult = {
     },
   ],
   currency: "EUR",
+  location: "Berlin",
   priceRealized_cents: 420000,
   priceRealized_cents_usd: 100000,
   low_estimate_cents: 200000,
@@ -38,6 +39,7 @@ describe("AuctionResult type", () => {
         auctionResult(id: "foo-bar") {
           currency
           saleDateText
+          location
         }
       }
     `
@@ -49,6 +51,7 @@ describe("AuctionResult type", () => {
     return runQuery(query, context!).then((data) => {
       expect(data.auctionResult.currency).toBe("EUR")
       expect(data.auctionResult.saleDateText).toEqual("10-12-2020")
+      expect(data.auctionResult.location).toEqual("Berlin")
     })
   })
 })
