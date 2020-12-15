@@ -151,6 +151,43 @@ describe("myCollectionCreateArtworkMutation", () => {
 
       expect(message).toEqual(serverError)
     })
+
+    it("creates additional images in sequence to avoid a gravity race condition", async () => {
+      // allow us to resolve the createImageLoader mock manually
+      let resolveCreateImageLoader = () => null as any
+      createImageLoader.mockImplementation(
+        () =>
+          new Promise<void>((resolve) => (resolveCreateImageLoader = resolve))
+      )
+
+      const externalImageUrls = [
+        "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
+        "https://test-upload-bucket.s3.amazonaws.com/path/to/other/image.jpg",
+      ]
+      const mutation = computeMutationInput(externalImageUrls)
+
+      runAuthenticatedQuery(mutation, defaultContext)
+
+      // flush promise queue
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      expect(createImageLoader).toHaveBeenCalledTimes(1)
+      expect(createImageLoader).toBeCalledWith(newArtwork.id, {
+        source_bucket: "test-upload-bucket",
+        source_key: "path/to/image.jpg",
+      })
+
+      resolveCreateImageLoader()
+
+      // flush promise queue
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      expect(createImageLoader).toHaveBeenCalledTimes(2)
+      expect(createImageLoader).toBeCalledWith(newArtwork.id, {
+        source_bucket: "test-upload-bucket",
+        source_key: "path/to/other/image.jpg",
+      })
+    })
   })
 })
 
