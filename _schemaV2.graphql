@@ -1575,15 +1575,9 @@ type ArtworkMutationFailure {
   mutationError: GravityMutationError
 }
 
-type ArtworkMutationSuccess {
-  artwork: Artwork
-  artworkEdge: ArtworkEdgeInterface
-}
-
 union ArtworkMutationType =
     ArtworkMutationDeleteSuccess
   | ArtworkMutationFailure
-  | ArtworkMutationSuccess
 
 union ArtworkOrEditionSetType = Artwork | EditionSet
 

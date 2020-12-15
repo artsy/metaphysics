@@ -5,53 +5,20 @@ import {
   GraphQLNonNull,
   GraphQLUnionType,
 } from "graphql"
-import {
-  cursorForObjectInConnection,
-  mutationWithClientMutationId,
-} from "graphql-relay"
+import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { ArtworkEdgeInterface, ArtworkType } from "schema/v2/artwork"
 
-const ArtworkMutationSuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "ArtworkMutationSuccess",
-  isTypeOf: (data) => data.id,
-  fields: () => ({
-    artwork: {
-      type: ArtworkType,
-      resolve: ({ id }, _, { artworkLoader }) => {
-        if (artworkLoader) {
-          return artworkLoader(id)
-        }
-      },
-    },
-    artworkEdge: {
-      type: ArtworkEdgeInterface,
-      resolve: async ({ id }, _, { artworkLoader }) => {
-        if (!artworkLoader) {
-          return null
-        }
-        const artwork = await artworkLoader(id)
-        const edge = {
-          cursor: cursorForObjectInConnection([artwork], artwork),
-          node: artwork,
-        }
-        return edge
-      },
-    },
-  }),
-})
-
-const ArtworkMutationDeleteSuccess = new GraphQLObjectType<
+const ArtworkMutationDeleteSuccessType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
   name: "ArtworkMutationDeleteSuccess",
   isTypeOf: (data) => {
-    return data.deleted
+    return data.image_url
   },
   fields: () => ({
     success: {
@@ -76,11 +43,7 @@ const ArtworkMutationFailureType = new GraphQLObjectType<any, ResolverContext>({
 
 export const ArtworkMutationType = new GraphQLUnionType({
   name: "ArtworkMutationType",
-  types: [
-    ArtworkMutationSuccessType,
-    ArtworkMutationDeleteSuccess,
-    ArtworkMutationFailureType,
-  ],
+  types: [ArtworkMutationDeleteSuccessType, ArtworkMutationFailureType],
 })
 
 interface DeleteArtworkImageMutationInput {
