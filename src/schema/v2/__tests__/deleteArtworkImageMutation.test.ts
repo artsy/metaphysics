@@ -20,6 +20,7 @@ describe("DeleteArtworkImageMutation", () => {
   `
 
   it("returns an error", async () => {
+    console.error = jest.fn() // Suppress error output
     const context = {
       deleteArtworkImageLoader: () =>
         Promise.reject(
@@ -43,7 +44,8 @@ describe("DeleteArtworkImageMutation", () => {
 
   it("deletes an artwork image", async () => {
     const context = {
-      deleteArtworkImageLoader: () => Promise.resolve({ deleted: true }),
+      deleteArtworkImageLoader: () =>
+        Promise.resolve({ image_url: "some-deleted-image-url" }),
     }
 
     const data = await runAuthenticatedQuery(mutation, context)
