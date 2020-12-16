@@ -16,6 +16,25 @@ export default {
       "Generally, less than 150 pieces total.",
     ].join(" "),
   },
+  "open edition": {
+    id: "open edition",
+    name: "Open edition",
+    info: "The edition run is ongoing",
+    short_description: "This edition run is still in production",
+    long_description: [
+      "The edition run is ongoing.",
+      "New works are still being produced, which may be numbered.",
+      "This includes made-to-order works.",
+    ].join(" "),
+  },
+  "unknown edition": {
+    id: "unknown edition",
+    name: "Unknown edition",
+    info: "The edition run has ended",
+    short_description: "This edition run has ended",
+    long_description:
+      "The edition run has ended; it is unclear how many works were produced.",
+  },
   "made-to-order": {
     id: "made-to-order",
     name: "Made-to-order",
