@@ -9,7 +9,6 @@ import { getMicrofunnelDataByArtworkInternalID } from "schema/v2/artist/targetSu
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
 
 describe("Artwork type", () => {
-  const partner = { id: "existy" }
   const sale = { id: "existy" }
 
   let artwork = null
@@ -50,6 +49,7 @@ describe("Artwork type", () => {
       dimensions: { in: "2 x 3in." },
       metric: "in",
       unlisted: true,
+      category: "Painting",
     }
     context = {
       artworkLoader: sinon
@@ -2428,6 +2428,35 @@ describe("Artwork type", () => {
         "richard-prince-untitled-portrait",
         {}
       )
+    })
+  })
+
+  describe("mediumType", () => {
+    it(`returns proper medium type for artwork`, () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            mediumType {
+              internalID
+              name
+              longDescription
+            }
+          }
+        }
+      `
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            mediumType: {
+              internalID: "Painting",
+              name: "Painting",
+              longDescription:
+                "Includes gouache; fresco; ink and wash; oil painting; screen painting; scroll painting; tempera; watercolor.",
+            },
+          },
+        })
+      })
     })
   })
 })

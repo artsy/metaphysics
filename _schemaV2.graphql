@@ -1359,6 +1359,9 @@ type Artwork implements Node & Searchable & Sellable {
   # canvas_. (This should not be confused with the artwork attribute called
   # `category`, which is commonly referred to as "medium" or "medium type")
   medium: String
+
+  # Represents the "**medium**" of an artwork, such as painting_
+  mediumType: MediumType
   meta: ArtworkMeta
 
   # The unit of length of the artwork, expressed in `in` or `cm`
