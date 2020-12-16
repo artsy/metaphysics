@@ -5,6 +5,7 @@ export default {
     info: "One of a kind piece",
     short_description: "This is a unique work",
     long_description: "One of a kind piece, created by the artist.",
+    deprecated: false,
   },
   "limited edition": {
     id: "limited edition",
@@ -15,6 +16,28 @@ export default {
       "Original works created in multiple with direct involvement of the artist.",
       "Generally, less than 150 pieces total.",
     ].join(" "),
+    deprecated: false,
+  },
+  "open edition": {
+    id: "open edition",
+    name: "Open edition",
+    info: "The edition run is ongoing",
+    short_description: "This edition run is still in production",
+    long_description: [
+      "The edition run is ongoing.",
+      "New works are still being produced, which may be numbered.",
+      "This includes made-to-order works.",
+    ].join(" "),
+    deprecated: false,
+  },
+  "unknown edition": {
+    id: "unknown edition",
+    name: "Unknown edition",
+    info: "The edition run has ended",
+    short_description: "This edition run has ended",
+    long_description:
+      "The edition run has ended; it is unclear how many works were produced.",
+    deprecated: false,
   },
   "made-to-order": {
     id: "made-to-order",
@@ -23,6 +46,7 @@ export default {
     short_description: "This is a made-to-order piece",
     long_description:
       "A piece that is made-to-order, taking into account the collector’s preferences.",
+    deprecated: true,
   },
   reproduction: {
     id: "reproduction",
@@ -33,6 +57,7 @@ export default {
       "Reproduction of an original work authorized by artist’s studio or estate.",
       "The artist was not directly involved in production.",
     ].join(" "),
+    deprecated: true,
   },
   "editioned multiple": {
     id: "editioned multiple",
@@ -43,6 +68,7 @@ export default {
       "Pieces created in larger limited editions, authorized by the artist’s studio or estate.",
       "Not produced with direct involvement of the artist.",
     ].join(" "),
+    deprecated: true,
   },
   "non-editioned multiple": {
     id: "non-editioned multiple",
@@ -53,6 +79,7 @@ export default {
       "Works made in unlimited or unknown numbers of copies, authorized by the artist’s studio or estate.",
       "Not produced with direct involvement of the artist.",
     ].join(" "),
+    deprecated: true,
   },
   ephemera: {
     id: "ephemera",
@@ -63,5 +90,6 @@ export default {
       "Items related to the artist, created or manufactured for a specific, limited use.",
       "This includes exhibition materials, memorabilia, autographs, etc.",
     ].join(" "),
+    deprecated: true,
   },
 }
