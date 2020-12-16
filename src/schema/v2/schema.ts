@@ -102,6 +102,7 @@ import { DeleteArtworkImageMutation } from "./deleteArtworkImageMutation"
 
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { AuctionResult } from "./auction_result"
+import ArtworkMediumTypes from "./artworkMediumTypes"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -110,6 +111,7 @@ const PrincipalFieldDirective = new GraphQLDirective({
 
 const rootFields = {
   artworkAttributionClasses: ArtworkAttributionClasses,
+  artworkMediumTypes: ArtworkMediumTypes,
   auctionResult: AuctionResult,
   article: Article,
   articles: Articles,
