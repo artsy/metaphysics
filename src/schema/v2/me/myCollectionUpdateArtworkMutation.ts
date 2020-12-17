@@ -105,10 +105,10 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
 
       if (editionNumber || editionSize) {
         // create edition set for artwork
-        if (response.edition_sets.length === 0) {
+        if (!response.edition_sets?.length) {
           await createArtworkEditionSetLoader(artworkId, {
             edition_size: editionSize,
-            available_editions: [editionNumber],
+            available_editions: editionNumber ? [editionNumber] : null,
           })
         } else {
           const editionSetId = response.edition_sets[0].id
@@ -116,7 +116,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
             { artworkId, editionSetId },
             {
               edition_size: editionSize,
-              available_editions: [editionNumber],
+              available_editions: editionNumber ? [editionNumber] : null,
             }
           )
         }

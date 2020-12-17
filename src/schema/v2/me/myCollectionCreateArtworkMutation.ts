@@ -126,7 +126,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         // create edition set for artwork
         await createArtworkEditionSetLoader(artworkId, {
           edition_size: editionSize,
-          available_editions: [editionNumber],
+          available_editions: editionNumber ? [editionNumber] : null,
         })
       }
 
