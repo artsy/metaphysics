@@ -1239,7 +1239,7 @@ type Artwork implements Node & Searchable & Sellable {
   # Represents the "**medium type**", such as _Painting_. (This field is also
   # commonly referred to as just "medium", but should not be confused with the
   # artwork attribute called `medium`.)
-  category: String
+  category: String @deprecated(reason: "Prefer to use `mediumType`.")
 
   # Returns the display label and detail for artwork certificate of authenticity
   certificateOfAuthenticity: ArtworkInfoRow
@@ -1360,7 +1360,9 @@ type Artwork implements Node & Searchable & Sellable {
   # `category`, which is commonly referred to as "medium" or "medium type")
   medium: String
 
-  # Represents the "**medium**" of an artwork, such as painting_
+  # Represents the "**medium type**", such as _Painting_. (This field is also
+  # commonly referred to as just "medium", but should not be confused with the
+  # artwork attribute called `medium`.)
   mediumType: MediumType
   meta: ArtworkMeta
 
