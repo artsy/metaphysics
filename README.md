@@ -95,6 +95,14 @@ You will need to set up headers with both:
 
 _If you're new to GraphQL, you can checkout [Artsy's GraphQL Workshop](https://github.com/artsy/graphql-workshop)._
 
+### Introspection Setup
+
+In order to get docs for the schema on MP in your playground of choice (Postman, Insomnia, Altair, etc), you need to send the following header:
+```
+Authorization: Bearer <secret>
+```
+and replace `<secret>` with the contents of `Metaphysics INTROSPECT_TOKEN` from 1Password.
+
 ### Sample Queries
 
 Once you have the GraphiQL client running against your local service,
