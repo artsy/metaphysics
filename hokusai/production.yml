@@ -1,7 +1,11 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: metaphysics-web
+  labels:
+    app: metaphysics
+    layer: application
+    component: web
   namespace: default
 spec:
   strategy:
@@ -9,6 +13,11 @@ spec:
       maxSurge: 0
       maxUnavailable: 20%
     type: RollingUpdate
+  selector:
+    matchLabels:
+      app: metaphysics
+      layer: application
+      component: web
   template:
     metadata:
       labels:
@@ -83,7 +92,7 @@ metadata:
   namespace: default
 spec:
   scaleTargetRef:
-    apiVersion: extensions/v1beta1
+    apiVersion: apps/v1
     kind: Deployment
     name: metaphysics-web
   minReplicas: 10
@@ -112,18 +121,20 @@ spec:
   type: ClusterIP
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: metaphysics
   annotations:
     nginx.ingress.kubernetes.io/whitelist-source-range: "{{ (cloudflareIpSourceRanges + kubernetesNetworkCIDR)|join(',') }}"
 spec:
+  ingressClassName: nginx
   rules:
     - host: metaphysics-production.artsy.net
       http:
         paths:
           - path: /
+            pathType: Prefix
             backend:
               serviceName: metaphysics-web-internal
               servicePort: mp-http
