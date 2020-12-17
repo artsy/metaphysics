@@ -134,6 +134,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       availability: { type: GraphQLString },
       category: {
         type: GraphQLString,
+        deprecationReason: "Prefer to use `mediumType`.",
         description:
           'Represents the "**medium type**", such as _Painting_. (This field is also commonly referred to as just "medium", but should not be confused with the artwork attribute called `medium`.)',
       },
