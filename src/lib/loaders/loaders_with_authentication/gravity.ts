@@ -191,6 +191,20 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    createArtworkEditionSetLoader: gravityLoader(
+      (artworkID) => `artwork/${artworkID}/edition_set`,
+      {},
+      { method: "POST" }
+    ),
+    updateArtworkEditionSetLoader: gravityLoader<
+      any,
+      { artworkId: string; editionSetId: string }
+    >(
+      ({ artworkId, editionSetId }) =>
+        `artwork/${artworkId}/edition_set/${editionSetId}`,
+      {},
+      { method: "PUT" }
+    ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     partnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,
