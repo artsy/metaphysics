@@ -97,11 +97,22 @@ _If you're new to GraphQL, you can checkout [Artsy's GraphQL Workshop](https://g
 
 ### Introspection Setup
 
-In order to get docs for the schema on MP in your playground of choice (Postman, Insomnia, Altair, etc), you need to send the following header:
+Getting docs for the schema on MP in your playground of choice (Postman, Insomnia, Altair, etc) is called introspection.
+
+Introspection is available by default when developing.
+
+Introspection on staging and production are for internal use only, so artsy devs can use it to make development for MP clients (eigen, force, etc) easier, but it is and should not be used by any of the clients or anyone else.
+
+In order to set this up in your playground of choice (Postman, Insomnia, Altair, etc), you need to send the following header:
 ```
 Authorization: Bearer <secret>
 ```
-and replace `<secret>` with the contents of `Metaphysics INTROSPECT_TOKEN` from 1Password.
+and replace `<secret>` with the value you get from hokusai using
+```
+hokusai staging env get INTROSPECT_TOKEN
+hokusai production env get INTROSPECT_TOKEN
+```
+or the contents of `Metaphysics INTROSPECT_TOKEN` in 1Password.
 
 ### Sample Queries
 
