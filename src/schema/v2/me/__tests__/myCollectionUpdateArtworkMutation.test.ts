@@ -332,7 +332,7 @@ describe("myCollectionUpdateArtworkMutation", () => {
       )
     })
 
-    it("does not create an edition set if you don't specify either", async () => {
+    it("resets the edition set if you don't specify either", async () => {
       const mutation = computeMutationInput({
         editionNumber: null,
         editionSize: null,
@@ -340,7 +340,16 @@ describe("myCollectionUpdateArtworkMutation", () => {
 
       await runAuthenticatedQuery(mutation, defaultContext)
 
-      expect(updateArtworkEditionSetLoader).not.toHaveBeenCalled()
+      expect(updateArtworkEditionSetLoader).toHaveBeenCalledWith(
+        {
+          artworkId: updatedArtwork.id,
+          editionSetId: editionedArtwork.edition_sets[0].id,
+        },
+        {
+          edition_size: null,
+          available_editions: null,
+        }
+      )
     })
   })
 })

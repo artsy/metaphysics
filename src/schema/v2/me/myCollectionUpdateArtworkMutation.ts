@@ -103,23 +103,23 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         ...rest,
       })
 
-      if (editionNumber || editionSize) {
-        // create edition set for artwork
-        if (!response.edition_sets?.length) {
+      if (!response.edition_sets?.length) {
+        if (editionSize || editionNumber) {
+          // create new edition set when none existed previously
           await createArtworkEditionSetLoader(artworkId, {
             edition_size: editionSize,
             available_editions: editionNumber ? [editionNumber] : null,
           })
-        } else {
-          const editionSetId = response.edition_sets[0].id
-          await updateArtworkEditionSetLoader(
-            { artworkId, editionSetId },
-            {
-              edition_size: editionSize,
-              available_editions: editionNumber ? [editionNumber] : null,
-            }
-          )
         }
+      } else {
+        const editionSetId = response.edition_sets[0].id
+        await updateArtworkEditionSetLoader(
+          { artworkId, editionSetId },
+          {
+            edition_size: editionSize,
+            available_editions: editionNumber ? [editionNumber] : null,
+          }
+        )
       }
 
       const imageSources = computeImageSources(externalImageUrls)
