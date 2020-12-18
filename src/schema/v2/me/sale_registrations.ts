@@ -20,7 +20,6 @@ export const SaleRegistrationType = new GraphQLObjectType<any, ResolverContext>(
       },
       isRegistered: {
         type: GraphQLBoolean,
-        resolve: ({ is_registered }) => is_registered,
       },
       sale: {
         type: Sale.type,
@@ -64,6 +63,7 @@ const SaleRegistrationConnection: GraphQLFieldConfig<void, ResolverContext> = {
         }
       })
     )
+
     return connectionFromArraySlice(saleRegistrations, paginationArgs, {
       arrayLength: parseInt(headers["x-total-count"] || "0", 10),
       sliceStart: offset,
