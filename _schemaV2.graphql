@@ -1363,7 +1363,7 @@ type Artwork implements Node & Searchable & Sellable {
   # Represents the "**medium type**", such as _Painting_. (This field is also
   # commonly referred to as just "medium", but should not be confused with the
   # artwork attribute called `medium`.)
-  mediumType: MediumType
+  mediumType: ArtworkMedium
   meta: ArtworkMeta
 
   # The unit of length of the artwork, expressed in `in` or `cm`
@@ -1563,6 +1563,17 @@ type ArtworkLayer {
   internalID: ID!
   name: String
   type: String
+}
+
+# Collection of fields that describe medium type, such as _Painting_. (This field
+# is also commonly referred to as just "medium", but should not be confused with
+# the artwork attribute called `medium`.)
+type ArtworkMedium {
+  # Long descriptive phrase
+  longDescription: String
+
+  # Shortest form of medium type display
+  name: String
 }
 
 type ArtworkMeta {
@@ -7268,17 +7279,6 @@ type Me implements Node {
   unreadNotificationsCount: Int!
 }
 
-# Collection of fields that describe medium type, such as _Painting_. (This field
-# is also commonly referred to as just "medium", but should not be confused with
-# the artwork attribute called `medium`.)
-type MediumType {
-  # Long descriptive phrase
-  longDescription: String
-
-  # Shortest form of medium type display
-  name: String
-}
-
 # A message in a conversation.
 type Message implements Node {
   attachments: [Attachment]
@@ -8622,7 +8622,7 @@ type Query {
   artworkAttributionClasses: [AttributionClass]
 
   # List of all artwork mediums
-  artworkMediums: [MediumType]
+  artworkMediums: [ArtworkMedium]
 
   # A list of Artworks
   artworks(
@@ -10921,7 +10921,7 @@ type Viewer {
   artworkAttributionClasses: [AttributionClass]
 
   # List of all artwork mediums
-  artworkMediums: [MediumType]
+  artworkMediums: [ArtworkMedium]
 
   # A list of Artworks
   artworks(
