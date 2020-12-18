@@ -7272,12 +7272,6 @@ type Me implements Node {
 # is also commonly referred to as just "medium", but should not be confused with
 # the artwork attribute called `medium`.)
 type MediumType {
-  # A globally unique ID.
-  id: ID!
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-
   # Long descriptive phrase
   longDescription: String
 
@@ -8627,8 +8621,8 @@ type Query {
   # List of all artwork attribution classes
   artworkAttributionClasses: [AttributionClass]
 
-  # List of all artwork medium types
-  artworkMediumTypes: [MediumType]
+  # List of all artwork mediums
+  artworkMediums: [MediumType]
 
   # A list of Artworks
   artworks(
@@ -10926,8 +10920,8 @@ type Viewer {
   # List of all artwork attribution classes
   artworkAttributionClasses: [AttributionClass]
 
-  # List of all artwork medium types
-  artworkMediumTypes: [MediumType]
+  # List of all artwork mediums
+  artworkMediums: [MediumType]
 
   # A list of Artworks
   artworks(

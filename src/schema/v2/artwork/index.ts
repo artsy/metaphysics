@@ -46,7 +46,7 @@ import AttributionClass from "schema/v2/artwork/attributionClass"
 import attributionClasses from "lib/attributionClasses"
 import MediumType from "schema/v2/artwork/mediumType"
 // Mapping of category ids to MediumType values
-import mediumTypes from "lib/mediumTypes"
+import artworkMediums from "lib/artworkMediums"
 import { LotStandingType } from "../me/lot_standing"
 import { amount, symbolFromCurrencyCode } from "schema/v2/fields/money"
 import { capitalizeFirstCharacter } from "lib/helpers"
@@ -552,7 +552,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           'Represents the "**medium type**", such as _Painting_. (This field is also commonly referred to as just "medium", but should not be confused with the artwork attribute called `medium`.)',
         resolve: ({ category }) => {
           if (category) {
-            return mediumTypes[category]
+            return artworkMediums[category]
           }
         },
       },
