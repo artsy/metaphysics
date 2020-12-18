@@ -19,13 +19,13 @@ export default {
     ].join(" "),
     name: "Design/Decorative Art",
   },
-  "Drawing, Collage or Other Work on Paper": {
-    id: "Drawing, Collage or Other Work on Paper",
+  "Drawing, Collage or other Work on Paper": {
+    id: "Drawing, Collage or other Work on Paper",
     long_description: [
       "Includes collages; drawings; figure drawing; pen and ink; sketch.",
       "This also includes paintings where paper is the support.",
     ].join(" "),
-    name: "Drawing, Collage or Other Work on Paper",
+    name: "Drawing, Collage or other Work on Paper",
   },
   "Ephemera or Merchandise": {
     id: "Ephemera or Merchandise",
