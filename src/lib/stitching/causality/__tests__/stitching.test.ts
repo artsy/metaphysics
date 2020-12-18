@@ -97,8 +97,6 @@ describe("causality/stitching", () => {
   it("resolves a SaleArtwork on an AuctionsLotStanding", async () => {
     const allMergedSchemas = await incrementalMergeSchemas(schema, 1)
 
-    // This test is that a submission gets the artist by stitching a MP
-    // Artist into the ConsignmentSubmission inside the schema
     const query = gql`
       {
         _unused_auctionsLotStandingConnection(userId: "123") {
@@ -155,6 +153,138 @@ describe("causality/stitching", () => {
           ],
         },
       },
+    })
+  })
+
+  describe("auctionsLotStandingConnection", () => {
+    it("stitches auctionsLotStandingConnection under Me", async () => {
+      const allMergedSchemas = await incrementalMergeSchemas(schema, 1)
+
+      const query = gql`
+        {
+          me {
+            auctionsLotStandingConnection {
+              edges {
+                node {
+                  rawId
+                }
+              }
+            }
+          }
+        }
+      `
+
+      // Mock the resolvers for just a user's lot standings so we can see the
+      // stitched SaleArtwork data inside.
+      // this is needed without it we get [GraphQLError: Variable "$_v0_userId" got invalid value undefined; Expected non-nullable type ID! not to be null.]
+      addMockFunctionsToSchema({
+        schema: allMergedSchemas,
+        mocks: {
+          Query: () => ({
+            me: () => {
+              return {
+                internalID: "foo",
+              }
+            },
+          }),
+        },
+      })
+
+      const result = await graphql(allMergedSchemas, query, {}, {})
+
+      expect(result).toEqual({
+        data: {
+          me: {
+            auctionsLotStandingConnection: {
+              edges: [
+                { node: { rawId: "Hello World" } },
+                { node: { rawId: "Hello World" } },
+              ],
+            },
+          },
+        },
+      })
+    })
+
+    describe("when sale artworks are missing", () => {
+      let info
+      let auctionsLotStandingConnection
+      beforeEach(async () => {
+        const { resolvers } = await useCausalityStitching()
+
+        // aka _unused_auctionsLotStandingConnection
+        const causalityLotStandingConnection = {
+          edges: [
+            {
+              node: {
+                lot: {
+                  internalID: "foo",
+                },
+              },
+            },
+            {
+              node: {
+                lot: {
+                  internalID: "bar",
+                },
+              },
+            },
+          ],
+        }
+
+        info = {
+          mergeInfo: {
+            delegateToSchema: jest.fn(() => {
+              return Promise.resolve(causalityLotStandingConnection)
+            }),
+          },
+        }
+
+        auctionsLotStandingConnection =
+          resolvers.Me.auctionsLotStandingConnection
+      })
+
+      it("gracefully handles missing sale artwork but removes the lot standing from result", async () => {
+        const saleArtworkRootLoader = jest.fn((_id) => {
+          return Promise.reject("Im unpublished")
+        })
+
+        const result = await auctionsLotStandingConnection.resolve(
+          { internalID: "foo" },
+          {},
+          {
+            saleArtworkRootLoader,
+          },
+          info
+        )
+        expect(saleArtworkRootLoader.mock.calls).toEqual([["foo"], ["bar"]])
+        expect(result.edges).toEqual([])
+      })
+
+      it("returns lots with matching sale artwork", async () => {
+        const saleArtworkRootLoader = jest.fn((id) => {
+          if (id === "bar") {
+            return Promise.resolve({ _id: "bar" })
+          }
+          return Promise.reject("I am unpublished")
+        })
+
+        const result = await auctionsLotStandingConnection.resolve(
+          { internalID: "foo" },
+          {},
+          {
+            saleArtworkRootLoader,
+          },
+          info
+        )
+        expect(saleArtworkRootLoader.mock.calls).toEqual([["foo"], ["bar"]])
+        expect(result.edges.map((node) => node.node)).toEqual([
+          {
+            lot: { internalID: "bar" },
+            saleArtwork: { _id: "bar" },
+          },
+        ])
+      })
     })
   })
 })

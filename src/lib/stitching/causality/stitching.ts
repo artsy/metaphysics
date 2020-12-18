@@ -118,16 +118,48 @@ export const causalityStitchingEnvironment = ({
           // (eg first, after, last, before) are forwarded automatically, so we only
           // need the userId.
           resolve: (parent, _args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: causalitySchema,
-              operation: "query",
-              fieldName: "_unused_auctionsLotStandingConnection",
-              args: {
-                userId: parent.internalID,
-              },
-              context,
-              info,
-            })
+            return info.mergeInfo
+              .delegateToSchema({
+                schema: causalitySchema,
+                operation: "query",
+                fieldName: "_unused_auctionsLotStandingConnection",
+                args: {
+                  userId: parent.internalID,
+                },
+                context,
+                info,
+              })
+              .then(async (lotStandingsConnection) => {
+                const promisedSaleArtworks = lotStandingsConnection.edges.map(
+                  ({ node: { lot } }) => {
+                    return context
+                      .saleArtworkRootLoader(lot.internalID)
+                      .catch(() => null)
+                  }
+                )
+
+                const availableSaleArtworks = (
+                  await Promise.all(promisedSaleArtworks)
+                ).filter((sa) => sa !== null)
+                // FIXME: this depends on the presence of edge->node->lot->internalID in the query. see https://github.com/artsy/metaphysics/pull/2885#discussion_r543693841
+                const availableEdges = lotStandingsConnection.edges.reduce(
+                  (acc: any, edge: any) => {
+                    const saleArtwork = availableSaleArtworks.find(
+                      (sa: any) => sa._id === edge.node.lot.internalID
+                    )
+                    if (saleArtwork) {
+                      return [
+                        ...acc,
+                        { ...edge, node: { ...edge.node, saleArtwork } },
+                      ]
+                    } else {
+                      return acc
+                    }
+                  },
+                  []
+                )
+                return { ...lotStandingsConnection, edges: availableEdges }
+              })
           },
         },
       },
