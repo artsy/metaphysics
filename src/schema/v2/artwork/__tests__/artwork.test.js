@@ -2437,7 +2437,6 @@ describe("Artwork type", () => {
         {
           artwork(id: "richard-prince-untitled-portrait") {
             mediumType {
-              internalID
               name
               longDescription
             }
@@ -2449,7 +2448,6 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             mediumType: {
-              internalID: "Painting",
               name: "Painting",
               longDescription:
                 "Includes gouache; fresco; ink and wash; oil painting; screen painting; scroll painting; tempera; watercolor.",
