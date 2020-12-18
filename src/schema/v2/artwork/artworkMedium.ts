@@ -1,8 +1,8 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const MediumType = new GraphQLObjectType<any, ResolverContext>({
-  name: "MediumType",
+const ArtworkMedium = new GraphQLObjectType<any, ResolverContext>({
+  name: "ArtworkMedium",
   description:
     'Collection of fields that describe medium type, such as _Painting_. (This field is also commonly referred to as just "medium", but should not be confused with the artwork attribute called `medium`.)',
   fields: {
@@ -20,4 +20,4 @@ const MediumType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-export default MediumType
+export default ArtworkMedium
