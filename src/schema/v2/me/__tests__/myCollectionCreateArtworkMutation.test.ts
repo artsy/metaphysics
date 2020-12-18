@@ -10,7 +10,15 @@ const artworkLoader = jest.fn().mockResolvedValue(artworkDetails)
 
 const createImageLoader = jest.fn()
 
-const computeMutationInput = (externalImageUrls: string[] = []): string => {
+const computeMutationInput = ({
+  externalImageUrls = [],
+  editionSize = null,
+  editionNumber = null,
+}: {
+  externalImageUrls?: string[]
+  editionSize?: string | null
+  editionNumber?: string | null
+} = {}): string => {
   const mutation = gql`
     mutation {
       myCollectionCreateArtwork(
@@ -21,8 +29,8 @@ const computeMutationInput = (externalImageUrls: string[] = []): string => {
           costMinor: 200
           date: "1990"
           depth: "20"
-          editionNumber: "1"
-          editionSize: "10x10x10"
+          editionNumber: ${JSON.stringify(editionNumber)}
+          editionSize: ${JSON.stringify(editionSize)}
           externalImageUrls: ${JSON.stringify(externalImageUrls)}
           height: "20"
           medium: "Painting"
@@ -56,10 +64,12 @@ const computeMutationInput = (externalImageUrls: string[] = []): string => {
   return mutation
 }
 
+const createArtworkEditionSetLoader = jest.fn()
 const defaultContext = {
   createArtworkLoader,
   artworkLoader: artworkLoader,
   createArtworkImageLoader: createImageLoader,
+  createArtworkEditionSetLoader,
 }
 
 describe("myCollectionCreateArtworkMutation", () => {
@@ -115,7 +125,7 @@ describe("myCollectionCreateArtworkMutation", () => {
       const externalImageUrls = [
         "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
       ]
-      const mutation = computeMutationInput(externalImageUrls)
+      const mutation = computeMutationInput({ externalImageUrls })
 
       const data = await runAuthenticatedQuery(mutation, defaultContext)
       const { artworkOrError } = data.myCollectionCreateArtwork
@@ -132,7 +142,7 @@ describe("myCollectionCreateArtworkMutation", () => {
       const externalImageUrls = [
         "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
       ]
-      const mutation = computeMutationInput(externalImageUrls)
+      const mutation = computeMutationInput({ externalImageUrls })
 
       const serverError = "Error creating image"
       const url =
@@ -164,7 +174,7 @@ describe("myCollectionCreateArtworkMutation", () => {
         "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
         "https://test-upload-bucket.s3.amazonaws.com/path/to/other/image.jpg",
       ]
-      const mutation = computeMutationInput(externalImageUrls)
+      const mutation = computeMutationInput({ externalImageUrls })
 
       runAuthenticatedQuery(mutation, defaultContext)
 
@@ -187,6 +197,68 @@ describe("myCollectionCreateArtworkMutation", () => {
         source_bucket: "test-upload-bucket",
         source_key: "path/to/other/image.jpg",
       })
+    })
+  })
+
+  describe("setting edition set info", () => {
+    it("creates an edition set on the artwork", async () => {
+      const mutation = computeMutationInput({
+        editionNumber: "50",
+        editionSize: "100",
+      })
+
+      await runAuthenticatedQuery(mutation, defaultContext)
+
+      expect(createArtworkEditionSetLoader).toHaveBeenCalledWith(
+        newArtwork.id,
+        {
+          edition_size: "100",
+          available_editions: ["50"],
+        }
+      )
+    })
+
+    it("works if you only specify the edition number", async () => {
+      const mutation = computeMutationInput({
+        editionNumber: "50",
+      })
+
+      await runAuthenticatedQuery(mutation, defaultContext)
+
+      expect(createArtworkEditionSetLoader).toHaveBeenCalledWith(
+        newArtwork.id,
+        {
+          edition_size: null,
+          available_editions: ["50"],
+        }
+      )
+    })
+
+    it("works if you only specify the edition size", async () => {
+      const mutation = computeMutationInput({
+        editionSize: "50",
+      })
+
+      await runAuthenticatedQuery(mutation, defaultContext)
+
+      expect(createArtworkEditionSetLoader).toHaveBeenCalledWith(
+        newArtwork.id,
+        {
+          edition_size: "50",
+          available_editions: null,
+        }
+      )
+    })
+
+    it("does not create an edition set if you don't specify either", async () => {
+      const mutation = computeMutationInput({
+        editionNumber: null,
+        editionSize: null,
+      })
+
+      await runAuthenticatedQuery(mutation, defaultContext)
+
+      expect(createArtworkEditionSetLoader).not.toHaveBeenCalled()
     })
   })
 })

@@ -79,9 +79,19 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       externalImageUrls = [],
       ...rest
     },
-    { updateArtworkLoader, createArtworkImageLoader }
+    {
+      updateArtworkLoader,
+      createArtworkImageLoader,
+      createArtworkEditionSetLoader,
+      updateArtworkEditionSetLoader,
+    }
   ) => {
-    if (!updateArtworkLoader || !createArtworkImageLoader) {
+    if (
+      !updateArtworkLoader ||
+      !createArtworkImageLoader ||
+      !createArtworkEditionSetLoader ||
+      !updateArtworkEditionSetLoader
+    ) {
       return new Error("You need to be signed in to perform this action")
     }
 
@@ -90,10 +100,27 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         artists: artistIds,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
-        edition_number: editionNumber,
-        edition_size: editionSize,
         ...rest,
       })
+
+      if (!response.edition_sets?.length) {
+        if (editionSize || editionNumber) {
+          // create new edition set when none existed previously
+          await createArtworkEditionSetLoader(artworkId, {
+            edition_size: editionSize,
+            available_editions: editionNumber ? [editionNumber] : null,
+          })
+        }
+      } else {
+        const editionSetId = response.edition_sets[0].id
+        await updateArtworkEditionSetLoader(
+          { artworkId, editionSetId },
+          {
+            edition_size: editionSize,
+            available_editions: editionNumber ? [editionNumber] : null,
+          }
+        )
+      }
 
       const imageSources = computeImageSources(externalImageUrls)
 

@@ -97,9 +97,17 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       externalImageUrls = [],
       ...rest
     },
-    { createArtworkLoader, createArtworkImageLoader }
+    {
+      createArtworkLoader,
+      createArtworkImageLoader,
+      createArtworkEditionSetLoader,
+    }
   ) => {
-    if (!createArtworkLoader || !createArtworkImageLoader) {
+    if (
+      !createArtworkLoader ||
+      !createArtworkImageLoader ||
+      !createArtworkEditionSetLoader
+    ) {
       return new Error("You need to be signed in to perform this action")
     }
 
@@ -109,12 +117,19 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         collection_id: "my-collection",
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
-        edition_size: editionSize,
-        edition_number: editionNumber,
         ...rest,
       })
 
       const artworkId = response.id
+
+      if (editionNumber || editionSize) {
+        // create edition set for artwork
+        await createArtworkEditionSetLoader(artworkId, {
+          edition_size: editionSize,
+          available_editions: editionNumber ? [editionNumber] : null,
+        })
+      }
+
       const imageSources = computeImageSources(externalImageUrls)
 
       for (const imageSource of imageSources) {
