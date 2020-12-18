@@ -6,7 +6,6 @@ describe("ArtworkMediums type", () => {
     const query = `
       {
         artworkMediums {
-          internalID
           name
           longDescription
         }
@@ -14,7 +13,6 @@ describe("ArtworkMediums type", () => {
     `
 
     return runQuery(query).then((data) => {
-      expect(data!.artworkMediums[0].internalID).toBe("Architecture")
       expect(data!.artworkMediums[0].name).toBe("Architecture")
       expect(data!.artworkMediums[0].longDescription).toBe(
         "Includes architectural models; buildings (e.g., house, temple)."
