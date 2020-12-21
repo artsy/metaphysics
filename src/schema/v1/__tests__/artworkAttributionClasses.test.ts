@@ -22,7 +22,7 @@ describe("ArtworkAttributionClasses type", () => {
         "This is a unique work"
       )
       expect(data!.artworkAttributionClasses[0].longDescription).toBe(
-        "One of a kind piece, created by the artist."
+        "One-of-a-kind piece."
       )
     })
   })

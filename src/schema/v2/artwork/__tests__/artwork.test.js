@@ -1606,7 +1606,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             attributionClass: {
-              longDescription: "One of a kind piece, created by the artist.",
+              longDescription: "One-of-a-kind piece.",
             },
           },
         })
