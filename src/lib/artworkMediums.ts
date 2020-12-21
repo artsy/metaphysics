@@ -60,7 +60,7 @@ export default {
   Other: {
     id: "Other",
     long_description:
-      "Includes items that do not fall into any other categories (e.g., armor; musical instruments; tools; weapons).",
+      "Includes items that do not fall into any other categories (e.g., armor; musical instruments; tools).",
     name: "Other",
   },
   Painting: {
