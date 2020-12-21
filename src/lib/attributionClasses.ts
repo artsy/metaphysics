@@ -4,14 +4,14 @@ export default {
     name: "Unique",
     info: null,
     short_description: "This is a unique work",
-    long_description: "One of a kind piece, created by the artist.",
+    long_description: "One-of-a-kind piece.",
     deprecated: false,
   },
   "limited edition": {
     id: "limited edition",
     name: "Limited edition",
     info: null,
-    short_description: "This is part of a limited edition set",
+    short_description: "This work is part of a limited edition set",
     long_description: [
       "Original works created in multiple with direct involvement of the artist.",
       "Generally, less than 150 pieces total.",
@@ -22,7 +22,7 @@ export default {
     id: "open edition",
     name: "Open edition",
     info: null,
-    short_description: "This edition run is still in production",
+    short_description: "This work is from an open edition",
     long_description: [
       "The edition run is ongoing.",
       "New works are still being produced, which may be numbered.",
@@ -34,7 +34,7 @@ export default {
     id: "unknown edition",
     name: "Unknown edition",
     info: null,
-    short_description: "This edition run has ended",
+    short_description: "This work is from an edition of unknown size",
     long_description:
       "The edition run has ended; it is unclear how many works were produced.",
     deprecated: false,
