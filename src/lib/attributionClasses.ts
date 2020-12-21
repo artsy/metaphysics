@@ -12,10 +12,8 @@ export default {
     name: "Limited edition",
     info: null,
     short_description: "This work is part of a limited edition set",
-    long_description: [
-      "Original works created in multiple with direct involvement of the artist.",
-      "Generally, less than 150 pieces total.",
-    ].join(" "),
+    long_description:
+      "The edition run has ended; the number of works produced is known and included in the listing.",
     deprecated: false,
   },
   "open edition": {
