@@ -8,7 +8,6 @@ describe("ArtworkAttributionClasses type", () => {
         artworkAttributionClasses {
           internalID
           name
-          info
           shortDescription
           longDescription
         }

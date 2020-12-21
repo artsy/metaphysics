@@ -13,12 +13,12 @@ const AttributionClass = new GraphQLObjectType<any, ResolverContext>({
     },
     info: {
       type: GraphQLString,
-      description:
-        "Descriptive phrase used as companion for attribution class name display",
+      deprecationReason: "Prefer `shortDescription`",
     },
     shortDescription: {
       type: GraphQLString,
-      description: "Longer version of attribution class display",
+      description:
+        "Short descriptive phrase for attribution class without punctuation",
       resolve: ({ short_description }) => {
         return short_description
       },
@@ -26,7 +26,7 @@ const AttributionClass = new GraphQLObjectType<any, ResolverContext>({
     longDescription: {
       type: GraphQLString,
       description:
-        "Long descriptive phrase used as companion for short_description",
+        "Long description (can include multiple sentences) for attribution class",
       resolve: ({ long_description }) => {
         return long_description
       },

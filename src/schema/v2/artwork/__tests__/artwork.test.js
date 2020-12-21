@@ -1571,27 +1571,6 @@ describe("Artwork type", () => {
       })
     })
 
-    it(`returns proper attribution class info for unique artwork`, () => {
-      const query = `
-        {
-          artwork(id: "richard-prince-untitled-portrait") {
-            attributionClass {
-              info
-            }
-          }
-        }
-      `
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            attributionClass: {
-              info: "One of a kind piece",
-            },
-          },
-        })
-      })
-    })
-
     it(`returns proper attribution class short_description for unique artwork`, () => {
       const query = `
         {
