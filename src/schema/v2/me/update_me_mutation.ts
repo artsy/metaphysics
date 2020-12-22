@@ -122,6 +122,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       description: "The given email of the user.",
       type: GraphQLString,
     },
+    emailFrequency: {
+      description: "Frequency of marketing emails.",
+      type: GraphQLString,
+    },
     password: {
       description: "The user's password, required to change email address.",
       type: GraphQLString,
@@ -207,6 +211,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   mutateAndGetPayload: (
     {
       collectorLevel,
+      emailFrequency,
       priceRangeMin,
       priceRangeMax,
       receivePurchaseNotification,
@@ -222,6 +227,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   ) => {
     const user: any = {
       collector_level: collectorLevel,
+      email_frequency: emailFrequency,
       price_range_min: priceRangeMin,
       price_range_max: priceRangeMax,
       receive_purchase_notification: receivePurchaseNotification,
