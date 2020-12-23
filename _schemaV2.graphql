@@ -7696,6 +7696,7 @@ input MyCollectionUpdateArtworkInput {
   editionSize: String
   externalImageUrls: [String]
   height: String
+  isEdition: Boolean
   medium: String
   metric: String
   provenance: String
