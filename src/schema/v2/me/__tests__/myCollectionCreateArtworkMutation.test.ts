@@ -14,10 +14,12 @@ const computeMutationInput = ({
   externalImageUrls = [],
   editionSize = null,
   editionNumber = null,
+  isEdition = null,
 }: {
   externalImageUrls?: string[]
   editionSize?: string | null
   editionNumber?: string | null
+  isEdition?: boolean | null
 } = {}): string => {
   const mutation = gql`
     mutation {
@@ -29,6 +31,7 @@ const computeMutationInput = ({
           costMinor: 200
           date: "1990"
           depth: "20"
+          isEdition: ${JSON.stringify(isEdition)}
           editionNumber: ${JSON.stringify(editionNumber)}
           editionSize: ${JSON.stringify(editionSize)}
           externalImageUrls: ${JSON.stringify(externalImageUrls)}
@@ -228,7 +231,6 @@ describe("myCollectionCreateArtworkMutation", () => {
       expect(createArtworkEditionSetLoader).toHaveBeenCalledWith(
         newArtwork.id,
         {
-          edition_size: null,
           available_editions: ["50"],
         }
       )
@@ -245,7 +247,6 @@ describe("myCollectionCreateArtworkMutation", () => {
         newArtwork.id,
         {
           edition_size: "50",
-          available_editions: null,
         }
       )
     })
@@ -259,6 +260,19 @@ describe("myCollectionCreateArtworkMutation", () => {
       await runAuthenticatedQuery(mutation, defaultContext)
 
       expect(createArtworkEditionSetLoader).not.toHaveBeenCalled()
+    })
+
+    it("does create an edition set if you pass `isEdition`", async () => {
+      const mutation = computeMutationInput({
+        isEdition: true,
+      })
+
+      await runAuthenticatedQuery(mutation, defaultContext)
+
+      expect(createArtworkEditionSetLoader).toHaveBeenCalledWith(
+        newArtwork.id,
+        {}
+      )
     })
   })
 })
