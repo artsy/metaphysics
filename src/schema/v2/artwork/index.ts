@@ -223,6 +223,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      isEdition: {
+        type: GraphQLBoolean,
+        resolve: ({ edition_sets }) => {
+          return edition_sets && edition_sets.length >= 1
+        },
+      },
       editionSize: {
         type: GraphQLString,
         resolve: ({ edition_sets }) => edition_sets?.[0]?.edition_size,

@@ -1326,6 +1326,7 @@ type Artwork implements Node & Searchable & Sellable {
   isBuyNowable: Boolean
   isComparableWithAuctionResults: Boolean
   isDownloadable: Boolean
+  isEdition: Boolean
   isEmbeddableVideo: Boolean
   isForSale: Boolean
   isHangable: Boolean
@@ -7650,6 +7651,7 @@ input MyCollectionCreateArtworkInput {
   editionSize: String
   externalImageUrls: [String]
   height: String
+  isEdition: Boolean
   medium: String!
   metric: String
   provenance: String
