@@ -1,6 +1,5 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
-import { Partner } from "types/runtime/gravity"
 
 const updatedArtwork = { id: "some-artwork-id" }
 const updateArtworkLoader = jest.fn().mockResolvedValue(updatedArtwork)
