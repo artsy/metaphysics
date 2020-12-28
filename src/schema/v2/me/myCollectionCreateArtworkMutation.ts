@@ -126,8 +126,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
 
       const artworkId = response.id
 
-      const providedEditionField = editionNumber || editionSize
-      if (isEdition === true || providedEditionField) {
+      if (isEdition === true || editionNumber || editionSize) {
         // create edition set for artwork
         const payload = {}
         if (editionSize) {
