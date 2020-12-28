@@ -133,7 +133,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         const providedEditionField = editionNumber || editionSize
         if (isEdition === true || providedEditionField) {
           // create edition set for artwork
-          let payload = {}
+          const payload = {}
           if (editionSize) {
             payload["edition_size"] = editionSize
           }

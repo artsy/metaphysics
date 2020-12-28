@@ -267,7 +267,7 @@ describe("myCollectionUpdateArtworkMutation", () => {
       expect(createArtworkEditionSetLoader).not.toHaveBeenCalled()
     })
 
-    it("creates an edition set if you specify `isEdition` true ", async () => {
+    it("creates an edition set if you specify `isEdition` true", async () => {
       const mutation = computeMutationInput({
         isEdition: true,
       })
