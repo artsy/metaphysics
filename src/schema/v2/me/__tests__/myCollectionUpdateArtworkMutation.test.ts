@@ -13,10 +13,12 @@ const computeMutationInput = ({
   externalImageUrls = [],
   editionSize = null,
   editionNumber = null,
+  isEdition = null,
 }: {
   externalImageUrls?: string[]
   editionSize?: string | null
   editionNumber?: string | null
+  isEdition?: boolean | null
 } = {}): string => {
   const mutation = gql`
     mutation {
@@ -29,6 +31,7 @@ const computeMutationInput = ({
           costMinor: 200
           date: "1990"
           depth: "20"
+          isEdition: ${JSON.stringify(isEdition)}
           editionNumber: ${JSON.stringify(editionNumber)}
           editionSize: ${JSON.stringify(editionSize)}
           externalImageUrls: ${JSON.stringify(externalImageUrls)}
@@ -66,11 +69,14 @@ const computeMutationInput = ({
 
 const createArtworkEditionSetLoader = jest.fn()
 const updateArtworkEditionSetLoader = jest.fn()
+const deleteArtworkEditionSetLoader = jest.fn()
+
 const defaultContext = {
   updateArtworkLoader,
   artworkLoader: artworkLoader,
   createArtworkImageLoader: createImageLoader,
   createArtworkEditionSetLoader,
+  deleteArtworkEditionSetLoader,
   updateArtworkEditionSetLoader,
 }
 
@@ -230,7 +236,6 @@ describe("myCollectionUpdateArtworkMutation", () => {
       expect(createArtworkEditionSetLoader).toHaveBeenCalledWith(
         updatedArtwork.id,
         {
-          edition_size: null,
           available_editions: ["50"],
         }
       )
@@ -247,7 +252,6 @@ describe("myCollectionUpdateArtworkMutation", () => {
         updatedArtwork.id,
         {
           edition_size: "50",
-          available_editions: null,
         }
       )
     })
@@ -261,6 +265,19 @@ describe("myCollectionUpdateArtworkMutation", () => {
       await runAuthenticatedQuery(mutation, defaultContext)
 
       expect(createArtworkEditionSetLoader).not.toHaveBeenCalled()
+    })
+
+    it("creates an edition set if you specify `isEdition` true", async () => {
+      const mutation = computeMutationInput({
+        isEdition: true,
+      })
+
+      await runAuthenticatedQuery(mutation, defaultContext)
+
+      expect(createArtworkEditionSetLoader).toHaveBeenCalledWith(
+        updatedArtwork.id,
+        {}
+      )
     })
   })
 
@@ -307,8 +324,8 @@ describe("myCollectionUpdateArtworkMutation", () => {
           editionSetId: editionedArtwork.edition_sets[0].id,
         },
         {
-          edition_size: null,
           available_editions: ["50"],
+          edition_size: null,
         }
       )
     })
@@ -327,9 +344,22 @@ describe("myCollectionUpdateArtworkMutation", () => {
         },
         {
           edition_size: "50",
-          available_editions: null,
+          available_editions: [""],
         }
       )
+    })
+
+    it("removes existing edition set if you specify `isEdition` false", async () => {
+      const mutation = computeMutationInput({
+        isEdition: false,
+      })
+
+      await runAuthenticatedQuery(mutation, defaultContext)
+
+      expect(deleteArtworkEditionSetLoader).toHaveBeenCalledWith({
+        artworkId: updatedArtwork.id,
+        editionSetId: editionedArtwork.edition_sets[0].id,
+      })
     })
 
     it("resets the edition set if you don't specify either", async () => {
@@ -347,7 +377,7 @@ describe("myCollectionUpdateArtworkMutation", () => {
         },
         {
           edition_size: null,
-          available_editions: null,
+          available_editions: [""],
         }
       )
     })

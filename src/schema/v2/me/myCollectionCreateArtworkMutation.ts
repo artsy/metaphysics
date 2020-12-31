@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLList, GraphQLInt } from "graphql"
+import { GraphQLString, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { GraphQLNonNull } from "graphql"
@@ -56,6 +56,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     depth: {
       type: GraphQLString,
     },
+    isEdition: {
+      type: GraphQLBoolean,
+    },
     editionNumber: {
       type: GraphQLString,
     },
@@ -92,6 +95,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       artistIds,
       costCurrencyCode,
       costMinor,
+      isEdition,
       editionSize,
       editionNumber,
       externalImageUrls = [],
@@ -122,12 +126,18 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
 
       const artworkId = response.id
 
-      if (editionNumber || editionSize) {
+      if (isEdition === true || editionNumber || editionSize) {
         // create edition set for artwork
-        await createArtworkEditionSetLoader(artworkId, {
-          edition_size: editionSize,
-          available_editions: editionNumber ? [editionNumber] : null,
-        })
+        const payload = {}
+        if (editionSize) {
+          payload["edition_size"] = editionSize
+        }
+
+        if (editionNumber) {
+          payload["available_editions"] = [editionNumber]
+        }
+
+        await createArtworkEditionSetLoader(artworkId, payload)
       }
 
       const imageSources = computeImageSources(externalImageUrls)

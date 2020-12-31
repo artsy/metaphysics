@@ -1,12 +1,32 @@
-import { GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInt } from "graphql"
+import {
+  GraphQLString,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLInt,
+  GraphQLBoolean,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { computeImageSources } from "./myCollectionCreateArtworkMutation"
 
+interface MyCollectionArtworkUpdateMutationInput {
+  artworkId: string
+  artistIds?: [string]
+  category?: string
+  costCurrencyCode?: string
+  costMinor?: number
+  date?: string
+  depth?: string
+  isEdition?: boolean
+  editionNumber?: string
+  editionSize?: string
+  externalImageUrls?: [string]
+}
+
 export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
-  any,
+  MyCollectionArtworkUpdateMutationInput,
   any,
   ResolverContext
 >({
@@ -33,6 +53,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     },
     depth: {
       type: GraphQLString,
+    },
+    isEdition: {
+      type: GraphQLBoolean,
     },
     editionNumber: {
       type: GraphQLString,
@@ -74,6 +97,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       artistIds,
       costCurrencyCode,
       costMinor,
+      isEdition,
       editionNumber,
       editionSize,
       externalImageUrls = [],
@@ -83,6 +107,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       updateArtworkLoader,
       createArtworkImageLoader,
       createArtworkEditionSetLoader,
+      deleteArtworkEditionSetLoader,
       updateArtworkEditionSetLoader,
     }
   ) => {
@@ -90,6 +115,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       !updateArtworkLoader ||
       !createArtworkImageLoader ||
       !createArtworkEditionSetLoader ||
+      !deleteArtworkEditionSetLoader ||
       !updateArtworkEditionSetLoader
     ) {
       return new Error("You need to be signed in to perform this action")
@@ -104,22 +130,35 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       })
 
       if (!response.edition_sets?.length) {
-        if (editionSize || editionNumber) {
-          // create new edition set when none existed previously
-          await createArtworkEditionSetLoader(artworkId, {
-            edition_size: editionSize,
-            available_editions: editionNumber ? [editionNumber] : null,
-          })
+        if (isEdition === true || editionNumber || editionSize) {
+          // create edition set for artwork
+          const payload = {}
+          if (editionSize) {
+            payload["edition_size"] = editionSize
+          }
+
+          if (editionNumber) {
+            payload["available_editions"] = [editionNumber]
+          }
+          await createArtworkEditionSetLoader(artworkId, payload)
         }
       } else {
         const editionSetId = response.edition_sets[0].id
-        await updateArtworkEditionSetLoader(
-          { artworkId, editionSetId },
-          {
-            edition_size: editionSize,
-            available_editions: editionNumber ? [editionNumber] : null,
+
+        if (isEdition === false) {
+          await deleteArtworkEditionSetLoader({ artworkId, editionSetId })
+        } else {
+          const payload = {
+            edition_size: editionSize ? editionSize : null,
+            // TODO: Is there a better way to clear out edition number?
+            available_editions: editionNumber ? [editionNumber] : [""],
           }
-        )
+
+          await updateArtworkEditionSetLoader(
+            { artworkId, editionSetId },
+            payload
+          )
+        }
       }
 
       const imageSources = computeImageSources(externalImageUrls)

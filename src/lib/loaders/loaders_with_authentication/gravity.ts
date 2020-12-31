@@ -205,6 +205,15 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    deleteArtworkEditionSetLoader: gravityLoader<
+      any,
+      { artworkId: string; editionSetId: string }
+    >(
+      ({ artworkId, editionSetId }) =>
+        `artwork/${artworkId}/edition_set/${editionSetId}`,
+      {},
+      { method: "DELETE" }
+    ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     partnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,
