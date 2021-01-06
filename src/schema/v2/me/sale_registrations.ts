@@ -1,25 +1,25 @@
 import { first } from "lodash"
+import { pageable } from "relay-cursor-paging"
 import Sale from "schema/v2/sale/index"
+import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { SalesConnectionField } from "schema/v2/sales"
 import Bidder from "schema/v2/bidder"
-import {
-  GraphQLList,
-  GraphQLBoolean,
-  GraphQLObjectType,
-  GraphQLFieldConfig,
-} from "graphql"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { BodyAndHeaders } from "lib/loaders"
+import { GraphQLBoolean, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { InternalIDFields } from "schema/v2/object_identification"
 
 export const SaleRegistrationType = new GraphQLObjectType<any, ResolverContext>(
   {
     name: "SaleRegistration",
     fields: () => ({
+      ...InternalIDFields,
       bidder: {
         type: Bidder.type,
       },
       isRegistered: {
         type: GraphQLBoolean,
-        resolve: ({ is_registered }) => is_registered,
       },
       sale: {
         type: Sale.type,
@@ -28,26 +28,47 @@ export const SaleRegistrationType = new GraphQLObjectType<any, ResolverContext>(
   }
 )
 
-// TODO: If this is needed by Reaction, it should become a connection
-const SaleRegistration: GraphQLFieldConfig<void, ResolverContext> = {
-  type: new GraphQLList(SaleRegistrationType),
-  args: SalesConnectionField.args,
-  resolve: (_root, options, { meBiddersLoader, salesLoader }) => {
+const SaleRegistrationConnection: GraphQLFieldConfig<void, ResolverContext> = {
+  type: connectionDefinitions({ nodeType: SaleRegistrationType })
+    .connectionType,
+  args: pageable(SalesConnectionField.args),
+  resolve: async (
+    _root,
+    { isAuction: is_auction, live, published, sort, ...paginationArgs },
+    { meBiddersLoader, salesLoader }
+  ) => {
     if (!meBiddersLoader) return null
-    return salesLoader(options).then((sales) => {
-      return Promise.all(
-        sales.map((sale) => {
-          return meBiddersLoader({ sale_id: sale.id }).then((bidders) => {
-            return {
-              sale,
-              bidder: first(bidders),
-              is_registered: bidders.length > 0,
-            }
-          })
-        })
-      )
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(
+      paginationArgs
+    )
+    const { body: sales, headers } = (await (salesLoader(
+      {
+        is_auction,
+        live,
+        published,
+        sort,
+        page,
+        size,
+        total_count: true,
+      },
+      { headers: true }
+    ) as any)) as BodyAndHeaders
+    const saleRegistrations = await Promise.all(
+      sales.map(async (sale) => {
+        const bidders = await meBiddersLoader({ sale_id: sale.id })
+        return {
+          sale,
+          bidder: first(bidders),
+          isRegistered: bidders.length > 0,
+        }
+      })
+    )
+
+    return connectionFromArraySlice(saleRegistrations, paginationArgs, {
+      arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+      sliceStart: offset,
     })
   },
 }
 
-export default SaleRegistration
+export default SaleRegistrationConnection
