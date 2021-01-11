@@ -1,30 +1,27 @@
-import { createKawsLink } from "./link"
-import {
-  makeRemoteExecutableSchema,
-  transformSchema,
-  RenameTypes,
-  RenameRootFields,
-} from "graphql-tools"
-import { readFileSync } from "fs"
+import { createKawsExecutor } from "./link"
+import { wrapSchema, RenameTypes, RenameRootFields } from "@graphql-tools/wrap"
+import { loadSchema } from "@graphql-tools/load"
+import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader"
 
-export const executableKawsSchema = () => {
-  const kawsLink = createKawsLink()
-  const kawsTypeDefs = readFileSync("src/data/kaws.graphql", "utf8")
+export const executableKawsSchema = async () => {
+  const kawsExecutor = createKawsExecutor()
 
   // Setup the default Schema
-  const schema = makeRemoteExecutableSchema({
-    schema: kawsTypeDefs,
-    link: kawsLink,
+  const schema = wrapSchema({
+    schema: await loadSchema("src/data/kaws.graphql", {
+      loaders: [new GraphQLFileLoader()],
+    }),
+    executor: kawsExecutor,
+    transforms: [
+      new RenameTypes((name) => {
+        return `Marketing${name}`
+      }),
+      new RenameRootFields(
+        (_operation, name) =>
+          `marketing${name.charAt(0).toUpperCase() + name.slice(1)}`
+      ),
+    ],
   })
 
-  // Return the new modified schema
-  return transformSchema(schema, [
-    new RenameTypes((name) => {
-      return `Marketing${name}`
-    }),
-    new RenameRootFields(
-      (_operation, name) =>
-        `marketing${name.charAt(0).toUpperCase() + name.slice(1)}`
-    ),
-  ])
+  return schema
 }

@@ -2,12 +2,17 @@ import { createHttpLink } from "apollo-link-http"
 import config from "config"
 import fetch from "node-fetch"
 import urljoin from "url-join"
+import { createRemoteExecutor } from "../lib/createRemoteExecutor"
 
 import { middlewareLink } from "../lib/middlewareLink"
-import { responseLoggerLink } from "../logLinkMiddleware"
+import {
+  responseLoggerLink,
+  responseLoggerMiddleware,
+} from "../logLinkMiddleware"
 
 const { KAWS_API_BASE } = config
 
+/** @deprecated Prefer using the new style of schema stitching */
 export const createKawsLink = () => {
   const httpLink = createHttpLink({
     fetch,
@@ -15,4 +20,10 @@ export const createKawsLink = () => {
   })
 
   return middlewareLink.concat(responseLoggerLink("Kaws")).concat(httpLink)
+}
+
+export const createKawsExecutor = () => {
+  return createRemoteExecutor(urljoin(KAWS_API_BASE, "graphql"), {
+    middleware: [responseLoggerMiddleware("Kaws")],
+  })
 }

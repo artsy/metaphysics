@@ -3,6 +3,7 @@ import { print } from "graphql/language"
 import config from "../../config"
 import extensionsLogger from "lib/loaders/api/extensionsLogger"
 import { ResolverContext } from "types/graphql"
+import { ExecutorMiddleware } from "./lib/createRemoteExecutor"
 
 const shouldLogLinkTraffic = !!process.env.LOG_HTTP_LINKS
 const { ENABLE_REQUEST_LOGGING } = config
@@ -11,6 +12,8 @@ const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 /**
  * This acts more like a post-middleware logger, by running the operation
  * waiting until it's done, and then logging out the response.
+ *
+ * @deprecated
  */
 export const responseLoggerLink = (name: string) =>
   new ApolloLink(
@@ -41,3 +44,27 @@ export const responseLoggerLink = (name: string) =>
         })) ||
       null // if it didn't include forward/operation
   )
+
+/**
+ * Logs out a stitched service's response after its execution
+ */
+export const responseLoggerMiddleware = (name: string): ExecutorMiddleware => {
+  return (operation) => {
+    if (shouldLogLinkTraffic) {
+      console.log(`>\n> Made query to ${name}:`)
+      console.log(">\n" + operation.text)
+      console.log(`> Got Response:`)
+      console.log("> " + JSON.stringify(operation.result))
+    }
+    if (enableRequestLogging) {
+      const requestID = operation.context?.requestIDs.requestID
+      if (requestID) {
+        extensionsLogger(requestID, "stitching", name.toLowerCase(), {
+          query: operation.text,
+          vars: operation.variables,
+        })
+      }
+    }
+    return operation
+  }
+}
