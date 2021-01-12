@@ -334,6 +334,7 @@ input CreateAppSecondFactorInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
+  password: String!
 }
 
 """
@@ -410,6 +411,7 @@ input CreateSmsSecondFactorInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
+  password: String!
 }
 
 """
@@ -581,7 +583,7 @@ input DisableSecondFactorInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
-  password: String
+  password: String!
   secondFactorID: ID!
 }
 
@@ -833,31 +835,19 @@ union MoneyOrErrorUnion = Error | Money
 type Mutation {
   captureHold(input: CaptureHoldInput!): CaptureHoldPayload
   confirmPassword(input: ConfirmPasswordInput!): ConfirmPasswordPayload
-  createAppSecondFactor(
-    input: CreateAppSecondFactorInput!
-  ): CreateAppSecondFactorPayload
-  createBackupSecondFactors(
-    input: CreateBackupSecondFactorsInput!
-  ): CreateBackupSecondFactorsPayload
+  createAppSecondFactor(input: CreateAppSecondFactorInput!): CreateAppSecondFactorPayload
+  createBackupSecondFactors(input: CreateBackupSecondFactorsInput!): CreateBackupSecondFactorsPayload
   createImage(input: CreateImageInput!): CreateImagePayload
-  createSmsSecondFactor(
-    input: CreateSmsSecondFactorInput!
-  ): CreateSmsSecondFactorPayload
+  createSmsSecondFactor(input: CreateSmsSecondFactorInput!): CreateSmsSecondFactorPayload
   createViewingRoom(input: CreateViewingRoomInput!): CreateViewingRoomPayload
 
   """
   Deduct from the partner's exemption balance, against which they can make sales and not pay commission
   """
-  debitCommissionExemption(
-    input: DebitCommissionExemptionInput!
-  ): DebitCommissionExemptionPayload
+  debitCommissionExemption(input: DebitCommissionExemptionInput!): DebitCommissionExemptionPayload
   deleteViewingRoom(input: DeleteViewingRoomInput!): DeleteViewingRoomPayload
-  deliverSecondFactor(
-    input: DeliverSecondFactorInput!
-  ): DeliverSecondFactorPayload
-  disableSecondFactor(
-    input: DisableSecondFactorInput!
-  ): DisableSecondFactorPayload
+  deliverSecondFactor(input: DeliverSecondFactorInput!): DeliverSecondFactorPayload
+  disableSecondFactor(input: DisableSecondFactorInput!): DisableSecondFactorPayload
   enableSecondFactor(input: EnableSecondFactorInput!): EnableSecondFactorPayload
   holdInventory(input: HoldInventoryInput!): HoldInventoryPayload
   publishViewingRoom(input: PublishViewingRoomInput!): PublishViewingRoomPayload
@@ -866,28 +856,14 @@ type Mutation {
   """
   Refund commission exemption for a previous transaction
   """
-  refundCommissionExemption(
-    input: RefundCommissionExemptionInput!
-  ): RefundCommissionExemptionPayload
-  requestConditionReport(
-    input: RequestConditionReportInput!
-  ): RequestConditionReportPayload
-  unpublishViewingRoom(
-    input: UnpublishViewingRoomInput!
-  ): UnpublishViewingRoomPayload
-  updateAppSecondFactor(
-    input: UpdateAppSecondFactorInput!
-  ): UpdateAppSecondFactorPayload
-  updateSmsSecondFactor(
-    input: UpdateSmsSecondFactorInput!
-  ): UpdateSmsSecondFactorPayload
+  refundCommissionExemption(input: RefundCommissionExemptionInput!): RefundCommissionExemptionPayload
+  requestConditionReport(input: RequestConditionReportInput!): RequestConditionReportPayload
+  unpublishViewingRoom(input: UnpublishViewingRoomInput!): UnpublishViewingRoomPayload
+  updateAppSecondFactor(input: UpdateAppSecondFactorInput!): UpdateAppSecondFactorPayload
+  updateSmsSecondFactor(input: UpdateSmsSecondFactorInput!): UpdateSmsSecondFactorPayload
   updateViewingRoom(input: UpdateViewingRoomInput!): UpdateViewingRoomPayload
-  updateViewingRoomArtworks(
-    input: UpdateViewingRoomArtworksInput!
-  ): UpdateViewingRoomArtworksPayload
-  updateViewingRoomSubsections(
-    input: UpdateViewingRoomSubsectionsInput!
-  ): UpdateViewingRoomSubsectionsPayload
+  updateViewingRoomArtworks(input: UpdateViewingRoomArtworksInput!): UpdateViewingRoomArtworksPayload
+  updateViewingRoomSubsections(input: UpdateViewingRoomSubsectionsInput!): UpdateViewingRoomSubsectionsPayload
 }
 
 type PageCursor {
@@ -1073,22 +1049,12 @@ type Query {
   """
   Autocomplete resolvers.
   """
-  matchPartners(
-    matchType: String
-    page: Int = 1
-    size: Int = 5
-    term: String!
-  ): [Partner!]
+  matchPartners(matchType: String, page: Int = 1, size: Int = 5, term: String!): [Partner!]
 
   """
   Autocomplete resolvers.
   """
-  match_partners(
-    match_type: String
-    page: Int = 1
-    size: Int = 5
-    term: String!
-  ): [Partner!] @deprecated(reason: "Use matchPartners")
+  match_partners(match_type: String, page: Int = 1, size: Int = 5, term: String!): [Partner!] @deprecated(reason: "Use matchPartners")
 
   """
   Find partners by IDs
@@ -1098,9 +1064,33 @@ type Query {
   """
   List enabled Two-Factor Authentication factors
   """
-  secondFactors(
-    kinds: [SecondFactorKind!] = [app, sms, backup]
-  ): [SecondFactor!]!
+  secondFactors(kinds: [SecondFactorKind!] = [app, sms, backup]): [SecondFactor!]!
+
+  """
+  List of user's saved addresses
+  """
+  userAddressConnection(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    userId: ID!
+  ): UserAddressConnection
 
   """
   Find a viewing room by ID
@@ -1170,11 +1160,6 @@ type Query {
     """
     last: Int
     partnerID: ID
-
-    """
-    (Deprecated) Use statuses
-    """
-    published: Boolean
 
     """
     Returns only viewing rooms with these statuses
@@ -1491,6 +1476,101 @@ type UpdateViewingRoomSubsectionsPayload {
   """
   clientMutationId: String
   subsections: [ViewingRoomSubsection!]!
+}
+
+"""
+User saved address
+"""
+type UserAddress {
+  """
+  Address line 1
+  """
+  addressLine1: String!
+
+  """
+  Address line 2
+  """
+  addressLine2: String
+
+  """
+  Address line 3
+  """
+  addressLine3: String
+
+  """
+  City
+  """
+  city: String!
+
+  """
+  Country
+  """
+  country: String!
+
+  """
+  Is default address
+  """
+  isDefault: Boolean!
+
+  """
+  Name on addreess
+  """
+  name: String
+
+  """
+  Phone number
+  """
+  phoneNumber: String
+
+  """
+  Postal Code
+  """
+  postalCode: String
+
+  """
+  Region
+  """
+  region: String
+}
+
+"""
+The connection type for UserAddress.
+"""
+type UserAddressConnection {
+  """
+  A list of edges.
+  """
+  edges: [UserAddressEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [UserAddress]
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  Total count of matching nodes, before pagination
+  """
+  totalCount: Int!
+}
+
+"""
+An edge in a connection.
+"""
+type UserAddressEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: UserAddress
 }
 
 """
