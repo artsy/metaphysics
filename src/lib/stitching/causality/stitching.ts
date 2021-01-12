@@ -24,9 +24,11 @@ const resolveLotCentsFieldToMoney = (centsField) => {
 export const causalityStitchingEnvironment = ({
   causalitySchema,
   localSchema,
+  version,
 }: {
   causalitySchema: GraphQLSchema & { transforms: any }
   localSchema: GraphQLSchema
+  version: number
 }) => {
   return {
     extensionSchema: gql`
@@ -50,9 +52,25 @@ export const causalityStitchingEnvironment = ({
         sellingPrice: Money
         onlineAskingPrice: Money
       }
+
+      ${version === 2 ? "extend type Lot { lot: AuctionsLotState! }" : ""}
     `,
 
     resolvers: {
+      ...(version === 2 && {
+        Lot: {
+          lot: {
+            fragment: gql`
+              fragment LotLot on Lot {
+                internalID
+              }
+            `,
+            resolve: (parent, _args, context) => {
+              return context.lotDataMap[parent.internalID]
+            },
+          },
+        },
+      }),
       AuctionsLotStanding: {
         saleArtwork: {
           fragment: gql`
