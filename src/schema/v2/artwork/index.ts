@@ -955,15 +955,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       certificateOfAuthenticity: {
         type: ArtworkInfoRowType,
         description:
-          "Returns the display label and detail for artwork certificate of authenticity",
+          "Returns the display label and detail when artwork has a certificate of authenticity",
         resolve: ({ certificate_of_authenticity }) => {
           if (certificate_of_authenticity) {
             return { label: "Certificate of authenticity", details: "Included" }
-          } else if (certificate_of_authenticity === false) {
-            return {
-              label: "Certificate of authenticity",
-              details: "Not included",
-            }
           } else {
             return null
           }

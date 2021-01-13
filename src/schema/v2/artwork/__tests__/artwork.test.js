@@ -2260,13 +2260,10 @@ describe("Artwork type", () => {
         expect(data.artwork.hasCertificateOfAuthenticity).toBe(true)
       })
     })
-    it("is set to proper object when certificate_of_authenticity is false", () => {
+    it("is null when certificate_of_authenticity is false", () => {
       artwork.certificate_of_authenticity = false
       return runQuery(query, context).then((data) => {
-        expect(data.artwork.certificateOfAuthenticity).toEqual({
-          label: "Certificate of authenticity",
-          details: "Not included",
-        })
+        expect(data.artwork.certificateOfAuthenticity).toBe(null)
         expect(data.artwork.hasCertificateOfAuthenticity).toBe(false)
       })
     })
