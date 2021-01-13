@@ -301,7 +301,7 @@ type PartnerStats {
   partnerId: String!
 
   """
-  Artworks, shows, or artists ranked by views. Capped at 20 by the underlying sql query.
+  Artworks, shows, viewing rooms, or artists ranked by views. Capped at 20 by the underlying sql query.
   """
   rankedStats(
     """
@@ -602,7 +602,7 @@ enum QueryPeriodEnum {
 }
 
 """
-Top artworks, shows, or artists from a partner
+Top artworks, shows, viewing rooms, or artists from a partner
 """
 type RankedStats {
   period: QueryPeriodEnum!
@@ -660,12 +660,17 @@ enum RankedStatsObjectTypeEnum {
   Show
   """
   SHOW
+
+  """
+  ViewingRoom
+  """
+  VIEWING_ROOM
 }
 
 """
-An artwork, artist, or show
+An artwork, artist, show, or viewing room
 """
-union RankedStatsUnion = Artist | Artwork | Show
+union RankedStatsUnion = Artist | Artwork | Show | ViewingRoom
 
 type Show {
   entityId: String!
@@ -677,6 +682,10 @@ Statistics for users
 type UserStats {
   totalPurchaseCount: Int!
   userId: String!
+}
+
+type ViewingRoom {
+  entityId: String!
 }
 
 type VisitorsByCountry {

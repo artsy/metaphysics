@@ -13,10 +13,13 @@ const getMaxPrice = (thing: { listPrice: any }) => {
   return thing.listPrice.minor || thing.listPrice.maxPrice.minor
 }
 
-export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
+export const vortexStitchingEnvironment = (
+  localSchema: GraphQLSchema,
+  gravitySchema: GraphQLSchema
+) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: gql`
-    union AnalyticsRankedEntityUnion = Artwork | Show | Artist
+    union AnalyticsRankedEntityUnion = Artwork | Show | Artist | ViewingRoom
     extend type AnalyticsPricingContext {
       appliedFiltersDisplay: String
     }
@@ -250,6 +253,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         fragment: gql`... on Partner {
           internalID
         }`,
+
         resolve: async (source, _, context, info) => {
           const args = { partnerId: source.internalID }
           return await info.mergeInfo.delegateToSchema({
@@ -307,7 +311,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
       entity: {
         fragment: gql`
           ... on AnalyticsRankedStats {
-            rankedEntity{
+            rankedEntity {
               __typename
               ... on AnalyticsArtwork {
                 entityId
@@ -318,17 +322,27 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               ... on AnalyticsArtist {
                 entityId
               }
+              ... on AnalyticsViewingRoom {
+                entityId
+              }
             }
           }
         `,
         resolve: (parent, _args, context, info) => {
           const removeVortexPrefix = (name) => name.replace("Analytics", "")
           const typename = parent.rankedEntity.__typename
-          const fieldName = removeVortexPrefix(typename).toLowerCase()
+          const typenameWithoutPrefix = removeVortexPrefix(typename)
+          // Data massaging to allow for proper casing for query: viewingRoom, show, artwork, etc
+          const fieldName =
+            typenameWithoutPrefix.charAt(0).toLowerCase() +
+            typenameWithoutPrefix.slice(1)
           const id = parent.rankedEntity.entityId
+          const schema =
+            fieldName == "viewingRoom" ? gravitySchema : localSchema
+
           return info.mergeInfo
             .delegateToSchema({
-              schema: localSchema,
+              schema: schema,
               operation: "query",
               fieldName,
               args: {

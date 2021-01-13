@@ -80,7 +80,9 @@ export const incrementalMergeSchemas = (localSchema, version: 1 | 2) => {
   if (version === 1) {
     useStitchingEnvironment(vortexStitchingEnvironmentv1(localSchema))
   } else {
-    useStitchingEnvironment(vortexStitchingEnvironmentv2(localSchema))
+    useStitchingEnvironment(
+      vortexStitchingEnvironmentv2(localSchema, gravitySchema)
+    )
   }
 
   // Always stitch kaws
