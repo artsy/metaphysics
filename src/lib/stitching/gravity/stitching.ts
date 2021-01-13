@@ -173,6 +173,11 @@ export const gravityStitchingEnvironment = (
           },
         },
         addressConnection: {
+          fragment: gql`
+          ... on Me {
+            __typename
+          }
+          `,
           resolve: (_parent, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,

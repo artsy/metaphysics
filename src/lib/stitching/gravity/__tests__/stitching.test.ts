@@ -4,7 +4,6 @@ import {
   getGravityStitchedSchema,
 } from "./testingUtils"
 import moment, { DurationInputArg2, DurationInputArg1 } from "moment"
-import Context from "schema/v1/artwork/context"
 
 const momentAdd = (...args) => {
   return moment()
