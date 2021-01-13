@@ -6800,7 +6800,7 @@ type dimensions {
 input DisableSecondFactorInput {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
-  password: String!
+  password: String
   secondFactorID: ID!
 }
 
