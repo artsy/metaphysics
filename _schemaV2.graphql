@@ -1241,7 +1241,7 @@ type Artwork implements Node & Searchable & Sellable {
   # artwork attribute called `medium`.)
   category: String @deprecated(reason: "Prefer to use `mediumType`.")
 
-  # Returns the display label and detail for artwork certificate of authenticity
+  # Returns the display label and detail when artwork has a certificate of authenticity
   certificateOfAuthenticity: ArtworkInfoRow
   collectingInstitution: String
   conditionDescription: ArtworkInfoRow
@@ -6830,6 +6830,32 @@ type LocationEdge {
 
 scalar Long
 
+type Lot {
+  internalID: String
+  lot: AuctionsLotState!
+  saleArtwork: SaleArtwork
+}
+
+# A connection to a list of items.
+type LotConnection {
+  # A list of edges.
+  edges: [LotEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type LotEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Lot
+}
+
 type LotStanding {
   # Your bid if it is currently winning
   activeBid: BidderPosition
@@ -7311,6 +7337,12 @@ type Me implements Node {
 
   # A count of unread notifications.
   unreadNotificationsCount: Int!
+  watchedLotConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): LotConnection!
 }
 
 # A message in a conversation.
