@@ -86,7 +86,7 @@ import { ResolverContext } from "types/graphql"
 import { ArtworkVersionType } from "./artwork_version"
 import { HighlightsField } from "./Highlights"
 import { startIdentityVerificationMutation } from "./startIdentityVerificationMutation"
-import Fairs from "./fairs"
+import Fairs, { fairsConnection } from "./fairs"
 import { Feature } from "./Feature"
 import Articles from "./articles"
 import SaleArtwork from "./sale_artwork"
@@ -128,6 +128,7 @@ const rootFields = {
   // externalPartner: ExternalPartner,
   fair: Fair,
   fairs: Fairs,
+  fairsConnection,
   feature: Feature,
   // filterPartners: FilterPartners,
   // filterArtworksConnection: filterArtworksConnection(),

@@ -1,8 +1,8 @@
-import _ from "lodash"
-import FairSorts from "./sorts/fair_sorts"
-import EventStatus from "./input_fields/event_status"
-import Near from "./input_fields/near"
-import Fair from "./fair"
+import _, { pick } from "lodash"
+import FairSorts, { TFairSorts } from "./sorts/fair_sorts"
+import EventStatus, { TEventStatus } from "./input_fields/event_status"
+import Near, { TNear } from "./input_fields/near"
+import Fair, { fairConnection } from "./fair"
 import {
   GraphQLString,
   GraphQLList,
@@ -11,6 +11,10 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { CursorPageable, pageable } from "relay-cursor-paging"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { createPageCursors } from "schema/v1/fields/pagination"
+import { connectionFromArraySlice } from "graphql-relay"
 
 const Fairs: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Fair.type),
@@ -83,3 +87,72 @@ const Fairs: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default Fairs
+
+export const fairsConnection = {
+  type: fairConnection.connectionType,
+  args: pageable({
+    fairOrganizerID: { type: GraphQLString },
+    hasFullFeature: { type: GraphQLBoolean },
+    hasHomepageSection: { type: GraphQLBoolean },
+    hasListing: { type: GraphQLBoolean },
+    ids: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        "Only return fairs matching specified IDs. Accepts list of IDs.",
+    },
+    near: { type: Near },
+    sort: FairSorts,
+    status: EventStatus,
+  }),
+  description: "A list of fairs",
+  resolve: async (
+    _root,
+    args: {
+      fairOrganizerID?: string
+      hasFullFeature?: boolean
+      hasHomepageSection?: boolean
+      hasListing?: boolean
+      ids?: string[]
+      near?: TNear
+      sort?: TFairSorts
+      status?: TEventStatus
+    } & CursorPageable,
+    { fairsLoader }
+  ) => {
+    const { size, offset, page } = convertConnectionArgsToGravityArgs(args)
+
+    const { body, headers } = await fairsLoader({
+      fair_organizer_id: args.fairOrganizerID,
+      has_full_feature: args.hasFullFeature,
+      has_homepage_section: args.hasHomepageSection,
+      has_listing: args.hasListing,
+      id: args.ids,
+      page,
+      size,
+      sort: args.sort,
+      status: args.status,
+      total_count: true,
+      ...(args.near
+        ? {
+            near: `${args.near.lat},${args.near.lng}`,
+            max_distance: args.near.maxDistance,
+          }
+        : {}),
+    })
+
+    const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+    return {
+      totalCount,
+      pageCursors: createPageCursors({ page, size }, totalCount),
+      ...connectionFromArraySlice(
+        body,
+        pick(args, "before", "after", "first", "last"),
+        {
+          arrayLength: totalCount,
+          sliceStart: offset,
+        }
+      ),
+    }
+  },
+}
