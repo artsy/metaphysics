@@ -13,7 +13,6 @@ import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 import date from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
-import { watchedLotsConnection } from "schema/v2/lot"
 
 import ArtworkInquiries from "./artwork_inquiries"
 import BidderPositions from "./bidder_positions"
@@ -217,7 +216,6 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
-    watchedLotsConnection,
   },
 })
 

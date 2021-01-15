@@ -1241,7 +1241,7 @@ type Artwork implements Node & Searchable & Sellable {
   # artwork attribute called `medium`.)
   category: String @deprecated(reason: "Prefer to use `mediumType`.")
 
-  # Returns the display label and detail for artwork certificate of authenticity
+  # Returns the display label and detail when artwork has a certificate of authenticity
   certificateOfAuthenticity: ArtworkInfoRow
   collectingInstitution: String
   conditionDescription: ArtworkInfoRow
@@ -7330,14 +7330,12 @@ type Me implements Node {
 
   # A count of unread notifications.
   unreadNotificationsCount: Int!
-
-  # A list of lots a user is watching
-  watchedLotsConnection(
+  watchedLotConnection(
     after: String
     before: String
     first: Int
     last: Int
-  ): LotConnection
+  ): LotConnection!
 }
 
 # A message in a conversation.
