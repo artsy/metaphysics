@@ -9088,9 +9088,14 @@ type Location {
 
 scalar Long
 
+# A unified auction lot with data from our auctions bidding engine.
 type Lot {
   internalID: String
+
+  # The current auction state of the lot.
   lot: AuctionsLotState!
+
+  # The associated SaleArtwork
   saleArtwork: SaleArtwork
 }
 

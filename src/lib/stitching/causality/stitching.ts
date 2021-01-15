@@ -1,10 +1,13 @@
 import gql from "lib/gql"
+import { Response as FetchResponse } from "node-fetch"
 import { formatMoney } from "accounting"
-import { GraphQLSchema } from "graphql"
+import { GraphQLError, GraphQLSchema } from "graphql"
 import {
   moneyMajorResolver,
   symbolFromCurrencyCode,
 } from "schema/v2/fields/money"
+import { connectionFromArray } from "graphql-relay"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 const resolveLotCentsFieldToMoney = (centsField) => {
   return async (parent, _args, context, _info) => {
@@ -30,9 +33,12 @@ export const causalityStitchingEnvironment = ({
 }) => {
   return {
     extensionSchema: gql`
+      # A unified auction lot with data from our auctions bidding engine.
       type Lot {
         internalID: String
+        # The current auction state of the lot.
         lot: AuctionsLotState!
+        # The associated SaleArtwork
         saleArtwork: SaleArtwork
       }
 
@@ -209,30 +215,117 @@ export const causalityStitchingEnvironment = ({
           },
         },
         watchedLotConnection: {
-          resolve: async (_parent, _args, { saleArtworksAllLoader }) => {
-            const watchedSaleArtworksReq = await saleArtworksAllLoader({
-              include_watched_artworks: true,
-            })
-            const watchedSaleArtworks = watchedSaleArtworksReq.body
+          resolve: async (_parent, args, context, _info) => {
+            const { saleArtworksAllLoader, causalityLoader } = context
+            // fetch sale artworks from gravity
+            const { first = 25, ...rest } = args
 
-            const nodes = watchedSaleArtworks.map((sa) => ({
-              saleArtwork: sa,
-              // TODO: fetch actual lot states
-              lot: {
-                id: "12346789",
-                bidCount: 4,
-                reserveStatus: "NoReserve",
-                sellingPrice: {
-                  display: "$1,600",
-                },
-                soldStatus: "ForSale",
-                internalID: "5fec9c2caa6ad9000d757ae0",
+            const connectionOptions = {
+              include_watched_artworks: true,
+              total_count: true,
+              first,
+              ...rest,
+            }
+            const params = convertConnectionArgsToGravityArgs(connectionOptions)
+            delete params.page
+
+            const { body, headers } = await saleArtworksAllLoader(params)
+            const watchedSaleArtworks: any[] = body
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+            // fetch lot states from causality
+            // Because this is not a stitched request,
+            // We must explicitly query for fields here
+            // and perform money transformations below to approximate
+            // the lotState interface.
+            const lotStatesResponse = await causalityLoader({
+              query: gql`
+                query WatchedLotsQuery($ids: [ID!]!) {
+                  lots(ids: $ids) {
+                    id
+                    internalID
+                    saleId
+                    bidCount
+                    reserveStatus
+                    sellingPriceCents
+                    onlineAskingPriceCents
+                    floorSellingPriceCents
+                    onlineSellingToBidder {
+                      __typename
+                      ... on ArtsyBidder {
+                        id
+                        paddleNumber
+                        userId
+                      }
+                    }
+                    floorWinningBidder {
+                      __typename
+                      ... on ArtsyBidder {
+                        id
+                        paddleNumber
+                        userId
+                      }
+                    }
+                    soldStatus
+                  }
+                }
+              `,
+              variables: {
+                ids: watchedSaleArtworks.map((sa) => sa._id),
               },
-            }))
+            }).then((res: FetchResponse) => res.json())
+
+            const { data, errors: causalityErrors } = lotStatesResponse
+
+            // If the causality request failed for some reason, throw its errors.
+            if (causalityErrors) {
+              const errors = causalityErrors.reduce((acc, ce) => {
+                return acc + " " + ce["message"]
+              }, "From causality: ")
+              throw new GraphQLError(errors)
+            }
+
+            const lots: any[] = data.lots
+
+            // zip up watchedSaleArtworks with associated lot states
+            const nodes = watchedSaleArtworks.reduce((acc, saleArtwork) => {
+              const lot = lots.find((l) => l.internalID === saleArtwork._id)
+              if (!lot) {
+                console.warn(
+                  `lot state for ${saleArtwork._id} not found - skipping`
+                )
+                return acc
+              }
+
+              const {
+                onlineAskingPriceCents,
+                sellingPriceCents,
+                floorSellingPriceCents,
+              } = lot
+
+              return [
+                ...acc,
+                {
+                  saleArtwork,
+                  lot: {
+                    ...lot,
+                    onlineAskingPrice: resolveLotCentsFieldToMoney(
+                      onlineAskingPriceCents
+                    ),
+                    sellingPrice: resolveLotCentsFieldToMoney(
+                      sellingPriceCents
+                    ),
+                    floorSellingPrice: resolveLotCentsFieldToMoney(
+                      floorSellingPriceCents
+                    ),
+                  },
+                },
+              ]
+            }, [])
 
             return {
-              totalCount: watchedSaleArtworks.length,
-              edges: nodes.map((node) => ({ node })),
+              totalCount,
+              ...connectionFromArray(nodes, connectionOptions),
             }
           },
         },
