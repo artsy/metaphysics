@@ -60,7 +60,6 @@ const getCausalityStitchedSchema = async () => {
     stitchedSchema = causalityStitchingEnvironment({
       localSchema,
       causalitySchema,
-      version: 2,
     })
   }
   return stitchedSchema

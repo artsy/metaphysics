@@ -27,7 +27,6 @@ export const causalityStitchingEnvironment = ({
 }: {
   causalitySchema: GraphQLSchema & { transforms: any }
   localSchema: GraphQLSchema
-  version: number
 }) => {
   return {
     extensionSchema: gql`
