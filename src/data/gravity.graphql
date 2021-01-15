@@ -1105,6 +1105,32 @@ type Query {
   ): [SecondFactor!]!
 
   """
+  List of user's saved addresses
+  """
+  userAddressConnection(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    userId: ID!
+  ): UserAddressConnection
+
+  """
   Find a viewing room by ID
   """
   viewingRoom(id: ID!): ViewingRoom
@@ -1488,6 +1514,101 @@ type UpdateViewingRoomSubsectionsPayload {
   """
   clientMutationId: String
   subsections: [ViewingRoomSubsection!]!
+}
+
+"""
+User saved address
+"""
+type UserAddress {
+  """
+  Address line 1
+  """
+  addressLine1: String!
+
+  """
+  Address line 2
+  """
+  addressLine2: String
+
+  """
+  Address line 3
+  """
+  addressLine3: String
+
+  """
+  City
+  """
+  city: String!
+
+  """
+  Country
+  """
+  country: String!
+
+  """
+  Is default address
+  """
+  isDefault: Boolean!
+
+  """
+  Name on addreess
+  """
+  name: String
+
+  """
+  Phone number
+  """
+  phoneNumber: String
+
+  """
+  Postal Code
+  """
+  postalCode: String
+
+  """
+  Region
+  """
+  region: String
+}
+
+"""
+The connection type for UserAddress.
+"""
+type UserAddressConnection {
+  """
+  A list of edges.
+  """
+  edges: [UserAddressEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [UserAddress]
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  Total count of matching nodes, before pagination
+  """
+  totalCount: Int!
+}
+
+"""
+An edge in a connection.
+"""
+type UserAddressEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: UserAddress
 }
 
 """

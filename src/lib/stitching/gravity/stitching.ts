@@ -83,6 +83,12 @@ export const gravityStitchingEnvironment = (
     extensionSchema: gql`
       extend type Me {
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
+        addressConnection(
+          first: Int
+          last: Int
+          after: String
+          before: String
+        ): UserAddressConnection
       }
 
       extend type ViewingRoom {
@@ -161,6 +167,23 @@ export const gravityStitchingEnvironment = (
               operation: "query",
               fieldName: "_unused_gravity_secondFactors",
               args: args,
+              context,
+              info,
+            })
+          },
+        },
+        addressConnection: {
+          fragment: gql`
+          ... on Me {
+            __typename
+          }
+          `,
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_userAddressConnection",
+              args: { ...args, userId: context.userID },
               context,
               info,
             })
