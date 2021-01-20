@@ -219,6 +219,7 @@ export const causalityStitchingEnvironment = ({
               saleArtwork: sa,
               // TODO: fetch actual lot states
               lot: {
+                id: "12346789",
                 bidCount: 4,
                 reserveStatus: "NoReserve",
                 sellingPrice: {
