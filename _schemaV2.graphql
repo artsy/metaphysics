@@ -8605,9 +8605,6 @@ type Query {
     statuses: [ViewingRoomStatusEnum!] = [live]
   ): ViewingRoomsConnection
 
-  # A list of cities
-  allCities: [City!]!
-
   # Last updated timestamp
   analyticsLastUpdatedAt: AnalyticsDateTime
 
@@ -8799,6 +8796,9 @@ type Query {
     id: String!
   ): AuctionResult
 
+  # A list of cities
+  cities(featured: Boolean = false): [City!]!
+
   # A city-based entry point for local discovery
   city(
     # A point which will be used to locate the nearest local discovery city within a threshold
@@ -8959,9 +8959,6 @@ type Query {
     # The slug or ID of the Feature
     id: ID
   ): Feature
-
-  # A list of featured cities
-  featuredCities: [City!]!
   gene(
     # The slug or ID of the Gene
     id: String!
@@ -11054,9 +11051,6 @@ type Viewer {
   # Do not use (only used internally for stitching)
   _do_not_use_image: Image
 
-  # A list of cities
-  allCities: [City!]!
-
   # An Article
   article(
     # The ID of the Article
@@ -11212,6 +11206,9 @@ type Viewer {
     id: String!
   ): AuctionResult
 
+  # A list of cities
+  cities(featured: Boolean = false): [City!]!
+
   # A city-based entry point for local discovery
   city(
     # A point which will be used to locate the nearest local discovery city within a threshold
@@ -11275,9 +11272,6 @@ type Viewer {
     # The slug or ID of the Feature
     id: ID
   ): Feature
-
-  # A list of featured cities
-  featuredCities: [City!]!
   gene(
     # The slug or ID of the Gene
     id: String!
