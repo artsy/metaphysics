@@ -6,15 +6,12 @@ import {
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLNonNull,
 } from "graphql"
-
 import { LatLngType } from "../location"
-import { ShowsConnection, ShowType } from "schema/v2/show"
 import ShowSorts from "schema/v2/sorts/show_sorts"
-import { fairConnection } from "schema/v2/fair"
 import FairSorts from "schema/v2/sorts/fair_sorts"
 import EventStatus from "schema/v2/input_fields/event_status"
-import cityDataSortedByDisplayPreference from "./cityDataSortedByDisplayPreference.json"
 import { pageable, CursorPageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import {
@@ -23,141 +20,159 @@ import {
 } from "./constants"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import Near from "schema/v2/input_fields/near"
-import { LatLng, Point, distance } from "lib/geospatial"
+import { LatLng, distance } from "lib/geospatial"
 import { ResolverContext } from "types/graphql"
 import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
 
+export interface TCity {
+  slug: string
+  name: string
+  full_name: string
+  /** [lat, lng] */
+  coords: [number, number]
+}
+
 const PartnerShowPartnerType = new GraphQLEnumType({
   name: "PartnerShowPartnerType",
   values: {
-    GALLERY: {
-      value: ["Gallery"],
-    },
-    MUSEUM: {
-      value: ["Institution", "Institutional Seller"],
-    },
+    GALLERY: { value: ["Gallery"] },
+    MUSEUM: { value: ["Institution", "Institutional Seller"] },
   },
 })
 
-const CityType = new GraphQLObjectType<any, ResolverContext>({
+export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
   name: "City",
-  fields: {
-    slug: {
-      type: GraphQLString,
-    },
-    name: {
-      type: GraphQLString,
-    },
-    coordinates: {
-      type: LatLngType,
-    },
-    showsConnection: {
-      type: ShowsConnection.connectionType,
-      args: pageable({
-        sort: {
-          type: ShowSorts,
+  fields: () => {
+    const { ShowsConnection } = require("../show")
+    const { fairConnection } = require("../fair")
+    return {
+      slug: { type: new GraphQLNonNull(GraphQLString) },
+      name: { type: new GraphQLNonNull(GraphQLString) },
+      fullName: {
+        type: new GraphQLNonNull(GraphQLString),
+        resolve: ({ full_name }) => full_name,
+      },
+      coordinates: {
+        type: LatLngType,
+        resolve: ({ coords }) => {
+          return {
+            lat: coords[0],
+            lng: coords[1],
+          }
         },
-        status: {
-          type: EventStatus.type,
-          defaultValue: "CURRENT",
-          description: "Filter shows by chronological event status",
-        },
-        partnerType: {
-          type: PartnerShowPartnerType,
-          description: "Filter shows by partner type",
-        },
-        dayThreshold: {
-          type: GraphQLInt,
-          description:
-            "Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows",
-        },
-        includeStubShows: {
-          type: GraphQLBoolean,
-          description: "Whether to include local discovery stubs",
-        },
-      }),
-      resolve: async (city, args, { showsWithHeadersLoader }) =>
-        loadData(args, showsWithHeadersLoader, {
-          near: `${city.coordinates.lat},${city.coordinates.lng}`,
-          max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-          has_location: true,
-          at_a_fair: false,
-          ...(args.partnerType && { partner_types: args.partnerType }),
-          ...(args.dayThreshold && { day_threshold: args.dayThreshold }),
-          sort: args.sort,
-          // default Enum value for status is not properly resolved
-          // so we have to manually resolve it by lowercasing the value
-          // https://github.com/apollographql/graphql-tools/issues/715
-          ...(args.status && { status: args.status.toLowerCase() }),
-          displayable: true,
-          include_local_discovery:
-            args.includeStubShows || args.discoverable === true,
-          include_discovery_blocked: false,
+      },
+      showsConnection: {
+        type: ShowsConnection.connectionType,
+        args: pageable({
+          sort: {
+            type: ShowSorts,
+          },
+          status: {
+            type: EventStatus.type,
+            defaultValue: "CURRENT",
+            description: "Filter shows by chronological event status",
+          },
+          partnerType: {
+            type: PartnerShowPartnerType,
+            description: "Filter shows by partner type",
+          },
+          dayThreshold: {
+            type: GraphQLInt,
+            description:
+              "Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows",
+          },
+          includeStubShows: {
+            type: GraphQLBoolean,
+            description: "Whether to include local discovery stubs",
+          },
         }),
-    },
-    fairsConnection: {
-      type: fairConnection.connectionType,
-      args: pageable({
-        sort: FairSorts,
-        status: EventStatus,
-      }),
-      resolve: (city, args, { fairsLoader }) =>
-        loadData(args, fairsLoader, {
-          near: `${city.coordinates.lat},${city.coordinates.lng}`,
-          max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-          sort: args.sort,
-          status: args.status,
+        resolve: async (city, args, { showsWithHeadersLoader }) => {
+          return loadData(args, showsWithHeadersLoader, {
+            near: city.coords.join(","),
+            max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+            has_location: true,
+            at_a_fair: false,
+            ...(args.partnerType && { partner_types: args.partnerType }),
+            ...(args.dayThreshold && { day_threshold: args.dayThreshold }),
+            sort: args.sort,
+            // default Enum value for status is not properly resolved
+            // so we have to manually resolve it by lowercasing the value
+            // https://github.com/apollographql/graphql-tools/issues/715
+            ...(args.status && { status: args.status.toLowerCase() }),
+            displayable: true,
+            include_local_discovery:
+              args.includeStubShows || args.discoverable === true,
+            include_discovery_blocked: false,
+          })
+        },
+      },
+      fairsConnection: {
+        type: fairConnection.connectionType,
+        args: pageable({
+          sort: FairSorts,
+          status: EventStatus,
         }),
-    },
-    sponsoredContent: {
-      type: new GraphQLObjectType<any, ResolverContext>({
-        name: "CitySponsoredContent",
-        fields: {
-          introText: {
-            type: GraphQLString,
-          },
-          artGuideUrl: {
-            type: GraphQLString,
-          },
-          featuredShows: {
-            type: new GraphQLList(ShowType),
-            resolve: (citySponsoredContent, _args, { showsLoader }) => {
-              return showsLoader({
-                id: citySponsoredContent.featuredShowIds,
-                include_local_discovery: true,
-                displayable: true,
-              })
-            },
-          },
-          showsConnection: {
-            type: ShowsConnection.connectionType,
-            args: pageable({
-              sort: {
-                type: ShowSorts,
+        resolve: (city, args, { fairsLoader }) =>
+          loadData(args, fairsLoader, {
+            near: city.coords.join(","),
+            max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+            sort: args.sort,
+            status: args.status,
+          }),
+      },
+      sponsoredContent: {
+        type: new GraphQLObjectType<any, ResolverContext>({
+          name: "CitySponsoredContent",
+          fields: () => {
+            const { ShowType, ShowsConnection } = require("../show")
+            return {
+              introText: {
+                type: GraphQLString,
               },
-              status: EventStatus,
-            }),
-            resolve: async (
-              citySponsoredContent,
-              args,
-              { showsWithHeadersLoader }
-            ) => {
-              return loadData(args, showsWithHeadersLoader, {
-                id: citySponsoredContent.showIds,
-                include_local_discovery: true,
-                displayable: true,
-                sort: args.sort,
-                status: args.status,
-              })
-            },
+              artGuideUrl: {
+                type: GraphQLString,
+              },
+              featuredShows: {
+                type: new GraphQLList(ShowType),
+                resolve: (citySponsoredContent, _args, { showsLoader }) => {
+                  return showsLoader({
+                    id: citySponsoredContent.featuredShowIds,
+                    include_local_discovery: true,
+                    displayable: true,
+                  })
+                },
+              },
+              showsConnection: {
+                type: ShowsConnection.connectionType,
+                args: pageable({
+                  sort: {
+                    type: ShowSorts,
+                  },
+                  status: EventStatus,
+                }),
+                resolve: async (
+                  citySponsoredContent,
+                  args,
+                  { showsWithHeadersLoader }
+                ) => {
+                  return loadData(args, showsWithHeadersLoader, {
+                    id: citySponsoredContent.showIds,
+                    include_local_discovery: true,
+                    displayable: true,
+                    sort: args.sort,
+                    status: args.status,
+                  })
+                },
+              },
+            }
           },
-        },
-      }),
-      resolve: (city) => sponsoredContentForCity(city.slug),
-    },
+        }),
+        resolve: (city) => sponsoredContentForCity(city.slug),
+      },
+    }
   },
 })
 
@@ -176,56 +191,61 @@ export const City: GraphQLFieldConfig<void, ResolverContext> = {
         "A point which will be used to locate the nearest local discovery city within a threshold",
     },
   },
-  resolve: (_obj, { slug, near }) => {
+  resolve: async (_obj, { slug, near }, { geodataCitiesLoader }) => {
     if (slug && near) {
       throw new Error('The "slug" and "near" arguments are mutually exclusive.')
     }
+
     if (!slug && !near) {
       throw new Error('One of the arguments "slug" or "near" is required.')
     }
+
+    const allCities = await geodataCitiesLoader()
+
     if (slug) {
-      return lookupCity(slug)
+      return lookupCity(slug, allCities)
     }
+
     if (near) {
-      return nearestCity(near)
+      return nearestCity(near, allCities)
     }
   },
 }
 
-const lookupCity = (slug: string) => {
-  const city = cityDataSortedByDisplayPreference.find((c) => c.slug === slug)
+const lookupCity = (slug: string, cities: TCity[]) => {
+  const city = cities.find((c) => c.slug === slug)
+
   if (!city) {
-    throw new Error(
-      `City ${slug} not found in: ${cityDataSortedByDisplayPreference
-        .map(({ slug }) => slug)
-        .join(", ")}`
-    )
+    throw new Error(`City "${slug}" not found`)
   }
+
   return city
 }
 
-const nearestCity = (latLng: LatLng) => {
-  const orderedCities = citiesOrderedByDistance(latLng)
+const nearestCity = (latLng: LatLng, cities: TCity[]) => {
+  const orderedCities = citiesOrderedByDistance(latLng, cities)
   const closestCity = orderedCities[0]
 
   if (isCloseEnough(latLng, closestCity)) {
     return closestCity
   }
+
   return null
 }
 
-const citiesOrderedByDistance = (latLng: LatLng): Point[] => {
-  const cities: Point[] = Object.values(cityDataSortedByDisplayPreference)
+const citiesOrderedByDistance = (latLng: LatLng, cities: TCity[]): TCity[] => {
   cities.sort((a, b) => {
-    const distanceA = distance(latLng, a.coordinates)
-    const distanceB = distance(latLng, b.coordinates)
+    const distanceA = distance(latLng, { lat: a.coords[0], lng: a.coords[1] })
+    const distanceB = distance(latLng, { lat: b.coords[0], lng: b.coords[1] })
     return distanceA - distanceB
   })
+
   return cities
 }
 
-const isCloseEnough = (latLng: LatLng, city: Point) =>
-  distance(latLng, city.coordinates) < NEAREST_CITY_THRESHOLD_KM * 1000
+const isCloseEnough = (latLng: LatLng, city: TCity) =>
+  distance(latLng, { lat: city.coords[0], lng: city.coords[1] }) <
+  NEAREST_CITY_THRESHOLD_KM * 1000
 
 async function loadData(
   args: CursorPageable,
