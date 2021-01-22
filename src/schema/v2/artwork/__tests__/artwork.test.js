@@ -278,9 +278,8 @@ describe("Artwork type", () => {
     }
     `
 
-    it("returns pricePaid", () => {
+    it("returns pricePaid and defaults to USD if no currency is present", () => {
       artwork.price_paid_cents = 21000
-      artwork.price_paid_currency = "USD"
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
