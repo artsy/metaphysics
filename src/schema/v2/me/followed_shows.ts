@@ -5,15 +5,7 @@ import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLFieldConfig, GraphQLString, GraphQLInt } from "graphql"
 import { ResolverContext } from "types/graphql"
 import EventStatus from "schema/v2/input_fields/event_status"
-import cityData from "../city/cityDataSortedByDisplayPreference.json"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "../city/constants"
-
-const location_by_city_slug = cityData.reduce((acc, val) => {
-  acc[val.slug] = val.coordinates
-  return acc
-}, {})
-
-const getValidCitySlugs = () => Object.keys(location_by_city_slug).join(", ")
 
 export const FollowedShowConnection = connectionDefinitions({
   name: "FollowedShow",
@@ -31,23 +23,28 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
     },
     city: {
       type: GraphQLString,
-      description: `A string representing one of the supported cities in the City Guide, which are: ${getValidCitySlugs()}`,
+      description: `A string representing one of the supported cities`,
     },
   }),
   description: "A list of the current user’s currently followed shows",
-  resolve: (_root, options, { followedShowsLoader }) => {
+  resolve: async (
+    _root,
+    options,
+    { followedShowsLoader, geodataCitiesLoader }
+  ) => {
     if (!followedShowsLoader) return null
 
     let locationArgs = {}
     if (options.city) {
-      const location = location_by_city_slug[options.city]
+      const allCities = await geodataCitiesLoader()
+      const location = allCities.find((city) => city.slug === options.city)
 
       if (!location) {
-        throw new Error(`City slug must be one of: ${getValidCitySlugs()}`)
+        throw new Error(`Cannot find valid city`)
       }
 
       locationArgs = {
-        near: `${location.lat},${location.lng}`,
+        near: location.coords.join(","),
         max_distance: LOCAL_DISCOVERY_RADIUS_KM,
       }
     }
