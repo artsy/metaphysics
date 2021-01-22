@@ -1,17 +1,24 @@
-const mockCities = [
+import { runQuery } from "schema/v2/test/utils"
+import gql from "lib/gql"
+import { MAX_GRAPHQL_INT, allViaLoader as _allViaLoader } from "lib/all"
+import { TCity } from "../city"
+
+const MOCK_CITIES: TCity[] = [
   {
     slug: "sacramende-ca-usa",
     name: "Sacramende",
-    coordinates: { lat: 38.5, lng: -121.8 },
+    full_name: "Sacramende, CA, USA",
+    coords: [38.5, -121.8],
   },
   {
     slug: "smallvile-usa",
     name: "Smallville",
-    coordinates: { lat: 39.78, lng: -100.45 },
+    full_name: "Smallville, USA",
+    coords: [39.78, -100.45],
   },
 ]
 
-const mockSponsoredContent = {
+const MOCK_SPONSORED_CONTENT = {
   cities: {
     "sacramende-ca-usa": {
       introText: "Lorem ipsum dolot sit amet",
@@ -22,13 +29,16 @@ const mockSponsoredContent = {
   },
 }
 
-jest.mock("../city/cityDataSortedByDisplayPreference.json", () => mockCities)
-jest.mock("lib/all.ts")
-jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
+const MOCK_CONTEXT = {
+  geodataCitiesLoader: () => Promise.resolve(MOCK_CITIES),
+}
 
-import { runQuery } from "schema/v2/test/utils"
-import gql from "lib/gql"
-import { MAX_GRAPHQL_INT, allViaLoader as _allViaLoader } from "lib/all"
+const MOCK_EMPTY_CONTEXT = {
+  geodataCitiesLoader: () => Promise.resolve([]),
+}
+
+jest.mock("lib/all.ts")
+jest.mock("lib/sponsoredContent/data.json", () => MOCK_SPONSORED_CONTENT)
 
 const allViaLoader = _allViaLoader as jest.Mock<typeof _allViaLoader>
 
@@ -47,7 +57,8 @@ describe("City", () => {
         }
       `
 
-      const result = await runQuery(query)
+      const result = await runQuery(query, MOCK_CONTEXT)
+
       expect(result!.city).toEqual({
         name: "Sacramende",
       })
@@ -63,8 +74,9 @@ describe("City", () => {
           }
         }
       `
-      await expect(runQuery(query)).rejects.toThrow(
-        /City sacramundo not found in:/
+
+      await expect(runQuery(query, MOCK_EMPTY_CONTEXT)).rejects.toThrow(
+        'City "sacramundo" not found'
       )
     })
   })
@@ -80,7 +92,8 @@ describe("City", () => {
         }
       `
 
-      const result = await runQuery(query)
+      const result = await runQuery(query, MOCK_CONTEXT)
+
       expect(result!.city).toEqual({
         name: "Smallville",
       })
@@ -96,7 +109,7 @@ describe("City", () => {
         }
       `
 
-      const result = await runQuery(query)
+      const result = await runQuery(query, MOCK_CONTEXT)
       expect(result!.city).toBeNull()
     })
   })
@@ -125,6 +138,7 @@ describe("City", () => {
         Promise.resolve({ body: mockShows, headers: { "x-total-count": "1" } })
       )
       context = {
+        ...MOCK_CONTEXT,
         showsWithHeadersLoader: mockShowsLoader,
         accessToken: null,
         userID: null,
@@ -382,6 +396,7 @@ describe("City", () => {
         Promise.resolve({ body: mockFairs, headers: { "x-total-count": "1" } })
       )
       context = {
+        ...MOCK_CONTEXT,
         fairsLoader: mockFairsLoader,
       }
     })
@@ -455,9 +470,9 @@ describe("City", () => {
         }
       `
 
-      const result = await runQuery(query)
+      const result = await runQuery(query, MOCK_CONTEXT)
 
-      expect(result!.city.sponsoredContent).toEqual({
+      expect(result.city.sponsoredContent).toEqual({
         introText: "Lorem ipsum dolot sit amet",
         artGuideUrl: "https://www.example.com/",
       })
@@ -474,6 +489,7 @@ describe("City", () => {
       )
 
       const context = {
+        ...MOCK_CONTEXT,
         showsWithHeadersLoader: mockShowsLoader,
       }
 
@@ -513,6 +529,7 @@ describe("City", () => {
       const mockShows = [{ id: "featured-show" }]
       const mockShowsLoader = jest.fn(() => Promise.resolve(mockShows))
       const context = {
+        ...MOCK_CONTEXT,
         showsLoader: mockShowsLoader,
       }
 
