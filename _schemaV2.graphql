@@ -2295,7 +2295,8 @@ type City {
     sort: FairSorts
     status: EventStatus
   ): FairConnection
-  name: String
+  fullName: String!
+  name: String!
   showsConnection(
     after: String
     before: String
@@ -2315,7 +2316,7 @@ type City {
     # Filter shows by chronological event status
     status: EventStatus = CURRENT
   ): ShowConnection
-  slug: String
+  slug: String!
   sponsoredContent: CitySponsoredContent
 }
 
@@ -6114,9 +6115,7 @@ type FollowsAndSaves {
     after: String
     before: String
 
-    # A string representing one of the supported cities in the City Guide, which
-    # are: new-york-ny-usa, los-angeles-ca-usa, london-united-kingdom,
-    # berlin-germany, paris-france, hong-kong-hong-kong
+    # A string representing one of the supported cities
     city: String
 
     # Number of days which will be used to filter upcoming and closing soon shows
@@ -8606,6 +8605,9 @@ type Query {
     statuses: [ViewingRoomStatusEnum!] = [live]
   ): ViewingRoomsConnection
 
+  # A list of cities
+  allCities: [City!]!
+
   # Last updated timestamp
   analyticsLastUpdatedAt: AnalyticsDateTime
 
@@ -8957,6 +8959,9 @@ type Query {
     # The slug or ID of the Feature
     id: ID
   ): Feature
+
+  # A list of featured cities
+  featuredCities: [City!]!
   gene(
     # The slug or ID of the Gene
     id: String!
@@ -11049,6 +11054,9 @@ type Viewer {
   # Do not use (only used internally for stitching)
   _do_not_use_image: Image
 
+  # A list of cities
+  allCities: [City!]!
+
   # An Article
   article(
     # The ID of the Article
@@ -11267,6 +11275,9 @@ type Viewer {
     # The slug or ID of the Feature
     id: ID
   ): Feature
+
+  # A list of featured cities
+  featuredCities: [City!]!
   gene(
     # The slug or ID of the Gene
     id: String!
