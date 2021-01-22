@@ -10,7 +10,6 @@ import { setVersion } from "schema/v2/image/normalize"
 import Fair from "schema/v2/fair"
 import Sale from "schema/v2/sale"
 import SaleArtwork from "schema/v2/sale_artwork"
-import { formatMoney } from "accounting"
 import {
   connectionWithCursorInfo,
   PageCursorsType,
@@ -58,7 +57,6 @@ import { ArtworkContextGrids } from "./artworkContextGrids"
 import { PageInfoType } from "graphql-relay"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { InquiryQuestionType } from "../inquiry_question"
-import currencyCodes from "lib/currency_codes.json"
 
 const has_price_range = (price) => {
   return new RegExp(/\-/).test(price)
@@ -738,16 +736,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "The price paid for the artwork in a user's 'my collection'",
         resolve: (artwork) => {
+          const { price_paid_cents } = artwork
+          const price_paid_currency = artwork.price_paid_currency || "USD"
           return {
-            cents: artwork.price_paid_cents,
-            currency: artwork.price_paid_currency,
-            display: formatMoney(
-              artwork.price_paid_cents /
-                (currencyCodes[artwork.price_paid_currency.toLowerCase()]
-                  ?.subunit_to_unit ?? 100),
-              symbolFromCurrencyCode(artwork.price_paid_currency),
-              0
-            ),
+            cents: price_paid_cents,
+            currency: price_paid_currency,
+            display: amount(() => price_paid_cents).resolve(artwork, {
+              precision: 0,
+              symbol: symbolFromCurrencyCode(price_paid_currency),
+            }),
           }
         },
       },
