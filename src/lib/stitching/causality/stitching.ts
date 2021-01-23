@@ -1,13 +1,10 @@
 import gql from "lib/gql"
-import { Response as FetchResponse } from "node-fetch"
 import { formatMoney } from "accounting"
 import { GraphQLError, GraphQLSchema } from "graphql"
 import {
   moneyMajorResolver,
   symbolFromCurrencyCode,
 } from "schema/v2/fields/money"
-import { connectionFromArray } from "graphql-relay"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 const resolveLotCentsFieldToMoney = (centsField) => {
   return async (parent, _args, context, _info) => {
@@ -27,40 +24,23 @@ const resolveLotCentsFieldToMoney = (centsField) => {
 export const causalityStitchingEnvironment = ({
   causalitySchema,
   localSchema,
+  version,
 }: {
   causalitySchema: GraphQLSchema & { transforms: any }
   localSchema: GraphQLSchema
+  version: number
 }) => {
   return {
     extensionSchema: gql`
-      # A unified auction lot with data from our auctions bidding engine.
-      type Lot {
-        internalID: String
-        # The current auction state of the lot.
-        lot: AuctionsLotState!
-        # The associated SaleArtwork
-        saleArtwork: SaleArtwork
-      }
-
-      # A connection to a list of items.
-      type LotConnection {
-        # A list of edges.
-        edges: [LotEdge]
-        pageCursors: PageCursors!
-
-        # Information to aid in pagination.
-        pageInfo: PageInfo!
-        totalCount: Int
-      }
-
-      # An edge in a connection.
-      type LotEdge {
-        # A cursor for use in pagination
-        cursor: String!
-
-        # The item at the end of the edge
-        node: Lot
-      }
+      ${version === 2
+        ? gql`
+            # A unified auction lot with data from our auctions bidding engine.
+            extend type Lot {
+              # The current auction state of the lot.
+              lot: AuctionsLotState!
+            }
+          `
+        : ``}
 
       extend type Me {
         auctionsLotStandingConnection(
@@ -69,13 +49,6 @@ export const causalityStitchingEnvironment = ({
           after: String
           before: String
         ): AuctionsLotStandingConnection!
-
-        watchedLotConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-        ): LotConnection!
       }
 
       extend type AuctionsLotStanding {
@@ -92,19 +65,40 @@ export const causalityStitchingEnvironment = ({
     `,
 
     resolvers: {
-      Lot: {
-        internalID: {
-          resolve: ({ saleArtwork }) => saleArtwork._id,
-        },
-        saleArtwork: {
-          resolve: ({ saleArtwork }) => saleArtwork,
-        },
-        lot: {
-          resolve: ({ lot }) => {
-            return lot
-          },
-        },
-      },
+      ...(version === 2
+        ? {
+            Lot: {
+              lot: {
+                resolve: (root, _args, context, _info) => {
+                  const { _lot, internalID } = root
+
+                  // // if lot already exists on the object, return it (not yet used)
+                  // if (_lot) {
+                  //   return lot
+                  // }
+
+                  // resolve lot if available via context (eg watchedLotConnection resolver)
+                  const lotState = context.lotDataMap?.[internalID]
+                  if (lotState) {
+                    return lotState
+                  }
+
+                  throw new GraphQLError(`Lot state for ${internalID} missing`)
+
+                  // // fetch lot state from causality
+                  // return _info.mergeInfo.delegateToSchema({
+                  //   schema: localSchema,
+                  //   operation: "query",
+                  //   fieldName: "_unused_auctionsLot",
+                  //   args: { id: internalID },
+                  //   context,
+                  //   info,
+                  // })
+                },
+              },
+            },
+          }
+        : {}),
       AuctionsLotStanding: {
         saleArtwork: {
           fragment: gql`
@@ -212,121 +206,6 @@ export const causalityStitchingEnvironment = ({
                 )
                 return { ...lotStandingsConnection, edges: availableEdges }
               })
-          },
-        },
-        watchedLotConnection: {
-          resolve: async (_parent, args, context, _info) => {
-            const { saleArtworksAllLoader, causalityLoader } = context
-            // fetch sale artworks from gravity
-            const { first = 25, ...rest } = args
-
-            const connectionOptions = {
-              include_watched_artworks: true,
-              total_count: true,
-              first,
-              ...rest,
-            }
-            const params = convertConnectionArgsToGravityArgs(connectionOptions)
-            delete params.page
-
-            const { body, headers } = await saleArtworksAllLoader(params)
-            const watchedSaleArtworks: any[] = body
-            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-            // fetch lot states from causality
-            // Because this is not a stitched request,
-            // We must explicitly query for fields here
-            // and perform money transformations below to approximate
-            // the lotState interface.
-            const lotStatesResponse = await causalityLoader({
-              query: gql`
-                query WatchedLotsQuery($ids: [ID!]!) {
-                  lots(ids: $ids) {
-                    id
-                    internalID
-                    saleId
-                    bidCount
-                    reserveStatus
-                    sellingPriceCents
-                    onlineAskingPriceCents
-                    floorSellingPriceCents
-                    onlineSellingToBidder {
-                      __typename
-                      ... on ArtsyBidder {
-                        id
-                        paddleNumber
-                        userId
-                      }
-                    }
-                    floorWinningBidder {
-                      __typename
-                      ... on ArtsyBidder {
-                        id
-                        paddleNumber
-                        userId
-                      }
-                    }
-                    soldStatus
-                  }
-                }
-              `,
-              variables: {
-                ids: watchedSaleArtworks.map((sa) => sa._id),
-              },
-            }).then((res: FetchResponse) => res.json())
-
-            const { data, errors: causalityErrors } = lotStatesResponse
-
-            // If the causality request failed for some reason, throw its errors.
-            if (causalityErrors) {
-              const errors = causalityErrors.reduce((acc, ce) => {
-                return acc + " " + ce["message"]
-              }, "From causality: ")
-              throw new GraphQLError(errors)
-            }
-
-            const lots: any[] = data.lots
-
-            // zip up watchedSaleArtworks with associated lot states
-            const nodes = watchedSaleArtworks.reduce((acc, saleArtwork) => {
-              const lot = lots.find((l) => l.internalID === saleArtwork._id)
-              if (!lot) {
-                console.warn(
-                  `lot state for ${saleArtwork._id} not found - skipping`
-                )
-                return acc
-              }
-
-              const {
-                onlineAskingPriceCents,
-                sellingPriceCents,
-                floorSellingPriceCents,
-              } = lot
-
-              return [
-                ...acc,
-                {
-                  saleArtwork,
-                  lot: {
-                    ...lot,
-                    onlineAskingPrice: resolveLotCentsFieldToMoney(
-                      onlineAskingPriceCents
-                    ),
-                    sellingPrice: resolveLotCentsFieldToMoney(
-                      sellingPriceCents
-                    ),
-                    floorSellingPrice: resolveLotCentsFieldToMoney(
-                      floorSellingPriceCents
-                    ),
-                  },
-                },
-              ]
-            }, [])
-
-            return {
-              totalCount,
-              ...connectionFromArray(nodes, connectionOptions),
-            }
           },
         },
       },

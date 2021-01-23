@@ -11,7 +11,7 @@ import { readFileSync } from "fs"
 
 const blacklistedTypes: string[] = []
 const whitelistedRootFields: string[] = []
-const privateFields: string[] = ["lotStandingConnection"]
+const privateFields: string[] = ["lotStandingConnection", "lot"]
 const permittedRootFields = [...whitelistedRootFields, ...privateFields]
 
 export const executableCausalitySchema = () => {

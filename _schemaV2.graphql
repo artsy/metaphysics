@@ -6840,15 +6840,21 @@ type LocationEdge {
 
 scalar Long
 
-# A unified auction lot with data from our auctions bidding engine.
-type Lot {
-  internalID: String
+type Lot implements Node {
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
 
   # The current auction state of the lot.
   lot: AuctionsLotState!
 
-  # The associated SaleArtwork
+  # The saleArtwork object.
   saleArtwork: SaleArtwork
+
+  # A slug ID.
+  slug: ID!
 }
 
 # A connection to a list of items.
@@ -7354,12 +7360,14 @@ type Me implements Node {
 
   # A count of unread notifications.
   unreadNotificationsCount: Int!
+
+  # A list of lots a user is watching
   watchedLotConnection(
     after: String
     before: String
     first: Int
     last: Int
-  ): LotConnection!
+  ): LotConnection
 }
 
 # A message in a conversation.
@@ -8535,6 +8543,9 @@ type PublishViewingRoomPayload {
 type Query {
   # Do not use (only used internally for stitching)
   _do_not_use_image: Image
+
+  # Returns a lot with specific `id`.
+  _unused_auctionsLot(id: ID!): AuctionsLotState
 
   # Lot standings for a user
   _unused_auctionsLotStandingConnection(

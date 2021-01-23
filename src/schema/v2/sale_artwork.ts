@@ -21,6 +21,7 @@ import {
   GraphQLBoolean,
   GraphQLList,
   GraphQLFieldConfig,
+  GraphQLID,
 } from "graphql"
 import config from "config"
 import { ResolverContext } from "types/graphql"
@@ -92,7 +93,13 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      artwork: { type: Artwork.type, resolve: ({ artwork }) => artwork },
+      artwork: {
+        type: Artwork.type,
+        resolve: (root) => {
+          const { artwork } = root
+          return artwork
+        },
+      },
       node: { type: Artwork.type, resolve: ({ artwork }) => artwork },
       cursor: { type: GraphQLString },
       counts: {

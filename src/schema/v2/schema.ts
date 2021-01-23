@@ -90,7 +90,7 @@ import { startIdentityVerificationMutation } from "./startIdentityVerificationMu
 import Fairs, { fairsConnection } from "./fairs"
 import { Feature } from "./Feature"
 import Articles from "./articles"
-import SaleArtwork from "./sale_artwork"
+import SaleArtwork, { Lot } from "./sale_artwork"
 import { SaleArtworksConnectionField } from "./sale_artworks"
 import Artworks from "./artworks"
 import { TargetSupply } from "./TargetSupply"

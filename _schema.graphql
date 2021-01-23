@@ -9088,37 +9088,6 @@ type Location {
 
 scalar Long
 
-# A unified auction lot with data from our auctions bidding engine.
-type Lot {
-  internalID: String
-
-  # The current auction state of the lot.
-  lot: AuctionsLotState!
-
-  # The associated SaleArtwork
-  saleArtwork: SaleArtwork
-}
-
-# A connection to a list of items.
-type LotConnection {
-  # A list of edges.
-  edges: [LotEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type LotEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Lot
-}
-
 type LotStanding {
   # Your bid if it is currently winning
   active_bid: BidderPosition
@@ -9562,12 +9531,6 @@ type Me implements Node {
     size: Int
   ): [Artist]
   type: String
-  watchedLotConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): LotConnection!
 }
 
 # A message in a conversation.
@@ -11694,6 +11657,9 @@ type PublishViewingRoomPayload {
 }
 
 type Query {
+  # Returns a lot with specific `id`.
+  _unused_auctionsLot(id: ID!): AuctionsLotState
+
   # Lot standings for a user
   _unused_auctionsLotStandingConnection(
     after: String
