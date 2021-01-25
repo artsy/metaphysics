@@ -31,8 +31,9 @@ import ArtistSorts from "./sorts/artist_sorts"
 import { fields as partnerArtistFields } from "./partner_artist"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { deprecate } from "lib/deprecation"
+import { ChecklistItemsType } from "./checklistItems"
 
-const artworksArgs: GraphQLFieldConfigArgumentMap = {
+export const artworksArgs: GraphQLFieldConfigArgumentMap = {
   forSale: {
     type: GraphQLBoolean,
   },
@@ -40,6 +41,44 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   exclude: {
     type: new GraphQLList(GraphQLString),
   },
+}
+
+export const artworksConnectionResolver = (
+  { id },
+  args,
+  { partnerArtworksLoader }
+) => {
+  const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+  interface GravityArgs {
+    exclude_ids?: string[]
+    page: number
+    published: boolean
+    size: number
+    total_count: boolean
+    sort: string
+    for_sale: boolean
+  }
+
+  const gravityArgs: GravityArgs = {
+    published: true,
+    total_count: true,
+    page,
+    size,
+    sort: args.sort,
+    for_sale: args.for_sale,
+  }
+
+  if (args.exclude) {
+    gravityArgs.exclude_ids = flatten([args.exclude])
+  }
+
+  return partnerArtworksLoader(id, gravityArgs).then(({ body, headers }) => {
+    return connectionFromArraySlice(body, args, {
+      arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+      sliceStart: offset,
+    })
+  })
 }
 
 export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
@@ -100,47 +139,16 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         description: "A connection of artworks from a Partner.",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
-        resolve: ({ id }, args, { partnerArtworksLoader }) => {
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            args
-          )
-
-          interface GravityArgs {
-            exclude_ids?: string[]
-            page: number
-            published: boolean
-            size: number
-            total_count: boolean
-            sort: string
-            for_sale: boolean
-          }
-
-          const gravityArgs: GravityArgs = {
-            published: true,
-            total_count: true,
-            page,
-            size,
-            sort: args.sort,
-            for_sale: args.for_sale,
-          }
-
-          if (args.exclude) {
-            gravityArgs.exclude_ids = flatten([args.exclude])
-          }
-
-          return partnerArtworksLoader(id, gravityArgs).then(
-            ({ body, headers }) => {
-              return connectionFromArraySlice(body, args, {
-                arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-                sliceStart: offset,
-              })
-            }
-          )
-        },
+        resolve: artworksConnectionResolver,
       },
       categories: {
         type: new GraphQLList(PartnerCategoryType),
         resolve: ({ partner_categories }) => partner_categories,
+      },
+      checklistItems: {
+        description: "A list of the partners checklist items",
+        type: ChecklistItemsType,
+        resolve: (checklistItems) => checklistItems,
       },
       collectingInstitution: {
         type: GraphQLString,

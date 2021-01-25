@@ -2285,6 +2285,19 @@ type CaptureHoldPayload {
   holdOrError: InventoryHoldOrErrorUnion!
 }
 
+type ChecklistItemsType {
+  # Artworks missing priority metadata for a partner's checklist
+  artworkItemsConnection(
+    after: String
+    before: String
+    exclude: [String]
+    first: Int
+    forSale: Boolean
+    last: Int
+    sort: ArtworkSorts
+  ): ArtworkConnection
+}
+
 type City {
   coordinates: LatLng
   fairsConnection(
@@ -7995,6 +8008,9 @@ type Partner implements Node {
   ): ArtworkConnection
   cached: Int
   categories: [PartnerCategory]
+
+  # A list of the partners checklist items
+  checklistItems: ChecklistItemsType
 
   # A list of the partners unique city locations
   cities(size: Int = 25): [String]

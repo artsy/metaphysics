@@ -201,6 +201,79 @@ describe("Partner type", () => {
       })
     })
   })
+  describe("#checklistItems", () => {
+    let artworksResponse
+
+    beforeEach(() => {
+      artworksResponse = [
+        {
+          id: "cara-barer-iceberg",
+        },
+        {
+          id: "david-leventi-rezzonico",
+        },
+        {
+          id: "virginia-mak-hidden-nature-08",
+        },
+      ]
+      context = {
+        partnerArtworksLoader: () =>
+          Promise.resolve({
+            body: artworksResponse,
+            headers: {
+              "x-total-count": artworksResponse.length,
+            },
+          }),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+    })
+
+    it("returns artworks and such", async () => {
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            checklistItems {
+              artworkItemsConnection(first:3) {
+                edges {
+                  node {
+                    slug
+                  }
+                }
+              }
+            } 
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          checklistItems: {
+            artworkItemsConnection: {
+              edges: [
+                {
+                  node: {
+                    slug: "cara-barer-iceberg",
+                  },
+                },
+                {
+                  node: {
+                    slug: "david-leventi-rezzonico",
+                  },
+                },
+                {
+                  node: {
+                    slug: "virginia-mak-hidden-nature-08",
+                  },
+                },
+              ],
+            },
+          },
+        },
+      })
+    })
+  })
 
   describe("#artworksConnection", () => {
     let artworksResponse
