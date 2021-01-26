@@ -66,7 +66,7 @@ export const artworksConnectionResolver = (
     page,
     size,
     sort: args.sort,
-    for_sale: args.for_sale,
+    for_sale: args.forSale,
   }
 
   if (args.exclude) {
