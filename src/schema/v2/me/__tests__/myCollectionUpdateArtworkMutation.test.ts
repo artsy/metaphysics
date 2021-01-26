@@ -38,6 +38,8 @@ const computeMutationInput = ({
           height: "20"
           medium: "Updated"
           metric: "in"
+          pricePaidCents: 10000
+          pricePaidCurrency: "USD"
           provenance: "Pat Hearn Gallery"
           title: "hey now"
           width: "20"
@@ -47,6 +49,9 @@ const computeMutationInput = ({
           ... on MyCollectionArtworkMutationSuccess {
             artwork {
               medium
+              pricePaid {
+                display
+              }
             }
             artworkEdge {
               node {

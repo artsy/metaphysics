@@ -739,7 +739,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           const { price_paid_cents } = artwork
           const price_paid_currency = artwork.price_paid_currency || "USD"
           return {
-            cents: price_paid_cents,
+            cents: price_paid_cents || 0,
             currency: price_paid_currency,
             display: amount(() => price_paid_cents).resolve(artwork, {
               precision: 0,
