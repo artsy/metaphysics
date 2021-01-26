@@ -1,8 +1,8 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
-import cityData from "schema/v2/city/cityDataSortedByDisplayPreference.json"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "schema/v2/city/constants"
+import { TCity } from "schema/v2/city"
 
 const stubResolver = () => Promise.resolve({ body: [], headers: {} })
 
@@ -80,15 +80,23 @@ describe("returns followed shows for a user", () => {
 
   describe("filter by city", () => {
     it("generates a predictable URL with a city slug input", async () => {
-      const nyc = cityData[0]
+      const nyc: TCity = {
+        name: "New York",
+        full_name: "New York, NY, USA",
+        slug: "new-york-ny-usa",
+        coords: [40.71, -74.01],
+      }
       expect(nyc.slug).toBe("new-york-ny-usa")
       const query = generate_query(`(first: 10, city: "${nyc.slug}")`)
-      await runAuthenticatedQuery(query, { followedShowsLoader })
+      await runAuthenticatedQuery(query, {
+        followedShowsLoader,
+        geodataCitiesLoader: () => Promise.resolve([nyc]),
+      })
       expect(followedShowsLoader).toHaveBeenCalledWith({
         size: 10,
         offset: 0,
         total_count: true,
-        near: `${nyc.coordinates.lat},${nyc.coordinates.lng}`,
+        near: `${nyc.coords[0]},${nyc.coords[1]}`,
         max_distance: LOCAL_DISCOVERY_RADIUS_KM,
       })
     })
@@ -96,28 +104,11 @@ describe("returns followed shows for a user", () => {
     it("throws an error if presented with an invalid city slug", async () => {
       const query = generate_query(`(first: 10, city: "this-is-not-a-city")`)
       await expect(
-        runAuthenticatedQuery(query, { followedShowsLoader })
-      ).rejects.toMatchInlineSnapshot(
-        `[Error: City slug must be one of: new-york-ny-usa, los-angeles-ca-usa, london-united-kingdom, berlin-germany, paris-france, hong-kong-hong-kong]`
-      )
-    })
-
-    it("relies on the state of cityData", () => {
-      cityData
-        .map((city) => ({
-          name: city.name,
-          slug: city.slug,
-          lat: city.coordinates.lat,
-          lng: city.coordinates.lng,
-        }))
-        .forEach((city) => {
-          expect(city).toMatchObject({
-            name: expect.any(String),
-            slug: expect.any(String),
-            lat: expect.any(Number),
-            lng: expect.any(Number),
-          })
+        runAuthenticatedQuery(query, {
+          followedShowsLoader,
+          geodataCitiesLoader: () => Promise.resolve([]),
         })
+      ).rejects.toMatchInlineSnapshot(`[Error: Cannot find valid city]`)
     })
   })
 })
