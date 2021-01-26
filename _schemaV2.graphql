@@ -6840,6 +6840,7 @@ type LocationEdge {
 
 scalar Long
 
+# A lot in an auction containing merged Sale artwork and Lot state data
 type Lot implements Node {
   # A globally unique ID.
   id: ID!

@@ -1,10 +1,14 @@
 import gql from "lib/gql"
 import { formatMoney } from "accounting"
-import { GraphQLError, GraphQLSchema } from "graphql"
+import { GraphQLSchema } from "graphql"
 import {
   moneyMajorResolver,
   symbolFromCurrencyCode,
 } from "schema/v2/fields/money"
+import {
+  stitchedCausalityLotResolver,
+  stitchingLotExtensionSchema,
+} from "schema/v2/lot"
 
 const resolveLotCentsFieldToMoney = (centsField) => {
   return async (parent, _args, context, _info) => {
@@ -32,15 +36,7 @@ export const causalityStitchingEnvironment = ({
 }) => {
   return {
     extensionSchema: gql`
-      ${version === 2
-        ? gql`
-            # A unified auction lot with data from our auctions bidding engine.
-            extend type Lot {
-              # The current auction state of the lot.
-              lot: AuctionsLotState!
-            }
-          `
-        : ``}
+      ${version === 2 ? stitchingLotExtensionSchema : ""}
 
       extend type Me {
         auctionsLotStandingConnection(
@@ -65,40 +61,7 @@ export const causalityStitchingEnvironment = ({
     `,
 
     resolvers: {
-      ...(version === 2
-        ? {
-            Lot: {
-              lot: {
-                resolve: (root, _args, context, _info) => {
-                  const { _lot, internalID } = root
-
-                  // // if lot already exists on the object, return it (not yet used)
-                  // if (_lot) {
-                  //   return lot
-                  // }
-
-                  // resolve lot if available via context (eg watchedLotConnection resolver)
-                  const lotState = context.lotDataMap?.[internalID]
-                  if (lotState) {
-                    return lotState
-                  }
-
-                  throw new GraphQLError(`Lot state for ${internalID} missing`)
-
-                  // // fetch lot state from causality
-                  // return _info.mergeInfo.delegateToSchema({
-                  //   schema: localSchema,
-                  //   operation: "query",
-                  //   fieldName: "_unused_auctionsLot",
-                  //   args: { id: internalID },
-                  //   context,
-                  //   info,
-                  // })
-                },
-              },
-            },
-          }
-        : {}),
+      ...(version === 2 ? stitchedCausalityLotResolver : {}),
       AuctionsLotStanding: {
         saleArtwork: {
           fragment: gql`

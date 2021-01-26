@@ -21,7 +21,6 @@ import {
   GraphQLBoolean,
   GraphQLList,
   GraphQLFieldConfig,
-  GraphQLID,
 } from "graphql"
 import config from "config"
 import { ResolverContext } from "types/graphql"
