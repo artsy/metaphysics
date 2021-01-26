@@ -15,6 +15,7 @@ import Partner from "./partner"
 import HomePage from "./home"
 import StaticContent from "./static_content"
 import { City } from "./city"
+import { cities } from "./cities"
 import FollowArtist from "./me/follow_artist"
 import FollowProfile from "./me/follow_profile"
 import FollowGene from "./me/follow_gene"
@@ -123,6 +124,7 @@ const rootFields = {
   artists: Artists,
   artistsConnection,
   city: City,
+  cities,
   // collection: Collection,
   creditCard: CreditCard,
   // externalPartner: ExternalPartner,
