@@ -7,7 +7,7 @@ import {
 } from "schema/v2/fields/money"
 import {
   stitchedCausalityLotResolver,
-  stitchingLotExtensionSchema,
+  stitchedCausalityLotExtensionSchema,
 } from "schema/v2/lot"
 
 const resolveLotCentsFieldToMoney = (centsField) => {
@@ -36,7 +36,7 @@ export const causalityStitchingEnvironment = ({
 }) => {
   return {
     extensionSchema: gql`
-      ${version === 2 ? stitchingLotExtensionSchema : ""}
+      ${version === 2 ? stitchedCausalityLotExtensionSchema : ""}
 
       extend type Me {
         auctionsLotStandingConnection(

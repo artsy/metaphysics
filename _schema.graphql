@@ -11657,9 +11657,6 @@ type PublishViewingRoomPayload {
 }
 
 type Query {
-  # Returns a lot with specific `id`.
-  _unused_auctionsLot(id: ID!): AuctionsLotState
-
   # Lot standings for a user
   _unused_auctionsLotStandingConnection(
     after: String

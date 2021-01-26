@@ -15,7 +15,7 @@ import { connectionFromArray } from "graphql-relay"
 export const LotType = new GraphQLObjectType<any, ResolverContext>({
   name: "Lot",
   description:
-    "A lot in an auction containing merged Sale artwork and Lot state data",
+    "A lot in an auction containing merged Sale artwork and Lot state data.",
   interfaces: () => {
     return [NodeInterface]
   },
@@ -136,7 +136,7 @@ const resolveWatchedLotConnection = async (_parent, args, context) => {
 /**
  * An extension schema to add the lot type at the causality stitching stage.
  */
-export const stitchingLotExtensionSchema = gql`
+export const stitchedCausalityLotExtensionSchema = gql`
   # A unified auction lot with data from our auctions bidding engine.
   extend type Lot {
     # The current auction state of the lot.
@@ -172,7 +172,7 @@ export const auctionLotConnection = connectionWithCursorInfo({
 })
 
 export const watchedLotConnection = {
-  description: "A list of lots a user is watching",
+  description: "A list of lots a user is watching.",
   type: auctionLotConnection.connectionType,
   args: pageable(),
   resolve: resolveWatchedLotConnection,

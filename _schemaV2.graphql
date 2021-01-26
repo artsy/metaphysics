@@ -6840,7 +6840,7 @@ type LocationEdge {
 
 scalar Long
 
-# A lot in an auction containing merged Sale artwork and Lot state data
+# A lot in an auction containing merged Sale artwork and Lot state data.
 type Lot implements Node {
   # A globally unique ID.
   id: ID!
@@ -7362,7 +7362,7 @@ type Me implements Node {
   # A count of unread notifications.
   unreadNotificationsCount: Int!
 
-  # A list of lots a user is watching
+  # A list of lots a user is watching.
   watchedLotConnection(
     after: String
     before: String
@@ -8544,9 +8544,6 @@ type PublishViewingRoomPayload {
 type Query {
   # Do not use (only used internally for stitching)
   _do_not_use_image: Image
-
-  # Returns a lot with specific `id`.
-  _unused_auctionsLot(id: ID!): AuctionsLotState
 
   # Lot standings for a user
   _unused_auctionsLotStandingConnection(
