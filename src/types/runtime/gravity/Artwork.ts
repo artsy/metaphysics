@@ -87,6 +87,7 @@ export const Artwork = Record({
   shipping_origin: Array(String).Or(Null),
   signature: String,
   signed_by_artist: Boolean.Or(Null),
+  signed_in_plate: Boolean.Or(Null),
   signed_other: Boolean.Or(Null),
   size_score: Number.Or(Null),
   sold: Boolean,

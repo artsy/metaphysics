@@ -2143,6 +2143,7 @@ describe("Artwork type", () => {
       artwork.stamped_by_artist_estate = null
       artwork.sticker_label = null
       artwork.signed_other = null
+      artwork.signed_in_plate = null
       artwork.not_signed = null
 
       return runQuery(query, context).then((data) => {
@@ -2152,6 +2153,7 @@ describe("Artwork type", () => {
     it("is null when all related fields are false", () => {
       artwork.signature = ""
       artwork.signed_by_artist = false
+      artwork.signed_in_plate = false
       artwork.stamped_by_artist_estate = false
       artwork.sticker_label = false
       artwork.signed_other = false
@@ -2163,6 +2165,7 @@ describe("Artwork type", () => {
     it("is set to proper object when signed_other is true", () => {
       artwork.signature = ""
       artwork.signed_by_artist = false
+      artwork.signed_in_plate = false
       artwork.stamped_by_artist_estate = false
       artwork.sticker_label = false
       artwork.signed_other = true
@@ -2191,6 +2194,7 @@ describe("Artwork type", () => {
     it("is set to proper object when several fields are true", () => {
       artwork.signature = "some details about signature"
       artwork.signed_by_artist = true
+      artwork.signed_in_plate = true
       artwork.stamped_by_artist_estate = true
       artwork.sticker_label = true
       artwork.signed_other = true
@@ -2200,7 +2204,7 @@ describe("Artwork type", () => {
             signatureInfo: {
               label: "Signature",
               details:
-                "Hand-signed by artist, stamped by artist's estate, sticker label, some details about signature",
+                "Hand-signed by artist, signed in plate, stamped by artist's estate, sticker label, some details about signature",
             },
           },
         })
@@ -2209,6 +2213,7 @@ describe("Artwork type", () => {
     it("is set to proper object when only signed_other is true", () => {
       artwork.signature = ""
       artwork.signed_by_artist = false
+      artwork.signed_in_plate = false
       artwork.stamped_by_artist_estate = false
       artwork.sticker_label = false
       artwork.signed_other = true
