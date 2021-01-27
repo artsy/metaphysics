@@ -39,7 +39,7 @@ export const LotType = new GraphQLObjectType<any, ResolverContext>({
  * from causality. Then pass the lot states through to the stitching layer
  * via the graphql request context.
  */
-const resolveWatchedLotConnection = async (_parent, args, context) => {
+const watchedLotConnectionResolver = async (_parent, args, context) => {
   const { saleArtworksAllLoader, causalityLoader } = context
   // fetch sale artworks from gravity
   const { first = 25, ...rest } = args
@@ -110,7 +110,9 @@ const resolveWatchedLotConnection = async (_parent, args, context) => {
   const availableLotDataIds = Object.keys(lotDataMap)
   const nodes = watchedSaleArtworks.reduce((acc, saleArtwork) => {
     if (!availableLotDataIds.find((id) => id === saleArtwork._id)) {
-      console.warn(`lot state for ${saleArtwork._id} not found - skipping`)
+      console.warn(
+        `[metaphysics @ schema/v2/lot] Warning: lot state for ${saleArtwork._id} not found - skipping`
+      )
       return acc
     } else {
       return [...acc, { _id: saleArtwork._id, saleArtwork }]
@@ -165,5 +167,5 @@ export const watchedLotConnection = {
   description: "A list of lots a user is watching.",
   type: auctionLotConnection.connectionType,
   args: pageable(),
-  resolve: resolveWatchedLotConnection,
+  resolve: watchedLotConnectionResolver,
 }
