@@ -1,6 +1,5 @@
 import { GraphQLError, GraphQLObjectType } from "graphql"
 import { SaleArtworkType } from "schema/v2/sale_artwork"
-import { Response as FetchResponse } from "node-fetch"
 import { ResolverContext } from "types/graphql"
 import {
   NodeInterface,
@@ -57,10 +56,11 @@ const resolveWatchedLotConnection = async (_parent, args, context) => {
   const { body, headers } = await saleArtworksAllLoader(params)
   const watchedSaleArtworks: any[] = body
   const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-  const saleArtworkIds = watchedSaleArtworks.map((sa) => sa._id)
-
+  const saleArtworkIds = watchedSaleArtworks.map(
+    (saleArtwork) => saleArtwork._id
+  )
   // Fetch the all fields of the lot object
-  const lotStatesResponse = await causalityLoader({
+  const causalityData = await causalityLoader({
     query: gql`
       query WatchedLotsQuery($ids: [ID!]!) {
         lots(ids: $ids) {
@@ -95,41 +95,31 @@ const resolveWatchedLotConnection = async (_parent, args, context) => {
     variables: {
       ids: saleArtworkIds,
     },
-  }).then((res: FetchResponse) => res.json())
+  })
 
-  const { data: causalityData, errors: causalityErrors } = lotStatesResponse
+  // make a map of lot state data
+  const lotDataMap = causalityData.lots.reduce((acc, lot) => {
+    acc[lot.internalID] = lot
+    return acc
+  }, {})
 
-  // If the causality request failed for some reason, throw its errors.
-  if (causalityErrors) {
-    const errors = causalityErrors.reduce((acc, ce) => {
-      return acc + " " + ce["message"]
-    }, "From causality: ")
-    throw new GraphQLError(errors)
-  } else {
-    // make a map of lot state data
-    const lotDataMap = causalityData.lots.reduce((acc, lot) => {
-      acc[lot.internalID] = lot
+  // place lotData in context for retrieval at stitching stage
+  context.lotDataMap = lotDataMap
+
+  // create nodes from sale artworks
+  const availableLotDataIds = Object.keys(lotDataMap)
+  const nodes = watchedSaleArtworks.reduce((acc, saleArtwork) => {
+    if (!availableLotDataIds.find((id) => id === saleArtwork._id)) {
+      console.warn(`lot state for ${saleArtwork._id} not found - skipping`)
       return acc
-    }, {})
-
-    // place lotData in context for retrieval at stitching stage
-    context.lotDataMap = lotDataMap
-
-    // create nodes from sale artworks
-    const availableLotDataIds = Object.keys(lotDataMap)
-    const nodes = watchedSaleArtworks.reduce((acc, saleArtwork) => {
-      if (!availableLotDataIds.find((id) => id === saleArtwork._id)) {
-        console.warn(`lot state for ${saleArtwork._id} not found - skipping`)
-        return acc
-      } else {
-        return [...acc, { _id: saleArtwork._id, saleArtwork }]
-      }
-    }, [])
-
-    return {
-      totalCount,
-      ...connectionFromArray(nodes, connectionOptions),
+    } else {
+      return [...acc, { _id: saleArtwork._id, saleArtwork }]
     }
+  }, [])
+
+  return {
+    totalCount,
+    ...connectionFromArray(nodes, connectionOptions),
   }
 }
 
