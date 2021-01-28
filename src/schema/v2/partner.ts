@@ -121,7 +121,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             sort: args.sort,
-            for_sale: args.for_sale,
+            for_sale: args.forSale,
           }
 
           if (args.exclude) {
