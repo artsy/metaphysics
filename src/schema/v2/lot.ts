@@ -144,8 +144,17 @@ export const stitchedCausalityLotExtensionSchema = gql`
 export const stitchedCausalityLotResolver = {
   Lot: {
     lot: {
+      fragment: gql`
+        ... on Lot {
+          saleArtwork {
+            internalID
+          }
+        }
+      `,
       resolve: (root, _args, context, _info) => {
-        const { internalID } = root
+        const {
+          saleArtwork: { internalID },
+        } = root
 
         // resolve lot if available via context (eg watchedLotConnection resolver)
         const lotState = context.lotDataMap?.[internalID]

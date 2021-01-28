@@ -166,14 +166,74 @@ describe("causality/stitching", () => {
   })
 
   describe("watchedLotConnection", () => {
-    it("resolves the Lot type with stitched `lot` field from causality", async () => {
+    it("fulfills the Lot interface using a `AuctionsLotState` and `SaleArtwork`", async () => {
       const query = gql`
         {
           me {
             watchedLotConnection {
               edges {
                 node {
-                  internalID
+                  lot {
+                    internalID
+                  }
+                  saleArtwork {
+                    internalID
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        meLoader: jest.fn(() => Promise.resolve({ internalID: "Baz" })),
+        saleArtworksAllLoader: jest.fn(() =>
+          Promise.resolve({
+            headers: {
+              "x-total-count": 1,
+            },
+            body: [
+              {
+                _id: "foo",
+              },
+            ],
+          })
+        ),
+        causalityLoader: jest.fn(() =>
+          Promise.resolve({
+            lots: [{ internalID: "foo" }],
+          })
+        ),
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toEqual({
+        me: {
+          watchedLotConnection: {
+            edges: [
+              {
+                node: {
+                  saleArtwork: { internalID: "foo" },
+                  lot: {
+                    internalID: "foo",
+                  },
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("resolves the Lot type with stitched `lot` fields", async () => {
+      const query = gql`
+        {
+          me {
+            watchedLotConnection {
+              edges {
+                node {
                   lot {
                     bidCount
                     onlineAskingPrice {
@@ -196,7 +256,7 @@ describe("causality/stitching", () => {
         saleArtworksAllLoader: jest.fn(() =>
           Promise.resolve({
             headers: {
-              "x-total-count": 1,
+              "x-total-count": 2,
             },
             body: [
               {
@@ -235,7 +295,6 @@ describe("causality/stitching", () => {
             edges: [
               {
                 node: {
-                  internalID: "foo",
                   saleArtwork: { lotLabel: "lot #foo" },
                   lot: {
                     bidCount: 2,
@@ -247,7 +306,6 @@ describe("causality/stitching", () => {
               },
               {
                 node: {
-                  internalID: "bar",
                   saleArtwork: { lotLabel: "lot #bar" },
                   lot: {
                     bidCount: 4,
