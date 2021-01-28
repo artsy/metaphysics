@@ -4,6 +4,9 @@ import { addMockFunctionsToSchema } from "graphql-tools"
 import { useCausalityStitching } from "./testingUtils"
 import gql from "lib/gql"
 import schema from "schema/v1/schema"
+import v2Schema from "schema/v2/schema"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { getFieldsForTypeFromSchema } from "lib/stitching/lib/getTypesFromSchema"
 
 describe("causality/stitching", () => {
   describe("extending types", () => {
@@ -153,6 +156,169 @@ describe("causality/stitching", () => {
           ],
         },
       },
+    })
+  })
+
+  it("extends the Lot type with a `lot` (state) field", async () => {
+    const mergedSchema = await incrementalMergeSchemas(v2Schema, 2)
+    const lotFields = await getFieldsForTypeFromSchema("Lot", mergedSchema)
+    expect(lotFields).toContain("lot")
+  })
+
+  describe("watchedLotConnection", () => {
+    it("fulfills the Lot interface using a `AuctionsLotState` and `SaleArtwork`", async () => {
+      const query = gql`
+        {
+          me {
+            watchedLotConnection {
+              edges {
+                node {
+                  lot {
+                    internalID
+                  }
+                  saleArtwork {
+                    internalID
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        meLoader: jest.fn(() => Promise.resolve({ internalID: "Baz" })),
+        saleArtworksAllLoader: jest.fn(() =>
+          Promise.resolve({
+            headers: {
+              "x-total-count": 1,
+            },
+            body: [
+              {
+                _id: "foo",
+              },
+            ],
+          })
+        ),
+        causalityLoader: jest.fn(() =>
+          Promise.resolve({
+            lots: [{ internalID: "foo" }],
+          })
+        ),
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toEqual({
+        me: {
+          watchedLotConnection: {
+            edges: [
+              {
+                node: {
+                  saleArtwork: { internalID: "foo" },
+                  lot: {
+                    internalID: "foo",
+                  },
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("resolves the Lot type with stitched `lot` fields", async () => {
+      const query = gql`
+        {
+          me {
+            watchedLotConnection {
+              edges {
+                node {
+                  lot {
+                    bidCount
+                    onlineAskingPrice {
+                      display
+                    }
+                  }
+                  saleArtwork {
+                    lotLabel
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      // stub out the loaders necessary to assemble this data
+      const context = {
+        meLoader: jest.fn(() => Promise.resolve({ internalID: "Baz" })),
+        saleArtworksAllLoader: jest.fn(() =>
+          Promise.resolve({
+            headers: {
+              "x-total-count": 2,
+            },
+            body: [
+              {
+                _id: "foo",
+                lot_label: "lot #foo",
+              },
+              {
+                _id: "bar",
+                lot_label: "lot #bar",
+              },
+            ],
+          })
+        ),
+        causalityLoader: jest.fn(() =>
+          Promise.resolve({
+            lots: [
+              { internalID: "foo", bidCount: 2, onlineAskingPriceCents: 2200 },
+              {
+                internalID: "bar",
+                bidCount: 4,
+                onlineAskingPriceCents: 420000,
+              },
+            ],
+          })
+        ),
+        saleArtworkRootLoader: jest.fn(() =>
+          Promise.resolve({ currency: "USD" })
+        ),
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toEqual({
+        me: {
+          watchedLotConnection: {
+            edges: [
+              {
+                node: {
+                  saleArtwork: { lotLabel: "lot #foo" },
+                  lot: {
+                    bidCount: 2,
+                    onlineAskingPrice: {
+                      display: "$22",
+                    },
+                  },
+                },
+              },
+              {
+                node: {
+                  saleArtwork: { lotLabel: "lot #bar" },
+                  lot: {
+                    bidCount: 4,
+                    onlineAskingPrice: {
+                      display: "$4,200",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      })
     })
   })
 

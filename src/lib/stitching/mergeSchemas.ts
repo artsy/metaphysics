@@ -56,7 +56,7 @@ export const incrementalMergeSchemas = (localSchema, version: 1 | 2) => {
   schemas.push(diffusionSchema)
 
   useStitchingEnvironment(
-    causalityStitchingEnvironment({ causalitySchema, localSchema })
+    causalityStitchingEnvironment({ causalitySchema, localSchema, version })
   )
 
   const exchangeSchema = executableExchangeSchema(transformsForExchange)

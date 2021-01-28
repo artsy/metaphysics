@@ -9088,32 +9088,6 @@ type Location {
 
 scalar Long
 
-type Lot {
-  internalID: String
-  lot: AuctionsLotState!
-  saleArtwork: SaleArtwork
-}
-
-# A connection to a list of items.
-type LotConnection {
-  # A list of edges.
-  edges: [LotEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type LotEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Lot
-}
-
 type LotStanding {
   # Your bid if it is currently winning
   active_bid: BidderPosition
@@ -9557,12 +9531,6 @@ type Me implements Node {
     size: Int
   ): [Artist]
   type: String
-  watchedLotConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): LotConnection!
 }
 
 # A message in a conversation.

@@ -5,6 +5,10 @@ import {
   moneyMajorResolver,
   symbolFromCurrencyCode,
 } from "schema/v2/fields/money"
+import {
+  stitchedCausalityLotResolver,
+  stitchedCausalityLotExtensionSchema,
+} from "schema/v2/lot"
 
 const resolveLotCentsFieldToMoney = (centsField) => {
   return async (parent, _args, context, _info) => {
@@ -24,37 +28,15 @@ const resolveLotCentsFieldToMoney = (centsField) => {
 export const causalityStitchingEnvironment = ({
   causalitySchema,
   localSchema,
+  version,
 }: {
   causalitySchema: GraphQLSchema & { transforms: any }
   localSchema: GraphQLSchema
+  version: number
 }) => {
   return {
     extensionSchema: gql`
-      type Lot {
-        internalID: String
-        lot: AuctionsLotState!
-        saleArtwork: SaleArtwork
-      }
-
-      # A connection to a list of items.
-      type LotConnection {
-        # A list of edges.
-        edges: [LotEdge]
-        pageCursors: PageCursors!
-
-        # Information to aid in pagination.
-        pageInfo: PageInfo!
-        totalCount: Int
-      }
-
-      # An edge in a connection.
-      type LotEdge {
-        # A cursor for use in pagination
-        cursor: String!
-
-        # The item at the end of the edge
-        node: Lot
-      }
+      ${version === 2 ? stitchedCausalityLotExtensionSchema : ""}
 
       extend type Me {
         auctionsLotStandingConnection(
@@ -63,13 +45,6 @@ export const causalityStitchingEnvironment = ({
           after: String
           before: String
         ): AuctionsLotStandingConnection!
-
-        watchedLotConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-        ): LotConnection!
       }
 
       extend type AuctionsLotStanding {
@@ -86,19 +61,7 @@ export const causalityStitchingEnvironment = ({
     `,
 
     resolvers: {
-      Lot: {
-        internalID: {
-          resolve: ({ saleArtwork }) => saleArtwork._id,
-        },
-        saleArtwork: {
-          resolve: ({ saleArtwork }) => saleArtwork,
-        },
-        lot: {
-          resolve: ({ lot }) => {
-            return lot
-          },
-        },
-      },
+      ...(version === 2 ? stitchedCausalityLotResolver : {}),
       AuctionsLotStanding: {
         saleArtwork: {
           fragment: gql`
@@ -206,34 +169,6 @@ export const causalityStitchingEnvironment = ({
                 )
                 return { ...lotStandingsConnection, edges: availableEdges }
               })
-          },
-        },
-        watchedLotConnection: {
-          resolve: async (_parent, _args, { saleArtworksAllLoader }) => {
-            const watchedSaleArtworksReq = await saleArtworksAllLoader({
-              include_watched_artworks: true,
-            })
-            const watchedSaleArtworks = watchedSaleArtworksReq.body
-
-            const nodes = watchedSaleArtworks.map((sa) => ({
-              saleArtwork: sa,
-              // TODO: fetch actual lot states
-              lot: {
-                id: "12346789",
-                bidCount: 4,
-                reserveStatus: "NoReserve",
-                sellingPrice: {
-                  display: "$1,600",
-                },
-                soldStatus: "ForSale",
-                internalID: "5fec9c2caa6ad9000d757ae0",
-              },
-            }))
-
-            return {
-              totalCount: watchedSaleArtworks.length,
-              edges: nodes.map((node) => ({ node })),
-            }
           },
         },
       },
