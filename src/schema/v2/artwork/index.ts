@@ -920,6 +920,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({
           signature,
           signed_by_artist,
+          signed_in_plate,
           stamped_by_artist_estate,
           sticker_label,
           signed_other,
@@ -928,6 +929,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           const detailsParts: string[] = []
           if (signed_by_artist) {
             detailsParts.push("hand-signed by artist")
+          }
+          if (signed_in_plate) {
+            detailsParts.push("signed in plate")
           }
           if (stamped_by_artist_estate) {
             detailsParts.push("stamped by artist's estate")
