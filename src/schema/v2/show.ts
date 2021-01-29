@@ -617,21 +617,19 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
   },
   resolve: (_root, { id }, { showLoader }) => {
     // TODO: blacklist filterArtworksConnection
-    return showLoader(id)
-      .then((show) => {
-        if (
-          !(
-            show.displayable ||
-            show.is_local_discovery ||
-            show.is_reference ||
-            isExisty(show.fair)
-          )
-        ) {
-          return new HTTPError("Show Not Found", 404)
-        }
-        return show
-      })
-      .catch(() => null)
+    return showLoader(id).then((show) => {
+      if (
+        !(
+          show.displayable ||
+          show.is_local_discovery ||
+          show.is_reference ||
+          isExisty(show.fair)
+        )
+      ) {
+        return new HTTPError("Show Not Found", 404)
+      }
+      return show
+    })
   },
 }
 
