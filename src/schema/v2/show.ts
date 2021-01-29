@@ -392,6 +392,13 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ fair }) => isExisty(fair),
       },
+      isOnlineExclusive: {
+        description: "Does the show exist soley online",
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: ({ location, fair, partner_city }) => {
+          return !location && !isExisty(fair) && !partner_city
+        },
+      },
       isReference: {
         description: "Is it a show provided for historical reference?",
         type: GraphQLBoolean,
