@@ -141,6 +141,39 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
+    performance: {
+      type: new GraphQLObjectType({
+        name: "AuctionLotPerformance",
+        fields: {
+          mid: {
+            type: GraphQLString,
+            description: "Percentage performance over mid-estimate",
+            resolve: ({
+              hammer_price_cents,
+              high_estimate_cents,
+              low_estimate_cents,
+            }) => {
+              if (
+                hammer_price_cents &&
+                high_estimate_cents &&
+                low_estimate_cents
+              ) {
+                return (
+                  Math.round(
+                    ((hammer_price_cents -
+                      (low_estimate_cents + high_estimate_cents) / 2) /
+                      hammer_price_cents) *
+                      100
+                  ) + "%"
+                )
+              }
+              return null
+            },
+          },
+        },
+      }),
+      resolve: (lot) => lot,
+    },
     estimate: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "AuctionLotEstimate",
@@ -153,6 +186,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLFloat,
             resolve: ({ high_estimate_cents }) => high_estimate_cents,
           },
+
           display: {
             type: GraphQLString,
             resolve: ({
