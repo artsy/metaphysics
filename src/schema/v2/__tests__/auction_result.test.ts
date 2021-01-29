@@ -18,11 +18,11 @@ const mockAuctionResult = {
   ],
   currency: "EUR",
   location: "Berlin",
-  price_realized_cents: 420000,
-  price_realized_cents_usd: 100000,
-  low_estimate_cents: 200000,
-  hammer_price_cents: 350000,
-  high_estimate_cents: 400000,
+  price_realized_cents: 200000,
+  price_realized_cents_usd: 200000,
+  low_estimate_cents: 100000,
+  hammer_price_cents: 100000,
+  high_estimate_cents: 300000,
   price_realized: {
     cents: 200000,
     centsUSD: 200000,
@@ -58,7 +58,7 @@ describe("AuctionResult type", () => {
         saleDateText: "10-12-2020",
         location: "Berlin",
         performance: {
-          mid: "14%",
+          mid: "-50%",
         },
       })
     })

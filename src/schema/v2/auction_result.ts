@@ -158,14 +158,10 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
                 high_estimate_cents &&
                 low_estimate_cents
               ) {
-                const midEstimate = (low_estimate_cents + high_estimate_cents) / 2)
+                const midEstimate =
+                  (low_estimate_cents + high_estimate_cents) / 2
                 const delta = hammer_price_cents - midEstimate
-                return (
-                  Math.round(
-                    (delta / midEstimate) *
-                      100
-                  ) + "%"
-                )
+                return Math.round((delta / midEstimate) * 100) + "%"
               }
               return null
             },
