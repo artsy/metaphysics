@@ -39,6 +39,7 @@ export interface GravityArtwork {
   inquireable: boolean
   acquireable: boolean
   offerable: boolean
+  offerable_from_inquiry: boolean
   published_at: string
   can_share: boolean
   can_share_image: boolean

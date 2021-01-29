@@ -54,6 +54,10 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ offerable }) => offerable,
     },
+    isOfferableFromInquiry: {
+      type: GraphQLBoolean,
+      resolve: ({ offerable_from_inquiry }) => offerable_from_inquiry,
+    },
     isForSale: {
       type: GraphQLBoolean,
       resolve: ({ forsale }) => forsale,

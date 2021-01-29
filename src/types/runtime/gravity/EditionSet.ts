@@ -9,6 +9,7 @@ export const EditionSet = Record({
   price_cents: Array(Number.Or(Null)).Or(Null),
   acquireable: Boolean,
   offerable: Boolean,
+  offerable_from_inquiry: Boolean,
   dimensions: Record({ in: String.Or(Null), cm: String.Or(Null) }),
   editions: String,
   display_price_currency: String,

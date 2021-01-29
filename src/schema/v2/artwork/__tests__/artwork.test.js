@@ -264,6 +264,30 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#isOfferableFromInquiry", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          isOfferableFromInquiry
+        }
+      }
+    `
+
+    it("will return the value of offerable_from_inquiry", () => {
+      artwork.offerable_from_inquiry = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            isOfferableFromInquiry: true,
+          },
+        })
+      })
+    })
+  })
+
   describe("#pricePaid", () => {
     const query = `
     {
