@@ -149,18 +149,18 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLString,
             description: "Percentage performance over mid-estimate",
             resolve: ({
-              hammer_price_cents,
+              price_realized_cents,
               high_estimate_cents,
               low_estimate_cents,
             }) => {
               if (
-                hammer_price_cents &&
+                price_realized_cents &&
                 high_estimate_cents &&
                 low_estimate_cents
               ) {
                 const midEstimate =
                   (low_estimate_cents + high_estimate_cents) / 2
-                const delta = hammer_price_cents - midEstimate
+                const delta = price_realized_cents - midEstimate
                 return Math.round((delta / midEstimate) * 100) + "%"
               }
               return null
