@@ -50,5 +50,10 @@ export default (accessToken, userID, opts) => {
       },
       { method: "POST" }
     ),
+    conversationCreateConversationOrderLoader: impulseLoader(
+      `conversation_orders`,
+      {},
+      { method: "POST" }
+    ),
   }
 }

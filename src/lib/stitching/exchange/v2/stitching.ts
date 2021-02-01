@@ -1,4 +1,4 @@
-import { GraphQLSchema, Kind, SelectionSetNode } from "graphql"
+import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
 import { amountSDL, amount } from "schema/v1/fields/money"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
@@ -154,6 +154,7 @@ export const exchangeStitchingEnvironment = ({
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
+
     extend type CommerceLineItem {
       artwork: Artwork
       artworkVersion: ArtworkVersion
@@ -346,6 +347,90 @@ export const exchangeStitchingEnvironment = ({
               context,
               info,
             })
+          },
+        },
+      },
+      Mutation: {
+        // monkey-patch the existing exchange mutation
+        // to add operations dependent on impulse
+        commerceCreateInquiryOfferOrderWithArtwork: {
+          resolve: async (_source, args, context, info) => {
+            const {
+              conversationLoader,
+              conversationCreateConversationOrderLoader,
+            } = context
+            const {
+              input: { impulseConversationId },
+            } = args
+
+            try {
+              await conversationLoader(impulseConversationId)
+            } catch (e) {
+              // be more elegant?
+              throw new GraphQLError(`Bad Request`)
+            }
+
+            const offerResult = await info.mergeInfo.delegateToSchema({
+              schema: exchangeSchema,
+              operation: "mutation",
+              fieldName: "commerceCreateInquiryOfferOrderWithArtwork",
+              args,
+              context,
+              info,
+              // transforms: [
+              //   new WrapQuery(
+              //     [
+              //       "createInquiryOfferOrderWithArtwork",
+              //       "orderOrError",
+              //       "order",
+              //     ],
+              //     (selectionSet: SelectionSetNode) => {
+              //       // const newSelections = [
+              //       // ...selectionSet.selections,
+              //       return {
+              //         kind: Kind.FIELD,
+              //         name: {
+              //           kind: Kind.NAME,
+              //           value: "internalID",
+              //         },
+              //         selectionSet,
+              //       }
+              //       // ]
+              //       // return { ...selectionSet, selections: newSelections }
+              //     },
+              //     (result) => result
+              //     // result.createInquiryOfferOrderWithArtwork.orderOrError.order
+              //   ),
+              // ],
+            })
+            const { orderOrError } = offerResult
+
+            if (orderOrError.error) {
+              // if we got an error from exchange, return it immediately
+              return offerResult
+            } else if (orderOrError.order) {
+              // attempt to associate the order with the conversation
+              const {
+                order: { internalID: orderId },
+              } = orderOrError
+
+              if (!orderId) {
+                throw new GraphQLError("Bad request (no order id)")
+              }
+
+              try {
+                await conversationCreateConversationOrderLoader({
+                  conversation_id: impulseConversationId,
+                  exchange_order_id: orderId,
+                })
+              } catch (e) {
+                throw new GraphQLError(
+                  "Impulse: request to associate offer with conversation failed"
+                )
+              }
+            }
+
+            return offerResult
           },
         },
       },
