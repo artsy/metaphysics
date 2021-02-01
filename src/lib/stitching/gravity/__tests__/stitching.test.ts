@@ -846,4 +846,16 @@ describe("gravity/stitching", () => {
       })
     })
   })
+
+  describe("#UserAddress", () => {
+    it("extends the UserAddress type with an id field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const userAddressField = await getFieldsForTypeFromSchema(
+        "UserAddress",
+        mergedSchema
+      )
+
+      expect(userAddressField).toContain("id")
+    })
+  })
 })
