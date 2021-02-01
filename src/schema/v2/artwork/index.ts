@@ -281,11 +281,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "Formatted artwork metadata, including artist, title, date and partner; e.g., 'Andy Warhol, Truck, 1980, Westward Gallery'.",
-        resolve: ({ artist, title, date, partner }) => {
+        resolve: ({ artist, title, date, category, medium, partner }) => {
           return _.compact([
             artist && artist.name,
             title && `‘${title}’`,
             date,
+            category && category,
+            medium && medium,
             partner && partner.name,
           ]).join(", ")
         },
