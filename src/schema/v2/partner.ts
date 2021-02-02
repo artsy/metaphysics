@@ -53,6 +53,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       edgeFields: partnerArtistFields,
     }).connectionType
 
+    const { filterArtworksConnection } = require("./filterArtworksConnection")
+
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -98,6 +100,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       artworksConnection: {
         description: "A connection of artworks from a Partner.",
+        deprecationReason: "Use `filterArtworksConnection`",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
         resolve: ({ id }, args, { partnerArtworksLoader }) => {
@@ -218,6 +221,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ default_profile_id }) => default_profile_id,
       },
+      filterArtworksConnection: filterArtworksConnection("partner_id"),
       hasFairPartnership: {
         type: GraphQLBoolean,
         resolve: ({ has_fair_partnership }) => has_fair_partnership,
