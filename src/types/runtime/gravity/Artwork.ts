@@ -68,6 +68,7 @@ export const Artwork = Record({
   not_signed: Boolean.Or(Null),
   offer: Boolean,
   offerable: Boolean,
+  offerable_from_inquiry: Boolean,
   partner: Partner,
   pickup_available: Boolean.Or(Null),
   price_cents: Array(Number.Or(Null)).Or(Null),

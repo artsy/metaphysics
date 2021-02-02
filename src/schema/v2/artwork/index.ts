@@ -392,6 +392,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description: "Whether a user can make an offer on a work",
         resolve: ({ offerable }) => offerable,
       },
+      isOfferableFromInquiry: {
+        type: GraphQLBoolean,
+        description:
+          "Whether a user can make an offer on the work through inquiry",
+        resolve: ({ offerable_from_inquiry }) => offerable_from_inquiry,
+      },
       isBiddable: {
         type: GraphQLBoolean,
         description:
