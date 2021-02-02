@@ -59,6 +59,66 @@ describe("Artwork type", () => {
     }
   })
 
+  describe("#formattedMetadata", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          formattedMetadata
+        }
+      }
+    `
+
+    it("returns properly formatted metadata", async () => {
+      artwork = {
+        ...artwork,
+        artist: { name: "Name" },
+        title: "Title",
+        date: "Date",
+        category: "Category",
+        medium: "Medium",
+        partner: { name: "Partner" },
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          formattedMetadata:
+            "Name, ‘Title’, Date, Category, Medium, Partner",
+        },
+      })
+    })
+
+    it("excludes null values", async () => {
+      artwork = {
+        ...artwork,
+        artist: { name: "Name" },
+        title: "Title",
+        date: "Date",
+        category: null,
+        medium: null,
+        partner: { name: "Partner" },
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          formattedMetadata:
+            "Name, ‘Title’, Date, Partner",
+        },
+      })
+    })
+  })
+
   describe("dimensions", () => {
     const query = `
       {
