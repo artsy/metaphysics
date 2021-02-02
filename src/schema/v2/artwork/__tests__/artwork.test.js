@@ -2280,6 +2280,7 @@ describe("Artwork type", () => {
         }
       }
     `
+
     it("is null when certificate_of_authenticity is null", () => {
       artwork.certificate_of_authenticity = null
       return runQuery(query, context).then((data) => {
@@ -2287,6 +2288,7 @@ describe("Artwork type", () => {
         expect(data.artwork.hasCertificateOfAuthenticity).toBe(false)
       })
     })
+
     it("is set to proper object when certificate_of_authenticity is true", () => {
       artwork.certificate_of_authenticity = true
       return runQuery(query, context).then((data) => {
@@ -2297,7 +2299,8 @@ describe("Artwork type", () => {
         expect(data.artwork.hasCertificateOfAuthenticity).toBe(true)
       })
     })
-    it("is set to proper object when ertificate_of_authenticity and coa_from_authenticating_body are true", () => {
+
+    it("is set to proper object when certificate_of_authenticity and coa_from_authenticating_body are true", () => {
       artwork.certificate_of_authenticity = true
       artwork.coa_by_authenticating_body = true
       return runQuery(query, context).then((data) => {
@@ -2308,6 +2311,7 @@ describe("Artwork type", () => {
         expect(data.artwork.hasCertificateOfAuthenticity).toBe(true)
       })
     })
+
     it("is set to proper when object certificate_of_authenticity and coa_from_gallery are true", () => {
       artwork.certificate_of_authenticity = true
       artwork.coa_by_gallery = true
@@ -2319,6 +2323,7 @@ describe("Artwork type", () => {
         expect(data.artwork.hasCertificateOfAuthenticity).toBe(true)
       })
     })
+
     it("is set to proper when object certificate_of_authenticity, coa_from_authenticating_body, and coa_from_gallery are true", () => {
       artwork.certificate_of_authenticity = true
       artwork.coa_by_gallery = true
@@ -2331,6 +2336,7 @@ describe("Artwork type", () => {
         expect(data.artwork.hasCertificateOfAuthenticity).toBe(true)
       })
     })
+
     it("is null when certificate_of_authenticity is false", () => {
       artwork.certificate_of_authenticity = false
       return runQuery(query, context).then((data) => {
