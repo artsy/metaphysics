@@ -1,14 +1,18 @@
-import { GraphQLFieldConfig, GraphQLList, GraphQLString } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLList,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import { createPageCursors } from "./fields/pagination"
 import { ShowsConnection } from "./show"
-import { pageable } from "relay-cursor-paging"
+import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArray } from "graphql-relay"
+import ShowSorts, { TShowSorts } from "./sorts/show_sorts"
+import { pick } from "lodash"
 
-/**
- * Root field used (only) by Positron to fetch related content on articles
- */
 export const Shows: GraphQLFieldConfig<void, ResolverContext> = {
   type: ShowsConnection.connectionType,
   description: "A list of Shows",
@@ -16,22 +20,53 @@ export const Shows: GraphQLFieldConfig<void, ResolverContext> = {
     ids: {
       type: new GraphQLList(GraphQLString),
     },
+    hasLocation: {
+      type: GraphQLBoolean,
+    },
+    sort: {
+      type: ShowSorts,
+    },
+    displayable: {
+      type: GraphQLBoolean,
+      defaultValue: true,
+    },
+    atAFair: {
+      type: GraphQLBoolean,
+    },
   }),
-  resolve: (_root, { ..._options }, { showsLoader }) => {
-    const { page, size } = convertConnectionArgsToGravityArgs(_options)
-    const options: any = {
-      id: _options.ids,
+  resolve: async (
+    _root,
+    args: {
+      ids?: string[]
+      hasLocation?: boolean
+      sort?: TShowSorts
+      displayable?: boolean
+      atAFair?: boolean
+    } & CursorPageable,
+    { showsWithHeadersLoader }
+  ) => {
+    const { page, size } = convertConnectionArgsToGravityArgs(args)
+
+    const { body, headers } = await showsWithHeadersLoader({
+      total_count: true,
       page,
       size,
-    }
-
-    return showsLoader(options).then((body) => {
-      const totalCount = body.length
-      return {
-        totalCount,
-        pageCursors: createPageCursors({ page, size }, totalCount),
-        ...connectionFromArray(body, options),
-      }
+      id: args.ids,
+      has_location: args.hasLocation,
+      sort: args.sort,
+      displayable: args.displayable,
+      at_a_fair: args.atAFair,
     })
+
+    const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+    return {
+      totalCount,
+      pageCursors: createPageCursors({ page, size }, totalCount),
+      ...connectionFromArray(
+        body,
+        pick(args, "before", "after", "first", "last")
+      ),
+    }
   },
 }
