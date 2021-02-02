@@ -31,7 +31,7 @@ export const getGravityMergedSchema = async (schemaVersion = 2) => {
   // objects that they are expected to build upon
   const mergedSchema = mergeSchemas({
     schemas: [localSchema, cachedSchema, extensionSchema],
-    resolvers: resolvers,
+    resolvers: resolvers as any,
   }) as GraphQLSchema & { transforms: any }
 
   const anyMergedSchema = mergedSchema as any

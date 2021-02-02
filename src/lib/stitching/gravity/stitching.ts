@@ -74,6 +74,18 @@ function printType(type: GraphQLType): string {
   }
 }
 
+const userAddressIDResolver = {
+  fragment: gql`
+... on UserAddress {
+internalID
+}
+`,
+  resolve: (parent, _args, _context, _info) => {
+    const internalID = parent.internalID
+    return toGlobalId("UserAddress", internalID)
+  },
+}
+
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
   gravitySchema: GraphQLSchema & { transforms: any },
@@ -92,7 +104,7 @@ export const gravityStitchingEnvironment = (
         ): UserAddressConnection
       }
       extend type UserAddress implements Node {
-        id: ID!
+        ${schemaVersion === 2 ? `id: ID!` : `__id: ID!`}
       }
       extend type ViewingRoom {
         artworksConnection(
@@ -193,19 +205,14 @@ export const gravityStitchingEnvironment = (
           },
         },
       },
-      UserAddress: {
-        id: {
-          fragment: gql`
-            ... on UserAddress {
-              internalID
+      UserAddress:
+        schemaVersion === 2
+          ? {
+              id: userAddressIDResolver,
             }
-          `,
-          resolve: (parent, _args, _context, _info) => {
-            const internalID = parent.internalID
-            return toGlobalId("UserAddress", internalID)
-          },
-        },
-      },
+          : {
+              __id: userAddressIDResolver,
+            },
       ArtistSeries: {
         artworksConnection: {
           fragment: gql`

@@ -14287,6 +14287,8 @@ type User {
 
 # User saved address
 type UserAddress implements Node {
+  __id: ID!
+
   # Address line 1
   addressLine1: String!
 
@@ -14301,7 +14303,6 @@ type UserAddress implements Node {
 
   # Country
   country: String!
-  id: ID!
 
   # Unique ID for this address
   internalID: ID!
