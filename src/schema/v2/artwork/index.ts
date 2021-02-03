@@ -985,9 +985,26 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: ArtworkInfoRowType,
         description:
           "Returns the display label and detail when artwork has a certificate of authenticity",
-        resolve: ({ certificate_of_authenticity }) => {
+        resolve: ({
+          certificate_of_authenticity,
+          coa_by_authenticating_body,
+          coa_by_gallery,
+        }) => {
+          let detailsParts = ""
           if (certificate_of_authenticity) {
-            return { label: "Certificate of authenticity", details: "Included" }
+            detailsParts += "Included"
+            if (coa_by_authenticating_body && !coa_by_gallery) {
+              detailsParts += " (issued by authorized authenticating body)"
+            } else if (coa_by_gallery && !coa_by_authenticating_body) {
+              detailsParts += " (issued by gallery)"
+            } else if (coa_by_authenticating_body && coa_by_gallery) {
+              detailsParts +=
+                " (one issued by gallery; one issued by authorized authenticating body)"
+            }
+            return {
+              label: "Certificate of authenticity",
+              details: detailsParts,
+            }
           } else {
             return null
           }
