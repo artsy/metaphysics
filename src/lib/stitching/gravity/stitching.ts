@@ -13,6 +13,7 @@ import { pageableFilterArtworksArgs } from "schema/v2/filterArtworksConnection"
 import { normalizeImageData, getDefault } from "schema/v2/image"
 import { formatMarkdownValue } from "schema/v2/fields/markdown"
 import Format from "schema/v2/input_fields/format"
+import { toGlobalId } from "graphql-relay"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -90,7 +91,9 @@ export const gravityStitchingEnvironment = (
           before: String
         ): UserAddressConnection
       }
-
+      extend type UserAddress {
+        id: ID!
+      }
       extend type ViewingRoom {
         artworksConnection(
           first: Int
@@ -187,6 +190,19 @@ export const gravityStitchingEnvironment = (
               context,
               info,
             })
+          },
+        },
+      },
+      UserAddress: {
+        id: {
+          fragment: gql`
+          ... on UserAddress {
+          internalID
+          }
+          `,
+          resolve: (parent, _args, _context, _info) => {
+            const internalID = parent.internalID
+            return toGlobalId("UserAddress", internalID)
           },
         },
       },
