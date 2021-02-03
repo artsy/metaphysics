@@ -2312,7 +2312,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it("is set to proper when object certificate_of_authenticity and coa_from_gallery are true", () => {
+    it("is set to proper object when certificate_of_authenticity and coa_from_gallery are true", () => {
       artwork.certificate_of_authenticity = true
       artwork.coa_by_gallery = true
       return runQuery(query, context).then((data) => {
@@ -2324,7 +2324,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it("is set to proper when object certificate_of_authenticity, coa_from_authenticating_body, and coa_from_gallery are true", () => {
+    it("is set to proper object when certificate_of_authenticity, coa_from_authenticating_body, and coa_from_gallery are true", () => {
       artwork.certificate_of_authenticity = true
       artwork.coa_by_gallery = true
       artwork.coa_by_authenticating_body = true
