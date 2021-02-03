@@ -5,7 +5,7 @@ import {
   getRootFieldsFromSchema,
   getFieldsForTypeFromSchema,
 } from "lib/stitching/lib/getTypesFromSchema"
-import { causalityStitchingEnvironment } from "../stitching"
+import { causalityStitchingEnvironment as causalityStitchingEnvironmentV2 } from "../v2/stitching"
 
 import { mergeSchemas } from "graphql-tools"
 import { GraphQLSchema } from "graphql"
@@ -37,7 +37,7 @@ export async function useCausalityStitching() {
  */
 
 let cachedSchema: GraphQLSchema & { transforms: any }
-let stitchedSchema: ReturnType<typeof causalityStitchingEnvironment>
+let stitchedSchema: ReturnType<typeof causalityStitchingEnvironmentV2>
 let mergedSchema: GraphQLSchema & { transforms: any }
 
 /**
@@ -57,10 +57,9 @@ const getCausalityTransformedSchema = async () => {
 const getCausalityStitchedSchema = async () => {
   if (!stitchedSchema) {
     const causalitySchema = await getCausalityTransformedSchema()
-    stitchedSchema = causalityStitchingEnvironment({
+    stitchedSchema = causalityStitchingEnvironmentV2({
       localSchema,
       causalitySchema,
-      version: 2,
     })
   }
   return stitchedSchema

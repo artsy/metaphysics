@@ -1,10 +1,9 @@
-import { GraphQLSchema, Kind, SelectionSetNode } from "graphql"
+import { GraphQLSchema } from "graphql"
 import { amountSDL, amount } from "schema/v1/fields/money"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
 import { delegateToSchema } from "@graphql-tools/delegate"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
-import { WrapQuery } from "graphql-tools"
 
 const orderTotals = [
   "itemsTotal",
@@ -24,11 +23,9 @@ const lineItemTotalsSDL = lineItemTotals.map(amountSDL)
 const offerAmountFields = ["amount", "taxTotal", "shippingTotal", "buyerTotal"]
 const offerAmountFieldsSDL = offerAmountFields.map(amountSDL)
 export const exchangeStitchingEnvironment = ({
-  version,
   localSchema,
   exchangeSchema,
 }: {
-  version: number
   localSchema: GraphQLSchema
   exchangeSchema: GraphQLSchema & { transforms: any }
 }) => {
@@ -124,7 +121,7 @@ export const exchangeStitchingEnvironment = ({
         return info.mergeInfo.delegateToSchema({
           schema: localSchema,
           operation: "query",
-          fieldName: version >= 2 ? "creditCard" : "credit_card",
+          fieldName: "credit_card",
           args: {
             id,
           },
@@ -159,7 +156,6 @@ export const exchangeStitchingEnvironment = ({
     extend type CommerceLineItem {
       artwork: Artwork
       artworkVersion: ArtworkVersion
-      ${version === 2 ? "artworkOrEditionSet: ArtworkOrEditionSetType" : ""}
       ${lineItemTotalsSDL.join("\n")}
     }
 
@@ -249,78 +245,6 @@ export const exchangeStitchingEnvironment = ({
             })
           },
         },
-        ...(version === 2 && {
-          artworkOrEditionSet: {
-            fragment: gql`
-            ... on CommerceLineItem {
-              artworkId
-              editionSetId
-            }
-          `,
-            resolve: async (parent, _args, context, info) => {
-              const artworkId = parent.artworkId
-              const editionSetId = parent.editionSetId
-
-              if (editionSetId) {
-                return info.mergeInfo.delegateToSchema({
-                  schema: localSchema,
-                  operation: "query",
-                  fieldName: "artwork",
-                  args: {
-                    id: artworkId,
-                  },
-                  context,
-                  info,
-                  transforms: [
-                    // Wrap document takes a subtree as an AST node
-                    new WrapQuery(
-                      // path at which to apply wrapping and extracting
-                      ["artwork"],
-                      (subtree: SelectionSetNode) => ({
-                        // we create a wrapping AST Field
-                        kind: Kind.FIELD,
-                        name: {
-                          kind: Kind.NAME,
-                          value: "editionSet",
-                        },
-                        arguments: [
-                          {
-                            kind: Kind.ARGUMENT,
-                            name: {
-                              kind: Kind.NAME,
-                              value: "id",
-                            },
-                            value: {
-                              kind: Kind.STRING,
-                              value: editionSetId,
-                            },
-                          },
-                        ],
-                        // Inside the field selection
-                        selectionSet: subtree,
-                      }),
-                      // how to process the data result at path
-                      (result) => {
-                        return result.editionSet
-                      }
-                    ),
-                  ],
-                })
-              }
-
-              return info.mergeInfo.delegateToSchema({
-                schema: localSchema,
-                operation: "query",
-                fieldName: "artwork",
-                args: {
-                  id: artworkId,
-                },
-                context,
-                info,
-              })
-            },
-          },
-        }),
         ...totalsResolvers("CommerceLineItem", lineItemTotals),
       },
       CommerceOrder: {
