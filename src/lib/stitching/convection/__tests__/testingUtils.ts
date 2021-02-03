@@ -5,7 +5,7 @@ import {
   getRootFieldsFromSchema,
   getFieldsForTypeFromSchema,
 } from "lib/stitching/lib/getTypesFromSchema"
-import { consignmentStitchingEnvironment } from "../stitching"
+import { consignmentStitchingEnvironment } from "../v2/stitching"
 
 import { mergeSchemas } from "graphql-tools"
 import { GraphQLSchema } from "graphql"

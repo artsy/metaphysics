@@ -1,4 +1,4 @@
-import { executableVortexSchema } from "./schema"
+import { executableVortexSchema } from "lib/stitching/vortex/schema"
 import { amount } from "schema/v1/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import gql from "lib/gql"
@@ -13,10 +13,7 @@ const getMaxPrice = (thing: { listPrice: any }) => {
   return thing.listPrice.minor || thing.listPrice.maxPrice.minor
 }
 
-export const vortexStitchingEnvironment = (
-  localSchema: GraphQLSchema,
-  gravitySchema: GraphQLSchema
-) => ({
+export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: gql`
     union AnalyticsRankedEntityUnion = Artwork | Show | Artist | ViewingRoom
@@ -47,9 +44,6 @@ export const vortexStitchingEnvironment = (
     }
     extend type Partner {
       analytics: AnalyticsPartnerStats
-    }
-    extend type User {
-      analytics: AnalyticsUserStats
     }
     extend type AnalyticsPartnerSalesStats {
       total(
@@ -83,7 +77,7 @@ export const vortexStitchingEnvironment = (
               category
             }
           }
-          ... on Artwork { artistNames }
+          ... on Artwork { artist_names }
         `,
         resolve: (parent, _args, _context, _info) =>
           filtersDescription(parent.appliedFilters, parent.artistNames),
@@ -114,7 +108,7 @@ export const vortexStitchingEnvironment = (
         fragment: gql`
           ... on Artwork {
             sizeScore
-            editionSets {
+            edition_sets {
               sizeScore
               listPrice {
                 __typename
@@ -146,31 +140,31 @@ export const vortexStitchingEnvironment = (
               }
             }
             artist {
-              internalID
+              _id
               disablePriceContext
             }
             category
-            isForSale
-            isPriceHidden
-            isInAuction
-            priceCurrency
+            is_for_sale
+            is_price_hidden
+            is_in_auction
+            price_currency
             artists {
-              internalID
+              _id
             }
-            artistNames
+            artist_names
           }
         `,
         resolve: async (source, _, context, info) => {
           const {
             artist,
             artists,
-            artistNames,
+            artist_names,
             category,
-            editionSets,
-            isForSale,
-            isInAuction,
-            isPriceHidden,
-            priceCurrency,
+            edition_sets,
+            is_for_sale,
+            is_in_auction,
+            is_price_hidden,
+            price_currency,
             listPrice,
             sizeScore: mainSizeScore,
           } = source
@@ -179,7 +173,7 @@ export const vortexStitchingEnvironment = (
           const edition = sortBy(
             [
               { sizeScore: mainSizeScore, listPrice },
-              ...(editionSets || []),
+              ...(edition_sets || []),
             ].filter((e) => e.sizeScore),
             getMaxPrice
           ).pop() as any
@@ -193,11 +187,11 @@ export const vortexStitchingEnvironment = (
 
           // fail if we don't have enough info to request a histogram
           if (
-            isPriceHidden ||
-            isInAuction ||
-            priceCurrency !== "USD" ||
+            is_price_hidden ||
+            is_in_auction ||
+            price_currency !== "USD" ||
             (artists && artists.length > 1) ||
-            !isForSale ||
+            !is_for_sale ||
             !price ||
             !artist ||
             !sizeScore ||
@@ -221,7 +215,7 @@ export const vortexStitchingEnvironment = (
           }
 
           const args = {
-            artistId: artist.internalID,
+            artistId: artist._id,
             category: vortexSupportedCategory,
             sizeScore: Math.round(sizeScore),
           }
@@ -238,7 +232,7 @@ export const vortexStitchingEnvironment = (
             // passing it down from Artwork so it can be used in appliedFiltersDisplay
             // as a way to work around the resolver only having access
             // to the data in AnalyticsPricingContext and not Artwork
-            if (vortexContext) vortexContext.artistNames = artistNames
+            if (vortexContext) vortexContext.artistNames = artist_names
 
             return vortexContext
           } catch (e) {
@@ -251,33 +245,14 @@ export const vortexStitchingEnvironment = (
     Partner: {
       analytics: {
         fragment: gql`... on Partner {
-          internalID
+          _id
         }`,
-
         resolve: async (source, _, context, info) => {
-          const args = { partnerId: source.internalID }
+          const args = { partnerId: source._id }
           return await info.mergeInfo.delegateToSchema({
             schema: vortexSchema,
             operation: "query",
             fieldName: "analyticsPartnerStats",
-            args,
-            context,
-            info,
-          })
-        },
-      },
-    },
-    User: {
-      analytics: {
-        fragment: gql`... on User {
-          internalID
-        }`,
-        resolve: async (source, _, context, info) => {
-          const args = { userId: source.internalID }
-          return await info.mergeInfo.delegateToSchema({
-            schema: vortexSchema,
-            operation: "query",
-            fieldName: "analyticsUserStats",
             args,
             context,
             info,
@@ -311,7 +286,7 @@ export const vortexStitchingEnvironment = (
       entity: {
         fragment: gql`
           ... on AnalyticsRankedStats {
-            rankedEntity {
+            rankedEntity{
               __typename
               ... on AnalyticsArtwork {
                 entityId
@@ -322,27 +297,17 @@ export const vortexStitchingEnvironment = (
               ... on AnalyticsArtist {
                 entityId
               }
-              ... on AnalyticsViewingRoom {
-                entityId
-              }
             }
           }
         `,
         resolve: (parent, _args, context, info) => {
           const removeVortexPrefix = (name) => name.replace("Analytics", "")
           const typename = parent.rankedEntity.__typename
-          const typenameWithoutPrefix = removeVortexPrefix(typename)
-          // Data massaging to allow for proper casing for query: viewingRoom, show, artwork, etc
-          const fieldName =
-            typenameWithoutPrefix.charAt(0).toLowerCase() +
-            typenameWithoutPrefix.slice(1)
+          const fieldName = removeVortexPrefix(typename).toLowerCase()
           const id = parent.rankedEntity.entityId
-          const schema =
-            fieldName == "viewingRoom" ? gravitySchema : localSchema
-
           return info.mergeInfo
             .delegateToSchema({
-              schema: schema,
+              schema: localSchema,
               operation: "query",
               fieldName,
               args: {

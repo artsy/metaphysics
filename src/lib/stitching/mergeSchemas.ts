@@ -3,24 +3,26 @@ import { executableGravitySchema } from "lib/stitching/gravity/schema"
 import { executableCausalitySchema } from "lib/stitching/causality/schema"
 import { executableDiffusionSchema } from "lib/stitching/diffusion/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
-import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitching"
 import {
   executableExchangeSchema,
   transformsForExchange,
 } from "lib/stitching/exchange/schema"
 import { executableKawsSchema } from "lib/stitching/kaws/schema"
-import {
-  kawsStitchingEnvironmentV1,
-  kawsStitchingEnvironmentV2,
-} from "lib/stitching/kaws/stitching"
+import { executableVortexSchema } from "lib/stitching/vortex/schema"
 
 import { GraphQLSchema } from "graphql"
-import { exchangeStitchingEnvironment } from "./exchange/stitching"
-import { executableVortexSchema } from "lib/stitching/vortex/schema"
-import { vortexStitchingEnvironment as vortexStitchingEnvironmentv1 } from "./vortex/stitchingv1"
-import { vortexStitchingEnvironment as vortexStitchingEnvironmentv2 } from "./vortex/stitching"
-import { gravityStitchingEnvironment } from "./gravity/stitching"
-import { causalityStitchingEnvironment } from "./causality/stitching"
+import { vortexStitchingEnvironment as vortexStitchingEnvironmentv1 } from "./vortex/v1/stitching"
+import { vortexStitchingEnvironment as vortexStitchingEnvironmentv2 } from "./vortex/v2/stitching"
+import { kawsStitchingEnvironmentV1 } from "./kaws/v1/stitching"
+import { kawsStitchingEnvironmentV2 } from "./kaws/v2/stitching"
+import { gravityStitchingEnvironment as gravityStitchingEnvironmentV1 } from "./gravity/v1/stitching"
+import { gravityStitchingEnvironment as gravityStitchingEnvironmentV2 } from "./gravity/v2/stitching"
+import { exchangeStitchingEnvironment as exchangeStitchingEnvironmentV1 } from "./exchange/v1/stitching"
+import { exchangeStitchingEnvironment as exchangeStitchingEnvironmentV2 } from "./exchange/v2/stitching"
+import { consignmentStitchingEnvironment as convectionStitchingEnvironmentV1 } from "./convection/v1/stitching"
+import { consignmentStitchingEnvironment as convectionStitchingEnvironmentV2 } from "./convection/v2/stitching"
+import { causalityStitchingEnvironment as causalityStitchingEnvironmentV1 } from "./causality/v1/stitching"
+import { causalityStitchingEnvironment as causalityStitchingEnvironmentV2 } from "./causality/v2/stitching"
 
 /**
  * Incrementally merges in schemas according to `process.env`
@@ -45,9 +47,15 @@ export const incrementalMergeSchemas = (localSchema, version: 1 | 2) => {
   const gravitySchema = executableGravitySchema()
   schemas.push(gravitySchema)
 
-  useStitchingEnvironment(
-    gravityStitchingEnvironment(localSchema, gravitySchema, version)
-  )
+  if (version === 1) {
+    useStitchingEnvironment(
+      gravityStitchingEnvironmentV1(localSchema, gravitySchema)
+    )
+  } else {
+    useStitchingEnvironment(
+      gravityStitchingEnvironmentV2(localSchema, gravitySchema)
+    )
+  }
 
   const causalitySchema = executableCausalitySchema()
   schemas.push(causalitySchema)
@@ -55,23 +63,47 @@ export const incrementalMergeSchemas = (localSchema, version: 1 | 2) => {
   const diffusionSchema = executableDiffusionSchema()
   schemas.push(diffusionSchema)
 
-  useStitchingEnvironment(
-    causalityStitchingEnvironment({ causalitySchema, localSchema, version })
-  )
+  if (version === 1) {
+    useStitchingEnvironment(
+      causalityStitchingEnvironmentV1({
+        causalitySchema,
+        localSchema,
+      })
+    )
+  } else {
+    useStitchingEnvironment(
+      causalityStitchingEnvironmentV2({
+        causalitySchema,
+        localSchema,
+      })
+    )
+  }
 
   const exchangeSchema = executableExchangeSchema(transformsForExchange)
   schemas.push(exchangeSchema)
 
-  useStitchingEnvironment(
-    exchangeStitchingEnvironment({ localSchema, exchangeSchema, version })
-  )
+  if (version === 1) {
+    useStitchingEnvironment(
+      exchangeStitchingEnvironmentV1({ localSchema, exchangeSchema })
+    )
+  } else {
+    useStitchingEnvironment(
+      exchangeStitchingEnvironmentV2({ localSchema, exchangeSchema })
+    )
+  }
 
   const convectionSchema = executableConvectionSchema()
   schemas.push(convectionSchema)
 
-  useStitchingEnvironment(
-    consignmentStitchingEnvironment(localSchema, convectionSchema)
-  )
+  if (version === 1) {
+    useStitchingEnvironment(
+      convectionStitchingEnvironmentV1(localSchema, convectionSchema)
+    )
+  } else {
+    useStitchingEnvironment(
+      convectionStitchingEnvironmentV2(localSchema, convectionSchema)
+    )
+  }
 
   const vortexSchema = executableVortexSchema()
   schemas.push(vortexSchema)

@@ -14301,7 +14301,6 @@ type UserAddress {
 
   # Country
   country: String!
-  id: ID!
 
   # Unique ID for this address
   internalID: ID!
