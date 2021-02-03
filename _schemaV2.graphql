@@ -11065,7 +11065,7 @@ type User {
 }
 
 # User saved address
-type UserAddress implements Node {
+type UserAddress {
   # Address line 1
   addressLine1: String!
 
