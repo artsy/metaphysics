@@ -111,6 +111,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   artistIDs: {
     type: new GraphQLList(GraphQLString),
   },
+  artistNationalities: {
+    type: GraphQLList(GraphQLString),
+  },
   atAuction: {
     type: GraphQLBoolean,
   },
@@ -376,6 +379,7 @@ const filterArtworksConnectionTypeFactory = (
       aggregationPartnerCities,
       artistID,
       artistIDs,
+      artistNationalities,
       artistSeriesID,
       atAuction,
       attributionClass,
@@ -408,6 +412,7 @@ const filterArtworksConnectionTypeFactory = (
       aggregation_partner_cities: aggregationPartnerCities,
       artist_id: artistID,
       artist_ids: artistIDs,
+      artist_nationalities: artistNationalities,
       artist_series_id: artistSeriesID,
       at_auction: atAuction,
       attribution_class: attributionClass,
