@@ -991,7 +991,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               detailsParts += " (issued by gallery)"
             } else if (coa_by_authenticating_body && coa_by_gallery) {
               detailsParts +=
-                " (issued by authorized authenticating body and gallery)"
+                " (one issued by gallery; one issued by authorized authenticating body)"
             }
             return {
               label: "Certificate of authenticity",

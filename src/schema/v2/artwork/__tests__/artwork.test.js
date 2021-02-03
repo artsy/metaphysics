@@ -2331,7 +2331,8 @@ describe("Artwork type", () => {
       return runQuery(query, context).then((data) => {
         expect(data.artwork.certificateOfAuthenticity).toEqual({
           label: "Certificate of authenticity",
-          details: "Included (issued by authorized authenticating body and gallery)",
+          details:
+            "Included (one issued by gallery; one issued by authorized authenticating body)",
         })
         expect(data.artwork.hasCertificateOfAuthenticity).toBe(true)
       })
