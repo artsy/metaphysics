@@ -29,6 +29,6 @@ export const EventStatus = {
   }),
 }
 
-export type TEventStatus = keyof typeof EVENT_STATUS_SORTS
+export type EventStatusType = keyof typeof EVENT_STATUS_SORTS
 
 export default EventStatus

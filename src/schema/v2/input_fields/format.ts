@@ -13,6 +13,6 @@ const Format = {
   }),
 }
 
-export type TFormat = typeof FORMATS[keyof typeof FORMATS]["value"]
+export type FormatType = typeof FORMATS[keyof typeof FORMATS]["value"]
 
 export default Format

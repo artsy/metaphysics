@@ -10,7 +10,7 @@ import { ShowsConnection } from "./show"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArray } from "graphql-relay"
-import ShowSorts, { TShowSort } from "./sorts/show_sorts"
+import ShowSorts, { ShowSortsType } from "./sorts/show_sorts"
 import { pick } from "lodash"
 
 export const Shows: GraphQLFieldConfig<
@@ -19,7 +19,7 @@ export const Shows: GraphQLFieldConfig<
   {
     ids?: string[]
     hasLocation?: boolean
-    sort?: TShowSort
+    sort?: ShowSortsType
     displayable?: boolean
     atAFair?: boolean
   } & CursorPageable

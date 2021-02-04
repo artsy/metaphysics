@@ -1,7 +1,7 @@
 import _, { pick } from "lodash"
-import FairSorts, { TFairSort } from "./sorts/fair_sorts"
-import EventStatus, { TEventStatus } from "./input_fields/event_status"
-import Near, { TNear } from "./input_fields/near"
+import FairSorts, { FairSortsType } from "./sorts/fair_sorts"
+import EventStatus, { EventStatusType } from "./input_fields/event_status"
+import Near, { NearType } from "./input_fields/near"
 import Fair, { fairConnection } from "./fair"
 import {
   GraphQLString,
@@ -97,9 +97,9 @@ export const fairsConnection: GraphQLFieldConfig<
     hasHomepageSection?: boolean
     hasListing?: boolean
     ids?: string[]
-    near?: TNear
-    sort?: TFairSort
-    status?: TEventStatus
+    near?: NearType
+    sort?: FairSortsType
+    status?: EventStatusType
   } & CursorPageable
 > = {
   type: fairConnection.connectionType,

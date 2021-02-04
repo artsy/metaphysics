@@ -16,6 +16,6 @@ export const FairSorts = {
   }),
 }
 
-export type TFairSort = typeof FAIR_SORTS[keyof typeof FAIR_SORTS]["value"]
+export type FairSortsType = typeof FAIR_SORTS[keyof typeof FAIR_SORTS]["value"]
 
 export default FairSorts

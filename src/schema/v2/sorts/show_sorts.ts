@@ -21,6 +21,6 @@ const ShowSorts = new GraphQLEnumType({
   values: SHOW_SORTS,
 })
 
-export type TShowSort = typeof SHOW_SORTS[keyof typeof SHOW_SORTS]["value"]
+export type ShowSortsType = typeof SHOW_SORTS[keyof typeof SHOW_SORTS]["value"]
 
 export default ShowSorts
