@@ -137,7 +137,7 @@ it("delegates to the local schema for an Order's creditCard", async () => {
 
   expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
     args: { id: "CC-1" },
-    fieldName: "credit_card",
+    fieldName: "creditCard",
     ...restOfResolveArgs,
   })
 })
@@ -151,7 +151,7 @@ it("doesn't delegate to the local schema for an Order's creditCard if creditCard
 
   expect(mergeInfo.delegateToSchema).not.toHaveBeenCalledWith({
     args: { id: null },
-    fieldName: "credit_card",
+    fieldName: "creditCard",
     ...restOfResolveArgs,
   })
 })

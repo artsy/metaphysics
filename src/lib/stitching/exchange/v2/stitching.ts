@@ -366,8 +366,9 @@ export const exchangeStitchingEnvironment = ({
             try {
               await conversationLoader(impulseConversationId)
             } catch (e) {
-              // be more elegant?
-              throw new GraphQLError(`Bad Request`)
+              throw new GraphQLError(
+                `[metaphysics @ exchange/v2/stitching] Conversation not found`
+              )
             }
 
             const offerResult = await info.mergeInfo.delegateToSchema({
@@ -415,7 +416,9 @@ export const exchangeStitchingEnvironment = ({
               } = orderOrError
 
               if (!orderId) {
-                throw new GraphQLError("Bad request (no order id)")
+                throw new GraphQLError(
+                  "[metaphysics @ exchange/v2/stitching] Order.orderID field must be selected"
+                )
               }
 
               try {
@@ -425,7 +428,7 @@ export const exchangeStitchingEnvironment = ({
                 })
               } catch (e) {
                 throw new GraphQLError(
-                  "Impulse: request to associate offer with conversation failed"
+                  "[metaphysics @ exchange/v2/stitching] Impulse: request to associate offer with conversation failed"
                 )
               }
             }
