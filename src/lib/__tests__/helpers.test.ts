@@ -1,12 +1,14 @@
 import {
   exclude,
   isExisty,
+  markdownToText,
   removeNulls,
   removeEmptyValues,
   resolveBlueGreen,
   stripTags,
   toKey,
   toQueryString,
+  unescapeEntities,
 } from "lib/helpers"
 
 describe("exclude", () => {
@@ -196,5 +198,21 @@ describe("resolveBlueGreen", () => {
 
   it("resolves to green with blue and green at 100 percent", () => {
     expect(resolveBlueGreen(resolveBlue, resolveGreen, 100)).toBe(resolveGreen)
+  })
+})
+
+describe("unescapeEntities", () => {
+  it("unescapes entities", () => {
+    const input = markdownToText(
+      "i daren't; i'm is 42\" tall & the hoop is 10' high"
+    )
+
+    expect(input).toEqual(
+      "i daren&#39;t; i&#39;m is 42&quot; tall &amp; the hoop is 10&#39; high"
+    )
+
+    expect(unescapeEntities(input)).toEqual(
+      "i daren't; i'm is 42\" tall & the hoop is 10' high"
+    )
   })
 })
