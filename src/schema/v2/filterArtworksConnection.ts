@@ -123,6 +123,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   color: {
     type: GraphQLString,
   },
+  colors: {
+    type: new GraphQLList(GraphQLString),
+  },
   sizes: {
     type: new GraphQLList(ArtworkSizes),
     description: "Filter results by Artwork sizes",
