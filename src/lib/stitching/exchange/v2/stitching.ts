@@ -1,4 +1,4 @@
-import { GraphQLSchema, Kind, SelectionSetNode } from "graphql"
+import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
 import { amountSDL, amount } from "schema/v1/fields/money"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
@@ -154,6 +154,7 @@ export const exchangeStitchingEnvironment = ({
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
+
     extend type CommerceLineItem {
       artwork: Artwork
       artworkVersion: ArtworkVersion
@@ -193,6 +194,12 @@ export const exchangeStitchingEnvironment = ({
 
     extend type Me {
       orders(first: Int, last: Int, after: String, before: String, mode: CommerceOrderModeEnum, sellerId: String, sort: CommerceOrderConnectionSortEnum, states: [CommerceOrderStateEnum!]): CommerceOrderConnectionWithTotalCount
+    }
+
+    extend type Mutation {
+      createInquiryOfferOrder(
+        input: CommerceCreateInquiryOfferOrderWithArtworkInput!
+      ): CommerceCreateInquiryOfferOrderWithArtworkPayload
     }
   `,
 
@@ -346,6 +353,87 @@ export const exchangeStitchingEnvironment = ({
               context,
               info,
             })
+          },
+        },
+      },
+      Mutation: {
+        createInquiryOfferOrder: {
+          resolve: async (_source, args, context, info) => {
+            const {
+              conversationLoader,
+              conversationCreateConversationOrderLoader,
+            } = context
+            const {
+              input: { impulseConversationId },
+            } = args
+
+            try {
+              await conversationLoader(impulseConversationId)
+            } catch (e) {
+              throw new GraphQLError(
+                `[metaphysics @ exchange/v2/stitching] Conversation not found`
+              )
+            }
+
+            const offerResult = await info.mergeInfo.delegateToSchema({
+              schema: exchangeSchema,
+              operation: "mutation",
+              fieldName: "commerceCreateInquiryOfferOrderWithArtwork",
+              args,
+              context,
+              info,
+              transforms: [
+                // add orderOrError.order.internalID to the Order selectionSet
+                new WrapQuery(
+                  [
+                    "commerceCreateInquiryOfferOrderWithArtwork",
+                    "orderOrError",
+                    "order",
+                  ],
+                  (selectionSet: SelectionSetNode) => {
+                    const newSelections = [
+                      ...selectionSet.selections,
+                      {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "internalID",
+                        },
+                      },
+                    ]
+                    return { ...selectionSet, selections: newSelections }
+                  },
+                  (result) => {
+                    return result
+                  }
+                ),
+              ],
+            })
+
+            const { orderOrError } = offerResult
+
+            if (orderOrError.error) {
+              // if we got an error from exchange, return it immediately
+              return offerResult
+            } else if (orderOrError.order) {
+              // attempt to associate the order with the conversation
+              const {
+                order: { internalID: orderId },
+              } = orderOrError
+
+              try {
+                await conversationCreateConversationOrderLoader({
+                  conversation_id: impulseConversationId,
+                  exchange_order_id: orderId,
+                })
+              } catch (e) {
+                throw new GraphQLError(
+                  "[metaphysics @ exchange/v2/stitching] Impulse: request to associate offer with conversation failed"
+                )
+              }
+            }
+
+            return offerResult
           },
         },
       },
