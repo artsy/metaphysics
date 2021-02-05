@@ -1,10 +1,4 @@
-import {
-  GraphQLError,
-  GraphQLSchema,
-  Kind,
-  parse,
-  SelectionSetNode,
-} from "graphql"
+import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
 import { amountSDL, amount } from "schema/v1/fields/money"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
@@ -201,6 +195,12 @@ export const exchangeStitchingEnvironment = ({
     extend type Me {
       orders(first: Int, last: Int, after: String, before: String, mode: CommerceOrderModeEnum, sellerId: String, sort: CommerceOrderConnectionSortEnum, states: [CommerceOrderStateEnum!]): CommerceOrderConnectionWithTotalCount
     }
+
+    extend type Mutation {
+      createInquiryOffer(
+        input: CommerceCreateInquiryOfferOrderWithArtworkInput!
+      ): CommerceCreateInquiryOfferOrderWithArtworkPayload
+    }
   `,
 
     // Resolvers for the above
@@ -357,9 +357,7 @@ export const exchangeStitchingEnvironment = ({
         },
       },
       Mutation: {
-        // monkey-patch the existing exchange mutation
-        // to add operations dependent on impulse
-        commerceCreateInquiryOfferOrderWithArtwork: {
+        createInquiryOffer: {
           resolve: async (_source, args, context, info) => {
             const {
               conversationLoader,
@@ -370,14 +368,7 @@ export const exchangeStitchingEnvironment = ({
             } = args
 
             try {
-              const conversation = await conversationLoader(
-                impulseConversationId
-              )
-              if (!conversation) {
-                throw new GraphQLError(
-                  `[metaphysics @ exchange/v2/stitching] Conversation not found`
-                )
-              }
+              await conversationLoader(impulseConversationId)
             } catch (e) {
               throw new GraphQLError(
                 `[metaphysics @ exchange/v2/stitching] Conversation not found`
@@ -392,6 +383,7 @@ export const exchangeStitchingEnvironment = ({
               context,
               info,
               transforms: [
+                // add orderOrError.order.internalID to the Order selectionSet
                 new WrapQuery(
                   [
                     "commerceCreateInquiryOfferOrderWithArtwork",
@@ -399,23 +391,8 @@ export const exchangeStitchingEnvironment = ({
                     "order",
                   ],
                   (selectionSet: SelectionSetNode) => {
-                    console.log(
-                      "SelectionSet: ",
-                      JSON.stringify(selectionSet, null, 2)
-                    )
-                    // return {
-                    //   ...parse(gql`
-                    //   ...on CommerceOrderWithMutationSuccess {
-                    //     order {
-                    //         internalID
-                    //     }
-                    //   }
-                    // `),
-                    //   selectionSet,
-                    // }
                     const newSelections = [
                       ...selectionSet.selections,
-                      // return
                       {
                         kind: Kind.FIELD,
                         name: {
@@ -423,19 +400,16 @@ export const exchangeStitchingEnvironment = ({
                           value: "internalID",
                         },
                       },
-                      //   selectionSet,
-                      // }
                     ]
                     return { ...selectionSet, selections: newSelections }
                   },
                   (result) => {
-                    console.warn("TRANSFORM " + JSON.stringify(result))
-                    // throw new GraphQLError(JSON.stringify(result))
                     return result
                   }
                 ),
               ],
             })
+
             const { orderOrError } = offerResult
 
             if (orderOrError.error) {
@@ -446,12 +420,6 @@ export const exchangeStitchingEnvironment = ({
               const {
                 order: { internalID: orderId },
               } = orderOrError
-
-              if (!orderId) {
-                throw new GraphQLError(
-                  "[metaphysics @ exchange/v2/stitching] Order.internalID field must be selected"
-                )
-              }
 
               try {
                 await conversationCreateConversationOrderLoader({
