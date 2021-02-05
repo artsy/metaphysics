@@ -3,8 +3,8 @@ import { GraphQLEnumType } from "graphql"
 const SHOW_SORTS = {
   END_AT_ASC: { value: "end_at" },
   END_AT_DESC: { value: "-end_at" },
-  FEATURED_ASC: { value: "-featured,-start_at" },
-  FEATURED_DESC: { value: "-featured,-end_at" },
+  FEATURED_ASC: { value: "featured" },
+  FEATURED_DESC: { value: "-featured" },
   NAME_ASC: { value: "name" },
   NAME_DESC: { value: "-name" },
   PARTNER_ASC: { value: "fully_qualified_name" },
