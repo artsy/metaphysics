@@ -1,4 +1,10 @@
-import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
+import {
+  GraphQLError,
+  GraphQLSchema,
+  Kind,
+  parse,
+  SelectionSetNode,
+} from "graphql"
 import { amountSDL, amount } from "schema/v1/fields/money"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
@@ -364,7 +370,14 @@ export const exchangeStitchingEnvironment = ({
             } = args
 
             try {
-              await conversationLoader(impulseConversationId)
+              const conversation = await conversationLoader(
+                impulseConversationId
+              )
+              if (!conversation) {
+                throw new GraphQLError(
+                  `[metaphysics @ exchange/v2/stitching] Conversation not found`
+                )
+              }
             } catch (e) {
               throw new GraphQLError(
                 `[metaphysics @ exchange/v2/stitching] Conversation not found`
@@ -378,31 +391,50 @@ export const exchangeStitchingEnvironment = ({
               args,
               context,
               info,
-              // transforms: [
-              //   new WrapQuery(
-              //     [
-              //       "createInquiryOfferOrderWithArtwork",
-              //       "orderOrError",
-              //       "order",
-              //     ],
-              //     (selectionSet: SelectionSetNode) => {
-              //       // const newSelections = [
-              //       // ...selectionSet.selections,
-              //       return {
-              //         kind: Kind.FIELD,
-              //         name: {
-              //           kind: Kind.NAME,
-              //           value: "internalID",
-              //         },
-              //         selectionSet,
-              //       }
-              //       // ]
-              //       // return { ...selectionSet, selections: newSelections }
-              //     },
-              //     (result) => result
-              //     // result.createInquiryOfferOrderWithArtwork.orderOrError.order
-              //   ),
-              // ],
+              transforms: [
+                new WrapQuery(
+                  [
+                    "commerceCreateInquiryOfferOrderWithArtwork",
+                    "orderOrError",
+                    "order",
+                  ],
+                  (selectionSet: SelectionSetNode) => {
+                    console.log(
+                      "SelectionSet: ",
+                      JSON.stringify(selectionSet, null, 2)
+                    )
+                    // return {
+                    //   ...parse(gql`
+                    //   ...on CommerceOrderWithMutationSuccess {
+                    //     order {
+                    //         internalID
+                    //     }
+                    //   }
+                    // `),
+                    //   selectionSet,
+                    // }
+                    const newSelections = [
+                      ...selectionSet.selections,
+                      // return
+                      {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "internalID",
+                        },
+                      },
+                      //   selectionSet,
+                      // }
+                    ]
+                    return { ...selectionSet, selections: newSelections }
+                  },
+                  (result) => {
+                    console.warn("TRANSFORM " + JSON.stringify(result))
+                    // throw new GraphQLError(JSON.stringify(result))
+                    return result
+                  }
+                ),
+              ],
             })
             const { orderOrError } = offerResult
 
@@ -417,7 +449,7 @@ export const exchangeStitchingEnvironment = ({
 
               if (!orderId) {
                 throw new GraphQLError(
-                  "[metaphysics @ exchange/v2/stitching] Order.orderID field must be selected"
+                  "[metaphysics @ exchange/v2/stitching] Order.internalID field must be selected"
                 )
               }
 
