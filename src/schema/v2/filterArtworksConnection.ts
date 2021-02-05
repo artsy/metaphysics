@@ -123,6 +123,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   color: {
     type: GraphQLString,
   },
+  colors: {
+    type: new GraphQLList(GraphQLString),
+  },
   sizes: {
     type: new GraphQLList(ArtworkSizes),
     description: "Filter results by Artwork sizes",
@@ -181,6 +184,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   partnerID: {
     type: GraphQLID,
+  },
+  partnerIDs: {
+    type: new GraphQLList(GraphQLString),
   },
   partnerCities: {
     type: new GraphQLList(GraphQLString),
@@ -395,6 +401,7 @@ const filterArtworksConnectionTypeFactory = (
       geneIDs,
       majorPeriods,
       partnerID,
+      partnerIDs,
       partnerCities,
       priceRange,
       saleID,
@@ -428,6 +435,7 @@ const filterArtworksConnectionTypeFactory = (
       gene_ids: geneIDs,
       major_periods: majorPeriods,
       partner_id: partnerID,
+      partner_ids: partnerIDs,
       partner_cities: partnerCities,
       price_range: priceRange,
       sale_id: saleID,
