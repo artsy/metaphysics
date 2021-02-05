@@ -197,7 +197,7 @@ export const exchangeStitchingEnvironment = ({
     }
 
     extend type Mutation {
-      createInquiryOffer(
+      createInquiryOfferOrder(
         input: CommerceCreateInquiryOfferOrderWithArtworkInput!
       ): CommerceCreateInquiryOfferOrderWithArtworkPayload
     }
@@ -357,7 +357,7 @@ export const exchangeStitchingEnvironment = ({
         },
       },
       Mutation: {
-        createInquiryOffer: {
+        createInquiryOfferOrder: {
           resolve: async (_source, args, context, info) => {
             const {
               conversationLoader,

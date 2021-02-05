@@ -37,7 +37,7 @@ it("extends the Me object", async () => {
 it("extends the Mutation object", async () => {
   const mergedSchema = await getExchangeMergedSchema()
   const meFields = await getFieldsForTypeFromSchema("Mutation", mergedSchema)
-  expect(meFields).toContain("createInquiryOffer")
+  expect(meFields).toContain("createInquiryOfferOrder")
 })
 
 it("resolves amount fields on CommerceOrder", async () => {
@@ -162,7 +162,7 @@ it("doesn't delegate to the local schema for an Order's creditCard if creditCard
   })
 })
 
-describe("commerceCreateInquiryOfferOrderWithArtwork", () => {
+describe("createInquiryOfferOrder", () => {
   const context = {
     conversationLoader: jest.fn(),
     conversationCreateConversationOrderLoader: jest.fn(),
@@ -175,7 +175,7 @@ describe("commerceCreateInquiryOfferOrderWithArtwork", () => {
 
   it("calls impulse after creating the order", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
-    const resolver = resolvers.Mutation.createInquiryOffer.resolve
+    const resolver = resolvers.Mutation.createInquiryOfferOrder.resolve
 
     const args = {
       input: {
@@ -213,7 +213,7 @@ describe("commerceCreateInquiryOfferOrderWithArtwork", () => {
 
   it("returns an error from exchange", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
-    const resolver = resolvers.Mutation.createInquiryOffer.resolve
+    const resolver = resolvers.Mutation.createInquiryOfferOrder.resolve
     const args = {
       input: {
         artworkId: "artwork-id",
@@ -234,7 +234,7 @@ describe("commerceCreateInquiryOfferOrderWithArtwork", () => {
 
   it("returns an error if the conversationLoader does not return a conversation", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
-    const resolver = resolvers.Mutation.createInquiryOffer.resolve
+    const resolver = resolvers.Mutation.createInquiryOfferOrder.resolve
     const args = {
       input: {
         artworkId: "artwork-id",
@@ -250,7 +250,7 @@ describe("commerceCreateInquiryOfferOrderWithArtwork", () => {
   })
   it("returns an error if the conversationCreateConversationOrderLoader fails", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
-    const resolver = resolvers.Mutation.createInquiryOffer.resolve
+    const resolver = resolvers.Mutation.createInquiryOfferOrder.resolve
     const args = {
       input: {
         artworkId: "artwork-id",
