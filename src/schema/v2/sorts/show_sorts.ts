@@ -7,6 +7,7 @@ const SHOW_SORTS = {
   FEATURED_DESC: { value: "-featured" },
   NAME_ASC: { value: "name" },
   NAME_DESC: { value: "-name" },
+  PARTNER_ASC: { value: "fully_qualified_name" },
   SORTABLE_NAME_ASC: { value: "sortable_name" },
   SORTABLE_NAME_DESC: { value: "-sortable_name" },
   START_AT_ASC: { value: "start_at" },
