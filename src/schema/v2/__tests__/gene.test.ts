@@ -81,7 +81,7 @@ describe("gene", () => {
         name: "Latin America and The Caribbean",
         meta: {
           description:
-            "Discover artists from Latin America and the Caribbean from pre-history to present, and browse works by size, prize and medium.",
+            "Discover artists from Latin America and the Caribbean from pre-history to present, and browse works by size, price and medium.",
         },
       })
     })

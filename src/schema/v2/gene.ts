@@ -39,9 +39,9 @@ const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
 
 const META_DESCRIPTION_OVERRIDES = {
   "western-europe":
-    "Discover Western European artists from pre-history to present, and browse works by size, prize and medium.",
+    "Discover Western European artists from pre-history to present, and browse works by size, price and medium.",
   "latin-america-and-the-caribbean":
-    "Discover artists from Latin America and the Caribbean from pre-history to present, and browse works by size, prize and medium.",
+    "Discover artists from Latin America and the Caribbean from pre-history to present, and browse works by size, price and medium.",
   africa:
     "Explore the art of Africa, including traditional Sub-Saharan art, modern photography, and contemporary art.",
   "middle-east":
