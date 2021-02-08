@@ -5,11 +5,7 @@ import gql from "lib/gql"
 const newArtwork = { id: "some-artwork-id" }
 const createArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
 
-const artworkDetails = {
-  medium: "Painting",
-  price_paid_cents: 10000,
-  price_paid_currency: "USD",
-}
+const artworkDetails = { medium: "Painting" }
 const artworkLoader = jest.fn().mockResolvedValue(artworkDetails)
 
 const createImageLoader = jest.fn()
@@ -42,8 +38,6 @@ const computeMutationInput = ({
           height: "20"
           medium: "Painting"
           metric: "in"
-          pricePaidCents: 10000
-          pricePaidCurrency: "USD"
           provenance: "Pat Hearn Gallery"
           title: "hey now"
           width: "20"
@@ -53,9 +47,6 @@ const computeMutationInput = ({
           ... on MyCollectionArtworkMutationSuccess {
             artwork {
               medium
-              pricePaid {
-                display
-              }
             }
             artworkEdge {
               node {
@@ -122,9 +113,6 @@ describe("myCollectionCreateArtworkMutation", () => {
       expect(artworkOrError).toEqual({
         artwork: {
           medium: "Painting",
-          pricePaid: {
-            display: "$100",
-          },
         },
         artworkEdge: {
           node: {
