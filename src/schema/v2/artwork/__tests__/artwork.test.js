@@ -59,6 +59,64 @@ describe("Artwork type", () => {
     }
   })
 
+  describe("#formattedMetadata", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          formattedMetadata
+        }
+      }
+    `
+
+    it("returns properly formatted metadata", async () => {
+      artwork = {
+        ...artwork,
+        artist: { name: "Name" },
+        title: "Title",
+        date: "Date",
+        category: "Category",
+        medium: "Medium",
+        partner: { name: "Partner" },
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          formattedMetadata: "Name, ‘Title’, Date, Category, Medium, Partner",
+        },
+      })
+    })
+
+    it("excludes null values", async () => {
+      artwork = {
+        ...artwork,
+        artist: { name: "Name" },
+        title: "Title",
+        date: "Date",
+        category: null,
+        medium: null,
+        partner: { name: "Partner" },
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          formattedMetadata: "Name, ‘Title’, Date, Partner",
+        },
+      })
+    })
+  })
+
   describe("dimensions", () => {
     const query = `
       {
@@ -264,6 +322,30 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#isOfferableFromInquiry", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          isOfferableFromInquiry
+        }
+      }
+    `
+
+    it("will return the value of offerable_from_inquiry", () => {
+      artwork.offerable_from_inquiry = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            isOfferableFromInquiry: true,
+          },
+        })
+      })
+    })
+  })
+
   describe("#pricePaid", () => {
     const query = `
     {
@@ -278,9 +360,8 @@ describe("Artwork type", () => {
     }
     `
 
-    it("returns pricePaid", () => {
+    it("returns pricePaid and defaults to USD if no currency is present", () => {
       artwork.price_paid_cents = 21000
-      artwork.price_paid_currency = "USD"
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
@@ -2144,6 +2225,7 @@ describe("Artwork type", () => {
       artwork.stamped_by_artist_estate = null
       artwork.sticker_label = null
       artwork.signed_other = null
+      artwork.signed_in_plate = null
       artwork.not_signed = null
 
       return runQuery(query, context).then((data) => {
@@ -2153,6 +2235,7 @@ describe("Artwork type", () => {
     it("is null when all related fields are false", () => {
       artwork.signature = ""
       artwork.signed_by_artist = false
+      artwork.signed_in_plate = false
       artwork.stamped_by_artist_estate = false
       artwork.sticker_label = false
       artwork.signed_other = false
@@ -2164,6 +2247,7 @@ describe("Artwork type", () => {
     it("is set to proper object when signed_other is true", () => {
       artwork.signature = ""
       artwork.signed_by_artist = false
+      artwork.signed_in_plate = false
       artwork.stamped_by_artist_estate = false
       artwork.sticker_label = false
       artwork.signed_other = true
@@ -2192,6 +2276,7 @@ describe("Artwork type", () => {
     it("is set to proper object when several fields are true", () => {
       artwork.signature = "some details about signature"
       artwork.signed_by_artist = true
+      artwork.signed_in_plate = true
       artwork.stamped_by_artist_estate = true
       artwork.sticker_label = true
       artwork.signed_other = true
@@ -2201,7 +2286,7 @@ describe("Artwork type", () => {
             signatureInfo: {
               label: "Signature",
               details:
-                "Hand-signed by artist, stamped by artist's estate, sticker label, some details about signature",
+                "Hand-signed by artist, signed in plate, stamped by artist's estate, sticker label, some details about signature",
             },
           },
         })
@@ -2210,6 +2295,7 @@ describe("Artwork type", () => {
     it("is set to proper object when only signed_other is true", () => {
       artwork.signature = ""
       artwork.signed_by_artist = false
+      artwork.signed_in_plate = false
       artwork.stamped_by_artist_estate = false
       artwork.sticker_label = false
       artwork.signed_other = true
@@ -2276,6 +2362,7 @@ describe("Artwork type", () => {
         }
       }
     `
+
     it("is null when certificate_of_authenticity is null", () => {
       artwork.certificate_of_authenticity = null
       return runQuery(query, context).then((data) => {
@@ -2283,6 +2370,7 @@ describe("Artwork type", () => {
         expect(data.artwork.hasCertificateOfAuthenticity).toBe(false)
       })
     })
+
     it("is set to proper object when certificate_of_authenticity is true", () => {
       artwork.certificate_of_authenticity = true
       return runQuery(query, context).then((data) => {
@@ -2293,6 +2381,45 @@ describe("Artwork type", () => {
         expect(data.artwork.hasCertificateOfAuthenticity).toBe(true)
       })
     })
+
+    it("is set to proper object when certificate_of_authenticity and coa_from_authenticating_body are true", () => {
+      artwork.certificate_of_authenticity = true
+      artwork.coa_by_authenticating_body = true
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.certificateOfAuthenticity).toEqual({
+          label: "Certificate of authenticity",
+          details: "Included (issued by authorized authenticating body)",
+        })
+        expect(data.artwork.hasCertificateOfAuthenticity).toBe(true)
+      })
+    })
+
+    it("is set to proper object when certificate_of_authenticity and coa_from_gallery are true", () => {
+      artwork.certificate_of_authenticity = true
+      artwork.coa_by_gallery = true
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.certificateOfAuthenticity).toEqual({
+          label: "Certificate of authenticity",
+          details: "Included (issued by gallery)",
+        })
+        expect(data.artwork.hasCertificateOfAuthenticity).toBe(true)
+      })
+    })
+
+    it("is set to proper object when certificate_of_authenticity, coa_from_authenticating_body, and coa_from_gallery are true", () => {
+      artwork.certificate_of_authenticity = true
+      artwork.coa_by_gallery = true
+      artwork.coa_by_authenticating_body = true
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.certificateOfAuthenticity).toEqual({
+          label: "Certificate of authenticity",
+          details:
+            "Included (one issued by gallery; one issued by authorized authenticating body)",
+        })
+        expect(data.artwork.hasCertificateOfAuthenticity).toBe(true)
+      })
+    })
+
     it("is null when certificate_of_authenticity is false", () => {
       artwork.certificate_of_authenticity = false
       return runQuery(query, context).then((data) => {

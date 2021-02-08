@@ -392,6 +392,13 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ fair }) => isExisty(fair),
       },
+      isOnlineExclusive: {
+        description: "Does the show exist soley online",
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: ({ location, fair, partner_city }) => {
+          return !location && !isExisty(fair) && !partner_city
+        },
+      },
       isReference: {
         description: "Is it a show provided for historical reference?",
         type: GraphQLBoolean,
@@ -617,21 +624,19 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
   },
   resolve: (_root, { id }, { showLoader }) => {
     // TODO: blacklist filterArtworksConnection
-    return showLoader(id)
-      .then((show) => {
-        if (
-          !(
-            show.displayable ||
-            show.is_local_discovery ||
-            show.is_reference ||
-            isExisty(show.fair)
-          )
-        ) {
-          return new HTTPError("Show Not Found", 404)
-        }
-        return show
-      })
-      .catch(() => null)
+    return showLoader(id).then((show) => {
+      if (
+        !(
+          show.displayable ||
+          show.is_local_discovery ||
+          show.is_reference ||
+          isExisty(show.fair)
+        )
+      ) {
+        return new HTTPError("Show Not Found", 404)
+      }
+      return show
+    })
   },
 }
 

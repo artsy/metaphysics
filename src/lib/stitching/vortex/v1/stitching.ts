@@ -1,4 +1,4 @@
-import { executableVortexSchema } from "./schema"
+import { executableVortexSchema } from "lib/stitching/vortex/schema"
 import { amount } from "schema/v1/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import gql from "lib/gql"
@@ -16,7 +16,7 @@ const getMaxPrice = (thing: { listPrice: any }) => {
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: gql`
-    union AnalyticsRankedEntityUnion = Artwork | Show | Artist
+    union AnalyticsRankedEntityUnion = Artwork | Show | Artist | ViewingRoom
     extend type AnalyticsPricingContext {
       appliedFiltersDisplay: String
     }

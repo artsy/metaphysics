@@ -18,17 +18,18 @@ const mockAuctionResult = {
   ],
   currency: "EUR",
   location: "Berlin",
-  priceRealized_cents: 420000,
-  priceRealized_cents_usd: 100000,
-  low_estimate_cents: 200000,
-  high_estimate_cents: 500000,
+  price_realized_cents: 100000,
+  price_realized_cents_usd: 200000,
+  hammer_price_cents: 100000,
+  low_estimate_cents: 100000,
+  high_estimate_cents: 300000,
   price_realized: {
-    cents: 420000,
-    centsUSD: 100000,
-    display: "JPY ¥420k",
+    cents: 200000,
+    centsUSD: 200000,
+    display: "€200.000",
   },
   estimate: {
-    display: "JPY ¥200,000 - 500,000",
+    display: "€200,000 - 500,000",
   },
 }
 
@@ -40,6 +41,9 @@ describe("AuctionResult type", () => {
           currency
           saleDateText
           location
+          performance {
+            mid
+          }
         }
       }
     `
@@ -49,9 +53,14 @@ describe("AuctionResult type", () => {
     }
 
     return runQuery(query, context!).then((data) => {
-      expect(data.auctionResult.currency).toBe("EUR")
-      expect(data.auctionResult.saleDateText).toEqual("10-12-2020")
-      expect(data.auctionResult.location).toEqual("Berlin")
+      expect(data.auctionResult).toEqual({
+        currency: "EUR",
+        saleDateText: "10-12-2020",
+        location: "Berlin",
+        performance: {
+          mid: "-50%",
+        },
+      })
     })
   })
 })

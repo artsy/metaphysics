@@ -1,5 +1,5 @@
 import { mergeSchemas } from "graphql-tools"
-import { kawsStitchingEnvironmentV2 } from "../stitching"
+import { kawsStitchingEnvironmentV2 } from "../v2/stitching"
 import { GraphQLSchema } from "graphql"
 import { executableKawsSchema } from "../schema"
 import localSchema from "schema/v2/schema"

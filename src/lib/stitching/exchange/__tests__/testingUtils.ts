@@ -1,8 +1,8 @@
 import { mergeSchemas } from "graphql-tools"
-import { exchangeStitchingEnvironment } from "../stitching"
+import { exchangeStitchingEnvironment } from "../v2/stitching"
 import { GraphQLSchema } from "graphql"
 import { executableExchangeSchema, transformsForExchange } from "../schema"
-import localSchema from "schema/v1/schema"
+import localSchema from "schema/v2/schema"
 
 let cachedSchema: GraphQLSchema & { transforms: any }
 let stitchedSchema: ReturnType<typeof exchangeStitchingEnvironment>
@@ -23,7 +23,6 @@ export const getExchangeStitchedSchema = async () => {
     stitchedSchema = exchangeStitchingEnvironment({
       localSchema,
       exchangeSchema: cachedSchema,
-      version: 1,
     })
   }
   return stitchedSchema

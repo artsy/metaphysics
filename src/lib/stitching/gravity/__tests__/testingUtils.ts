@@ -1,5 +1,5 @@
 import { mergeSchemas } from "graphql-tools"
-import { gravityStitchingEnvironment } from "../stitching"
+import { gravityStitchingEnvironment as gravityStitchingEnvironmentV2 } from "../v2/stitching"
 import { GraphQLSchema } from "graphql"
 import { executableGravitySchema } from "../schema"
 import localSchema from "schema/v2/schema"
@@ -15,17 +15,15 @@ export const getGravityTransformedSchema = async () => {
 }
 
 /** Gets a cached copy of the stitched schema, independent of being merged into the local schema */
-export const getGravityStitchedSchema = async (schemaVersion = 2) => {
+export const getGravityStitchedSchema = async () => {
   const cachedSchema = await getGravityTransformedSchema()
-  return gravityStitchingEnvironment(localSchema, cachedSchema, schemaVersion)
+  return gravityStitchingEnvironmentV2(localSchema, cachedSchema)
 }
 
 /** Gets a cached fully setup schema with gravity and the localSchema set up */
-export const getGravityMergedSchema = async (schemaVersion = 2) => {
+export const getGravityMergedSchema = async () => {
   const cachedSchema = await getGravityTransformedSchema()
-  const { extensionSchema, resolvers } = await getGravityStitchedSchema(
-    schemaVersion
-  )
+  const { extensionSchema, resolvers } = await getGravityStitchedSchema()
 
   // The order should only matter in that extension schemas come after the
   // objects that they are expected to build upon

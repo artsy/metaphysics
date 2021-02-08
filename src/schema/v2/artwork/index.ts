@@ -10,7 +10,6 @@ import { setVersion } from "schema/v2/image/normalize"
 import Fair from "schema/v2/fair"
 import Sale from "schema/v2/sale"
 import SaleArtwork from "schema/v2/sale_artwork"
-import { formatMoney } from "accounting"
 import {
   connectionWithCursorInfo,
   PageCursorsType,
@@ -58,7 +57,6 @@ import { ArtworkContextGrids } from "./artworkContextGrids"
 import { PageInfoType } from "graphql-relay"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { InquiryQuestionType } from "../inquiry_question"
-import currencyCodes from "lib/currency_codes.json"
 
 const has_price_range = (price) => {
   return new RegExp(/\-/).test(price)
@@ -283,11 +281,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "Formatted artwork metadata, including artist, title, date and partner; e.g., 'Andy Warhol, Truck, 1980, Westward Gallery'.",
-        resolve: ({ artist, title, date, partner }) => {
+        resolve: ({ artist, title, date, category, medium, partner }) => {
           return _.compact([
             artist && artist.name,
             title && `‘${title}’`,
             date,
+            category && category,
+            medium && medium,
             partner && partner.name,
           ]).join(", ")
         },
@@ -391,6 +391,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         description: "Whether a user can make an offer on a work",
         resolve: ({ offerable }) => offerable,
+      },
+      isOfferableFromInquiry: {
+        type: GraphQLBoolean,
+        description:
+          "Whether a user can make an offer on the work through inquiry",
+        resolve: ({ offerable_from_inquiry }) => offerable_from_inquiry,
       },
       isBiddable: {
         type: GraphQLBoolean,
@@ -738,16 +744,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "The price paid for the artwork in a user's 'my collection'",
         resolve: (artwork) => {
+          const { price_paid_cents } = artwork
+          const price_paid_currency = artwork.price_paid_currency || "USD"
           return {
-            cents: artwork.price_paid_cents,
-            currency: artwork.price_paid_currency,
-            display: formatMoney(
-              artwork.price_paid_cents /
-                (currencyCodes[artwork.price_paid_currency.toLowerCase()]
-                  ?.subunit_to_unit ?? 100),
-              symbolFromCurrencyCode(artwork.price_paid_currency),
-              0
-            ),
+            cents: price_paid_cents,
+            currency: price_paid_currency,
+            display: amount(() => price_paid_cents).resolve(artwork, {
+              precision: 0,
+              symbol: symbolFromCurrencyCode(price_paid_currency),
+            }),
           }
         },
       },
@@ -923,6 +928,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({
           signature,
           signed_by_artist,
+          signed_in_plate,
           stamped_by_artist_estate,
           sticker_label,
           signed_other,
@@ -931,6 +937,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           const detailsParts: string[] = []
           if (signed_by_artist) {
             detailsParts.push("hand-signed by artist")
+          }
+          if (signed_in_plate) {
+            detailsParts.push("signed in plate")
           }
           if (stamped_by_artist_estate) {
             detailsParts.push("stamped by artist's estate")
@@ -976,9 +985,26 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: ArtworkInfoRowType,
         description:
           "Returns the display label and detail when artwork has a certificate of authenticity",
-        resolve: ({ certificate_of_authenticity }) => {
+        resolve: ({
+          certificate_of_authenticity,
+          coa_by_authenticating_body,
+          coa_by_gallery,
+        }) => {
+          let detailsParts = ""
           if (certificate_of_authenticity) {
-            return { label: "Certificate of authenticity", details: "Included" }
+            detailsParts += "Included"
+            if (coa_by_authenticating_body && !coa_by_gallery) {
+              detailsParts += " (issued by authorized authenticating body)"
+            } else if (coa_by_gallery && !coa_by_authenticating_body) {
+              detailsParts += " (issued by gallery)"
+            } else if (coa_by_authenticating_body && coa_by_gallery) {
+              detailsParts +=
+                " (one issued by gallery; one issued by authorized authenticating body)"
+            }
+            return {
+              label: "Certificate of authenticity",
+              details: detailsParts,
+            }
           } else {
             return null
           }

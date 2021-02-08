@@ -111,6 +111,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   artistIDs: {
     type: new GraphQLList(GraphQLString),
   },
+  artistNationalities: {
+    type: GraphQLList(GraphQLString),
+  },
   atAuction: {
     type: GraphQLBoolean,
   },
@@ -119,6 +122,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   color: {
     type: GraphQLString,
+  },
+  colors: {
+    type: new GraphQLList(GraphQLString),
   },
   sizes: {
     type: new GraphQLList(ArtworkSizes),
@@ -178,6 +184,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   partnerID: {
     type: GraphQLID,
+  },
+  partnerIDs: {
+    type: new GraphQLList(GraphQLString),
   },
   partnerCities: {
     type: new GraphQLList(GraphQLString),
@@ -376,6 +385,7 @@ const filterArtworksConnectionTypeFactory = (
       aggregationPartnerCities,
       artistID,
       artistIDs,
+      artistNationalities,
       artistSeriesID,
       atAuction,
       attributionClass,
@@ -391,6 +401,7 @@ const filterArtworksConnectionTypeFactory = (
       geneIDs,
       majorPeriods,
       partnerID,
+      partnerIDs,
       partnerCities,
       priceRange,
       saleID,
@@ -408,6 +419,7 @@ const filterArtworksConnectionTypeFactory = (
       aggregation_partner_cities: aggregationPartnerCities,
       artist_id: artistID,
       artist_ids: artistIDs,
+      artist_nationalities: artistNationalities,
       artist_series_id: artistSeriesID,
       at_auction: atAuction,
       attribution_class: attributionClass,
@@ -423,6 +435,7 @@ const filterArtworksConnectionTypeFactory = (
       gene_ids: geneIDs,
       major_periods: majorPeriods,
       partner_id: partnerID,
+      partner_ids: partnerIDs,
       partner_cities: partnerCities,
       price_range: priceRange,
       sale_id: saleID,

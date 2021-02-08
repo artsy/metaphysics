@@ -1,3 +1,4 @@
+import causalityLoaders from "./causality"
 import convectionLoaders from "./convection"
 import diffusionLoaders from "./diffusion"
 import impulseLoaders from "./impulse"
@@ -12,6 +13,7 @@ export const createLoadersWithAuthentication = (accessToken, userID, opts) => ({
   ...impulseLoaders(accessToken, userID, opts),
   ...exchangeLoaders(accessToken, opts),
   ...vortexLoaders(accessToken, opts),
+  ...causalityLoaders(accessToken, userID),
 })
 
 export type LoadersWithAuthentication = ReturnType<

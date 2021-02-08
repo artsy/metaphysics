@@ -17,7 +17,7 @@ It is currently used in production all over the place in
 - **CI/Deploys:** [CircleCi](https://circleci.com/gh/artsy/metaphysics); merged PRs to `artsy/metaphysics#master` are automatically deployed to staging; PRs from `staging` to `release` are automatically deployed to production. [Start a deploy...](https://github.com/artsy/metaphysics/compare/release...staging?expand=1)
 - **Production:**
   - [Endpoint](https://metaphysics-production.artsy.net/v2)
-  - [Kubernetes deployment dashboard](https://kubernetes.artsy.net/#!/deployment/default/metaphysics-web?namespace=default)
+  - [Kubernetes deployment dashboard](https://kubernetes.prd.artsy.systems/#!/deployment/default/metaphysics-web?namespace=default)
   - [Datadog Monitoring - Overview](https://app.datadoghq.com/screen/302489/metaphysics-production)
   - [Datadog Monitoring - GraphQL Queries](https://app.datadoghq.com/apm/service/metaphysics.graphql-query/graphql.query?env=production)
   - [Datadog Monitoring - GraphQL Resolver](https://app.datadoghq.com/apm/service/metaphysics.graphql-resolver/graphql.resolver?env=production)
@@ -31,7 +31,7 @@ It is currently used in production all over the place in
   - [When Disaster Strikes](https://joe.artsy.net/job/refresh-metaphysics-production/)
 - **Staging:**
   - [Endpoint](https://metaphysics-staging.artsy.net/v2)
-  - [Kubernetes deployment dashboard](https://kubernetes-staging.artsy.net/#!/deployment/default/metaphysics-web?namespace=default)
+  - [Kubernetes deployment dashboard](https://kubernetes.stg.artsy.systems/#!/deployment/default/metaphysics-web?namespace=default)
   - [Datadog Monitoring - GraphQL Queries](https://app.datadoghq.com/apm/service/metaphysics.graphql-query/graphql.query?env=staging)
   - [Datadog Monitoring - GraphQL Resolver](https://app.datadoghq.com/apm/service/metaphysics.graphql-resolver/graphql.resolver?env=staging)
   - [Datadog Monitoring - Express](https://app.datadoghq.com/apm/service/metaphysics.request/express.request?env=staging)
@@ -54,7 +54,7 @@ cd metaphysics
 source ./scripts/setup.sh
 ```
 
-This will pull the environment variables from aws into .env.shared. 
+This will pull the environment variables from aws into .env.shared.
 It will also overwrite .env with the values in .env.example. If you need to override any of these values
 or add new .env values place them in the .env file.
 
@@ -104,14 +104,18 @@ Introspection is available by default when developing.
 Introspection on staging and production are for internal use only, so artsy devs can use it to make development for MP clients (eigen, force, etc) easier, but it is and should not be used by any of the clients or anyone else.
 
 In order to set this up in your playground of choice (Postman, Insomnia, Altair, etc), you need to send the following header:
+
 ```
 Authorization: Bearer <secret>
 ```
+
 and replace `<secret>` with the value you get from hokusai using
+
 ```
 hokusai staging env get INTROSPECT_TOKEN
 hokusai production env get INTROSPECT_TOKEN
 ```
+
 or the contents of `Metaphysics INTROSPECT_TOKEN` in 1Password.
 
 ### Sample Queries

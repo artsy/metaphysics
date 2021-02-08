@@ -21,6 +21,12 @@ export const Sellable = new GraphQLInterfaceType({
       description: "Whether a user can make an offer on the work",
       resolve: ({ is_offerable }) => is_offerable,
     },
+    isOfferableFromInquiry: {
+      type: GraphQLBoolean,
+      description:
+        "Whether a user can make an offer on the work through inquiry",
+      resolve: ({ is_offerable_from_inquiry }) => is_offerable_from_inquiry,
+    },
     isForSale: {
       type: GraphQLBoolean,
       resolve: ({ is_for_sale }) => is_for_sale,

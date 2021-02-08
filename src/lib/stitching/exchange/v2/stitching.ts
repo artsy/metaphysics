@@ -1,4 +1,4 @@
-import { GraphQLSchema, Kind, SelectionSetNode } from "graphql"
+import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
 import { amountSDL, amount } from "schema/v1/fields/money"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
@@ -24,11 +24,9 @@ const lineItemTotalsSDL = lineItemTotals.map(amountSDL)
 const offerAmountFields = ["amount", "taxTotal", "shippingTotal", "buyerTotal"]
 const offerAmountFieldsSDL = offerAmountFields.map(amountSDL)
 export const exchangeStitchingEnvironment = ({
-  version,
   localSchema,
   exchangeSchema,
 }: {
-  version: number
   localSchema: GraphQLSchema
   exchangeSchema: GraphQLSchema & { transforms: any }
 }) => {
@@ -124,7 +122,7 @@ export const exchangeStitchingEnvironment = ({
         return info.mergeInfo.delegateToSchema({
           schema: localSchema,
           operation: "query",
-          fieldName: version >= 2 ? "creditCard" : "credit_card",
+          fieldName: "creditCard",
           args: {
             id,
           },
@@ -156,10 +154,11 @@ export const exchangeStitchingEnvironment = ({
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
+
     extend type CommerceLineItem {
       artwork: Artwork
       artworkVersion: ArtworkVersion
-      ${version === 2 ? "artworkOrEditionSet: ArtworkOrEditionSetType" : ""}
+      artworkOrEditionSet: ArtworkOrEditionSetType
       ${lineItemTotalsSDL.join("\n")}
     }
 
@@ -195,6 +194,12 @@ export const exchangeStitchingEnvironment = ({
 
     extend type Me {
       orders(first: Int, last: Int, after: String, before: String, mode: CommerceOrderModeEnum, sellerId: String, sort: CommerceOrderConnectionSortEnum, states: [CommerceOrderStateEnum!]): CommerceOrderConnectionWithTotalCount
+    }
+
+    extend type Mutation {
+      createInquiryOfferOrder(
+        input: CommerceCreateInquiryOfferOrderWithArtworkInput!
+      ): CommerceCreateInquiryOfferOrderWithArtworkPayload
     }
   `,
 
@@ -249,65 +254,19 @@ export const exchangeStitchingEnvironment = ({
             })
           },
         },
-        ...(version === 2 && {
-          artworkOrEditionSet: {
-            fragment: gql`
+
+        artworkOrEditionSet: {
+          fragment: gql`
             ... on CommerceLineItem {
               artworkId
               editionSetId
             }
           `,
-            resolve: async (parent, _args, context, info) => {
-              const artworkId = parent.artworkId
-              const editionSetId = parent.editionSetId
+          resolve: async (parent, _args, context, info) => {
+            const artworkId = parent.artworkId
+            const editionSetId = parent.editionSetId
 
-              if (editionSetId) {
-                return info.mergeInfo.delegateToSchema({
-                  schema: localSchema,
-                  operation: "query",
-                  fieldName: "artwork",
-                  args: {
-                    id: artworkId,
-                  },
-                  context,
-                  info,
-                  transforms: [
-                    // Wrap document takes a subtree as an AST node
-                    new WrapQuery(
-                      // path at which to apply wrapping and extracting
-                      ["artwork"],
-                      (subtree: SelectionSetNode) => ({
-                        // we create a wrapping AST Field
-                        kind: Kind.FIELD,
-                        name: {
-                          kind: Kind.NAME,
-                          value: "editionSet",
-                        },
-                        arguments: [
-                          {
-                            kind: Kind.ARGUMENT,
-                            name: {
-                              kind: Kind.NAME,
-                              value: "id",
-                            },
-                            value: {
-                              kind: Kind.STRING,
-                              value: editionSetId,
-                            },
-                          },
-                        ],
-                        // Inside the field selection
-                        selectionSet: subtree,
-                      }),
-                      // how to process the data result at path
-                      (result) => {
-                        return result.editionSet
-                      }
-                    ),
-                  ],
-                })
-              }
-
+            if (editionSetId) {
               return info.mergeInfo.delegateToSchema({
                 schema: localSchema,
                 operation: "query",
@@ -317,10 +276,56 @@ export const exchangeStitchingEnvironment = ({
                 },
                 context,
                 info,
+                transforms: [
+                  // Wrap document takes a subtree as an AST node
+                  new WrapQuery(
+                    // path at which to apply wrapping and extracting
+                    ["artwork"],
+                    (subtree: SelectionSetNode) => ({
+                      // we create a wrapping AST Field
+                      kind: Kind.FIELD,
+                      name: {
+                        kind: Kind.NAME,
+                        value: "editionSet",
+                      },
+                      arguments: [
+                        {
+                          kind: Kind.ARGUMENT,
+                          name: {
+                            kind: Kind.NAME,
+                            value: "id",
+                          },
+                          value: {
+                            kind: Kind.STRING,
+                            value: editionSetId,
+                          },
+                        },
+                      ],
+                      // Inside the field selection
+                      selectionSet: subtree,
+                    }),
+                    // how to process the data result at path
+                    (result) => {
+                      return result.editionSet
+                    }
+                  ),
+                ],
               })
-            },
+            }
+
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "artwork",
+              args: {
+                id: artworkId,
+              },
+              context,
+              info,
+            })
           },
-        }),
+        },
+
         ...totalsResolvers("CommerceLineItem", lineItemTotals),
       },
       CommerceOrder: {
@@ -348,6 +353,87 @@ export const exchangeStitchingEnvironment = ({
               context,
               info,
             })
+          },
+        },
+      },
+      Mutation: {
+        createInquiryOfferOrder: {
+          resolve: async (_source, args, context, info) => {
+            const {
+              conversationLoader,
+              conversationCreateConversationOrderLoader,
+            } = context
+            const {
+              input: { impulseConversationId },
+            } = args
+
+            try {
+              await conversationLoader(impulseConversationId)
+            } catch (e) {
+              throw new GraphQLError(
+                `[metaphysics @ exchange/v2/stitching] Conversation not found`
+              )
+            }
+
+            const offerResult = await info.mergeInfo.delegateToSchema({
+              schema: exchangeSchema,
+              operation: "mutation",
+              fieldName: "commerceCreateInquiryOfferOrderWithArtwork",
+              args,
+              context,
+              info,
+              transforms: [
+                // add orderOrError.order.internalID to the Order selectionSet
+                new WrapQuery(
+                  [
+                    "commerceCreateInquiryOfferOrderWithArtwork",
+                    "orderOrError",
+                    "order",
+                  ],
+                  (selectionSet: SelectionSetNode) => {
+                    const newSelections = [
+                      ...selectionSet.selections,
+                      {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "internalID",
+                        },
+                      },
+                    ]
+                    return { ...selectionSet, selections: newSelections }
+                  },
+                  (result) => {
+                    return result
+                  }
+                ),
+              ],
+            })
+
+            const { orderOrError } = offerResult
+
+            if (orderOrError.error) {
+              // if we got an error from exchange, return it immediately
+              return offerResult
+            } else if (orderOrError.order) {
+              // attempt to associate the order with the conversation
+              const {
+                order: { internalID: orderId },
+              } = orderOrError
+
+              try {
+                await conversationCreateConversationOrderLoader({
+                  conversation_id: impulseConversationId,
+                  exchange_order_id: orderId,
+                })
+              } catch (e) {
+                throw new GraphQLError(
+                  "[metaphysics @ exchange/v2/stitching] Impulse: request to associate offer with conversation failed"
+                )
+              }
+            }
+
+            return offerResult
           },
         },
       },

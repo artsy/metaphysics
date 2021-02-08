@@ -19,8 +19,7 @@ const momentSubtract = (...args) => {
 describe("gravity/stitching", () => {
   describe("filterArtworksConnection", () => {
     it("extends the ArtistSeries type with a filterArtworksConnection field for the V2 schema", async () => {
-      const schemaVersion = 2
-      const mergedSchema = await getGravityMergedSchema(schemaVersion)
+      const mergedSchema = await getGravityMergedSchema()
       const artistSeriesFields = await getFieldsForTypeFromSchema(
         "ArtistSeries",
         mergedSchema
@@ -28,19 +27,8 @@ describe("gravity/stitching", () => {
       expect(artistSeriesFields).toContain("filterArtworksConnection")
     })
 
-    it("does not extend the ArtistSeries type with a filterArtworksConnection field for the V1 schema", async () => {
-      const schemaVersion = 1
-      const mergedSchema = await getGravityMergedSchema(schemaVersion)
-      const artistSeriesFields = await getFieldsForTypeFromSchema(
-        "ArtistSeries",
-        mergedSchema
-      )
-      expect(artistSeriesFields).not.toContain("filterArtworksConnection")
-    })
-
     it("resolves the filterArtworksConnection field on ArtistSeries for the V2 schema", async () => {
-      const schemaVersion = 2
-      const { resolvers } = await getGravityStitchedSchema(schemaVersion)
+      const { resolvers } = await getGravityStitchedSchema()
       const { filterArtworksConnection } = resolvers.ArtistSeries
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
@@ -63,12 +51,6 @@ describe("gravity/stitching", () => {
         context: expect.anything(),
         info: expect.anything(),
       })
-    })
-
-    it("does not resolve the filterArtworksConnection field on ArtistSeries for the V1 schema", async () => {
-      const schemaVersion = 1
-      const { resolvers } = await getGravityStitchedSchema(schemaVersion)
-      expect(resolvers.ArtistSeries.filterArtworksConnection).toBeUndefined()
     })
   })
 
@@ -126,8 +108,7 @@ describe("gravity/stitching", () => {
 
     describe("ArtistSeries", () => {
       it("resolves the artworksConnection field on ArtistSeries for the V2 schema", async () => {
-        const schemaVersion = 2
-        const { resolvers } = await getGravityStitchedSchema(schemaVersion)
+        const { resolvers } = await getGravityStitchedSchema()
         const { artworksConnection } = resolvers.ArtistSeries
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
@@ -151,8 +132,7 @@ describe("gravity/stitching", () => {
       describe("with a current artwork in context", () => {
         it("excludes the current artwork from the artworksConnection query", async () => {
           const context = { currentArtworkID: "xyz456" }
-          const schemaVersion = 2
-          const { resolvers } = await getGravityStitchedSchema(schemaVersion)
+          const { resolvers } = await getGravityStitchedSchema()
           const { artworksConnection } = resolvers.ArtistSeries
           const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
@@ -844,6 +824,18 @@ describe("gravity/stitching", () => {
         context: expect.anything(),
         info: expect.anything(),
       })
+    })
+  })
+
+  describe("#UserAddress", () => {
+    it("extends the UserAddress type with an id field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const userAddressField = await getFieldsForTypeFromSchema(
+        "UserAddress",
+        mergedSchema
+      )
+
+      expect(userAddressField).toContain("id")
     })
   })
 })
