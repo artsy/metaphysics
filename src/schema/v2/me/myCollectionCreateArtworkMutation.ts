@@ -74,12 +74,6 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     metric: {
       type: GraphQLString,
     },
-    pricePaidCents: {
-      type: GraphQLInt,
-    },
-    pricePaidCurrency: {
-      type: GraphQLString,
-    },
     provenance: {
       type: GraphQLString,
     },
@@ -105,8 +99,6 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       editionSize,
       editionNumber,
       externalImageUrls = [],
-      pricePaidCents,
-      pricePaidCurrency,
       ...rest
     },
     {
@@ -129,8 +121,6 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         collection_id: "my-collection",
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
-        price_paid_cents: pricePaidCents,
-        price_paid_currency: pricePaidCurrency,
         ...rest,
       })
 

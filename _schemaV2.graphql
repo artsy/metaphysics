@@ -7847,8 +7847,6 @@ input MyCollectionCreateArtworkInput {
   isEdition: Boolean
   medium: String!
   metric: String
-  pricePaidCents: Int
-  pricePaidCurrency: String
   provenance: String
   title: String
   width: String
@@ -7894,8 +7892,6 @@ input MyCollectionUpdateArtworkInput {
   isEdition: Boolean
   medium: String
   metric: String
-  pricePaidCents: Int
-  pricePaidCurrency: String
   provenance: String
   title: String
   width: String
