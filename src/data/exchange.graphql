@@ -757,6 +757,7 @@ type OfferOrder implements Order {
   currencyCode: String!
   displayCommissionRate: String
   id: ID!
+  impulseConversationId: String
   internalID: ID!
 
   """
