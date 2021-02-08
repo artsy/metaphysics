@@ -269,8 +269,6 @@ describe("Artwork type", () => {
     {
       artwork(id: "richard-prince-untitled-portrait") {
         pricePaid {
-          minor
-          major
           display
           currencyCode
         }
@@ -285,9 +283,22 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             pricePaid: {
-              minor: 21000,
-              major: 210,
               display: "$210",
+              currencyCode: "USD",
+            },
+          },
+        })
+      })
+    })
+
+    it("returns null if no pricePaid exists", () => {
+      artwork.price_paid_cents = null
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            pricePaid: {
+              display: null,
               currencyCode: "USD",
             },
           },
