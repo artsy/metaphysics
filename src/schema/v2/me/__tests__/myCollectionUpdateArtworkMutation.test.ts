@@ -4,8 +4,39 @@ import gql from "lib/gql"
 const updatedArtwork = { id: "some-artwork-id" }
 const updateArtworkLoader = jest.fn().mockResolvedValue(updatedArtwork)
 
-const artworkDetails = { medium: "Updated" }
-const artworkLoader = jest.fn().mockResolvedValue(artworkDetails)
+const defaultArtworkDetails = ({
+  externalImageUrls = [],
+  editionSize = null,
+  editionNumber = null,
+  isEdition = null,
+}: {
+  externalImageUrls?: string[]
+  editionSize?: string | null
+  editionNumber?: string | null
+  isEdition?: boolean | null
+} = {}) => ({
+  artistIds: ["4d8b92b34eb68a1b2c0003f4"],
+  artworkId: "some-artwork-id",
+  category: "some strange category",
+  cost_currency_code: "USD",
+  cost_minor: 200,
+  date: "1990",
+  depth: "20",
+  is_edition: JSON.stringify(isEdition),
+  edition_number: JSON.stringify(editionNumber),
+  edition_size: JSON.stringify(editionSize),
+  external_image_urls: JSON.stringify(externalImageUrls),
+  height: "20",
+  medium: "Updated",
+  metric: "in",
+  price_paid_cents: 10000,
+  price_paid_currency: "USD",
+  provenance: "Pat Hearn Gallery",
+  title: "hey now",
+  width: "20",
+})
+
+const artworkLoader = jest.fn().mockResolvedValue(defaultArtworkDetails())
 
 const createImageLoader = jest.fn()
 
@@ -38,6 +69,8 @@ const computeMutationInput = ({
           height: "20"
           medium: "Updated"
           metric: "in"
+          pricePaidCents: 10000
+          pricePaidCurrency: "USD"
           provenance: "Pat Hearn Gallery"
           title: "hey now"
           width: "20"
@@ -46,7 +79,23 @@ const computeMutationInput = ({
         artworkOrError {
           ... on MyCollectionArtworkMutationSuccess {
             artwork {
+              category
+              costCurrencyCode
+              costMinor
+              date
+              depth
+              isEdition
+              editionNumber
+              editionSize
+              height
               medium
+              metric
+              provenance
+              title
+              width
+              pricePaid {
+                display
+              }
             }
             artworkEdge {
               node {
@@ -117,7 +166,23 @@ describe("myCollectionUpdateArtworkMutation", () => {
 
       expect(artworkOrError).toEqual({
         artwork: {
+          category: "some strange category",
+          costCurrencyCode: "USD",
+          costMinor: 200,
+          date: "1990",
+          depth: "20",
+          editionNumber: null,
+          editionSize: null,
+          height: "20",
+          isEdition: null,
           medium: "Updated",
+          metric: "in",
+          pricePaid: {
+            display: "$100",
+          },
+          provenance: "Pat Hearn Gallery",
+          title: "hey now",
+          width: "20",
         },
         artworkEdge: {
           node: {
