@@ -1,8 +1,13 @@
+import { graphql } from "graphql"
+import gql from "lib/gql"
 import { getFieldsForTypeFromSchema } from "lib/stitching/lib/getTypesFromSchema"
+import { incrementalMergeSchemas } from "lib/stitching/mergeSchemas"
 import {
   getExchangeMergedSchema,
   getExchangeStitchedSchema,
 } from "./testingUtils"
+import schema from "schema/v2/schema"
+import { addMockFunctionsToSchema } from "graphql-tools"
 
 it("extends the Order objects", async () => {
   const mergedSchema = await getExchangeMergedSchema()
@@ -211,6 +216,71 @@ describe("createInquiryOfferOrder", () => {
     })
   })
 
+  describe("query resolution", () => {
+    it.only("resolves isInquiryOrder field on CommerceOfferOrder", async () => {
+      // const exchange = await getExchangeStitchedSchema()
+      const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
+      const query = gql`
+        mutation {
+          createInquiryOfferOrder(
+            input: {
+              artworkId: "6022c17fdfdd34000d1aef41"
+              impulseConversationId: "4722"
+            }
+          ) {
+            orderOrError {
+              ... on CommerceOrderWithMutationSuccess {
+                order {
+                  isInquiryOrder
+                  conversation {
+                    items {
+                      title
+                      __typename
+                      item {
+                        __typename
+                        ... on Artwork {
+                          title
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+      // Mock the resolvers for just a submission, and an artist.
+      // The part we are testing is the step that goes from a submission
+      // to the Artist
+      addMockFunctionsToSchema({
+        schema: allMergedSchemas,
+        mocks: {
+          Mutation: () => ({
+            createInquiryOfferOrder: (_root, _params) => {
+              return {
+                orderOrError: {
+                  __typename: "CommerceOrderWithMutationSuccess",
+                  order: {
+                    impulseConversationId: "foo",
+                  },
+                },
+              }
+            },
+          }),
+        },
+      })
+
+      const result = await graphql(allMergedSchemas, query, {
+        accessToken: "foo",
+        userID: "bar",
+      })
+      console.log(result)
+      expect(result.data.orderOrError.order.conversation).toEqual("fff")
+    })
+    it.skip("resolves conversation field on CommerceOfferOrder", async () => {})
+  })
+
   it("returns an error from exchange", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
     const resolver = resolvers.Mutation.createInquiryOfferOrder.resolve
@@ -248,6 +318,7 @@ describe("createInquiryOfferOrder", () => {
       "[metaphysics @ exchange/v2/stitching] Conversation not found"
     )
   })
+
   it("returns an error if the conversationCreateConversationOrderLoader fails", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
     const resolver = resolvers.Mutation.createInquiryOfferOrder.resolve

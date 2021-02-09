@@ -107,6 +107,7 @@ const ConversationItemType = new GraphQLUnionType({
   name: "ConversationItemType",
   types: [ArtworkType, ShowType],
   resolveType: ({ __typename }) => {
+    console.log({ __typename })
     switch (__typename) {
       case "Artwork":
         return ArtworkType
@@ -226,7 +227,11 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     inquiryID: {
       description: "Gravity inquiry id.",
       type: GraphQLString,
-      resolve: ({ inquiry_id }) => inquiry_id,
+      resolve: ({ inquiry_id }) => {
+        console.warn({ inquiry_id })
+        debugger
+        return inquiry_id
+      },
     },
     from: {
       description: "The participant who initiated the conversation",
@@ -355,6 +360,8 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         "The artworks and/or partner shows discussed in the conversation.",
       resolve: (conversation) => {
         const results = []
+        debugger
+
         for (const item of conversation.items) {
           if (
             isExisty(item.properties) &&

@@ -134,6 +134,39 @@ export const exchangeStitchingEnvironment = ({
     },
   }
 
+  const inquiryOrderResolvers = {
+    isInquiryOrder: {
+      fragment: gql`
+        fragment CommerceOrderIsInquiryOrder on CommerceOfferOrder {
+          impulseConversationId
+        }
+      `,
+      resolve: async (order) => {
+        const { impulseConversationId } = order
+        return Boolean(impulseConversationId)
+      },
+    },
+    conversation: {
+      fragment: gql`
+        fragment CommerceOrderConversation on CommerceOfferOrder {
+          impulseConversationId
+        }
+      `,
+      resolve: async (order, _args, { conversationLoader }, _info) => {
+        const { impulseConversationId } = order
+        if (impulseConversationId) {
+          try {
+            const conversation = await conversationLoader(impulseConversationId)
+            return conversation
+          } catch (e) {
+            // noop in case someone has access to order but not conversation?
+          }
+        }
+        return null
+      },
+    },
+  }
+
   // Map the totals array to a set of resolvers that call the amount function
   // the type param is only used for the fragment name
   const totalsResolvers = (type, totalSDLS) =>
@@ -166,7 +199,6 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-
       ${orderTotalsSDL.join("\n")}
     }
 
@@ -174,6 +206,8 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
+      isInquiryOrder: Boolean!
+      conversation: Conversation
 
       ${orderTotalsSDL.join("\n")}
       ${amountSDL("offerTotal")}
@@ -183,7 +217,6 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-
       ${orderTotalsSDL.join("\n")}
     }
 
@@ -217,6 +250,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        ...inquiryOrderResolvers,
       },
       CommerceLineItem: {
         artwork: {
