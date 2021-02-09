@@ -26,7 +26,8 @@ async function updateSchemaFile(repo, dest = "data/schema.graphql") {
     labels: ["Merge On Green"],
     update: (repoDir) => {
       const repoDest = path.join(repoDir, dest)
-      execSync("yarn install --ignore-engines", { cwd: repoDir })
+      execSync("yarn config set ignore-engines true", { cwd: repoDir })
+      execSync("yarn install", { cwd: repoDir })
       if (dest.endsWith(".json")) {
         const sdl = readFileSync("_schemaV2.graphql", "utf8").toString()
         const schema = buildSchema(sdl, { commentDescriptions: true })
