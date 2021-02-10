@@ -8112,7 +8112,7 @@ type Partner implements Node {
     forSale: Boolean
     last: Int
     sort: ArtworkSorts
-  ): ArtworkConnection @deprecated(reason: "Use `filterArtworksConnection`")
+  ): ArtworkConnection
   cached: Int
   categories: [PartnerCategory]
 

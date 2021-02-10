@@ -100,7 +100,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       artworksConnection: {
         description: "A connection of artworks from a Partner.",
-        deprecationReason: "Use `filterArtworksConnection`",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
         resolve: ({ id }, args, { partnerArtworksLoader }) => {
