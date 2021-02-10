@@ -34,6 +34,11 @@ export const transformsForExchange = [
   ),
   // replace CommerceDateTime field with MP's dateField
   new ReplaceCommerceDateTimeType(),
+
+  // new FilterRootFields((_operation, name) => {
+  //   console.log(name === "commerceCreateInquiryOfferOrderWithArtwork")
+  //   return name === "commerceCreateInquiryOfferOrderWithArtwork"
+  // }),
 ]
 
 export const legacyTransformsForExchange = [

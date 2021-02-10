@@ -216,71 +216,6 @@ describe("createInquiryOfferOrder", () => {
     })
   })
 
-  describe("query resolution", () => {
-    it.only("resolves isInquiryOrder field on CommerceOfferOrder", async () => {
-      // const exchange = await getExchangeStitchedSchema()
-      const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
-      const query = gql`
-        mutation {
-          createInquiryOfferOrder(
-            input: {
-              artworkId: "6022c17fdfdd34000d1aef41"
-              impulseConversationId: "4722"
-            }
-          ) {
-            orderOrError {
-              ... on CommerceOrderWithMutationSuccess {
-                order {
-                  isInquiryOrder
-                  conversation {
-                    items {
-                      title
-                      __typename
-                      item {
-                        __typename
-                        ... on Artwork {
-                          title
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      `
-      // Mock the resolvers for just a submission, and an artist.
-      // The part we are testing is the step that goes from a submission
-      // to the Artist
-      addMockFunctionsToSchema({
-        schema: allMergedSchemas,
-        mocks: {
-          Mutation: () => ({
-            createInquiryOfferOrder: (_root, _params) => {
-              return {
-                orderOrError: {
-                  __typename: "CommerceOrderWithMutationSuccess",
-                  order: {
-                    impulseConversationId: "foo",
-                  },
-                },
-              }
-            },
-          }),
-        },
-      })
-
-      const result = await graphql(allMergedSchemas, query, {
-        accessToken: "foo",
-        userID: "bar",
-      })
-      console.log(result)
-      expect(result.data.orderOrError.order.conversation).toEqual("fff")
-    })
-    it.skip("resolves conversation field on CommerceOfferOrder", async () => {})
-  })
-
   it("returns an error from exchange", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
     const resolver = resolvers.Mutation.createInquiryOfferOrder.resolve
@@ -339,5 +274,138 @@ describe("createInquiryOfferOrder", () => {
     await expect(resolver({}, args, context, { mergeInfo })).rejects.toThrow(
       "Impulse: request to associate offer with conversation failed"
     )
+  })
+})
+
+describe("resolving a stitched conversation", () => {
+  it("resolves isInquiryOrder field on CommerceOfferOrder", async () => {
+    const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
+    const query = gql`
+      {
+        commerceOrder(id: 4200) {
+          isInquiryOrder
+        }
+      }
+    `
+    // Mock the resolvers for just an OfferOrder with a conversation id.
+    // The part we are testing is the step that goes from a order
+    // to the conversation.
+    addMockFunctionsToSchema({
+      preserveResolvers: true,
+      schema: allMergedSchemas,
+      mocks: {
+        Query: () => ({
+          commerceOrder: (_root, _params) => {
+            return {
+              __typename: "CommerceOfferOrder",
+              impulseConversationId: "conversation-id",
+            }
+          },
+        }),
+      },
+    })
+
+    const result = await graphql(allMergedSchemas, query, {
+      accessToken: "foo",
+      userID: "bar",
+    })
+
+    expect(result).toEqual({
+      data: { commerceOrder: { isInquiryOrder: true } },
+    })
+  })
+
+  it("resolves isInquiryOrder to false field on CommerceOfferOrder", async () => {
+    const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
+    const query = gql`
+      {
+        commerceOrder(id: 4200) {
+          isInquiryOrder
+        }
+      }
+    `
+    // Mock the resolvers for just an OfferOrder with a conversation id.
+    // The part we are testing is the step that goes from a order
+    // to the conversation.
+    addMockFunctionsToSchema({
+      schema: allMergedSchemas,
+      mocks: {
+        Query: () => ({
+          commerceOrder: (_root, _params) => {
+            return {
+              __typename: "CommerceOfferOrder",
+              impulseConversationId: null,
+            }
+          },
+        }),
+      },
+    })
+    const result = await graphql(allMergedSchemas, query, {
+      accessToken: "foo",
+      userID: "bar",
+    })
+    console.log(JSON.stringify(result))
+    expect(result).toEqual({
+      data: { commerceOrder: { isInquiryOrder: false } },
+    })
+  })
+
+  it("resolves conversation field on CommerceOfferOrder", async () => {
+    const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
+    const query = gql`
+      {
+        commerceOrder(id: 4200) {
+          conversation {
+            items {
+              item {
+                ... on Artwork {
+                  title
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+    // Mock the resolvers for just an OfferOrder with a conversation id.
+    // The part we are testing is the step that goes from a order
+    // to the conversation.
+    addMockFunctionsToSchema({
+      schema: allMergedSchemas,
+      mocks: {
+        Query: () => ({
+          commerceOrder: (_root, _params) => {
+            return {
+              __typename: "CommerceOfferOrder",
+              impulseConversationId: "conversation-id",
+            }
+          },
+        }),
+        Me: () => ({
+          conversation: (_root, _params) => {
+            return {
+              items: [
+                { item: { __typename: "Artwork", title: "Conversation Art" } },
+              ],
+            }
+          },
+        }),
+      },
+    })
+
+    const result = await graphql(allMergedSchemas, query, {
+      accessToken: "foo",
+      userID: "bar",
+    })
+
+    console.log(result)
+
+    expect(result).toEqual({
+      data: {
+        commerceOrder: {
+          conversation: { items: [{ item: { title: "Conversation Art" } }] },
+        },
+      },
+    })
   })
 })

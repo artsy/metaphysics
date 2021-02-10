@@ -107,7 +107,6 @@ const ConversationItemType = new GraphQLUnionType({
   name: "ConversationItemType",
   types: [ArtworkType, ShowType],
   resolveType: ({ __typename }) => {
-    console.log({ __typename })
     switch (__typename) {
       case "Artwork":
         return ArtworkType
@@ -228,8 +227,6 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       description: "Gravity inquiry id.",
       type: GraphQLString,
       resolve: ({ inquiry_id }) => {
-        console.warn({ inquiry_id })
-        debugger
         return inquiry_id
       },
     },

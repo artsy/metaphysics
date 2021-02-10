@@ -152,17 +152,52 @@ export const exchangeStitchingEnvironment = ({
           impulseConversationId
         }
       `,
-      resolve: async (order, _args, { conversationLoader }, _info) => {
+      resolve: async (order, _args, context, info) => {
         const { impulseConversationId } = order
-        if (impulseConversationId) {
-          try {
-            const conversation = await conversationLoader(impulseConversationId)
-            return conversation
-          } catch (e) {
-            // noop in case someone has access to order but not conversation?
-          }
-        }
-        return null
+
+        if (!impulseConversationId) return null
+
+        return info.mergeInfo.delegateToSchema({
+          schema: localSchema,
+          operation: "query",
+          fieldName: "me",
+          context,
+          info,
+          transforms: [
+            // Wrap document takes a subtree as an AST node
+            new WrapQuery(
+              // path at which to apply wrapping and extracting
+              ["me"],
+              (subtree: SelectionSetNode) => ({
+                // we create a wrapping AST Field
+                kind: Kind.FIELD,
+                name: {
+                  kind: Kind.NAME,
+                  value: "conversation",
+                },
+                arguments: [
+                  {
+                    kind: Kind.ARGUMENT,
+                    name: {
+                      kind: Kind.NAME,
+                      value: "id",
+                    },
+                    value: {
+                      kind: Kind.STRING,
+                      value: impulseConversationId,
+                    },
+                  },
+                ],
+                // Inside the field selection
+                selectionSet: subtree,
+              }),
+              // how to process the data result at path
+              (result) => {
+                return result.conversation
+              }
+            ),
+          ],
+        })
       },
     },
   }
@@ -199,6 +234,8 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
+      isInquiryOrder: Boolean!
+      conversation: Conversation
       ${orderTotalsSDL.join("\n")}
     }
 
@@ -217,6 +254,8 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
+      isInquiryOrder: Boolean!
+      conversation: Conversation
       ${orderTotalsSDL.join("\n")}
     }
 
@@ -244,6 +283,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        ...inquiryOrderResolvers,
       },
       CommerceOfferOrder: {
         ...totalsResolvers("CommerceOfferOrder", orderTotals),
@@ -368,6 +408,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        ...inquiryOrderResolvers,
       },
       CommerceOffer: {
         ...totalsResolvers("CommerceOffer", offerAmountFields),
@@ -391,6 +432,13 @@ export const exchangeStitchingEnvironment = ({
         },
       },
       Mutation: {
+        commerceCreateInquiryOfferOrderWithArtwork: {
+          resolve: () => {
+            throw new GraphQLError(
+              `[metaphysics @ exchange/v2/stitching] use Mutation.createInquiryOffer`
+            )
+          },
+        },
         createInquiryOfferOrder: {
           resolve: async (_source, args, context, info) => {
             const {
