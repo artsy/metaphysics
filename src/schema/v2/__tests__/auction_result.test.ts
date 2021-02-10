@@ -28,9 +28,6 @@ const mockAuctionResult = {
     centsUSD: 200000,
     display: "€200.000",
   },
-  estimate: {
-    display: "€200,000 - 500,000",
-  },
 }
 
 describe("AuctionResult type", () => {
@@ -43,6 +40,9 @@ describe("AuctionResult type", () => {
           location
           performance {
             mid
+          }
+          estimate {
+            display
           }
         }
       }
@@ -59,6 +59,9 @@ describe("AuctionResult type", () => {
         location: "Berlin",
         performance: {
           mid: "-50%",
+        },
+        estimate: {
+          display: "€1,000 – 3,000",
         },
       })
     })
