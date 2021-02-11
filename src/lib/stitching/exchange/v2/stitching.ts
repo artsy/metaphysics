@@ -146,59 +146,6 @@ export const exchangeStitchingEnvironment = ({
         return Boolean(impulseConversationId)
       },
     },
-    conversation: {
-      fragment: gql`
-        fragment CommerceOrderConversation on CommerceOfferOrder {
-          impulseConversationId
-        }
-      `,
-      resolve: async (order, _args, context, info) => {
-        const { impulseConversationId } = order
-        if (!impulseConversationId) return null
-
-        return info.mergeInfo.delegateToSchema({
-          schema: localSchema,
-          operation: "query",
-          fieldName: "me",
-          context,
-          info,
-          transforms: [
-            // Wrap document takes a subtree as an AST node
-            new WrapQuery(
-              // path at which to apply wrapping and extracting
-              ["me"],
-              (subtree: SelectionSetNode) => ({
-                // we create a wrapping AST Field
-                kind: Kind.FIELD,
-                name: {
-                  kind: Kind.NAME,
-                  value: "conversation",
-                },
-                arguments: [
-                  {
-                    kind: Kind.ARGUMENT,
-                    name: {
-                      kind: Kind.NAME,
-                      value: "id",
-                    },
-                    value: {
-                      kind: Kind.STRING,
-                      value: impulseConversationId,
-                    },
-                  },
-                ],
-                // Inside the field selection
-                selectionSet: subtree,
-              }),
-              // how to process the data result at path
-              (result) => {
-                return result.conversation
-              }
-            ),
-          ],
-        })
-      },
-    },
   }
 
   // Map the totals array to a set of resolvers that call the amount function
@@ -234,7 +181,7 @@ export const exchangeStitchingEnvironment = ({
       sellerDetails: OrderParty
       creditCard: CreditCard
       isInquiryOrder: Boolean!
-      conversation: Conversation
+
       ${orderTotalsSDL.join("\n")}
     }
 
@@ -243,7 +190,6 @@ export const exchangeStitchingEnvironment = ({
       sellerDetails: OrderParty
       creditCard: CreditCard
       isInquiryOrder: Boolean!
-      conversation: Conversation
 
       ${orderTotalsSDL.join("\n")}
       ${amountSDL("offerTotal")}
@@ -254,7 +200,7 @@ export const exchangeStitchingEnvironment = ({
       sellerDetails: OrderParty
       creditCard: CreditCard
       isInquiryOrder: Boolean!
-      conversation: Conversation
+
       ${orderTotalsSDL.join("\n")}
     }
 
