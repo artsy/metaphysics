@@ -33,13 +33,25 @@ import { connectionWithCursorInfo } from "./fields/pagination"
 import { deprecate } from "lib/deprecation"
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
-  forSale: {
-    type: GraphQLBoolean,
+  artworkIDs: {
+    type: new GraphQLList(GraphQLString),
+    description: "Return only artwork(s) included in this list of IDs.",
   },
-  sort: ArtworkSorts,
   exclude: {
     type: new GraphQLList(GraphQLString),
   },
+  forSale: {
+    type: GraphQLBoolean,
+  },
+  imageCountLessThan: {
+    type: GraphQLInt,
+    description: "Return artworks with less than x additional_images.",
+  },
+  publishedWithin: {
+    type: GraphQLInt,
+    description: "Return artworks published less than x seconds ago.",
+  },
+  sort: ArtworkSorts,
 }
 
 export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
@@ -100,7 +112,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       artworksConnection: {
         description: "A connection of artworks from a Partner.",
-        deprecationReason: "Use `filterArtworksConnection`",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
         resolve: ({ id }, args, { partnerArtworksLoader }) => {
@@ -109,26 +120,34 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           )
 
           interface GravityArgs {
+            artwork_id?: string[]
             exclude_ids?: string[]
+            for_sale: boolean
+            image_count_less_than?: number
             page: number
             published: boolean
+            published_within?: number
             size: number
-            total_count: boolean
             sort: string
-            for_sale: boolean
+            total_count: boolean
           }
 
           const gravityArgs: GravityArgs = {
-            published: true,
-            total_count: true,
+            for_sale: args.forSale,
+            image_count_less_than: args.imageCountLessThan,
             page,
+            published: true,
+            published_within: args.publishedWithin,
             size,
             sort: args.sort,
-            for_sale: args.forSale,
+            total_count: true,
           }
 
           if (args.exclude) {
             gravityArgs.exclude_ids = flatten([args.exclude])
+          }
+          if (args.artworkIDs) {
+            gravityArgs.artwork_id = flatten([args.artworkIDs])
           }
 
           return partnerArtworksLoader(id, gravityArgs).then(
