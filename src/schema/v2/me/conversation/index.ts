@@ -405,7 +405,6 @@ const Conversation: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { conversationLoader }) => {
-    console.log("conversationresolver", conversationLoader)
     return conversationLoader ? conversationLoader(id) : null
   },
 }
