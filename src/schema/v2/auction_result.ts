@@ -212,7 +212,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
                 display += numeral(amount).format("")
               } else {
                 amount = Math.round(low_estimate_cents / subunit_to_unit)
-                display += numeral(amount).format("") + " - "
+                display += numeral(amount).format("") + " – "
                 amount = Math.round(high_estimate_cents / subunit_to_unit)
                 display += numeral(amount).format("")
               }
