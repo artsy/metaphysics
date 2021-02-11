@@ -357,7 +357,6 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         "The artworks and/or partner shows discussed in the conversation.",
       resolve: (conversation) => {
         const results = []
-        debugger
 
         for (const item of conversation.items) {
           if (
