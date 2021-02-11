@@ -305,10 +305,7 @@ describe("resolving a stitched conversation", () => {
       },
     })
 
-    const result = await graphql(allMergedSchemas, query, {
-      accessToken: "foo",
-      userID: "bar",
-    })
+    const result = await graphql(allMergedSchemas, query)
 
     expect(result).toEqual({
       data: { commerceOrder: { isInquiryOrder: true } },
@@ -341,10 +338,7 @@ describe("resolving a stitched conversation", () => {
         }),
       },
     })
-    const result = await graphql(allMergedSchemas, query, {
-      accessToken: "foo",
-      userID: "bar",
-    })
+    const result = await graphql(allMergedSchemas, query)
 
     expect(result).toEqual({
       data: { commerceOrder: { isInquiryOrder: false } },
@@ -373,6 +367,7 @@ describe("resolving a stitched conversation", () => {
     // The part we are testing is the step that goes from a order
     // to the conversation.
     addMockFunctionsToSchema({
+      preserveResolvers: false,
       schema: allMergedSchemas,
       mocks: {
         Query: () => ({
@@ -382,43 +377,9 @@ describe("resolving a stitched conversation", () => {
               impulseConversationId: "conversation-id",
             }
           },
-          // me: () => {
-          //   console.log("Me mock")
-          //   return {
-          //     conversation: {
-          //       items: [
-          //         {
-          //           item: { __typename: "Artwork", title: "Conversation Art" },
-          //         },
-          //       ],
-          //     },
-          //   }
-          // },
-          // me: () => ({
-          //   conversation: {
-          //     items: [
-          //       {
-          //         item: { __typename: "Artwork", title: "Conversation Art" },
-          //       },
-          //     ],
-          //   },
-          // }),
         }),
-        // Me: () => {
-        //   console.log("Me mock")
-        //   return {
-        //     conversation: () => {
-        //       console.log("conversation mock")
-        //       return {
-        //         items: [
-        //           {
-        //             item: { __typename: "Artwork", title: "Conversation Art" },
-        //           },
-        //         ],
-        //       }
-        //     },
-        //   }
-        // },
+        // FIXME: This mock bypasses our stitched resolver which delegates to
+        // me.conversation
         Conversation: () => {
           return {
             items: [
@@ -431,10 +392,7 @@ describe("resolving a stitched conversation", () => {
       },
     })
 
-    const result = await graphql(allMergedSchemas, query, {
-      accessToken: "foo",
-      userID: "bar",
-    })
+    const result = await graphql(allMergedSchemas, query)
 
     expect(result).toEqual({
       data: {
@@ -480,10 +438,7 @@ describe("resolving a stitched conversation", () => {
       },
     })
 
-    const result = await graphql(allMergedSchemas, query, {
-      accessToken: "foo",
-      userID: "bar",
-    })
+    const result = await graphql(allMergedSchemas, query)
 
     expect(result).toEqual({
       data: {
