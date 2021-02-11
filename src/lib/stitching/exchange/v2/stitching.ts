@@ -431,13 +431,6 @@ export const exchangeStitchingEnvironment = ({
         },
       },
       Mutation: {
-        commerceCreateInquiryOfferOrderWithArtwork: {
-          resolve: () => {
-            throw new GraphQLError(
-              `[metaphysics @ exchange/v2/stitching] use Mutation.createInquiryOffer`
-            )
-          },
-        },
         createInquiryOfferOrder: {
           resolve: async (_source, args, context, info) => {
             const {
