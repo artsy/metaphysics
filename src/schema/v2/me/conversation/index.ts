@@ -405,8 +405,10 @@ const Conversation: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The ID of the Conversation",
     },
   },
-  resolve: (_root, { id }, { conversationLoader }) =>
-    conversationLoader ? conversationLoader(id) : null,
+  resolve: (_root, { id }, { conversationLoader }) => {
+    console.log("conversationresolver", conversationLoader)
+    return conversationLoader ? conversationLoader(id) : null
+  },
 }
 
 export default Conversation

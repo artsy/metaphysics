@@ -328,6 +328,7 @@ describe("resolving a stitched conversation", () => {
     // The part we are testing is the step that goes from a order
     // to the conversation.
     addMockFunctionsToSchema({
+      preserveResolvers: true,
       schema: allMergedSchemas,
       mocks: {
         Query: () => ({
@@ -344,7 +345,7 @@ describe("resolving a stitched conversation", () => {
       accessToken: "foo",
       userID: "bar",
     })
-    console.log(JSON.stringify(result))
+
     expect(result).toEqual({
       data: { commerceOrder: { isInquiryOrder: false } },
     })
@@ -367,6 +368,7 @@ describe("resolving a stitched conversation", () => {
         }
       }
     `
+
     // Mock the resolvers for just an OfferOrder with a conversation id.
     // The part we are testing is the step that goes from a order
     // to the conversation.
@@ -380,13 +382,98 @@ describe("resolving a stitched conversation", () => {
               impulseConversationId: "conversation-id",
             }
           },
+          // me: () => {
+          //   console.log("Me mock")
+          //   return {
+          //     conversation: {
+          //       items: [
+          //         {
+          //           item: { __typename: "Artwork", title: "Conversation Art" },
+          //         },
+          //       ],
+          //     },
+          //   }
+          // },
+          // me: () => ({
+          //   conversation: {
+          //     items: [
+          //       {
+          //         item: { __typename: "Artwork", title: "Conversation Art" },
+          //       },
+          //     ],
+          //   },
+          // }),
         }),
-        Me: () => ({
-          conversation: (_root, _params) => {
+        // Me: () => {
+        //   console.log("Me mock")
+        //   return {
+        //     conversation: () => {
+        //       console.log("conversation mock")
+        //       return {
+        //         items: [
+        //           {
+        //             item: { __typename: "Artwork", title: "Conversation Art" },
+        //           },
+        //         ],
+        //       }
+        //     },
+        //   }
+        // },
+        Conversation: () => {
+          return {
+            items: [
+              {
+                item: { __typename: "Artwork", title: "Conversation Art" },
+              },
+            ],
+          }
+        },
+      },
+    })
+
+    const result = await graphql(allMergedSchemas, query, {
+      accessToken: "foo",
+      userID: "bar",
+    })
+
+    expect(result).toEqual({
+      data: {
+        commerceOrder: {
+          conversation: { items: [{ item: { title: "Conversation Art" } }] },
+        },
+      },
+    })
+  })
+  it("resolves conversation field on CommerceOfferOrder as null if there is no associated conversation id", async () => {
+    const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
+    const query = gql`
+      {
+        commerceOrder(id: 4200) {
+          conversation {
+            items {
+              item {
+                ... on Artwork {
+                  title
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    // Mock the resolvers for just an OfferOrder with a conversation id.
+    // The part we are testing is the step that goes from a order
+    // to the conversation.
+    addMockFunctionsToSchema({
+      preserveResolvers: true,
+      schema: allMergedSchemas,
+      mocks: {
+        Query: () => ({
+          commerceOrder: (_root, _params) => {
             return {
-              items: [
-                { item: { __typename: "Artwork", title: "Conversation Art" } },
-              ],
+              __typename: "CommerceOfferOrder",
+              impulseConversationId: null,
             }
           },
         }),
@@ -398,12 +485,10 @@ describe("resolving a stitched conversation", () => {
       userID: "bar",
     })
 
-    console.log(result)
-
     expect(result).toEqual({
       data: {
         commerceOrder: {
-          conversation: { items: [{ item: { title: "Conversation Art" } }] },
+          conversation: null,
         },
       },
     })

@@ -154,9 +154,14 @@ export const exchangeStitchingEnvironment = ({
       `,
       resolve: async (order, _args, context, info) => {
         const { impulseConversationId } = order
-
         if (!impulseConversationId) return null
 
+        console.log("delegating to me.conversation", { order })
+        // return context
+        //   .conversationLoader(impulseConversationId)
+        //   .then((conversation) => {
+        //     return { ...conversation, __typename: "Conversation" }
+        //   })
         return info.mergeInfo.delegateToSchema({
           schema: localSchema,
           operation: "query",
@@ -193,6 +198,7 @@ export const exchangeStitchingEnvironment = ({
               }),
               // how to process the data result at path
               (result) => {
+                console.log("got result", { result })
                 return result.conversation
               }
             ),
