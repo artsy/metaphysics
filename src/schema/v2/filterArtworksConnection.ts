@@ -99,6 +99,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   offerable: {
     type: GraphQLBoolean,
   },
+  additionalGeneIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
   aggregationPartnerCities: {
     type: new GraphQLList(GraphQLString),
   },
@@ -382,6 +385,7 @@ const filterArtworksConnectionTypeFactory = (
   resolve: (
     root,
     {
+      additionalGeneIDs,
       aggregationPartnerCities,
       artistID,
       artistIDs,
@@ -416,6 +420,7 @@ const filterArtworksConnectionTypeFactory = (
     info
   ) => {
     const options: any = {
+      additional_gene_ids: additionalGeneIDs,
       aggregation_partner_cities: aggregationPartnerCities,
       artist_id: artistID,
       artist_ids: artistIDs,
