@@ -104,6 +104,7 @@ import { DeleteArtworkImageMutation } from "./deleteArtworkImageMutation"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { AuctionResult } from "./auction_result"
 import ArtworkMediums from "./artworkMediums"
+import Conversation from "./me/conversation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -126,6 +127,7 @@ const rootFields = {
   city: City,
   cities,
   // collection: Collection,
+  conversation: Conversation,
   creditCard: CreditCard,
   // externalPartner: ExternalPartner,
   fair: Fair,
