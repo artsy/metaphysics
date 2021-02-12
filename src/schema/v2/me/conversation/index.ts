@@ -226,7 +226,9 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     inquiryID: {
       description: "Gravity inquiry id.",
       type: GraphQLString,
-      resolve: ({ inquiry_id }) => inquiry_id,
+      resolve: ({ inquiry_id }) => {
+        return inquiry_id
+      },
     },
     from: {
       description: "The participant who initiated the conversation",
@@ -355,6 +357,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         "The artworks and/or partner shows discussed in the conversation.",
       resolve: (conversation) => {
         const results = []
+
         for (const item of conversation.items) {
           if (
             isExisty(item.properties) &&
@@ -401,8 +404,9 @@ const Conversation: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The ID of the Conversation",
     },
   },
-  resolve: (_root, { id }, { conversationLoader }) =>
-    conversationLoader ? conversationLoader(id) : null,
+  resolve: (_root, { id }, { conversationLoader }) => {
+    return conversationLoader ? conversationLoader(id) : null
+  },
 }
 
 export default Conversation

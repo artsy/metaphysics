@@ -134,6 +134,20 @@ export const exchangeStitchingEnvironment = ({
     },
   }
 
+  const inquiryOrderResolvers = {
+    isInquiryOrder: {
+      fragment: gql`
+        fragment CommerceOrderIsInquiryOrder on CommerceOfferOrder {
+          impulseConversationId
+        }
+      `,
+      resolve: async (order) => {
+        const { impulseConversationId } = order
+        return Boolean(impulseConversationId)
+      },
+    },
+  }
+
   // Map the totals array to a set of resolvers that call the amount function
   // the type param is only used for the fragment name
   const totalsResolvers = (type, totalSDLS) =>
@@ -166,6 +180,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
+      isInquiryOrder: Boolean!
 
       ${orderTotalsSDL.join("\n")}
     }
@@ -174,6 +189,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
+      isInquiryOrder: Boolean!
 
       ${orderTotalsSDL.join("\n")}
       ${amountSDL("offerTotal")}
@@ -183,6 +199,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
+      isInquiryOrder: Boolean!
 
       ${orderTotalsSDL.join("\n")}
     }
@@ -211,12 +228,14 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        ...inquiryOrderResolvers,
       },
       CommerceOfferOrder: {
         ...totalsResolvers("CommerceOfferOrder", orderTotals),
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        ...inquiryOrderResolvers,
       },
       CommerceLineItem: {
         artwork: {
@@ -334,6 +353,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        ...inquiryOrderResolvers,
       },
       CommerceOffer: {
         ...totalsResolvers("CommerceOffer", offerAmountFields),
