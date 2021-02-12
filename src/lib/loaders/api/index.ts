@@ -35,6 +35,7 @@ export interface APIOptions {
 export interface DataLoaderKey {
   key: string
   apiOptions?: APIOptions
+  method?: string
 }
 
 export default (opts) => ({
