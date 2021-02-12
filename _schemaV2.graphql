@@ -2522,6 +2522,7 @@ type CommerceBuyOrder implements CommerceOrder {
   ): String
   commissionFeeCents: Int
   commissionRate: Float
+  conversation: Conversation
   createdAt(
     format: String
 
@@ -3098,6 +3099,7 @@ type CommerceOfferOrder implements CommerceOrder {
   ): String
   commissionFeeCents: Int
   commissionRate: Float
+  conversation: Conversation
   createdAt(
     format: String
 
@@ -3281,6 +3283,7 @@ interface CommerceOrder {
   ): String
   commissionFeeCents: Int
   commissionRate: Float
+  conversation: Conversation
   createdAt(
     format: String
 

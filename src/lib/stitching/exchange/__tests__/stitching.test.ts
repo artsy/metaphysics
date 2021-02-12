@@ -344,4 +344,108 @@ describe("resolving a stitched conversation", () => {
       data: { commerceOrder: { isInquiryOrder: false } },
     })
   })
+
+  it("resolves conversation field on CommerceOfferOrder", async () => {
+    const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
+    const query = gql`
+      {
+        commerceOrder(id: 4200) {
+          conversation {
+            items {
+              item {
+                ... on Artwork {
+                  title
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    // Mock the resolvers for just an OfferOrder with a conversation id.
+    // The part we are testing is the step that goes from a order
+    // to the conversation.
+    addMockFunctionsToSchema({
+      preserveResolvers: false,
+      schema: allMergedSchemas,
+      mocks: {
+        Query: () => ({
+          commerceOrder: (_root, _params) => {
+            return {
+              __typename: "CommerceOfferOrder",
+              impulseConversationId: "conversation-id",
+            }
+          },
+        }),
+        // FIXME: This mock bypasses our stitched resolver which delegates to
+        // me.conversation
+        Conversation: () => {
+          return {
+            items: [
+              {
+                item: { __typename: "Artwork", title: "Conversation Art" },
+              },
+            ],
+          }
+        },
+      },
+    })
+
+    const result = await graphql(allMergedSchemas, query)
+
+    expect(result).toEqual({
+      data: {
+        commerceOrder: {
+          conversation: { items: [{ item: { title: "Conversation Art" } }] },
+        },
+      },
+    })
+  })
+  it("resolves conversation field on CommerceOfferOrder as null if there is no associated conversation id", async () => {
+    const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
+    const query = gql`
+      {
+        commerceOrder(id: 4200) {
+          conversation {
+            items {
+              item {
+                ... on Artwork {
+                  title
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    // Mock the resolvers for just an OfferOrder with a conversation id.
+    // The part we are testing is the step that goes from a order
+    // to the conversation.
+    addMockFunctionsToSchema({
+      preserveResolvers: true,
+      schema: allMergedSchemas,
+      mocks: {
+        Query: () => ({
+          commerceOrder: (_root, _params) => {
+            return {
+              __typename: "CommerceOfferOrder",
+              impulseConversationId: null,
+            }
+          },
+        }),
+      },
+    })
+
+    const result = await graphql(allMergedSchemas, query)
+
+    expect(result).toEqual({
+      data: {
+        commerceOrder: {
+          conversation: null,
+        },
+      },
+    })
+  })
 })
