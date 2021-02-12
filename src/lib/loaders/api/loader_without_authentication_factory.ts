@@ -40,11 +40,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
   apiName: string,
   globalAPIOptions: APIOptions = {}
 ) => {
-  const apiLoaderFactory = (
-    path,
-    globalParams = {},
-    pathAPIOptions: { method?: string } = {}
-  ) => {
+  const apiLoaderFactory = (path, globalParams = {}, pathAPIOptions = {}) => {
     const loader = new DataLoader<DataLoaderKey, T | { body: T; headers: any }>(
       (keys) =>
         Promise.all<any>(
@@ -164,7 +160,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
         cacheKeyFn: (input) => JSON.stringify(input),
       }
     )
-    return loaderInterface(loader, path, globalParams, pathAPIOptions.method)
+    return loaderInterface(loader, path, globalParams)
   }
   return apiLoaderFactory as LoaderFactory
 }

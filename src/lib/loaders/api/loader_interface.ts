@@ -18,27 +18,17 @@ export type DynamicPathLoader<T, P = string> = (
   apiOptions?: APIOptions
 ) => Promise<T>
 
-const encodeStaticPath = (
-  path: string,
-  globalParams,
-  params,
-  method = "GET"
-) => {
-  if (method === "GET") {
-    return toKey(path, Object.assign({}, globalParams, params))
-  } else {
-    return path
-  }
+const encodeStaticPath = (path: string, globalParams, params) => {
+  return toKey(path, Object.assign({}, globalParams, params))
 }
 
 const encodeDynamicPath = (
   pathGenerator: (id: string) => string,
   globalParams,
   id,
-  params,
-  method
+  params
 ) => {
-  return encodeStaticPath(pathGenerator(id), globalParams, params, method)
+  return encodeStaticPath(pathGenerator(id), globalParams, params)
 }
 
 /**
@@ -62,36 +52,25 @@ const encodeDynamicPath = (
 export function loaderInterface<T>(
   loader: DataLoader<DataLoaderKey, T>,
   pathOrGenerator: string,
-  globalParams: any,
-  method?: string
+  globalParams: any
 ): StaticPathLoader<T>
 
 export function loaderInterface<T, P>(
   loader: DataLoader<DataLoaderKey, T>,
   pathOrGenerator: PathGenerator<P>,
-  globalParams: any,
-  method?: string
+  globalParams: any
 ): DynamicPathLoader<T>
 
 export function loaderInterface<T, P>(
   loader: DataLoader<DataLoaderKey, T>,
   pathOrGenerator: string | PathGenerator<P>,
-  globalParams: any,
-  method?: string
+  globalParams: any
 ) {
   const dynamicPath = typeof pathOrGenerator === "function"
   const keyGenerator: any = dynamicPath ? encodeDynamicPath : encodeStaticPath
   return (...args) => {
-    const key = keyGenerator(pathOrGenerator, globalParams, ...args, method)
+    const key = keyGenerator(pathOrGenerator, globalParams, ...args)
     const apiOptions = dynamicPath ? args[2] : args[1]
-
-    // These options are passed to `fetch.ts`, and the keys:
-    // `body`, `json` correspond to options to the underlying `request` library.
-    const fetchOptions = { method, body: args[0], json: true }
-
-    return loader.load({
-      key,
-      apiOptions: Object.assign({}, fetchOptions, apiOptions),
-    })
+    return loader.load({ key, apiOptions })
   }
 }

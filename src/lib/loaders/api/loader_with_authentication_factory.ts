@@ -27,11 +27,7 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
   globalAPIOptions: any
 ) => {
   return (accessTokenLoader) => {
-    const apiLoaderFactory = (
-      path,
-      globalParams = {},
-      pathAPIOptions: { method?: string } = {}
-    ) => {
+    const apiLoaderFactory = (path, globalParams = {}, pathAPIOptions = {}) => {
       const loader = new DataLoader<
         DataLoaderKey,
         T | { body: T; headers: any }
@@ -84,7 +80,7 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
           cacheKeyFn: (input) => JSON.stringify(input),
         }
       )
-      return loaderInterface(loader, path, globalParams, pathAPIOptions.method)
+      return loaderInterface(loader, path, globalParams)
     }
     return apiLoaderFactory as LoaderFactory
   }
