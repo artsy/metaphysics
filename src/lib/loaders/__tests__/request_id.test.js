@@ -23,9 +23,13 @@ describe("requestID (with the real data loaders)", () => {
 
     await runQuery(query, context)
 
-    expect(gravity).toBeCalledWith("artist/andy-warhol?", null, {
-      requestIDs,
-    })
+    expect(gravity).toBeCalledWith(
+      "artist/andy-warhol?",
+      null,
+      expect.objectContaining({
+        requestIDs,
+      })
+    )
   })
 
   it("(authenticated request) resolves to add the initial request ID to a gravity header", async () => {
@@ -44,9 +48,13 @@ describe("requestID (with the real data loaders)", () => {
     expect.assertions(1)
     await runAuthenticatedQuery(query, context)
 
-    expect(gravity).toBeCalledWith("me/lot_standings?size=100", "secret", {
-      requestIDs,
-    })
+    expect(gravity).toBeCalledWith(
+      "me/lot_standings?size=100",
+      "secret",
+      expect.objectContaining({
+        requestIDs,
+      })
+    )
   })
 })
 
