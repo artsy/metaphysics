@@ -202,6 +202,7 @@ export const exchangeStitchingEnvironment = ({
       creditCard: CreditCard
       isInquiryOrder: Boolean!
       conversation: Conversation
+      
       ${orderTotalsSDL.join("\n")}
     }
 
