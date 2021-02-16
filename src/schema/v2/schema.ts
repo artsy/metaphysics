@@ -55,6 +55,7 @@ import { UserField } from "./user"
 // import MatchArtist from "./match/artist"
 // import { SaleArtworksConnectionField } from "./sale_artworks"
 
+import Conversation from "./me/conversation"
 import UpdateConversationMutation from "./me/conversation/update_conversation_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
 import { submitInquiryRequestMutation } from "./me/conversation/submit_inquiry_request_mutation"
@@ -126,6 +127,11 @@ const rootFields = {
   city: City,
   cities,
   // collection: Collection,
+  _do_not_use_conversation: {
+    type: Conversation.type,
+    resolve: Conversation.resolve,
+    description: "Do not use (only used internally for stitching)",
+  },
   creditCard: CreditCard,
   // externalPartner: ExternalPartner,
   fair: Fair,
