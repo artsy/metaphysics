@@ -23,9 +23,13 @@ describe("User-Agent (with the real data loaders)", () => {
     expect.assertions(1)
     await runQuery(query, context)
 
-    expect(gravity).toBeCalledWith("artist/andy-warhol?", null, {
-      userAgent,
-    })
+    expect(gravity).toBeCalledWith(
+      "artist/andy-warhol?",
+      null,
+      expect.objectContaining({
+        userAgent,
+      })
+    )
   })
 
   it("(authenticated request) resolves to add the initial request ID to a gravity header", async () => {
@@ -44,8 +48,12 @@ describe("User-Agent (with the real data loaders)", () => {
     expect.assertions(1)
     await runAuthenticatedQuery(query, context)
 
-    expect(gravity).toBeCalledWith("me/lot_standings?size=100", "secret", {
-      userAgent,
-    })
+    expect(gravity).toBeCalledWith(
+      "me/lot_standings?size=100",
+      "secret",
+      expect.objectContaining({
+        userAgent,
+      })
+    )
   })
 })

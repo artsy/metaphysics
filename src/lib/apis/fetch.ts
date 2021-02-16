@@ -23,6 +23,11 @@ export default (url, options = {}) => {
     delete opts.userAgent
     opts.headers = assign({}, { "User-Agent": userAgent }, opts.headers)
 
+    if (opts.method === "GET") {
+      delete opts.body
+      delete opts.json
+    }
+
     request(url, opts, (err, response) => {
       if (err) return reject(err)
       // If there is a non-200 status code, reject.
