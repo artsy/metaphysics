@@ -30,7 +30,7 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
     const apiLoaderFactory = (
       path,
       globalParams = {},
-      pathAPIOptions: { method?: string } = {}
+      pathAPIOptions: { method: string } = { method: "GET" }
     ) => {
       const loader = new DataLoader<
         DataLoaderKey,
@@ -84,7 +84,7 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
           cacheKeyFn: (input) => JSON.stringify(input),
         }
       )
-      return loaderInterface(loader, path, globalParams, pathAPIOptions.method)
+      return loaderInterface(pathAPIOptions.method, loader, path, globalParams)
     }
     return apiLoaderFactory as LoaderFactory
   }
