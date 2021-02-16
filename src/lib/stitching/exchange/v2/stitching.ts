@@ -159,44 +159,10 @@ export const exchangeStitchingEnvironment = ({
         return info.mergeInfo.delegateToSchema({
           schema: localSchema,
           operation: "query",
-          fieldName: "conversation",
+          fieldName: "_do_not_use_conversation",
           args: { id: impulseConversationId },
           context,
           info,
-          transforms: [],
-          //   // Wrap document takes a subtree as an AST node
-          //   new WrapQuery(
-          //     // path at which to apply wrapping and extracting
-          //     ["conversation"],
-          //     (subtree: SelectionSetNode) => ({
-          //       // we create a wrapping AST Field
-          //       kind: Kind.FIELD,
-          //       name: {
-          //         kind: Kind.NAME,
-          //         value: "conversation",
-          //       },
-          //       arguments: [
-          //         {
-          //           kind: Kind.ARGUMENT,
-          //           name: {
-          //             kind: Kind.NAME,
-          //             value: "id",
-          //           },
-          //           value: {
-          //             kind: Kind.STRING,
-          //             value: impulseConversationId,
-          //           },
-          //         },
-          //       ],
-          //       // Inside the field selection
-          //       selectionSet: subtree,
-          //     }),
-          //     // how to process the data result at path
-          //     (result) => {
-          //       return result.conversation
-          //     }
-          //   ),
-          // ],
         })
       },
     },

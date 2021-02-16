@@ -367,7 +367,7 @@ describe("resolving a stitched conversation", () => {
     // The part we are testing is the step that goes from a order
     // to the conversation.
     addMockFunctionsToSchema({
-      preserveResolvers: false,
+      preserveResolvers: true,
       schema: allMergedSchemas,
       mocks: {
         Query: () => ({
@@ -378,21 +378,28 @@ describe("resolving a stitched conversation", () => {
             }
           },
         }),
-        // FIXME: This mock bypasses our stitched resolver which delegates to
-        // me.conversation
-        Conversation: () => {
-          return {
-            items: [
-              {
-                item: { __typename: "Artwork", title: "Conversation Art" },
-              },
-            ],
-          }
-        },
       },
     })
 
-    const result = await graphql(allMergedSchemas, query)
+    const result = await graphql(
+      allMergedSchemas,
+      query,
+      {},
+      {
+        conversationLoader: jest.fn(() =>
+          Promise.resolve({
+            items: [
+              {
+                item_type: "Artwork",
+                properties: {
+                  title: "Conversation Art",
+                },
+              },
+            ],
+          })
+        ),
+      }
+    )
 
     expect(result).toEqual({
       data: {
@@ -402,6 +409,7 @@ describe("resolving a stitched conversation", () => {
       },
     })
   })
+
   it("resolves conversation field on CommerceOfferOrder as null if there is no associated conversation id", async () => {
     const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
     const query = gql`
