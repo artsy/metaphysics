@@ -30,7 +30,7 @@ export const uncachedLoaderFactory = (
         ),
       { cache: false, batch: false }
     )
-    return loaderInterface(options?.method, loader, path, options)
+    return loaderInterface(loader, path, options)
   }
   return apiLoaderFactory as LoaderFactory
 }
