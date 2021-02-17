@@ -70,7 +70,7 @@ const runFairsQuery = async (query, config) =>
   })
 
 describe("HomePageFairsModule", () => {
-  it("works", async () => {
+  it("shows the correct number of fairs", async () => {
     const runningFairs = [mockRunningFair()]
 
     const pastFairs = [mockPastFair()]
