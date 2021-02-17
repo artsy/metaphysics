@@ -1,5 +1,4 @@
 import { runQuery } from "schema/v2/test/utils"
-import { nanoid } from "nanoid"
 import moment from "moment"
 import { range } from "lodash"
 
@@ -8,8 +7,11 @@ import { range } from "lodash"
   require("../home_page_fairs_module")
 }
 
+let _counter = 0
+const uniqid = () => _counter++
+
 const mockRunningFair = () => {
-  const id = nanoid()
+  const id = uniqid()
   return {
     id: `running-fair-${id}`,
     default_profile_id: `running-fair-${id}`,
@@ -26,7 +28,7 @@ const mockRunningFair = () => {
 }
 
 const mockFutureFair = () => {
-  const id = nanoid()
+  const id = uniqid()
   return {
     id: `future-fair-${id}`,
     default_profile_id: `future-fair-${id}`,
@@ -43,7 +45,7 @@ const mockFutureFair = () => {
 }
 
 const mockPastFair = () => {
-  const id = nanoid()
+  const id = uniqid()
   return {
     id: `past-fair-${id}`,
     default_profile_id: `past-fair-${id}`,
