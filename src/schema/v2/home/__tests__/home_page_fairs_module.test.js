@@ -54,6 +54,9 @@ const mockPastFair = () => {
   }
 }
 
+const isRunningFair = (fair) => fair.name.startsWith("A running fair")
+const isNotFutureFair = (fair) => !fair.name.startsWith("A future fair")
+
 const runFairsQuery = async (query, config) =>
   runQuery(query, {
     fairsLoader: (options) => Promise.resolve(config(options)),
@@ -143,8 +146,29 @@ describe("HomePageFairsModule", () => {
     const results = fairsModule.homePage.fairsModule.results
     expect(results).toHaveLength(8)
     expect(results).not.toIncludeAnyMembers(pastFairs)
-    const isRunningFair = (fair) => fair.name.startsWith("A running fair")
     expect(results).toSatisfyAll(isRunningFair)
   })
+
+  it("doesn't return fairs that haven't opened yet", async () => {
+    const query = `
+      {
+        homePage {
+          fairsModule {
+            results {
+              slug
+              name
+              id
+            }
+          }
+        }
+      }
+	`
+
+    const fairs = [mockRunningFair(), mockFutureFair()]
+
+    const fairsModule = await runFairsQuery(query, () => ({ body: fairs }))
+    const results = fairsModule.homePage.fairsModule.results
+    expect(results).toHaveLength(1)
+    expect(results).toSatisfyAll(isNotFutureFair)
   })
 })
