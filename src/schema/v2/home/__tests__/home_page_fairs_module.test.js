@@ -1,40 +1,69 @@
-/* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
+import { nanoid } from "nanoid"
+import moment from "moment"
+import { range } from "lodash"
 
-// FIXME: These tests seem to be failing in CI. Revisit and investigate why.
+const mockRunningFair = () => {
+  const id = nanoid()
+  return {
+    id: `running-fair-${id}`,
+    default_profile_id: `running-fair-${id}`,
+    start_at: moment().subtract(1, "day"),
+    end_at: moment().add(1, "day"),
+    name: `A running fair ${id}`,
+    published: true,
+    subtype: null,
+    summary: "",
+    layout: null,
+    display_vip: false,
+    has_full_feature: true,
+  }
+}
+
+const mockFutureFair = () => {
+  const id = nanoid()
+  return {
+    id: `future-fair-${id}`,
+    default_profile_id: `future-fair-${id}`,
+    start_at: moment().add(1, "day"),
+    end_at: moment().add(10, "day"),
+    name: `A future fair ${id}`,
+    published: true,
+    subtype: null,
+    summary: "",
+    layout: null,
+    display_vip: false,
+    has_full_feature: true,
+  }
+}
+
+const mockPastFair = () => {
+  const id = nanoid()
+  return {
+    id: `past-fair-${id}`,
+    default_profile_id: `past-fair-${id}`,
+    start_at: moment().subtract(10, "day"),
+    end_at: moment().subtract(1, "day"),
+    name: `A past fair ${id}`,
+    published: true,
+    subtype: null,
+    summary: "",
+    layout: null,
+    display_vip: false,
+    has_full_feature: true,
+  }
+}
+
+const runFairsQuery = async (query, config) =>
+  runQuery(query, {
+    fairsLoader: (options) => Promise.resolve(config(options)),
+  })
+
 describe("HomePageFairsModule", () => {
-  it.skip("works", () => {
-    const runningFairs = [
-      {
-        id: "artissima-2017",
-        default_profile_id: "artissima-2017",
-        start_at: "2017-11-03T10:00:00+00:00",
-        end_at: "2017-11-05T18:00:00+00:00",
-        name: "Artissima 2017",
-        published: true,
-        subtype: null,
-        summary: "",
-        layout: null,
-        display_vip: false,
-        has_full_feature: true,
-      },
-    ]
+  it("works", async () => {
+    const runningFairs = [mockRunningFair()]
 
-    const pastFairs = [
-      {
-        id: "zonamaco-foto-and-sal-n-del-anticuario-2017",
-        default_profile_id: "zsonamaco-foto-2017",
-        start_at: "2017-09-20T13:45:00+00:00",
-        end_at: "2017-09-24T13:45:00+00:00",
-        name: "Zâ“ˆONAMACO FOTO & SALÃ“N DEL ANTICUARIO 2017",
-        published: true,
-        subtype: null,
-        summary: "",
-        layout: null,
-        display_vip: false,
-        has_full_feature: true,
-      },
-    ]
+    const pastFairs = [mockPastFair()]
 
     const query = `
       {
@@ -50,27 +79,15 @@ describe("HomePageFairsModule", () => {
       }
     `
 
-    return runQuery(query, {
-      fairsLoader: (options) =>
-        Promise.resolve({ body: options.active ? runningFairs : pastFairs }),
-    }).then((fairsModule) => {
-      expect(fairsModule).toMatchSnapshot()
-    })
+    const fairsModule = await runFairsQuery(query, (options) => ({
+      body: options.active ? runningFairs : pastFairs,
+    }))
+    const results = fairsModule.homePage.fairsModule.results
+    expect(results).toHaveLength(2)
   })
 
-  it.skip("puts fairs that haven't started yet at the end of the results", async () => {
-    const fairs = [
-      {
-        id: "future-fair",
-        start_at: "2027-11-03T10:00:00+00:00",
-        name: "Future Fair",
-      },
-      {
-        id: "current-fair",
-        start_at: "2017-11-03T10:00:00+00:00",
-        name: "Current Fair",
-      },
-    ]
+  it("puts fairs that haven't started yet at the end of the results", async () => {
+    const fairs = [mockFutureFair(), mockRunningFair()]
 
     const query = `
       {
@@ -86,24 +103,14 @@ describe("HomePageFairsModule", () => {
       }
     `
 
-    const fairModule = await runQuery(query, {
-      fairsLoader: () => Promise.resolve({ body: fairs }),
-    })
-    const results = fairModule.homePage.fairsModule.results
-    expect(results[0].slug).toEqual("current-fair")
-    expect(results[1].slug).toEqual("future-fair")
+    const fairsModule = await runFairsQuery(query, () => ({ body: fairs }))
+    const results = fairsModule.homePage.fairsModule.results
+    expect(results[0].slug).toStartWith("running-fair")
+    expect(results[1].slug).toStartWith("future-fair")
   })
 
-  it.skip("does not request past fairs if it has 8 running ones", () => {
-    const aFair = {
-      id: "artissima-2017",
-      name: "Artissima 2017",
-    }
-
-    const runningFairs = []
-    for (let index = 0; index < 8; index++) {
-      runningFairs[index] = aFair
-    }
+  it("does not request past fairs if it has 8 running ones", async () => {
+    const runningFairs = range(8).map((_) => mockRunningFair())
 
     const pastFairs = [
       {
@@ -111,8 +118,8 @@ describe("HomePageFairsModule", () => {
         name: "Zâ“ˆONAMACO FOTO & SALÃ“N DEL ANTICUARIO 2017",
       },
       {
-        id: "past-fair-2017",
-        name: "I Should Not Show Up in the Snapshot",
+        id: "past-fair-not-showing",
+        name: "I should not show up in the results",
       },
     ]
 
@@ -130,11 +137,14 @@ describe("HomePageFairsModule", () => {
       }
     `
 
-    return runQuery(query, {
-      fairsLoader: (options) =>
-        Promise.resolve({ body: options.active ? runningFairs : pastFairs }),
-    }).then((fairsModule) => {
-      expect(fairsModule).toMatchSnapshot()
-    })
+    const fairsModule = await runFairsQuery(query, (options) => ({
+      body: options.active ? runningFairs : pastFairs,
+    }))
+    const results = fairsModule.homePage.fairsModule.results
+    expect(results).toHaveLength(8)
+    expect(results).not.toIncludeAnyMembers(pastFairs)
+    const isRunningFair = (fair) => fair.name.startsWith("A running fair")
+    expect(results).toSatisfyAll(isRunningFair)
+  })
   })
 })
