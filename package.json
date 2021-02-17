@@ -90,6 +90,7 @@
     "memcached": "2.2.2",
     "moment": "2.26.0",
     "moment-timezone": "0.5.31",
+    "nanoid": "3.1.20",
     "node-fetch": "1.7.3",
     "numeral": "1.5.6",
     "opentracing": "0.14.1",
@@ -142,6 +143,7 @@
     "expect.js": "0.3.1",
     "husky": "3.1.0",
     "jest": "24.9.0",
+    "jest-extended": "0.11.5",
     "lint-staged": "7.3.0",
     "prettier": "2.0.5",
     "sinon": "1.17.7",
@@ -151,6 +153,7 @@
   },
   "jest": {
     "setupFilesAfterEnv": [
+      "jest-extended",
       "<rootDir>/src/test/helper.js"
     ],
     "testPathIgnorePatterns": [
