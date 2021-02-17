@@ -3,6 +3,11 @@ import { nanoid } from "nanoid"
 import moment from "moment"
 import { range } from "lodash"
 
+// adding this dep explicitly so the tests run when we change the main file
+;() => {
+  require("../home_page_fairs_module")
+}
+
 const mockRunningFair = () => {
   const id = nanoid()
   return {
