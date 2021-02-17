@@ -94,42 +94,10 @@ describe("HomePageFairsModule", () => {
     expect(results).toHaveLength(2)
   })
 
-  it("puts fairs that haven't started yet at the end of the results", async () => {
-    const fairs = [mockFutureFair(), mockRunningFair()]
-
-    const query = `
-      {
-        homePage {
-          fairsModule {
-            results {
-              slug
-              name
-              isActive
-            }
-          }
-        }
-      }
-    `
-
-    const fairsModule = await runFairsQuery(query, () => ({ body: fairs }))
-    const results = fairsModule.homePage.fairsModule.results
-    expect(results[0].slug).toStartWith("running-fair")
-    expect(results[1].slug).toStartWith("future-fair")
-  })
-
   it("does not request past fairs if it has 8 running ones", async () => {
-    const runningFairs = range(8).map((_) => mockRunningFair())
+    const runningFairs = range(8).map(() => mockRunningFair())
 
-    const pastFairs = [
-      {
-        id: "zonamaco-foto-and-sal-n-del-anticuario-2017",
-        name: "Zâ“ˆONAMACO FOTO & SALÃ“N DEL ANTICUARIO 2017",
-      },
-      {
-        id: "past-fair-not-showing",
-        name: "I should not show up in the results",
-      },
-    ]
+    const pastFairs = [mockPastFair()]
 
     const query = `
       {
@@ -160,9 +128,7 @@ describe("HomePageFairsModule", () => {
         homePage {
           fairsModule {
             results {
-              slug
               name
-              id
             }
           }
         }
