@@ -128,8 +128,7 @@ const rootFields = {
   cities,
   // collection: Collection,
   _do_not_use_conversation: {
-    type: Conversation.type,
-    resolve: Conversation.resolve,
+    ...Conversation,
     description: "Do not use (only used internally for stitching)",
   },
   creditCard: CreditCard,

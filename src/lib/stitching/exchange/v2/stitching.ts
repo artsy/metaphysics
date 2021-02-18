@@ -200,8 +200,6 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-      isInquiryOrder: Boolean!
-      conversation: Conversation
       
       ${orderTotalsSDL.join("\n")}
     }
@@ -221,8 +219,6 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-      isInquiryOrder: Boolean!
-      conversation: Conversation
 
       ${orderTotalsSDL.join("\n")}
     }
@@ -251,7 +247,6 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
-        ...inquiryOrderResolvers,
       },
       CommerceOfferOrder: {
         ...totalsResolvers("CommerceOfferOrder", orderTotals),
@@ -376,7 +371,6 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
-        ...inquiryOrderResolvers,
       },
       CommerceOffer: {
         ...totalsResolvers("CommerceOffer", offerAmountFields),
