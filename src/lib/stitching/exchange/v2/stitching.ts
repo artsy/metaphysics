@@ -137,8 +137,11 @@ export const exchangeStitchingEnvironment = ({
   const inquiryOrderResolvers = {
     isInquiryOrder: {
       fragment: gql`
-        fragment CommerceOrderIsInquiryOrder on CommerceOfferOrder {
-          impulseConversationId
+        fragment CommerceOrderIsInquiryOrder on CommerceOrder {
+          __typename
+          ... on CommerceOfferOrder {
+            impulseConversationId
+          }
         }
       `,
       resolve: async (order) => {
@@ -148,21 +151,66 @@ export const exchangeStitchingEnvironment = ({
     },
     conversation: {
       fragment: gql`
-        fragment CommerceOrderConversation on CommerceOfferOrder {
-          impulseConversationId
+        fragment CommerceOrderConversation on CommerceOrder {
+          __typename
+          ... on CommerceOfferOrder {
+            impulseConversationId
+          }
         }
       `,
       resolve: async (order, _args, context, info) => {
         const { impulseConversationId } = order
         if (!impulseConversationId) return null
 
+        // return info.mergeInfo.delegateToSchema({
+        //   schema: localSchema,
+        //   operation: "query",
+        //   fieldName: "_do_not_use_conversation",
+        //   args: { id: impulseConversationId },
+        //   context,
+        //   info,
+        //   // transforms: exchangeSchema.transforms,
+        // })
         return info.mergeInfo.delegateToSchema({
           schema: localSchema,
-          operation: "query",
-          fieldName: "_do_not_use_conversation",
-          args: { id: impulseConversationId },
           context,
+          operation: "query",
+          fieldName: "me",
           info,
+          transforms: [
+            // Wrap document takes a subtree as an AST node
+            new WrapQuery(
+              // path at which to apply wrapping and extracting
+              ["me"],
+              (subtree: SelectionSetNode) => ({
+                // we create a wrapping AST Field
+                kind: Kind.FIELD,
+                name: {
+                  kind: Kind.NAME,
+                  value: "conversation",
+                },
+                arguments: [
+                  {
+                    kind: Kind.ARGUMENT,
+                    name: {
+                      kind: Kind.NAME,
+                      value: "id",
+                    },
+                    value: {
+                      kind: Kind.STRING,
+                      value: impulseConversationId,
+                    },
+                  },
+                ],
+                // Inside the field selection
+                selectionSet: subtree,
+              }),
+              // how to process the data result at path
+              (result) => {
+                return result.conversation
+              }
+            ),
+          ],
         })
       },
     },
