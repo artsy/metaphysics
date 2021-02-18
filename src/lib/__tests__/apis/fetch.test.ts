@@ -3,6 +3,7 @@ import request, { Request } from "request"
 const mockRequest = (request as any) as jest.Mock<Request>
 
 import fetch from "../../apis/fetch"
+import { constructUrlAndParams } from "../../apis/fetch"
 
 declare const expectPromiseRejectionToMatch: any
 
@@ -67,5 +68,57 @@ it("tries to parse the response when there is a String and resolves with it (3)"
     expect(error.body).toEqual(
       `{ "type": "other_error", "message": "undefined method \`[]' for nil:NilClass" }`
     )
+  })
+})
+
+describe("constructUrlAndParams", () => {
+  it("passes thru the url for a GET without query params", () => {
+    const { url, body, json } = constructUrlAndParams(
+      "GET",
+      "https://staging.artsy.net/api/v1/artist/andy-warhol"
+    )
+    expect(url).toEqual("https://staging.artsy.net/api/v1/artist/andy-warhol")
+    expect(body).toBeUndefined()
+    expect(json).toBeUndefined()
+  })
+
+  it("passes thru the url for a GET with query params", () => {
+    const { url, body, json } = constructUrlAndParams(
+      "GET",
+      "https://staging.artsy.net/api/v1/filter/artworks?acquireable=true"
+    )
+    expect(url).toEqual(
+      "https://staging.artsy.net/api/v1/filter/artworks?acquireable=true"
+    )
+    expect(body).toBeUndefined()
+    expect(json).toBeUndefined()
+  })
+
+  const methods = ["PUT", "POST"]
+
+  methods.forEach((method) => {
+    describe(`for a ${method} request`, () => {
+      it("removes query params for a POST", () => {
+        const { url, body, json } = constructUrlAndParams(
+          method,
+          "https://staging.artsy.net/api/v1/me/token?client_application_id=blah"
+        )
+        expect(url).toEqual("https://staging.artsy.net/api/v1/me/token")
+        expect(body).toEqual({ client_application_id: "blah" })
+        expect(json).toBeTruthy()
+      })
+
+      it("works for arrays", () => {
+        const { url, body, json } = constructUrlAndParams(
+          method,
+          "https://staging.artsy.net/api/v1/me/token?client_application_id[]=blah&client_application_id[]=cool"
+        )
+        expect(url).toEqual("https://staging.artsy.net/api/v1/me/token")
+        expect(body).toEqual({
+          client_application_id: ["blah", "cool"],
+        })
+        expect(json).toBeTruthy()
+      })
+    })
   })
 })

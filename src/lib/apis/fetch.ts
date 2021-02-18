@@ -2,11 +2,39 @@ import { assign, clone, get, defaults, compact } from "lodash"
 import request from "request"
 import config from "config"
 import { HTTPError } from "lib/HTTPError"
+import { parse } from "qs"
+import { isExisty } from "lib/helpers"
+
+interface RequestBodyParams {
+  body?: Record<string, unknown>
+  json?: boolean
+}
+
+interface URLAndRequestBodyParams extends RequestBodyParams {
+  url: string
+}
+
+export const constructUrlAndParams = (method, url): URLAndRequestBodyParams => {
+  const opts: RequestBodyParams = {}
+
+  if (method === "PUT" || method === "POST") {
+    const [path, queryParams] = url.split("?")
+    const parsedParams = parse(queryParams)
+
+    if (isExisty(parsedParams)) {
+      opts.body = parsedParams
+      opts.json = true
+
+      return { url: path, ...opts }
+    }
+  }
+
+  return { url }
+}
 
 // TODO: This `any` is a shame, but
 // the type seems to be a bit of a mix of the original
 // response and some faffing
-
 export default (url, options = {}) => {
   return new Promise<any>((resolve, reject) => {
     const opts: any = clone(
@@ -23,7 +51,10 @@ export default (url, options = {}) => {
     delete opts.userAgent
     opts.headers = assign({}, { "User-Agent": userAgent }, opts.headers)
 
-    request(url, opts, (err, response) => {
+    const { method } = opts
+    const { url: cleanedUrl, body, json } = constructUrlAndParams(method, url)
+
+    request(cleanedUrl, { ...opts, body, json }, (err, response) => {
       if (err) return reject(err)
       // If there is a non-200 status code, reject.
       if (
