@@ -39,6 +39,9 @@ export const ArtworksAggregation = new GraphQLEnumType({
     INSTITUTION: {
       value: "institution",
     },
+    LOCATION_CITY: {
+      value: "location_city",
+    },
     PARTNER: {
       value: "partner",
     },
