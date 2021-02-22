@@ -222,6 +222,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   artistSeriesID: {
     type: GraphQLString,
   },
+  locationCities: {
+    type: new GraphQLList(GraphQLString),
+  },
 }
 
 export const pageableFilterArtworksArgs = pageable(filterArtworksArgs)
@@ -411,6 +414,7 @@ const filterArtworksConnectionTypeFactory = (
       saleID,
       tagID,
       keywordMatchExact,
+      locationCities,
       ..._options
     },
     {
@@ -446,6 +450,7 @@ const filterArtworksConnectionTypeFactory = (
       sale_id: saleID,
       tag_id: tagID,
       keyword_match_exact: keywordMatchExact,
+      location_cities: locationCities,
       ..._options,
     }
     const {
