@@ -1,7 +1,7 @@
 import Fair from "schema/v2/fair"
 import { GraphQLList, GraphQLObjectType, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { groupBy } from "lodash"
+import { filter } from "lodash"
 import moment from "moment"
 
 export const HomePageFairsModuleType = new GraphQLObjectType<
@@ -19,32 +19,38 @@ export const HomePageFairsModuleType = new GraphQLObjectType<
           sort: "-start_at",
           active: true,
         }
-        return fairsLoader(gravityOptions).then(
-          ({ body: ungroupedRunningFairs }) => {
-            // Gravity returns fairs that are both current and upcoming.
-            // Make sure the current ones appear first in the results list.
-            const now = moment.utc()
-            const returnValue = groupBy(ungroupedRunningFairs, (fair) => {
-              const startAt = moment.utc(fair.start_at)
-              return now.isAfter(startAt) ? "current" : "upcoming"
-            })
 
-            const runningFairs = (returnValue["current"] || []).concat(
-              returnValue["upcoming"] || []
-            )
+        const now = moment.utc()
+
+        return fairsLoader(gravityOptions).then(
+          ({ body: unfilteredRunningFairs }) => {
+            // Gravity returns fairs that are both current and upcoming.
+            // Make sure only the current ones appear in the results list.
+            const runningFairs = filter(unfilteredRunningFairs, (fair) => {
+              const startAt = moment.utc(fair.start_at)
+              return now.isAfter(startAt)
+            })
 
             // If there are less than 8, get the most recent closed fairs
             if (runningFairs.length >= 8) {
               return runningFairs
             }
+
             const newOptions = {
               ...gravityOptions,
               status: "closed",
               active: false,
               size: 8 - runningFairs.length,
             }
-            return fairsLoader(newOptions).then(({ body: closedFairs }) =>
-              runningFairs.concat(closedFairs)
+
+            return fairsLoader(newOptions).then(
+              ({ body: unfilteredClosedFairs }) => {
+                const closedFairs = filter(unfilteredClosedFairs, (fair) => {
+                  const endAt = moment.utc(fair.end_at)
+                  return now.isAfter(endAt)
+                })
+                return runningFairs.concat(closedFairs)
+              }
             )
           }
         )
