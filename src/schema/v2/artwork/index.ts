@@ -745,6 +745,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "The price paid for the artwork in a user's 'my collection'",
         resolve: (artwork) => {
           const { price_paid_cents } = artwork
+          if (!price_paid_cents) return null
           const price_paid_currency = artwork.price_paid_currency || "USD"
           return {
             cents: price_paid_cents,
