@@ -189,6 +189,17 @@ export const exchangeStitchingEnvironment = ({
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
 
+
+    extend type Conversation {
+      orderConnection(
+        participantType: CommerceOrderParticipantEnum!
+        after: String
+        before: String
+        first: Int
+        last: Int
+      ): CommerceOrderConnectionWithTotalCount
+    }
+
     extend type CommerceLineItem {
       artwork: Artwork
       artworkVersion: ArtworkVersion
@@ -241,6 +252,40 @@ export const exchangeStitchingEnvironment = ({
 
     // Resolvers for the above
     resolvers: {
+      Conversation: {
+        orderConnection: {
+          fragment: gql`
+            fragment Conversation_orderConnection on Conversation {
+              internalID
+            }
+          `,
+          resolve: (
+            { internalID: conversationId },
+            { participantType, ...requestArgs },
+            context,
+            info
+          ) => {
+            const viewerKey =
+              participantType === "BUYER" ? "buyerId" : "sellerId"
+            const { userID } = context
+
+            const exchangeArgs = {
+              ...requestArgs,
+              impulseConversationId: conversationId,
+              [viewerKey]: userID,
+            }
+
+            return info.mergeInfo.delegateToSchema({
+              schema: exchangeSchema,
+              operation: "query",
+              fieldName: "commerceOrders",
+              args: exchangeArgs,
+              context,
+              info,
+            })
+          },
+        },
+      },
       CommerceBuyOrder: {
         // The money helper resolvers
         ...totalsResolvers("CommerceBuyOrder", orderTotals),

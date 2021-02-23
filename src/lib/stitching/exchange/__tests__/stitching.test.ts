@@ -39,6 +39,15 @@ it("extends the Me object", async () => {
   expect(meFields).toContain("orders")
 })
 
+it("extends the Conversation type", async () => {
+  const mergedSchema = await getExchangeMergedSchema()
+  const conversationFields = await getFieldsForTypeFromSchema(
+    "Conversation",
+    mergedSchema
+  )
+  expect(conversationFields).toContain("orderConnection")
+})
+
 it("extends the Mutation object", async () => {
   const mergedSchema = await getExchangeMergedSchema()
   const meFields = await getFieldsForTypeFromSchema("Mutation", mergedSchema)
@@ -132,6 +141,7 @@ it("delegates to the local schema for an LineItem's artwork", async () => {
   expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
     args: { id: "ARTWORK-ID" },
     fieldName: "artwork",
+
     operation: "query",
     schema: expect.anything(),
     context: expect.anything(),
@@ -274,6 +284,54 @@ describe("createInquiryOfferOrder", () => {
     await expect(resolver({}, args, context, { mergeInfo })).rejects.toThrow(
       "Impulse: request to associate offer with conversation failed"
     )
+  })
+})
+
+describe("Conversation with orders", () => {
+  it("delegates buyer request for Conversation.orderConnection to exchange schema", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const orderConnectionResolver =
+      resolvers.Conversation.orderConnection.resolve
+    const mergeInfo = { delegateToSchema: jest.fn() }
+
+    orderConnectionResolver(
+      { internalID: "conversation-id" },
+      { participantType: "BUYER" },
+      { userID: "user-id" },
+      { mergeInfo }
+    )
+
+    expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+      args: { buyerId: "user-id", impulseConversationId: "conversation-id" },
+      fieldName: "commerceOrders",
+      operation: "query",
+      schema: expect.anything(),
+      context: expect.anything(),
+      info: expect.anything(),
+    })
+  })
+
+  it("delegates seller buyer request for Conversation.orderConnection to exchange schema", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const orderConnectionResolver =
+      resolvers.Conversation.orderConnection.resolve
+    const mergeInfo = { delegateToSchema: jest.fn() }
+
+    orderConnectionResolver(
+      { internalID: "conversation-id" },
+      { participantType: "SELLER" },
+      { userID: "user-id" },
+      { mergeInfo }
+    )
+
+    expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+      args: { sellerId: "user-id", impulseConversationId: "conversation-id" },
+      fieldName: "commerceOrders",
+      operation: "query",
+      schema: expect.anything(),
+      context: expect.anything(),
+      info: expect.anything(),
+    })
   })
 })
 

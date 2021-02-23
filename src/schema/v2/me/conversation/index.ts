@@ -405,7 +405,9 @@ const Conversation: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { conversationLoader }) => {
-    return conversationLoader ? conversationLoader(id) : null
+    return conversationLoader
+      ? conversationLoader(id, { "expand[]": "conversation_orders" })
+      : null
   },
 }
 
