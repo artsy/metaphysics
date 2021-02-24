@@ -26,26 +26,25 @@ const mockAuctionResult = {
   price_realized: {
     cents: 200000,
     centsUSD: 200000,
-    display: "€200.000",
   },
 }
 
 describe("AuctionResult type", () => {
   it("fetches an auctionResult by ID", () => {
     const query = `
-      {
-        auctionResult(id: "foo-bar") {
-          currency
-          saleDateText
-          location
-          performance {
-            mid
-          }
-          estimate {
-            display
-          }
+    {
+      auctionResult(id: "foo-bar") {
+        currency
+        saleDateText
+        location
+        performance {
+          mid
+        }
+        estimate {
+          display
         }
       }
+    }
     `
 
     const context = {
@@ -63,6 +62,92 @@ describe("AuctionResult type", () => {
         estimate: {
           display: "€1,000 – 3,000",
         },
+      })
+    })
+  })
+
+  describe("returns the right price display", () => {
+    const query = `
+      {
+        auctionResult(id: "foo-bar") {
+          estimate {
+            display
+          }
+          priceRealized {
+            display
+          }
+        }
+      }
+    `
+    it("when the currency is supported and is part of symbolOnly array", () => {
+      const auctionWithSupprotedCurrency = {
+        ...mockAuctionResult,
+        currency: "EUR",
+      }
+
+      const context = {
+        auctionLotLoader: jest.fn(() =>
+          Promise.resolve(auctionWithSupprotedCurrency)
+        ),
+      }
+
+      return runQuery(query, context!).then((data) => {
+        expect(data.auctionResult).toEqual({
+          estimate: {
+            display: "€1,000 – 3,000",
+          },
+          priceRealized: {
+            display: "€1,000",
+          },
+        })
+      })
+    })
+
+    it("when the currency is supported but not part of symbolOnly array", () => {
+      const auctionWithSupprotedCurrency = {
+        ...mockAuctionResult,
+        currency: "HKD",
+      }
+
+      const context = {
+        auctionLotLoader: jest.fn(() =>
+          Promise.resolve(auctionWithSupprotedCurrency)
+        ),
+      }
+
+      return runQuery(query, context!).then((data) => {
+        expect(data.auctionResult).toEqual({
+          estimate: {
+            display: "HKD $1,000 – 3,000",
+          },
+          priceRealized: {
+            display: "HKD $1,000",
+          },
+        })
+      })
+    })
+
+    it("when the currency is not supported", () => {
+      const auctionWithNoSupprotedCurrency = {
+        ...mockAuctionResult,
+        currency: "FRF",
+      }
+
+      const context = {
+        auctionLotLoader: jest.fn(() =>
+          Promise.resolve(auctionWithNoSupprotedCurrency)
+        ),
+      }
+
+      return runQuery(query, context!).then((data) => {
+        expect(data.auctionResult).toEqual({
+          estimate: {
+            display: null,
+          },
+          priceRealized: {
+            display: null,
+          },
+        })
       })
     })
   })
