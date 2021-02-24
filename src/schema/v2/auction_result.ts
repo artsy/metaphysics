@@ -18,6 +18,7 @@ import { ResolverContext } from "types/graphql"
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 import currencyCodes from "lib/currency_codes.json"
 import { YearRange } from "./types/yearRange"
+import * as Sentry from "@sentry/node"
 const symbolOnly = ["USD", "GBP", "EUR", "MYR"]
 
 export const AuctionResultSorts = {
@@ -193,9 +194,14 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
               if (!low_estimate_cents && !high_estimate_cents) {
                 return null
               }
-              const { symbol, subunit_to_unit } = currencyCodes[
-                currency.toLowerCase()
-              ]
+
+              const currency_map = currencyCodes[currency.toLowerCase()]
+              if (!currency_map) {
+                Sentry.captureException(`currency not supported ${currency}}`)
+                return null
+              }
+              const { symbol, subunit_to_unit } = currency_map
+
               let display
               let amount
               if (indexOf(symbolOnly, currency) === -1) {
@@ -250,11 +256,14 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
                 return null
               }
 
-              const { symbol, subunit_to_unit } = currencyCodes[
-                currency.toLowerCase()
-              ]
-              let display
+              const currency_map = currencyCodes[currency.toLowerCase()]
+              if (!currency_map) {
+                Sentry.captureException(`currency not supported ${currency}}`)
+                return null
+              }
+              const { symbol, subunit_to_unit } = currency_map
 
+              let display
               if (indexOf(symbolOnly, currency) === -1) {
                 display = currency
               }
