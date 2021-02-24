@@ -47,6 +47,11 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLInt,
     description: "Return artworks with less than x additional_images.",
   },
+  missingPriorityMetadata: {
+    type: GraphQLBoolean,
+    description:
+      "Returns artworks with less than 2 images and/or missing visible price info",
+  },
   publishedWithin: {
     type: GraphQLInt,
     description: "Return artworks published less than x seconds ago.",
@@ -124,6 +129,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             exclude_ids?: string[]
             for_sale: boolean
             image_count_less_than?: number
+            missing_priority_metadata?: boolean
             page: number
             published: boolean
             published_within?: number
@@ -135,6 +141,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           const gravityArgs: GravityArgs = {
             for_sale: args.forSale,
             image_count_less_than: args.imageCountLessThan,
+            missing_priority_metadata: args.missingPriorityMetadata,
             page,
             published: true,
             published_within: args.publishedWithin,
