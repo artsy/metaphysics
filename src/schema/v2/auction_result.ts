@@ -193,9 +193,16 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
               if (!low_estimate_cents && !high_estimate_cents) {
                 return null
               }
-              const { symbol, subunit_to_unit } = currencyCodes[
-                currency.toLowerCase()
-              ]
+              const currency_map = currencyCodes[currency.toLowerCase()]
+              let symbol
+              let subunit_to_unit
+              if (currency_map) {
+                symbol = currency_map.symbol
+                subunit_to_unit = currency_map.subunit_to_unit
+              } else {
+                return null
+              }
+
               let display
               let amount
               if (indexOf(symbolOnly, currency) === -1) {
@@ -250,13 +257,21 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
                 return null
               }
 
-              const { symbol, subunit_to_unit } = currencyCodes[
-                currency.toLowerCase()
-              ]
-              let display
+              const currency_map = currencyCodes[currency.toLowerCase()]
+              let symbol
+              let subunit_to_unit
+              if (currency_map) {
+                symbol = currency_map.symbol
+                subunit_to_unit = currency_map.subunit_to_unit
+              } else {
+                return null
+              }
 
+              let display
               if (indexOf(symbolOnly, currency) === -1) {
                 display = currency
+              } else {
+                return null
               }
 
               if (symbol) {
