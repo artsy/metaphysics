@@ -138,6 +138,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       description: "The given location of the user as structured data",
       type: EditableLocationFields,
     },
+    completedOnboarding: {
+      description: "The user completed onboarding.",
+      type: GraphQLBoolean,
+    },
     collectorLevel: {
       description: "The collector level for the user",
       type: GraphQLInt,
@@ -211,6 +215,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   mutateAndGetPayload: (
     {
       collectorLevel,
+      completedOnboarding,
       emailFrequency,
       priceRangeMin,
       priceRangeMax,
@@ -227,6 +232,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   ) => {
     const user: any = {
       collector_level: collectorLevel,
+      completed_onboarding: completedOnboarding,
       email_frequency: emailFrequency,
       price_range_min: priceRangeMin,
       price_range_max: priceRangeMax,
