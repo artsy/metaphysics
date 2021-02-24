@@ -18,8 +18,6 @@ const defaultArtworkDetails = ({
   artistIds: ["4d8b92b34eb68a1b2c0003f4"],
   artworkId: "some-artwork-id",
   category: "some strange category",
-  cost_currency_code: "USD",
-  cost_minor: 200,
   date: "1990",
   depth: "20",
   is_edition: JSON.stringify(isEdition),
@@ -58,8 +56,6 @@ const computeMutationInput = ({
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
           artworkId: "some-artwork-id"
           category: "some strange category"
-          costCurrencyCode: "USD"
-          costMinor: 200
           date: "1990"
           depth: "20"
           isEdition: ${JSON.stringify(isEdition)}
@@ -80,8 +76,6 @@ const computeMutationInput = ({
           ... on MyCollectionArtworkMutationSuccess {
             artwork {
               category
-              costCurrencyCode
-              costMinor
               date
               depth
               isEdition
@@ -167,8 +161,6 @@ describe("myCollectionUpdateArtworkMutation", () => {
       expect(artworkOrError).toEqual({
         artwork: {
           category: "some strange category",
-          costCurrencyCode: "USD",
-          costMinor: 200,
           date: "1990",
           depth: "20",
           editionNumber: null,

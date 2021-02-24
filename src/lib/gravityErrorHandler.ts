@@ -6,6 +6,7 @@ import {
 } from "graphql"
 import { isArray, omit, pickBy } from "lodash"
 import { ResolverContext } from "types/graphql"
+import { HTTPError } from "./HTTPError"
 
 export const GravityMutationErrorType = new GraphQLObjectType<
   any,
@@ -33,6 +34,23 @@ export const GravityMutationErrorType = new GraphQLObjectType<
 
 export const formatGravityError = (error) => {
   const errorSplit = error.message?.split(" - ")
+
+  if (error instanceof HTTPError) {
+    // gravity returns errors as HTTPErrors but the body is actually
+    // a json object and not a string as expected, this checks for both cases
+    const freeBody: any = error.body
+    if (freeBody.error as string) {
+      return {
+        type: "error",
+        message: freeBody.error,
+      }
+    } else if (freeBody as string) {
+      return {
+        type: "error",
+        message: freeBody,
+      }
+    }
+  }
 
   if (errorSplit && errorSplit.length > 1) {
     try {

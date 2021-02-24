@@ -183,14 +183,12 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         ...response,
         id: artworkId,
       }
-    } catch {
-      ;(error) => {
-        const formattedErr = formatGravityError(error)
-        if (formattedErr) {
-          return { ...formattedErr, _type: "GravityMutationError" }
-        } else {
-          throw new Error(error)
-        }
+    } catch (e) {
+      const formattedErr = formatGravityError(e)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(e)
       }
     }
   },
