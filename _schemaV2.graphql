@@ -8238,6 +8238,9 @@ type Partner implements Node {
   # A connection of shows from a Partner.
   showsConnection(
     after: String
+
+    # True for only shows that are part of a fair, false for only shows not part of a fair, blank for all shows
+    atAFair: Boolean
     before: String
 
     # Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows

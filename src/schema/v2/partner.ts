@@ -326,6 +326,16 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         description: "A connection of shows from a Partner.",
         type: ShowsConnection.connectionType,
         args: pageable({
+          atAFair: {
+            type: GraphQLBoolean,
+            description:
+              "True for only shows that are part of a fair, false for only shows not part of a fair, blank for all shows",
+          },
+          dayThreshold: {
+            type: GraphQLInt,
+            description:
+              "Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows",
+          },
           sort: {
             type: ShowSorts,
           },
@@ -334,26 +344,23 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             defaultValue: "current",
             description: "Filter shows by chronological event status",
           },
-          dayThreshold: {
-            type: GraphQLInt,
-            description:
-              "Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows",
-          },
         }),
         resolve: ({ id }, args, { partnerShowsLoader }) => {
           const pageOptions = convertConnectionArgsToGravityArgs(args)
           const { page, size, offset } = pageOptions
 
           interface GravityArgs {
+            at_a_fair: boolean
+            day_threshold: number
             page: number
             size: number
-            total_count: boolean
             sort: string
             status: string
-            day_threshold: number
+            total_count: boolean
           }
 
           const gravityArgs: GravityArgs = {
+            at_a_fair: args.atAFair,
             total_count: true,
             page,
             size,
