@@ -10,7 +10,7 @@ import {
 import { readFileSync } from "fs"
 
 const blacklistedTypes: string[] = []
-const whitelistedRootFields: string[] = []
+const whitelistedRootFields: string[] = ["lot"]
 const privateFields: string[] = ["lotStandingConnection"]
 const permittedRootFields = [...whitelistedRootFields, ...privateFields]
 
