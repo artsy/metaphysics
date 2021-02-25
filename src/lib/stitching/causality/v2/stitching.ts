@@ -1,14 +1,10 @@
 import gql from "lib/gql"
 import { formatMoney } from "accounting"
-import { GraphQLSchema } from "graphql"
+import { GraphQLError, GraphQLSchema } from "graphql"
 import {
   moneyMajorResolver,
   symbolFromCurrencyCode,
 } from "schema/v2/fields/money"
-import {
-  stitchedCausalityLotResolver,
-  stitchedCausalityLotExtensionSchema,
-} from "schema/v2/lot"
 
 const resolveLotCentsFieldToMoney = (centsField) => {
   return async (parent, _args, context, _info) => {
@@ -34,7 +30,11 @@ export const causalityStitchingEnvironment = ({
 }) => {
   return {
     extensionSchema: gql`
-      ${stitchedCausalityLotExtensionSchema}
+      # A unified auction lot with data from our auctions bidding engine.
+      extend type Lot {
+        # The current auction state of the lot.
+        lot: AuctionsLotState!
+      }
 
       extend type Me {
         auctionsLotStandingConnection(
@@ -59,7 +59,31 @@ export const causalityStitchingEnvironment = ({
     `,
 
     resolvers: {
-      ...stitchedCausalityLotResolver,
+      Lot: {
+        lot: {
+          fragment: gql`
+            ... on Lot {
+              saleArtwork {
+                internalID
+              }
+            }
+          `,
+          resolve: (root, _args, context, _info) => {
+            const {
+              saleArtwork: { internalID },
+            } = root
+
+            // NOTE: We're attaching lot state to request/response context
+            // resolve lot if available via context (eg watchedLotConnection resolver)
+            const lotState = context.lotDataMap?.[internalID]
+            if (lotState) {
+              return lotState
+            }
+
+            throw new GraphQLError(`Lot state for ${internalID} missing`)
+          },
+        },
+      },
       AuctionsLotStanding: {
         saleArtwork: {
           fragment: gql`
@@ -148,6 +172,7 @@ export const causalityStitchingEnvironment = ({
                 const availableSaleArtworks = (
                   await Promise.all(promisedSaleArtworks)
                 ).filter((sa) => sa !== null)
+
                 // FIXME: this depends on the presence of edge->node->lot->internalID in the query. see https://github.com/artsy/metaphysics/pull/2885#discussion_r543693841
                 const availableEdges = lotStandingsConnection.edges.reduce(
                   (acc: any, edge: any) => {
