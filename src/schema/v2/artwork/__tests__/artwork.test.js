@@ -379,10 +379,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            pricePaid: {
-              display: null,
-              currencyCode: "USD",
-            },
+            pricePaid: null,
           },
         })
       })
