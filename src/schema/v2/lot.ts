@@ -11,7 +11,7 @@ import gql from "lib/gql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArray } from "graphql-relay"
 
-export const LotType = new GraphQLObjectType<any, ResolverContext>({
+const LotType = new GraphQLObjectType<any, ResolverContext>({
   name: "Lot",
   description:
     "A lot in an auction containing merged Sale artwork and Lot state data.",
@@ -33,6 +33,17 @@ export const LotType = new GraphQLObjectType<any, ResolverContext>({
     }
   },
 })
+
+export const watchedLotConnection2 = {
+  description: "A list of lots a user is watching.",
+  type: connectionWithCursorInfo({
+    nodeType: LotType,
+  }).connectionType,
+  args: pageable(),
+  resolve: async (_parent, args, { saleArtworksAllLoader }) => {
+    const { first = 25, ...rest } = args
+  },
+}
 
 export const watchedLotConnection = {
   description: "A list of lots a user is watching.",

@@ -36,6 +36,10 @@ export const causalityStitchingEnvironment = ({
         lot: AuctionsLotState!
       }
 
+      extend type WatchedLot {
+        test: AuctionsLotState
+      }
+
       extend type Me {
         auctionsLotStandingConnection(
           first: Int
@@ -59,6 +63,30 @@ export const causalityStitchingEnvironment = ({
     `,
 
     resolvers: {
+      WatchedLot: {
+        test: {
+          fragment: gql`
+            ... on WatchedLot {
+              saleArtwork {
+                internalID
+              }
+            }
+          `,
+
+          resolve: async (parent, _args, context, info) => {
+            const response = await info.mergeInfo.delegateToSchema({
+              schema: causalitySchema,
+              operation: "query",
+              fieldName: "auctionsLot",
+              args: { id: parent.saleArtwork.internalID },
+              context,
+              info,
+              transforms: causalitySchema.transforms,
+            })
+            console.log(response)
+          },
+        },
+      },
       Lot: {
         lot: {
           fragment: gql`

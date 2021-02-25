@@ -43,6 +43,7 @@ import {
 import { MyCollection } from "./myCollection"
 import FollowedGalleries from "./followed_galleries"
 import { watchedLotConnection } from "../lot"
+import { watchedLotConnection2 } from "./watched_lot"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -218,6 +219,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     watchedLotConnection,
+    watchedLotConnection2,
   },
 })
 

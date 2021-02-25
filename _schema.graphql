@@ -11888,6 +11888,9 @@ type Query {
     id: String!
   ): ArtworkVersion
 
+  # Returns a lot with specific `id`.
+  auctionsLot(id: ID!): AuctionsLotState
+
   # Creates, and authorizes, a JWT custom for Causality
   causality_jwt(
     role: Role
