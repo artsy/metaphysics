@@ -49,8 +49,7 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   missingPriorityMetadata: {
     type: GraphQLBoolean,
-    description:
-      "Returns artworks with less than 2 images and/or missing visible price info",
+    description: "Return artworks that are missing priority metadata",
   },
   publishedWithin: {
     type: GraphQLInt,

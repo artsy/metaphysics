@@ -8133,7 +8133,7 @@ type Partner implements Node {
     imageCountLessThan: Int
     last: Int
 
-    # Returns artworks with less than 2 images and/or missing visible price info
+    # Return artworks that are missing priority metadata
     missingPriorityMetadata: Boolean
 
     # Return artworks published less than x seconds ago.
