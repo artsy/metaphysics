@@ -1,10 +1,19 @@
 import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
 import { amountSDL, amount } from "schema/v1/fields/money"
 import gql from "lib/gql"
-import { toGlobalId } from "graphql-relay"
+import {
+  connectionFromArray,
+  connectionFromArraySlice,
+  toGlobalId,
+} from "graphql-relay"
 import { delegateToSchema } from "@graphql-tools/delegate"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
 import { WrapQuery } from "graphql-tools"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { MessageConnection } from "schema/v2/me/conversation"
+import { resolve } from "url"
+import { MessageType } from "schema/v1/me/conversation/message"
+import { access } from "fs"
 
 const orderTotals = [
   "itemsTotal",
@@ -184,11 +193,46 @@ export const exchangeStitchingEnvironment = ({
 
   // Used to convert an array of `key: resolvers` to a single obj
   const reduceToResolvers = (arr) => arr.reduce((a, b) => ({ ...a, ...b }))
+  /*
 
+resolve events:
+- get impulse message loader from context and load correct page of messages
+- get all offers for conversation order(s)
+- iterate over messages and insert offers by timestamp
+
+## New type mixed in with messages
+
+type ConversationOrderEvent implements Node {
+
+}
+
+
+
+*/
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
 
+    type ConversationEvent implements Node{
+      id: ID!
+      message: String
+    }
+
+    union ConversationEventKind = Message | ConversationEvent
+
+    type ConversationEventEdge {
+      cursor: String!
+      node: ConversationEventKind!
+    }
+
+    type ConversationEventConnection {
+      # A list of edges.
+      edges: [ConversationEventEdge]
+
+      # Information to aid in pagination.
+      pageInfo: PageInfo!
+      totalCount: Int
+    }
 
     extend type Conversation {
       orderConnection(
@@ -198,6 +242,15 @@ export const exchangeStitchingEnvironment = ({
         first: Int
         last: Int
       ): CommerceOrderConnectionWithTotalCount
+
+      eventConnection(
+        participantType: CommerceOrderParticipantEnum!
+        after: String
+        before: String
+        first: Int
+        last: Int
+      ): ConversationEventConnection!
+
     }
 
     extend type CommerceLineItem {
@@ -249,17 +302,157 @@ export const exchangeStitchingEnvironment = ({
       ): CommerceCreateInquiryOfferOrderWithArtworkPayload
     }
   `,
+    /*
 
+conversation(id: sdaf) {
+
+  eventConnection() { edges { node {
+    # message: Message
+    message {
+      id
+      internalID
+      isFromUser
+      isFirstMessage
+      body
+      createdAt
+      ...
+    }
+    # commerceEvent: CommerceEvent
+    commerceEvent {
+      kind 
+      message
+    }
+  }}}
+}
+
+*/
     // Resolvers for the above
     resolvers: {
       Conversation: {
+        eventConnection: {
+          fragment: gql`
+            fragment Conversation_eventConnection on Conversation {
+              internalID
+              from {
+                email
+                name
+              }
+              initialMessage: messagesConnection(first: 1) {
+                edges {
+                  node {
+                    body
+                    internalID
+                  }
+                }
+              }
+              lastMessage: messagesConnection(last: 1) {
+                edges {
+                  node {
+                    body
+                    internalID
+                  }
+                }
+              }
+              messagesConnection {
+                edges
+              }
+            }
+          `,
+          resolve: async (root, args, context, info) => {
+            const { internalID, from, initialMessage, lastMessage } = root
+            const { conversationMessagesLoader } = context
+            const lastMessageId = lastMessage?.edges?.node?.internalID
+            const initialMessageBody = initialMessage?.edges?.node?.body
+
+            if (!conversationMessagesLoader) return null
+            const argKeys = Object.keys(args)
+            if (argKeys.includes("last") && !argKeys.includes("before")) {
+              args.before = lastMessageId
+            }
+            const { page, size, offset } = convertConnectionArgsToGravityArgs(
+              args
+            )
+            const {
+              total_count,
+              message_details,
+            } = await conversationMessagesLoader({
+              page,
+              size,
+              conversation_id: internalID,
+              "expand[]": "deliveries",
+              sort: args.sort || "asc",
+            })
+            // Inject the convesation initiator's email into each message payload
+            // so we can tell if the user sent a particular message.
+            // Also inject the conversation id, since we need it in some message
+            // resolvers (invoices).
+            /* eslint-disable no-param-reassign */
+            const messageResult = message_details.map((message) => {
+              console.log(message)
+              const messageFields = MessageType.getFields()
+              return Object.entries(messageFields).reduce(
+                (acc, [key, field]) => {
+                  return {
+                    ...acc,
+                    [key]: field.resolve!(
+                      message,
+                      {
+                        /* how to get args? */
+                      },
+                      context,
+                      info
+                    ),
+                  }
+                },
+                { __typename: "Message" } as any
+              )
+              // return {
+              //   ...message,
+              //   __typename: "Message",
+              //   conversation_initial_message: initialMessageBody,
+              //   conversation_from_name: from.name,
+              //   conversation_from_address: from?.email,
+              //   conversation_id: internalID,
+              // }
+            })
+            const fullResult = [...messageResult]
+            console.log({ total_count, fullResult })
+            /*
+            context.conversationLoader
+            const messageResult = info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "messageConnection",
+              args: {},
+              context,
+              info,
+            })
+            // alternativeley message loader
+            const messageResult = messageLoader()
+            const eventResults = info.mergeInfo.delegateToSchema({
+              schema: exchangeSchema,
+              operation: "query",
+              fieldName: "commerceOffers",
+              args: {},
+              context,
+              info,
+            })
+            // alternatively fetch from exchange
+            return connectionFromArray(messageResult + eventResults, args)
+      */
+            return connectionFromArraySlice(fullResult, args, {
+              arrayLength: total_count,
+              sliceStart: offset,
+            })
+          },
+        },
         orderConnection: {
           fragment: gql`
             fragment Conversation_orderConnection on Conversation {
               internalID
             }
           `,
-          resolve: (
+          resolve: async (
             { internalID: conversationId },
             { participantType, ...requestArgs },
             context,
@@ -275,7 +468,7 @@ export const exchangeStitchingEnvironment = ({
               [viewerKey]: userID,
             }
 
-            return info.mergeInfo.delegateToSchema({
+            const os = await info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
               operation: "query",
               fieldName: "commerceOrders",
@@ -283,6 +476,8 @@ export const exchangeStitchingEnvironment = ({
               context,
               info,
             })
+            console.warn(os)
+            return os
           },
         },
       },

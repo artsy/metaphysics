@@ -176,10 +176,17 @@ const messagesConnection = {
     },
   }),
   resolve: (
-    { id, from_email, initial_message, from_name, _embedded },
+    root,
     options,
     { conversationMessagesLoader }: { conversationMessagesLoader?: any }
   ) => {
+    const {
+      internalID: id,
+      from_email,
+      initial_message,
+      from_name,
+      _embedded,
+    } = root
     if (!conversationMessagesLoader) return null
     const optionKeys = Object.keys(options)
     if (optionKeys.includes("last") && !optionKeys.includes("before")) {
