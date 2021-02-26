@@ -1254,6 +1254,7 @@ type Query {
     Returns the first _n_ elements from the list.
     """
     first: Int
+    impulseConversationId: String
 
     """
     Returns the last _n_ elements from the list.
