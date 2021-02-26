@@ -56,6 +56,11 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     description: "Return artworks published less than x seconds ago.",
   },
   sort: ArtworkSorts,
+  shallow: {
+    type: GraphQLBoolean,
+    description:
+      "Only allowed for authorized admin/partner requests. When false fetch :all properties on an artwork, when true or not present fetch artwork :short properties",
+  },
 }
 
 export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
@@ -118,7 +123,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         description: "A connection of artworks from a Partner.",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
-        resolve: ({ id }, args, { partnerArtworksLoader }) => {
+        resolve: (
+          { id },
+          args,
+          { partnerArtworksLoader, partnerArtworksAllLoader }
+        ) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )
@@ -154,6 +163,30 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
           if (args.artworkIDs) {
             gravityArgs.artwork_id = flatten([args.artworkIDs])
+          }
+
+          // Only accept shallow = false argument if requesting user is authorized admin/partner
+          if (args.shallow === false && partnerArtworksAllLoader) {
+            return partnerArtworksLoader(id, gravityArgs).then(
+              ({ body, headers }) => {
+                const artworkIds = body.map((artwork) => artwork._id)
+                const gravityArtworkArgs = {
+                  artwork_id: artworkIds,
+                }
+
+                return partnerArtworksAllLoader(id, gravityArtworkArgs).then(
+                  ({ body }) => {
+                    return connectionFromArraySlice(body, args, {
+                      arrayLength: parseInt(
+                        headers["x-total-count"] || "0",
+                        10
+                      ),
+                      sliceStart: offset,
+                    })
+                  }
+                )
+              }
+            )
           }
 
           return partnerArtworksLoader(id, gravityArgs).then(
