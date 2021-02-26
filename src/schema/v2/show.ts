@@ -147,6 +147,12 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      artworksCount: {
+        description:
+          "The total count of artworks, both unpublished and published, in a show",
+        type: GraphQLInt,
+        resolve: ({ artworks_count }) => artworks_count,
+      },
       artistsWithoutArtworks: {
         description: "Artists inside the show who do not have artworks present",
         type: new GraphQLList(Artist.type),

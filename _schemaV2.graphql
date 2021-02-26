@@ -10313,6 +10313,9 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
     last: Int
     published: Boolean = true
   ): ArtworkConnection
+
+  # The total count of artworks, both unpublished and published, in a show
+  artworksCount: Int
   cached: Int
 
   # The general city, derived from a fair location, a show location or a potential city
