@@ -6944,18 +6944,16 @@ type LocationEdge {
 
 scalar Long
 
-# A lot in an auction containing merged Sale artwork and Lot state data.
+# A lot in an auction containing merged SaleArtwork and LotState data, stitched from causality.
 type Lot implements Node {
   # A globally unique ID.
   id: ID!
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
+  lot: AuctionsLotState
 
-  # The current auction state of the lot.
-  lot: AuctionsLotState!
-
-  # The saleArtwork object.
+  # The watched saleArtwork object.
   saleArtwork: SaleArtwork
 
   # A slug ID.
@@ -7478,14 +7476,6 @@ type Me implements Node {
     first: Int
     last: Int
   ): LotConnection
-
-  # A list of lots a user is watching.
-  watchedLotConnection2(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): WatchedLotConnection
 }
 
 # A message in a conversation.
@@ -11987,42 +11977,6 @@ input ViewingRoomSubsectionInput {
   delete: Boolean = false
   image: ARImageInput
   internalID: ID
-}
-
-# A lot in an auction containing merged Sale artwork and Lot state data.
-type WatchedLot implements Node {
-  # A globally unique ID.
-  id: ID!
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-
-  # The watched saleArtwork object.
-  saleArtwork: SaleArtwork
-
-  # A slug ID.
-  slug: ID!
-  test: AuctionsLotState
-}
-
-# A connection to a list of items.
-type WatchedLotConnection {
-  # A list of edges.
-  edges: [WatchedLotEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type WatchedLotEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: WatchedLot
 }
 
 type YearRange {

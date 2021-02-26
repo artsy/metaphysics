@@ -1,6 +1,6 @@
 import gql from "lib/gql"
 import { formatMoney } from "accounting"
-import { GraphQLError, GraphQLSchema } from "graphql"
+import { GraphQLSchema } from "graphql"
 import {
   moneyMajorResolver,
   symbolFromCurrencyCode,
@@ -30,14 +30,8 @@ export const causalityStitchingEnvironment = ({
 }) => {
   return {
     extensionSchema: gql`
-      # A unified auction lot with data from our auctions bidding engine.
       extend type Lot {
-        # The current auction state of the lot.
-        lot: AuctionsLotState!
-      }
-
-      extend type WatchedLot {
-        test: AuctionsLotState
+        lot: AuctionsLotState
       }
 
       extend type Me {
@@ -63,30 +57,6 @@ export const causalityStitchingEnvironment = ({
     `,
 
     resolvers: {
-      WatchedLot: {
-        test: {
-          fragment: gql`
-            ... on WatchedLot {
-              saleArtwork {
-                internalID
-              }
-            }
-          `,
-
-          resolve: async (parent, _args, context, info) => {
-            const response = await info.mergeInfo.delegateToSchema({
-              schema: causalitySchema,
-              operation: "query",
-              fieldName: "auctionsLot",
-              args: { id: parent.saleArtwork.internalID },
-              context,
-              info,
-              transforms: causalitySchema.transforms,
-            })
-            console.log(response)
-          },
-        },
-      },
       Lot: {
         lot: {
           fragment: gql`
@@ -96,19 +66,17 @@ export const causalityStitchingEnvironment = ({
               }
             }
           `,
-          resolve: (root, _args, context, _info) => {
-            const {
-              saleArtwork: { internalID },
-            } = root
 
-            // NOTE: We're attaching lot state to request/response context
-            // resolve lot if available via context (eg watchedLotConnection resolver)
-            const lotState = context.lotDataMap?.[internalID]
-            if (lotState) {
-              return lotState
-            }
-
-            throw new GraphQLError(`Lot state for ${internalID} missing`)
+          resolve: (parent, _args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: causalitySchema,
+              operation: "query",
+              fieldName: "auctionsLot",
+              args: { id: parent.saleArtwork.internalID },
+              context,
+              info,
+              transforms: causalitySchema.transforms,
+            })
           },
         },
       },

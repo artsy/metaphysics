@@ -11,6 +11,8 @@ const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 /**
  * This acts more like a post-middleware logger, by running the operation
  * waiting until it's done, and then logging out the response.
+ *
+ * To use, set `LOG_HTTP_LINKS=true` in .env file.
  */
 export const responseLoggerLink = (name: string) =>
   new ApolloLink(
