@@ -5,10 +5,6 @@ import {
   moneyMajorResolver,
   symbolFromCurrencyCode,
 } from "schema/v2/fields/money"
-import {
-  stitchedCausalityLotResolver,
-  stitchedCausalityLotExtensionSchema,
-} from "schema/v2/lot"
 
 const resolveLotCentsFieldToMoney = (centsField) => {
   return async (parent, _args, context, _info) => {
@@ -34,17 +30,6 @@ export const causalityStitchingEnvironment = ({
 }) => {
   return {
     extensionSchema: gql`
-      ${stitchedCausalityLotExtensionSchema}
-
-      extend type Me {
-        auctionsLotStandingConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-        ): AuctionsLotStandingConnection!
-      }
-
       extend type AuctionsLotStanding {
         saleArtwork: SaleArtwork
       }
@@ -56,10 +41,22 @@ export const causalityStitchingEnvironment = ({
         sellingPrice: Money
         onlineAskingPrice: Money
       }
+
+      extend type Lot {
+        lot: AuctionsLotState
+      }
+
+      extend type Me {
+        auctionsLotStandingConnection(
+          first: Int
+          last: Int
+          after: String
+          before: String
+        ): AuctionsLotStandingConnection!
+      }
     `,
 
     resolvers: {
-      ...stitchedCausalityLotResolver,
       AuctionsLotStanding: {
         saleArtwork: {
           fragment: gql`
@@ -110,6 +107,28 @@ export const causalityStitchingEnvironment = ({
           resolve: resolveLotCentsFieldToMoney("onlineAskingPriceCents"),
         },
       },
+      Lot: {
+        lot: {
+          fragment: gql`
+            ... on Lot {
+              saleArtwork {
+                internalID
+              }
+            }
+          `,
+
+          resolve: (parent, _args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: causalitySchema,
+              operation: "query",
+              fieldName: "auctionsLot",
+              args: { id: parent.saleArtwork.internalID },
+              context,
+              info,
+            })
+          },
+        },
+      },
       Me: {
         auctionsLotStandingConnection: {
           // The required query to get access to the object, e.g. we have to
@@ -148,6 +167,7 @@ export const causalityStitchingEnvironment = ({
                 const availableSaleArtworks = (
                   await Promise.all(promisedSaleArtworks)
                 ).filter((sa) => sa !== null)
+
                 // FIXME: this depends on the presence of edge->node->lot->internalID in the query. see https://github.com/artsy/metaphysics/pull/2885#discussion_r543693841
                 const availableEdges = lotStandingsConnection.edges.reduce(
                   (acc: any, edge: any) => {
