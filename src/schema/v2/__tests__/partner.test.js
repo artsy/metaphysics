@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "schema/v2/test/utils"
+import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("Partner type", () => {
@@ -204,6 +204,27 @@ describe("Partner type", () => {
 
   describe("#artworksConnection", () => {
     let artworksResponse
+    const partnerArtworksLoader = jest.fn(() => {
+      return Promise.resolve({
+        body: artworksResponse,
+        headers: {
+          "x-total-count": artworksResponse.length,
+        },
+      })
+    })
+
+    const partnerArtworksAllLoader = jest.fn(() => {
+      return Promise.resolve({
+        body: artworksResponse,
+        headers: {
+          "x-total-count": artworksResponse.length,
+        },
+      })
+    })
+
+    const partnerLoader = jest.fn(() => {
+      return Promise.resolve(partnerData)
+    })
 
     beforeEach(() => {
       artworksResponse = [
@@ -217,109 +238,198 @@ describe("Partner type", () => {
           id: "virginia-mak-hidden-nature-08",
         },
       ]
-      context = {
-        partnerArtworksLoader: () =>
-          Promise.resolve({
-            body: artworksResponse,
-            headers: {
-              "x-total-count": artworksResponse.length,
-            },
-          }),
-        partnerLoader: () => Promise.resolve(partnerData),
-      }
     })
 
-    it("returns artworks", async () => {
-      const query = `
-        {
-          partner(id:"bau-xi-gallery") {
-            artworksConnection(first:3) {
-              edges {
-                node {
-                  slug
+    afterEach(() => {
+      jest.clearAllMocks()
+    })
+
+    describe("when query is authenticated", () => {
+      beforeEach(() => {
+        context = {
+          partnerArtworksAllLoader,
+          partnerArtworksLoader,
+          partnerLoader,
+        }
+      })
+      describe("when shallow is false", () => {
+        it("calls partnerArtworksAllLoader", async () => {
+          const query = gql`
+            {
+              partner(id: "bau-xi-gallery") {
+                artworksConnection(first: 3, shallow: false) {
+                  edges {
+                    node {
+                      slug
+                    }
+                  }
+                }
+              }
+            }
+          `
+          await runAuthenticatedQuery(query, context)
+          expect(partnerArtworksAllLoader).toHaveBeenCalled()
+        })
+      })
+      describe("when shallow is true", () => {
+        it("does not call partnerArtworksAllLoader", async () => {
+          const query = gql`
+            {
+              partner(id: "bau-xi-gallery") {
+                artworksConnection(first: 3, shallow: true) {
+                  edges {
+                    node {
+                      slug
+                    }
+                  }
+                }
+              }
+            }
+          `
+          await runAuthenticatedQuery(query, context)
+          expect(partnerArtworksAllLoader).not.toHaveBeenCalled()
+        })
+      })
+    })
+
+    describe("when query is not authenticated", () => {
+      beforeEach(() => {
+        context = { partnerLoader, partnerArtworksLoader }
+      })
+      it("returns artworks", async () => {
+        const query = gql`
+          {
+            partner(id: "bau-xi-gallery") {
+              artworksConnection(first: 3) {
+                edges {
+                  node {
+                    slug
+                  }
                 }
               }
             }
           }
-        }
-      `
+        `
 
-      const data = await runQuery(query, context)
+        const data = await runQuery(query, context)
 
-      expect(data).toEqual({
-        partner: {
-          artworksConnection: {
-            edges: [
-              {
-                node: {
-                  slug: "cara-barer-iceberg",
+        expect(data).toEqual({
+          partner: {
+            artworksConnection: {
+              edges: [
+                {
+                  node: {
+                    slug: "cara-barer-iceberg",
+                  },
                 },
-              },
-              {
-                node: {
-                  slug: "david-leventi-rezzonico",
+                {
+                  node: {
+                    slug: "david-leventi-rezzonico",
+                  },
                 },
-              },
-              {
-                node: {
-                  slug: "virginia-mak-hidden-nature-08",
+                {
+                  node: {
+                    slug: "virginia-mak-hidden-nature-08",
+                  },
                 },
-              },
-            ],
+              ],
+            },
           },
-        },
+        })
       })
-    })
 
-    it("returns hasNextPage=true when first is below total", async () => {
-      const query = `
-        {
-          partner(id:"bau-xi-gallery") {
-            artworksConnection(first:1) {
-              pageInfo {
-                hasNextPage
+      it("returns hasNextPage=true when first is below total", async () => {
+        const query = gql`
+          {
+            partner(id: "bau-xi-gallery") {
+              artworksConnection(first: 1) {
+                pageInfo {
+                  hasNextPage
+                }
               }
             }
           }
-        }
-      `
+        `
 
-      const data = await runQuery(query, context)
+        const data = await runQuery(query, context)
 
-      expect(data).toEqual({
-        partner: {
-          artworksConnection: {
-            pageInfo: {
-              hasNextPage: true,
+        expect(data).toEqual({
+          partner: {
+            artworksConnection: {
+              pageInfo: {
+                hasNextPage: true,
+              },
             },
           },
-        },
+        })
       })
-    })
 
-    it("returns hasNextPage=false when first is above total", async () => {
-      const query = `
-        {
-          partner(id:"bau-xi-gallery") {
-            artworksConnection(first:3) {
-              pageInfo {
-                hasNextPage
+      it("returns hasNextPage=false when first is above total", async () => {
+        const query = gql`
+          {
+            partner(id: "bau-xi-gallery") {
+              artworksConnection(first: 3) {
+                pageInfo {
+                  hasNextPage
+                }
               }
             }
           }
-        }
-      `
+        `
 
-      const data = await runQuery(query, context)
+        const data = await runQuery(query, context)
 
-      expect(data).toEqual({
-        partner: {
-          artworksConnection: {
-            pageInfo: {
-              hasNextPage: false,
+        expect(data).toEqual({
+          partner: {
+            artworksConnection: {
+              pageInfo: {
+                hasNextPage: false,
+              },
             },
           },
-        },
+        })
+      })
+
+      describe("when shallow is false", () => {
+        it("does not call partnerArtworksAllLoader", async () => {
+          const query = gql`
+            {
+              partner(id: "bau-xi-gallery") {
+                artworksConnection(first: 3, shallow: false) {
+                  edges {
+                    node {
+                      slug
+                    }
+                  }
+                }
+              }
+            }
+          `
+          await runQuery(query, context)
+
+          expect(partnerArtworksAllLoader).not.toHaveBeenCalled()
+        })
+      })
+      describe("when shallow is true", () => {
+        it("does not call partnerArtworksAllLoader", async () => {
+          const query = gql`
+            {
+              partner(id: "bau-xi-gallery") {
+                artworksConnection(first: 3, shallow: true) {
+                  edges {
+                    node {
+                      slug
+                    }
+                  }
+                }
+              }
+            }
+          `
+
+          await runQuery(query, context)
+
+          expect(partnerArtworksAllLoader).not.toHaveBeenCalled()
+        })
       })
     })
   })

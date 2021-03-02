@@ -220,6 +220,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerArtworksAllLoader: gravityLoader(
+      (id) => `partner/${id}/artworks/all`,
+      {},
+      { headers: true }
+    ),
     popularArtistsLoader: gravityLoader("artists/popular"),
     recordArtworkViewLoader: gravityLoader(
       "me/recently_viewed_artworks",

@@ -47,11 +47,20 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLInt,
     description: "Return artworks with less than x additional_images.",
   },
+  missingPriorityMetadata: {
+    type: GraphQLBoolean,
+    description: "Return artworks that are missing priority metadata",
+  },
   publishedWithin: {
     type: GraphQLInt,
     description: "Return artworks published less than x seconds ago.",
   },
   sort: ArtworkSorts,
+  shallow: {
+    type: GraphQLBoolean,
+    description:
+      "Only allowed for authorized admin/partner requests. When false fetch :all properties on an artwork, when true or not present fetch artwork :short properties",
+  },
 }
 
 export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
@@ -114,7 +123,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         description: "A connection of artworks from a Partner.",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
-        resolve: ({ id }, args, { partnerArtworksLoader }) => {
+        resolve: (
+          { id },
+          args,
+          { partnerArtworksLoader, partnerArtworksAllLoader }
+        ) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )
@@ -124,6 +137,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             exclude_ids?: string[]
             for_sale: boolean
             image_count_less_than?: number
+            missing_priority_metadata?: boolean
             page: number
             published: boolean
             published_within?: number
@@ -135,6 +149,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           const gravityArgs: GravityArgs = {
             for_sale: args.forSale,
             image_count_less_than: args.imageCountLessThan,
+            missing_priority_metadata: args.missingPriorityMetadata,
             page,
             published: true,
             published_within: args.publishedWithin,
@@ -148,6 +163,30 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
           if (args.artworkIDs) {
             gravityArgs.artwork_id = flatten([args.artworkIDs])
+          }
+
+          // Only accept shallow = false argument if requesting user is authorized admin/partner
+          if (args.shallow === false && partnerArtworksAllLoader) {
+            return partnerArtworksLoader(id, gravityArgs).then(
+              ({ body, headers }) => {
+                const artworkIds = body.map((artwork) => artwork._id)
+                const gravityArtworkArgs = {
+                  artwork_id: artworkIds,
+                }
+
+                return partnerArtworksAllLoader(id, gravityArtworkArgs).then(
+                  ({ body }) => {
+                    return connectionFromArraySlice(body, args, {
+                      arrayLength: parseInt(
+                        headers["x-total-count"] || "0",
+                        10
+                      ),
+                      sliceStart: offset,
+                    })
+                  }
+                )
+              }
+            )
           }
 
           return partnerArtworksLoader(id, gravityArgs).then(
