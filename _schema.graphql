@@ -11726,6 +11726,9 @@ type PublishViewingRoomPayload {
 }
 
 type Query {
+  # Returns a lot with specific `id`.
+  _unused_auctionsLot(id: ID!): AuctionsLotState
+
   # Lot standings for a user
   _unused_auctionsLotStandingConnection(
     after: String
@@ -11887,9 +11890,6 @@ type Query {
     # The ID of the ArtworkVersion
     id: String!
   ): ArtworkVersion
-
-  # Returns a lot with specific `id`.
-  auctionsLot(id: ID!): AuctionsLotState
 
   # Creates, and authorizes, a JWT custom for Causality
   causality_jwt(

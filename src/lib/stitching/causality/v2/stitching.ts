@@ -121,7 +121,7 @@ export const causalityStitchingEnvironment = ({
             return info.mergeInfo.delegateToSchema({
               schema: causalitySchema,
               operation: "query",
-              fieldName: "auctionsLot",
+              fieldName: "_unused_auctionsLot",
               args: { id: parent.saleArtwork.internalID },
               context,
               info,
