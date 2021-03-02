@@ -238,11 +238,6 @@ describe("Partner type", () => {
           id: "virginia-mak-hidden-nature-08",
         },
       ]
-      context = {
-        partnerArtworksAllLoader,
-        partnerArtworksLoader,
-        partnerLoader,
-      }
     })
 
     afterEach(() => {
@@ -250,6 +245,13 @@ describe("Partner type", () => {
     })
 
     describe("when query is authenticated", () => {
+      beforeEach(() => {
+        context = {
+          partnerArtworksAllLoader,
+          partnerArtworksLoader,
+          partnerLoader,
+        }
+      })
       describe("when shallow is false", () => {
         it("calls partnerArtworksAllLoader", async () => {
           const query = gql`
@@ -291,6 +293,9 @@ describe("Partner type", () => {
     })
 
     describe("when query is not authenticated", () => {
+      beforeEach(() => {
+        context = { partnerLoader, partnerArtworksLoader }
+      })
       it("returns artworks", async () => {
         const query = gql`
           {
@@ -386,7 +391,7 @@ describe("Partner type", () => {
       })
 
       describe("when shallow is false", () => {
-        it("does not return deep artwork data", async () => {
+        it("does not call partnerArtworksAllLoader", async () => {
           const query = gql`
             {
               partner(id: "bau-xi-gallery") {
@@ -400,35 +405,13 @@ describe("Partner type", () => {
               }
             }
           `
-          const data = await runQuery(query, context)
+          await runQuery(query, context)
 
-          expect(data).toEqual({
-            partner: {
-              artworksConnection: {
-                edges: [
-                  {
-                    node: {
-                      slug: "cara-barer-iceberg",
-                    },
-                  },
-                  {
-                    node: {
-                      slug: "david-leventi-rezzonico",
-                    },
-                  },
-                  {
-                    node: {
-                      slug: "virginia-mak-hidden-nature-08",
-                    },
-                  },
-                ],
-              },
-            },
-          })
+          expect(partnerArtworksAllLoader).not.toHaveBeenCalled()
         })
       })
       describe("when shallow is true", () => {
-        it("does not return deep artwork data", async () => {
+        it("does not call partnerArtworksAllLoader", async () => {
           const query = gql`
             {
               partner(id: "bau-xi-gallery") {
@@ -443,31 +426,9 @@ describe("Partner type", () => {
             }
           `
 
-          const data = await runQuery(query, context)
+          await runQuery(query, context)
 
-          expect(data).toEqual({
-            partner: {
-              artworksConnection: {
-                edges: [
-                  {
-                    node: {
-                      slug: "cara-barer-iceberg",
-                    },
-                  },
-                  {
-                    node: {
-                      slug: "david-leventi-rezzonico",
-                    },
-                  },
-                  {
-                    node: {
-                      slug: "virginia-mak-hidden-nature-08",
-                    },
-                  },
-                ],
-              },
-            },
-          })
+          expect(partnerArtworksAllLoader).not.toHaveBeenCalled()
         })
       })
     })
