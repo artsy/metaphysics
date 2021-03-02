@@ -8059,9 +8059,16 @@ enum OrderedSetSorts {
 }
 
 type OrderEvent {
-  amount: String
+  amount(
+    decimal: String
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String
+    precision: Int
+    symbol: String
+    thousand: String
+  ): String
   createdAt: String!
-  json: String
   kind: OrderEventKind!
   message: String!
 }

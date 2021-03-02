@@ -188,13 +188,13 @@ export const exchangeStitchingEnvironment = ({
           }
         }
       `,
-      resolve: async (root, args, context, info) => {
+      resolve: async (root, _args, context) => {
         const offers = root.offers.nodes
-        console.log({ offers })
 
         // convert offers to order events
         const formattedEvents = await Promise.all(
           offers.map(async (offer) => {
+            const { amountCents, currencyCode, createdAt } = offer
             const fromId = offer?.fromDetails?.internalID
             const kind =
               fromId !== context.userId ? "OFFER_RECEIVED" : "OFFER_SENT"
@@ -205,10 +205,10 @@ export const exchangeStitchingEnvironment = ({
               context
             )
             return {
-              json: JSON.stringify(offer, null, 2),
+              createdAt,
+              amountCents,
+              currencyCode,
               kind,
-              createdAt: offer.createdAt,
-              amount,
               message: `${isCounterOffer ? "Counteroffer" : "Offer"} ${
                 kind === "OFFER_RECEIVED" ? "received" : `sent for ${amount}`
               }`,
@@ -216,7 +216,6 @@ export const exchangeStitchingEnvironment = ({
           })
         )
 
-        console.log(formattedEvents)
         return formattedEvents
       },
     },
@@ -230,6 +229,7 @@ export const exchangeStitchingEnvironment = ({
         [name]: {
           fragment: `fragment ${type}_${name} on ${type} { ${name}Cents currencyCode }`,
           resolve: (parent, args, _context, _info) => {
+            console.log(parent, args, name)
             return amount((_) => parent[name + "Cents"]).resolve(parent, args)
           },
         },
@@ -249,11 +249,10 @@ export const exchangeStitchingEnvironment = ({
     }
 
     type OrderEvent {
-      json: String
       kind: OrderEventKind!
       createdAt: String!
       message: String!
-      amount: String
+      ${amountSDL("amount")}
     }
 
     extend type Conversation {
@@ -360,6 +359,9 @@ export const exchangeStitchingEnvironment = ({
             })
           },
         },
+      },
+      OrderEvent: {
+        ...totalsResolvers("CommerceOffer", ["amount"]),
       },
       CommerceBuyOrder: {
         // The money helper resolvers
