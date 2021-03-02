@@ -3182,6 +3182,7 @@ type CommerceOfferOrder implements CommerceOrder {
     symbol: String
     thousand: String = ","
   ): String
+  orderEvents: [OrderEvent]!
   requestedFulfillment: CommerceRequestedFulfillmentUnion
   seller: CommerceOrderPartyUnion!
   sellerDetails: OrderParty
@@ -8055,6 +8056,19 @@ enum OrderedSetSorts {
   OWNER_ID_DESC
   OWNER_TYPE_ASC
   OWNER_TYPE_DESC
+}
+
+type OrderEvent {
+  amount: String
+  createdAt: String!
+  json: String
+  kind: OrderEventKind!
+  message: String!
+}
+
+enum OrderEventKind {
+  OFFER_RECEIVED
+  OFFER_SENT
 }
 
 union OrderParty = Partner | User

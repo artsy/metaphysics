@@ -5,6 +5,8 @@ import { toGlobalId } from "graphql-relay"
 import { delegateToSchema } from "@graphql-tools/delegate"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
 import { WrapQuery } from "graphql-tools"
+import { flatMap } from "lodash"
+import { moneyMajorResolver } from "schema/v2/fields/money"
 
 const orderTotals = [
   "itemsTotal",
@@ -166,6 +168,58 @@ export const exchangeStitchingEnvironment = ({
         })
       },
     },
+    orderEvents: {
+      fragment: gql`
+        fragment Conversation_orderEvents on CommerceOfferOrder {
+          offers {
+            nodes {
+              fromDetails {
+                ... on User {
+                  internalID
+                }
+              }
+              createdAt
+              currencyCode
+              amountCents
+              respondsTo {
+                __typename
+              }
+            }
+          }
+        }
+      `,
+      resolve: async (root, args, context, info) => {
+        const offers = root.offers.nodes
+        console.log({ offers })
+
+        // convert offers to order events
+        const formattedEvents = await Promise.all(
+          offers.map(async (offer) => {
+            const fromId = offer?.fromDetails?.internalID
+            const kind =
+              fromId !== context.userId ? "OFFER_RECEIVED" : "OFFER_SENT"
+            const isCounterOffer = Boolean(offer.respondsTo)
+            const amount = await moneyMajorResolver(
+              { cents: offer.amountCents, currency: offer.currencyCode },
+              { convertTo: null },
+              context
+            )
+            return {
+              json: JSON.stringify(offer, null, 2),
+              kind,
+              createdAt: offer.createdAt,
+              amount,
+              message: `${isCounterOffer ? "Counteroffer" : "Offer"} ${
+                kind === "OFFER_RECEIVED" ? "received" : `sent for ${amount}`
+              }`,
+            }
+          })
+        )
+
+        console.log(formattedEvents)
+        return formattedEvents
+      },
+    },
   }
 
   // Map the totals array to a set of resolvers that call the amount function
@@ -189,6 +243,18 @@ export const exchangeStitchingEnvironment = ({
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
 
+    enum OrderEventKind { 
+      OFFER_SENT 
+      OFFER_RECEIVED 
+    }
+
+    type OrderEvent {
+      json: String
+      kind: OrderEventKind!
+      createdAt: String!
+      message: String!
+      amount: String
+    }
 
     extend type Conversation {
       orderConnection(
@@ -221,6 +287,7 @@ export const exchangeStitchingEnvironment = ({
       creditCard: CreditCard
       isInquiryOrder: Boolean!
       conversation: Conversation
+      orderEvents: [OrderEvent]!
 
       ${orderTotalsSDL.join("\n")}
       ${amountSDL("offerTotal")}
@@ -252,6 +319,14 @@ export const exchangeStitchingEnvironment = ({
 
     // Resolvers for the above
     resolvers: {
+      // OrderEvent: {
+      //   resolve: (root, args, context, info) => {
+      //     console.log("HERE ************")
+      //     return {
+      //       json: root,
+      //     }
+      //   },
+      // },
       Conversation: {
         orderConnection: {
           fragment: gql`
