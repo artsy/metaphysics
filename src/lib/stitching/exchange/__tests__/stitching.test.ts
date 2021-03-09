@@ -333,6 +333,33 @@ describe("Conversation with orders", () => {
       info: expect.anything(),
     })
   })
+
+  it("supports filtering orders by state", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const orderConnectionResolver =
+      resolvers.Conversation.orderConnection.resolve
+    const mergeInfo = { delegateToSchema: jest.fn() }
+
+    orderConnectionResolver(
+      { internalID: "conversation-id" },
+      { participantType: "BUYER", state: "SUBMITTED" },
+      { userID: "user-id" },
+      { mergeInfo }
+    )
+
+    expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+      args: {
+        buyerId: "user-id",
+        impulseConversationId: "conversation-id",
+        state: "SUBMITTED",
+      },
+      fieldName: "commerceOrders",
+      operation: "query",
+      schema: expect.anything(),
+      context: expect.anything(),
+      info: expect.anything(),
+    })
+  })
 })
 
 // FIXME: These tests don't work

@@ -193,6 +193,7 @@ export const exchangeStitchingEnvironment = ({
     extend type Conversation {
       orderConnection(
         participantType: CommerceOrderParticipantEnum!
+        state: CommerceOrderStateEnum
         after: String
         before: String
         first: Int
