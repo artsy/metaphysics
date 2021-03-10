@@ -1050,8 +1050,8 @@ type OrderRequiresAction {
 
 type OrderStateChangedEvent implements EventInterface {
   createdAt: DateTime!
+  state: OrderStateEnum!
   stateReason: String
-  type: OrderStateEnum!
 }
 
 enum OrderStateEnum {
