@@ -123,6 +123,15 @@ export const removeNulls = (object) => {
   ) // eslint-disable-line eqeqeq, no-param-reassign, max-len
 }
 
+export const removeEmptyValues = (object) => {
+  Object.keys(object).forEach(
+    (key) =>
+      (object[key] == null ||
+        (Array.isArray(object[key]) && isEmpty(object[key]))) &&
+      delete object[key]
+  ) // eslint-disable-line eqeqeq, no-param-reassign, max-len
+}
+
 export const resolveBlueGreen = (
   resolveBlue: string,
   resolveGreen?: string,

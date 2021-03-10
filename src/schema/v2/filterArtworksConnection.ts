@@ -2,6 +2,7 @@ import { pageable } from "relay-cursor-paging"
 import {
   convertConnectionArgsToGravityArgs,
   removeNulls,
+  removeEmptyValues,
   isExisty,
 } from "lib/helpers"
 import {
@@ -21,6 +22,7 @@ import {
   GraphQLUnionType,
   GraphQLObjectType,
   GraphQLInterfaceType,
+  GraphQLInputObjectType,
 } from "graphql"
 
 import { ResolverContext } from "types/graphql"
@@ -230,7 +232,18 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   },
 }
 
-export const pageableFilterArtworksArgs = pageable(filterArtworksArgs)
+const pageableFilterArtworksArgs = pageable(filterArtworksArgs)
+
+const FilterArtworksInputType = new GraphQLInputObjectType({
+  name: "FilterArtworksInput",
+  fields: pageableFilterArtworksArgs,
+})
+
+// exported for use in stitching SDL
+export const pageableFilterArtworksArgsWithInput = {
+  ...pageableFilterArtworksArgs,
+  input: { type: FilterArtworksInputType },
+}
 
 export const FilterArtworksFields = () => {
   return {
@@ -382,82 +395,96 @@ const filterArtworksConnectionType = connectionDefinitions({
   edgeInterfaces: [ArtworkEdgeInterface],
 }).connectionType
 
+// Convert between incoming filter arguments, and backend-suitable format.
+const convertFilterArgs = ({
+  additionalGeneIDs,
+  aggregationPartnerCities,
+  artistID,
+  artistIDs,
+  artistNationalities,
+  artistSeriesID,
+  atAuction,
+  attributionClass,
+  sizes,
+  dimensionRange,
+  excludeArtworkIDs,
+  extraAggregationGeneIDs,
+  includeArtworksByFollowedArtists,
+  includeMediumFilterInAggregation,
+  inquireableOnly,
+  forSale,
+  geneID,
+  geneIDs,
+  majorPeriods,
+  materialsTerms,
+  partnerID,
+  partnerIDs,
+  partnerCities,
+  priceRange,
+  saleID,
+  tagID,
+  keywordMatchExact,
+  locationCities,
+  ..._options
+}) => {
+  return {
+    additional_gene_ids: additionalGeneIDs,
+    aggregation_partner_cities: aggregationPartnerCities,
+    artist_id: artistID,
+    artist_ids: artistIDs,
+    artist_nationalities: artistNationalities,
+    artist_series_id: artistSeriesID,
+    at_auction: atAuction,
+    attribution_class: attributionClass,
+    sizes: sizes,
+    dimension_range: dimensionRange,
+    exclude_artwork_ids: excludeArtworkIDs,
+    extra_aggregation_gene_ids: extraAggregationGeneIDs,
+    include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
+    include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
+    inquireable_only: inquireableOnly,
+    for_sale: forSale,
+    gene_id: geneID,
+    gene_ids: geneIDs,
+    major_periods: majorPeriods,
+    materials_terms: materialsTerms,
+    partner_id: partnerID,
+    partner_ids: partnerIDs,
+    partner_cities: partnerCities,
+    price_range: priceRange,
+    sale_id: saleID,
+    tag_id: tagID,
+    keyword_match_exact: keywordMatchExact,
+    location_cities: locationCities,
+    ..._options,
+  }
+}
+
 const filterArtworksConnectionTypeFactory = (
   mapRootToFilterParams
 ): GraphQLFieldConfig<any, ResolverContext> => ({
   type: filterArtworksConnectionType,
   description: "Artworks Elastic Search results",
-  args: pageable(filterArtworksArgs),
+  args: pageableFilterArtworksArgsWithInput,
   resolve: (
     root,
-    {
-      additionalGeneIDs,
-      aggregationPartnerCities,
-      artistID,
-      artistIDs,
-      artistNationalities,
-      artistSeriesID,
-      atAuction,
-      attributionClass,
-      sizes,
-      dimensionRange,
-      excludeArtworkIDs,
-      extraAggregationGeneIDs,
-      includeArtworksByFollowedArtists,
-      includeMediumFilterInAggregation,
-      inquireableOnly,
-      forSale,
-      geneID,
-      geneIDs,
-      majorPeriods,
-      materialsTerms,
-      partnerID,
-      partnerIDs,
-      partnerCities,
-      priceRange,
-      saleID,
-      tagID,
-      keywordMatchExact,
-      locationCities,
-      ..._options
-    },
+    { input, ...rootArguments },
     {
       unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
       authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
     },
     info
   ) => {
+    const argsProvidedAtRoot = convertFilterArgs(rootArguments as any)
+    removeEmptyValues(argsProvidedAtRoot)
+    const argsProvidedInInput = convertFilterArgs(input ?? {})
+    removeEmptyValues(argsProvidedInInput)
+
     const options: any = {
-      additional_gene_ids: additionalGeneIDs,
-      aggregation_partner_cities: aggregationPartnerCities,
-      artist_id: artistID,
-      artist_ids: artistIDs,
-      artist_nationalities: artistNationalities,
-      artist_series_id: artistSeriesID,
-      at_auction: atAuction,
-      attribution_class: attributionClass,
-      sizes: sizes,
-      dimension_range: dimensionRange,
-      exclude_artwork_ids: excludeArtworkIDs,
-      extra_aggregation_gene_ids: extraAggregationGeneIDs,
-      include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
-      include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
-      inquireable_only: inquireableOnly,
-      for_sale: forSale,
-      gene_id: geneID,
-      gene_ids: geneIDs,
-      major_periods: majorPeriods,
-      materials_terms: materialsTerms,
-      partner_id: partnerID,
-      partner_ids: partnerIDs,
-      partner_cities: partnerCities,
-      price_range: priceRange,
-      sale_id: saleID,
-      tag_id: tagID,
-      keyword_match_exact: keywordMatchExact,
-      location_cities: locationCities,
-      ..._options,
+      ...argsProvidedAtRoot,
+      ...argsProvidedInInput,
     }
+
     const {
       first,
       last,

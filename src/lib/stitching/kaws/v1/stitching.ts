@@ -1,11 +1,5 @@
-import {
-  GraphQLSchema,
-  GraphQLFieldConfigArgumentMap,
-  GraphQLType,
-  isScalarType,
-  isEnumType,
-  isListType,
-} from "graphql"
+import { GraphQLSchema, GraphQLFieldConfigArgumentMap } from "graphql"
+import { printType } from "lib/stitching/lib/printType"
 import { filterArtworksArgs as filterArtworksArgsV1 } from "schema/v1/filter_artworks"
 
 /**
@@ -113,16 +107,4 @@ function argsToSDL(args: GraphQLFieldConfigArgumentMap) {
     result.push(`${argName}: ${printType(args[argName].type)}`)
   })
   return result
-}
-
-function printType(type: GraphQLType): string {
-  if (isScalarType(type)) {
-    return type.name
-  } else if (isListType(type)) {
-    return `[${printType(type.ofType)}]`
-  } else if (isEnumType(type)) {
-    return type.name
-  } else {
-    throw new Error(`Unknown type: ${JSON.stringify(type)}`)
-  }
 }
