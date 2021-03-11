@@ -185,4 +185,26 @@ export const MoneyInput = new GraphQLInputObjectType({
   },
 })
 
+export const resolveLotCentsFieldToMoney = (centsField) => {
+  return async (parent, _args, context, _info) => {
+    const { internalID, [centsField]: cents } = parent
+    try {
+      const { currency } = await context.saleArtworkRootLoader(internalID)
+      const major = await moneyMajorResolver({ cents, currency }, {}, context)
+      return {
+        major,
+        minor: cents,
+        currencyCode: currency,
+        display: formatMoney(major, symbolFromCurrencyCode(currency), 0),
+      }
+    } catch (error) {
+      console.error(
+        "v2/fields/money @resolveLotCentsFieldToMoney: Error:",
+        error
+      )
+      return null
+    }
+  }
+}
+
 export default money

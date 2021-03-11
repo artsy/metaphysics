@@ -96,7 +96,7 @@ export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
     }
 
     const fairs = await relatedFairsLoader({ artwork: [id], size: 1 })
-    const fair = first(fairs)
+    const fair: any = first(fairs)
     if (fair && fair.has_full_feature) {
       const relatedFairShowsResponse = await relatedShowsLoader({
         artwork: [id],

@@ -7074,6 +7074,20 @@ type Lot implements Node {
   slug: ID!
 }
 
+type Lot2 {
+  bidCount: Int
+  floorSellingPrice: Money
+  floorSellingPriceCents: Int
+  internalID: String
+  onlineAskingPrice: Money
+  onlineAskingPriceCents: Int
+  reserveStatus: String
+  saleId: String
+  sellingPrice: Money
+  sellingPriceCents: Int
+  soldStatus: String
+}
+
 # A connection to a list of items.
 type LotConnection {
   # A list of edges.
@@ -7498,6 +7512,7 @@ type Me implements Node {
     # Only the lot standings for a specific auction
     saleID: String
   ): [LotStanding]
+  myBids: MyBids2
   myCollectionConnection(
     after: String
     before: String
@@ -7921,6 +7936,18 @@ type Mutation {
   updateViewingRoomSubsections(
     input: UpdateViewingRoomSubsectionsInput!
   ): UpdateViewingRoomSubsectionsPayload
+}
+
+type MyBids {
+  isWatching: Boolean
+  lots: [Lot2]
+  sale: Sale
+  saleArtworks: [SaleArtwork]
+}
+
+type MyBids2 {
+  active: [MyBids]
+  closed: [MyBids]
 }
 
 type MyCollectionArtworkMutationDeleteSuccess {
@@ -9764,6 +9791,7 @@ type Sale implements Node {
     last: Int
   ): ArtworkConnection
   associatedSale: Sale
+  bidder: Bidder
 
   # A bid increment policy that explains minimum bids in ranges.
   bidIncrements: [BidIncrement]
@@ -9905,7 +9933,11 @@ type SaleArtwork implements ArtworkEdgeInterface & Node {
   # Can bids be placed on the artwork?
   isBiddable: Boolean
   isBidOn: Boolean
+
+  # Is this sale artwork being watched by a user
+  isWatching: Boolean
   isWithReserve: Boolean
+  lot: Lot2
   lotLabel: String
   lowEstimate: SaleArtworkLowEstimate
   minimumNextBid: SaleArtworkMinimumNextBid

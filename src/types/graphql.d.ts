@@ -1,5 +1,5 @@
 import { GraphQLSchema } from "graphql/type"
-import createLoaders from "../lib/loaders"
+import { createLoaders } from "../lib/loaders"
 import { ImageData } from "schema/v2/image/normalize"
 
 export interface ResolverContextValues {

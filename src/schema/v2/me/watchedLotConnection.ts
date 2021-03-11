@@ -31,6 +31,12 @@ export const WatchedLotConnection: GraphQLFieldConfig<void, ResolverContext> = {
 
     const { body, headers } = await saleArtworksAllLoader(gravityArgs)
 
+    // TODO: Move this property to gravity JSON response
+    body.forEach((saleArtwork) => {
+      saleArtwork.isWatching = true
+      return saleArtwork
+    })
+
     const connection = connectionFromArraySlice(body, args, {
       arrayLength: parseInt(headers["x-total-count"] || "0", 10),
       sliceStart: gravityArgs.offset,

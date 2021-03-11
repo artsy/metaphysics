@@ -1,25 +1,6 @@
 import gql from "lib/gql"
-import { formatMoney } from "accounting"
 import { GraphQLSchema } from "graphql"
-import {
-  moneyMajorResolver,
-  symbolFromCurrencyCode,
-} from "schema/v2/fields/money"
-
-const resolveLotCentsFieldToMoney = (centsField) => {
-  return async (parent, _args, context, _info) => {
-    const { internalID, [centsField]: cents } = parent
-    const { currency } = await context.saleArtworkRootLoader(internalID)
-    const major = await moneyMajorResolver({ cents, currency }, {}, context)
-
-    return {
-      major,
-      minor: cents,
-      currencyCode: currency,
-      display: formatMoney(major, symbolFromCurrencyCode(currency), 0),
-    }
-  }
-}
+import { resolveLotCentsFieldToMoney } from "schema/v2/fields/money"
 
 export const causalityStitchingEnvironment = ({
   causalitySchema,
@@ -30,10 +11,6 @@ export const causalityStitchingEnvironment = ({
 }) => {
   return {
     extensionSchema: gql`
-      extend type AuctionsLotStanding {
-        saleArtwork: SaleArtwork
-      }
-
       extend type AuctionsLotState {
         "current high bid recognized on the live auction floor"
         floorSellingPrice: Money
@@ -53,6 +30,10 @@ export const causalityStitchingEnvironment = ({
           after: String
           before: String
         ): AuctionsLotStandingConnection!
+      }
+
+      extend type AuctionsLotStanding {
+        saleArtwork: SaleArtwork
       }
     `,
 

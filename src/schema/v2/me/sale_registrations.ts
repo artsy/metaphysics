@@ -28,7 +28,10 @@ export const SaleRegistrationType = new GraphQLObjectType<any, ResolverContext>(
   }
 )
 
-const SaleRegistrationConnection: GraphQLFieldConfig<void, ResolverContext> = {
+export const SaleRegistrationConnection: GraphQLFieldConfig<
+  void,
+  ResolverContext
+> = {
   type: connectionDefinitions({ nodeType: SaleRegistrationType })
     .connectionType,
   args: pageable(SalesConnectionField.args),
@@ -70,5 +73,3 @@ const SaleRegistrationConnection: GraphQLFieldConfig<void, ResolverContext> = {
     })
   },
 }
-
-export default SaleRegistrationConnection
