@@ -2,7 +2,7 @@
   "cities": {
     "new-york-ny-usa": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in New York.",
-      "artGuideUrl": "https://www.bmw-arts-design.com/artsy",
+      "artGuideUrl": "https://emt.bmw-arts-design.com/bmw-art-guide?partner=q73iAFGdha",
       "featuredShowIds": [
         "5c8857f2702b1d000691f4f7",
         "5c8857f4702b1d000691f501"
@@ -16,7 +16,7 @@
     },
     "london-united-kingdom": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in London.",
-      "artGuideUrl": "https://www.bmw-arts-design.com/artsy",
+      "artGuideUrl": "https://emt.bmw-arts-design.com/bmw-art-guide?partner=q73iAFGdha",
       "featuredShowIds": [
         "5c8857f6702b1d000691f50e",
         "5c8857f5702b1d000691f504"
@@ -30,7 +30,7 @@
     },
     "los-angeles-ca-usa": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Los Angeles.",
-      "artGuideUrl": "https://www.bmw-arts-design.com/artsy",
+      "artGuideUrl": "https://emt.bmw-arts-design.com/bmw-art-guide?partner=q73iAFGdha",
       "featuredShowIds": [
         "5c8857f4702b1d000691f502",
         "5c8857f5702b1d000691f507"
@@ -39,7 +39,7 @@
     },
     "paris-france": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Paris.",
-      "artGuideUrl": "https://www.bmw-arts-design.com/artsy",
+      "artGuideUrl": "https://emt.bmw-arts-design.com/bmw-art-guide?partner=q73iAFGdha",
       "featuredShowIds": [
         "5c8857f3702b1d000691f4fa",
         "5c8857f3702b1d000691f4fc"
@@ -48,7 +48,7 @@
     },
     "berlin-germany": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Berlin.",
-      "artGuideUrl": "https://www.bmw-arts-design.com/artsy",
+      "artGuideUrl": "https://emt.bmw-arts-design.com/bmw-art-guide?partner=q73iAFGdha",
       "featuredShowIds": [
         "5c8857f1702b1d000691f4f5",
         "5c8857f3702b1d000691f4fb"
@@ -64,7 +64,7 @@
     },
     "hong-kong-hong-kong": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Hong Kong.",
-      "artGuideUrl": "https://www.bmw-arts-design.com/artsy",
+      "artGuideUrl": "https://emt.bmw-arts-design.com/bmw-art-guide?partner=q73iAFGdha",
       "featuredShowIds": ["5c8857f4702b1d000691f500"],
       "showIds": ["5c8857f4702b1d000691f500"]
     }
