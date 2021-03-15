@@ -27,6 +27,9 @@ export const ArtworksAggregation = new GraphQLEnumType({
     MAJOR_PERIOD: {
       value: "major_period",
     },
+    MATERIALS_TERMS: {
+      value: "materials_terms",
+    },
     MEDIUM: {
       value: "medium",
     },

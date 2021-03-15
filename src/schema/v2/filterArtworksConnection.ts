@@ -171,6 +171,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     description:
       "When true, will only return `marketable` works (not nude or provocative).",
   },
+  materialsTerms: {
+    type: GraphQLList(GraphQLString),
+  },
   medium: {
     type: GraphQLString,
     description:
@@ -407,6 +410,7 @@ const filterArtworksConnectionTypeFactory = (
       geneID,
       geneIDs,
       majorPeriods,
+      materialsTerms,
       partnerID,
       partnerIDs,
       partnerCities,
@@ -443,6 +447,7 @@ const filterArtworksConnectionTypeFactory = (
       gene_id: geneID,
       gene_ids: geneIDs,
       major_periods: majorPeriods,
+      materials_terms: materialsTerms,
       partner_id: partnerID,
       partner_ids: partnerIDs,
       partner_cities: partnerCities,
