@@ -2,6 +2,7 @@ import {
   exclude,
   isExisty,
   removeNulls,
+  removeEmptyValues,
   resolveBlueGreen,
   stripTags,
   toKey,
@@ -159,6 +160,25 @@ describe("removeNulls", () => {
     expect(objWithNulls).toHaveProperty("a", "percy")
     expect(objWithNulls).not.toHaveProperty("b")
     expect(objWithNulls).not.toHaveProperty("c")
+  })
+})
+
+describe("removeEmptyValues", () => {
+  const obj = {
+    a: "percy",
+    b: null,
+    c: undefined,
+    d: [],
+    e: ["cat"],
+  }
+
+  it("removes null and undefined properties from an object", () => {
+    removeEmptyValues(obj)
+    expect(obj).toHaveProperty("a", "percy")
+    expect(obj).toHaveProperty("e", ["cat"])
+    expect(obj).not.toHaveProperty("b")
+    expect(obj).not.toHaveProperty("c")
+    expect(obj).not.toHaveProperty("d")
   })
 })
 

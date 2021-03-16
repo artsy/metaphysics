@@ -1,19 +1,13 @@
 import gql from "lib/gql"
-import {
-  GraphQLSchema,
-  GraphQLFieldConfigArgumentMap,
-  GraphQLType,
-  isScalarType,
-  isListType,
-  isEnumType,
-} from "graphql"
+import { GraphQLSchema, GraphQLFieldConfigArgumentMap } from "graphql"
 import moment from "moment"
 import { defineCustomLocale, isExisty } from "lib/helpers"
-import { pageableFilterArtworksArgs } from "schema/v2/filterArtworksConnection"
+import { pageableFilterArtworksArgsWithInput } from "schema/v2/filterArtworksConnection"
 import { normalizeImageData, getDefault } from "schema/v2/image"
 import { formatMarkdownValue } from "schema/v2/fields/markdown"
 import Format from "schema/v2/input_fields/format"
 import { toGlobalId } from "graphql-relay"
+import { printType } from "lib/stitching/lib/printType"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -62,18 +56,6 @@ function argsToSDL(args: GraphQLFieldConfigArgumentMap) {
   return result
 }
 
-function printType(type: GraphQLType): string {
-  if (isScalarType(type)) {
-    return type.name
-  } else if (isListType(type)) {
-    return `[${printType(type.ofType)}]`
-  } else if (isEnumType(type)) {
-    return type.name
-  } else {
-    throw new Error(`Unknown type: ${JSON.stringify(type)}`)
-  }
-}
-
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
   gravitySchema: GraphQLSchema & { transforms: any }
@@ -115,9 +97,9 @@ export const gravityStitchingEnvironment = (
         artists(page: Int, size: Int): [Artist]
         image: Image
         artworksConnection(first: Int, after: String): ArtworkConnection
-        filterArtworksConnection(${argsToSDL(pageableFilterArtworksArgs).join(
-          "\n"
-        )}): FilterArtworksConnection
+        filterArtworksConnection(${argsToSDL(
+          pageableFilterArtworksArgsWithInput
+        ).join("\n")}): FilterArtworksConnection
 
         descriptionFormatted(format: Format): String
         """

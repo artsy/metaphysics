@@ -526,4 +526,97 @@ describe("artworksConnection", () => {
       ])
     })
   })
+
+  describe("Accepting an `input` argument", () => {
+    beforeEach(() => {
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: sinon
+            .stub()
+            .withArgs("filter/artworks", {
+              gene_id: "500-1000-ce",
+              aggregations: ["total"],
+              for_sale: true,
+            })
+            .returns(
+              Promise.resolve({
+                hits: [
+                  {
+                    id: "oseberg-norway-queens-ship",
+                    title: "Queen's Ship",
+                    artists: [],
+                  },
+                ],
+                aggregations: {
+                  total: {
+                    value: 10,
+                  },
+                },
+              })
+            ),
+        },
+      }
+    })
+
+    it("returns a connection", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            input: {
+              geneID: "500-1000-ce"
+              first: 10
+              after: ""
+              aggregations: [TOTAL]
+              medium: "*"
+              forSale: true
+            }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "oseberg-norway-queens-ship" } },
+      ])
+    })
+
+    it("prefers `input` arguments over ones specified in the root", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            aggregations: []
+            medium: null
+            input: {
+              geneID: "500-1000-ce"
+              first: 10
+              after: ""
+              aggregations: [TOTAL]
+              medium: "*"
+              forSale: true
+            }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "oseberg-norway-queens-ship" } },
+      ])
+    })
+  })
 })

@@ -1,20 +1,15 @@
+import { GraphQLSchema, GraphQLFieldConfigArgumentMap } from "graphql"
 import {
-  GraphQLSchema,
-  GraphQLFieldConfigArgumentMap,
-  GraphQLType,
-  isScalarType,
-  isEnumType,
-  isListType,
-} from "graphql"
-import { filterArtworksArgs as filterArtworksArgsV2WithoutPageable } from "schema/v2/filterArtworksConnection"
-import { pageable } from "relay-cursor-paging"
+  pageableFilterArtworksArgsWithInput,
+  filterArtworksArgs,
+} from "schema/v2/filterArtworksConnection"
 import gql from "lib/gql"
+import { printType } from "lib/stitching/lib/printType"
 
 export const kawsStitchingEnvironmentV2 = (
   localSchema: GraphQLSchema,
   kawsSchema: GraphQLSchema & { transforms: any }
 ) => {
-  const filterArtworksArgsV2 = pageable(filterArtworksArgsV2WithoutPageable)
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
@@ -29,7 +24,7 @@ export const kawsStitchingEnvironmentV2 = (
     }
     extend type MarketingCollection {
       internalID: ID!
-      artworksConnection(${argsToSDL(filterArtworksArgsV2).join(
+      artworksConnection(${argsToSDL(pageableFilterArtworksArgsWithInput).join(
         "\n"
       )}): FilterArtworksConnection
     }
@@ -164,7 +159,7 @@ export const kawsStitchingEnvironmentV2 = (
           fragment: `
           fragment MarketingCollectionQuery on MarketingCollection {
             query {
-              ${Object.keys(filterArtworksArgsV2).join("\n")}
+              ${Object.keys(filterArtworksArgs).join("\n")}
             }
           }
         `,
@@ -218,16 +213,4 @@ function argsToSDL(args: GraphQLFieldConfigArgumentMap) {
     result.push(`${argName}: ${printType(args[argName].type)}`)
   })
   return result
-}
-
-function printType(type: GraphQLType): string {
-  if (isScalarType(type)) {
-    return type.name
-  } else if (isListType(type)) {
-    return `[${printType(type.ofType)}]`
-  } else if (isEnumType(type)) {
-    return type.name
-  } else {
-    throw new Error(`Unknown type: ${JSON.stringify(type)}`)
-  }
 }
