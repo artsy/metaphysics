@@ -296,7 +296,7 @@ describe("Conversation with orders", () => {
 
     orderConnectionResolver(
       { internalID: "conversation-id" },
-      { participantType: "BUYER" },
+      {},
       { userID: "user-id" },
       { mergeInfo }
     )
@@ -319,13 +319,16 @@ describe("Conversation with orders", () => {
 
     orderConnectionResolver(
       { internalID: "conversation-id" },
-      { participantType: "SELLER" },
+      { sellerId: "partner-id" },
       { userID: "user-id" },
       { mergeInfo }
     )
 
     expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-      args: { sellerId: "user-id", impulseConversationId: "conversation-id" },
+      args: {
+        sellerId: "partner-id",
+        impulseConversationId: "conversation-id",
+      },
       fieldName: "commerceOrders",
       operation: "query",
       schema: expect.anything(),
@@ -342,7 +345,7 @@ describe("Conversation with orders", () => {
 
     orderConnectionResolver(
       { internalID: "conversation-id" },
-      { participantType: "BUYER", state: "SUBMITTED" },
+      { state: "SUBMITTED" },
       { userID: "user-id" },
       { mergeInfo }
     )

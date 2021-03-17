@@ -192,7 +192,8 @@ export const exchangeStitchingEnvironment = ({
 
     extend type Conversation {
       orderConnection(
-        participantType: CommerceOrderParticipantEnum!
+        sellerId: ID
+        participantType: CommerceOrderParticipantEnum
         state: CommerceOrderStateEnum
         after: String
         before: String
@@ -262,18 +263,31 @@ export const exchangeStitchingEnvironment = ({
           `,
           resolve: (
             { internalID: conversationId },
-            { participantType, ...requestArgs },
+            {
+              sellerId,
+              ...requestArgs
+            }: {
+              /* Deprecated - use sellerId */
+              participantType?: any
+              /* Overrides buyer_id in request */
+              sellerId?: string
+              first?: number
+              last?: number
+              after?: string
+              before?: string
+              state?: string
+            },
             context,
             info
           ) => {
-            const viewerKey =
-              participantType === "BUYER" ? "buyerId" : "sellerId"
-            const { userID } = context
+            const viewerKey = sellerId
+              ? { sellerId: sellerId }
+              : { buyerId: context.userID }
 
             const exchangeArgs = {
               ...requestArgs,
+              ...viewerKey,
               impulseConversationId: conversationId,
-              [viewerKey]: userID,
             }
 
             return info.mergeInfo.delegateToSchema({
