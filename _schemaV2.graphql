@@ -9934,7 +9934,10 @@ type SaleArtwork implements ArtworkEdgeInterface & Node {
   isBiddable: Boolean
   isBidOn: Boolean
 
-  # Is this sale artwork being watched by a user
+  # Is the user the highest bidder on the sale artwork. (Currently only being used via me.myBids.)
+  isHighestBidder: Boolean
+
+  # Is this sale artwork being watched by a user. (Currently only used on me.myBids and me.watchedLotsConnection.)
   isWatching: Boolean
   isWithReserve: Boolean
   lot: Lot2

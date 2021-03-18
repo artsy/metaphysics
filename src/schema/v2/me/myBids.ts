@@ -80,7 +80,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     const me = await meLoader()
 
     // Fetch all auction lot standings from a given user
-    const causalityPromise = causalityLoader({
+    const causalityPromise: any = causalityLoader({
       query: gql`
         query LotStandingsConnection($userId: ID!, $first: Int) {
           lotStandingConnection(userId: $userId, first: $first) {
@@ -134,10 +134,10 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     ])
 
     // Map over response to gather all sale IDs
-    const causalityLots = (causalityResponse as any).lotStandingConnection.edges.map(
-      ({ node }) => node.lot
+    const causalityLots = causalityResponse.lotStandingConnection.edges.map(
+      ({ node }) => node
     )
-    const causalitySaleIds = causalityLots.map((lot) => lot.saleId)
+    const causalitySaleIds = causalityLots.map((node) => node.lot.saleId)
     const registeredSaleIds = registeredSalesResponse.body.map(
       (sale) => sale._id
     )
@@ -163,7 +163,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     const saleSaleArtworks = await Promise.all(
       combinedSales.map((sale: any) => {
         const lots = causalityLots.filter(
-          (causalityLot) => causalityLot.saleId === sale._id
+          (node) => node.lot.saleId === sale._id
         )
         const artworkIds = lots.map((lot) => lot.internalID)
         return saleArtworksLoader(sale._id, {
@@ -177,8 +177,8 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     // Transform data into proper shape for MyBid type
     combinedSales = combinedSales.map((sale: any, index) => {
       // Once sales fetched, search for active lots
-      const lots = causalityLots.filter((causalityLot) => {
-        return causalityLot.saleId === sale._id
+      const lots = causalityLots.filter((node) => {
+        return node.lot.saleId === sale._id
       })
 
       // If lot isn't in causality it means we're just watching it and there's
@@ -205,7 +205,9 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
 
       // Attach causality lot info to the sale artwork
       saleSaleArtworks[index].body.forEach((saleArtwork, artworkIndex) => {
-        saleArtwork.lot = lots[artworkIndex]
+        const causalityLot = lots[artworkIndex]
+        saleArtwork.lot = causalityLot.lot
+        saleArtwork.isHighestBidder = causalityLot.isHighestBidder
       })
 
       return {
