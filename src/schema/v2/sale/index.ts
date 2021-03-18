@@ -21,7 +21,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { map } from "lodash"
 import { NodeInterface } from "schema/v2/object_identification"
 import { isLiveOpen, displayTimelyAt } from "./display"
-import { flatten, isEmpty } from "lodash"
+import { flatten, first, isEmpty } from "lodash"
 
 import {
   GraphQLString,
@@ -129,6 +129,18 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             return saleLoader(associated_sale.id)
           }
           return null
+        },
+      },
+      bidder: {
+        type: Bidder.type,
+        resolve: async ({ id }, _options, { meBiddersLoader }) => {
+          if (!meBiddersLoader) {
+            return null
+          }
+          // TODO: Look into possibly batching this.
+          // @see https://github.com/artsy/gravity/blob/master/app/api/v1/me_bidders_endpoint.rb
+          const bidders = await meBiddersLoader({ sale_id: id })
+          return first(bidders)
         },
       },
       bidIncrements: {

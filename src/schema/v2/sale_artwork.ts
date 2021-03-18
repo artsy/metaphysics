@@ -26,6 +26,7 @@ import config from "config"
 import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 import { NodeInterface } from "schema/v2/object_identification"
+import { CausalityLotState } from "./lot"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -244,9 +245,31 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      isHighestBidder: {
+        type: GraphQLBoolean,
+        description:
+          "Is the user the highest bidder on the sale artwork. (Currently only being used via me.myBids.)",
+        // TODO: This is currently only used via the `me.myBids` field. We can
+        // update once we've finished migrating Causality over.
+        resolve: (saleArtwork) => {
+          return Boolean(saleArtwork.isHighestBidder)
+        },
+      },
+      isWatching: {
+        type: GraphQLBoolean,
+        description:
+          "Is this sale artwork being watched by a user. (Currently only used on me.myBids and me.watchedLotsConnection.)",
+        // TODO: At some point we might want to migrate this property to Gravity
+        resolve: (saleArtwork) => {
+          return Boolean(saleArtwork.isWatching)
+        },
+      },
       isWithReserve: {
         type: GraphQLBoolean,
         resolve: ({ reserve_status }) => reserve_status !== "no_reserve",
+      },
+      lot: {
+        type: CausalityLotState,
       },
       lotLabel: {
         type: GraphQLString,

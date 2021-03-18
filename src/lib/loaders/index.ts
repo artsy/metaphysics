@@ -76,7 +76,7 @@ interface AvailableLoaders extends AllLoaders {
  * Only if credentials are provided will the set include authenticated loaders, so before using an authenticated loader
  * it would be wise to check if the loader is not in fact `undefined`.
  */
-export default (accessToken, userID, opts): AvailableLoaders => {
+export const createLoaders = (accessToken, userID, opts): AvailableLoaders => {
   const unauthenticatedLoaders = createLoadersWithoutAuthentication(opts)
   let authenticatedLoaders = {}
   if (accessToken) {

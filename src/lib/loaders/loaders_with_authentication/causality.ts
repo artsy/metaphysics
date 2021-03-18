@@ -12,7 +12,7 @@ interface GraphQLArgs {
   variables: any
 }
 
-export default (_accessToken, userID) => {
+export const causalityLoaders = (_accessToken, userID) => {
   const causalityLoader = async ({
     query,
     variables,

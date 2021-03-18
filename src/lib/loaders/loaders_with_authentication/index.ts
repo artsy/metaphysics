@@ -1,4 +1,4 @@
-import causalityLoaders from "./causality"
+import { causalityLoaders } from "./causality"
 import convectionLoaders from "./convection"
 import diffusionLoaders from "./diffusion"
 import impulseLoaders from "./impulse"
