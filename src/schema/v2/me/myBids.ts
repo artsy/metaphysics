@@ -184,10 +184,20 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       // If lot isn't in causality it means we're just watching it and there's
       // no bidding activity; return that status.
       if (lots.length === 0) {
+        // Check to see if there are any watched lots in the sale
+        const watchedLotsFromSale = watchedSaleArtworksResponse.body
+          .filter((saleArtwork) => saleArtwork.sale_id === sale.id)
+          .map((saleArtwork) => {
+            // Attach an isWatching prop to response so that SaleArtwork type
+            // can resolve the watching status
+            saleArtwork.isWatching = true
+            return saleArtwork
+          })
+
         return {
           lots: [],
           sale,
-          saleArtworks: watchedSaleArtworksResponse.body,
+          saleArtworks: watchedLotsFromSale,
           isWatching: true,
           ...withSaleInfo(sale),
         }
