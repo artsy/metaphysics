@@ -26,7 +26,7 @@ import config from "config"
 import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 import { NodeInterface } from "schema/v2/object_identification"
-import { Lot2 } from "./lot"
+import { CausalityLotState } from "./lot"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -269,7 +269,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ reserve_status }) => reserve_status !== "no_reserve",
       },
       lot: {
-        type: Lot2,
+        type: CausalityLotState,
       },
       lotLabel: {
         type: GraphQLString,

@@ -26,8 +26,13 @@ export const Lot = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-export const Lot2 = new GraphQLObjectType({
-  name: "Lot2",
+/**
+ * TODO: This may be migrated to Gravity once we finish moving Causality's
+ * bidding engine. For now, naming the type after Causality so that it's
+ * unambiguous.
+ */
+export const CausalityLotState = new GraphQLObjectType({
+  name: "CausalityLotState",
   fields: () => ({
     bidCount: {
       type: GraphQLInt,

@@ -137,6 +137,8 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           if (!meBiddersLoader) {
             return null
           }
+          // TODO: Look into possibly batching this.
+          // @see https://github.com/artsy/gravity/blob/master/app/api/v1/me_bidders_endpoint.rb
           const bidders = await meBiddersLoader({ sale_id: id })
           return first(bidders)
         },

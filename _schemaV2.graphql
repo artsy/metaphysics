@@ -2313,6 +2313,20 @@ type CaptureHoldPayload {
   holdOrError: InventoryHoldOrErrorUnion!
 }
 
+type CausalityLotState {
+  bidCount: Int
+  floorSellingPrice: Money
+  floorSellingPriceCents: Int
+  internalID: String
+  onlineAskingPrice: Money
+  onlineAskingPriceCents: Int
+  reserveStatus: String
+  saleId: String
+  sellingPrice: Money
+  sellingPriceCents: Int
+  soldStatus: String
+}
+
 type City {
   coordinates: LatLng
   fairsConnection(
@@ -7074,20 +7088,6 @@ type Lot implements Node {
   slug: ID!
 }
 
-type Lot2 {
-  bidCount: Int
-  floorSellingPrice: Money
-  floorSellingPriceCents: Int
-  internalID: String
-  onlineAskingPrice: Money
-  onlineAskingPriceCents: Int
-  reserveStatus: String
-  saleId: String
-  sellingPrice: Money
-  sellingPriceCents: Int
-  soldStatus: String
-}
-
 # A connection to a list of items.
 type LotConnection {
   # A list of edges.
@@ -7512,7 +7512,7 @@ type Me implements Node {
     # Only the lot standings for a specific auction
     saleID: String
   ): [LotStanding]
-  myBids: MyBids2
+  myBids: MyBids
   myCollectionConnection(
     after: String
     before: String
@@ -7938,16 +7938,15 @@ type Mutation {
   ): UpdateViewingRoomSubsectionsPayload
 }
 
-type MyBids {
-  isWatching: Boolean
-  lots: [Lot2]
+type MyBid {
+  lots: [CausalityLotState]
   sale: Sale
   saleArtworks: [SaleArtwork]
 }
 
-type MyBids2 {
-  active: [MyBids]
-  closed: [MyBids]
+type MyBids {
+  active: [MyBid]
+  closed: [MyBid]
 }
 
 type MyCollectionArtworkMutationDeleteSuccess {
@@ -9940,7 +9939,7 @@ type SaleArtwork implements ArtworkEdgeInterface & Node {
   # Is this sale artwork being watched by a user. (Currently only used on me.myBids and me.watchedLotsConnection.)
   isWatching: Boolean
   isWithReserve: Boolean
-  lot: Lot2
+  lot: CausalityLotState
   lotLabel: String
   lowEstimate: SaleArtworkLowEstimate
   minimumNextBid: SaleArtworkMinimumNextBid

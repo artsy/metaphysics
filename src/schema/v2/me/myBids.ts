@@ -1,25 +1,17 @@
 import _ from "lodash"
 import moment from "moment-timezone"
-import {
-  GraphQLBoolean,
-  GraphQLFieldConfig,
-  GraphQLList,
-  GraphQLObjectType,
-} from "graphql"
+import { GraphQLFieldConfig, GraphQLList, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import gql from "lib/gql"
 import Sale from "../sale"
 import { SaleArtworkType } from "../sale_artwork"
-import { Lot2 } from "../lot"
+import { CausalityLotState } from "../lot"
 
-export const MyBidsType = new GraphQLObjectType<any, ResolverContext>({
-  name: "MyBids",
+export const MyBidType = new GraphQLObjectType<any, ResolverContext>({
+  name: "MyBid",
   fields: () => ({
-    isWatching: {
-      type: GraphQLBoolean,
-    },
     lots: {
-      type: new GraphQLList(Lot2),
+      type: new GraphQLList(CausalityLotState),
     },
     sale: {
       type: Sale.type,
@@ -32,14 +24,14 @@ export const MyBidsType = new GraphQLObjectType<any, ResolverContext>({
 
 export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLObjectType({
-    name: "MyBids2",
+    name: "MyBids",
     fields: () => ({
       active: {
-        type: new GraphQLList(MyBidsType),
+        type: new GraphQLList(MyBidType),
         resolve: ({ active }) => active,
       },
       closed: {
-        type: new GraphQLList(MyBidsType),
+        type: new GraphQLList(MyBidType),
         resolve: ({ closed }) => closed,
       },
     }),
@@ -70,8 +62,8 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     }
 
     /**
-     * Causality's connection is faux with a max cap of 25, so we'll only ever
-     * be able to return a non-pagable single list. Increased to an arbitrarily
+     * Causality's connection is subject to a max cap of 25, so we'll only ever
+     * be able to return a few items. Increased to an arbitrarily
      * high number to account for registered sales and watched lots.
      */
     const FETCH_COUNT = 99
@@ -198,7 +190,6 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
           lots: [],
           sale,
           saleArtworks: watchedLotsFromSale,
-          isWatching: true,
           ...withSaleInfo(sale),
         }
       }
