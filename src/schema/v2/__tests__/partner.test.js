@@ -695,6 +695,7 @@ describe("Partner type", () => {
 
     beforeEach(() => {
       articlesResponse = {
+        count: 4,
         results: [
           {
             slug: "bastian-picasso-printmaking",
@@ -714,11 +715,12 @@ describe("Partner type", () => {
       }
     })
 
-    it("returns articles", async () => {
+    it("returns articles with count", async () => {
       const query = gql`
         {
           partner(id: "bastian") {
             articlesConnection(first: 3) {
+              totalCount
               edges {
                 node {
                   slug
@@ -733,6 +735,7 @@ describe("Partner type", () => {
       expect(data).toEqual({
         partner: {
           articlesConnection: {
+            totalCount: 4,
             edges: [
               {
                 node: {
