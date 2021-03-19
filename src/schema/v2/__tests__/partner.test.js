@@ -689,4 +689,73 @@ describe("Partner type", () => {
       })
     })
   })
+
+  describe("#articlesConnection", () => {
+    let articlesResponse
+
+    beforeEach(() => {
+      articlesResponse = {
+        count: 4,
+        results: [
+          {
+            slug: "bastian-picasso-printmaking",
+          },
+          {
+            slug: "bastian-eating-eyes",
+          },
+          {
+            slug: "bastian-questions-wim-wendr",
+          },
+        ],
+      }
+
+      context = {
+        articlesLoader: () => Promise.resolve(articlesResponse),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+    })
+
+    it("returns articles with count", async () => {
+      const query = gql`
+        {
+          partner(id: "bastian") {
+            articlesConnection(first: 3) {
+              totalCount
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          articlesConnection: {
+            totalCount: 4,
+            edges: [
+              {
+                node: {
+                  slug: "bastian-picasso-printmaking",
+                },
+              },
+              {
+                node: {
+                  slug: "bastian-eating-eyes",
+                },
+              },
+              {
+                node: {
+                  slug: "bastian-questions-wim-wendr",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
 })

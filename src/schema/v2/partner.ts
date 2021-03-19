@@ -31,6 +31,8 @@ import ArtistSorts from "./sorts/artist_sorts"
 import { fields as partnerArtistFields } from "./partner_artist"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { deprecate } from "lib/deprecation"
+import { articleConnection } from "./article"
+import ArticleSorts from "./sorts/article_sorts"
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   artworkIDs: {
@@ -79,6 +81,44 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
+      articlesConnection: {
+        description: "A connection of articles related to a partner.",
+        type: articleConnection.connectionType,
+        args: pageable({ sort: ArticleSorts }),
+        resolve: async ({ _id }, args, { articlesLoader }) => {
+          const { size, offset, sort } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          interface ArticleArgs {
+            published: boolean
+            partner_id: string
+            limit: number
+            count: boolean
+            offset: number
+            sort: string
+          }
+
+          const articleArgs: ArticleArgs = {
+            published: true,
+            partner_id: _id,
+            limit: size,
+            count: true,
+            offset,
+            sort,
+          }
+
+          const { results, count } = await articlesLoader(articleArgs)
+
+          return {
+            totalCount: count,
+            ...connectionFromArraySlice(results, args, {
+              arrayLength: count,
+              sliceStart: offset,
+            }),
+          }
+        },
+      },
       artistsConnection: {
         description: "A connection of artists at a partner.",
         type: ArtistPartnerConnection,
