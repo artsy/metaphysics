@@ -90,7 +90,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             args
           )
 
-          interface GravityArgs {
+          interface ArticleArgs {
             published: boolean
             partner_id: string
             limit: number
@@ -99,7 +99,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             sort: string
           }
 
-          const gravityArgs: GravityArgs = {
+          const articleArgs: ArticleArgs = {
             published: true,
             partner_id: _id,
             limit: size,
@@ -108,7 +108,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             sort,
           }
 
-          const { results, count } = await articlesLoader(gravityArgs)
+          const { results, count } = await articlesLoader(articleArgs)
 
           return {
             totalCount: count,

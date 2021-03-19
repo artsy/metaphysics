@@ -695,7 +695,6 @@ describe("Partner type", () => {
 
     beforeEach(() => {
       articlesResponse = {
-        count: 4,
         results: [
           {
             slug: "bastian-picasso-printmaking",
@@ -715,7 +714,7 @@ describe("Partner type", () => {
       }
     })
 
-    it("returns articles with count", async () => {
+    it("returns articles", async () => {
       const query = gql`
         {
           partner(id: "bastian") {
