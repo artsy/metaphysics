@@ -34,7 +34,11 @@ export const executableVortexSchema = ({
         ]
       : []),
     new RenameTypes((name) => {
-      return `Analytics${name}`
+      if (name === "PriceInsights" || name === "MarketPriceInsights") {
+        return name
+      } else {
+        return `Analytics${name}`
+      }
     }),
     new RenameRootFields(
       (_operation, name) =>
