@@ -730,7 +730,6 @@ describe("Partner type", () => {
         }
       `
       const data = await runQuery(query, context)
-      console.log(data)
 
       expect(data).toEqual({
         partner: {

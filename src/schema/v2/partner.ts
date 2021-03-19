@@ -82,7 +82,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       ...SlugAndInternalIDFields,
       cached,
       articlesConnection: {
-        description: "A connection of articles at a partner.",
+        description: "A connection of articles related to a partner.",
         type: articleConnection.connectionType,
         args: pageable({ sort: ArticleSorts }),
         resolve: async ({ _id }, args, { articlesLoader }) => {
