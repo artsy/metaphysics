@@ -68,9 +68,6 @@ type AnalyticsArtworksPublishedStats {
 # exceed the size of a 32-bit integer, it's encoded as a string.
 scalar AnalyticsBigInt
 
-# An ISO 8601 datetime
-scalar AnalyticsDateTime
-
 # Visitor countries, device, referals and session page
 type AnalyticsGroupedStats {
   groupedEntity: AnalyticsGroupedStatsUnion!
@@ -154,6 +151,9 @@ type AnalyticsHistogramBin {
   numArtworks: Int!
 }
 
+# An ISO 8601 datetime
+scalar AnalyticsISO8601DateTime
+
 type AnalyticsPageCursor {
   # first cursor on the page
   cursor: String!
@@ -214,8 +214,8 @@ type AnalyticsPartnerAudienceStats {
 # Inquiry count time series data of a partner
 type AnalyticsPartnerInquiryCountTimeSeriesStats {
   count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
+  endTime: AnalyticsISO8601DateTime
+  startTime: AnalyticsISO8601DateTime
 }
 
 # Inquiry stats of a partner
@@ -259,8 +259,8 @@ type AnalyticsPartnerSalesStats {
 # Sales time series data of a partner
 type AnalyticsPartnerSalesTimeSeriesStats {
   count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
+  endTime: AnalyticsISO8601DateTime
+  startTime: AnalyticsISO8601DateTime
   total(
     decimal: String = "."
     format: String = "%s%v"
@@ -375,8 +375,8 @@ type AnalyticsPartnerStatsArtworksPublished {
 # Artworks published time series data of a partner
 type AnalyticsPartnerStatsArtworksPublishedTimeSeries {
   count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
+  endTime: AnalyticsISO8601DateTime
+  startTime: AnalyticsISO8601DateTime
 }
 
 # Stats for pageviews of partner content
@@ -399,36 +399,21 @@ type AnalyticsPartnerStatsPageviews {
 # Pageviews time series data of a partner
 type AnalyticsPartnerStatsPageviewsTimeSeries {
   count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
+  endTime: AnalyticsISO8601DateTime
+  startTime: AnalyticsISO8601DateTime
 }
 
 # Partner Time Series Stats
 type AnalyticsPartnerTimeSeriesStats {
   count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
+  endTime: AnalyticsISO8601DateTime
+  startTime: AnalyticsISO8601DateTime
 }
 
 # Price Context Filter Type
 type AnalyticsPriceContextFilterType {
   category: AnalyticsPricingContextCategoryEnum
   dimension: AnalyticsPricingContextDimensionEnum
-}
-
-# The connection type for MarketPriceInsights.
-type AnalyticsPriceInsightConnection {
-  # A list of edges.
-  edges: [AnalyticsPriceInsightEdge]
-
-  # A list of nodes.
-  nodes: [MarketPriceInsights]
-  pageCursors: AnalyticsPageCursors
-
-  # Information to aid in pagination.
-  pageInfo: AnalyticsPageInfo!
-  totalCount: Int
-  totalPages: Int
 }
 
 # An edge in a connection.
@@ -9593,7 +9578,7 @@ type MarketPriceInsights {
   artistId: ID
   artistName: String
   artsyQInventory: Int
-  createdAt: AnalyticsDateTime
+  createdAt: AnalyticsISO8601DateTime
   demandRank: Float
   demandTrend: Float
   highRangeCents: AnalyticsBigInt
@@ -9614,7 +9599,7 @@ type MarketPriceInsights {
   smallHighRangeCents: AnalyticsBigInt
   smallLowRangeCents: AnalyticsBigInt
   smallMidRangeCents: AnalyticsBigInt
-  updatedAt: AnalyticsDateTime
+  updatedAt: AnalyticsISO8601DateTime
 }
 
 type Me implements Node {
@@ -11738,6 +11723,21 @@ type PriceCents {
   min: Int
 }
 
+# The connection type for MarketPriceInsights.
+type PriceInsightConnection {
+  # A list of edges.
+  edges: [AnalyticsPriceInsightEdge]
+
+  # A list of nodes.
+  nodes: [MarketPriceInsights]
+  pageCursors: AnalyticsPageCursors
+
+  # Information to aid in pagination.
+  pageInfo: AnalyticsPageInfo!
+  totalCount: Int
+  totalPages: Int
+}
+
 type PriceRange {
   display: String
   maxPrice: Money
@@ -11863,35 +11863,10 @@ type Query {
   ): ViewingRoomsConnection
 
   # Last updated timestamp
-  analyticsLastUpdatedAt: AnalyticsDateTime
-
-  # Get price insights for a market.
-  analyticsMarketPriceInsights(
-    artistId: ID!
-    medium: String!
-  ): MarketPriceInsights
+  analyticsLastUpdatedAt: AnalyticsISO8601DateTime
 
   # Find PartnerStats
   analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStats
-
-  # Get all price insights for an artist.
-  analyticsPriceInsights(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-    artistId: ID!
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-
-    # Return price insights sorted this way
-    sort: AnalyticsPriceInsightSort
-  ): AnalyticsPriceInsightConnection
 
   # Query UserStats
   analyticsUserStats(userId: String!): AnalyticsUserStats
@@ -12288,6 +12263,9 @@ type Query {
   ): [MarketingCollection!]!
   marketingHubCollections: [MarketingCollection!]!
 
+  # Get price insights for a market.
+  marketPriceInsights(artistId: ID!, medium: String!): MarketPriceInsights
+
   # A Search for Artists
   match_artist(
     # Exclude these MongoDB ids from results
@@ -12479,6 +12457,25 @@ type Query {
     # Number of results to return
     size: Int
   ): PopularArtists
+
+  # Get all price insights for an artist.
+  priceInsights(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+    artistId: ID!
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+
+    # Return price insights sorted this way
+    sort: AnalyticsPriceInsightSort
+  ): PriceInsightConnection
 
   # A Profile
   profile(

@@ -25,7 +25,7 @@ scalar BigInt
 """
 An ISO 8601 datetime
 """
-scalar DateTime
+scalar ISO8601DateTime
 
 """
 Visitor countries, device, referals and session page
@@ -141,7 +141,7 @@ type MarketPriceInsights {
   artistId: ID
   artistName: String
   artsyQInventory: Int
-  createdAt: DateTime
+  createdAt: ISO8601DateTime
   demandRank: Float
   demandTrend: Float
   highRangeCents: BigInt
@@ -162,7 +162,7 @@ type MarketPriceInsights {
   smallHighRangeCents: BigInt
   smallLowRangeCents: BigInt
   smallMidRangeCents: BigInt
-  updatedAt: DateTime
+  updatedAt: ISO8601DateTime
 }
 
 type PageCursor {
@@ -251,8 +251,8 @@ Inquiry count time series data of a partner
 """
 type PartnerInquiryCountTimeSeriesStats {
   count: Int
-  endTime: DateTime
-  startTime: DateTime
+  endTime: ISO8601DateTime
+  startTime: ISO8601DateTime
 }
 
 """
@@ -299,8 +299,8 @@ Sales time series data of a partner
 """
 type PartnerSalesTimeSeriesStats {
   count: Int
-  endTime: DateTime
-  startTime: DateTime
+  endTime: ISO8601DateTime
+  startTime: ISO8601DateTime
   totalCents: Int!
 }
 
@@ -458,8 +458,8 @@ Artworks published time series data of a partner
 """
 type PartnerStatsArtworksPublishedTimeSeries {
   count: Int
-  endTime: DateTime
-  startTime: DateTime
+  endTime: ISO8601DateTime
+  startTime: ISO8601DateTime
 }
 
 """
@@ -486,8 +486,8 @@ Pageviews time series data of a partner
 """
 type PartnerStatsPageviewsTimeSeries {
   count: Int
-  endTime: DateTime
-  startTime: DateTime
+  endTime: ISO8601DateTime
+  startTime: ISO8601DateTime
 }
 
 """
@@ -495,8 +495,8 @@ Partner Time Series Stats
 """
 type PartnerTimeSeriesStats {
   count: Int
-  endTime: DateTime
-  startTime: DateTime
+  endTime: ISO8601DateTime
+  startTime: ISO8601DateTime
 }
 
 """
@@ -933,7 +933,7 @@ type Query {
   """
   Last updated timestamp
   """
-  lastUpdatedAt: DateTime
+  lastUpdatedAt: ISO8601DateTime
 
   """
   Get price insights for a market.

@@ -34,15 +34,24 @@ export const executableVortexSchema = ({
         ]
       : []),
     new RenameTypes((name) => {
-      if (name === "PriceInsights" || name === "MarketPriceInsights") {
+      if (
+        [
+          "PriceInsights",
+          "PriceInsightConnection",
+          "MarketPriceInsights",
+        ].includes(name)
+      ) {
         return name
       } else {
         return `Analytics${name}`
       }
     }),
-    new RenameRootFields(
-      (_operation, name) =>
-        `analytics${name.charAt(0).toUpperCase() + name.slice(1)}`
-    ),
+    new RenameRootFields((_operation, name) => {
+      if (["priceInsights", "marketPriceInsights"].includes(name)) {
+        return name
+      } else {
+        return `analytics${name.charAt(0).toUpperCase() + name.slice(1)}`
+      }
+    }),
   ])
 }
