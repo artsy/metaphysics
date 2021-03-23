@@ -154,6 +154,6 @@ export const defineCustomLocale = (
   localeSpec: LocaleSpecification
 ) => {
   const currentLocale = moment.locale()
-  moment.defineLocale(uniqueName, localeSpec)
+  moment.updateLocale(uniqueName, localeSpec)
   moment.locale(currentLocale)
 }
