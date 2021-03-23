@@ -2,7 +2,6 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import sinon from "sinon"
-import value from "*.json"
 
 describe("salesConnection", () => {
   describe(`Provides filter results`, () => {
