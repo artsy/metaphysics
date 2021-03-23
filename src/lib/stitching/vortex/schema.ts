@@ -20,7 +20,12 @@ export const executableVortexSchema = ({
     link: vortexLink,
   })
 
-  const removeRootFieldList = ["pricingContext", "partnerStat", "userStat"]
+  const removeRootFieldList = [
+    "pricingContext",
+    "partnerStat",
+    "userStat",
+    "BigInt",
+  ]
 
   // Return the new modified schema
   return transformSchema(schema, [
@@ -34,11 +39,22 @@ export const executableVortexSchema = ({
         ]
       : []),
     new RenameTypes((name) => {
-      return `Analytics${name}`
+      if (
+        name.includes("PriceInsight") ||
+        name.includes("PageCursor") ||
+        ["BigInt", "ISO8601DateTime"].includes(name)
+      ) {
+        return name
+      } else {
+        return `Analytics${name}`
+      }
     }),
-    new RenameRootFields(
-      (_operation, name) =>
-        `analytics${name.charAt(0).toUpperCase() + name.slice(1)}`
-    ),
+    new RenameRootFields((_operation, name) => {
+      if (["priceInsights", "marketPriceInsights"].includes(name)) {
+        return name
+      } else {
+        return `analytics${name.charAt(0).toUpperCase() + name.slice(1)}`
+      }
+    }),
   ])
 }
