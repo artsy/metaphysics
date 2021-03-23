@@ -5,6 +5,7 @@ import {
   GraphQLFieldConfig,
   GraphQLList,
   GraphQLString,
+  GraphQLEnumType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
@@ -21,6 +22,22 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
     //       this was meant for refetching purposes, then we should add a plural
     //       `nodes` root field and use that instead.
     //
+    auctionState: {
+      type: new GraphQLEnumType({
+        name: "AuctionState",
+        values: {
+          OPEN: {
+            value: "Open",
+          },
+          UPCOMING: {
+            value: "Upcoming",
+          },
+          CLOSED: {
+            value: "Closed",
+          },
+        },
+      }),
+    },
     ids: {
       type: new GraphQLList(GraphQLString),
       description: `
@@ -53,7 +70,16 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
   }),
   resolve: async (
     _root,
-    { ids, isAuction, live, published, sort, registered, ...paginationArgs },
+    {
+      auctionState,
+      ids,
+      isAuction,
+      live,
+      published,
+      sort,
+      registered,
+      ...paginationArgs
+    },
     {
       unauthenticatedLoaders: { salesLoaderWithHeaders: loaderWithCache },
       authenticatedLoaders: { salesLoaderWithHeaders: loaderWithoutCache },
@@ -67,6 +93,7 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
       typeof registered === "boolean" ? loaderWithoutCache : loaderWithCache
     const { body: sales, headers } = ((await loader!(
       {
+        auctionState,
         id: ids,
         is_auction: isAuction,
         live,

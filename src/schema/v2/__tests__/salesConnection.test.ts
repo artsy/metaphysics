@@ -142,5 +142,56 @@ describe("salesConnection", () => {
         { node: { name: "Heritage: Photographs" } },
       ])
     })
+
+    it("returns a connection based on auctionState", async () => {
+      const auctionStates = {
+        OPEN: "Open",
+        UPCOMING: "Upcoming",
+        CLOSED: "Closed",
+      }
+      Object.entries(auctionStates).forEach(async ([key, value]) => {
+        const context = {
+          authenticatedLoaders: {
+            salesLoaderWithHeaders: sinon
+              .stub()
+              .withArgs("sales", {
+                first: 5,
+                registered: true,
+                auctionState: value,
+              })
+              .returns(
+                Promise.resolve({
+                  headers: { "x-total-count": 1 },
+                  body: [
+                    {
+                      name: "Heritage: Photographs",
+                      slug: "heritage-photographs-14",
+                    },
+                  ],
+                })
+              ),
+          },
+          unauthenticatedLoaders: {},
+        }
+
+        const query = gql`
+          {
+            salesConnection(first: 5, registered: true, auctionState: ${key}) {
+              edges {
+                node {
+                  name
+                }
+              }
+            }
+          }
+        `
+
+        const { salesConnection } = await runQuery(query, context as any)
+
+        expect(salesConnection.edges).toEqual([
+          { node: { name: "Heritage: Photographs" } },
+        ])
+      })
+    })
   })
 })
