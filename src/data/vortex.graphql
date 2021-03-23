@@ -23,8 +23,10 @@ exceed the size of a 32-bit integer, it's encoded as a string.
 scalar BigInt
 
 """
-An ISO 8601 datetime
+An ISO 8601 datetime -- second one is because of moving price insights
+from Diffusion to Vortex.
 """
+scalar DateTime
 scalar ISO8601DateTime
 
 """
@@ -251,8 +253,8 @@ Inquiry count time series data of a partner
 """
 type PartnerInquiryCountTimeSeriesStats {
   count: Int
-  endTime: ISO8601DateTime
-  startTime: ISO8601DateTime
+  endTime: DateTime
+  startTime: DateTime
 }
 
 """
@@ -299,8 +301,8 @@ Sales time series data of a partner
 """
 type PartnerSalesTimeSeriesStats {
   count: Int
-  endTime: ISO8601DateTime
-  startTime: ISO8601DateTime
+  endTime: DateTime
+  startTime: DateTime
   totalCents: Int!
 }
 
@@ -458,8 +460,8 @@ Artworks published time series data of a partner
 """
 type PartnerStatsArtworksPublishedTimeSeries {
   count: Int
-  endTime: ISO8601DateTime
-  startTime: ISO8601DateTime
+  endTime: DateTime
+  startTime: DateTime
 }
 
 """
@@ -486,8 +488,8 @@ Pageviews time series data of a partner
 """
 type PartnerStatsPageviewsTimeSeries {
   count: Int
-  endTime: ISO8601DateTime
-  startTime: ISO8601DateTime
+  endTime: DateTime
+  startTime: DateTime
 }
 
 """
@@ -495,8 +497,8 @@ Partner Time Series Stats
 """
 type PartnerTimeSeriesStats {
   count: Int
-  endTime: ISO8601DateTime
-  startTime: ISO8601DateTime
+  endTime: DateTime
+  startTime: DateTime
 }
 
 """
@@ -933,7 +935,7 @@ type Query {
   """
   Last updated timestamp
   """
-  lastUpdatedAt: ISO8601DateTime
+  lastUpdatedAt: DateTime
 
   """
   Get price insights for a market.
