@@ -214,15 +214,20 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
                   artwork_id: artworkIds,
                 }
 
+                const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
                 return partnerArtworksAllLoader(id, gravityArtworkArgs).then(
                   ({ body }) => {
-                    return connectionFromArraySlice(body, args, {
-                      arrayLength: parseInt(
-                        headers["x-total-count"] || "0",
-                        10
-                      ),
-                      sliceStart: offset,
-                    })
+                    return {
+                      totalCount,
+                      ...connectionFromArraySlice(body, args, {
+                        arrayLength: parseInt(
+                          headers["x-total-count"] || "0",
+                          10
+                        ),
+                        sliceStart: offset,
+                      }),
+                    }
                   }
                 )
               }
@@ -450,10 +455,15 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           return partnerShowsLoader(id, gravityArgs).then(
             ({ body, headers }) => {
-              return connectionFromArraySlice(body, args, {
-                arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-                sliceStart: offset,
-              })
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+              return {
+                totalCount,
+                ...connectionFromArraySlice(body, args, {
+                  arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+                  sliceStart: offset,
+                }),
+              }
             }
           )
         },
