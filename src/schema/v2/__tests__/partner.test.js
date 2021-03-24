@@ -252,6 +252,29 @@ describe("Partner type", () => {
           partnerLoader,
         }
       })
+
+      it("loads the total count", async () => {
+        const query = gql`
+          {
+            partner(id: "bau-xi-gallery") {
+              artworksConnection(first: 3) {
+                totalCount
+              }
+            }
+          }
+        `
+
+        const data = await runAuthenticatedQuery(query, context)
+
+        expect(data).toEqual({
+          partner: {
+            artworksConnection: {
+              totalCount: 3,
+            },
+          },
+        })
+      })
+
       describe("when shallow is false", () => {
         it("calls partnerArtworksAllLoader", async () => {
           const query = gql`
@@ -390,6 +413,28 @@ describe("Partner type", () => {
         })
       })
 
+      it("loads the total count", async () => {
+        const query = gql`
+          {
+            partner(id: "bau-xi-gallery") {
+              artworksConnection(first: 3) {
+                totalCount
+              }
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          partner: {
+            artworksConnection: {
+              totalCount: 3,
+            },
+          },
+        })
+      })
+
       describe("when shallow is false", () => {
         it("does not call partnerArtworksAllLoader", async () => {
           const query = gql`
@@ -462,10 +507,10 @@ describe("Partner type", () => {
     })
 
     it("returns shows", async () => {
-      const query = `
+      const query = gql`
         {
-          partner(id:"levy-gorvy") {
-            showsConnection(first:3) {
+          partner(id: "levy-gorvy") {
+            showsConnection(first: 3) {
               edges {
                 node {
                   slug
@@ -504,10 +549,10 @@ describe("Partner type", () => {
     })
 
     it("returns hasNextPage=true when first is below total", async () => {
-      const query = `
+      const query = gql`
         {
-          partner(id:"bau-xi-gallery") {
-            showsConnection(first:1) {
+          partner(id: "bau-xi-gallery") {
+            showsConnection(first: 1) {
               pageInfo {
                 hasNextPage
               }
@@ -530,10 +575,10 @@ describe("Partner type", () => {
     })
 
     it("returns hasNextPage=false when first is above total", async () => {
-      const query = `
+      const query = gql`
         {
-          partner(id:"bau-xi-gallery") {
-            showsConnection(first:3) {
+          partner(id: "bau-xi-gallery") {
+            showsConnection(first: 3) {
               pageInfo {
                 hasNextPage
               }
@@ -550,6 +595,27 @@ describe("Partner type", () => {
             pageInfo: {
               hasNextPage: false,
             },
+          },
+        },
+      })
+    })
+
+    it("loads the total count", async () => {
+      const query = gql`
+        {
+          partner(id: "levy-gorvy") {
+            showsConnection(first: 3) {
+              totalCount
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          showsConnection: {
+            totalCount: 3,
           },
         },
       })
