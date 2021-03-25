@@ -5,14 +5,10 @@ import { ResolverContext } from "types/graphql"
 import gql from "lib/gql"
 import Sale from "../sale"
 import { SaleArtworkType } from "../sale_artwork"
-import { CausalityLotState } from "../lot"
 
 export const MyBidType = new GraphQLObjectType<any, ResolverContext>({
   name: "MyBid",
   fields: () => ({
-    lots: {
-      type: new GraphQLList(CausalityLotState),
-    },
     sale: {
       type: Sale.type,
     },
@@ -197,7 +193,8 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       // Attach causality lot info to the sale artwork
       saleSaleArtworks[index].body.forEach((saleArtwork, artworkIndex) => {
         const causalityLot = lots[artworkIndex]
-        saleArtwork.lot = causalityLot.lot
+        // Attach to SaleArtwork.lotState field
+        saleArtwork.lotState = causalityLot.lot
         saleArtwork.isHighestBidder = causalityLot.isHighestBidder
       })
 

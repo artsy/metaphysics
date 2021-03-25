@@ -7940,7 +7940,6 @@ type Mutation {
 }
 
 type MyBid {
-  lots: [CausalityLotState]
   sale: Sale
   saleArtworks: [SaleArtwork]
 }
@@ -9940,8 +9939,8 @@ type SaleArtwork implements ArtworkEdgeInterface & Node {
   # Is this sale artwork being watched by a user. (Currently only used on me.myBids and me.watchedLotsConnection.)
   isWatching: Boolean
   isWithReserve: Boolean
-  lot: CausalityLotState
   lotLabel: String
+  lotState: CausalityLotState
   lowEstimate: SaleArtworkLowEstimate
   minimumNextBid: SaleArtworkMinimumNextBid
   node: Artwork

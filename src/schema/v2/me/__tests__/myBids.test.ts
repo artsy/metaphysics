@@ -17,7 +17,7 @@ describe("myBids", () => {
                 position
                 isWatching
                 isHighestBidder
-                lot {
+                lotState {
                   bidCount
                   floorSellingPrice {
                     display
@@ -57,7 +57,7 @@ describe("myBids", () => {
               position: 2,
               isWatching: true,
               isHighestBidder: true,
-              lot: {
+              lotState: {
                 bidCount: 1,
                 floorSellingPrice: {
                   display: "CHF4,500",
@@ -97,7 +97,7 @@ describe("myBids", () => {
                 position
                 isWatching
                 isHighestBidder
-                lot {
+                lotState {
                   bidCount
                   floorSellingPrice {
                     display
@@ -137,7 +137,7 @@ describe("myBids", () => {
               position: 2,
               isWatching: true,
               isHighestBidder: true,
-              lot: {
+              lotState: {
                 bidCount: 1,
                 floorSellingPrice: {
                   display: "CHF4,500",
