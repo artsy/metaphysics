@@ -268,7 +268,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ reserve_status }) => reserve_status !== "no_reserve",
       },
-      lot: {
+      lotState: {
         type: CausalityLotState,
       },
       lotLabel: {
