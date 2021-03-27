@@ -1,6 +1,7 @@
 import { mergeSchemas as _mergeSchemas } from "graphql-tools"
 import { executableGravitySchema } from "lib/stitching/gravity/schema"
 import { executableCausalitySchema } from "lib/stitching/causality/schema"
+import { executableDiffusionSchema } from "lib/stitching/diffusion/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
 import {
   executableExchangeSchema,
@@ -58,6 +59,9 @@ export const incrementalMergeSchemas = (localSchema, version: 1 | 2) => {
 
   const causalitySchema = executableCausalitySchema()
   schemas.push(causalitySchema)
+
+  const diffusionSchema = executableDiffusionSchema()
+  schemas.push(diffusionSchema)
 
   if (version === 1) {
     useStitchingEnvironment(
