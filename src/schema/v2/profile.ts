@@ -33,6 +33,14 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ id }) => `/${id}`,
     },
+    displayArtistsSection: {
+      type: GraphQLBoolean,
+      resolve: ({ owner }) => owner.display_artists_section,
+    },
+    profileArtistsLayout: {
+      type: GraphQLString,
+      resolve: ({ owner }) => owner.profile_artists_layout,
+    },
     icon: {
       type: Image.type,
       resolve: ({ icon }) => normalizeImageData(icon),

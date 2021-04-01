@@ -13,6 +13,7 @@ describe("Partner type", () => {
       name: "Catty Partner",
       has_full_profile: true,
       profile_banner_display: true,
+      distinguish_represented_artists: true,
       partner_categories: [
         {
           id: "blue-chip",
@@ -28,6 +29,23 @@ describe("Partner type", () => {
         .withArgs(partnerData.id)
         .returns(Promise.resolve(partnerData)),
     }
+  })
+
+  it("returns distinguishRepresentedArtists field", async () => {
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          distinguishRepresentedArtists
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      partner: {
+        distinguishRepresentedArtists: true,
+      },
+    })
   })
 
   it("includes the gallery website address in shows", async () => {
