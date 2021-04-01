@@ -403,6 +403,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ name }) => name.trim(),
       },
+      distinguishRepresentedArtists: {
+        type: GraphQLBoolean,
+        resolve: ({ distinguish_represented_artists }) =>
+          distinguish_represented_artists,
+      },
       profile: {
         type: Profile.type,
         resolve: ({ default_profile_id }, _options, { profileLoader }) =>
