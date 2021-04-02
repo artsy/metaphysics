@@ -26,7 +26,7 @@ describe("Me", () => {
         .mockReturnValueOnce(Promise.resolve([{ id: "bidder-id" }]))
 
       const context = {
-        salesLoader: sinon.stub().returns(
+        salesLoaderWithHeaders: sinon.stub().returns(
           Promise.resolve({
             body: [
               {
