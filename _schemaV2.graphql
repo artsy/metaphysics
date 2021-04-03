@@ -5370,6 +5370,15 @@ type Conversation implements Node {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+
+  # Messages and other events in a conversation.
+  conversationEventConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    sort: sortMessages
+  ): ConversationEventConnection
   createdAt(
     format: String
 
@@ -5476,6 +5485,31 @@ type ConversationEdge {
   node: Conversation
 }
 
+union ConversationEvent =
+    ConversationOfferSubmitted
+  | ConversationOrderStateChanged
+  | Message
+
+# A connection to a list of items.
+type ConversationEventConnection {
+  # A list of edges.
+  edges: [ConversationEventEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type ConversationEventEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: ConversationEvent
+}
+
 # The participant who started the conversation, currently always a User
 type ConversationInitiator {
   email: String!
@@ -5502,6 +5536,38 @@ type ConversationItem {
 }
 
 union ConversationItemType = Artwork | Show
+
+enum ConversationOfferPartyType {
+  BUYER
+  SELLER
+}
+
+# An offer submitted in a conversation
+type ConversationOfferSubmitted implements Node {
+  amount: String!
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  fromParticipant: ConversationOfferPartyType
+  id: ID!
+  isCounter: Boolean
+}
+
+# A conversation order state change
+type ConversationOrderStateChanged implements Node {
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  id: ID!
+  state: String!
+  stateReason: String
+}
 
 # The participant responding to the conversation, currently always a Partner
 type ConversationResponder {
@@ -12211,6 +12277,11 @@ input SmsSecondFactorAttributes {
 union SmsSecondFactorOrErrorsUnion = Errors | SmsSecondFactor
 
 enum sort {
+  ASC
+  DESC
+}
+
+enum sortMessages {
   ASC
   DESC
 }
