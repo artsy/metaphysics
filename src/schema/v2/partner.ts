@@ -35,7 +35,7 @@ import {
 } from "./fields/pagination"
 import { deprecate } from "lib/deprecation"
 import { articleConnection } from "./article"
-import ArticleSorts from "./sorts/article_sorts"
+import ArticleSorts, { ArticleSort } from "./sorts/article_sorts"
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   artworkIDs: {
@@ -95,9 +95,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async (
           { _id },
           args: {
-            page: number
-            size: number
-            sort: typeof ArticleSorts
+            page?: number
+            size?: number
+            sort?: ArticleSort
           } & CursorPageable,
           { articlesLoader }
         ) => {
@@ -111,7 +111,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             limit: number
             count: boolean
             offset: number
-            sort: typeof ArticleSorts
+            sort?: ArticleSort
             page: number
             size: number
           }
