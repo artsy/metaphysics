@@ -1288,6 +1288,7 @@ type Query {
     sellerType: String
     sort: OrderConnectionSortEnum
     state: OrderStateEnum
+    states: [OrderStateEnum!]
   ): OrderConnectionWithTotalCount
 }
 
