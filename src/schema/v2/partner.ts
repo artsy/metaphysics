@@ -10,7 +10,7 @@ import {
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { flatten, omit } from "lodash"
+import { flatten } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
@@ -89,14 +89,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: articleConnection.connectionType,
         args: pageable({
           sort: ArticleSorts,
-          page: { type: GraphQLInt },
-          size: { type: GraphQLInt },
         }),
         resolve: async (
           { _id },
           args: {
-            page?: number
-            size?: number
             sort?: ArticleSort
           } & CursorPageable,
           { articlesLoader }
@@ -112,8 +108,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             count: boolean
             offset: number
             sort?: ArticleSort
-            page: number
-            size: number
           }
 
           const articleArgs: ArticleArgs = {
@@ -123,14 +117,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             count: true,
             offset,
             sort: args.sort,
-            size,
-            page,
           }
 
-          const { results, count } = await articlesLoader({
-            ...articleArgs,
-            ...omit(args, ["first", "last", "before", "after"]),
-          })
+          const { results, count } = await articlesLoader(articleArgs)
 
           return {
             totalCount: count,
