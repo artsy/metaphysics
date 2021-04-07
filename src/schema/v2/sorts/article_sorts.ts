@@ -7,7 +7,7 @@ export const ARTICLE_SORTS = {
   PUBLISHED_AT_DESC: {
     value: "-published_at",
   },
-} as const
+}
 
 const ArticleSorts = {
   type: new GraphQLEnumType({
