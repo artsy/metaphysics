@@ -1,4 +1,4 @@
-import { pageable } from "relay-cursor-paging"
+import { CursorPageable, pageable } from "relay-cursor-paging"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -29,10 +29,13 @@ import { PartnerCategoryType } from "./partner_category"
 import ShowSorts from "./sorts/show_sorts"
 import ArtistSorts from "./sorts/artist_sorts"
 import { fields as partnerArtistFields } from "./partner_artist"
-import { connectionWithCursorInfo } from "./fields/pagination"
+import {
+  connectionWithCursorInfo,
+  createPageCursors,
+} from "./fields/pagination"
 import { deprecate } from "lib/deprecation"
 import { articleConnection } from "./article"
-import ArticleSorts from "./sorts/article_sorts"
+import ArticleSorts, { ArticleSort } from "./sorts/article_sorts"
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   artworkIDs: {
@@ -84,9 +87,17 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       articlesConnection: {
         description: "A connection of articles related to a partner.",
         type: articleConnection.connectionType,
-        args: pageable({ sort: ArticleSorts }),
-        resolve: async ({ _id }, args, { articlesLoader }) => {
-          const { size, offset, sort } = convertConnectionArgsToGravityArgs(
+        args: pageable({
+          sort: ArticleSorts,
+        }),
+        resolve: async (
+          { _id },
+          args: {
+            sort?: ArticleSort
+          } & CursorPageable,
+          { articlesLoader }
+        ) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )
 
@@ -96,7 +107,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             limit: number
             count: boolean
             offset: number
-            sort: string
+            sort?: ArticleSort
           }
 
           const articleArgs: ArticleArgs = {
@@ -105,13 +116,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             limit: size,
             count: true,
             offset,
-            sort,
+            sort: args.sort,
           }
 
           const { results, count } = await articlesLoader(articleArgs)
 
           return {
             totalCount: count,
+            pageCursors: createPageCursors({ ...args, page, size }, count),
             ...connectionFromArraySlice(results, args, {
               arrayLength: count,
               sliceStart: offset,
