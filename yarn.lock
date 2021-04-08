@@ -23,10 +23,10 @@
     chokidar "^3.0.0"
     decache "^4.4.0"
 
-"@artsy/update-repo@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@artsy/update-repo/-/update-repo-0.2.0.tgz#c978d475fa4e2e1be0cc40fe57a7581f0d8f690b"
-  integrity sha512-S7pM46T6/pAaHVD5R5nCc4UXIQQo3kG4KQk2B75RYbOb8LMk7dyFKwsm36R3nriv7Xhb4E2jEN6J/srpataLFQ==
+"@artsy/update-repo@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@artsy/update-repo/-/update-repo-0.2.1.tgz#7b82e393c7eee59f60deaf7fc6f77661e36dbd04"
+  integrity sha512-sco76cOeJbp/Opv9NsZi2Ra9FcDX6PFjms5gqdlokgBA3ig/lIiBXVEB26alMMuckrVYjYtL1Y86EktofH5pfg==
   dependencies:
     "@octokit/rest" "^17.2.0"
     kleur "^3.0.3"
