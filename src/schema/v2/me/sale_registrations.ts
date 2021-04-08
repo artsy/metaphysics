@@ -38,24 +38,22 @@ export const SaleRegistrationConnection: GraphQLFieldConfig<
   resolve: async (
     _root,
     { isAuction: is_auction, live, published, sort, ...paginationArgs },
-    { meBiddersLoader, salesLoader }
+    { meBiddersLoader, salesLoaderWithHeaders }
   ) => {
     if (!meBiddersLoader) return null
     const { page, size, offset } = convertConnectionArgsToGravityArgs(
       paginationArgs
     )
-    const { body: sales, headers } = (await (salesLoader(
-      {
-        is_auction,
-        live,
-        published,
-        sort,
-        page,
-        size,
-        total_count: true,
-      },
-      { headers: true }
-    ) as any)) as BodyAndHeaders
+    const response: BodyAndHeaders = await salesLoaderWithHeaders({
+      is_auction,
+      live,
+      published,
+      sort,
+      page,
+      size,
+      total_count: true,
+    })
+    const { body: sales, headers } = response
     const saleRegistrations = await Promise.all(
       sales.map(async (sale) => {
         const bidders = await meBiddersLoader({ sale_id: sale.id })
