@@ -147,6 +147,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
 
     // Clean invalid sales
     combinedSales = combinedSales.filter(Boolean)
+
     // Fetch all sale artworks from sale
     const saleSaleArtworks = await Promise.all(
       combinedSales.map((sale: any) => {
@@ -169,39 +170,47 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
         return node.lot.saleId === sale._id
       })
 
-      // If lot isn't in causality it means we're just watching it and there's
-      // no bidding activity; return that status.
-      if (lots.length === 0) {
-        // Check to see if there are any watched lots in the sale
-        const watchedLotsFromSale = watchedSaleArtworksResponse.body
-          .filter((saleArtwork) => saleArtwork.sale_id === sale.id)
-          .map((saleArtwork) => {
-            // Attach an isWatching prop to response so that SaleArtwork type
-            // can resolve the watching status
-            saleArtwork.isWatching = true
-            return saleArtwork
-          })
+      // Check to see if there are any watched lots in the sale
+      const watchedLotsFromSale = watchedSaleArtworksResponse.body
+        .filter((saleArtwork) => saleArtwork.sale_id === sale.id)
+        .map((saleArtwork) => {
+          // Attach an isWatching prop to response so that SaleArtwork type
+          // can resolve the watching status
+          saleArtwork.isWatching = true
+          return saleArtwork
+        })
 
-        return {
-          lots: [],
-          sale,
-          saleArtworks: watchedLotsFromSale,
-          ...withSaleInfo(sale),
+      // Attach lot state to each sale artwork
+      const saleArtworksWithCausalityState = saleSaleArtworks[index].body.map(
+        (saleArtwork, artworkIndex) => {
+          const causalityLot = lots[artworkIndex]
+
+          // Attach to SaleArtwork.lotState field
+          saleArtwork.lotState = causalityLot.lot
+          saleArtwork.isHighestBidder = causalityLot.isHighestBidder
+          return saleArtwork
         }
-      }
+      )
 
-      // Attach causality lot info to the sale artwork
-      saleSaleArtworks[index].body.forEach((saleArtwork, artworkIndex) => {
-        const causalityLot = lots[artworkIndex]
-        // Attach to SaleArtwork.lotState field
-        saleArtwork.lotState = causalityLot.lot
-        saleArtwork.isHighestBidder = causalityLot.isHighestBidder
-      })
+      // Combine watched lots and sale artworks
+      const saleArtworks = watchedLotsFromSale
+        .filter((watchedLot) => {
+          // Check to see if a user has both watched AND bid on a lot, if so,
+          // only take the lot that user bid on and reject the watched one.
+          const foundWatchedAndBidOnLot = saleArtworksWithCausalityState.find(
+            (saleArtwork) => saleArtwork.lotState.internalID === watchedLot._id
+          )
+          if (!foundWatchedAndBidOnLot) {
+            return watchedLot
+          }
+        })
+        // Merge all artworks together
+        .concat(saleArtworksWithCausalityState)
 
       return {
         lots,
         sale,
-        saleArtworks: saleSaleArtworks[index].body,
+        saleArtworks,
         isWatching: false,
         ...withSaleInfo(sale),
       }
