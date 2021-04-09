@@ -195,6 +195,7 @@ export const exchangeStitchingEnvironment = ({
         sellerId: ID
         participantType: CommerceOrderParticipantEnum
         state: CommerceOrderStateEnum
+        states: [CommerceOrderStateEnum!]
         after: String
         before: String
         first: Int
@@ -276,6 +277,7 @@ export const exchangeStitchingEnvironment = ({
               after?: string
               before?: string
               state?: string
+              states?: [string]
             },
             context,
             info
