@@ -27,13 +27,13 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
         name: "AuctionState",
         values: {
           OPEN: {
-            value: "Open",
+            value: "open",
           },
           UPCOMING: {
-            value: "Upcoming",
+            value: "upcoming",
           },
           CLOSED: {
-            value: "Closed",
+            value: "closed",
           },
         },
       }),
@@ -93,7 +93,7 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
       typeof registered === "boolean" ? loaderWithoutCache : loaderWithCache
     const { body: sales, headers } = ((await loader!(
       {
-        auctionState,
+        auction_state: auctionState,
         id: ids,
         is_auction: isAuction,
         live,
