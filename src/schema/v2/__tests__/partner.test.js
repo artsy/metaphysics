@@ -772,6 +772,28 @@ describe("Partner type", () => {
         },
       })
     })
+
+    it("loads the total count", async () => {
+      const query = gql`
+        {
+          partner(id: "bau-xi-gallery") {
+            artistsConnection(first: 3) {
+              totalCount
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            totalCount: 3,
+          },
+        },
+      })
+    })
   })
 
   describe("#articlesConnection", () => {
