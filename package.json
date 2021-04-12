@@ -26,7 +26,7 @@
     "prettier-project": "prettier --write 'src/**/*.{js,ts,tsx,md,graphql}'",
     "schema-drift": "babel-node --no-warnings --extensions '.ts,.js' ./scripts/schema-drift.ts",
     "start": "yarn run dev",
-    "test": "yarn type-check && yarn lint && jest",
+    "test": "yarn type-check && yarn lint && jest --maxWorkers=4",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "test:validQueries": "babel-node --extensions '.ts,.js' src/integration/__tests__/runStoredQueryTests.ts",
     "type-check": "tsc --noEmit --pretty",

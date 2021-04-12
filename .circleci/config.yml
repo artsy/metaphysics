@@ -61,7 +61,7 @@ jobs:
           command: node scripts/push-schema-changes.js
   ci_test:
     executor: hokusai/deploy
-    resource_class: large
+    resource_class: xlarge
     steps:
       - hokusai/setup-docker
       - hokusai/run-tests
