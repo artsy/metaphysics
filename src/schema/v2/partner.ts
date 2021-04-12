@@ -162,11 +162,16 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           return partnerArtistsForPartnerLoader(id, gravityArgs).then(
             ({ body, headers }) => {
-              return connectionFromArraySlice(body, args, {
-                arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-                sliceStart: offset,
-                resolveNode: (node) => node.artist,
-              })
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+              return {
+                totalCount,
+                ...connectionFromArraySlice(body, args, {
+                  arrayLength: totalCount,
+                  sliceStart: offset,
+                  resolveNode: (node) => node.artist,
+                }),
+              }
             }
           )
         },
