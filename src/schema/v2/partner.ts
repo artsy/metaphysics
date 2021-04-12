@@ -48,10 +48,6 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   forSale: {
     type: GraphQLBoolean,
   },
-  imageCountLessThan: {
-    type: GraphQLInt,
-    description: "Return artworks with less than x additional_images.",
-  },
   missingPriorityMetadata: {
     type: GraphQLBoolean,
     description: "Return artworks that are missing priority metadata",
@@ -193,7 +189,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             artwork_id?: string[]
             exclude_ids?: string[]
             for_sale: boolean
-            image_count_less_than?: number
             missing_priority_metadata?: boolean
             page: number
             published: boolean
@@ -205,7 +200,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           const gravityArgs: GravityArgs = {
             for_sale: args.forSale,
-            image_count_less_than: args.imageCountLessThan,
             missing_priority_metadata: args.missingPriorityMetadata,
             page,
             published: true,
