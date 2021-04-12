@@ -59,6 +59,12 @@ jobs:
       - run:
           name: push schema changes
           command: node scripts/push-schema-changes.js
+  ci_test:
+    executor: hokusai/deploy
+    resource_class: large
+    steps:
+      - hokusai/setup-docker
+      - hokusai/run-tests
 
 workflows:
   default:
@@ -68,8 +74,7 @@ workflows:
           <<: *only_development
 
       # pre-staging
-      - hokusai/test:
-          name: test
+      - ci_test:
           <<: *not_staging_or_release
           post-steps:
             - run: mkdir -p ./coverage
@@ -85,7 +90,7 @@ workflows:
           name: push-staging-image
           <<: *only_master
           requires:
-            - test
+            - ci_test
 
       - hokusai/deploy-staging:
           name: deploy-staging
