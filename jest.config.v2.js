@@ -7,6 +7,7 @@ module.exports = {
       collectCoverage: true,
       coverageReporters: ["lcov", "text-summary"],
       moduleFileExtensions: ["js", "jsx", "json", "ts", "tsx"],
+      setupFilesAfterEnv: ["jest-extended", "<rootDir>/src/test/helper.js"],
       testRegex: "(.test)\\.(js|ts)$",
       testPathIgnorePatterns: [
         "/node_modules/",
@@ -21,7 +22,6 @@ module.exports = {
       transform: {
         "^.+\\.(js|ts)$": "babel-jest",
       },
-      setupFilesAfterEnv: ["jest-extended", "<rootDir>/src/test/helper.js"],
     },
   ],
 }
