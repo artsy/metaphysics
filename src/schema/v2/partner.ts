@@ -419,6 +419,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ distinguish_represented_artists }) =>
           distinguish_represented_artists,
       },
+      displayArtistsSection: {
+        type: GraphQLBoolean,
+        resolve: ({ display_artists_section }) => display_artists_section,
+      },
+      profileArtistsLayout: {
+        type: GraphQLString,
+        resolve: ({ profile_artists_layout }) => profile_artists_layout,
+      },
       profile: {
         type: Profile.type,
         resolve: ({ default_profile_id }, _options, { profileLoader }) =>

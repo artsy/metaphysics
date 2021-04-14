@@ -35,10 +35,12 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
     },
     displayArtistsSection: {
       type: GraphQLBoolean,
+      deprecationReason: "Prefer displayArtistsSection in Partner type",
       resolve: ({ owner }) => owner.display_artists_section,
     },
     profileArtistsLayout: {
       type: GraphQLString,
+      deprecationReason: "Prefer profileArtistsLayout in Partner type",
       resolve: ({ owner }) => owner.profile_artists_layout,
     },
     icon: {
