@@ -28,7 +28,10 @@ import { ResolverContext } from "types/graphql"
 import { PartnerCategoryType } from "./partner_category"
 import ShowSorts from "./sorts/show_sorts"
 import ArtistSorts from "./sorts/artist_sorts"
-import { fields as partnerArtistFields } from "./partner_artist"
+import {
+  fields as partnerArtistFields,
+  PartnerArtistType,
+} from "./partner_artist"
 import {
   connectionWithCursorInfo,
   createPageCursors,
@@ -432,6 +435,17 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       displayArtistsSection: {
         type: GraphQLBoolean,
         resolve: ({ display_artists_section }) => display_artists_section,
+      },
+      partnerArtist: {
+        type: PartnerArtistType,
+        args: {
+          artistID: {
+            type: new GraphQLNonNull(GraphQLString),
+          },
+        },
+        resolve: ({ id }, { artistID }, { partnerArtistLoader }) => {
+          partnerArtistLoader({ artist_id: artistID, partner_id: id })
+        },
       },
       profileArtistsLayout: {
         type: GraphQLString,
