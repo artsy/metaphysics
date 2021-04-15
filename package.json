@@ -27,6 +27,8 @@
     "schema-drift": "babel-node --no-warnings --extensions '.ts,.js' ./scripts/schema-drift.ts",
     "start": "yarn run dev",
     "test": "yarn type-check && yarn lint && jest",
+    "test:jest:v1": "yarn jest --config jest.config.v1.js --maxWorkers 3",
+    "test:jest:v2": "yarn jest --config jest.config.v2.js --maxWorkers 3",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "test:validQueries": "babel-node --extensions '.ts,.js' src/integration/__tests__/runStoredQueryTests.ts",
     "type-check": "tsc --noEmit --pretty",
@@ -150,38 +152,6 @@
     "superagent": "3.8.3",
     "supertest": "3.1.0",
     "typescript": "4.2.4"
-  },
-  "jest": {
-    "setupFilesAfterEnv": [
-      "jest-extended",
-      "<rootDir>/src/test/helper.js"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/build/",
-      "/src/test/helper.js",
-      "/src/test/utils.js",
-      "/src/test/gql.js",
-      "/src/test/__mocks__",
-      "src/schema/v2/__tests__/ecommerce/"
-    ],
-    "transform": {
-      "^.+\\.(js|ts)$": "babel-jest"
-    },
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "json",
-      "ts",
-      "tsx"
-    ],
-    "testRegex": "(.test)\\.(js|ts)$",
-    "coverageDirectory": "coverage",
-    "collectCoverage": true,
-    "coverageReporters": [
-      "lcov",
-      "text-summary"
-    ]
   },
   "prettier": {
     "semi": false,
