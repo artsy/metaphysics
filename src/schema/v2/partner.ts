@@ -135,6 +135,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           representedBy: {
             type: GraphQLBoolean,
           },
+          displayOnPartnerProfile: {
+            type: GraphQLBoolean,
+          },
+          artistIDs: {
+            type: new GraphQLList(GraphQLString),
+          },
         }),
         resolve: ({ id }, args, { partnerArtistsForPartnerLoader }) => {
           const pageOptions = convertConnectionArgsToGravityArgs(args)
@@ -146,6 +152,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             total_count: boolean
             sort: string
             represented_by: boolean
+            display_on_partner_profile: boolean
+            artist_ids: [string]
           }
 
           const gravityArgs: GravityArgs = {
@@ -154,6 +162,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             sort: args.sort,
             represented_by: args.representedBy,
+            display_on_partner_profile: args.displayOnPartnerProfile,
+            artist_ids: args.artistIDs,
           }
 
           return partnerArtistsForPartnerLoader(id, gravityArgs).then(

@@ -8272,7 +8272,9 @@ type Partner implements Node {
   # A connection of artists at a partner.
   artistsConnection(
     after: String
+    artistIDs: [String]
     before: String
+    displayOnPartnerProfile: Boolean
     first: Int
     last: Int
     representedBy: Boolean
