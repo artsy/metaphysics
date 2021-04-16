@@ -8404,7 +8404,6 @@ type Partner implements Node {
     last: Int
   ): LocationConnection
   name: String
-  partnerArtist(artistID: String!): PartnerArtist
   profile: Profile
   profileArtistsLayout: String
 
