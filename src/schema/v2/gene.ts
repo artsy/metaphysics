@@ -20,6 +20,7 @@ import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 import { Searchable } from "./searchable"
 import { setVersion } from "./image/normalize"
 import { getDefault } from "./image"
+import { markdown } from "schema/v2/fields/markdown"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -71,9 +72,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       filterArtworksConnection: filterArtworksConnection("gene_id"),
-      description: {
-        type: GraphQLString,
-      },
+      description: markdown(),
       displayName: {
         type: GraphQLString,
         resolve: ({ display_name }) => display_name,
