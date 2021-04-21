@@ -96,6 +96,221 @@ describe("Partner type", () => {
     })
   })
 
+  describe("#meta", () => {
+    let profileData
+
+    beforeEach(() => {
+      profileData = {
+        owner: partnerData,
+        bio: "partner profile bio",
+        owner_type: "PartnerGallery",
+        icon: {
+          image_url: "https://xxx.cloudfront.net/xxx/:version.jpg",
+          image_versions: ["square140", "large"],
+          image_urls: {
+            square140: "https://xxx.cloudfront.net/xxx/square140.jpg",
+            large: "https://xxx.cloudfront.net/xxx/large.jpg",
+          },
+        },
+      }
+
+      context = {
+        profileLoader: () => Promise.resolve(profileData),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+    })
+
+    it("returns meta", async () => {
+      const query = `
+        {
+          partner(id:"catty-partner") {
+            meta {
+              title
+              image
+              description
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          meta: {
+            title:
+              "Catty Partner | Artists, Art for Sale, and Contact Info | Artsy",
+            image: "https://xxx.cloudfront.net/xxx/square140.jpg",
+            description: "partner profile bio",
+          },
+        },
+      })
+    })
+
+    it("returns meta if profile empty", async () => {
+      context = {
+        profileLoader: () => Promise.reject(),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+
+      const query = `
+        {
+          partner(id:"catty-partner") {
+            meta {
+              title
+              image
+              description
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          meta: {
+            title: "Catty Partner | Artsy",
+            image: null,
+            description: "Catty Partner on Artsy",
+          },
+        },
+      })
+    })
+
+    it("returns meta when Institution partner", async () => {
+      profileData.owner_type = "PartnerInstitution"
+
+      const query = `
+        {
+          partner(id:"catty-partner") {
+            meta {
+              title
+              description
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          meta: {
+            title:
+              "Catty Partner | Artists, Artworks, and Contact Info | Artsy",
+            description: "partner profile bio",
+          },
+        },
+      })
+    })
+
+    it("returns meta when bio empty and Gallery partner", async () => {
+      profileData.bio = null
+
+      const query = `
+        {
+          partner(id:"catty-partner") {
+            meta {
+              title
+              description
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          meta: {
+            title:
+              "Catty Partner | Artists, Art for Sale, and Contact Info | Artsy",
+            description:
+              "Explore Artists, Artworks, and Shows from Catty Partner on Artsy",
+          },
+        },
+      })
+    })
+
+    it("returns meta when bio empty and not Gallery partner", async () => {
+      profileData.bio = null
+      profileData.owner_type = "PartnerInstitution"
+
+      const query = `
+        {
+          partner(id:"catty-partner") {
+            meta {
+              title
+              description
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          meta: {
+            title:
+              "Catty Partner | Artists, Artworks, and Contact Info | Artsy",
+            description: "Catty Partner on Artsy",
+          },
+        },
+      })
+    })
+
+    it("returns meta when FairOrganizer partner", async () => {
+      profileData.owner_type = "FairOrganizer"
+
+      const query = `
+        {
+          partner(id:"catty-partner") {
+            meta {
+              title
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          meta: {
+            title:
+              "Catty Partner | Fair Info, Artists, and Art for Sale | Artsy",
+          },
+        },
+      })
+    })
+
+    it("returns meta when partner without icon", async () => {
+      profileData.icon = null
+
+      const query = `
+        {
+          partner(id:"catty-partner") {
+            meta {
+              image
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          meta: {
+            image: null,
+          },
+        },
+      })
+    })
+  })
+
   describe("#LocationsConnection", () => {
     let locationsResponse
 
