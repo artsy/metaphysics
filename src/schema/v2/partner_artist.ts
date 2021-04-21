@@ -16,15 +16,23 @@ import { getPagingParameters } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
+import { formatMarkdownValue, markdown } from "./fields/markdown"
 
 // TODO: This should move to the gravity loader
 interface PartnerArtistDetails {
   sortable_id: string
-  is_use_default_biography: boolean
+  use_default_biography: boolean
   published_artworks_count: number
   published_for_sale_artworks_count: number
   display_on_partner_profile: boolean
   represented_by: boolean
+  biography: string
+  artist: {
+    blurb: string
+  }
+  partner: {
+    name: string
+  }
 }
 
 const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
@@ -43,6 +51,47 @@ const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
   resolve: (partner_artist) => partner_artist,
 }
 
+const PartnerArtistBlurbType = new GraphQLObjectType<any, ResolverContext>({
+  name: "PartnerArtistBlurb",
+  fields: {
+    credit: {
+      type: GraphQLString,
+      resolve: ({ credit }) => credit,
+    },
+    text: {
+      type: GraphQLString,
+      resolve: ({ text }) => text,
+    },
+  },
+})
+
+const biographyBlurb: GraphQLFieldConfig<
+  PartnerArtistDetails,
+  ResolverContext
+> = {
+  args: {
+    ...markdown().args,
+  },
+  type: PartnerArtistBlurbType,
+  resolve: (
+    { use_default_biography, biography, artist: { blurb }, partner: { name } },
+    { format }
+  ) => {
+    if (use_default_biography) {
+      return {
+        text: formatMarkdownValue(blurb, format),
+      }
+    } else if (biography.length) {
+      return {
+        text: formatMarkdownValue(biography, format),
+        credit: `Submitted by ${name}`,
+      }
+    }
+
+    return null
+  },
+}
+
 export const fields: Thunk<GraphQLFieldConfigMap<
   PartnerArtistDetails,
   ResolverContext
@@ -54,6 +103,7 @@ export const fields: Thunk<GraphQLFieldConfigMap<
   biography: {
     type: GraphQLString,
   },
+  biographyBlurb,
   counts,
   isDisplayOnPartnerProfile: {
     type: GraphQLBoolean,
@@ -65,7 +115,7 @@ export const fields: Thunk<GraphQLFieldConfigMap<
   },
   isUseDefaultBiography: {
     type: GraphQLBoolean,
-    resolve: ({ is_use_default_biography }) => is_use_default_biography,
+    resolve: ({ use_default_biography }) => use_default_biography,
   },
   partner: {
     type: PartnerType,
