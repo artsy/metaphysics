@@ -655,6 +655,30 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      domesticShippingFee: {
+        type: Money,
+        description: "Domestic shipping fee.",
+        resolve: ({
+          domestic_shipping_fee_cents: cents,
+          price_currency: currency,
+        }) => {
+          if (typeof cents !== "number" || !currency) return null
+
+          return { cents, currency }
+        },
+      },
+      internationalShippingFee: {
+        type: Money,
+        description: "International shipping fee.",
+        resolve: ({
+          international_shipping_fee_cents: cents,
+          price_currency: currency,
+        }) => {
+          if (typeof cents !== "number" || !currency) return null
+
+          return { cents, currency }
+        },
+      },
       shippingInfo: {
         type: GraphQLString,
         description:
