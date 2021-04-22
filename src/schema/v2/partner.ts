@@ -37,6 +37,36 @@ import { deprecate } from "lib/deprecation"
 import { articleConnection } from "./article"
 import ArticleSorts, { ArticleSort } from "./sorts/article_sorts"
 
+import { truncate } from "lib/helpers"
+import { setVersion } from "./image/normalize"
+import { compact } from "lodash"
+
+const isFairOrganizer = (type) => type === "FairOrganizer"
+const isGallery = (type) => type === "PartnerGallery"
+const isPartner = (type) => isGallery(type) || isInstitution(type)
+const isInstitution = (type) =>
+  ["PartnerBrand", "PartnerInstitution", "PartnerInstitutionalSeller"].includes(
+    type
+  )
+
+const partnerTitleContent = (type) => {
+  let result: string | undefined
+
+  if (type) {
+    if (isPartner(type) && !isFairOrganizer(type)) {
+      result = isGallery(type)
+        ? "Artists, Art for Sale, and Contact Info"
+        : "Artists, Artworks, and Contact Info"
+    }
+
+    if (isFairOrganizer(type)) {
+      result = "Fair Info, Artists, and Art for Sale"
+    }
+  }
+
+  return result
+}
+
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   artworkIDs: {
     type: new GraphQLList(GraphQLString),
@@ -351,6 +381,53 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       hasFairPartnership: {
         type: GraphQLBoolean,
         resolve: ({ has_fair_partnership }) => has_fair_partnership,
+      },
+      meta: {
+        type: new GraphQLObjectType<any, ResolverContext>({
+          name: "PartnerMeta",
+          fields: {
+            description: {
+              type: GraphQLString,
+              resolve: ({ bio, owner: { name }, owner_type: type }) => {
+                let description = "Profile on Artsy"
+
+                if (bio) {
+                  description = bio
+                } else if (isGallery(type) && name) {
+                  description = `Explore Artists, Artworks, and Shows from ${name} on Artsy`
+                } else if (name) {
+                  description = `${name} on Artsy`
+                }
+
+                return truncate(description, 157)
+              },
+            },
+            title: {
+              type: GraphQLString,
+              resolve: ({ owner: { name }, owner_type: type }) => {
+                return compact([
+                  name ? name : "Profile",
+                  partnerTitleContent(type),
+                  "Artsy",
+                ]).join(" | ")
+              },
+            },
+            image: {
+              type: GraphQLString,
+              resolve: ({ icon }) => {
+                if (!icon) {
+                  return null
+                }
+
+                return setVersion(icon, ["square140"])
+              },
+            },
+          },
+        }),
+        resolve: (partner, _options, { profileLoader }) =>
+          profileLoader(partner.default_profile_id).catch(() => ({
+            owner: partner,
+          })),
       },
       href: {
         type: GraphQLString,
