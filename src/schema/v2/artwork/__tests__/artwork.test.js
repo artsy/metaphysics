@@ -1766,6 +1766,178 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#domesticShippingFee", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          domesticShippingFee {
+            major
+            minor
+            currencyCode
+          }
+        }
+      }
+    `
+
+    it("returns domestic shipping fee as a Money type", () => {
+      artwork.domestic_shipping_fee_cents = 10000
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            domesticShippingFee: {
+              currencyCode: "USD",
+              major: 100,
+              minor: 10000,
+            },
+          },
+        })
+      })
+    })
+
+    it("supports 0", () => {
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            domesticShippingFee: {
+              currencyCode: "USD",
+              major: 0,
+              minor: 0,
+            },
+          },
+        })
+      })
+    })
+
+    it("supports non-fractional currency", () => {
+      artwork.domestic_shipping_fee_cents = 10000
+      artwork.price_currency = "JPY"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            domesticShippingFee: {
+              currencyCode: "JPY",
+              major: 10000,
+              minor: 10000,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns null with no domestic_shipping_fee_cents", () => {
+      artwork.domestic_shipping_fee_cents = null
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            domesticShippingFee: null,
+          },
+        })
+      })
+    })
+
+    it("returns null with no price_currency", () => {
+      artwork.domestic_shipping_fee_cents = 10000
+      artwork.price_currency = null
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            domesticShippingFee: null,
+          },
+        })
+      })
+    })
+  })
+
+  describe("#internationalShippingFee", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          internationalShippingFee {
+            major
+            minor
+            currencyCode
+          }
+        }
+      }
+    `
+
+    it("returns international shipping fee as a Money type", () => {
+      artwork.international_shipping_fee_cents = 10000
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            internationalShippingFee: {
+              currencyCode: "USD",
+              major: 100,
+              minor: 10000,
+            },
+          },
+        })
+      })
+    })
+
+    it("supports 0", () => {
+      artwork.international_shipping_fee_cents = 0
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            internationalShippingFee: {
+              currencyCode: "USD",
+              major: 0,
+              minor: 0,
+            },
+          },
+        })
+      })
+    })
+
+    it("supports non-fractional currency", () => {
+      artwork.international_shipping_fee_cents = 10000
+      artwork.price_currency = "JPY"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            internationalShippingFee: {
+              currencyCode: "JPY",
+              major: 10000,
+              minor: 10000,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns null with no international_shipping_fee_cents", () => {
+      artwork.international_shipping_fee_cents = null
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            internationalShippingFee: null,
+          },
+        })
+      })
+    })
+
+    it("returns null with no price_currency", () => {
+      artwork.international_shipping_fee_cents = 10000
+      artwork.price_currency = null
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            internationalShippingFee: null,
+          },
+        })
+      })
+    })
+  })
+
   describe("#shippingInfo", () => {
     const query = `
       {
