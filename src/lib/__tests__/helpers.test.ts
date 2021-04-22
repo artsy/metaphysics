@@ -9,6 +9,7 @@ import {
   toKey,
   toQueryString,
   unescapeEntities,
+  convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
 
 describe("exclude", () => {
@@ -214,5 +215,62 @@ describe("unescapeEntities", () => {
     expect(unescapeEntities(input)).toEqual(
       "i daren't; i'm is 42\" tall & the hoop is 10' high"
     )
+  })
+})
+
+describe("convertConnectionArgsToGravityArgs", () => {
+  it("works with page-based pagination", () => {
+    expect(convertConnectionArgsToGravityArgs({ page: 1, first: 30 })).toEqual({
+      page: 1,
+      offset: 0,
+      size: 30,
+    })
+
+    expect(convertConnectionArgsToGravityArgs({ page: 2, first: 30 })).toEqual({
+      page: 2,
+      offset: 30,
+      size: 30,
+    })
+
+    expect(convertConnectionArgsToGravityArgs({ page: 3, first: 30 })).toEqual({
+      page: 3,
+      offset: 60,
+      size: 30,
+    })
+  })
+
+  it("works with cursor-based pagination", () => {
+    expect(
+      convertConnectionArgsToGravityArgs({
+        after: "YXJyYXljb25uZWN0aW9uOi0x",
+        first: 30,
+      })
+    ).toEqual({
+      page: 1,
+      offset: 0,
+      size: 30,
+    })
+
+    expect(
+      convertConnectionArgsToGravityArgs({
+        after: "YXJyYXljb25uZWN0aW9uOjI5",
+        first: 30,
+      })
+    ).toEqual({
+      page: 2,
+      offset: 30,
+      size: 30,
+    })
+
+    expect(
+      convertConnectionArgsToGravityArgs({
+        after: "YXJyYXljb25uZWN0aW9uOjU5",
+        first: 30,
+      })
+    ).toEqual({
+      page: 3,
+      offset: 60,
+      size: 30,
+    })
   })
 })

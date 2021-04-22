@@ -111,20 +111,43 @@ export const markdownToPlainText = (str: string) => {
   return unescapeEntities(markdownToText(str))
 }
 
+/**
+ * Here we always return both a `page` and an `offset` — while either can (and are)
+ * passed to Gravity. In this case `page` will take precedence and the `offset`
+ * value can (and is) be  used as the `sliceStart` param for `connectionFromArraySlice`.
+ */
 export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(
   options: T
-): { page: number; size: number; offset: number } & T => {
-  const { limit: size, offset } = getPagingParameters(options)
+): {
+  size: any
+  page: number
+  offset: number
+} & Record<string, any> => {
+  const { limit, offset } = getPagingParameters(options)
+
+  const gravityArgs = omit(options, ["first", "after", "last", "before"])
+
+  const size = Number.isInteger(limit) ? limit : gravityArgs.size
+
+  if ("page" in options && typeof options.page === "number") {
+    return {
+      ...gravityArgs,
+      size,
+      page: options.page,
+      offset: (options.page - 1) * size,
+    }
+  }
+
   // If a size of 0 explicitly requested, it doesn't really matter what
   // the page is.
   const page = size ? Math.round((size + offset) / size) : 1
-  const gravityArgs = omit(options, ["first", "after", "last", "before"])
+
   return {
     ...gravityArgs,
-    size: Number.isInteger(size) ? size : gravityArgs.size,
+    size,
     page,
     offset,
-  } as any
+  }
 }
 
 export const convertGravityToConnectionArgs = <
