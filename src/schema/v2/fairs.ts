@@ -1,7 +1,7 @@
 import _, { pick } from "lodash"
-import FairSorts, { TFairSorts } from "./sorts/fair_sorts"
-import EventStatus, { TEventStatus } from "./input_fields/event_status"
-import Near, { TNear } from "./input_fields/near"
+import FairSorts, { FairSortsType } from "./sorts/fair_sorts"
+import EventStatus, { EventStatusType } from "./input_fields/event_status"
+import Near, { NearType } from "./input_fields/near"
 import Fair, { fairConnection } from "./fair"
 import {
   GraphQLString,
@@ -88,7 +88,20 @@ const Fairs: GraphQLFieldConfig<void, ResolverContext> = {
 
 export default Fairs
 
-export const fairsConnection = {
+export const fairsConnection: GraphQLFieldConfig<
+  void,
+  ResolverContext,
+  {
+    fairOrganizerID?: string
+    hasFullFeature?: boolean
+    hasHomepageSection?: boolean
+    hasListing?: boolean
+    ids?: string[]
+    near?: NearType
+    sort?: FairSortsType
+    status?: EventStatusType
+  } & CursorPageable
+> = {
   type: fairConnection.connectionType,
   args: pageable({
     fairOrganizerID: { type: GraphQLString },
@@ -105,20 +118,7 @@ export const fairsConnection = {
     status: EventStatus,
   }),
   description: "A list of fairs",
-  resolve: async (
-    _root,
-    args: {
-      fairOrganizerID?: string
-      hasFullFeature?: boolean
-      hasHomepageSection?: boolean
-      hasListing?: boolean
-      ids?: string[]
-      near?: TNear
-      sort?: TFairSorts
-      status?: TEventStatus
-    } & CursorPageable,
-    { fairsLoader }
-  ) => {
+  resolve: async (_root, args, { fairsLoader }) => {
     const { size, offset, page } = convertConnectionArgsToGravityArgs(args)
 
     const { body, headers } = await fairsLoader({

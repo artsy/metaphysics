@@ -9,7 +9,7 @@ const Near = new GraphQLInputObjectType({
   },
 })
 
-export type TNear = {
+export type NearType = {
   lat: number
   lng: number
   maxDistance?: number

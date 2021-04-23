@@ -29,6 +29,7 @@ describe("markdown", () => {
       "
     `)
   })
+
   it("resolves markdown as markdown", () => {
     expect(
       markdown().resolve?.(
@@ -38,5 +39,16 @@ describe("markdown", () => {
         { fieldName: "description" } as any
       )
     ).toMatchInlineSnapshot(`"Here's a **description** with some *emphasis* !"`)
+  })
+
+  it("resolves markdown as plain text", () => {
+    expect(
+      markdown().resolve?.(
+        { description: "Here's a **description** with some *emphasis* !" },
+        { format: "plain" },
+        {} as any,
+        { fieldName: "description" } as any
+      )
+    ).toMatchInlineSnapshot(`"Here's a description with some emphasis !"`)
   })
 })

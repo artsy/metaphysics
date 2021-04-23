@@ -83,8 +83,32 @@ export const stripTags = (str?: string) => {
   return String(str).replace(/<\/?[^>]+>/g, "")
 }
 
+const HTML_ENTITIES = {
+  "&amp;": "&",
+  "&#38;": "&",
+  "&lt;": "<",
+  "&#60;": "<",
+  "&gt;": ">",
+  "&#62;": ">",
+  "&apos;": "'",
+  "&#39;": "'",
+  "&quot;": '"',
+  "&#34;": '"',
+}
+
+const HTML_ENTITIES_REGEX = /&(?:amp|#38|lt|#60|gt|#62|apos|#39|quot|#34);/g
+
+export const unescapeEntities = (str?: string) => {
+  if (str === undefined) return ""
+  return str.replace(HTML_ENTITIES_REGEX, (x) => HTML_ENTITIES[x])
+}
+
 export const markdownToText = (str: string) => {
   return stripTags(formatMarkdownValue(str, "html")).trim()
+}
+
+export const markdownToPlainText = (str: string) => {
+  return unescapeEntities(markdownToText(str))
 }
 
 export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(

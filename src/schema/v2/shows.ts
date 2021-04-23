@@ -10,10 +10,20 @@ import { ShowsConnection } from "./show"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArray } from "graphql-relay"
-import ShowSorts, { TShowSorts } from "./sorts/show_sorts"
+import ShowSorts, { ShowSortsType } from "./sorts/show_sorts"
 import { pick } from "lodash"
 
-export const Shows: GraphQLFieldConfig<void, ResolverContext> = {
+export const Shows: GraphQLFieldConfig<
+  void,
+  ResolverContext,
+  {
+    ids?: string[]
+    hasLocation?: boolean
+    sort?: ShowSortsType
+    displayable?: boolean
+    atAFair?: boolean
+  } & CursorPageable
+> = {
   type: ShowsConnection.connectionType,
   description: "A list of Shows",
   args: pageable({
@@ -34,17 +44,7 @@ export const Shows: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLBoolean,
     },
   }),
-  resolve: async (
-    _root,
-    args: {
-      ids?: string[]
-      hasLocation?: boolean
-      sort?: TShowSorts
-      displayable?: boolean
-      atAFair?: boolean
-    } & CursorPageable,
-    { showsWithHeadersLoader }
-  ) => {
+  resolve: async (_root, args, { showsWithHeadersLoader }) => {
     const { page, size } = convertConnectionArgsToGravityArgs(args)
 
     const { body, headers } = await showsWithHeadersLoader({

@@ -4,7 +4,10 @@ import _ from "lodash"
 import cached from "./fields/cached"
 import Artist, { artistConnection } from "./artist"
 import Image from "./image"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import {
+  convertConnectionArgsToGravityArgs,
+  markdownToPlainText,
+} from "lib/helpers"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLObjectType,
@@ -34,12 +37,59 @@ const SUBJECT_MATTER_MATCHES = [
 
 const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
 
+const META_DESCRIPTION_OVERRIDES = {
+  "western-europe":
+    "Discover Western European artists from pre-history to present, and browse works by size, price and medium.",
+  "latin-america-and-the-caribbean":
+    "Discover artists from Latin America and the Caribbean from pre-history to present, and browse works by size, price and medium.",
+  africa:
+    "Explore the art of Africa, including traditional Sub-Saharan art, modern photography, and contemporary art.",
+  "middle-east":
+    "Discover Middle Eastern artists and explore art from the region from pre-history to present (Mesopotamian art, ancient Egyptian art, Islamic art, and contemporary Middle Eastern artists).",
+}
+
+const DEFAULT_META_DESCRIPTION =
+  "Artsy is the world’s largest online art marketplace. Browse over 1 million artworks by iconic and emerging artists from 4000+ galleries and top auction houses."
+
 export const GeneType = new GraphQLObjectType<any, ResolverContext>({
   name: "Gene",
   interfaces: [NodeInterface, Searchable],
   fields: () => {
     const { filterArtworksConnection } = require("./filterArtworksConnection")
     return {
+      meta: {
+        resolve: (gene) => gene,
+        type: new GraphQLNonNull(
+          new GraphQLObjectType<any, ResolverContext>({
+            name: "GeneMeta",
+            description: "Meta tags for Gene pages",
+            fields: {
+              description: {
+                type: new GraphQLNonNull(GraphQLString),
+                resolve: (gene) => {
+                  if (META_DESCRIPTION_OVERRIDES[gene.id] !== undefined) {
+                    return META_DESCRIPTION_OVERRIDES[gene.id]
+                  }
+
+                  if (
+                    gene.type?.name?.includes(
+                      "Geographical Regions and Countries"
+                    )
+                  ) {
+                    return `Explore art by artists who are from, or who have lived in, ${gene.name}. Browse works by size, price, and medium.`
+                  }
+
+                  if (gene.description !== null) {
+                    return markdownToPlainText(gene.description)
+                  }
+
+                  return DEFAULT_META_DESCRIPTION
+                },
+              },
+            },
+          })
+        ),
+      },
       // Searchable
       displayLabel: {
         type: GraphQLString,

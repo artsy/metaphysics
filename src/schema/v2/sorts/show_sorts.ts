@@ -14,13 +14,13 @@ const SHOW_SORTS = {
   START_AT_DESC: { value: "-start_at" },
   UPDATED_AT_ASC: { value: "updated_at" },
   UPDATED_AT_DESC: { value: "-updated_at" },
-}
+} as const
 
 const ShowSorts = new GraphQLEnumType({
   name: "ShowSorts",
   values: SHOW_SORTS,
 })
 
-export type TShowSorts = keyof typeof SHOW_SORTS
+export type ShowSortsType = typeof SHOW_SORTS[keyof typeof SHOW_SORTS]["value"]
 
 export default ShowSorts
