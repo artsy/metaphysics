@@ -103,6 +103,11 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
+    unfollowGeneLoader: gravityLoader(
+      (geneID) => `me/follow/gene/${geneID}`,
+      {},
+      { method: "DELETE" }
+    ),
     followProfileLoader: gravityLoader(
       "me/follow/profile",
       {},
