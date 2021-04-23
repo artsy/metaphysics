@@ -2,11 +2,11 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("FollowGene", () => {
-  const followGeneLoader = jest.fn(() =>
+  const followGeneLoader = jest.fn(({ gene_id }) =>
     Promise.resolve({
       gene: {
         family: {},
-        id: "pop-art",
+        id: gene_id,
         name: "Pop Art",
         image_url: "",
         image_urls: {},
@@ -15,11 +15,11 @@ describe("FollowGene", () => {
     })
   )
 
-  const unfollowGeneLoader = jest.fn(() =>
+  const unfollowGeneLoader = jest.fn((geneID) =>
     Promise.resolve({
       gene: {
         family: {},
-        id: "pop-art",
+        id: geneID,
         name: "Pop Art",
         image_url: "",
         image_urls: {},
@@ -65,7 +65,7 @@ describe("FollowGene", () => {
 
     await runAuthenticatedQuery(mutation, context).then(({ followGene }) => {
       expect(followGene).toEqual(expectedGeneData)
-      expect(followGeneLoader).toHaveBeenCalled()
+      expect(followGeneLoader).toHaveBeenCalledWith({ gene_id: "pop-art" })
     })
   })
 
@@ -83,7 +83,7 @@ describe("FollowGene", () => {
 
     await runAuthenticatedQuery(mutation, context).then(({ followGene }) => {
       expect(followGene).toEqual(expectedGeneData)
-      expect(unfollowGeneLoader).toHaveBeenCalled()
+      expect(unfollowGeneLoader).toHaveBeenCalledWith("pop-art")
     })
   })
 })
