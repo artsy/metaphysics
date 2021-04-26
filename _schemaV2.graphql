@@ -10669,6 +10669,7 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
 
   # Does the show exist as a fair booth?
   isFairBooth: Boolean
+  isFeatured: Boolean
 
   # Is the user following this show
   isFollowed: Boolean

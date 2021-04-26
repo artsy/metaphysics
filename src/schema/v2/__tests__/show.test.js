@@ -39,6 +39,7 @@ describe("Show type", () => {
           name: "Pablo Picasso",
         },
       ],
+      featured: true,
     }
 
     galaxyData = {
@@ -189,6 +190,22 @@ describe("Show type", () => {
     `
     const data = await runQuery(query, context)
     expect(data.show.name).toEqual("Whitespace Abounds")
+  })
+
+  it("returns correct value for isFeatured field", async () => {
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          isFeatured
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      show: {
+        isFeatured: true,
+      },
+    })
   })
 
   describe("is_followed", () => {

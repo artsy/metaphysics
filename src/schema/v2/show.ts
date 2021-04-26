@@ -378,6 +378,10 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           return isExisty(location || fair || partner_city)
         },
       },
+      isFeatured: {
+        type: GraphQLBoolean,
+        resolve: ({ featured }) => featured,
+      },
       isActive: {
         type: GraphQLBoolean,
         description:
