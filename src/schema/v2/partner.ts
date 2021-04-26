@@ -562,7 +562,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             sort: args.sort,
-            status: args.status,
+            status: args.status || undefined,
             day_threshold: args.dayThreshold,
           }
 
