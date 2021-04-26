@@ -8433,6 +8433,9 @@ type Partner implements Node {
     # Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows
     dayThreshold: Int
     first: Int
+
+    # If True returns only displayable items
+    isDisplayable: Boolean
     last: Int
     sort: ShowSorts
 
