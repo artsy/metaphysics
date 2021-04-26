@@ -514,8 +514,6 @@ const filterArtworksConnectionTypeFactory = (
       aggregations,
     }
 
-    if (!!options.page) gravityOptions.page = options.page
-
     // Support queries that show all mediums using the medium param.
     // If you specify "*" it results in metaphysics removing the query option
     // making the graphQL queries between all and a subset of mediums the same shape.
