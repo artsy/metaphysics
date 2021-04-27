@@ -572,6 +572,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
               return {
                 totalCount,
+                pageCursors: createPageCursors(
+                  { ...args, page, size },
+                  totalCount
+                ),
                 ...connectionFromArraySlice(body, args, {
                   arrayLength: totalCount,
                   sliceStart: offset,
