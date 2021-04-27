@@ -1468,6 +1468,9 @@ type Artwork implements Node & Searchable & Sellable {
   # Whether this artwork is unlisted or not
   unlisted: Boolean
 
+  # Based on artwork location verify that VAT info for the partner is complete.
+  vatRequirementComplete: Boolean
+
   # If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS
   website: String
 
