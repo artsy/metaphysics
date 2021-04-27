@@ -115,6 +115,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: articleConnection.connectionType,
         args: pageable({
           sort: ArticleSorts,
+          page: { type: GraphQLInt },
         }),
         resolve: async (
           { _id },
@@ -141,7 +142,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             partner_id: _id,
             limit: size,
             count: true,
-            offset,
+            offset: args.page ? args.page * size - size : offset,
             sort: args.sort,
           }
 
@@ -149,10 +150,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           return {
             totalCount: count,
-            pageCursors: createPageCursors({ ...args, page, size }, count),
+            pageCursors: createPageCursors(
+              { ...args, page: args.page ? args.page : page, size },
+              count
+            ),
             ...connectionFromArraySlice(results, args, {
               arrayLength: count,
-              sliceStart: offset,
+              sliceStart: args.page ? args.page * size - size : offset,
             }),
           }
         },
