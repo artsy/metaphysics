@@ -5,6 +5,7 @@ const SHOW_SORTS = {
   END_AT_DESC: { value: "-end_at" },
   FEATURED_ASC: { value: "featured" },
   FEATURED_DESC: { value: "-featured" },
+  FEATURED_DESC_END_AT_DESC: { value: "-featured,-end_at" },
   NAME_ASC: { value: "name" },
   NAME_DESC: { value: "-name" },
   PARTNER_ASC: { value: "fully_qualified_name" },

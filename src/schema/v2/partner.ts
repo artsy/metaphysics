@@ -541,6 +541,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             defaultValue: "current",
             description: "Filter shows by chronological event status",
           },
+          isDisplayable: {
+            type: GraphQLBoolean,
+            description: "If True returns only displayable items",
+          },
         }),
         resolve: ({ id }, args, { partnerShowsLoader }) => {
           const pageOptions = convertConnectionArgsToGravityArgs(args)
@@ -554,6 +558,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             sort: string
             status: string
             total_count: boolean
+            displayable: boolean
           }
 
           const gravityArgs: GravityArgs = {
@@ -562,8 +567,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             sort: args.sort,
-            status: args.status,
+            status: args.status || undefined,
             day_threshold: args.dayThreshold,
+            displayable: args.isDisplayable,
           }
 
           return partnerShowsLoader(id, gravityArgs).then(
