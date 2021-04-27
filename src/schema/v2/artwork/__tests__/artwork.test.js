@@ -2300,6 +2300,23 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#vatRequirementComplete", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          vatRequirementComplete
+        }
+      }
+    `
+
+    it("returns artworks vat_requirement_complete", () => {
+      artwork.vat_requirement_complete = true
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { vatRequirementComplete: true } })
+      })
+    })
+  })
+
   describe("#euShippingOrigin", () => {
     const query = `
       {

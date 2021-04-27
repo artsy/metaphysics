@@ -763,6 +763,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      vatRequirementComplete: {
+        type: GraphQLBoolean,
+        description:
+          "Based on artwork location verify that VAT info for the partner is complete.",
+        resolve: (artwork) => {
+          return artwork.vat_requirement_complete
+        },
+      },
       pricePaid: {
         type: Money,
         description:
