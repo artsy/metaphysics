@@ -5617,6 +5617,9 @@ type Errors {
 }
 
 enum EventStatus {
+  # Load all shows
+  ALL
+
   # End date is in the past
   CLOSED
 
