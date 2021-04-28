@@ -20,6 +20,10 @@ const EVENT_STATUS_SORTS = {
     description:
       "Special filtering option which is used to show running and upcoming shows",
   },
+  ALL: {
+    value: null,
+    description: "Load all shows",
+  },
 } as const
 
 export const EventStatus = {
