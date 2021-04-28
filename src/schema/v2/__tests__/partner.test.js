@@ -1011,6 +1011,220 @@ describe("Partner type", () => {
     })
   })
 
+  describe("#allArtistsConnection", () => {
+    let artistsResponse
+
+    beforeEach(() => {
+      artistsResponse = [
+        {
+          published_artworks_count: 0,
+          represented_by: true,
+          artist: {
+            id: "jessica-lichtenstein",
+          },
+        },
+        {
+          published_artworks_count: 12,
+          represented_by: true,
+          artist: {
+            id: "yves-klein",
+          },
+        },
+        {
+          published_artworks_count: 10,
+          represented_by: false,
+          artist: {
+            id: "carol-rama",
+          },
+        },
+        {
+          published_artworks_count: 0,
+          represented_by: false,
+          artist: {
+            id: "edozie-anedu",
+          },
+        },
+      ]
+      context = {
+        partnerArtistsForPartnerLoader: () =>
+          Promise.resolve({
+            body: artistsResponse,
+            headers: {
+              "x-total-count": artistsResponse.length,
+            },
+          }),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+    })
+
+    it("returns all artists", async () => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            allArtistsConnection {
+              edges {
+                counts {
+                  artworks
+                }
+                representedBy
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          allArtistsConnection: {
+            edges: [
+              {
+                counts: {
+                  artworks: 0,
+                },
+                representedBy: true,
+                node: {
+                  slug: "jessica-lichtenstein",
+                },
+              },
+              {
+                counts: {
+                  artworks: 12,
+                },
+                representedBy: true,
+                node: {
+                  slug: "yves-klein",
+                },
+              },
+              {
+                counts: {
+                  artworks: 10,
+                },
+                representedBy: false,
+                node: {
+                  slug: "carol-rama",
+                },
+              },
+              {
+                counts: {
+                  artworks: 0,
+                },
+                representedBy: false,
+                node: {
+                  slug: "edozie-anedu",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns all represented artists and not represented artists with published artworks", async () => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            allArtistsConnection(
+              hasNotRepresentedArtistWithPublishedArtworks: true
+            ) {
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          allArtistsConnection: {
+            edges: [
+              {
+                node: {
+                  slug: "jessica-lichtenstein",
+                },
+              },
+              {
+                node: {
+                  slug: "yves-klein",
+                },
+              },
+              {
+                node: {
+                  slug: "carol-rama",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns artists with published artworks", async () => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            allArtistsConnection(hasPublishedArtworks: true) {
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          allArtistsConnection: {
+            edges: [
+              {
+                node: {
+                  slug: "yves-klein",
+                },
+              },
+              {
+                node: {
+                  slug: "carol-rama",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("loads the total count", async () => {
+      const query = gql`
+        {
+          partner(id: "bau-xi-gallery") {
+            allArtistsConnection {
+              totalCount
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          allArtistsConnection: {
+            totalCount: 4,
+          },
+        },
+      })
+    })
+  })
+
   describe("#articlesConnection", () => {
     let articlesResponse
 
