@@ -704,6 +704,7 @@ type Offer {
   currencyCode: String!
   from: OrderPartyUnion!
   fromParticipant: OrderParticipantEnum
+  hasDefiniteTotal: Boolean!
   id: ID!
   internalID: ID!
   note: String
