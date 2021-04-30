@@ -767,8 +767,19 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         description:
           "Based on artwork location verify that VAT info for the partner is complete.",
-        resolve: (artwork) => {
-          return artwork.vat_requirement_complete
+        resolve: async (
+          { vat_required, partner },
+          {},
+          { partnerAllLoader }
+        ) => {
+          if (vat_required == null || _.isEmpty(partner) || !partnerAllLoader)
+            return null
+
+          if (!vat_required) return true
+
+          const { vat_registered } = await partnerAllLoader(partner.id)
+
+          return vat_registered
         },
       },
       pricePaid: {

@@ -2309,10 +2309,64 @@ describe("Artwork type", () => {
       }
     `
 
-    it("returns artworks vat_requirement_complete", () => {
-      artwork.vat_requirement_complete = true
+    it("returns null when vat_required is not present", () => {
+      delete artwork.vat_required
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { vatRequirementComplete: null } })
+      })
+    })
+
+    it("returns null when partner is empty", () => {
+      artwork.vat_required = false
+      artwork.partner = null
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { vatRequirementComplete: null } })
+      })
+    })
+
+    it("returns null when partnerAllLoader is not present", () => {
+      artwork.vat_required = false
+      artwork.partner = { id: "123" }
+      delete context.partnerAllLoader
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { vatRequirementComplete: null } })
+      })
+    })
+
+    it("returns true when artwork does not require vat", () => {
+      artwork.vat_required = false
+      artwork.partner = { id: "123" }
+      context.partnerAllLoader = jest.fn(() => Promise.resolve({}))
+
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({ artwork: { vatRequirementComplete: true } })
+        expect(context.partnerAllLoader).not.toHaveBeenCalled()
+      })
+    })
+
+    it("returns true when artwork requires vat and partner is vat registered", () => {
+      artwork.vat_required = true
+      artwork.partner = { id: "123" }
+      context.partnerAllLoader = jest.fn(() =>
+        Promise.resolve({ vat_registered: true })
+      )
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { vatRequirementComplete: true } })
+        expect(context.partnerAllLoader).toHaveBeenCalledWith("123")
+      })
+    })
+
+    it("returns false when artwork requires vat and partner is not vat registered", () => {
+      artwork.vat_required = true
+      artwork.partner = { id: "123" }
+      context.partnerAllLoader = jest.fn(() =>
+        Promise.resolve({ vat_registered: false })
+      )
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { vatRequirementComplete: false } })
+        expect(context.partnerAllLoader).toHaveBeenCalledWith("123")
       })
     })
   })
