@@ -220,6 +220,7 @@ export default (accessToken, userID, opts) => {
       { method: "DELETE" }
     ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
+    partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
     partnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,
       {},
