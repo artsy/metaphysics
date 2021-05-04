@@ -14,6 +14,7 @@ describe("Partner type", () => {
       has_full_profile: true,
       profile_banner_display: true,
       distinguish_represented_artists: true,
+      profile_banner_display: "Artworks",
       partner_categories: [
         {
           id: "blue-chip",
@@ -44,6 +45,23 @@ describe("Partner type", () => {
     expect(data).toEqual({
       partner: {
         distinguishRepresentedArtists: true,
+      },
+    })
+  })
+
+  it("returns profileBannerDisplay field", async () => {
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          profileBannerDisplay
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      partner: {
+        profileBannerDisplay: "Artworks",
       },
     })
   })
