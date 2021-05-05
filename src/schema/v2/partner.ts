@@ -116,6 +116,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: articleConnection.connectionType,
         args: pageable({
           sort: ArticleSorts,
+          page: { type: GraphQLInt },
         }),
         resolve: async (
           { _id },
@@ -606,6 +607,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           },
           sort: {
             type: ShowSorts,
+          },
+          page: {
+            type: GraphQLInt,
           },
           status: {
             type: EventStatus.type,
