@@ -106,6 +106,8 @@ import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { AuctionResult } from "./auction_result"
 import ArtworkMediums from "./artworkMediums"
 
+// import  { RequestLocation } from "./requestLocation"
+
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
   locations: [DirectiveLocation.FIELD],
@@ -162,6 +164,7 @@ const rootFields = {
   // partnerCategory: PartnerCategory,
   partnersConnection: PartnersConnection,
   // profile: Profile,
+  requestLocation: RequestLocation,
   sale: Sale,
   saleArtwork: SaleArtwork,
   saleArtworksConnection: SaleArtworksConnectionField,
