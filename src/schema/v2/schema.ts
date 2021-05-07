@@ -105,6 +105,7 @@ import { DeleteArtworkImageMutation } from "./deleteArtworkImageMutation"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { AuctionResult } from "./auction_result"
 import ArtworkMediums from "./artworkMediums"
+import { RequestLocationField } from "./requestLocation"
 
 // import  { RequestLocation } from "./requestLocation"
 
@@ -164,7 +165,7 @@ const rootFields = {
   // partnerCategory: PartnerCategory,
   partnersConnection: PartnersConnection,
   // profile: Profile,
-  requestLocation: RequestLocation,
+  requestLocation: RequestLocationField,
   sale: Sale,
   saleArtwork: SaleArtwork,
   saleArtworksConnection: SaleArtworksConnectionField,
