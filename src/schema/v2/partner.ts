@@ -513,6 +513,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ pre_qualify }) => pre_qualify,
       },
+      claimed: {
+        type: GraphQLBoolean,
+        resolve: ({ claimed }) => claimed,
+      },
+      showPromoted: {
+        type: GraphQLBoolean,
+        resolve: ({ show_promoted }) => show_promoted,
+      },
       locations: {
         type: new GraphQLList(LocationType),
         description:
