@@ -1184,42 +1184,6 @@ describe("Partner type", () => {
       })
     })
 
-    it("returns artists with published artworks", async () => {
-      const query = gql`
-        {
-          partner(id: "catty-partner") {
-            allArtistsConnection(hasPublishedArtworks: true) {
-              edges {
-                node {
-                  slug
-                }
-              }
-            }
-          }
-        }
-      `
-      const data = await runQuery(query, context)
-
-      expect(data).toEqual({
-        partner: {
-          allArtistsConnection: {
-            edges: [
-              {
-                node: {
-                  slug: "yves-klein",
-                },
-              },
-              {
-                node: {
-                  slug: "carol-rama",
-                },
-              },
-            ],
-          },
-        },
-      })
-    })
-
     it("loads the total count", async () => {
       const query = gql`
         {

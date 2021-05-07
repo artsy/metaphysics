@@ -181,48 +181,38 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             sort: string
             represented_by: boolean
             display_on_partner_profile: boolean
-            // has_published_artworks: boolean
+            has_published_artworks: boolean
           }
 
           const gravityArgs: GravityArgs = {
             sort: args.sort,
             represented_by: args.representedBy,
             display_on_partner_profile: args.displayOnPartnerProfile,
-            // has_published_artworks: args.hasPublishedArtworks,
+            has_published_artworks: args.hasPublishedArtworks,
           }
 
-          return (
-            allViaLoader(partnerArtistsForPartnerLoader, {
-              path: id,
-              params: gravityArgs,
+          return allViaLoader(partnerArtistsForPartnerLoader, {
+            path: id,
+            params: gravityArgs,
+          })
+            .then((body) => {
+              return body.filter((item) =>
+                args.hasNotRepresentedArtistWithPublishedArtworks &&
+                !item.represented_by
+                  ? item.published_artworks_count > 0
+                  : true
+              )
             })
-              // TODO: remove after adding has_published_artworks field to the Gravity API
-              .then((body) => {
-                return body.filter((item) =>
-                  args.hasPublishedArtworks
-                    ? item.published_artworks_count > 0
-                    : true
-                )
-              })
-              .then((body) => {
-                return body.filter((item) =>
-                  args.hasNotRepresentedArtistWithPublishedArtworks &&
-                  !item.represented_by
-                    ? item.published_artworks_count > 0
-                    : true
-                )
-              })
-              .then((body) => {
-                return {
-                  totalCount: body.length,
-                  ...connectionFromArraySlice(body, args, {
-                    arrayLength: body.length,
-                    sliceStart: 0,
-                    resolveNode: (node) => node.artist,
-                  }),
-                }
-              })
-          )
+            .then((body) => {
+              return {
+                totalCount: body.length,
+                ...connectionFromArraySlice(body, args, {
+                  arrayLength: body.length,
+                  sliceStart: 0,
+                  resolveNode: (node) => node.artist,
+                }),
+              }
+            })
         },
       },
       artistsConnection: {
@@ -234,6 +224,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
           },
           displayOnPartnerProfile: {
+            type: GraphQLBoolean,
+          },
+          hasPublishedArtworks: {
             type: GraphQLBoolean,
           },
           artistIDs: {
@@ -252,6 +245,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             represented_by: boolean
             display_on_partner_profile: boolean
             artist_ids: [string]
+            has_published_artworks: boolean
           }
 
           const gravityArgs: GravityArgs = {
@@ -262,6 +256,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             represented_by: args.representedBy,
             display_on_partner_profile: args.displayOnPartnerProfile,
             artist_ids: args.artistIDs,
+            has_published_artworks: args.hasPublishedArtworks,
           }
 
           return partnerArtistsForPartnerLoader(id, gravityArgs).then(
