@@ -17,6 +17,7 @@ describe("Partner type", () => {
       profile_banner_display: "Artworks",
       claimed: true,
       show_promoted: true,
+      profile_layout: "gallery_default",
       partner_categories: [
         {
           id: "blue-chip",
@@ -98,6 +99,23 @@ describe("Partner type", () => {
     expect(data).toEqual({
       partner: {
         showPromoted: true,
+      },
+    })
+  })
+
+  it("returns isNonSubscriber field", async () => {
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          isNonSubscriber
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      partner: {
+        isNonSubscriber: true,
       },
     })
   })

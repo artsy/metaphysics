@@ -521,6 +521,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ show_promoted }) => show_promoted,
       },
+      isNonSubscriber: {
+        type: GraphQLBoolean,
+        // TODO: get rid of using profile_layout to determine non-subscriber profile after Gravity API updated
+        resolve: ({ profile_layout }) => profile_layout === "gallery_default",
+      },
       locations: {
         type: new GraphQLList(LocationType),
         description:

@@ -8499,6 +8499,7 @@ type Partner implements Node {
   internalID: ID!
   isDefaultProfilePublic: Boolean
   isLinkable: Boolean
+  isNonSubscriber: Boolean
   isPreQualify: Boolean
 
   # Indicates the partner is a trusted seller on Artsy
