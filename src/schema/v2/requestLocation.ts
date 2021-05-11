@@ -1,4 +1,9 @@
-import { GraphQLFieldConfig, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLFieldConfig,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import fetch from "node-fetch"
 import { ResolverContext } from "types/graphql"
 import { IDFields } from "./object_identification"
@@ -27,9 +32,14 @@ export const RequestLocationType = new GraphQLObjectType<any, ResolverContext>({
 export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
   type: RequestLocationType,
   description: "A requested location",
-  resolve: (_root, _args) => {
+  args: {
+    ip: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+  resolve: (_root, args) => {
     return fetch(
-      `http://api.ipstack.com/134.201.250.155?access_key=${process.env.IPSTACK_API_KEY}`
+      `http://api.ipstack.com/${args.ip}?access_key=${process.env.IPSTACK_API_KEY}`
     )
       .then((response) => response.json())
       .then((response) => {
