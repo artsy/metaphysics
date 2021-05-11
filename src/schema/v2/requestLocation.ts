@@ -44,7 +44,6 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
       .then((response) => response.json())
       .then((response) => {
         response.id = response.ip
-        console.log(response)
         return response
       })
   },
