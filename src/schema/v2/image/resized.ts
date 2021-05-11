@@ -73,7 +73,8 @@ export const resizedImageUrl = (
     src,
     "resize",
     (proxiedWidth || 0) * 2 || undefined,
-    (proxiedHeight || 0) * 2 || undefined
+    (proxiedHeight || 0) * 2 || undefined,
+    50
   )
 
   return {

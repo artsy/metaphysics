@@ -13,7 +13,7 @@ describe("Image", () => {
       const url1x =
         "https://gemini.cloudfront.test?resize_to=fit&width=500&height=333&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
       const url2x =
-        "https://gemini.cloudfront.test?resize_to=fit&width=1000&height=666&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
+        "https://gemini.cloudfront.test?resize_to=fit&width=1000&height=666&quality=50&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
 
       expect(resizedImageUrl(image, { width: 500, height: 500 })).toEqual({
         factor: 0.14285714285714285,
@@ -29,7 +29,7 @@ describe("Image", () => {
       const url1x =
         "https://gemini.cloudfront.test?resize_to=fit&width=500&height=333&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
       const url2x =
-        "https://gemini.cloudfront.test?resize_to=fit&width=1000&height=666&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
+        "https://gemini.cloudfront.test?resize_to=fit&width=1000&height=666&quality=50&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
 
       expect(resizedImageUrl(image, { width: 500, height: 500 })).toEqual({
         factor: 0.14285714285714285,
@@ -45,7 +45,7 @@ describe("Image", () => {
       const url1x =
         "https://gemini.cloudfront.test?resize_to=fit&width=300&height=199&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
       const url2x =
-        "https://gemini.cloudfront.test?resize_to=fit&width=600&height=398&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
+        "https://gemini.cloudfront.test?resize_to=fit&width=600&height=398&quality=50&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
 
       expect(resizedImageUrl(image, { width: 300, height: 300 })).toEqual({
         factor: 0.08571428571428572,
@@ -61,7 +61,7 @@ describe("Image", () => {
       const url1x =
         "https://gemini.cloudfront.test?resize_to=fit&width=500&height=333&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
       const url2x =
-        "https://gemini.cloudfront.test?resize_to=fit&width=1000&height=666&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
+        "https://gemini.cloudfront.test?resize_to=fit&width=1000&height=666&quality=50&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
 
       expect(resizedImageUrl(image, { width: 500 })).toEqual({
         factor: 0.14285714285714285,
@@ -77,7 +77,7 @@ describe("Image", () => {
       const url1x =
         "https://gemini.cloudfront.test?resize_to=fit&width=500&height=500&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
       const url2x =
-        "https://gemini.cloudfront.test?resize_to=fit&width=1000&height=1000&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
+        "https://gemini.cloudfront.test?resize_to=fit&width=1000&height=1000&quality=50&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
 
       expect(
         resizedImageUrl(
