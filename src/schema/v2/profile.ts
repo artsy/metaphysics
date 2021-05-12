@@ -20,6 +20,10 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
     bio: {
       type: GraphQLString,
     },
+    fullBio: {
+      type: GraphQLString,
+      resolve: ({ full_bio }) => full_bio,
+    },
     counts: {
       resolve: (profile) => profile,
       type: new GraphQLObjectType<any, ResolverContext>({
