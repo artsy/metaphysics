@@ -12,7 +12,7 @@ describe("Image", () => {
       const url1x =
         "https://gemini.cloudfront.test?resize_to=fill&width=500&height=500&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
       const url2x =
-        "https://gemini.cloudfront.test?resize_to=fill&width=1000&height=1000&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
+        "https://gemini.cloudfront.test?resize_to=fill&width=1000&height=1000&quality=50&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
 
       expect(croppedImageUrl(image, { width: 500, height: 500 })).toEqual({
         width: 500,
@@ -27,7 +27,7 @@ describe("Image", () => {
       const url1x =
         "https://gemini.cloudfront.test?resize_to=fill&width=500&height=500&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg"
       const url2x =
-        "https://gemini.cloudfront.test?resize_to=fill&width=1000&height=1000&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg"
+        "https://gemini.cloudfront.test?resize_to=fill&width=1000&height=1000&quality=50&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg"
       const bareImageUrl = normalize("https://xxx.cloudfront.net/xxx/cat.jpg")
 
       expect(
