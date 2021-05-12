@@ -441,6 +441,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ default_profile_id }) => default_profile_id,
       },
       filterArtworksConnection: filterArtworksConnection("partner_id"),
+      vatNumber: {
+        type: GraphQLString,
+        resolve: ({ vat_number }) => vat_number,
+      },
+
       hasFairPartnership: {
         type: GraphQLBoolean,
         resolve: ({ has_fair_partnership }) => has_fair_partnership,
