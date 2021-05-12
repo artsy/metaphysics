@@ -103,11 +103,11 @@ describe("Partner type", () => {
     })
   })
 
-  it("returns isNonSubscriber field", async () => {
+  it("returns fullProfileEligible field", async () => {
     const query = gql`
       {
         partner(id: "catty-partner") {
-          isNonSubscriber
+          fullProfileEligible
         }
       }
     `
@@ -115,7 +115,7 @@ describe("Partner type", () => {
 
     expect(data).toEqual({
       partner: {
-        isNonSubscriber: true,
+        fullProfileEligible: false,
       },
     })
   })
