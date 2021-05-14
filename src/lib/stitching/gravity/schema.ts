@@ -40,6 +40,9 @@ export const executableGravitySchema = () => {
     "SaleArtwork",
     "SaleArtworkConnection",
     "SaleArtworkEdge",
+    "User",
+    "UsersConnection",
+    "UsersConnectionEdge",
   ]
 
   // Types which come from Gravity that are not (yet) needed in MP.
