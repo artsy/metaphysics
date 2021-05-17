@@ -107,8 +107,6 @@ import { AuctionResult } from "./auction_result"
 import ArtworkMediums from "./artworkMediums"
 import { RequestLocationField } from "./requestLocation"
 
-// import  { RequestLocation } from "./requestLocation"
-
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
   locations: [DirectiveLocation.FIELD],
