@@ -1,4 +1,4 @@
-import { clone } from "lodash"
+import { clone, pick } from "lodash"
 import Partner, { PartnerType } from "./partner"
 import PartnerTypeType from "./input_fields/partner_type_type"
 import {
@@ -139,17 +139,32 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
 export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
   type: connectionWithCursorInfo({ nodeType: PartnerType }).connectionType,
   description: "A list of Partners",
-  args: pageable({
-    ids: {
-      type: new GraphQLList(GraphQLString),
-    },
-  }),
+  args: pageable(
+    Object.assign(
+      {
+        ids: {
+          type: new GraphQLList(GraphQLString),
+        },
+      },
+      pick(
+        Partners.args,
+        "near",
+        "eligibleForListing",
+        "defaultProfilePublic",
+        "sort"
+      )
+    )
+  ),
   resolve: (_root, { ..._options }, { partnersLoader }) => {
     const { page, size } = convertConnectionArgsToGravityArgs(_options)
     const options: any = {
       id: _options.ids,
       page,
       size,
+      near: _options.near,
+      eligible_for_listing: _options.eligibleForListing,
+      default_profile_public: _options.defaultProfilePublic,
+      sort: _options.sort,
     }
 
     return partnersLoader(options).then((body) => {
