@@ -1,4 +1,4 @@
-import { scale } from "proportional-scale"
+import { MaxDimensions, scale } from "proportional-scale"
 import proxy from "./proxies"
 import { setVersion } from "./normalize"
 import {
@@ -55,9 +55,19 @@ export const resizedImageUrl = (
     }
   }
 
-  const scaleTo = !!targetWidth
-    ? { maxWidth: targetWidth! }
-    : { maxHeight: targetHeight! }
+  // This will always have either a width, height or both — the incoming
+  // types are slightly incorrect.
+  // @ts-ignore
+  const scaleTo: MaxDimensions = (() => {
+    switch (true) {
+      case targetWidth !== undefined && targetHeight !== undefined:
+        return { maxWidth: targetWidth, maxHeight: targetHeight }
+      case targetWidth !== undefined:
+        return { maxWidth: targetWidth }
+      case targetHeight !== undefined:
+        return { maxHeight: targetHeight }
+    }
+  })()
 
   const scaled = scale({
     width: originalWidth ?? 0,
@@ -73,7 +83,8 @@ export const resizedImageUrl = (
     src,
     "resize",
     (proxiedWidth || 0) * 2 || undefined,
-    (proxiedHeight || 0) * 2 || undefined
+    (proxiedHeight || 0) * 2 || undefined,
+    50
   )
 
   return {

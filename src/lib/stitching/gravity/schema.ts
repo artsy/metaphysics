@@ -9,6 +9,7 @@ import {
 import { readFileSync } from "fs"
 
 const allowList = [
+  "agreement",
   "viewingRoom",
   "viewingRooms",
   "artistSeries",
@@ -35,6 +36,13 @@ export const executableGravitySchema = () => {
     "ArtistConnection",
     "Money",
     "MoneyInput",
+    "Sale",
+    "SaleArtwork",
+    "SaleArtworkConnection",
+    "SaleArtworkEdge",
+    "User",
+    "UsersConnection",
+    "UsersConnectionEdge",
   ]
 
   // Types which come from Gravity that are not (yet) needed in MP.

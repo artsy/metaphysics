@@ -32,7 +32,7 @@ export const croppedImageUrl = (
   const src = setVersion(image as any, version)
 
   const url1x = proxy(src, "crop", width, height)
-  const url2x = proxy(src, "crop", width * 2, height * 2)
+  const url2x = proxy(src, "crop", width * 2, height * 2, 50)
 
   return {
     width,
