@@ -6,12 +6,10 @@ import {
 } from "graphql"
 import fetch from "node-fetch"
 import { ResolverContext } from "types/graphql"
-import { IDFields } from "./object_identification"
 
 export const RequestLocationType = new GraphQLObjectType<any, ResolverContext>({
   name: "RequestLocation",
   fields: () => ({
-    ...IDFields,
     country: {
       type: GraphQLString,
       resolve: ({ country_name }) => country_name,
@@ -19,12 +17,6 @@ export const RequestLocationType = new GraphQLObjectType<any, ResolverContext>({
     countryCode: {
       type: GraphQLString,
       resolve: ({ country_code }) => country_code,
-    },
-    city: {
-      type: GraphQLString,
-    },
-    zip: {
-      type: GraphQLString,
     },
   }),
 })
@@ -38,13 +30,14 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, args) => {
-    return fetch(
-      `http://api.ipstack.com/${args.ip}?access_key=${process.env.IPSTACK_API_KEY}`
-    )
+    return fetch(`https://freegeoip.app/json/${args.ip}`)
       .then((response) => response.json())
       .then((response) => {
-        response.id = response.ip
         return response
+      })
+      .catch((error) => {
+        console.error("[schema/requestLocation.ts] Error:", error)
+        return null
       })
   },
 }
