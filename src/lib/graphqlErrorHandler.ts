@@ -33,10 +33,22 @@ export const statusCodeForError = (e) => {
   // Check for server-side errors during stitching downstream.
   // `e.originalError` is of `ServerError` type.
   // https://github.com/apollographql/apollo-link/blob/480df382cf7db486ae76c56ac2522134d77e36fa/packages/apollo-link-http-common/src/index.ts#L15
+  //
+  // TODO: The below doesn't seem to be set for errors from stitched services.
   const stitchedStatusCode = get(e, "originalError.response.status")
+
+  // TODO: Look into what step/layer is causing an error object from stitching
+  // to be coerced into a string.
+  const originalMessage = e.originalError && e.originalError.message
+  const matchedStatus =
+    originalMessage && originalMessage.match(/extensions: { code: (\d+)/)
+  const matchedCode: string | undefined = (matchedStatus || []).slice(-1)[0]
+  const alternateStitchedStatusCode = matchedCode && parseInt(matchedCode)
+
   return (
     stitchedStatusCode ||
-    (e.originalError instanceof HTTPError && e.originalError.statusCode)
+    (e.originalError instanceof HTTPError && e.originalError.statusCode) ||
+    alternateStitchedStatusCode
   )
 }
 
