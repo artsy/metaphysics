@@ -152,6 +152,40 @@ describe("graphqlErrorHandler", () => {
           ).extensions
         ).toEqual({ httpStatusCodes: [404, 403] })
       })
+
+      it("propagates HTTP status codes when sent from a stitched backend", () => {
+        const originalError = new GraphQLError("extensions: { code: 404")
+
+        const error = new GraphQLError(
+          "not found",
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          originalError
+        )
+        expect(formattedGraphQLError(error).extensions).toEqual({
+          httpStatusCodes: [404],
+        })
+      })
+
+      it("doesn't propagate status codes when none match", () => {
+        const originalError = new GraphQLError(
+          "something is configured wrong (404)"
+        )
+
+        const error = new GraphQLError(
+          "Unexpected error",
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          originalError
+        )
+        expect(Object.keys(formattedGraphQLError(error))).not.toContain(
+          "extensions"
+        )
+      })
     })
   })
 })
