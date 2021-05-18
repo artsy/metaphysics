@@ -139,40 +139,36 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
 export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
   type: connectionWithCursorInfo({ nodeType: PartnerType }).connectionType,
   description: "A list of Partners",
-  args: pageable(
-    Object.assign(
-      {
-        ids: {
-          type: new GraphQLList(GraphQLString),
-        },
-      },
-      pick(
-        Partners.args,
-        "near",
-        "eligibleForListing",
-        "defaultProfilePublic",
-        "sort"
-      )
-    )
-  ),
-  resolve: (_root, { ..._options }, { partnersLoader }) => {
-    const { page, size } = convertConnectionArgsToGravityArgs(_options)
-    const options: any = {
-      id: _options.ids,
+  args: pageable({
+    ids: {
+      type: new GraphQLList(GraphQLString),
+    },
+    ...pick(
+      Partners.args,
+      "near",
+      "eligibleForListing",
+      "defaultProfilePublic",
+      "sort"
+    ),
+  }),
+  resolve: (_root, options, { partnersLoader }) => {
+    const { page, size } = convertConnectionArgsToGravityArgs(options)
+    const gravityArgs: any = {
+      id: options.ids,
       page,
       size,
-      near: _options.near,
-      eligible_for_listing: _options.eligibleForListing,
-      default_profile_public: _options.defaultProfilePublic,
-      sort: _options.sort,
+      near: options.near,
+      eligible_for_listing: options.eligibleForListing,
+      default_profile_public: options.defaultProfilePublic,
+      sort: options.sort,
     }
 
-    return partnersLoader(options).then((body) => {
+    return partnersLoader(gravityArgs).then((body) => {
       const totalCount = body.length
       return {
         totalCount,
         pageCursors: createPageCursors({ page, size }, totalCount),
-        ...connectionFromArray(body, options),
+        ...connectionFromArray(body, gravityArgs),
       }
     })
   },
