@@ -591,6 +591,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ display_artists_section }) => display_artists_section,
       },
+      displayWorksSection: {
+        type: GraphQLBoolean,
+        resolve: ({ display_works_section }) => display_works_section,
+      },
       profileBannerDisplay: {
         type: GraphQLString,
         resolve: ({ profile_banner_display }) => profile_banner_display,
