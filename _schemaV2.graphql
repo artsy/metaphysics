@@ -1089,6 +1089,15 @@ type ArtistPartnerEdge {
   # The item at the end of the edge
   node: Artist
   partner: Partner
+
+  # A PartnerArtist artworks connection
+  partnerArtistArtworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    sort: PartnerArtistArtworksSort
+  ): PartnerArtistArtworksConnection
   representedBy: Boolean
   sortableID: String
 }
@@ -8628,8 +8637,49 @@ type PartnerArtist {
   isDisplayOnPartnerProfile: Boolean
   isUseDefaultBiography: Boolean
   partner: Partner
+
+  # A PartnerArtist artworks connection
+  partnerArtistArtworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    sort: PartnerArtistArtworksSort
+  ): PartnerArtistArtworksConnection
   representedBy: Boolean
   sortableID: String
+}
+
+type PartnerArtistArtworks {
+  artwork: Artwork
+  id: String
+  partnerArtist: PartnerArtist
+  position: Int
+}
+
+# A connection to a list of items.
+type PartnerArtistArtworksConnection {
+  # A list of edges.
+  edges: [PartnerArtistArtworksEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerArtistArtworksEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: PartnerArtistArtworks
+}
+
+enum PartnerArtistArtworksSort {
+  POSITION_ASC
+  POSITION_DESC
 }
 
 type PartnerArtistBlurb {
@@ -8680,6 +8730,15 @@ type PartnerArtistEdge {
   # The item at the end of the edge
   node: Partner
   partner: Partner
+
+  # A PartnerArtist artworks connection
+  partnerArtistArtworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    sort: PartnerArtistArtworksSort
+  ): PartnerArtistArtworksConnection
   representedBy: Boolean
   sortableID: String
 }

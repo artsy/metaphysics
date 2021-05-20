@@ -17,6 +17,7 @@ import { ResolverContext } from "types/graphql"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
 import { formatMarkdownValue, markdown } from "./fields/markdown"
+import { PartnerArtistArtworksConnection } from "./partner_artist_artworks"
 
 // TODO: This should move to the gravity loader
 interface PartnerArtistDetails {
@@ -105,6 +106,7 @@ export const fields: Thunk<GraphQLFieldConfigMap<
   },
   biographyBlurb,
   counts,
+  partnerArtistArtworksConnection: PartnerArtistArtworksConnection,
   isDisplayOnPartnerProfile: {
     type: GraphQLBoolean,
     resolve: ({ display_on_partner_profile }) => display_on_partner_profile,

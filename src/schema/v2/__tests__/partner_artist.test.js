@@ -174,4 +174,217 @@ describe("partnerArtist", () => {
       })
     })
   })
+
+  describe("#PartnerArtistArtworksConnection", () => {
+    let partnerArtistArtworksResponse
+    partnerArtistData = [
+      {
+        artist: {
+          blurb: "Artsy provided biography",
+        },
+        partner: {
+          name: "Catty Gallery",
+        },
+      },
+    ]
+
+    beforeEach(() => {
+      partnerArtistArtworksResponse = [
+        {
+          artwork: {
+            title: "Artwork 1",
+          },
+          position: 3,
+          partner_artist: {
+            represented_by: false,
+          },
+        },
+        {
+          artwork: {
+            title: "Artwork 2",
+          },
+          position: 2,
+          partner_artist: {
+            represented_by: true,
+          },
+        },
+        {
+          artwork: {
+            title: "Artwork 3",
+          },
+          position: 1,
+          partner_artist: {
+            represented_by: true,
+          },
+        },
+      ]
+      context = {
+        partnerArtistArtworksLoader: () =>
+          Promise.resolve({
+            body: partnerArtistArtworksResponse,
+            headers: {
+              "x-total-count": partnerArtistArtworksResponse.length,
+            },
+          }),
+        partnerArtistsForPartnerLoader: () =>
+          Promise.resolve({
+            body: partnerArtistData,
+            headers: {
+              "x-total-count": partnerArtistData.length,
+            },
+          }),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+    })
+
+    it("returns artworks", async () => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            artistsConnection(first: 1) {
+              edges {
+                partnerArtistArtworksConnection(first: 12) {
+                  totalCount
+                  edges {
+                    node {
+                      artwork {
+                        title
+                      }
+                      position
+                      partnerArtist {
+                        representedBy
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                partnerArtistArtworksConnection: {
+                  totalCount: 3,
+                  edges: [
+                    {
+                      node: {
+                        artwork: {
+                          title: "Artwork 1",
+                        },
+                        position: 3,
+                        partnerArtist: {
+                          representedBy: false,
+                        },
+                      },
+                    },
+                    {
+                      node: {
+                        artwork: {
+                          title: "Artwork 2",
+                        },
+                        position: 2,
+                        partnerArtist: {
+                          representedBy: true,
+                        },
+                      },
+                    },
+                    {
+                      node: {
+                        artwork: {
+                          title: "Artwork 3",
+                        },
+                        position: 1,
+                        partnerArtist: {
+                          representedBy: true,
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=true when first is below total", async () => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            artistsConnection(first: 1) {
+              edges {
+                partnerArtistArtworksConnection(first: 1) {
+                  pageInfo {
+                    hasNextPage
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                partnerArtistArtworksConnection: {
+                  pageInfo: {
+                    hasNextPage: true,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=false when first is above total", async () => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            artistsConnection(first: 1) {
+              edges {
+                partnerArtistArtworksConnection(first: 3) {
+                  pageInfo {
+                    hasNextPage
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                partnerArtistArtworksConnection: {
+                  pageInfo: {
+                    hasNextPage: false,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
 })

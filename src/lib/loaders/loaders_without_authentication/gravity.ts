@@ -93,6 +93,15 @@ export default (opts) => {
     >(
       ({ artist_id, partner_id }) => `partner/${partner_id}/artist/${artist_id}`
     ),
+    partnerArtistArtworksLoader: gravityLoader<
+      any,
+      { artistID: string; partnerID: string }
+    >(
+      ({ artistID, partnerID }) =>
+        `partner/${partnerID}/artist/${artistID}/partner_artist_artworks`,
+      {},
+      { headers: true }
+    ),
     partnerArtistsForArtistLoader: gravityLoader(
       (id) => `artist/${id}/partner_artists`
     ),
