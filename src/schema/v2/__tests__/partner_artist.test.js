@@ -194,27 +194,15 @@ describe("partnerArtist", () => {
           artwork: {
             title: "Artwork 1",
           },
-          position: 3,
-          partner_artist: {
-            represented_by: false,
-          },
         },
         {
           artwork: {
             title: "Artwork 2",
           },
-          position: 2,
-          partner_artist: {
-            represented_by: true,
-          },
         },
         {
           artwork: {
             title: "Artwork 3",
-          },
-          position: 1,
-          partner_artist: {
-            represented_by: true,
           },
         },
       ]
@@ -243,17 +231,11 @@ describe("partnerArtist", () => {
           partner(id: "catty-partner") {
             artistsConnection(first: 1) {
               edges {
-                partnerArtistArtworksConnection(first: 12) {
+                artworksConnection(first: 12) {
                   totalCount
                   edges {
                     node {
-                      artwork {
-                        title
-                      }
-                      position
-                      partnerArtist {
-                        representedBy
-                      }
+                      title
                     }
                   }
                 }
@@ -270,40 +252,22 @@ describe("partnerArtist", () => {
           artistsConnection: {
             edges: [
               {
-                partnerArtistArtworksConnection: {
+                artworksConnection: {
                   totalCount: 3,
                   edges: [
                     {
                       node: {
-                        artwork: {
-                          title: "Artwork 1",
-                        },
-                        position: 3,
-                        partnerArtist: {
-                          representedBy: false,
-                        },
+                        title: "Artwork 1",
                       },
                     },
                     {
                       node: {
-                        artwork: {
-                          title: "Artwork 2",
-                        },
-                        position: 2,
-                        partnerArtist: {
-                          representedBy: true,
-                        },
+                        title: "Artwork 2",
                       },
                     },
                     {
                       node: {
-                        artwork: {
-                          title: "Artwork 3",
-                        },
-                        position: 1,
-                        partnerArtist: {
-                          representedBy: true,
-                        },
+                        title: "Artwork 3",
                       },
                     },
                   ],
@@ -321,7 +285,7 @@ describe("partnerArtist", () => {
           partner(id: "catty-partner") {
             artistsConnection(first: 1) {
               edges {
-                partnerArtistArtworksConnection(first: 1) {
+                artworksConnection(first: 1) {
                   pageInfo {
                     hasNextPage
                   }
@@ -339,7 +303,7 @@ describe("partnerArtist", () => {
           artistsConnection: {
             edges: [
               {
-                partnerArtistArtworksConnection: {
+                artworksConnection: {
                   pageInfo: {
                     hasNextPage: true,
                   },
@@ -357,7 +321,7 @@ describe("partnerArtist", () => {
           partner(id: "catty-partner") {
             artistsConnection(first: 1) {
               edges {
-                partnerArtistArtworksConnection(first: 3) {
+                artworksConnection(first: 3) {
                   pageInfo {
                     hasNextPage
                   }
@@ -375,7 +339,7 @@ describe("partnerArtist", () => {
           artistsConnection: {
             edges: [
               {
-                partnerArtistArtworksConnection: {
+                artworksConnection: {
                   pageInfo: {
                     hasNextPage: false,
                   },
