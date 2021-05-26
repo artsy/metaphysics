@@ -174,4 +174,181 @@ describe("partnerArtist", () => {
       })
     })
   })
+
+  describe("#PartnerArtistArtworksConnection", () => {
+    let partnerArtistArtworksResponse
+    partnerArtistData = [
+      {
+        artist: {
+          blurb: "Artsy provided biography",
+        },
+        partner: {
+          name: "Catty Gallery",
+        },
+      },
+    ]
+
+    beforeEach(() => {
+      partnerArtistArtworksResponse = [
+        {
+          artwork: {
+            title: "Artwork 1",
+          },
+        },
+        {
+          artwork: {
+            title: "Artwork 2",
+          },
+        },
+        {
+          artwork: {
+            title: "Artwork 3",
+          },
+        },
+      ]
+      context = {
+        partnerArtistArtworksLoader: () =>
+          Promise.resolve({
+            body: partnerArtistArtworksResponse,
+            headers: {
+              "x-total-count": partnerArtistArtworksResponse.length,
+            },
+          }),
+        partnerArtistsForPartnerLoader: () =>
+          Promise.resolve({
+            body: partnerArtistData,
+            headers: {
+              "x-total-count": partnerArtistData.length,
+            },
+          }),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+    })
+
+    it("returns artworks", async () => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            artistsConnection(first: 1) {
+              edges {
+                artworksConnection(first: 12) {
+                  totalCount
+                  edges {
+                    node {
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                artworksConnection: {
+                  totalCount: 3,
+                  edges: [
+                    {
+                      node: {
+                        title: "Artwork 1",
+                      },
+                    },
+                    {
+                      node: {
+                        title: "Artwork 2",
+                      },
+                    },
+                    {
+                      node: {
+                        title: "Artwork 3",
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=true when first is below total", async () => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            artistsConnection(first: 1) {
+              edges {
+                artworksConnection(first: 1) {
+                  pageInfo {
+                    hasNextPage
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                artworksConnection: {
+                  pageInfo: {
+                    hasNextPage: true,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=false when first is above total", async () => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            artistsConnection(first: 1) {
+              edges {
+                artworksConnection(first: 3) {
+                  pageInfo {
+                    hasNextPage
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          artistsConnection: {
+            edges: [
+              {
+                artworksConnection: {
+                  pageInfo: {
+                    hasNextPage: false,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
 })

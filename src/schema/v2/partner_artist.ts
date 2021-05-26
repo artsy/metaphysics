@@ -10,13 +10,16 @@ import {
   Thunk,
   GraphQLFieldConfigMap,
   GraphQLFieldConfig,
+  GraphQLEnumType,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { getPagingParameters } from "relay-cursor-paging"
+import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
 import { formatMarkdownValue, markdown } from "./fields/markdown"
+import { artworkConnection } from "./artwork"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 // TODO: This should move to the gravity loader
 interface PartnerArtistDetails {
@@ -28,9 +31,11 @@ interface PartnerArtistDetails {
   represented_by: boolean
   biography: string
   artist: {
+    id: string
     blurb: string
   }
   partner: {
+    id: string
     name: string
   }
 }
@@ -92,6 +97,20 @@ const biographyBlurb: GraphQLFieldConfig<
   },
 }
 
+const ArtworksSort = {
+  type: new GraphQLEnumType({
+    name: "PartnerArtistArtworksSort",
+    values: {
+      POSITION_ASC: {
+        value: "position",
+      },
+      POSITION_DESC: {
+        value: "-position",
+      },
+    },
+  }),
+}
+
 export const fields: Thunk<GraphQLFieldConfigMap<
   PartnerArtistDetails,
   ResolverContext
@@ -105,6 +124,42 @@ export const fields: Thunk<GraphQLFieldConfigMap<
   },
   biographyBlurb,
   counts,
+  artworksConnection: {
+    type: artworkConnection.connectionType,
+    args: pageable({
+      sort: ArtworksSort,
+    }),
+    resolve: (
+      { partner: { id: partnerID }, artist: { id: artistID } },
+      args,
+      { partnerArtistArtworksLoader }
+    ) => {
+      const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+      const gravityArgs = {
+        total_count: true,
+        sort: args.sort,
+        page,
+        size,
+      }
+
+      return partnerArtistArtworksLoader(
+        { partnerID, artistID },
+        gravityArgs
+      ).then(({ body, headers }) => {
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return {
+          totalCount,
+          ...connectionFromArraySlice(body, args, {
+            arrayLength: totalCount,
+            sliceStart: offset,
+            resolveNode: (node) => node.artwork,
+          }),
+        }
+      })
+    },
+  },
   isDisplayOnPartnerProfile: {
     type: GraphQLBoolean,
     resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
