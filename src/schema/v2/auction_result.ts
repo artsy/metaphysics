@@ -10,7 +10,7 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
 } from "graphql"
-import { indexOf, isNil } from "lodash"
+import { isNil } from "lodash"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import Image, { normalizeImageData } from "schema/v2/image"
 import { ResolverContext } from "types/graphql"
@@ -19,7 +19,7 @@ import { ResolverContext } from "types/graphql"
 import currencyCodes from "lib/currency_codes.json"
 import { YearRange } from "./types/yearRange"
 import * as Sentry from "@sentry/node"
-const symbolOnly = ["USD", "GBP", "EUR", "MYR"]
+import { currencyPrefix } from "lib/currencyHelpers"
 
 export const AuctionResultSorts = {
   type: new GraphQLEnumType({
@@ -200,17 +200,12 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
                 Sentry.captureException(`currency not supported ${currency}}`)
                 return null
               }
-              const { symbol, subunit_to_unit } = currency_map
 
-              let display
+              const { subunit_to_unit } = currency_map
+
+              let display = currencyPrefix(currency)
               let amount
-              if (indexOf(symbolOnly, currency) === -1) {
-                display = currency
-              }
 
-              if (symbol) {
-                display = display ? display + " " + symbol : symbol
-              }
               if (!low_estimate_cents || !high_estimate_cents) {
                 amount = Math.round(
                   (low_estimate_cents || high_estimate_cents) / subunit_to_unit
@@ -261,16 +256,9 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
                 Sentry.captureException(`currency not supported ${currency}}`)
                 return null
               }
-              const { symbol, subunit_to_unit } = currency_map
+              const { subunit_to_unit } = currency_map
 
-              let display
-              if (indexOf(symbolOnly, currency) === -1) {
-                display = currency
-              }
-
-              if (symbol) {
-                display = display ? display + " " + symbol : symbol
-              }
+              let display = currencyPrefix(currency)
 
               const amount = Math.round(price_realized_cents / subunit_to_unit)
 

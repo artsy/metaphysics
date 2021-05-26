@@ -1507,7 +1507,7 @@
     "iso_code": "MXN",
     "name": "Mexican Peso",
     "symbol": "$",
-    "disambiguate_symbol": "MEX$",
+    "disambiguate_symbol": "Mex$",
     "alternate_symbols": ["MEX$"],
     "subunit": "Centavo",
     "subunit_to_unit": 100,
