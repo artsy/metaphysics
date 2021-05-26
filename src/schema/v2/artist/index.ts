@@ -471,6 +471,15 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             auctionArtworks: numeral(
               ({ auction_artworks_count }) => auction_artworks_count
             ),
+            auctionResults: {
+              type: GraphQLInt,
+              resolve: ({ _id }, _options, { auctionLotsLoader }) =>
+                auctionLotsLoader({
+                  artist_id: _id,
+                }).then(({ total_count }) => {
+                  return total_count
+                }),
+            },
           },
         }),
         resolve: (artist) => artist,
