@@ -60,7 +60,7 @@ describe("AuctionResult type", () => {
           mid: "-50%",
         },
         estimate: {
-          display: "€1,000 – 3,000",
+          display: "€1,000–€3,000",
         },
       })
     })
@@ -94,7 +94,7 @@ describe("AuctionResult type", () => {
       return runQuery(query, context!).then((data) => {
         expect(data.auctionResult).toEqual({
           estimate: {
-            display: "€1,000 – 3,000",
+            display: "€1,000–€3,000",
           },
           priceRealized: {
             display: "€1,000",
@@ -118,10 +118,10 @@ describe("AuctionResult type", () => {
       return runQuery(query, context!).then((data) => {
         expect(data.auctionResult).toEqual({
           estimate: {
-            display: "HKD $1,000 – 3,000",
+            display: "HK$1,000–HK$3,000",
           },
           priceRealized: {
-            display: "HKD $1,000",
+            display: "HK$1,000",
           },
         })
       })
