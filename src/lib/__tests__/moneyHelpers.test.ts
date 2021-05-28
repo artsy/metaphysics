@@ -37,9 +37,7 @@ describe("priceRangeDisplayText", () => {
   it("builds display text with range", () => {
     expect(priceRangeDisplayText(10000, 20000, "EUR", "")).toBe("€100–€200")
     expect(priceRangeDisplayText(100, 200, "MXN", "")).toBe("MX$1–MX$2")
-    expect(priceRangeDisplayText(100, 200, "VUV", "")).toBe(
-      "VUV Vt100–VUV Vt200"
-    )
+    expect(priceRangeDisplayText(100, 200, "VUV", "")).toBe("VUV Vt100–Vt200")
   })
 
   it("builds display text with lowest", () => {

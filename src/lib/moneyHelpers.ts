@@ -22,6 +22,18 @@ export const currencyPrefix = (currency: string): string => {
   return disambiguate_symbol || currency + " " + symbol
 }
 
+export const priceAmount = (
+  priceCents: number,
+  currency: string,
+  format: string
+): string => {
+  const { subunit_to_unit } = currencyCodes[currency.toLowerCase()]
+
+  const amount = Math.round(priceCents / subunit_to_unit)
+
+  return numeral(amount).format(format)
+}
+
 export const isCurrencySupported = (currency: string): boolean => {
   return currencyCodes[currency.toLowerCase()]
 }
@@ -34,15 +46,11 @@ export const priceDisplayText = (
   currency: string,
   format: string
 ): string => {
-  const { subunit_to_unit } = currencyCodes[currency.toLowerCase()]
-
-  const amount = Math.round(priceCents / subunit_to_unit)
-
-  return currencyPrefix(currency) + numeral(amount).format(format)
+  return currencyPrefix(currency) + priceAmount(priceCents, currency, format)
 }
 
 /**
- * Builds price range display text (e.g. "$100-$200")..
+ * Builds price range display text (e.g. "$100–$200" or "VUV Vt100–Vt200")..
  */
 export const priceRangeDisplayText = (
   lowerPriceCents: number,
@@ -58,9 +66,19 @@ export const priceRangeDisplayText = (
     )
   }
 
+  const lowerCurrencyPrefix = currencyPrefix(currency)
+  const higherCurrencyPrefix = lowerCurrencyPrefix.includes(" ")
+    ? lowerCurrencyPrefix.split(" ")[1]
+    : lowerCurrencyPrefix
+
+  const lowerPriceAmount = priceAmount(lowerPriceCents, currency, format)
+  const higherPriceAmount = priceAmount(higherPriceCents, currency, format)
+
   return (
-    priceDisplayText(lowerPriceCents, currency, format) +
+    lowerCurrencyPrefix +
+    lowerPriceAmount +
     "–" +
-    priceDisplayText(higherPriceCents, currency, format)
+    higherCurrencyPrefix +
+    higherPriceAmount
   )
 }
