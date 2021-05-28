@@ -6,6 +6,7 @@ import {
   executableExchangeSchema,
   transformsForExchange,
 } from "lib/stitching/exchange/schema"
+import { executableDiffusionSchema } from "lib/stitching/diffusion/schema"
 import { executableKawsSchema } from "lib/stitching/kaws/schema"
 import { executableVortexSchema } from "lib/stitching/vortex/schema"
 
@@ -74,6 +75,9 @@ export const incrementalMergeSchemas = (localSchema, version: 1 | 2) => {
       })
     )
   }
+
+  const diffusionSchema = executableDiffusionSchema()
+  schemas.push(diffusionSchema)
 
   const exchangeSchema = executableExchangeSchema(transformsForExchange)
   schemas.push(exchangeSchema)
