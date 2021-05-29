@@ -12133,7 +12133,7 @@ type Query {
   ): ArtworkVersion
 
   # Auction lot results
-  auctionResultsByArtists(
+  auctionResultsByArtistsConnection(
     # Returns the elements in the list that come after the specified cursor.
     after: String
     artistIds: [ID!]!
