@@ -1,5 +1,4 @@
 import date from "./fields/date"
-import numeral from "numeral"
 import { NodeInterface, InternalIDFields } from "./object_identification"
 import {
   GraphQLFloat,
@@ -10,16 +9,19 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
 } from "graphql"
-import { indexOf, isNil } from "lodash"
+import { isNil } from "lodash"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import Image, { normalizeImageData } from "schema/v2/image"
 import { ResolverContext } from "types/graphql"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
-import currencyCodes from "lib/currency_codes.json"
 import { YearRange } from "./types/yearRange"
 import * as Sentry from "@sentry/node"
-const symbolOnly = ["USD", "GBP", "EUR", "MYR"]
+import {
+  isCurrencySupported,
+  priceDisplayText,
+  priceRangeDisplayText,
+} from "lib/moneyHelpers"
 
 export const AuctionResultSorts = {
   type: new GraphQLEnumType({
@@ -195,35 +197,17 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
                 return null
               }
 
-              const currency_map = currencyCodes[currency.toLowerCase()]
-              if (!currency_map) {
+              if (!isCurrencySupported(currency)) {
                 Sentry.captureException(`currency not supported ${currency}}`)
                 return null
               }
-              const { symbol, subunit_to_unit } = currency_map
 
-              let display
-              let amount
-              if (indexOf(symbolOnly, currency) === -1) {
-                display = currency
-              }
-
-              if (symbol) {
-                display = display ? display + " " + symbol : symbol
-              }
-              if (!low_estimate_cents || !high_estimate_cents) {
-                amount = Math.round(
-                  (low_estimate_cents || high_estimate_cents) / subunit_to_unit
-                )
-                display += numeral(amount).format("")
-              } else {
-                amount = Math.round(low_estimate_cents / subunit_to_unit)
-                display += numeral(amount).format("") + " – "
-                amount = Math.round(high_estimate_cents / subunit_to_unit)
-                display += numeral(amount).format("")
-              }
-
-              return display
+              return priceRangeDisplayText(
+                low_estimate_cents,
+                high_estimate_cents,
+                currency,
+                ""
+              )
             },
           },
         },
@@ -256,27 +240,12 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
                 return null
               }
 
-              const currency_map = currencyCodes[currency.toLowerCase()]
-              if (!currency_map) {
+              if (!isCurrencySupported(currency)) {
                 Sentry.captureException(`currency not supported ${currency}}`)
                 return null
               }
-              const { symbol, subunit_to_unit } = currency_map
 
-              let display
-              if (indexOf(symbolOnly, currency) === -1) {
-                display = currency
-              }
-
-              if (symbol) {
-                display = display ? display + " " + symbol : symbol
-              }
-
-              const amount = Math.round(price_realized_cents / subunit_to_unit)
-
-              display += numeral(amount).format(format)
-
-              return display
+              return priceDisplayText(price_realized_cents, currency, format)
             },
           },
         },

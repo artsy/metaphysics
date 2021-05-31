@@ -103,7 +103,7 @@ describe("Artist type", () => {
                     display: "JPY ¥420k",
                   },
                   estimate: {
-                    display: "JPY ¥200,000 – 500,000",
+                    display: "JPY ¥200,000–¥500,000",
                   },
                 },
               },
