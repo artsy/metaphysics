@@ -9774,6 +9774,7 @@ type Me implements Node {
     sort: SaleSorts
   ): [SaleRegistration]
   saved_artworks: Collection
+  savedSearch(criteria: SearchCriteriaAttributes, id: ID): SearchCriteria
   secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
 
   # A list of the current user’s suggested artists, based on a single artist
@@ -11995,6 +11996,12 @@ type Query {
   # Find partners by IDs
   _unused_gravity_partners(ids: [ID!]!): [DoNotUseThisPartner!]
 
+  # Find a saved search by ID or criteria
+  _unused_gravity_savedSearch(
+    criteria: SearchCriteriaAttributes
+    id: ID
+  ): SearchCriteria
+
   # List enabled Two-Factor Authentication factors
   _unused_gravity_secondFactors(
     kinds: [SecondFactorKind!] = [app, sms, backup]
@@ -13494,6 +13501,16 @@ type SearchCriteria {
   attribution: String
   category: String
   internalID: ID!
+  priceMax: Int
+  priceMin: Int
+  size: String
+}
+
+# Attributes for a search criteria
+input SearchCriteriaAttributes {
+  artistID: String
+  attribution: String
+  category: String
   priceMax: Int
   priceMin: Int
   size: String

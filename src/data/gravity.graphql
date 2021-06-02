@@ -1396,6 +1396,11 @@ type Query {
   saleArtworks(ids: [ID!]!): [SaleArtwork!]!
 
   """
+  Find a saved search by ID or criteria
+  """
+  savedSearch(criteria: SearchCriteriaAttributes, id: ID): SearchCriteria
+
+  """
   List enabled Two-Factor Authentication factors
   """
   secondFactors(
@@ -1709,6 +1714,18 @@ type SearchCriteria {
   attribution: String
   category: String
   internalID: ID!
+  priceMax: Int
+  priceMin: Int
+  size: String
+}
+
+"""
+Attributes for a search criteria
+"""
+input SearchCriteriaAttributes {
+  artistID: String
+  attribution: String
+  category: String
   priceMax: Int
   priceMin: Int
   size: String
