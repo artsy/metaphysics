@@ -526,7 +526,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ type, default_profile_id }) =>
           type === "Auction"
             ? `/auction/${default_profile_id}`
-            : `/${default_profile_id}`,
+            : `/partner/${default_profile_id}`,
       },
       initials: initials("name"),
       isDefaultProfilePublic: {
