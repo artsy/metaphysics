@@ -112,6 +112,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           },
           inEditorialFeed: {
             type: GraphQLBoolean,
+            description:
+              "Articles that are ready to be publicly viewed in the feed by everyone.",
           },
         }),
         type: articleConnection.connectionType,

@@ -1,18 +1,18 @@
-import cached from "./fields/cached"
-import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
-import AuthorType from "./author"
-import Image, { normalizeImageData } from "./image"
-import date from "./fields/date"
-import { IDFields, NodeInterface } from "./object_identification"
 import {
+  GraphQLFieldConfig,
   GraphQLInt,
   GraphQLList,
-  GraphQLString,
-  GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLFieldConfig,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
+import AuthorType from "./author"
+import cached from "./fields/cached"
+import date from "./fields/date"
+import Image, { normalizeImageData } from "./image"
+import { IDFields, NodeInterface } from "./object_identification"
 
 export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Article",
@@ -59,6 +59,10 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     updatedAt: date,
+    vertical: {
+      type: GraphQLString,
+      resolve: ({ vertical }) => vertical?.name,
+    },
   }),
 })
 
