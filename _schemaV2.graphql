@@ -7566,6 +7566,14 @@ type Me implements Node {
     first: Int
     last: Int
   ): ArtworkInquiryConnection
+
+  # A list of the auction results by followed artists
+  auctionResultsByFollowedArtists(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): AuctionResultConnection
   auctionsLotStandingConnection(
     after: String
     before: String

@@ -1,57 +1,92 @@
-import { GraphQLFieldConfig, GraphQLObjectType } from "graphql"
-import { connectionDefinitions } from "graphql-relay"
+import { GraphQLFieldConfig } from "graphql"
+import { connectionFromArraySlice } from "graphql-relay"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { merge } from "lodash"
 import { pageable } from "relay-cursor-paging"
+import { createPageCursors } from "schema/v1/fields/pagination"
 import { params } from "schema/v1/home/add_generic_genes"
-import { InternalIDFields } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
-
-export const AuctionResultsByFollowedArtistsType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "AuctionResultsByFollowedArtists",
-  description: "TODO",
-  fields: () => ({
-    ...InternalIDFields,
-  }),
-})
+import { auctionResultConnection } from "../auction_result"
 
 const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
   void,
   ResolverContext
 > = {
-  type: connectionDefinitions({ nodeType: AuctionResultsByFollowedArtistsType })
-    .connectionType,
+  type: auctionResultConnection.connectionType,
   args: pageable({}),
-  description: "A list of the current user’s inquiry requests",
-  resolve: async (_root, options, { followedArtistsLoader }) => {
-    if (!followedArtistsLoader) return null
+  description: "A list of the auction results by followed artists",
+  resolve: async (
+    _root,
+    options,
+    { followedArtistsLoader, auctionLotsLoader }
+  ) => {
+    try {
+      if (!followedArtistsLoader || !auctionLotsLoader) return null
 
-    const gravityArgs = {
-      size: 50,
-      offset: 0,
-      total_count: false,
-      ...params,
+      const gravityArgs = {
+        size: 50,
+        offset: 0,
+        total_count: false,
+        ...params,
+      }
+      const { body: followedArtists } = await followedArtistsLoader(gravityArgs)
+
+      // TODO make it possible!
+      const followedArtistIds = followedArtists.map((artist) => artist.id)
+
+      const {
+        page,
+        size,
+        offset,
+        sizes,
+        organizations,
+        categories,
+      } = convertConnectionArgsToGravityArgs(options)
+      const diffusionArgs = {
+        page,
+        size,
+        // artist_ids: followedArtistIds,
+        artist_id: "4dd1584de0091e000100207c",
+        organizations,
+        categories,
+        earliest_created_year: options.earliestCreatedYear,
+        latest_created_year: options.latestCreatedYear,
+        allow_empty_created_dates: options.allowEmptyCreatedDates,
+        sizes,
+        sort: options.sort,
+      }
+
+      const { total_count, _embedded } = await auctionLotsLoader(diffusionArgs)
+      const totalPages = Math.ceil(total_count / size)
+
+      return merge(
+        {
+          pageCursors: createPageCursors(
+            {
+              page,
+              size,
+            },
+            total_count
+          ),
+        },
+        {
+          totalCount: total_count,
+        },
+        connectionFromArraySlice(_embedded.items, options, {
+          arrayLength: total_count,
+          sliceStart: offset,
+        }),
+        {
+          pageInfo: {
+            hasPreviousPage: page > 1,
+            hasNextPage: page < totalPages,
+          },
+        }
+      )
+    } catch (error) {
+      console.log(error)
+      throw new Error(error)
     }
-    const { body: followedArtists } = await followedArtistsLoader(gravityArgs)
-
-    console.log(followedArtists.map((a) => a.id))
-
-    // TODO query auction results by artist ids
-
-    //  option 1. figure out how to do a call to diffusion graphql endpoint hereby
-    //  option 2. create a rest endpoint in diffusion and call it here with a loader
-
-    // const { limit: size, offset } = getPagingParameters(options)
-
-    return null
-
-    // .then(({ body, headers }) => {
-    //   return connectionFromArraySlice(body, connectionOptions, {
-    //     arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-    //     sliceStart: offset,
-    //   })
-    // })
   },
 }
 
