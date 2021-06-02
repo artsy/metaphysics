@@ -15,6 +15,8 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
     page: { type: GraphQLInt },
     inEditorialFeed: {
       type: GraphQLBoolean,
+      description:
+        "Articles that are ready to be publicly viewed in the feed by everyone.",
     },
   }),
   resolve: async (
