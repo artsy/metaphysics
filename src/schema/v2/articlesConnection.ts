@@ -41,7 +41,6 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
 
     const { results, count } = await articlesLoader(articlesLoaderArgs)
 
-    console.log(results)
     return {
       totalCount: count,
       pageCursors: createPageCursors({ ...args, page, size }, count),
