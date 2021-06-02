@@ -3,7 +3,10 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("acticlesConnection", () => {
   const articlesLoader = jest.fn(() =>
-    Promise.resolve({ results: [{ title: "Foo Bar" }], count: 100 })
+    Promise.resolve({
+      results: [{ title: "Foo Bar", vertical: { name: "Art Market" } }],
+      count: 100,
+    })
   )
 
   afterEach(() => {
@@ -13,11 +16,16 @@ describe("acticlesConnection", () => {
   it("returns data", async () => {
     const query = gql`
       {
-        articlesConnection(first: 10, sort: PUBLISHED_AT_DESC) {
+        articlesConnection(
+          first: 10
+          sort: PUBLISHED_AT_DESC
+          inEditorialFeed: true
+        ) {
           totalCount
           edges {
             node {
               title
+              vertical
             }
           }
         }
@@ -32,6 +40,7 @@ describe("acticlesConnection", () => {
       count: true,
       offset: 0,
       sort: "-published_at",
+      in_editorial_feed: true,
     })
 
     expect(data).toEqual({
@@ -41,6 +50,7 @@ describe("acticlesConnection", () => {
           {
             node: {
               title: "Foo Bar",
+              vertical: "Art Market",
             },
           },
         ],

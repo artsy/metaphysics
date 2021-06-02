@@ -665,6 +665,7 @@ type Article implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+  vertical: String
 }
 
 # A connection to a list of items.
@@ -9307,6 +9308,7 @@ type Query {
     after: String
     before: String
     first: Int
+    inEditorialFeed: Boolean
     last: Int
     page: Int
     sort: ArticleSorts
@@ -11921,6 +11923,7 @@ type Viewer {
     after: String
     before: String
     first: Int
+    inEditorialFeed: Boolean
     last: Int
     page: Int
     sort: ArticleSorts

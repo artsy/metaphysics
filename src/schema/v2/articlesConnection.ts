@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLInt } from "graphql"
+import { GraphQLBoolean, GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { CursorPageable, pageable } from "relay-cursor-paging"
@@ -13,26 +13,33 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
   args: pageable({
     sort: ArticleSorts,
     page: { type: GraphQLInt },
+    inEditorialFeed: {
+      type: GraphQLBoolean,
+    },
   }),
   resolve: async (
     _root,
     args: {
+      inEditorialFeed?: Boolean
       sort?: ArticleSort
     } & CursorPageable,
     { articlesLoader }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+    const { sort, inEditorialFeed } = args
 
     const articlesLoaderArgs = {
       published: true,
       limit: size,
       count: true,
       offset,
-      sort: args.sort,
+      sort,
+      in_editorial_feed: inEditorialFeed,
     }
 
     const { results, count } = await articlesLoader(articlesLoaderArgs)
 
+    console.log(results)
     return {
       totalCount: count,
       pageCursors: createPageCursors({ ...args, page, size }, count),
