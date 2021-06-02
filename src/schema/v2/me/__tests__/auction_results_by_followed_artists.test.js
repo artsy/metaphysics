@@ -9,9 +9,9 @@ describe("Me", () => {
         {
           me {
             auctionResultsByFollowedArtists(first: 100) {
+              totalCount
               edges {
                 node {
-                  id
                   title
                 }
               }
@@ -21,36 +21,23 @@ describe("Me", () => {
       `
 
       const expectedConnectionData = {
+        totalCount: 2,
         edges: [
           {
             node: {
-              id: "auction-result-1",
               title: "Auction Result 1",
             },
           },
           {
             node: {
-              id: "auction-result-2",
               title: "Auction Result 2",
             },
           },
         ],
       }
 
-      const auctionLotsLoader = jest.fn(async () => ({
-        total_count: 3,
-        _embedded: {
-          items: [
-            {
-              id: "auction-result-1",
-              title: "Auction Result 1",
-            },
-            {
-              id: "auction-result-2",
-              title: "Auction Result 2",
-            },
-          ],
-        },
+      const diffusionGraphqlLoader = jest.fn(async () => ({
+        auctionResultsByArtistsConnection: expectedConnectionData,
       }))
 
       const followedArtistsLoader = jest.fn(async () => ({
@@ -68,7 +55,7 @@ describe("Me", () => {
       const context = {
         meLoader: () => Promise.resolve({}),
         followedArtistsLoader,
-        auctionLotsLoader,
+        diffusionGraphqlLoader,
       }
 
       const {
@@ -78,18 +65,7 @@ describe("Me", () => {
       expect(auctionResultsByFollowedArtists).toEqual(expectedConnectionData)
 
       expect(followedArtistsLoader).toHaveBeenCalled()
-      expect(auctionLotsLoader).toHaveBeenCalledWith({
-        allow_empty_created_dates: undefined,
-        artist_id: "4dd1584de0091e000100207c",
-        categories: undefined,
-        earliest_created_year: undefined,
-        latest_created_year: undefined,
-        organizations: undefined,
-        page: 1,
-        size: 100,
-        sizes: undefined,
-        sort: undefined,
-      })
+      expect(diffusionGraphqlLoader).toHaveBeenCalled()
     })
   })
 })

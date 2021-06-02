@@ -15,15 +15,10 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
   resolve: async (
     _root,
     _options,
-    { followedArtistsLoader, auctionLotsLoader, diffusionGraphqlLoader }
+    { followedArtistsLoader, diffusionGraphqlLoader }
   ) => {
     try {
-      if (
-        !followedArtistsLoader ||
-        !auctionLotsLoader ||
-        !diffusionGraphqlLoader
-      )
-        return null
+      if (!followedArtistsLoader || !diffusionGraphqlLoader) return null
 
       const gravityArgs = {
         size: 50,
@@ -35,7 +30,6 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
 
       const followedArtistIds = followedArtists.map((artist) => artist.id)
 
-      console.log(followedArtistIds)
       const auctionResults = await diffusionGraphqlLoader({
         query: gql`
           query AuctionResultsByArtistsConnection($artistIds: [ID!]!) {
@@ -78,13 +72,13 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
           }
         `,
         variables: {
-          artistIds: ["4df44138c75005000100331c"], //followedArtistIds,
+          artistIds: followedArtistIds,
         },
       })
 
       return auctionResults?.auctionResultsByArtistsConnection
     } catch (error) {
-      console.log(error)
+      console.error(error)
       throw new Error(error)
     }
   },
