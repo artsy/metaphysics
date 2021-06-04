@@ -64,6 +64,7 @@ export const gravityStitchingEnvironment = (
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
       extend type Me {
+        savedSearch(id: ID, criteria: SearchCriteriaAttributes): SearchCriteria
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
         addressConnection(
           first: Int
