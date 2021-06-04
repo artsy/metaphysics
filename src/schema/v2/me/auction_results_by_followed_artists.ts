@@ -5,6 +5,9 @@ import { params } from "schema/v1/home/add_generic_genes"
 import { ResolverContext } from "types/graphql"
 import { auctionResultConnection } from "../auction_result"
 
+const MAX_FOLLOWED_ARTISTS = 50
+const MAX_AUCTION_RESULTS = 100
+
 const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
   void,
   ResolverContext
@@ -14,7 +17,7 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
   description: "A list of the auction results by followed artists",
   resolve: async (
     _root,
-    _options,
+    options,
     { followedArtistsLoader, diffusionGraphqlLoader }
   ) => {
     try {
@@ -28,12 +31,23 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
       }
       const { body: followedArtists } = await followedArtistsLoader(gravityArgs)
 
-      const followedArtistIds = followedArtists.map((artist) => artist.id)
+      // Prepare diffusion args
+      const followedArtistIds = followedArtists
+        .slice(0, MAX_FOLLOWED_ARTISTS)
+        .map((artist) => artist.artist._id)
+      const { after, first } = options
 
       const auctionResults = await diffusionGraphqlLoader({
         query: gql`
-          query AuctionResultsByArtistsConnection($artistIds: [ID!]!) {
-            auctionResultsByArtistsConnection(artistIds: $artistIds) {
+          query AuctionResultsByArtistsConnection(
+            $artistIds: [ID!]!
+            $first: Int
+          ) {
+            auctionResultsByArtistsConnection(
+              artistIds: $artistIds
+              first: $first
+            ) {
+              totalCount
               edges {
                 node {
                   artistId
@@ -73,8 +87,14 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
         `,
         variables: {
           artistIds: followedArtistIds,
+          first: MAX_AUCTION_RESULTS,
         },
       })
+
+      // Prepare connection
+      const connection: any = auctionResults?.auctionResultsByArtistsConnection
+      connection.totalCount = connection?.edges?.length || 0
+      connection.edges = connection?.edges?.slice(+after, +after + first)
 
       return auctionResults?.auctionResultsByArtistsConnection
     } catch (error) {
