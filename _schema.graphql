@@ -9764,7 +9764,6 @@ type Me implements Node {
     sort: SaleSorts
   ): [SaleRegistration]
   saved_artworks: Collection
-  savedSearch(criteria: SearchCriteriaAttributes, id: ID): SearchCriteria
   secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
 
   # A list of the current user’s suggested artists, based on a single artist
