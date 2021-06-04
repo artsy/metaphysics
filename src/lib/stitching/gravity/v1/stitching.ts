@@ -53,7 +53,6 @@ export const gravityStitchingEnvironment = (
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
       extend type Me {
-        savedSearch(id: ID, criteria: SearchCriteriaAttributes): SearchCriteria
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
         addressConnection(
           first: Int
@@ -134,18 +133,6 @@ export const gravityStitchingEnvironment = (
     `,
     resolvers: {
       Me: {
-        savedSearch: {
-          resolve: (_parent, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_savedSearch",
-              args: args,
-              context,
-              info,
-            })
-          },
-        },
         secondFactors: {
           resolve: (_parent, args, context, info) => {
             return info.mergeInfo.delegateToSchema({

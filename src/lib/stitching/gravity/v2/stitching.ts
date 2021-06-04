@@ -142,6 +142,18 @@ export const gravityStitchingEnvironment = (
     `,
     resolvers: {
       Me: {
+        savedSearch: {
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_savedSearch",
+              args: args,
+              context,
+              info,
+            })
+          },
+        },
         secondFactors: {
           resolve: (_parent, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
