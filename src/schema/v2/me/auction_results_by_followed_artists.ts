@@ -27,16 +27,16 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
       if (!followedArtistsLoader || !auctionLotsLoader) return null
 
       const gravityArgs = {
-        size: 50,
+        size: MAX_FOLLOWED_ARTISTS,
         offset: 0,
         total_count: false,
         ...params,
       }
       const { body: followedArtists } = await followedArtistsLoader(gravityArgs)
 
-      const followedArtistIds = followedArtists
-        .slice(0, MAX_FOLLOWED_ARTISTS)
-        .map((artist) => artist.artist._id)
+      const followedArtistIds = followedArtists.map(
+        (artist) => artist.artist._id
+      )
 
       const {
         page,
