@@ -37,26 +37,12 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
         (artist) => artist.artist._id
       )
 
-      const {
-        page,
-        size,
-        offset,
-        sizes,
-        organizations,
-        categories,
-      } = convertConnectionArgsToGravityArgs(options)
+      const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
 
       const diffusionArgs = {
         page,
         size,
         artist_ids: followedArtistIds,
-        organizations,
-        categories,
-        earliest_created_year: options.earliestCreatedYear,
-        latest_created_year: options.latestCreatedYear,
-        allow_empty_created_dates: options.allowEmptyCreatedDates,
-        sizes,
-        sort: options.sort,
       }
 
       return auctionLotsLoader(diffusionArgs).then(
