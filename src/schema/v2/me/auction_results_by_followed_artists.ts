@@ -9,7 +9,6 @@ import { createPageCursors } from "schema/v2/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 
 const MAX_FOLLOWED_ARTISTS = 50
-const MAX_AUCTION_RESULTS = 100
 
 const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
   void,
@@ -58,7 +57,6 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
         allow_empty_created_dates: options.allowEmptyCreatedDates,
         sizes,
         sort: options.sort,
-        first: MAX_AUCTION_RESULTS,
       }
 
       return auctionLotsLoader(diffusionArgs).then(
