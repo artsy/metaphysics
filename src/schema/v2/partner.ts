@@ -526,6 +526,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ show_promoted }) => show_promoted,
       },
+      partnerPageEligible: {
+        type: GraphQLBoolean,
+        resolve: ({ type }) =>
+          ["Gallery", "Institution", "Institutional Seller", "Brand"].includes(
+            type
+          ),
+      },
       fullProfileEligible: {
         type: GraphQLBoolean,
         // TODO: get rid of using profile_layout to determine fullProfileEligible after Gravity API updated

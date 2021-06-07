@@ -11,6 +11,7 @@ describe("Partner type", () => {
       id: "catty-partner",
       slug: "catty-partner",
       name: "Catty Partner",
+      type: "Gallery",
       has_full_profile: true,
       profile_banner_display: true,
       distinguish_represented_artists: true,
@@ -119,6 +120,37 @@ describe("Partner type", () => {
       },
     })
   })
+
+  it.each([
+    ["Gallery", true],
+    ["Institution", true],
+    ["Institutional Seller", true],
+    ["Brand", true],
+    ["Auction", false],
+    ["Demo", false],
+    ["Private Collector", false],
+    ["Private Dealer", false],
+  ])(
+    "returns partnerPageEligible field when partner type is %s",
+    async (type, result) => {
+      partnerData.type = type
+
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            partnerPageEligible
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          partnerPageEligible: result,
+        },
+      })
+    }
+  )
 
   it("includes the gallery website address in shows", async () => {
     partnerData.partner = {

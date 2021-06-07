@@ -8640,6 +8640,7 @@ type Partner implements Node {
   ): LocationConnection
   meta: PartnerMeta
   name: String
+  partnerPageEligible: Boolean
   profile: Profile
   profileArtistsLayout: String
   profileBannerDisplay: String
