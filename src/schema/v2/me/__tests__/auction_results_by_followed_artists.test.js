@@ -36,18 +36,34 @@ describe("Me", () => {
         ],
       }
 
-      const diffusionGraphqlLoader = jest.fn(async () => ({
-        auctionResultsByArtistsConnection: expectedConnectionData,
+      const auctionLotsLoader = jest.fn(async () => ({
+        total_count: 2,
+        _embedded: {
+          items: [
+            {
+              title: "Auction Result 1",
+            },
+            {
+              title: "Auction Result 2",
+            },
+          ],
+        },
       }))
 
       const followedArtistsLoader = jest.fn(async () => ({
-        headers: { "x-total-count": 3 },
+        headers: { "x-total-count": 2 },
         body: [
           {
-            id: "artist-1",
+            id: "followartist-1",
+            artist: {
+              _id: "artist-1",
+            },
           },
           {
-            id: "artist-2",
+            id: "followartist-2",
+            artist: {
+              _id: "artist-2",
+            },
           },
         ],
       }))
@@ -55,7 +71,7 @@ describe("Me", () => {
       const context = {
         meLoader: () => Promise.resolve({}),
         followedArtistsLoader,
-        diffusionGraphqlLoader,
+        auctionLotsLoader,
       }
 
       const {
@@ -65,7 +81,7 @@ describe("Me", () => {
       expect(auctionResultsByFollowedArtists).toEqual(expectedConnectionData)
 
       expect(followedArtistsLoader).toHaveBeenCalled()
-      expect(diffusionGraphqlLoader).toHaveBeenCalled()
+      expect(auctionLotsLoader).toHaveBeenCalled()
     })
   })
 })
