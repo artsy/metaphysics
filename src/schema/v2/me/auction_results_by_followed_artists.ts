@@ -1,9 +1,12 @@
 import { GraphQLFieldConfig } from "graphql"
-import gql from "lib/gql"
 import { pageable } from "relay-cursor-paging"
 import { params } from "schema/v1/home/add_generic_genes"
 import { ResolverContext } from "types/graphql"
 import { auctionResultConnection } from "../auction_result"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { merge } from "lodash"
+import { createPageCursors } from "schema/v2/fields/pagination"
+import { connectionFromArraySlice } from "graphql-relay"
 
 const MAX_FOLLOWED_ARTISTS = 50
 const MAX_AUCTION_RESULTS = 100
@@ -18,10 +21,10 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
   resolve: async (
     _root,
     options,
-    { followedArtistsLoader, diffusionGraphqlLoader }
+    { followedArtistsLoader, auctionLotsLoader }
   ) => {
     try {
-      if (!followedArtistsLoader || !diffusionGraphqlLoader) return null
+      if (!followedArtistsLoader || !auctionLotsLoader) return null
 
       const gravityArgs = {
         size: 50,
@@ -31,72 +34,65 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
       }
       const { body: followedArtists } = await followedArtistsLoader(gravityArgs)
 
-      // Prepare diffusion args
       const followedArtistIds = followedArtists
         .slice(0, MAX_FOLLOWED_ARTISTS)
         .map((artist) => artist.artist._id)
-      const { after, first } = options
 
-      const auctionResults = await diffusionGraphqlLoader({
-        query: gql`
-          query AuctionResultsByArtistsConnection(
-            $artistIds: [ID!]!
-            $first: Int
-          ) {
-            auctionResultsByArtistsConnection(
-              artistIds: $artistIds
-              first: $first
-            ) {
-              totalCount
-              edges {
-                node {
-                  artistId
-                  boughtIn
-                  categoryText
-                  currency
-                  date
-                  dateText
-                  depthCm
-                  description
-                  diameterCm
-                  dimensionText
-                  externalUrl
-                  hammerPriceCents
-                  hammerPriceCentsUsd
-                  heightCm
-                  highEstimateCents
-                  highEstimateCentsUsd
-                  id
-                  location
-                  lowEstimateCents
-                  lowEstimateCentsUsd
-                  mediumText
-                  organization
-                  priceRealizedCents
-                  priceRealizedCentsUsd
-                  saleDate
-                  saleDateText
-                  saleOverEstimatePercentage
-                  saleTitle
-                  title
-                  widthCm
-                }
-              }
+      const {
+        page,
+        size,
+        offset,
+        sizes,
+        organizations,
+        categories,
+      } = convertConnectionArgsToGravityArgs(options)
+
+      const diffusionArgs = {
+        page,
+        size,
+        artist_ids: followedArtistIds,
+        organizations,
+        categories,
+        earliest_created_year: options.earliestCreatedYear,
+        latest_created_year: options.latestCreatedYear,
+        allow_empty_created_dates: options.allowEmptyCreatedDates,
+        sizes,
+        sort: options.sort,
+        first: MAX_AUCTION_RESULTS,
+      }
+
+      return auctionLotsLoader(diffusionArgs).then(
+        ({ total_count, _embedded }) => {
+          const totalPages = Math.ceil(total_count / size)
+          return merge(
+            {
+              pageCursors: createPageCursors(
+                {
+                  page,
+                  size,
+                },
+                total_count
+              ),
+            },
+            {
+              totalCount: total_count,
+            },
+            connectionFromArraySlice(_embedded.items, options, {
+              arrayLength: total_count,
+              sliceStart: offset,
+            }),
+            {
+              pageInfo: {
+                hasPreviousPage: page > 1,
+                hasNextPage: page < totalPages,
+              },
+            },
+            {
+              artist_ids: followedArtistIds,
             }
-          }
-        `,
-        variables: {
-          artistIds: followedArtistIds,
-          first: MAX_AUCTION_RESULTS,
-        },
-      })
-
-      // Prepare connection
-      const connection: any = auctionResults?.auctionResultsByArtistsConnection
-      connection.totalCount = connection?.edges?.length || 0
-      connection.edges = connection?.edges?.slice(+after, +after + first)
-
-      return auctionResults?.auctionResultsByArtistsConnection
+          )
+        }
+      )
     } catch (error) {
       console.error(error)
       throw new Error(error)
