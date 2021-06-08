@@ -1,49 +1,47 @@
 import {
   GraphQLBoolean,
-  GraphQLNonNull,
-  GraphQLList,
-  GraphQLString,
-  GraphQLObjectType,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
-
-import { IDFields, NodeInterface } from "schema/v2/object_identification"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
-
 import date from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
-
-import ArtworkInquiries from "./artwork_inquiries"
-import BidderPositions from "./bidder_positions"
-import Bidders from "./bidders"
-import BidderStatus from "./bidder_status"
-import { BidderPosition } from "./bidder_position"
-import CollectorProfile from "./collector_profile"
-import Conversation from "./conversation"
-import Conversations from "./conversations"
-import { CreditCards } from "./credit_cards"
-import FollowedArtistsArtworkGroups from "./followed_artists_artworks_group"
-import FollowedArtists from "./followed_artists"
-import FollowedGenes from "./followed_genes"
-import FollowedShows from "./followed_shows"
-import FollowedFairs from "./followed_fairs"
-import Invoice from "./conversation/invoice"
-import LotStanding from "./lot_standing"
-import LotStandings from "./lot_standings"
-import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
-import { SaleRegistrationConnection } from "./sale_registrations"
-import { SavedArtworks } from "./savedArtworks"
+import { IDFields, NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import { SaleArtworksConnectionField } from "../sale_artworks"
+import ArtworkInquiries from "./artwork_inquiries"
+import AuctionResultsByFollowedArtists from "./auction_results_by_followed_artists"
+import Bidders from "./bidders"
+import { BidderPosition } from "./bidder_position"
+import BidderPositions from "./bidder_positions"
+import BidderStatus from "./bidder_status"
+import CollectorProfile from "./collector_profile"
+import Conversation from "./conversation"
+import Invoice from "./conversation/invoice"
+import Conversations from "./conversations"
+import { CreditCards } from "./credit_cards"
+import FollowedArtists from "./followed_artists"
+import FollowedArtistsArtworkGroups from "./followed_artists_artworks_group"
+import FollowedFairs from "./followed_fairs"
+import FollowedGalleries from "./followed_galleries"
+import FollowedGenes from "./followed_genes"
+import FollowedShows from "./followed_shows"
 import {
   IdentityVerification,
   PendingIdentityVerification,
 } from "./identity_verification"
-import { MyCollection } from "./myCollection"
-import FollowedGalleries from "./followed_galleries"
-import { WatchedLotConnection } from "./watchedLotConnection"
+import LotStanding from "./lot_standing"
+import LotStandings from "./lot_standings"
 import { MyBids } from "./myBids"
+import { MyCollection } from "./myCollection"
+import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
+import { SaleRegistrationConnection } from "./sale_registrations"
+import { SavedArtworks } from "./savedArtworks"
+import { WatchedLotConnection } from "./watchedLotConnection"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -51,6 +49,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     ...IDFields,
     artworkInquiriesConnection: ArtworkInquiries,
+    auctionResultsByFollowedArtists: AuctionResultsByFollowedArtists,
     bidders: Bidders,
     bidderStatus: BidderStatus,
     bidderPositions: BidderPositions,
