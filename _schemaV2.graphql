@@ -8641,6 +8641,7 @@ type Partner implements Node {
   meta: PartnerMeta
   name: String
   partnerPageEligible: Boolean
+  partnerType: String
   profile: Profile
   profileArtistsLayout: String
   profileBannerDisplay: String

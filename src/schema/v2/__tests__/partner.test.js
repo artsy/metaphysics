@@ -18,7 +18,7 @@ describe("Partner type", () => {
       profile_banner_display: "Artworks",
       claimed: true,
       show_promoted: true,
-      profile_layout: "gallery_default",
+      full_profile_eligible: true,
       partner_categories: [
         {
           id: "blue-chip",
@@ -104,6 +104,23 @@ describe("Partner type", () => {
     })
   })
 
+  it("returns partnerType field", async () => {
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          partnerType
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      partner: {
+        partnerType: "Gallery",
+      },
+    })
+  })
+
   it("returns fullProfileEligible field", async () => {
     const query = gql`
       {
@@ -116,7 +133,7 @@ describe("Partner type", () => {
 
     expect(data).toEqual({
       partner: {
-        fullProfileEligible: false,
+        fullProfileEligible: true,
       },
     })
   })
