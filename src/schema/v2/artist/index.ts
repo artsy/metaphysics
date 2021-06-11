@@ -58,7 +58,7 @@ import { totalViaLoader } from "lib/total"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
 import { ArtistTargetSupply } from "./targetSupply"
-import Partner, { PartnerType } from "../partner"
+import { PartnerType } from "../partner"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
