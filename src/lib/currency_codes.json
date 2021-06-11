@@ -481,6 +481,7 @@
     "iso_code": "CNY",
     "name": "Chinese Renminbi Yuan",
     "symbol": "¥",
+    "disambiguate_symbol": "CN¥",
     "alternate_symbols": ["CN¥", "元", "CN元"],
     "subunit": "Fen",
     "subunit_to_unit": 100,
