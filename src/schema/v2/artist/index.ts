@@ -58,6 +58,7 @@ import { totalViaLoader } from "lib/total"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
 import { ArtistTargetSupply } from "./targetSupply"
+import { PartnerType } from "../partner"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -350,8 +351,14 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             partnerID: {
               type: GraphQLString,
               resolve: ({ partner_id }) => partner_id,
+              deprecationReason:
+                "No longer used as the partner field contains the partner.id",
               description:
                 "The partner id of the partner who submitted the featured bio.",
+            },
+            partner: {
+              type: PartnerType,
+              resolve: ({ partner }) => partner,
             },
           },
         }),
@@ -373,6 +380,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
                 text: formatMarkdownValue(biography, format),
                 credit: `Submitted by ${partner.name}`,
                 partner_id: partner.id,
+                partner: partner,
               }
             }
             return { text: formatMarkdownValue(blurb, format) }
