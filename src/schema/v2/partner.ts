@@ -534,8 +534,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           ),
       },
       fullProfileEligible: {
+        deprecationReason: "Prefer displayFullPartnerPage",
         type: GraphQLBoolean,
-        resolve: ({ full_profile_eligible }) => full_profile_eligible,
+        resolve: ({ display_full_partner_page }) => display_full_partner_page,
+      },
+      displayFullPartnerPage: {
+        type: GraphQLBoolean,
+        resolve: ({ display_full_partner_page }) => display_full_partner_page,
       },
       partnerType: {
         type: GraphQLString,

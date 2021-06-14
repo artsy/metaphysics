@@ -18,7 +18,7 @@ describe("Partner type", () => {
       profile_banner_display: "Artworks",
       claimed: true,
       show_promoted: true,
-      full_profile_eligible: true,
+      display_full_partner_page: true,
       partner_categories: [
         {
           id: "blue-chip",
@@ -121,11 +121,11 @@ describe("Partner type", () => {
     })
   })
 
-  it("returns fullProfileEligible field", async () => {
+  it("returns displayFullPartnerPage field", async () => {
     const query = gql`
       {
         partner(id: "catty-partner") {
-          fullProfileEligible
+          displayFullPartnerPage
         }
       }
     `
@@ -133,7 +133,7 @@ describe("Partner type", () => {
 
     expect(data).toEqual({
       partner: {
-        fullProfileEligible: true,
+        displayFullPartnerPage: true,
       },
     })
   })
