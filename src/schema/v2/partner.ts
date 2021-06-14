@@ -526,10 +526,25 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ show_promoted }) => show_promoted,
       },
-      fullProfileEligible: {
+      partnerPageEligible: {
         type: GraphQLBoolean,
-        // TODO: get rid of using profile_layout to determine fullProfileEligible after Gravity API updated
-        resolve: ({ profile_layout }) => profile_layout !== "gallery_default",
+        resolve: ({ type }) =>
+          ["Gallery", "Institution", "Institutional Seller", "Brand"].includes(
+            type
+          ),
+      },
+      fullProfileEligible: {
+        deprecationReason: "Prefer displayFullPartnerPage",
+        type: GraphQLBoolean,
+        resolve: ({ display_full_partner_page }) => display_full_partner_page,
+      },
+      displayFullPartnerPage: {
+        type: GraphQLBoolean,
+        resolve: ({ display_full_partner_page }) => display_full_partner_page,
+      },
+      partnerType: {
+        type: GraphQLString,
+        resolve: ({ type }) => type,
       },
       locations: {
         type: new GraphQLList(LocationType),

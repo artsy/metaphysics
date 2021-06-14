@@ -11,13 +11,14 @@ describe("Partner type", () => {
       id: "catty-partner",
       slug: "catty-partner",
       name: "Catty Partner",
+      type: "Gallery",
       has_full_profile: true,
       profile_banner_display: true,
       distinguish_represented_artists: true,
       profile_banner_display: "Artworks",
       claimed: true,
       show_promoted: true,
-      profile_layout: "gallery_default",
+      display_full_partner_page: true,
       partner_categories: [
         {
           id: "blue-chip",
@@ -103,11 +104,11 @@ describe("Partner type", () => {
     })
   })
 
-  it("returns fullProfileEligible field", async () => {
+  it("returns partnerType field", async () => {
     const query = gql`
       {
         partner(id: "catty-partner") {
-          fullProfileEligible
+          partnerType
         }
       }
     `
@@ -115,10 +116,58 @@ describe("Partner type", () => {
 
     expect(data).toEqual({
       partner: {
-        fullProfileEligible: false,
+        partnerType: "Gallery",
       },
     })
   })
+
+  it("returns displayFullPartnerPage field", async () => {
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          displayFullPartnerPage
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      partner: {
+        displayFullPartnerPage: true,
+      },
+    })
+  })
+
+  it.each([
+    ["Gallery", true],
+    ["Institution", true],
+    ["Institutional Seller", true],
+    ["Brand", true],
+    ["Auction", false],
+    ["Demo", false],
+    ["Private Collector", false],
+    ["Private Dealer", false],
+  ])(
+    "returns partnerPageEligible field when partner type is %s",
+    async (type, result) => {
+      partnerData.type = type
+
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            partnerPageEligible
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          partnerPageEligible: result,
+        },
+      })
+    }
+  )
 
   it("includes the gallery website address in shows", async () => {
     partnerData.partner = {
