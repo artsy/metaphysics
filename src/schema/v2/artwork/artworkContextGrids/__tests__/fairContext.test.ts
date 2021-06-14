@@ -34,7 +34,7 @@ describe("Show Context", () => {
       artist: {
         id: "andy-warhol",
         name: "Andy Warhol",
-        published_artworks_count: 123,
+        forsale_artworks_count: 123,
       },
       partner: {
         id: "cama-gallery",

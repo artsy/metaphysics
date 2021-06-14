@@ -34,7 +34,7 @@ describe("Default Context", () => {
       artist: {
         id: "andy-warhol",
         name: "Andy Warhol",
-        published_artworks_count: 123,
+        forsale_artworks_count: 123,
       },
       partner: {
         id: "cama-gallery",
@@ -88,6 +88,7 @@ describe("Default Context", () => {
       page: 1,
       size: 2,
       sort: "-merchandisability",
+      filter: ["for_sale"],
     })
     expect.assertions(2)
   })
