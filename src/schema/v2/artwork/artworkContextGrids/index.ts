@@ -18,6 +18,7 @@ interface GravityArgs {
   sort?: string
   for_sale?: boolean
   published?: boolean
+  filter?: string[]
 }
 
 export const formDefaultGravityArgs = ({ options, artwork }) => {

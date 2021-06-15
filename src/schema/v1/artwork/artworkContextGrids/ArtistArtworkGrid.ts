@@ -46,12 +46,13 @@ export const ArtistArtworkGridType = new GraphQLObjectType<
           artwork,
         })
         gravityArgs.sort = "-published_at"
+        gravityArgs.filter = ["for_sale"]
 
         return artistArtworksLoader(artist.id, gravityArgs).then((artworks) => {
           if (!artworks) return null
 
           return connectionFromArraySlice(artworks, options, {
-            arrayLength: artistArtworkArrayLength(artist, options.filter),
+            arrayLength: artistArtworkArrayLength(artist, gravityArgs.filter),
             sliceStart: offset,
           })
         })
