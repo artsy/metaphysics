@@ -117,7 +117,9 @@ function startApp(appSchema, path: string) {
 
   app.use(
     path,
-    cors(),
+    cors({
+      maxAge: 600,
+    }),
     morgan,
     // Gotta parse the JSON body before passing it to logQueryDetails/fetchPersistedQuery
     bodyParser.json(),
