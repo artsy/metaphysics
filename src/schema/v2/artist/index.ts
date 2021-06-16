@@ -241,6 +241,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             description:
               "Filter auction results by empty artwork created date values",
           },
+          keyword: {
+            type: GraphQLString,
+            description:
+              "Filter by artwork title or description keyword search",
+          },
         }),
         resolve: ({ _id }, options, { auctionLotsLoader }) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
@@ -262,6 +267,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             artist_id: _id,
             organizations,
             categories,
+            keyword: options.keyword,
             earliest_created_year: options.earliestCreatedYear,
             latest_created_year: options.latestCreatedYear,
             allow_empty_created_dates: options.allowEmptyCreatedDates,
