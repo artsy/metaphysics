@@ -106,9 +106,9 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
           // enrich result with artist data
           const items = _embedded.items.map((auctionResult) => {
             const artist = followedArtists.find(
-              (artist) => artist.artist._id == auctionResult.artist_id
+              (artist) => artist.artist?._id == auctionResult.artist_id
             )
-            auctionResult.artist = artist?.artist
+            auctionResult.artist = artist.artist
             return auctionResult
           })
 
