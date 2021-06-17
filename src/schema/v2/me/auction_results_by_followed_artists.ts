@@ -1,4 +1,4 @@
-import { 
+import {
   GraphQLFieldConfig,
   GraphQLBoolean,
   GraphQLString,
@@ -39,8 +39,7 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
     recordsTrusted: {
       type: GraphQLBoolean,
       defaultValue: false,
-      description:
-        "When true, will only return records for allowed artists.",
+      description: "When true, will only return records for allowed artists.",
     },
     earliestCreatedYear: {
       type: GraphQLInt,
@@ -103,6 +102,16 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
       return auctionLotsLoader(diffusionArgs).then(
         ({ total_count, _embedded }) => {
           const totalPages = Math.ceil(total_count / size)
+
+          // enrich result with artist data
+          const items = _embedded.items.map((auctionResult) => {
+            const artist = followedArtists.find(
+              (artist) => artist.artist?._id == auctionResult.artist_id
+            )
+            auctionResult.artist = artist.artist
+            return auctionResult
+          })
+
           return merge(
             {
               pageCursors: createPageCursors(
@@ -116,7 +125,7 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
             {
               totalCount: total_count,
             },
-            connectionFromArraySlice(_embedded.items, options, {
+            connectionFromArraySlice(items, options, {
               arrayLength: total_count,
               sliceStart: offset,
             }),
