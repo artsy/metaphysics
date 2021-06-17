@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("Me", () => {
-  describe("ArtworkInquiries", () => {
+  describe("AuctionResultsByFollowedArtists", () => {
     it("returns auction results by followed artists", async () => {
       const query = gql`
         {
