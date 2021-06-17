@@ -22,6 +22,7 @@ import {
   priceDisplayText,
   priceRangeDisplayText,
 } from "lib/moneyHelpers"
+import { ArtistType } from "./artist"
 
 export const AuctionResultSorts = {
   type: new GraphQLEnumType({
@@ -51,6 +52,10 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
     artistID: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ artist_id }) => artist_id,
+    },
+    artist: {
+      type: ArtistType,
+      resolve: ({ artist }) => artist,
     },
     date,
     dateText: {
