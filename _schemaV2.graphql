@@ -4004,6 +4004,15 @@ type CommerceShippingQuote {
   id: ID!
   isSelected: Boolean!
   name: String
+  price(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
   priceCents: Int!
   priceCurrency: String!
   tier: String!

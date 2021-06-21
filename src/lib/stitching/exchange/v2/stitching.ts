@@ -23,6 +23,10 @@ const lineItemTotalsSDL = lineItemTotals.map(amountSDL)
 
 const offerAmountFields = ["amount", "taxTotal", "shippingTotal", "buyerTotal"]
 const offerAmountFieldsSDL = offerAmountFields.map(amountSDL)
+
+const shippingQuoteFields = ["price"]
+const shippingQuoteFieldsSDL = shippingQuoteFields.map(amountSDL)
+
 export const exchangeStitchingEnvironment = ({
   localSchema,
   exchangeSchema,
@@ -203,6 +207,10 @@ export const exchangeStitchingEnvironment = ({
       ): CommerceOrderConnectionWithTotalCount
     }
 
+    extend type CommerceShippingQuote {
+      ${shippingQuoteFieldsSDL.join("\n")}
+    }
+
     extend type CommerceLineItem {
       artwork: Artwork
       artworkVersion: ArtworkVersion
@@ -302,6 +310,9 @@ export const exchangeStitchingEnvironment = ({
             })
           },
         },
+      },
+      CommerceShippingQuote: {
+        ...totalsResolvers("CommerceShippingQuote", shippingQuoteFields),
       },
       CommerceBuyOrder: {
         // The money helper resolvers
