@@ -44,7 +44,7 @@ export const conversationEventConnection: GraphQLFieldConfig<
     args,
     ctx: {
       conversationMessagesLoader?: any
-      exchangeLoader?: any
+      exchangeGraphQLLoader?: any
       userID?: string
     }
   ) => {
@@ -54,6 +54,8 @@ export const conversationEventConnection: GraphQLFieldConfig<
     if (!conversationMessagesLoader) return null
 
     // Fetch all events for conversation because we will need them no matter what
+    // TODO: possible refactor - fetchConversationOrderEvents & fetchConversationMessageEvents have slightly different
+    //   signatures - optional properties, which means we call them differently.
     const orderEventRequest = fetchConversationOrderEvents(conversationId, ctx)
 
     const argsWithBefore = prepareConversationArgs(parent, args)

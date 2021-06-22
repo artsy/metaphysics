@@ -23,17 +23,20 @@ import gql from "lib/gql"
 export const fetchConversationOrderEvents = async (
   conversationId: string,
   // from ctx
-  { exchangeLoader, userID }: { exchangeLoader?: any; userID?: string },
+  {
+    exchangeGraphQLLoader,
+    userID,
+  }: { exchangeGraphQLLoader?: any; userID?: string },
   // from args - presence of sellerId overrides buyer mode
   sellerId?: string
 ) => {
-  if (!exchangeLoader) return null
+  if (!exchangeGraphQLLoader) return null
   // this id changes for the buyer or seller
   const viewerKey = sellerId
     ? `sellerId: "${sellerId}"`
     : `buyerId: "${userID}"`
 
-  const exchangeData = await exchangeLoader({
+  const exchangeData = await exchangeGraphQLLoader({
     query: gql`
       query ConversationEventConnection($conversationId: String!) {
         orders(first: 100, impulseConversationId: $conversationId, ${viewerKey}) {

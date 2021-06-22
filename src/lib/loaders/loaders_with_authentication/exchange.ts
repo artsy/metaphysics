@@ -26,7 +26,7 @@ export default (accessToken, opts) => {
     { method: "POST" }
   )
 
-  const exchangeLoader = async <R = unknown>({
+  const exchangeGraphQLLoader = async <R = unknown>({
     query,
     variables,
   }: GraphQLArgs): Promise<Record<string, R>> => {
@@ -62,6 +62,6 @@ export default (accessToken, opts) => {
 
   return {
     exchangeTokenLoader,
-    exchangeLoader,
+    exchangeGraphQLLoader,
   }
 }
