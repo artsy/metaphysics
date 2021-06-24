@@ -20,7 +20,8 @@ describe("getOptionalFieldsDirectivePaths", () => {
     `
 
     const path = getOptionalFieldsDirectivePaths(queryToAst(query))
-    expect(path.length).toBeFalsy()
+
+    expect(path).toEqual([])
   })
 
   it("returns the full path to the field tagged with the directive", () => {
@@ -39,7 +40,7 @@ describe("getOptionalFieldsDirectivePaths", () => {
     `
 
     const path = getOptionalFieldsDirectivePaths(queryToAst(query))
-    expect(path).toBeArray([["artist", "results"]])
+    expect(path).toEqual([["artist", "results"]])
   })
 
   it("returns the full path to the fields tagged with the directive", () => {
@@ -61,6 +62,6 @@ describe("getOptionalFieldsDirectivePaths", () => {
     `
 
     const path = getOptionalFieldsDirectivePaths(queryToAst(query))
-    expect(path).toBeArray([["artwork"], ["article", "author"]])
+    expect(path).toEqual([["artwork"], ["article", "author"]])
   })
 })

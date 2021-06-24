@@ -15,7 +15,7 @@ describe("optionalFieldsDirectiveExtension", () => {
         artist(id: "test") {
           id
         }
-        article(id: "test")  @optionalField {
+        article(id: "test") @optionalField {
           author {
             name
           }
@@ -31,7 +31,6 @@ describe("optionalFieldsDirectiveExtension", () => {
         artworkLoader: () => Promise.reject(new HTTPError("not found", 404)),
         artistLoader: () => Promise.reject(new HTTPError("not found", 404)),
         articleLoader: () => Promise.resolve(new HTTPError("not found", 404)),
-        authorLoader: () => Promise.reject(new HTTPError("not found", 404)),
       },
     }
 
@@ -41,7 +40,10 @@ describe("optionalFieldsDirectiveExtension", () => {
       result
     )
     expect(extensions).toEqual({
-      optionalFields: [{ httpStatusCode: 404 }, { httpStatusCode: 404 }],
+      optionalFields: [
+        { httpStatusCode: 404, path: ["artwork"] },
+        { httpStatusCode: 404, path: ["article"] },
+      ],
     })
   })
 

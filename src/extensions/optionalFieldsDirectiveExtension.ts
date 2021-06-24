@@ -9,22 +9,17 @@ export const optionalFieldsDirectiveExtension = (documentAST, result) => {
 
   if (paths.length && result.errors && result.errors.length) {
     const optionalErrors = result.errors.filter(
-      (e) => paths.filter((path) => isEqual(e.path, path)).length
+      (error) => paths.filter((path) => isEqual(error.path, path)).length
     )
 
     if (!optionalErrors) return extensions
 
     optionalErrors.forEach((errors) => {
-      flattenErrors(errors).some((err) => {
-        const httpStatusCode = statusCodeForError(err)
+      flattenErrors(errors).some((error) => {
+        // We always add the error even if it doesn't has a status code.
+        const httpStatusCode = statusCodeForError(error) || 500
 
-        optionalFields.push({ httpStatusCode: httpStatusCode || 500 })
-
-        // if (httpStatusCode) {
-        //   optionalFields.push({ httpStatusCode })
-        //   return true
-        // }
-        // return false
+        optionalFields.push({ httpStatusCode, path: error.path })
       })
     })
   }
