@@ -630,6 +630,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return price_includes_tax ? "VAT included in price" : null
         },
       },
+      artaShippingEnabled: {
+        type: GraphQLBoolean,
+        resolve: ({ arta_enabled }) => arta_enabled,
+      },
       shipsToContinentalUSOnly: {
         type: GraphQLBoolean,
         description:
