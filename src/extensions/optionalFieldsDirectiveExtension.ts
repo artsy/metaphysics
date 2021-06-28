@@ -9,7 +9,9 @@ export const optionalFieldsDirectiveExtension = (documentAST, result) => {
 
   if (paths.length && result.errors && result.errors.length) {
     const optionalErrors = result.errors.filter(
-      (error) => paths.filter((path) => isEqual(error.path.slice(0, path.length), path))
+      (error) =>
+        paths.filter((path) => isEqual(error.path.slice(0, path.length), path))
+          .length
     )
 
     if (!optionalErrors) return extensions

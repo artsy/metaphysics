@@ -39,6 +39,7 @@ describe("optionalFieldsDirectiveExtension", () => {
       queryToAst(query),
       result
     )
+
     expect(extensions).toEqual({
       optionalFields: [
         { httpStatusCode: 404, path: ["artwork"] },
