@@ -54,6 +54,15 @@ it("extends the Mutation object", async () => {
   expect(meFields).toContain("createInquiryOfferOrder")
 })
 
+it("extends the CommerceShippingQuote object", async () => {
+  const mergedSchema = await getExchangeMergedSchema()
+  const meFields = await getFieldsForTypeFromSchema(
+    "CommerceShippingQuote",
+    mergedSchema
+  )
+  expect(meFields).toContain("price")
+})
+
 it("resolves amount fields on CommerceOrder", async () => {
   const { resolvers } = await getExchangeStitchedSchema()
   const totalListPriceResolver = resolvers.CommerceOrder.totalListPrice.resolve
@@ -64,6 +73,15 @@ it("resolves amount fields on CommerceOrder", async () => {
       {}
     )
   ).toEqual("$1.00")
+})
+
+it("resolves price field on CommerceShippingQuote", async () => {
+  const { resolvers } = await getExchangeStitchedSchema()
+  const priceResolver = resolvers.CommerceShippingQuote.price.resolve
+
+  expect(priceResolver({ currencyCode: "USD", priceCents: 300 }, {})).toEqual(
+    "$3.00"
+  )
 })
 
 // These are used in all delegate calls, and not useful to the test
