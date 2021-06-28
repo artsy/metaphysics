@@ -107,6 +107,11 @@ const PrincipalFieldDirective = new GraphQLDirective({
   locations: [DirectiveLocation.FIELD],
 })
 
+const OptionalFieldDirective = new GraphQLDirective({
+  name: "optionalField",
+  locations: [DirectiveLocation.FIELD],
+})
+
 const rootFields = {
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkMediums: ArtworkMediums,
@@ -244,5 +249,8 @@ export default new GraphQLSchema({
     ShowArtworkGridType,
     ArtworkOrEditionSetType,
   ],
-  directives: specifiedDirectives.concat([PrincipalFieldDirective]),
+  directives: specifiedDirectives.concat([
+    PrincipalFieldDirective,
+    OptionalFieldDirective,
+  ]),
 })

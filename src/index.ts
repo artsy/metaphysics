@@ -32,6 +32,7 @@ import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
 import { ErrorExtension } from "./extensions/errorExtension"
 import { LoggingExtension } from "./extensions/loggingExtension"
+import { optionalFieldsDirectiveExtension } from "./extensions/optionalFieldsDirectiveExtension"
 import { principalFieldDirectiveExtension } from "./extensions/principalFieldDirectiveExtension"
 import { principalFieldDirectiveValidation } from "validations/principalFieldDirectiveValidation"
 import { NoSchemaIntrospectionCustomRule } from "validations/noSchemaIntrospectionCustomRule"
@@ -76,11 +77,17 @@ function createExtensions(document, result, requestID) {
     result
   )
 
+  const optionalFieldsExtensions = optionalFieldsDirectiveExtension(
+    document,
+    result
+  )
+
   const requestLoggerExtensions = enableRequestLogging
     ? fetchLoggerRequestDone(requestID)
     : {}
 
   const extensions = {
+    ...optionalFieldsExtensions,
     ...principalFieldExtensions,
     ...requestLoggerExtensions,
   }
