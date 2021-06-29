@@ -17,7 +17,7 @@ export const prepareConversationArgs = (conversation, args) => {
   return conversationArgs
 }
 
-export const fetchConversationMessageEvents = async (
+export const fetchMessageEvents = async (
   conversationId: string,
   parent: any,
   ctx: { conversationMessagesLoader: any },

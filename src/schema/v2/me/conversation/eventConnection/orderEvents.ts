@@ -15,18 +15,14 @@ import gql from "lib/gql"
 
 /**
  * fetch all order events for a conversation from exchange
- * @param conversationId
- * @param ctx
- * @param { sellerId } - to authenticate as seller instead of buyer
- * @returns
  */
-export const fetchConversationOrderEvents = async (
+export const fetchOrderEvents = async (
   conversationId: string,
   // from ctx
   {
     exchangeGraphQLLoader,
     userID,
-  }: { exchangeGraphQLLoader?: any; userID?: string },
+  }: { exchangeGraphQLLoader: any; userID: string },
   // from args - presence of sellerId overrides buyer mode
   sellerId?: string
 ) => {
@@ -77,10 +73,7 @@ export const fetchConversationOrderEvents = async (
   )
   // console.log({ offset })
 
-  const orderEventNodes = orderEvents.map((event, index) => {
-    return { ...event, id: `event-${index}` }
-  })
-  return orderEventNodes
+  return orderEvents
 }
 
 const ConversationOfferSubmittedEventType = new GraphQLObjectType<

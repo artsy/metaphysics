@@ -25,7 +25,7 @@ import {
   NullableIDField,
 } from "schema/v2/object_identification"
 import { MessageType } from "./message"
-import { conversationEventConnection } from "./conversationEventConnection"
+import { eventConnection } from "./eventConnection"
 import { ResolverContext } from "types/graphql"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
@@ -404,7 +404,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     },
 
     messagesConnection,
-    conversationEventConnection,
+    conversationEventConnection: eventConnection,
     unread: {
       type: GraphQLBoolean,
       description: "True if there is an unread message by the user.",
