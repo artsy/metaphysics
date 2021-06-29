@@ -134,6 +134,18 @@ const ConversationItem = new GraphQLObjectType<any, ResolverContext>({
     permalink: {
       type: GraphQLString,
     },
+    liveItem: {
+      type: ConversationItemType,
+      resolve: (parent, _args, { artworkLoader }) => {
+        if (parent.item_type === "Artwork") {
+          return artworkLoader(parent.properties.id).then((artwork) => ({
+            ...artwork,
+            __typename: "Artwork",
+          }))
+        }
+        throw new Error("Only artworks are supported.")
+      },
+    },
   },
 })
 
@@ -352,10 +364,17 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     },
 
     items: {
+      args: {
+        live: {
+          type: GraphQLBoolean,
+          description: "When true fetches an actual items instead of snapshots",
+          defaultValue: false,
+        },
+      },
       type: new GraphQLList(ConversationItem),
       description:
         "The artworks and/or partner shows discussed in the conversation.",
-      resolve: (conversation) => {
+      resolve: async (conversation, args, { artworkLoader }, _info) => {
         const results = []
 
         for (const item of conversation.items) {
@@ -363,9 +382,23 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
             isExisty(item.properties) &&
             (item.item_type === "Artwork" || item.item_type === "PartnerShow")
           ) {
-            // FIXME: Argument of type 'any' is not assignable to parameter of type 'never'.
-            // @ts-ignore
-            results.push(item)
+            if (args.live && item.item_type === "Artwork") {
+              const artwork = await artworkLoader(item.properties.id)
+
+              const updatedArtwork = {
+                properties: artwork,
+                item_type: "Artwork",
+                title: artwork.title,
+                permalink: `https://www.artsy.net/artwork/${item.properties.id}`,
+              }
+
+              // @ts-ignore
+              results.push(updatedArtwork) // figure out how to type this as an artwork
+            } else {
+              // FIXME: Argument of type 'any' is not assignable to parameter of type 'never'.
+              // @ts-ignore
+              results.push(item)
+            }
           }
         }
         return results
