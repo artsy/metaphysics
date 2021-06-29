@@ -7,6 +7,7 @@ import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { sortBy } from "lodash"
 import { ConversationEventUnion, fetchOrderEvents } from "./orderEvents"
 import { fetchMessageEvents, prepareConversationArgs } from "./messageEvents"
+import { fetchForPaginationArgs } from "./combinedPagination"
 
 /*
 TODO: Make pagination work
@@ -44,6 +45,11 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
     const { conversationMessagesLoader, exchangeGraphQLLoader, userID } = ctx
     if (!(conversationMessagesLoader && exchangeGraphQLLoader && userID))
       return null
+
+    // TODO: Here
+    // const {nodes, totalCount} = fetchForPaginationArgs(args, {
+    //   // ord: () => fetchOrderEvents
+    // })
 
     // Fetch all events for conversation because we will need them no matter what
     // TODO: possible refactor - fetchConversationOrderEvents & fetchConversationMessageEvents have slightly different
