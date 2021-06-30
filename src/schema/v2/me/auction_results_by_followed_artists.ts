@@ -10,7 +10,7 @@ import { params } from "schema/v1/home/add_generic_genes"
 import { ResolverContext } from "types/graphql"
 import { auctionResultConnection, AuctionResultSorts } from "../auction_result"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { merge } from "lodash"
+import { compact, merge } from "lodash"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 import ArtworkSizes from "../artwork/artworkSizes"
@@ -73,8 +73,8 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
       }
       const { body: followedArtists } = await followedArtistsLoader(gravityArgs)
 
-      const followedArtistIds = followedArtists.map(
-        (artist) => artist.artist._id
+      const followedArtistIds = compact(
+        followedArtists.map((artist) => artist.artist._id)
       )
 
       const {
