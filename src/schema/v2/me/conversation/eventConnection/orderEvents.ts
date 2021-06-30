@@ -12,11 +12,35 @@ import { MessageType } from "schema/v2/me/conversation/message"
 import { NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import gql from "lib/gql"
+import { PaginatedFetcher } from "./combinedPagination"
+
+// Fetch all events for conversation because we will need them no matter what
+// todo: mode into orderEvents
+export const fetchOrderEventsForPagination = (
+  conversationId: any,
+  userID: string,
+  exchangeGraphQLLoader: any
+): PaginatedFetcher => async (limit, offset, sort) => {
+  const orderEvents: Array<any> = await fetchOrderEvents(conversationId, {
+    exchangeGraphQLLoader,
+    userID,
+  })
+  const sortedNodes = orderEvents.sort((event) => {
+    const date: number = Date.parse(event.createdAt)
+
+    return sort === "DESC" ? -date : date
+  })
+
+  return {
+    totalCount: sortedNodes.length,
+    nodes: sortedNodes.slice(offset, limit + offset),
+  }
+}
 
 /**
  * fetch all order events for a conversation from exchange
  */
-export const fetchOrderEvents = async (
+const fetchOrderEvents = async (
   conversationId: string,
   // from ctx
   {

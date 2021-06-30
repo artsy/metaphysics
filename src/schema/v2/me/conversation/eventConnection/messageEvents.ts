@@ -1,5 +1,6 @@
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { get } from "lodash"
+import { PaginatedFetcher } from "./combinedPagination"
 
 const lastMessageId = (conversation) => {
   return get(conversation, "_embedded.last_message.id")
@@ -17,33 +18,25 @@ export const prepareConversationArgs = (conversation, args) => {
   return conversationArgs
 }
 
-export const fetchMessageEvents = async (
+export const fetchMessagesForPagination = (
   conversationId: string,
-  parent: any,
-  ctx: { conversationMessagesLoader: any },
-  conversationArgs: any
-): Promise<{
-  totalMessageCount: number
-  messages: any[]
-  messagesOffset: number
-}> => {
-  const { conversationMessagesLoader } = ctx
+  conversationMessagesLoader: any,
+  parent: { initial_message: any; from_name: any; from_email: any }
+): PaginatedFetcher => async (size, offset, sort) => {
   const { initial_message, from_name, from_email } = parent
-  const {
-    page,
-    size,
-    offset: messagesOffset,
-  } = convertConnectionArgsToGravityArgs(conversationArgs)
+  // adapted from convertConnectionArgsToGravityArgs
+  const page = size ? Math.round((size + offset) / size) : 1
+
   const {
     total_count: totalMessageCount,
     message_details: messageDetails,
   } = await conversationMessagesLoader({
     page,
     size,
+    // sort, // double check this is the right place for this arg
     conversation_id: conversationId,
     "expand[]": "deliveries",
   })
-
   // Inject the conversation initiator's email into each message payload
   // so we can tell if the user sent a particular message.
   // Also inject the conversation id, since we need it in some message
@@ -58,10 +51,8 @@ export const fetchMessageEvents = async (
       conversation_id: conversationId,
     }
   })
-
   return {
-    totalMessageCount,
-    messages,
-    messagesOffset,
+    totalCount: totalMessageCount,
+    nodes: messages,
   }
 }
