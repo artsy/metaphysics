@@ -74,7 +74,7 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
       const { body: followedArtists } = await followedArtistsLoader(gravityArgs)
 
       const followedArtistIds = compact(
-        followedArtists.map((artist) => artist.artist._id)
+        followedArtists.map((artist) => artist?.artist?._id)
       )
 
       const {
@@ -106,9 +106,9 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
           // enrich result with artist data
           const items = _embedded.items.map((auctionResult) => {
             const artist = followedArtists.find(
-              (artist) => artist.artist?._id == auctionResult.artist_id
+              (artist) => artist?.artist?._id == auctionResult.artist_id
             )
-            auctionResult.artist = artist.artist
+            auctionResult.artist = artist?.artist
             return auctionResult
           })
 
