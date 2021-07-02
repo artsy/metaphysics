@@ -44,7 +44,7 @@ describe("Fair type", () => {
     }
   `
 
-  let context = {
+  const context = {
     fairLoader: sinon.stub().returns(Promise.resolve(fair)),
   }
 
@@ -88,34 +88,6 @@ describe("Fair type", () => {
     const result = await runQuery(hrefQuery, context)
 
     expect(result.fair.href).toEqual("/fair/the-armory-show-2017")
-  })
-
-  it("is_publically_visible returns false when profile is not published", () => {
-    const profile = {
-      id: "context",
-      published: false,
-      private: false,
-    }
-
-    context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
-
-    return runQuery(query, context).then((data) => {
-      expect(data).toEqual({
-        fair: {
-          slug: "the-armory-show-2017",
-          name: "The Armory Show 2017",
-          organizer: {
-            profileID: "the-armory-show",
-            profile: {
-              isPubliclyVisible: false,
-            },
-          },
-          mobileImage: {
-            imageURL: "circle-image.jpg",
-          },
-        },
-      })
-    })
   })
 
   it("is_publically_visible returns false when profile is not published", () => {
@@ -320,7 +292,7 @@ describe("Fair", () => {
     `
 
     const data = await runQuery(query, context)
-    console.log(data)
+
     const {
       fair: {
         shows: { pageCursors, pageInfo },
@@ -394,7 +366,7 @@ describe("Fair", () => {
 
   describe("isActive flag", () => {
     describe("when active_start_at and end_at are in the past", () => {
-      it("is false ", async () => {
+      it("is false", async () => {
         const mockFair = {
           id: "this-fair-was-active",
           active_start_at: moment().subtract(14, "days").toISOString(),
@@ -425,7 +397,7 @@ describe("Fair", () => {
     })
 
     describe("when active_start_at is in the past and end_at is in the future", () => {
-      it("is true ", async () => {
+      it("is true", async () => {
         const mockFair = {
           id: "this-fair-is-active",
           active_start_at: moment().subtract(7, "days").toISOString(),
@@ -456,7 +428,7 @@ describe("Fair", () => {
     })
 
     describe("when active_start_at and end_at are in the future", () => {
-      it("is false ", async () => {
+      it("is false", async () => {
         const mockFair = {
           id: "this-fair-not-yet-active",
           active_start_at: moment().add(7, "days").toISOString(),
