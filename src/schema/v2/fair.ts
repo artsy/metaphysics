@@ -33,10 +33,13 @@ import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 import { ResolverContext } from "types/graphql"
 import { sponsoredContentForFair } from "lib/sponsoredContent"
-import { connectionWithCursorInfo } from "./fields/pagination"
 import { markdown } from "./fields/markdown"
 import { articleConnection } from "./article"
 import ArticleSorts from "./sorts/article_sorts"
+import {
+  connectionWithCursorInfo,
+  createPageCursors,
+} from "./fields/pagination"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -264,6 +267,9 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           },
         }),
         resolve: ({ id }, options, { fairBoothsLoader }) => {
+          const pageOptions = convertConnectionArgsToGravityArgs(options)
+          const { page, size } = pageOptions
+
           interface GravityOptions {
             size: number
             sort: string
@@ -283,14 +289,19 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             gravityOptions.cursor = options.after
           }
           return fairBoothsLoader(id, gravityOptions).then(
-            ({ body: { results, next } }) => {
-              const connection = connectionFromArraySlice(results, options, {
-                arrayLength: results.length,
-                sliceStart: 0,
-              })
-              connection.pageInfo.endCursor = next
-              connection.pageInfo.hasNextPage = !!next
-              return connection
+            ({ body: { results }, headers }) => {
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+              return {
+                pageCursors: createPageCursors(
+                  { ...options, page, size },
+                  totalCount
+                ),
+                ...connectionFromArraySlice(results, options, {
+                  arrayLength: results.length,
+                  sliceStart: 0,
+                }),
+              }
             }
           )
         },
