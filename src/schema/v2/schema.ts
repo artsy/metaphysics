@@ -36,7 +36,7 @@ import { OrderPartyUnionType } from "./ecommerce/types/order_party_union"
 import Fair from "./fair"
 import Fairs, { fairsConnection } from "./fairs"
 import { Feature } from "./Feature"
-// import FilterPartners from "./filter_partners"
+import FilterPartners from "./filter_partners"
 import { filterArtworksConnection } from "./filterArtworksConnection"
 import Gene from "./gene"
 // import ExternalPartner from "./external_partner"
@@ -93,7 +93,7 @@ import { startIdentityVerificationMutation } from "./startIdentityVerificationMu
 import StaticContent from "./static_content"
 import System from "./system"
 // import PartnerCategory from "./partner_category"
-// import PartnerCategories from "./partner_categories"
+import PartnerCategories from "./partner_categories"
 // import SuggestedGenes from "./suggested_genes"
 import { TagField } from "./tag"
 import { TargetSupply } from "./TargetSupply"
@@ -139,7 +139,7 @@ const rootFields = {
   fairs: Fairs,
   fairsConnection,
   feature: Feature,
-  // filterPartners: FilterPartners,
+  filterPartners: FilterPartners,
   // filterArtworksConnection: filterArtworksConnection(),
   gene: Gene,
   genes: Genes,
@@ -160,7 +160,7 @@ const rootFields = {
   orderedSets: OrderedSets,
   partner: Partner,
   partnerArtworks: PartnerArtworks,
-  // partnerCategories: PartnerCategories,
+  partnerCategories: PartnerCategories,
   // partnerCategory: PartnerCategory,
   partnersConnection: PartnersConnection,
   // profile: Profile,
