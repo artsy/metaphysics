@@ -219,7 +219,9 @@ describe("Fair", () => {
                 id: "abxy-blk-and-blue",
               },
             ],
-            next: "1234567890",
+          },
+          headers: {
+            "x-total-count": 1,
           },
         })
       ),
@@ -301,22 +303,42 @@ describe("Fair", () => {
               hasNextPage
               endCursor
             }
+            pageCursors {
+              around {
+                page
+              }
+              first {
+                page
+              }
+              previous {
+                page
+              }
+            }
           }
         }
       }
     `
 
     const data = await runQuery(query, context)
-    expect(data).toEqual({
+    console.log(data)
+    const {
       fair: {
-        shows: {
-          pageInfo: {
-            endCursor: "1234567890",
-            hasNextPage: true,
-          },
-        },
+        shows: { pageCursors, pageInfo },
       },
+    } = data
+
+    const { around, first, previous } = pageCursors
+
+    expect(around.length).toBe(4)
+    expect(first).toBe(null)
+    expect(previous).toBe(null)
+    expect(pageInfo).toEqual({
+      endCursor: null,
+      hasNextPage: true,
     })
+    for (let index = 0; index < 4; index++) {
+      expect(around[index].page).toBe(index + 1)
+    }
   })
 
   it("includes a formatted exhibition period", async () => {
