@@ -15,7 +15,7 @@ const FilterPartners: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(new GraphQLList(PartnersAggregation)),
     },
   }),
-  resolve: (_root, options, { partnersLoader }) => partnersLoader(options),
+  resolve: Partners.resolve
 }
 
 export default FilterPartners

@@ -28,12 +28,7 @@ export const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
       partners: {
         type: Partners.type,
         args: Partners.args,
-        resolve: ({ id }, options, { partnersLoader }) =>
-          partnersLoader(
-            _.defaults(options, {
-              partner_categories: [id],
-            })
-          ),
+        resolve: Partners.resolve
       },
     }
   },
