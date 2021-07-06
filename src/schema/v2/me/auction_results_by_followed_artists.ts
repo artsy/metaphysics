@@ -103,14 +103,21 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
         ({ total_count, _embedded }) => {
           const totalPages = Math.ceil(total_count / size)
 
+          // filter items without artist id
+          const filteredAuctionResults = _embedded.items.filter(
+            (auctionResult) => auctionResult.artist_id
+          )
+
           // enrich result with artist data
-          const items = _embedded.items.map((auctionResult) => {
-            const artist = followedArtists.find(
-              (artist) => artist?.artist?._id == auctionResult.artist_id
-            )
-            auctionResult.artist = artist?.artist
-            return auctionResult
-          })
+          const enrichedAuctionResults = filteredAuctionResults.map(
+            (auctionResult) => {
+              const artist = followedArtists.find(
+                (artist) => artist?.artist?._id == auctionResult.artist_id
+              )
+              auctionResult.artist = artist?.artist
+              return auctionResult
+            }
+          )
 
           return merge(
             {
@@ -125,7 +132,7 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
             {
               totalCount: total_count,
             },
-            connectionFromArraySlice(items, options, {
+            connectionFromArraySlice(enrichedAuctionResults, options, {
               arrayLength: total_count,
               sliceStart: offset,
             }),
