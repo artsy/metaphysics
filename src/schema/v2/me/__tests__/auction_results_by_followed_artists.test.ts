@@ -57,6 +57,9 @@ describe("Me", () => {
               title: "Auction Result 2",
               artist_id: "artist-2",
             },
+            {
+              title: "Auction Result Without Artist ID",
+            },
           ],
         },
       }))
