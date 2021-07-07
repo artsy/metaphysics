@@ -5211,6 +5211,7 @@ type ConversationInitiator {
 
 type ConversationItem {
   item: ConversationItemType
+  liveArtworkItem: ConversationItemType
   permalink: String
   title: String
 }

@@ -26,6 +26,7 @@ describe("Me", () => {
               item_id: "artwork-42",
               title: "Pwetty Cats",
               properties: {
+                id: "artwork-42",
                 title: "Pwetty Cats",
                 acquireable: true,
                 artists: [
@@ -33,6 +34,10 @@ describe("Me", () => {
                     id: "artist-42",
                   },
                 ],
+              },
+              liveArtworkItem: {
+                slug: "artwork-42",
+                isOfferableFromInquiry: true,
               },
             },
             {
@@ -255,6 +260,161 @@ describe("Me", () => {
             expect(items).toMatchSnapshot()
           }
         )
+      })
+
+      it("returns the conversation live artwork item", () => {
+        const newContext = {
+          conversationLoader: () => {
+            return Promise.resolve({
+              id: "420",
+              initial_message: "Loved some of the works at your fair booth!",
+              from_email: "collector@example.com",
+              from_name: "Percy",
+              _embedded: {
+                last_message: {
+                  snippet:
+                    "Loved some of the works at your fair booth! About this collector: Percy is a good cat",
+                  from_email_address: "other-collector@example.com",
+                  id: "25",
+                  order: 1,
+                },
+              },
+              from_last_viewed_message_id: "20",
+              items: [
+                {
+                  item_type: "Artwork",
+                  item_id: "artwork-42",
+                  title: "Pwetty Cats",
+                  properties: {
+                    id: "artwork-42",
+                    title: "Pwetty Cats",
+                    acquireable: true,
+                    artists: [
+                      {
+                        id: "artist-42",
+                      },
+                    ],
+                  },
+                  liveArtworkItem: {
+                    slug: "artwork-42",
+                    isOfferableFromInquiry: true,
+                  },
+                },
+              ],
+            })
+          },
+
+          artworkLoader: () => {
+            return Promise.resolve({
+              id: "artwork-42",
+              title: "Untitled (Portrait)",
+              forsale: true,
+              offerable_from_inquiry: true,
+              artists: [],
+            })
+          },
+        }
+
+        const query = `
+          {
+            me {
+              conversation(id: "420") {
+                items {
+                  title
+                  liveArtworkItem {
+                    ... on Artwork {
+                      slug
+                      isForSale
+                      isOfferableFromInquiry
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `
+
+        return runAuthenticatedQuery(query, newContext).then(
+          ({
+            me: {
+              conversation: { items },
+            },
+          }) => {
+            const artwork = items[0]
+            expect(artwork.liveArtworkItem.isOfferableFromInquiry).toBe(true)
+            expect(artwork.liveArtworkItem.isForSale).toBe(true)
+            expect(artwork.liveArtworkItem.slug).toBe("artwork-42")
+          }
+        )
+      })
+
+      it("throws error when liveArtworkItem is a partner show", () => {
+        const newContext = {
+          conversationLoader: () => {
+            return Promise.resolve({
+              id: "420",
+              initial_message: "Loved some of the works at your fair booth!",
+              from_email: "collector@example.com",
+              from_name: "Percy",
+              _embedded: {
+                last_message: {
+                  snippet:
+                    "Loved some of the works at your fair booth! About this collector: Percy is a good cat",
+                  from_email_address: "other-collector@example.com",
+                  id: "25",
+                  order: 1,
+                },
+              },
+              from_last_viewed_message_id: "20",
+              items: [
+                {
+                  item_type: "PartnerShow",
+                  item_id: "show-42",
+                  title: "Catty Show",
+                  properties: {
+                    is_reference: true,
+                    display_on_partner_profile: true,
+                  },
+                  liveArtworkItem: {
+                    slug: "artwork-42",
+                    isOfferableFromInquiry: true,
+                  },
+                },
+              ],
+            })
+          },
+
+          artworkLoader: () => {
+            return Promise.resolve({})
+          },
+        }
+
+        const query = `
+          {
+            me {
+              conversation(id: "420") {
+                items {
+                  title
+                  liveArtworkItem {
+                    ... on Artwork {
+                      slug
+                      isForSale
+                      isOfferableFromInquiry
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `
+
+        return runAuthenticatedQuery(query, newContext)
+          .then((result) => {
+            expect(result).toBe(null)
+          })
+          .catch((e) => {
+            expect(e.message).toBe("PartnerShow not supported.")
+          })
       })
     })
 
