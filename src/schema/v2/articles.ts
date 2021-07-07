@@ -15,6 +15,9 @@ const Articles: GraphQLFieldConfig<void, ResolverContext> = {
     auctionID: {
       type: GraphQLString,
     },
+    featured: {
+      type: GraphQLBoolean,
+    },
     ids: {
       type: new GraphQLList(GraphQLString),
       description: `
@@ -31,13 +34,18 @@ const Articles: GraphQLFieldConfig<void, ResolverContext> = {
     },
     sort: ArticleSorts,
   },
-  resolve: (_root, { auctionID, showID, ..._options }, { articlesLoader }) => {
-    const options: any = {
+  resolve: async (
+    _root,
+    { auctionID, showID, ...rest },
+    { articlesLoader }
+  ) => {
+    const articles = await articlesLoader({
       auction_id: auctionID,
       show_id: showID,
-      ..._options,
-    }
-    return articlesLoader(options).then((articles) => articles.results)
+      ...rest,
+    })
+
+    return articles.results
   },
 }
 
