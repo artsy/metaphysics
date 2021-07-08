@@ -136,16 +136,21 @@ const ConversationItem = new GraphQLObjectType<any, ResolverContext>({
     },
     liveArtworkItem: {
       type: ConversationItemType,
-      resolve: (artworkItem, _args, { artworkLoader }) => {
-        if (artworkItem.item_type === "Artwork") {
-          return artworkLoader(artworkItem.properties.id).then((artwork) => {
-            return {
-              ...artwork,
-              __typename: "Artwork",
+      resolve: (conversationItem, _args, { artworkLoader }) => {
+        if (conversationItem.item_type === "Artwork") {
+          return artworkLoader(conversationItem.properties.id).then(
+            (artwork) => {
+              const updatedArtwork = {
+                ...artwork,
+                __typename: "Artwork",
+              }
+              return artwork.published ? updatedArtwork : null
             }
-          })
-        } else {
+          )
+        } else if (conversationItem.item_type === "PartnerShow") {
           throw new Error("PartnerShow not supported.")
+        } else {
+          return null
         }
       },
     },
@@ -370,7 +375,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLList(ConversationItem),
       description:
         "The artworks and/or partner shows discussed in the conversation.",
-      resolve: async (conversation) => {
+      resolve: (conversation) => {
         const results = []
 
         for (const item of conversation.items) {
