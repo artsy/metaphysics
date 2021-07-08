@@ -648,6 +648,7 @@ type LineItem {
   order: Order!
   priceCents: Int! @deprecated(reason: "switch to use listPriceCents")
   quantity: Int!
+  shipment: Shipment
   shippingQuoteOptions(
     """
     Returns the elements in the list that come after the specified cursor.
@@ -1719,6 +1720,22 @@ type ShipArta {
   phoneNumber: String
   postalCode: String
   region: String
+}
+
+"""
+A shipment
+"""
+type Shipment {
+  bookedAt: String
+  carrierName: String
+  createdAt: DateTime!
+  id: ID!
+  priceCents: Int!
+  priceCurrency: String!
+  status: String
+  trackingNumber: String
+  trackingUrl: String
+  updatedAt: DateTime!
 }
 
 """
