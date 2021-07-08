@@ -115,36 +115,45 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         description: "The artworks featured in the show",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
-        resolve: (show, options, { partnerShowArtworksLoader }) => {
+        resolve: async (show, options, { partnerShowArtworksLoader }) => {
           const loaderOptions = {
             partner_id: show.partner.id,
             show_id: show.id,
           }
+
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             options
           )
-          interface GravityArgs {
+
+          const gravityArgs: {
             exclude_ids?: string[]
             page: number
             size: number
             total_count: boolean
-          }
-          const gravityArgs: GravityArgs = {
+          } = {
             page,
             size,
             total_count: true,
           }
+
           if (options.exclude) {
             gravityArgs.exclude_ids = flatten([options.exclude])
           }
-          return partnerShowArtworksLoader(loaderOptions, gravityArgs).then(
-            ({ body, headers = {} }) => {
-              return connectionFromArraySlice(body, options, {
-                arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-                sliceStart: offset,
-              })
-            }
+
+          const { body, headers = {} } = await partnerShowArtworksLoader(
+            loaderOptions,
+            gravityArgs
           )
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return {
+            totalCount,
+            ...connectionFromArraySlice(body, options, {
+              arrayLength: totalCount,
+              sliceStart: offset,
+            }),
+          }
         },
       },
       artworksCount: {
