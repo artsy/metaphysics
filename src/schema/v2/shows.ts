@@ -12,6 +12,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArray } from "graphql-relay"
 import ShowSorts, { ShowSortsType } from "./sorts/show_sorts"
 import { pick } from "lodash"
+import EventStatus, { EventStatusType } from "./input_fields/event_status"
 
 export const Shows: GraphQLFieldConfig<
   void,
@@ -22,6 +23,7 @@ export const Shows: GraphQLFieldConfig<
     sort?: ShowSortsType
     displayable?: boolean
     atAFair?: boolean
+    status?: EventStatusType
   } & CursorPageable
 > = {
   type: ShowsConnection.connectionType,
@@ -43,6 +45,9 @@ export const Shows: GraphQLFieldConfig<
     atAFair: {
       type: GraphQLBoolean,
     },
+    status: {
+      type: EventStatus.type,
+    },
   }),
   resolve: async (_root, args, { showsWithHeadersLoader }) => {
     const { page, size } = convertConnectionArgsToGravityArgs(args)
@@ -56,6 +61,7 @@ export const Shows: GraphQLFieldConfig<
       sort: args.sort,
       displayable: args.displayable,
       at_a_fair: args.atAFair,
+      status: args.status,
     })
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
