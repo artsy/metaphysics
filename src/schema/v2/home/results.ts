@@ -131,6 +131,7 @@ const moduleResults: HomePageArtworkModuleResolvers<any> = {
     }).then((works) => {
       return similarArtworksLoader({
         artwork_id: map(works, "_id").slice(0, 7),
+        for_sale: true,
       })
     })
   },
@@ -141,7 +142,10 @@ const moduleResults: HomePageArtworkModuleResolvers<any> = {
         return []
       }
       const recentlyViewedIds = recently_viewed_artwork_ids.slice(0, 7)
-      return similarArtworksLoader({ artwork_id: recentlyViewedIds })
+      return similarArtworksLoader({
+        artwork_id: recentlyViewedIds,
+        for_sale: true,
+      })
     })
   },
   recently_viewed_works: ({ meLoader, artworksLoader }) => {
