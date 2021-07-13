@@ -77,6 +77,10 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
         followedArtists.map((artist) => artist?.artist?._id)
       )
 
+      if (!followedArtistIds || followedArtistIds.length === 0) {
+        return null
+      }
+
       const {
         page,
         size,
