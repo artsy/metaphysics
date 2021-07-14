@@ -136,6 +136,7 @@ const ConversationItem = new GraphQLObjectType<any, ResolverContext>({
     },
     liveArtwork: {
       type: ConversationItemType,
+      description: "The actual, non-snapshotted artwork",
       resolve: async (conversationItem, _args, { artworkLoader }) => {
         if (conversationItem.item_type === "Artwork") {
           try {
