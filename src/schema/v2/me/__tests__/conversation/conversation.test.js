@@ -35,7 +35,7 @@ describe("Me", () => {
                   },
                 ],
               },
-              liveArtworkItem: {
+              liveArtwork: {
                 slug: "artwork-42",
                 isOfferableFromInquiry: true,
               },
@@ -296,7 +296,7 @@ describe("Me", () => {
                     ],
                     published: true,
                   },
-                  liveArtworkItem: {
+                  liveArtwork: {
                     slug: "artwork-42",
                     isOfferableFromInquiry: true,
                   },
@@ -323,7 +323,7 @@ describe("Me", () => {
               conversation(id: "420") {
                 items {
                   title
-                  liveArtworkItem {
+                  liveArtwork {
                     ... on Artwork {
                       slug
                       isForSale
@@ -343,9 +343,9 @@ describe("Me", () => {
             },
           }) => {
             const artwork = items[0]
-            expect(artwork.liveArtworkItem.isOfferableFromInquiry).toBe(true)
-            expect(artwork.liveArtworkItem.isForSale).toBe(true)
-            expect(artwork.liveArtworkItem.slug).toBe("artwork-42")
+            expect(artwork.liveArtwork.isOfferableFromInquiry).toBe(true)
+            expect(artwork.liveArtwork.isForSale).toBe(true)
+            expect(artwork.liveArtwork.slug).toBe("artwork-42")
           }
         )
       })
@@ -384,25 +384,13 @@ describe("Me", () => {
                     ],
                     published: true,
                   },
-                  liveArtworkItem: {
-                    slug: "artwork-42",
-                    isOfferableFromInquiry: true,
-                  },
+                  liveArtwork: null,
                 },
               ],
             })
           },
 
-          artworkLoader: () => {
-            return Promise.resolve({
-              id: "artwork-42",
-              title: "Untitled (Portrait)",
-              forsale: true,
-              offerable_from_inquiry: true,
-              artists: [],
-              published: false,
-            })
-          },
+          artworkLoader: () => Promise.reject({ error: "Artwork Not Found" }),
         }
 
         const query = `
@@ -411,7 +399,7 @@ describe("Me", () => {
               conversation(id: "420") {
                 items {
                   title
-                  liveArtworkItem {
+                  liveArtwork {
                     ... on Artwork {
                       slug
                       isForSale
@@ -430,13 +418,13 @@ describe("Me", () => {
               conversation: { items },
             },
           }) => {
-            const artworkItem = items[0]
-            expect(artworkItem.liveArtworkItem).toBe(null)
+            const artwork = items[0]
+            expect(artwork.liveArtwork).toBe(null)
           }
         )
       })
 
-      it("throws error when liveArtworkItem is a partner show", () => {
+      it("throws error when liveArtwork is a partner show", () => {
         const newContext = {
           conversationLoader: () => {
             return Promise.resolve({
@@ -463,7 +451,7 @@ describe("Me", () => {
                     is_reference: true,
                     display_on_partner_profile: true,
                   },
-                  liveArtworkItem: {
+                  liveArtwork: {
                     slug: "artwork-42",
                     isOfferableFromInquiry: true,
                   },
@@ -483,7 +471,7 @@ describe("Me", () => {
               conversation(id: "420") {
                 items {
                   title
-                  liveArtworkItem {
+                  liveArtwork {
                     ... on Artwork {
                       slug
                       isForSale

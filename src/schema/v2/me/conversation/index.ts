@@ -134,19 +134,22 @@ const ConversationItem = new GraphQLObjectType<any, ResolverContext>({
     permalink: {
       type: GraphQLString,
     },
-    liveArtworkItem: {
+    liveArtwork: {
       type: ConversationItemType,
-      resolve: (conversationItem, _args, { artworkLoader }) => {
+      resolve: async (conversationItem, _args, { artworkLoader }) => {
         if (conversationItem.item_type === "Artwork") {
-          return artworkLoader(conversationItem.properties.id).then(
-            (artwork) => {
-              const updatedArtwork = {
-                ...artwork,
-                __typename: "Artwork",
-              }
-              return artwork.published ? updatedArtwork : null
+          try {
+            const artworkData = await artworkLoader(
+              conversationItem.properties.id
+            )
+            return {
+              ...artworkData,
+              __typename: "Artwork",
             }
-          )
+          } catch (error) {
+            console.error(error)
+            return null
+          }
         } else if (conversationItem.item_type === "PartnerShow") {
           throw new Error("PartnerShow not supported.")
         } else {
