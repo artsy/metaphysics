@@ -56,6 +56,7 @@ input ApproveOrderInput {
   """
   clientMutationId: String
   id: ID!
+  shippingContact: ShippingContactAttributes
 }
 
 """
@@ -1750,6 +1751,15 @@ input ShippingAttributes {
   phoneNumber: String
   postalCode: String
   region: String
+}
+
+"""
+Shipping contact information
+"""
+input ShippingContactAttributes {
+  email: String!
+  name: String!
+  phone: String!
 }
 
 """
