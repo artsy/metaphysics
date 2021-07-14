@@ -424,7 +424,7 @@ describe("Me", () => {
         )
       })
 
-      it("throws error when liveArtwork is a partner show", () => {
+      it("returns null when item is a partner show", () => {
         const newContext = {
           conversationLoader: () => {
             return Promise.resolve({
@@ -451,17 +451,9 @@ describe("Me", () => {
                     is_reference: true,
                     display_on_partner_profile: true,
                   },
-                  liveArtwork: {
-                    slug: "artwork-42",
-                    isOfferableFromInquiry: true,
-                  },
                 },
               ],
             })
-          },
-
-          artworkLoader: () => {
-            return Promise.resolve({})
           },
         }
 
@@ -484,13 +476,16 @@ describe("Me", () => {
           }
         `
 
-        return runAuthenticatedQuery(query, newContext)
-          .then((result) => {
-            expect(result).toBe(null)
-          })
-          .catch((e) => {
-            expect(e.message).toBe("PartnerShow not supported.")
-          })
+        return runAuthenticatedQuery(query, newContext).then(
+          ({
+            me: {
+              conversation: { items },
+            },
+          }) => {
+            const artwork = items[0]
+            expect(artwork.liveArtwork).toBe(null)
+          }
+        )
       })
     })
 

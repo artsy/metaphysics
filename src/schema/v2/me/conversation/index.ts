@@ -152,7 +152,8 @@ const ConversationItem = new GraphQLObjectType<any, ResolverContext>({
             return null
           }
         } else if (conversationItem.item_type === "PartnerShow") {
-          throw new Error("PartnerShow not supported.")
+          console.warn("PartnerShow not supported")
+          return null
         } else {
           return null
         }
