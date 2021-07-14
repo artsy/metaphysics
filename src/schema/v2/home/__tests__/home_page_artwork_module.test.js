@@ -121,7 +121,7 @@ describe("HomePageArtworkModule", () => {
         }
       `
       return runQuery(query).then(({ homePage }) => {
-        expect(homePage.artworkModule.title).toEqual("Works by popular artists")
+        expect(homePage.artworkModule.title).toEqual("Works by Popular Artists")
       })
     })
   })
