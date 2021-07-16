@@ -27,6 +27,7 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLFieldConfig,
+  GraphQLInt,
 } from "graphql"
 import ShowSorts from "./sorts/show_sorts"
 import { allViaLoader } from "lib/all"
@@ -265,6 +266,10 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
             defaultValue: false,
           },
+          page: {
+            type: GraphQLInt,
+            defaultValue: 1,
+          },
         }),
         resolve: ({ id }, options, { fairBoothsLoader }) => {
           const pageOptions = convertConnectionArgsToGravityArgs(options)
@@ -277,28 +282,29 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             section: string
             artworks: boolean
             total_count: boolean
+            page: number
           }
           const gravityOptions: GravityOptions = {
             sort: options.sort || "-featured",
             section: options.section,
-            size: options.first,
+            size,
             artworks: true,
             total_count: !!options.totalCount,
+            page,
           }
-          if (!!options.after) {
-            gravityOptions.cursor = options.after
-          }
+
           return fairBoothsLoader(id, gravityOptions).then(
-            ({ body: { results }, headers }) => {
+            ({ body, headers }) => {
               const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
               return {
+                totalCount,
                 pageCursors: createPageCursors(
                   { ...options, page, size },
                   totalCount
                 ),
-                ...connectionFromArraySlice(results, options, {
-                  arrayLength: results.length,
+                ...connectionFromArraySlice(body, options, {
+                  arrayLength: totalCount,
                   sliceStart: 0,
                 }),
               }
