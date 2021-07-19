@@ -122,15 +122,15 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     ])
 
     // Map over response to gather all sale IDs
-    const causalityLots = causalityResponse.lotStandingConnection.edges.map(
-      ({ node }) => node
-    )
+    const causalityLots = (
+      causalityResponse?.lotStandingConnection?.edges ?? []
+    ).map(({ node }) => node)
     const causalitySaleIds = causalityLots.map((node) => node.lot.saleId)
     const registeredSaleIds = registeredSalesResponse.body.map(
       (sale) => sale._id
     )
     const watchedSaleIds = watchedSaleArtworksResponse.body.map(
-      (artwork) => artwork.sale_id
+      (artwork) => artwork.artwork.sale_ids[0]
     )
 
     // Combine ids from categories and dedupe
