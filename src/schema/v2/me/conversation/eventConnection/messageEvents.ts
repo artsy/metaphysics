@@ -1,4 +1,3 @@
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { get } from "lodash"
 import { PaginatedFetcher } from "./combinedPagination"
 
@@ -22,7 +21,7 @@ export const fetchMessagesForPagination = (
   conversationId: string,
   conversationMessagesLoader: any,
   parent: { initial_message: any; from_name: any; from_email: any }
-): PaginatedFetcher => async (size, offset, sort) => {
+): PaginatedFetcher => async (size, offset, _sort) => {
   const { initial_message, from_name, from_email } = parent
   // adapted from convertConnectionArgsToGravityArgs
   const page = size ? Math.round((size + offset) / size) : 1

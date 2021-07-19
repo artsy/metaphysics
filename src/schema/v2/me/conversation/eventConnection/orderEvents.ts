@@ -51,7 +51,7 @@ const fetchOrderEvents = async (
   sellerId?: string
 ) => {
   if (!exchangeGraphQLLoader) return null
-  // this id changes for the buyer or seller
+  // this id key depends on whether the requester the buyer or seller
   const viewerKey = sellerId
     ? `sellerId: "${sellerId}"`
     : `buyerId: "${userID}"`
