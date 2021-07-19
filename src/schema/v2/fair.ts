@@ -299,10 +299,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
 
               return {
                 totalCount,
-                pageCursors: createPageCursors(
-                  { ...options, page, size },
-                  totalCount
-                ),
+                pageCursors: createPageCursors({ page, size }, totalCount),
                 ...connectionFromArraySlice(body, options, {
                   arrayLength: totalCount,
                   sliceStart: offset,
