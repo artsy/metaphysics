@@ -273,7 +273,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: ({ id }, options, { fairBoothsLoader }) => {
           const pageOptions = convertConnectionArgsToGravityArgs(options)
-          const { page, size } = pageOptions
+          const { page, size, offset } = pageOptions
 
           interface GravityOptions {
             size: number
@@ -305,7 +305,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
                 ),
                 ...connectionFromArraySlice(body, options, {
                   arrayLength: totalCount,
-                  sliceStart: 0,
+                  sliceStart: offset,
                 }),
               }
             }

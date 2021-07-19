@@ -185,15 +185,16 @@ describe("Fair", () => {
       ),
       fairBoothsLoader: jest.fn().mockReturnValue(
         Promise.resolve({
-          body: {
-            results: [
-              {
-                id: "abxy-blk-and-blue",
-              },
-            ],
-          },
+          body: [
+            {
+              name: "A",
+            },
+            {
+              name: "B",
+            },
+          ],
           headers: {
-            "x-total-count": 1,
+            "x-total-count": 2,
           },
         })
       ),
@@ -270,7 +271,7 @@ describe("Fair", () => {
     const query = gql`
       {
         fair(id: "aqua-art-miami-2018") {
-          shows: showsConnection(first: 0, after: "") {
+          shows: showsConnection(first: 1) {
             pageInfo {
               hasNextPage
               endCursor
@@ -301,16 +302,91 @@ describe("Fair", () => {
 
     const { around, first, previous } = pageCursors
 
-    expect(around.length).toBe(4)
+    expect(around.length).toBe(2)
     expect(first).toBe(null)
     expect(previous).toBe(null)
     expect(pageInfo).toEqual({
-      endCursor: null,
+      endCursor: "YXJyYXljb25uZWN0aW9uOjA=",
       hasNextPage: true,
     })
-    for (let index = 0; index < 4; index++) {
+    for (let index = 0; index < 2; index++) {
       expect(around[index].page).toBe(index + 1)
     }
+  })
+
+  it("paginates by cursor", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          shows: showsConnection(first: 1) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            edges {
+              node {
+                name
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      fair: {
+        shows: {
+          pageInfo: {
+            hasNextPage: true,
+            endCursor: "YXJyYXljb25uZWN0aW9uOjA=",
+          },
+          edges: [
+            {
+              node: {
+                name: "A",
+              },
+            },
+          ],
+        },
+      },
+    })
+
+    const nextQuery = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          shows: showsConnection(first: 1, after: "YXJyYXljb25uZWN0aW9uOjA=") {
+            pageInfo {
+              hasNextPage
+            }
+            edges {
+              node {
+                name
+              }
+            }
+          }
+        }
+      }
+    `
+    const nextData = await runQuery(nextQuery, context)
+
+    expect(nextData).toEqual({
+      fair: {
+        shows: {
+          pageInfo: {
+            hasNextPage: false,
+          },
+          edges: [
+            {
+              node: {
+                name: "B",
+              },
+            },
+          ],
+        },
+      },
+    })
   })
 
   it("includes a formatted exhibition period", async () => {
