@@ -27,16 +27,20 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLFieldConfig,
+  GraphQLInt,
 } from "graphql"
 import ShowSorts from "./sorts/show_sorts"
 import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 import { ResolverContext } from "types/graphql"
 import { sponsoredContentForFair } from "lib/sponsoredContent"
-import { connectionWithCursorInfo } from "./fields/pagination"
 import { markdown } from "./fields/markdown"
 import { articleConnection } from "./article"
 import ArticleSorts from "./sorts/article_sorts"
+import {
+  connectionWithCursorInfo,
+  createPageCursors,
+} from "./fields/pagination"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -262,8 +266,15 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
             defaultValue: false,
           },
+          page: {
+            type: GraphQLInt,
+            defaultValue: 1,
+          },
         }),
         resolve: ({ id }, options, { fairBoothsLoader }) => {
+          const pageOptions = convertConnectionArgsToGravityArgs(options)
+          const { page, size, offset } = pageOptions
+
           interface GravityOptions {
             size: number
             sort: string
@@ -271,26 +282,29 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             section: string
             artworks: boolean
             total_count: boolean
+            page: number
           }
           const gravityOptions: GravityOptions = {
             sort: options.sort || "-featured",
             section: options.section,
-            size: options.first,
+            size,
             artworks: true,
             total_count: !!options.totalCount,
+            page,
           }
-          if (!!options.after) {
-            gravityOptions.cursor = options.after
-          }
+
           return fairBoothsLoader(id, gravityOptions).then(
-            ({ body: { results, next } }) => {
-              const connection = connectionFromArraySlice(results, options, {
-                arrayLength: results.length,
-                sliceStart: 0,
-              })
-              connection.pageInfo.endCursor = next
-              connection.pageInfo.hasNextPage = !!next
-              return connection
+            ({ body, headers }) => {
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+              return {
+                totalCount,
+                pageCursors: createPageCursors({ page, size }, totalCount),
+                ...connectionFromArraySlice(body, options, {
+                  arrayLength: totalCount,
+                  sliceStart: offset,
+                }),
+              }
             }
           )
         },
