@@ -117,6 +117,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         args: pageable({
           sort: ArticleSorts,
           page: { type: GraphQLInt },
+          inEditorialFeed: {
+            type: GraphQLBoolean,
+            description:
+              "Articles that are ready to be publicly viewed in the feed by everyone.",
+            defaultValue: true,
+          },
         }),
         resolve: async (
           { _id },

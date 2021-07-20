@@ -17,6 +17,7 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLBoolean,
       description:
         "Articles that are ready to be publicly viewed in the feed by everyone.",
+      defaultValue: true,
     },
   }),
   resolve: async (
