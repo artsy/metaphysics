@@ -268,7 +268,6 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           },
           page: {
             type: GraphQLInt,
-            defaultValue: 1,
           },
         }),
         resolve: ({ id }, options, { fairBoothsLoader }) => {
