@@ -1730,7 +1730,13 @@ type Shipment {
   bookedAt: String
   carrierName: String
   createdAt: DateTime!
+  deliveryEnd: DateTime
+  deliveryStart: DateTime
+  deliveryWindowModifier: String
   id: ID!
+  pickupEnd: DateTime
+  pickupStart: DateTime
+  pickupWindowModifier: String
   priceCents: Int!
   priceCurrency: String!
   status: String
