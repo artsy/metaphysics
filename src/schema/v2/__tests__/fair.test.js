@@ -321,7 +321,6 @@ describe("Fair", () => {
           shows: showsConnection(first: 1) {
             pageInfo {
               hasNextPage
-              endCursor
             }
             edges {
               node {
@@ -340,47 +339,11 @@ describe("Fair", () => {
         shows: {
           pageInfo: {
             hasNextPage: true,
-            endCursor: "YXJyYXljb25uZWN0aW9uOjA=",
           },
           edges: [
             {
               node: {
                 name: "A",
-              },
-            },
-          ],
-        },
-      },
-    })
-
-    const nextQuery = gql`
-      {
-        fair(id: "aqua-art-miami-2018") {
-          shows: showsConnection(first: 1, after: "YXJyYXljb25uZWN0aW9uOjA=") {
-            pageInfo {
-              hasNextPage
-            }
-            edges {
-              node {
-                name
-              }
-            }
-          }
-        }
-      }
-    `
-    const nextData = await runQuery(nextQuery, context)
-
-    expect(nextData).toEqual({
-      fair: {
-        shows: {
-          pageInfo: {
-            hasNextPage: false,
-          },
-          edges: [
-            {
-              node: {
-                name: "B",
               },
             },
           ],
