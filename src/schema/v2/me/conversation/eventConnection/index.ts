@@ -1,6 +1,4 @@
 import { pageable } from "relay-cursor-paging"
-import { connectionFromArraySlice } from "graphql-relay"
-
 import { GraphQLEnumType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
@@ -10,6 +8,7 @@ import {
 } from "./orderEvents"
 import { fetchMessagesForPagination } from "./messageEvents"
 import { fetchForPaginationArgs } from "./combinedPagination"
+import { hybridConnectionFromArraySlice } from "./hybridConnection"
 
 /*
 TODO: cursors and pagination must be encoded and decoded correctly.
@@ -59,13 +58,13 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
       ),
     })
 
-    console.log(combinedPaginationResult)
+    // console.log(combinedPaginationResult)
     const { nodes, totalCount, totalOffset } = combinedPaginationResult
 
     // TODO: Assuming everything has worked up to this point, the cursors
     // are probably still not working right.
     const connectionResult = {
-      ...connectionFromArraySlice(nodes, args, {
+      ...hybridConnectionFromArraySlice(nodes, args, {
         arrayLength: totalCount,
         sliceStart: totalOffset,
       }),

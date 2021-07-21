@@ -3,22 +3,15 @@
 //   nodes: Array<T>
 // }
 
+import { ConnectionArguments } from "graphql-relay"
 import { sortBy } from "lodash"
+import { cursorToOffsets, HybridOffsets, NodeWMeta } from "./hybridConnection"
 
 // some typical relay pagination args (maybe there is a type for this)
-interface PaginationArgs {
-  first?: number
-  last?: number
-  before?: string
-  after?: string
-}
 type SortDirection = "ASC" | "DESC"
 
 // these keys are arbitrary + used to refer to separate source offsets
-type PaginatedSource = "msg" | "ord"
-
-// we will position our items using the index in their own collection as well as the combined collection
-type PaginatedOffsets = Record<PaginatedSource, number> & { position: number }
+type SourceKeys = "msg" | "ord"
 
 /**
  * A fetching function for a given source. Based on the incoming `sortDirection`
@@ -31,26 +24,34 @@ export type PaginatedFetcher = <T = any>(
   sort: SortDirection
 ) => Promise<{ nodes: Array<T>; totalCount: number }>
 
-// const encodeBase64 = (str: string) =>
-//   Buffer.from(str, "utf-8").toString("base64")
-const decodeBase64 = (str: string) =>
-  Buffer.from(str, "base64").toString("base64")
-
-// Serialize an offset to a string
-// not used yet
-const serializeOffsets = (offsets: PaginatedOffsets) => {
-  return JSON.stringify(offsets)
-}
-const deserializeOffsets = (cursor: string): PaginatedOffsets => {
-  // TODO: once actually encoding cursors
-  // this may be something more like like `ConversationEvent:offsets`
-  // where we have to chop off the first part to get the encoded offsets
-  return JSON.parse(cursor)
-}
-
+/**
+ * Combine the response from multiple sources to return a single paginated result
+ * @param paginationArgs The pagination args
+ * @param fetchers an object with keys 'msg' and 'ord' and values that are a fetcher accepting limit/offset args
+ * @returns an object that looks like this:
+ * ```ts
+ * {
+ *   totalCount: number
+ *   totalOffset: number
+ *   nodes: Array<{
+ *     // initial node response plus...
+ *     id: GlobalId             // id encoding the node's overall position in the collection
+ *     meta: {
+ *       source: 'msg' | 'ord', // source fetcher
+ *       index: number          // position in _that_ fetcher's entire collection
+ *     }
+ *     offsets: {
+ *       ord: number            // last-seen order event (from node.meta.index)
+ *       msg: number            // last-seen message event
+ *       position: number       // overall position in the paginated collection
+ *     }
+ *   }>
+ * }
+ * ```
+ */
 export const fetchForPaginationArgs = async (
-  { first, last, before, after }: PaginationArgs,
-  fetchers: Record<PaginatedSource, PaginatedFetcher>
+  { first, last, before, after }: ConnectionArguments,
+  fetchers: Record<SourceKeys, PaginatedFetcher>
 ): Promise<{ totalCount: number; nodes: Array<any>; totalOffset: number }> => {
   // 1. check args
   if (before || last) {
@@ -63,15 +64,14 @@ export const fetchForPaginationArgs = async (
   const sort: "ASC" | "DESC" = "DESC"
 
   // 2. determine offsets by deserializing cursor
-  let offsets: PaginatedOffsets = {
+  let offsets: HybridOffsets<SourceKeys> = {
     msg: 0,
     ord: 0,
     position: 0,
   }
 
   if (after) {
-    const decoded = decodeBase64(after)
-    offsets = deserializeOffsets(decoded)
+    offsets = cursorToOffsets(after)
   }
 
   // figure out pagination args - default = 10?
@@ -113,40 +113,43 @@ export const fetchForPaginationArgs = async (
 // add what source each node came from as well as its position in the collection
 const addLocalPositionsToNodes = (
   nodes: Array<any>,
-  source: PaginatedSource,
-  startingOffsets: PaginatedOffsets
-): Array<any> => {
+  source: SourceKeys,
+  startingOffsets: HybridOffsets<SourceKeys>
+): Array<NodeWMeta<SourceKeys>> => {
   return nodes.reduce((acc, node, index) => {
     const totalIndex = index + startingOffsets[source]
     const meta = { source, index: totalIndex }
-    node.meta = meta
+    node._cursorMeta = meta
     acc.push(node)
     return acc
   }, [])
 }
 
 // add total collection offsets to each node. assume that will wind up in the cursor.
-const reduceNodesWithOffsets = (
-  nodes: Array<any>,
-  startingOffsets: PaginatedOffsets
-): { nodes: Array<any>; offsets: PaginatedOffsets } => {
+const reduceNodesWithOffsets = <T extends NodeWMeta<SourceKeys>>(
+  nodes: Array<T>,
+  startingOffsets: HybridOffsets<SourceKeys>
+): { nodes: Array<T>; offsets: HybridOffsets<SourceKeys> } => {
   return nodes.reduce(
     (acc, node, index) => {
-      const { source: thisSource, index: sourceIndex } = node.meta
+      const { source: thisSource, index: sourceIndex } = node._cursorMeta
       const newPosition = startingOffsets.position + index
       const newOffsets = {
         ...acc.offsets,
         [thisSource]: sourceIndex,
         position: newPosition,
       }
-      // TODO: clarify this is how we want to use id (assumption is that it will become cursor)
-      const globalId = serializeOffsets(newOffsets)
-      const newNode = { ...node, id: globalId }
+      console.log({ newOffsets })
+      // A bit of mutation here because deep cloning looks much uglier
+      node._cursorMeta.offsets = newOffsets
       return {
-        nodes: [...acc.nodes, newNode],
+        nodes: [...acc.nodes, node],
         offsets: newOffsets,
       }
     },
-    { nodes: [], offsets: startingOffsets }
+    { nodes: [], offsets: startingOffsets } as {
+      nodes: Array<T>
+      offsets: HybridOffsets<SourceKeys>
+    }
   )
 }
