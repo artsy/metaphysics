@@ -444,9 +444,12 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           },
         }),
         resolve: async ({ _id }, args, { articlesLoader }) => {
-          const { size, offset, sort } = convertConnectionArgsToGravityArgs(
-            args
-          )
+          const {
+            size,
+            offset,
+            sort,
+            inEditorialFeed,
+          } = convertConnectionArgsToGravityArgs(args)
 
           const { results, count } = await articlesLoader({
             published: true,
@@ -455,6 +458,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             count: true,
             offset,
             sort,
+            in_editorial_feed: inEditorialFeed,
           })
 
           return {

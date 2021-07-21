@@ -126,6 +126,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async (
           { _id },
           args: {
+            inEditorialFeed?: Boolean
             sort?: ArticleSort
           } & CursorPageable,
           { articlesLoader }
@@ -141,6 +142,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             count: boolean
             offset: number
             sort?: ArticleSort
+            in_editorial_feed?: Boolean
           }
 
           const articleArgs: ArticleArgs = {
@@ -150,6 +152,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             count: true,
             offset,
             sort: args.sort,
+            in_editorial_feed: args.inEditorialFeed,
           }
 
           const { results, count } = await articlesLoader(articleArgs)
