@@ -434,11 +434,21 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       },
       articlesConnection: {
         type: articleConnection.connectionType,
-        args: pageable({ sort: ArticleSorts }),
+        args: pageable({
+          sort: ArticleSorts,
+          inEditorialFeed: {
+            type: GraphQLBoolean,
+            description:
+              "Articles that are ready to be publicly viewed in the feed by everyone.",
+          },
+        }),
         resolve: async ({ _id }, args, { articlesLoader }) => {
-          const { size, offset, sort } = convertConnectionArgsToGravityArgs(
-            args
-          )
+          const {
+            size,
+            offset,
+            sort,
+            inEditorialFeed,
+          } = convertConnectionArgsToGravityArgs(args)
 
           const { results, count } = await articlesLoader({
             published: true,
@@ -447,6 +457,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             count: true,
             offset,
             sort,
+            in_editorial_feed: inEditorialFeed,
           })
 
           return {
