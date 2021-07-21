@@ -216,6 +216,8 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       }
     })
 
+    // debugger
+
     // Lastly, divide sales by opened / closed and sort by position
     const sorted = sortSales(combinedSales)
     return sorted
