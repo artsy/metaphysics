@@ -45,13 +45,12 @@ It is currently used in production all over the place in
 
 To get yourself set up with all the project's dependencies:
 
-```
+```sh
 git clone https://github.com/artsy/metaphysics
 cd metaphysics
 
 # Run the setup script
-
-yarn setup
+./scripts/setup.sh
 ```
 
 This will pull the environment variables from aws into .env.shared.
@@ -161,20 +160,20 @@ this:
 - Install [Docker for Mac](https://github.com/artsy/hokusai#requirements) and
   [Hokusai](https://github.com/artsy/hokusai#setup)
 
-  ```
+  ```sh
   $ brew tap caskroom/cask && brew cask install docker
   $ pip install hokusai
   ```
 
   If you are using your system Python distribution, you may need to run this as:
 
-  ```
+  ```sh
   $ sudo pip install hokusai --ignore-installed
   ```
 
 - Configure Hokusai
 
-  ```
+  ```sh
   export AWS_ACCESS_KEY_ID={{ MY_AWS_ACCESS_KEY_ID }}
   export AWS_SECRET_ACCESS_KEY={{ MY_AWS_SECRET_ACCESS_KEY }}
   hokusai configure --kubectl-version {{ kubectl_version }} --s3-bucket {{ kubectl_config_s3_bucket }} --s3-key {{ kubectl_config_s3_key }}
@@ -184,11 +183,9 @@ this:
   Artsy staff should find follow the instructions in
   https://github.com/artsy/potential/blob/master/platform/Kubernetes.md#hokusai
 
-### Development
-
 - Start the server
 
-  ```
+  ```sh
   hokusai dev start
   ```
 
@@ -196,7 +193,7 @@ this:
 
 - Run tests in the Docker Compose test stack via Hokusai:
 
-  ```
+  ```sh
   hokusai test
   ```
 
