@@ -130,7 +130,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       (sale) => sale._id
     )
     const watchedSaleIds = watchedSaleArtworksResponse.body.map(
-      (artwork) => artwork.artwork.sale_ids[0]
+      (saleArtwork) => saleArtwork.artwork.sale_ids[0]
     )
 
     // Combine ids from categories and dedupe
@@ -151,10 +151,12 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     // Fetch all sale artworks from sale
     const saleSaleArtworks = await Promise.all(
       combinedSales.map((sale: any) => {
-        const lots = causalityLots.filter(
+        const causalityLotsBySaleId = causalityLots.filter(
           (node) => node.lot.saleId === sale._id
         )
-        const artworkIds = lots.map((lot) => lot.internalID)
+        const artworkIds = causalityLotsBySaleId.map(
+          (causalityLot) => causalityLot.lot.internalID
+        )
         return saleArtworksLoader(sale._id, {
           ids: artworkIds,
           offset: 0,
@@ -200,6 +202,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
           const foundWatchedAndBidOnLot = saleArtworksWithCausalityState.find(
             (saleArtwork) => saleArtwork.lotState.internalID === watchedLot._id
           )
+
           if (!foundWatchedAndBidOnLot) {
             return watchedLot
           }
