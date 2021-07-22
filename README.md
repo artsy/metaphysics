@@ -63,16 +63,10 @@ or add new .env values place them in the .env file.
 With your dependencies set up, you can run Metaphysics by running:
 
 ```sh
-yarn dev
+yarn start
 ```
 
 Which will start the server on http://localhost:3000
-
-You can also use hokusai by running the below command.
-
-```sh
-hokusai dev start
-```
 
 Be sure that memcached is no longer running before starting hokusai by running
 
@@ -104,14 +98,18 @@ Introspection is available by default when developing.
 Introspection on staging and production are for internal use only, so artsy devs can use it to make development for MP clients (eigen, force, etc) easier, but it is and should not be used by any of the clients or anyone else.
 
 In order to set this up in your playground of choice (Postman, Insomnia, Altair, etc), you need to send the following header:
+
 ```
 Authorization: Bearer <secret>
 ```
+
 and replace `<secret>` with the value you get from hokusai using
+
 ```
 hokusai staging env get INTROSPECT_TOKEN
 hokusai production env get INTROSPECT_TOKEN
 ```
+
 or the contents of `Metaphysics INTROSPECT_TOKEN` in 1Password.
 
 ### Sample Queries
@@ -185,6 +183,14 @@ this:
 
   Artsy staff should find follow the instructions in
   https://github.com/artsy/potential/blob/master/platform/Kubernetes.md#hokusai
+
+### Development
+
+- Start the server
+
+  ```
+  hokusai dev start
+  ```
 
 ### Testing
 
