@@ -39,7 +39,7 @@ export const causalityLoaders = (_accessToken, _userID) => {
     } else if (causalityErrors) {
       const errors = causalityErrors.reduce((acc, error) => {
         return acc + " " + error["message"]
-      }, "")
+      }, "From causality service:")
 
       throw new GraphQLError(`[loaders/causality.ts]: ${errors}`)
     } else {

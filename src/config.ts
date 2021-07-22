@@ -86,7 +86,6 @@ const {
 const mustHave = {
   // Reliant Artsy Services
   CAUSALITY_API_BASE,
-  CAUSALITY_TOKEN,
   CONVECTION_API_BASE,
   CONVECTION_APP_ID,
   DELTA_API_BASE,
