@@ -51,10 +51,10 @@ cd metaphysics
 
 # Run the setup script
 
-source ./scripts/setup.sh
+yarn setup
 ```
 
-This will pull the environment variables from aws into .env.shared. 
+This will pull the environment variables from aws into .env.shared.
 It will also overwrite .env with the values in .env.example. If you need to override any of these values
 or add new .env values place them in the .env file.
 

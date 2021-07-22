@@ -6,17 +6,28 @@
 #
 # Commands that may fail have "|| return" to avoid continuing or interfering with terminal.
 
-if [ ! -z $NVM_DIR ]; then # skip nvm steps if not available
-  echo 'Configuring node 12...'
-  source ~/.nvm/nvm.sh
-  nvm install || return
+# Install yarn if it does not exist.
+if ! yarn versions &> /dev/null; then
+  echo 'yarn is required for setup, installing...'
+  if ! brew --version &> /dev/null; then
+    echo 'brew is required to install yarn, see https://docs.brew.sh/Installation'
+    exit 0
+  fi
+  brew install yarn
 fi
 
-echo 'Installing yarn and memcached...'
-brew bundle || return
+if ! memcached --version &> /dev/null; then
+  brew install memcached
+fi
 
-echo 'Installing node packages...'
-yarn install || return
+if [[ ! -z $NVM_DIR ]]; then # skip if nvm is not available
+  echo "Installing Node..."
+  source ~/.nvm/nvm.sh
+  nvm install
+fi
+
+echo "Installing dependencies..."
+yarn install || echo 'Unable to install dependencies using yarn!'
 
 if [ -e ".env" ]; then
   echo '.env file already exists, so skipping initialization...'
