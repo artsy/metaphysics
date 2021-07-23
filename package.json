@@ -26,6 +26,7 @@
     "prettier-project": "prettier --write 'src/**/*.{js,ts,tsx,md,graphql}'",
     "schema-drift": "babel-node --no-warnings --extensions '.ts,.js' ./scripts/schema-drift.ts",
     "start": "yarn run dev",
+    "sync-env": "aws s3 cp s3://artsy-citadel/dev/.env.metaphysics .env.shared && echo 'ENV sync complete.'",
     "test": "yarn type-check && yarn lint && jest",
     "test:jest:v1": "yarn jest --config jest.config.v1.js --maxWorkers 3",
     "test:jest:v2": "yarn jest --config jest.config.v2.js --maxWorkers 3",

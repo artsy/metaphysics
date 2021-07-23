@@ -45,16 +45,15 @@ It is currently used in production all over the place in
 
 To get yourself set up with all the project's dependencies:
 
-```
+```sh
 git clone https://github.com/artsy/metaphysics
 cd metaphysics
 
 # Run the setup script
-
-source ./scripts/setup.sh
+./scripts/setup.sh
 ```
 
-This will pull the environment variables from aws into .env.shared. 
+This will pull the environment variables from aws into .env.shared.
 It will also overwrite .env with the values in .env.example. If you need to override any of these values
 or add new .env values place them in the .env file.
 
@@ -63,16 +62,10 @@ or add new .env values place them in the .env file.
 With your dependencies set up, you can run Metaphysics by running:
 
 ```sh
-yarn dev
+yarn start
 ```
 
 Which will start the server on http://localhost:3000
-
-You can also use hokusai by running the below command.
-
-```sh
-hokusai dev start
-```
 
 Be sure that memcached is no longer running before starting hokusai by running
 
@@ -104,14 +97,18 @@ Introspection is available by default when developing.
 Introspection on staging and production are for internal use only, so artsy devs can use it to make development for MP clients (eigen, force, etc) easier, but it is and should not be used by any of the clients or anyone else.
 
 In order to set this up in your playground of choice (Postman, Insomnia, Altair, etc), you need to send the following header:
+
 ```
 Authorization: Bearer <secret>
 ```
+
 and replace `<secret>` with the value you get from hokusai using
+
 ```
 hokusai staging env get INTROSPECT_TOKEN
 hokusai production env get INTROSPECT_TOKEN
 ```
+
 or the contents of `Metaphysics INTROSPECT_TOKEN` in 1Password.
 
 ### Sample Queries
@@ -163,20 +160,20 @@ this:
 - Install [Docker for Mac](https://github.com/artsy/hokusai#requirements) and
   [Hokusai](https://github.com/artsy/hokusai#setup)
 
-  ```
+  ```sh
   $ brew tap caskroom/cask && brew cask install docker
   $ pip install hokusai
   ```
 
   If you are using your system Python distribution, you may need to run this as:
 
-  ```
+  ```sh
   $ sudo pip install hokusai --ignore-installed
   ```
 
 - Configure Hokusai
 
-  ```
+  ```sh
   export AWS_ACCESS_KEY_ID={{ MY_AWS_ACCESS_KEY_ID }}
   export AWS_SECRET_ACCESS_KEY={{ MY_AWS_SECRET_ACCESS_KEY }}
   hokusai configure --kubectl-version {{ kubectl_version }} --s3-bucket {{ kubectl_config_s3_bucket }} --s3-key {{ kubectl_config_s3_key }}
@@ -186,11 +183,17 @@ this:
   Artsy staff should find follow the instructions in
   https://github.com/artsy/potential/blob/master/platform/Kubernetes.md#hokusai
 
+- Start the server
+
+  ```sh
+  hokusai dev start
+  ```
+
 ### Testing
 
 - Run tests in the Docker Compose test stack via Hokusai:
 
-  ```
+  ```sh
   hokusai test
   ```
 
