@@ -23,16 +23,18 @@ export const fetchMessagesForPagination = (
   parent: { initial_message: any; from_name: any; from_email: any }
 ): PaginatedFetcher => async (size, offset, _sort) => {
   const { initial_message, from_name, from_email } = parent
-  // adapted from convertConnectionArgsToGravityArgs
-  const page = size ? Math.round((size + offset) / size) : 1
 
+  const page = size ? Math.round((size + offset) / size) : 1
+  setImmediate(() => {
+    console.log({ page, size, offset })
+  })
   const {
     total_count: totalMessageCount,
     message_details: messageDetails,
   } = await conversationMessagesLoader({
     page,
     size,
-    // sort, // double check this is the right place for this arg
+    sort: "desc", // double check this is the right place for this arg
     conversation_id: conversationId,
     "expand[]": "deliveries",
   })

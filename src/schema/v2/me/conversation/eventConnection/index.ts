@@ -65,8 +65,7 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
     // are probably still not working right.
     const connectionResult = {
       ...hybridConnectionFromArraySlice(nodes, args, {
-        arrayLength: totalCount,
-        sliceStart: totalOffset,
+        totalCount,
       }),
       totalCount,
     }

@@ -4,6 +4,7 @@
 // }
 
 import { ConnectionArguments } from "graphql-relay"
+import { verbose } from "lib/loggers"
 import { sortBy } from "lodash"
 import { cursorToOffsets, HybridOffsets, NodeWMeta } from "./hybridConnection"
 
@@ -65,21 +66,20 @@ export const fetchForPaginationArgs = async (
 
   // 2. determine offsets by deserializing cursor
   let offsets: HybridOffsets<SourceKeys> = {
-    msg: 0,
-    ord: 0,
-    position: 0,
+    msg: null,
+    ord: null,
+    position: null,
   }
 
   if (after) {
     offsets = cursorToOffsets(after)
   }
 
-  // figure out pagination args - default = 10?
   const limit: number = first || 10
 
   // 3. overfetch to fulfill request from either service
-  const orderEventsReq = fetchers.ord(limit, offsets.ord, sort)
-  const messagesReq = fetchers.msg(limit, offsets.msg, sort)
+  const orderEventsReq = fetchers.ord(limit, offsets.ord || 0, sort)
+  const messagesReq = fetchers.msg(limit, offsets.msg || 0, sort)
   const [orderEventsResult, messagesResult] = await Promise.all([
     orderEventsReq,
     messagesReq,
@@ -104,7 +104,7 @@ export const fetchForPaginationArgs = async (
   return {
     ...reduceNodesWithOffsets(sortedNodes, offsets),
     totalCount,
-    totalOffset: offsets.position,
+    totalOffset: offsets.position!,
   }
   // offsets are indexes of the final collection,
   // so our new objects must pick up where they left off
@@ -117,7 +117,7 @@ const addLocalPositionsToNodes = (
   startingOffsets: HybridOffsets<SourceKeys>
 ): Array<NodeWMeta<SourceKeys>> => {
   return nodes.reduce((acc, node, index) => {
-    const totalIndex = index + startingOffsets[source]
+    const totalIndex = index + startingOffsets[source]!
     const meta = { source, index: totalIndex }
     node._cursorMeta = meta
     acc.push(node)
@@ -133,7 +133,7 @@ const reduceNodesWithOffsets = <T extends NodeWMeta<SourceKeys>>(
   return nodes.reduce(
     (acc, node, index) => {
       const { source: thisSource, index: sourceIndex } = node._cursorMeta
-      const newPosition = startingOffsets.position + index
+      const newPosition = startingOffsets.position! + index
       const newOffsets = {
         ...acc.offsets,
         [thisSource]: sourceIndex,

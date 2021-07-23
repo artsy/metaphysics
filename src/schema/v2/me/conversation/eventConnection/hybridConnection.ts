@@ -3,13 +3,15 @@ import {
   Connection,
   ConnectionCursor,
 } from "graphql-relay"
+import qs from "qs"
+import { URLSearchParams } from "url"
 
 // we will position our items using the index in their own collection as well as the combined collection
 // Type parameter T refers to labels for each source
-export type HybridOffsets<T extends string> = Record<T, number> & {
-  /** The offset of the argument in the final, combined collection */
-  position: number
-}
+export type HybridOffsets<T extends string> = Record<
+  T | "position",
+  number | null
+>
 
 /**
  * A node with an additional `_cursorMeta` property for storing intermediate data
@@ -37,7 +39,8 @@ const PREFIX = "hybrid_connection:"
 export function offsetsToCursor<T extends string>(
   offsets: HybridOffsets<T>
 ): ConnectionCursor {
-  return base64(PREFIX + JSON.stringify(offsets))
+  const asQuery = new URLSearchParams(offsets as any).toString()
+  return base64(PREFIX + asQuery)
 }
 
 /**
@@ -47,12 +50,7 @@ export function cursorToOffsets<T extends string>(
   cursor: ConnectionCursor
 ): HybridOffsets<T> {
   // drop the prefix and parse the json
-  return JSON.parse(unBase64(cursor).split(":")[1])
-}
-
-type ArraySliceMetaInfo = {
-  sliceStart: number
-  arrayLength: number
+  return qs.parse(unBase64(cursor).split(":")[1])
 }
 
 /**
@@ -70,63 +68,54 @@ export function hybridConnectionFromArraySlice<
 >(
   arraySlice: Array<NodeWMeta<S, T>>,
   args: ConnectionArguments,
-  meta: ArraySliceMetaInfo
+  meta: { totalCount: number }
 ): Connection<T> {
-  const { after, before, first, last } = args
-  const { sliceStart, arrayLength } = meta
-  const sliceEnd = sliceStart + arraySlice.length
-
-  let startOffset = Math.max(sliceStart, 0)
-  let endOffset = Math.min(sliceEnd, arrayLength)
+  const { _after, _before, first, last } = args
+  const { totalCount } = meta
 
   // TODO: fix commented-out code left over from graphql-relay-js connection.ts
-
-  // const afterOffset = getOffsetsWithDefault(after, -1)
-  // if (0 <= afterOffset && afterOffset < arrayLength) {
-  //   startOffset = Math.max(startOffset, afterOffset + 1)
-  // }
-
-  // const beforeOffset = getOffsetsWithDefault(before, endOffset)
-  // if (0 <= beforeOffset && beforeOffset < arrayLength) {
-  //   endOffset = Math.min(endOffset, beforeOffset)
-  // }
 
   if (typeof first === "number") {
     if (first < 0) {
       throw new Error('Argument "first" must be a non-negative integer')
     }
-
-    endOffset = Math.min(endOffset, startOffset + first)
+  } else {
+    throw new Error("'first' is required")
   }
+
   if (typeof last === "number") {
-    if (last < 0) {
-      throw new Error('Argument "last" must be a non-negative integer')
-    }
-
-    startOffset = Math.max(startOffset, endOffset - last)
+    throw new Error('only "first" is supported for now')
   }
 
-  // If supplied slice is too large, trim it down before mapping over it.
-  const slice = arraySlice.slice(
-    startOffset - sliceStart,
-    endOffset - sliceStart
+  console.log(
+    "incoming",
+    arraySlice.map((v) => [v._cursorMeta.source, v.createdAt])
+  )
+  const slice = arraySlice.slice(0, first)
+  console.log(
+    "sliced",
+    slice.map((v) => [v._cursorMeta.source, v.createdAt, v.body || v.state])
   )
 
-  const edges: Array<{ cursor: string; node: T }> = slice.map((value) => {
-    const {
-      _cursorMeta: { offsets },
-      ...node
-    } = value
-    const cursor = offsetsToCursor(offsets!)
-    console.log("***** Adding cursor from offsets: *****")
-    console.log({ cursor, offsets })
-    return {
-      cursor,
-      // FIXME
-      node: (node as unknown) as T,
-    }
-  })
+  const edges: Array<{ cursor: string; node: NodeWMeta<S, T> }> = slice.map(
+    (value) => {
+      const {
+        _cursorMeta: { offsets },
+      } = value
+      const cursor = offsetsToCursor(offsets!)
 
+      console.log("***** Adding cursor from offsets: *****")
+      console.log({ cursor, offsets })
+
+      return {
+        cursor,
+        // FIXME
+        node: value,
+      }
+    }
+  )
+
+  console.log(edges.map((e) => e.node._cursorMeta.source))
   const firstEdge = edges[0]
   const lastEdge = edges[edges.length - 1]
   // TODO: fix commented-out code left over from graphql-relay-js connection.ts
@@ -137,10 +126,12 @@ export function hybridConnectionFromArraySlice<
     pageInfo: {
       startCursor: firstEdge ? firstEdge.cursor : null,
       endCursor: lastEdge ? lastEdge.cursor : null,
-      hasPreviousPage: true,
-      // typeof last === "number" ? startOffset > lowerBound : false,
-      hasNextPage: true,
-      //  typeof first === "number" ? endOffset < upperBound : false,
+      hasPreviousPage: firstEdge
+        ? firstEdge.node._cursorMeta.offsets!.position! > 0
+        : false,
+      hasNextPage: lastEdge
+        ? lastEdge.node._cursorMeta.offsets!.position! + 1 < totalCount
+        : false,
     },
   }
 }

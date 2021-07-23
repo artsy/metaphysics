@@ -21,6 +21,8 @@ export const fetchOrderEventsForPagination = (
   userID: string,
   exchangeGraphQLLoader: any
 ): PaginatedFetcher => async (limit, offset, sort) => {
+  console.log("FetchOrderEvents", { limit, offset, conversationId })
+
   const orderEvents: Array<any> = await fetchOrderEvents(conversationId, {
     exchangeGraphQLLoader,
     userID,
@@ -95,8 +97,6 @@ const fetchOrderEvents = async (
   const orderEvents = exchangeData.orders.nodes.flatMap(
     (node) => node.orderHistory
   )
-  // console.log({ offset })
-
   return orderEvents
 }
 

@@ -3,6 +3,7 @@ import config from "config"
 import fetch from "node-fetch"
 import urljoin from "url-join"
 import { GraphQLError } from "graphql"
+import { verbose } from "lib/loggers"
 
 const { EXCHANGE_APP_ID, EXCHANGE_API_BASE } = config
 interface GraphQLArgs {
@@ -48,6 +49,7 @@ export default (accessToken, opts) => {
 
     const json = await response.json()
     const { data: exchangeData, errors: exchangeErrors } = json
+    verbose(json)
 
     // If the causality request failed for some reason, throw its errors.
     if (exchangeErrors) {
