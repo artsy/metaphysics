@@ -27,7 +27,7 @@ if [[ ! -z $NVM_DIR ]]; then # skip if nvm is not available
 fi
 
 echo "Installing dependencies..."
-yarn install || echo 'Unable to install dependencies using yarn!'
+yarn install
 
 if [ -e ".env" ]; then
   echo '.env file already exists, so skipping initialization...'
