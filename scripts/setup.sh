@@ -1,18 +1,18 @@
+#!/bin/bash
+
+# Exit if any subcommand fails
+set -e
+
 # This assumes you have general prerequisites installed as by:
 # https://github.com/artsy/potential/blob/master/scripts/setup
 #
 # Run like:
 #   source scripts/setup.sh
 #
-# Commands that may fail have "|| return" to avoid continuing or interfering with terminal.
 
 # Install yarn if it does not exist.
 if ! which yarn > /dev/null; then
-  echo 'yarn is required for setup, installing...'
-  if ! which brew > /dev/null; then
-    echo 'brew is required to install yarn, see https://docs.brew.sh/Installation'
-    exit 0
-  fi
+  echo 'yarn is required for setup, installing with brew...'
   brew install yarn
 fi
 
