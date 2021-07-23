@@ -16,7 +16,7 @@ if ! which yarn > /dev/null; then
   brew install yarn
 fi
 
-if ! memcached --version &> /dev/null; then
+if ! which memcached > /dev/null; then
   brew install memcached
 fi
 
