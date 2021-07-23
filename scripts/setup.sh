@@ -9,7 +9,7 @@
 # Install yarn if it does not exist.
 if ! yarn versions &> /dev/null; then
   echo 'yarn is required for setup, installing...'
-  if ! brew --version &> /dev/null; then
+  if ! which brew > /dev/null; then
     echo 'brew is required to install yarn, see https://docs.brew.sh/Installation'
     exit 0
   fi
