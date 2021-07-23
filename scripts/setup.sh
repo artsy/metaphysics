@@ -7,7 +7,7 @@ set -e
 # https://github.com/artsy/potential/blob/master/scripts/setup
 #
 # Run like:
-#   source scripts/setup.sh
+#   ./scripts/setup.sh
 #
 
 # Install yarn if it does not exist.
