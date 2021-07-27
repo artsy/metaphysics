@@ -10,12 +10,6 @@ set -e
 #   ./scripts/setup.sh
 #
 
-# Install yarn if it does not exist.
-if ! which yarn > /dev/null; then
-  echo 'yarn is required for setup, installing with brew...'
-  brew install yarn
-fi
-
 if ! which memcached > /dev/null; then
   brew install memcached
 fi
@@ -25,6 +19,10 @@ if [[ ! -z $NVM_DIR ]]; then # skip if nvm is not available
   source ~/.nvm/nvm.sh
   nvm install
 fi
+
+# Install yarn if it does not exist, otherwise ensure its up-to-date.
+echo "Installing yarn"
+npm install --global yarn@latest
 
 echo "Installing dependencies..."
 yarn install
