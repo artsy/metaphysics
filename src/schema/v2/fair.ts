@@ -21,7 +21,6 @@ import {
 } from "./object_identification"
 import {
   GraphQLObjectType,
-  GraphQLID,
   GraphQLString,
   GraphQLBoolean,
   GraphQLNonNull,
@@ -41,6 +40,7 @@ import {
   connectionWithCursorInfo,
   createPageCursors,
 } from "./fields/pagination"
+import { FairOrganizerType } from "./fair_organizer"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -52,26 +52,6 @@ const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLList(Partner.type),
     },
   }),
-})
-
-const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
-  name: "organizer",
-  fields: {
-    ...SlugAndInternalIDFields,
-    profileID: {
-      type: GraphQLID,
-      resolve: ({ profile_id }) => profile_id,
-    },
-    profile: {
-      type: Profile.type,
-      resolve: ({ profile_id }, _options, { profileLoader }) => {
-        return profileLoader(profile_id).catch(() => null)
-      },
-    },
-    website: {
-      type: GraphQLString,
-    },
-  },
 })
 
 export const FairType = new GraphQLObjectType<any, ResolverContext>({

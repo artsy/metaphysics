@@ -72,6 +72,7 @@ export default (opts) => {
       { headers: true }
     ),
     fairLoader: gravityLoader((id) => `fair/${id}`),
+    fairOrganizerLoader: gravityLoader((id) => `fair_organizer/${id}`),
     fairsLoader: gravityLoader("fairs", {}, { headers: true }),
     filterArtworksLoader: gravityLoader(
       "filter/artworks",
