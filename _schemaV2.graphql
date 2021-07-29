@@ -6338,6 +6338,12 @@ type FairExhibitorsGroup {
 
 type FairOrganizer {
   about: String
+  fairsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): FairConnection
 
   # A globally unique ID.
   id: ID!
