@@ -8,6 +8,12 @@ import {
 import { SlugAndInternalIDFields } from "./object_identification"
 import Profile from "./profile"
 import { ResolverContext } from "types/graphql"
+import { pageable } from "relay-cursor-paging"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { createPageCursors } from "./fields/pagination"
+import { connectionFromArraySlice } from "graphql-relay"
+import { pick } from "lodash"
+import { fairConnection } from "./fair"
 
 export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
   name: "FairOrganizer",
@@ -16,6 +22,34 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
       ...SlugAndInternalIDFields,
       about: {
         type: GraphQLString,
+      },
+      fairsConnection: {
+        type: fairConnection.connectionType,
+        args: pageable(),
+        resolve: async ({ profile_id }, args, { fairsLoader }) => {
+          const { size, page, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+          const gravityOptions = {
+            fair_organizer_id: profile_id,
+            total_count: true,
+            size,
+            page,
+          }
+
+          const { body, headers } = await fairsLoader(gravityOptions)
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return {
+            totalCount,
+            pageCursors: createPageCursors({ page, size }, totalCount),
+            ...connectionFromArraySlice(
+              body,
+              pick(args, "before", "after", "first", "last"),
+              { sliceStart: offset, arrayLength: totalCount }
+            ),
+          }
+        },
       },
       name: {
         type: GraphQLString,
