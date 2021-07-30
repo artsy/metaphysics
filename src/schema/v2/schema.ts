@@ -101,6 +101,7 @@ import { UserField } from "./user"
 // import TrendingArtists from "./artists/trending"
 import { Users } from "./users"
 import VanityURLEntity from "./vanityURLEntity"
+import Profile from "./profile"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -163,7 +164,7 @@ const rootFields = {
   partnerCategories: PartnerCategories,
   // partnerCategory: PartnerCategory,
   partnersConnection: PartnersConnection,
-  // profile: Profile,
+  profile: Profile,
   requestLocation: RequestLocationField,
   sale: Sale,
   saleArtwork: SaleArtwork,

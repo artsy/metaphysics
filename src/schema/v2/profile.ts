@@ -12,6 +12,18 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
+const OwnerType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ProfileOwner",
+  fields: () => ({
+    about: {
+      type: GraphQLString,
+    },
+    name: {
+      type: GraphQLString,
+    },
+  }),
+})
+
 export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
   name: "Profile",
   fields: () => ({
@@ -70,6 +82,10 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
     name: {
       type: GraphQLString,
       resolve: ({ owner }) => owner.name,
+    },
+    owner: {
+      type: OwnerType,
+      resolve: ({ owner }) => owner,
     },
     isPubliclyVisible: {
       type: GraphQLBoolean,
