@@ -16,5 +16,16 @@
     "strict": true,
     "target": "es5"
   },
-  "exclude": ["build", "node_modules", "**/node_modules/*", "dangerfile.ts"]
+  "exclude": [
+    "build",
+    "scripts",
+    "peril",
+    "__mocks__",
+    "node_modules",
+    "**/node_modules/*",
+    "dangerfile.ts",
+    "index.js",
+    "jest.config*.js",
+    "wallaby.js"
+  ]
 }
