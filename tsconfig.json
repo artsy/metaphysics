@@ -10,11 +10,11 @@
     "noImplicitAny": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "rootDir": "./src",
     "pretty": true,
     "skipLibCheck": true,
     "strict": true,
     "target": "es5"
   },
+  "inclde": ["index.js", "src/**/*"],
   "exclude": ["build", "node_modules", "**/node_modules/*", "dangerfile.ts"]
 }
