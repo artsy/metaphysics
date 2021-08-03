@@ -47,9 +47,6 @@ if (enableQueryTracing) {
   initTracer()
 }
 
-// Always load the source on startup so any file level issues surface sooner.
-require("./src")
-
 if (enableAsyncStackTraces) {
   console.warn("[FEATURE] Enabling long async stack traces") // eslint-disable-line
   require("longjohn")
