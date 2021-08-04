@@ -65,6 +65,7 @@ export const gravityStitchingEnvironment = (
     extensionSchema: gql`
       extend type Me {
         savedSearch(id: ID, criteria: SearchCriteriaAttributes): SearchCriteria
+        savedSearchesConnection: SearchCriteriaConnection
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
         addressConnection(
           first: Int
@@ -148,6 +149,18 @@ export const gravityStitchingEnvironment = (
               schema: gravitySchema,
               operation: "query",
               fieldName: "_unused_gravity_savedSearch",
+              args: args,
+              context,
+              info,
+            })
+          },
+        },
+        savedSearchesConnection: {
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_savedSearchesConnection",
               args: args,
               context,
               info,
