@@ -18,6 +18,7 @@ import { pick } from "lodash"
 import { fairConnection } from "./fair"
 import { articleConnection } from "./article"
 import ArticleSorts, { ArticleSort } from "./sorts/article_sorts"
+import { formatMarkdownValue, markdown } from "./fields/markdown"
 
 export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
   name: "FairOrganizer",
@@ -26,6 +27,12 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
       ...SlugAndInternalIDFields,
       about: {
         type: GraphQLString,
+        args: {
+          ...markdown().args,
+        },
+        resolve: ({ about }, { format }) => {
+          return formatMarkdownValue(about, format)
+        },
       },
       articlesConnection: {
         description: "A connection of articles related to a partner.",
