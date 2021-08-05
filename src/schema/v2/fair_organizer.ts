@@ -31,7 +31,7 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
           ...markdown().args,
         },
         resolve: ({ about }, { format }) => {
-          return formatMarkdownValue(about, format)
+          return formatMarkdownValue(about, format).trim()
         },
       },
       articlesConnection: {
