@@ -9,10 +9,7 @@ export const AlgoliaType = new GraphQLObjectType<any, ResolverContext>({
     apiKey: {
       type: GraphQLString,
       resolve: ({ userID }) => {
-        const client = algoliasearch(
-          config.ALGOLIA_APP_ID!,
-          config.ALGOLIA_ADMIN_API_KEY!
-        )
+        const client = algoliasearch("unused", "unused")
 
         // generate a public API key that is valid for 1 hour
         const options = {
