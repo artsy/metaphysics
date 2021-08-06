@@ -74,6 +74,10 @@ type Agreement {
   updatedAt: ISO8601DateTime!
 }
 
+type Algolia {
+  apiKey: String
+}
+
 type AnalyticsArtist {
   entityId: String!
 }
@@ -9692,6 +9696,7 @@ type Query {
 
   # Find an agreement by ID
   agreement(id: ID!): Agreement
+  algolia: Algolia
 
   # Last updated timestamp
   analyticsLastUpdatedAt: AnalyticsDateTime
@@ -12452,6 +12457,7 @@ type Viewer {
 
   # Do not use (only used internally for stitching)
   _do_not_use_image: Image
+  algolia: Algolia
 
   # An Article
   article(

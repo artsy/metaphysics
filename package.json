@@ -51,6 +51,7 @@
     "@heroku/foreman": "2.0.2",
     "@sentry/node": "5.18.1",
     "accounting": "0.4.1",
+    "algoliasearch": "^4.10.3",
     "apollo-link": "1.2.1",
     "apollo-link-context": "1.0.8",
     "apollo-link-http": "1.5.4",

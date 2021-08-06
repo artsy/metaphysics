@@ -102,6 +102,7 @@ import { UserField } from "./user"
 import { Users } from "./users"
 import VanityURLEntity from "./vanityURLEntity"
 import FairOrganizer from "./fair_organizer"
+import Algolia from "./algolia"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -114,6 +115,7 @@ const OptionalFieldDirective = new GraphQLDirective({
 })
 
 const rootFields = {
+  algolia: Algolia,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkMediums: ArtworkMediums,
   auctionResult: AuctionResult,
