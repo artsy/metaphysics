@@ -7,10 +7,17 @@ const { buildSchema, introspectionQuery, graphqlSync } = require("graphql")
 const { readFileSync, writeFileSync } = require("fs")
 
 /**
- * @param {string} repo - Name of artsy repo to update
- * @param {string} [dest=data/schema.graphql] - Path to schema file in target repo
+ * updates the schema file on repo
+ * @param {Object} input
+ * @param {string} input.repo - repo: name of the artsy repo to update
+ * @param {string} [input.body] - body: The PR body descrption
+ * @param {string} [input.dest] - dest: Path to schema file in target repo
  */
-async function updateSchemaFile(repo, dest = "data/schema.graphql") {
+async function updateSchemaFile({
+  repo,
+  dest = "data/schema.graphql",
+  body = "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process.",
+}) {
   await updateRepo({
     repo: {
       owner: "artsy",
@@ -20,8 +27,7 @@ async function updateSchemaFile(repo, dest = "data/schema.graphql") {
     title: "Update metaphysics schema",
     targetBranch: "master",
     commitMessage: "Update metaphysics schema",
-    body:
-      "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process.",
+    body,
     assignees: ["artsyit"],
     labels: ["Merge On Green"],
     update: (repoDir) => {
@@ -53,10 +59,20 @@ async function main() {
 
     execSync("yarn dump:staging")
 
-    await updateSchemaFile("eigen")
-    await updateSchemaFile("force")
-    await updateSchemaFile("volt", "vendor/graphql/schema/metaphysics.json")
-    await updateSchemaFile("pulse", "vendor/graphql/schema/metaphysics.json")
+    await updateSchemaFile({
+      repo: "eigen",
+      body:
+        "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process. #nochangelog",
+    })
+    await updateSchemaFile({ repo: "force" })
+    await updateSchemaFile({
+      repo: "volt",
+      dest: "vendor/graphql/schema/metaphysics.json",
+    })
+    await updateSchemaFile({
+      repo: "pulse",
+      dest: "vendor/graphql/schema/metaphysics.json",
+    })
   } catch (error) {
     console.error(error)
     process.exit(1)
