@@ -7,10 +7,11 @@ const { buildSchema, introspectionQuery, graphqlSync } = require("graphql")
 const { readFileSync, writeFileSync } = require("fs")
 
 /**
- * @param {{repo: string, body?: string, dest?: string}}
- * Repo: Name of the artsy repo to update
- * dest: Path to schema file in target repo
- * body: The PR body descrption
+ * updates the schema file on repo
+ * @param {Object} input
+ * @param {string} input.repo - repo: name of the artsy repo to update
+ * @param {string} [input.body] - body: The PR body descrption
+ * @param {string} [input.dest] - dest: Path to schema file in target repo
  */
 async function updateSchemaFile({
   repo,
