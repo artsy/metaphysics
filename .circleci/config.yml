@@ -4,13 +4,9 @@ orbs:
   codecov: codecov/codecov@1.2.5
   hokusai: artsy/hokusai@0.8.0
   horizon: artsy/release@0.0.1
-<<<<<<< HEAD
   node: circleci/node@4.7.0
-  yarn: artsy/yarn@5.1.3
-=======
-  node: circleci/node@4.6.0
   yarn: artsy/yarn@6.0.0
->>>>>>> 3560ba2e (Upgrading to node 14 (artsy/yarn 6.0.0 orb))
+
 
 not_staging_or_release: &not_staging_or_release
   filters:
