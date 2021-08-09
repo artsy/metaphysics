@@ -16,7 +16,6 @@ import { ResolverContext } from "types/graphql"
 
 const mapEnvBooleans = {
   queryTracing: !!config.ENABLE_QUERY_TRACING,
-  heapDumps: !!config.ENABLE_HEAPDUMPS,
   stitching: !config.DISABLE_SCHEMA_STITCHING,
   stitchingConvection: true,
   stitchingExchange: true,
