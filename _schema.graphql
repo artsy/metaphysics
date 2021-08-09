@@ -10124,7 +10124,6 @@ type MessageInitiator {
 
 type Metaphysics {
   environment: String!
-  heapDumps: Boolean!
   queryTracing: Boolean!
   stitching: Boolean!
   stitchingConvection: Boolean!

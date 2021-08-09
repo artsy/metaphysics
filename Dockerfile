@@ -29,4 +29,4 @@ COPY --chown=deploy:deploy . ./
 RUN yarn build
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["node", "build/index.js"]
+CMD ["node", "--heapsnapshot-signal=SIGUSR2", "build/index.js"]

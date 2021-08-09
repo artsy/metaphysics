@@ -40,7 +40,6 @@ import * as Sentry from "@sentry/node"
 
 const {
   ENABLE_REQUEST_LOGGING,
-  ENABLE_HEAPDUMPS,
   LOG_QUERY_DETAILS_THRESHOLD,
   PRODUCTION_ENV,
   QUERY_DEPTH_LIMIT,
@@ -55,10 +54,6 @@ const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 const logQueryDetailsThreshold =
   (LOG_QUERY_DETAILS_THRESHOLD && parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10)) ||
   null // null by default
-
-if (ENABLE_HEAPDUMPS) {
-  require("heapdump") // Request a heapdump by sending `kill -USR2 [pid of metaphysics]`
-}
 
 function logQueryDetailsIfEnabled() {
   if (logQueryDetailsThreshold && Number.isInteger(logQueryDetailsThreshold)) {
