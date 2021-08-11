@@ -291,4 +291,68 @@ describe("HomePageArtworkModules", () => {
       expect(keys).not.toContain("generic_gene")
     })
   })
+
+  it("includes modules upon request", () => {
+    const query = `
+    {
+      homePage {
+        artworkModules(
+          maxFollowedGeneRails: -1
+          include: [FOLLOWED_GALLERIES SAVED_WORKS]
+        ) {
+          key
+        }
+      }
+    }
+    `
+
+    return runAuthenticatedQuery(query, context).then(({ homePage }) => {
+      const keys = map(homePage.artworkModules, "key")
+
+      expect(keys).toEqual(["followed_galleries", "saved_works"])
+    })
+  })
+
+  it("includes modules upon request with empty includes", () => {
+    const query = `
+    {
+      homePage {
+        artworkModules(
+          maxFollowedGeneRails: -1
+          include: []
+        ) {
+          key
+        }
+      }
+    }
+    `
+
+    return runAuthenticatedQuery(query, context).then(({ homePage }) => {
+      const keys = map(homePage.artworkModules, "key")
+
+      expect(keys).toEqual([])
+    })
+  })
+
+  it("includes and excludes modules upon request", () => {
+    const query = `
+    {
+      homePage {
+        artworkModules(
+          maxFollowedGeneRails: -1
+          include: [FOLLOWED_GALLERIES SAVED_WORKS]
+          exclude: [SAVED_WORKS RECOMMENDED_WORKS]
+        ) {
+          key
+        }
+      }
+    }
+    `
+
+    return runAuthenticatedQuery(query, context).then(({ homePage }) => {
+      const keys = map(homePage.artworkModules, "key")
+
+      expect(keys).toEqual(["followed_galleries"])
+    })
+  })
 })

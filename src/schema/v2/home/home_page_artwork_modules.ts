@@ -30,10 +30,14 @@ import {
 const filterModules = (
   modules: HomePageArtworkModuleDetails[],
   max_rails: number,
-  exclude: string[]
+  exclude: string[],
+  include?: string[]
 ) => {
   let allModules: HomePageArtworkModuleDetails[]
-  if (exclude.includes("generic_gene")) {
+  if (
+    exclude.includes("generic_gene") ||
+    (include && !include?.includes("generic_gene"))
+  ) {
     allModules = filter(modules, ["display", true])
   } else {
     allModules = addGenericGenes(filter(modules, ["display", true]))
@@ -106,6 +110,10 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
       description:
         "The preferred order of modules, defaults to order returned by Gravity",
     },
+    include: {
+      type: new GraphQLList(HomePageArtworkModuleTypes),
+      description: "Include certain modules and return these modules only",
+    },
     exclude: {
       type: new GraphQLList(HomePageArtworkModuleTypes),
       defaultValue: [],
@@ -119,6 +127,7 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
       maxFollowedGeneRails: max_followed_gene_rails,
       order,
       exclude,
+      include,
     },
     {
       followedGenesLoader,
@@ -131,11 +140,15 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
     // If user is logged in, get their specific modules
     if (homepageModulesLoader && followedGenesLoader) {
       return homepageModulesLoader().then((response) => {
-        const keysToDisplay = without(keys(response), ...exclude)
+        let keysToDisplay = without(keys(response), ...exclude)
+        if (include) {
+          keysToDisplay = keysToDisplay.filter((key) => include.includes(key))
+        }
         const modulesToDisplay = map(keysToDisplay, (key) => ({
           key,
           display: response[key],
         }))
+
         return addFollowedGenes(
           followedGenesLoader,
           modulesToDisplay,
@@ -143,7 +156,7 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
         ).then((allModulesToDisplay) => {
           let modules = allModulesToDisplay
 
-          modules = filterModules(modules, max_rails, exclude)
+          modules = filterModules(modules, max_rails, exclude, include)
           modules = reorderModules(modules, order)
 
           // For the related artists rail, we need to fetch a random
@@ -201,7 +214,7 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
       featuredFair(fairsLoader),
     ]).then(([auction, fair]) => {
       const modules = loggedOutModules(auction, fair)
-      return filterModules(modules, max_rails, exclude)
+      return filterModules(modules, max_rails, exclude, include)
     })
   },
 }
