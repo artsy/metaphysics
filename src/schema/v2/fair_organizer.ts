@@ -49,7 +49,7 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async (
           { profile_id },
           args: {
-            inEditorialFeed?: Boolean
+            inEditorialFeed?: boolean
             sort?: ArticleSort
           } & CursorPageable,
           { articlesLoader, fairsLoader }
@@ -72,7 +72,7 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
             count: boolean
             offset: number
             sort?: ArticleSort
-            in_editorial_feed?: Boolean
+            in_editorial_feed?: boolean
           }
 
           const articleArgs: ArticleArgs = {

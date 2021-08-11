@@ -126,7 +126,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async (
           { _id },
           args: {
-            inEditorialFeed?: Boolean
+            inEditorialFeed?: boolean
             sort?: ArticleSort
           } & CursorPageable,
           { articlesLoader }
@@ -142,7 +142,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             count: boolean
             offset: number
             sort?: ArticleSort
-            in_editorial_feed?: Boolean
+            in_editorial_feed?: boolean
           }
 
           const articleArgs: ArticleArgs = {
