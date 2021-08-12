@@ -1,8 +1,10 @@
 import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
-import algoliasearch from "algoliasearch"
+import {
+  generateSecuredApiKey,
+  SecuredApiKeyRestrictions,
+} from "@algolia/client-search"
 import config from "config"
-import { SecuredApiKeyRestrictions } from "@algolia/client-search"
 
 export const AlgoliaType = new GraphQLObjectType<any, ResolverContext>({
   name: "Algolia",
@@ -10,7 +12,6 @@ export const AlgoliaType = new GraphQLObjectType<any, ResolverContext>({
     apiKey: {
       type: GraphQLString,
       resolve: async (_root, _options, { meLoader }, _info) => {
-        const client = algoliasearch("unused", "unused")
         const baseOptions = {
           restrictIndices: config.ALGOLIA_RESTRICT_INDICES,
           validUntil: Math.floor(Date.now() / 1000) + 3600, // valid for 1 hour
@@ -23,12 +24,12 @@ export const AlgoliaType = new GraphQLObjectType<any, ResolverContext>({
             userToken: me._id,
           }
 
-          return client.generateSecuredApiKey(
+          return generateSecuredApiKey()(
             config.ALGOLIA_SEARCH_API_KEY!,
             options
           )
         } else {
-          return client.generateSecuredApiKey(
+          return generateSecuredApiKey()(
             config.ALGOLIA_SEARCH_API_KEY!,
             baseOptions
           )
@@ -40,8 +41,8 @@ export const AlgoliaType = new GraphQLObjectType<any, ResolverContext>({
 
 const Algolia: GraphQLFieldConfig<void, ResolverContext> = {
   type: AlgoliaType,
-  resolve: (_root, _options, { userID }, _info) => {
-    return { userID }
+  resolve: (_root, _options, _context, _info) => {
+    return {}
   },
 }
 

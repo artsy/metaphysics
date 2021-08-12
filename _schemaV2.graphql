@@ -9696,7 +9696,6 @@ type Query {
 
   # Find an agreement by ID
   agreement(id: ID!): Agreement
-  algolia: Algolia
 
   # Last updated timestamp
   analyticsLastUpdatedAt: AnalyticsDateTime
@@ -11809,6 +11808,8 @@ type SubmitInquiryRequestMutationPayload {
 }
 
 type System {
+  algolia: Algolia
+
   # Creates, and authorizes, a JWT custom for Causality
   causalityJWT(
     role: Role
@@ -12457,7 +12458,6 @@ type Viewer {
 
   # Do not use (only used internally for stitching)
   _do_not_use_image: Image
-  algolia: Algolia
 
   # An Article
   article(
