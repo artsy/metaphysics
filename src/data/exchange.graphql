@@ -366,7 +366,7 @@ input CreateInquiryOfferOrderWithArtworkInput {
 
   """
   When set to false, we will create a new order. Otherwise if current user has
-  pending/submitted orders on same artwork/edition with same quantity, we will return that
+  submitted orders on same artwork/edition with same quantity, we will return that
   """
   findActiveOrCreate: Boolean = true
 
@@ -392,8 +392,8 @@ type CreateInquiryOfferOrderWithArtworkPayload {
 
   """
   A union of success/failure. If find_active_or_create is not false, it will
-  return existing pending/submitted order for current user if exists, otherwise
-  it will return newly created order
+  return existing submitted order for current user if exists, otherwise it will
+  return newly created order
   """
   orderOrError: OrderOrFailureUnion!
 }
@@ -419,7 +419,7 @@ input CreateOfferOrderWithArtworkInput {
 
   """
   When set to false, we will create a new order. Otherwise if current user has
-  pending/submitted orders on same artwork/edition with same quantity, we will return that
+  submitted orders on same artwork/edition with same quantity, we will return that
   """
   findActiveOrCreate: Boolean = true
 
@@ -440,8 +440,8 @@ type CreateOfferOrderWithArtworkPayload {
 
   """
   A union of success/failure. If find_active_or_create is not false, it will
-  return existing pending/submitted order for current user if exists, otherwise
-  it will return newly created order
+  return existing submitted order for current user if exists, otherwise it will
+  return newly created order
   """
   orderOrError: OrderOrFailureUnion!
 }
@@ -1773,6 +1773,7 @@ A shipping quote
 """
 type ShippingQuote {
   createdAt: DateTime!
+  displayName: String!
   id: ID!
   isSelected: Boolean!
   name: String
