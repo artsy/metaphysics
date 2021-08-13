@@ -11,9 +11,7 @@ export const AlgoliaType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     appID: {
       type: GraphQLString,
-      resolve: () => {
-        config.ALGOLIA_APP_ID
-      },
+      resolve: () => config.ALGOLIA_APP_ID,
     },
     apiKey: {
       type: GraphQLString,
