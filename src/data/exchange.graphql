@@ -649,6 +649,7 @@ type LineItem {
   order: Order!
   priceCents: Int! @deprecated(reason: "switch to use listPriceCents")
   quantity: Int!
+  selectedShippingQuote: ShippingQuote
   shipment: Shipment
   shippingQuoteOptions(
     """
