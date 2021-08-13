@@ -9,6 +9,12 @@ import config from "config"
 export const AlgoliaType = new GraphQLObjectType<any, ResolverContext>({
   name: "Algolia",
   fields: () => ({
+    appID: {
+      type: GraphQLString,
+      resolve: () => {
+        config.ALGOLIA_APP_ID
+      },
+    },
     apiKey: {
       type: GraphQLString,
       resolve: async (_root, _options, { meLoader }, _info) => {

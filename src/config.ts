@@ -6,6 +6,7 @@ require("dotenv").config({
 })
 
 const {
+  ALGOLIA_APP_ID,
   ALGOLIA_RESTRICT_INDICES,
   ALGOLIA_SEARCH_API_KEY,
   ARTICLE_REQUEST_THROTTLE_MS,
@@ -129,6 +130,7 @@ function IntWithDefault(value: any | undefined, defaultValue: number): number {
 }
 
 export default {
+  ALGOLIA_APP_ID,
   ALGOLIA_RESTRICT_INDICES,
   ALGOLIA_SEARCH_API_KEY,
   ARTICLE_REQUEST_THROTTLE_MS: Number(ARTICLE_REQUEST_THROTTLE_MS) || 600000,
