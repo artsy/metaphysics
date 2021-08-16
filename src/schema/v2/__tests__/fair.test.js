@@ -267,6 +267,48 @@ describe("Fair", () => {
     })
   })
 
+  it("exposes the partner type when grouping exhibitors alphanumerically", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          exhibitorsGroupedByName {
+            letter
+            exhibitors {
+              partner {
+                name
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const partner = {
+      name: "ArtHelix Gallery",
+    }
+
+    context.partnerLoader = sinon.stub().returns(Promise.resolve(partner))
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      fair: {
+        exhibitorsGroupedByName: [
+          {
+            letter: "A",
+            exhibitors: [
+              {
+                partner: {
+                  name: "ArtHelix Gallery",
+                },
+              },
+            ],
+          },
+        ],
+      },
+    })
+  })
+
   it("Shows connection uses gravity cursor", async () => {
     const query = gql`
       {
