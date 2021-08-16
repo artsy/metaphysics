@@ -1,4 +1,3 @@
-import _ from "lodash"
 import cached from "./fields/cached"
 import PartnerCategoryTypeEnum from "./input_fields/partner_category_type"
 import { SlugAndInternalIDFields } from "./object_identification"
@@ -28,7 +27,7 @@ export const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
       partners: {
         type: Partners.type,
         args: Partners.args,
-        resolve: Partners.resolve
+        resolve: Partners.resolve,
       },
     }
   },

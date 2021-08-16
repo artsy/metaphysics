@@ -22,7 +22,7 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (
     _root,
     args: {
-      inEditorialFeed?: Boolean
+      inEditorialFeed?: boolean
       sort?: ArticleSort
     } & CursorPageable,
     { articlesLoader }

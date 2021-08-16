@@ -689,11 +689,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "The string that describes domestic and international shipping.",
         resolve: (artwork) => {
           if (
+            !artwork.arta_enabled &&
             artwork.domestic_shipping_fee_cents == null &&
             artwork.international_shipping_fee_cents == null
           )
             return "Shipping, tax, and additional fees quoted by seller"
           if (
+            !artwork.arta_enabled &&
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents == null
           )
@@ -702,6 +704,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               : "Free domestic shipping only"
 
           if (
+            !artwork.arta_enabled &&
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents === 0
           )
@@ -727,18 +730,20 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             ? "within Continental Europe"
             : "domestic"
 
-          if (
-            domesticShipping &&
-            artwork.international_shipping_fee_cents == null
-          )
-            return `Shipping: ${domesticShipping} ${shippingRegion} only`
-
           if (artwork.domestic_shipping_fee_cents === 0)
             domesticShipping = "Free"
           if (artwork.international_shipping_fee_cents === 0)
             internationalShipping = "free"
 
-          return `Shipping: ${domesticShipping} ${shippingRegion}, ${internationalShipping} rest of world`
+          const domesticShippingMessage = artwork.arta_enabled
+            ? "domestic calculated at checkout"
+            : `${domesticShipping} ${shippingRegion}`
+
+          if (artwork.international_shipping_fee_cents == null) {
+            return `Shipping: ${domesticShippingMessage} only`
+          }
+
+          return `Shipping: ${domesticShippingMessage}, ${internationalShipping} rest of world`
         },
       },
       shippingOrigin: {
