@@ -11,7 +11,7 @@ import numeral from "./fields/numeral"
 import Profile from "./profile"
 import Image from "./image"
 import Artist from "./artist"
-import Partner from "./partner"
+import Partner, { PartnerType } from "./partner"
 import { ShowsConnection } from "./show"
 import { LocationType } from "./location"
 import {
@@ -329,6 +329,16 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
                         type: GraphQLString,
                         description: "Exhibitors _id",
                         resolve: ({ partner_id }) => partner_id,
+                      },
+                      partner: {
+                        type: PartnerType,
+                        resolve: (
+                          { partner_id },
+                          _options,
+                          { partnerLoader }
+                        ) => {
+                          return partnerLoader(partner_id).catch(() => null)
+                        },
                       },
                       profileID: {
                         type: GraphQLString,
