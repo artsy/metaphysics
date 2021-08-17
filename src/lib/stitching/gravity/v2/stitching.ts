@@ -8,6 +8,7 @@ import { formatMarkdownValue } from "schema/v2/fields/markdown"
 import Format from "schema/v2/input_fields/format"
 import { toGlobalId } from "graphql-relay"
 import { printType } from "lib/stitching/lib/printType"
+import { dateRange } from "lib/date"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -98,6 +99,7 @@ export const gravityStitchingEnvironment = (
         distanceToOpen(short: Boolean! = false): String
         distanceToClose(short: Boolean! = false): String
         partner: Partner
+        exhibitionPeriod: String
       }
 
       extend type ArtistSeries {
@@ -534,6 +536,16 @@ export const gravityStitchingEnvironment = (
               info,
             })
           },
+        },
+        exhibitionPeriod: {
+          fragment: gql`
+          ... on ViewingRoom {
+            startAt
+            endAt
+          }
+        `,
+          resolve: ({ startAt: _startAt, endAt: _endAt }) =>
+            dateRange(_startAt, _endAt, "UTC"),
         },
       },
       Viewer: {
