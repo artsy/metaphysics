@@ -9,7 +9,6 @@ import {
   GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { clone } from "lodash"
 
 export const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerCategory",
@@ -28,36 +27,12 @@ export const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
       partners: {
         type: Partners.type,
         args: Partners.args,
-        resolve: (
-          { id },
-          {
-            defaultProfilePublic,
-            eligibleForCarousel,
-            eligibleForListing,
-            eligibleForPrimaryBucket,
-            eligibleForSecondaryBucket,
-            hasFullProfile,
-            ..._options
-          },
-          { partnersLoader }
-        ) => {
-          const options: any = {
-            default_profile_public: defaultProfilePublic,
-            eligible_for_carousel: eligibleForCarousel,
-            eligible_for_listing: eligibleForListing,
-            eligible_for_primary_bucket: eligibleForPrimaryBucket,
-            eligible_for_secondary_bucket: eligibleForSecondaryBucket,
-            has_full_profile: hasFullProfile,
-            partner_categories: [id],
-            ..._options,
-          }
-          const cleanedOptions = clone(options)
-          // make ids singular to match gravity :id
-          if (options.ids) {
-            cleanedOptions.id = options.ids
-            delete cleanedOptions.ids
-          }
-          return partnersLoader(cleanedOptions)
+        resolve: (parent, args, context) => {
+          return Partners.resolve(
+            parent,
+            { ...args, partner_categories: [parent.id] },
+            context
+          )
         },
       },
     }
