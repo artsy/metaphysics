@@ -92,7 +92,7 @@ function createExtensions(document, result, requestID) {
   return Object.keys(extensions).length ? extensions : undefined
 }
 
-function startApp(appSchema, path: string) {
+async function startApp(appSchema, path: string) {
   const app = express()
 
   const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
@@ -185,6 +185,7 @@ function startApp(appSchema, path: string) {
       },
     })
 
+    await server.start()
     server.applyMiddleware({ app, path })
   } else {
     const graphqlHTTP = require("express-graphql")
@@ -268,7 +269,9 @@ function startApp(appSchema, path: string) {
 const app = express()
 
 // This order is important for dd-trace to be able to find the nested routes.
-app.use("/v2", startApp(schemaV2, "/"))
-app.use("/", startApp(schemaV1, "/"))
+;(async () => {
+  app.use("/v2", await startApp(schemaV2, "/"))
+  app.use("/", await startApp(schemaV1, "/"))
+})()
 
 export default app
