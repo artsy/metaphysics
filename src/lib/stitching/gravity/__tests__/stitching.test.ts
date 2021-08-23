@@ -470,6 +470,62 @@ describe("gravity/stitching", () => {
     })
   })
 
+  describe("#exhibitionPeriod", () => {
+    it("extends the ViewingRoom type with a exhibitionPeriod field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const artworkConnectionFields = await getFieldsForTypeFromSchema(
+        "ViewingRoom",
+        mergedSchema
+      )
+
+      expect(artworkConnectionFields).toContain("exhibitionPeriod")
+    })
+
+    it("resolves the exhibitionPeriod field on ViewingRoom", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { exhibitionPeriod } = resolvers.ViewingRoom
+      const startAt = moment().add(1, "days").format("MMM D")
+      const endAt = moment().add(30, "days").format("MMM D")
+
+      expect(
+        exhibitionPeriod.resolve({
+          startAt: momentAdd(1, "days"),
+          endAt: momentAdd(30, "days"),
+        })
+      ).toEqual(`${startAt} – ${endAt}`)
+    })
+
+    it("returns Invalid dates if dates are missing", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { exhibitionPeriod } = resolvers.ViewingRoom
+      const startAt = moment().add(1, "days").format("MMM D")
+      const endAt = moment().add(30, "days").format("MMM D")
+      const startAtYear = moment().format("YYYY")
+      const endAtAtYear = moment().format("YYYY")
+
+      expect(
+        exhibitionPeriod.resolve({
+          startAt: null,
+          endAt: momentAdd(30, "days"),
+        })
+      ).toEqual(`${"Invalid date"} – ${endAt}, ${endAtAtYear}`)
+
+      expect(
+        exhibitionPeriod.resolve({
+          startAt: momentAdd(1, "days"),
+          endAt: null,
+        })
+      ).toEqual(`${startAt}, ${startAtYear} – ${"Invalid date"}`)
+
+      expect(
+        exhibitionPeriod.resolve({
+          startAt: null,
+          endAt: null,
+        })
+      ).toEqual("Invalid date – Invalid date")
+    })
+  })
+
   describe("#viewingRoomsConnection in Partner", () => {
     it("extends the Partner type with a viewingRoomsConnection field", async () => {
       const mergedSchema = await getGravityMergedSchema()
