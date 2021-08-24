@@ -67,6 +67,7 @@ describe("Artist type", () => {
                 currency
                 priceRealized {
                   display(format: "0a")
+                  displayUSD(format: "0a")
                   cents
                   centsUSD
                 }
@@ -101,6 +102,7 @@ describe("Artist type", () => {
                     cents: 420000,
                     centsUSD: 100000,
                     display: "JPY ¥420k",
+                    displayUSD: "$1k",
                   },
                   estimate: {
                     display: "JPY ¥200,000–¥500,000",
@@ -281,6 +283,7 @@ describe("Artist type", () => {
                   display(format: "0a")
                   cents
                   centsUSD
+                  displayUSD
                 }
               }
             }
@@ -306,6 +309,7 @@ describe("Artist type", () => {
                       display: "JPY ¥0",
                       cents: 0,
                       centsUSD: 0,
+                      displayUSD: "$0",
                     },
                   },
                 },

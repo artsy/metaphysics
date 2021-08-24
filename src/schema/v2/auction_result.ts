@@ -253,6 +253,23 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
               return priceDisplayText(price_realized_cents, currency, format)
             },
           },
+          displayUSD: {
+            type: GraphQLString,
+            args: {
+              format: {
+                type: GraphQLString,
+                description: "Passes in to numeral, such as `'0.00'`",
+                defaultValue: "",
+              },
+            },
+            resolve: ({ price_realized_cents_usd }, { format }) => {
+              if (isNil(price_realized_cents_usd)) {
+                return null
+              }
+
+              return priceDisplayText(price_realized_cents_usd, "USD", format)
+            },
+          },
         },
       }),
       resolve: (lot) => lot,
