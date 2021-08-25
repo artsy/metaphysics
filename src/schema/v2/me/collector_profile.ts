@@ -15,26 +15,24 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   ResolverContext
 > = {
   ...InternalIDFields,
-  email: {
-    type: GraphQLString,
-  },
-  name: {
-    type: GraphQLString,
-  },
-  confirmedBuyerAt: date,
   collectorLevel: {
     type: GraphQLInt,
     resolve: ({ collector_level }) => collector_level,
   },
+  confirmedBuyerAt: date,
+  email: { type: GraphQLString },
+  institutionalAffiliations: {
+    type: GraphQLString,
+    resolve: ({ institutional_affiliations }) => institutional_affiliations,
+  },
+  intents: { type: new GraphQLList(GraphQLString) },
+  loyaltyApplicantAt: date,
+  name: { type: GraphQLString },
+  professionalBuyerAppliedAt: date,
+  professionalBuyerAt: date,
   selfReportedPurchases: {
     type: GraphQLString,
     resolve: ({ self_reported_purchases }) => self_reported_purchases,
-  },
-  loyaltyApplicantAt: date,
-  professionalBuyerAt: date,
-  professionalBuyerAppliedAt: date,
-  intents: {
-    type: new GraphQLList(GraphQLString),
   },
 }
 
@@ -48,8 +46,9 @@ export const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>(
 const CollectorProfile: GraphQLFieldConfig<void, ResolverContext> = {
   type: CollectorProfileType,
   description: "A collector profile.",
-  resolve: (_root, _option, { collectorProfileLoader }) =>
-    !collectorProfileLoader ? null : collectorProfileLoader(),
+  resolve: (_root, _option, { collectorProfileLoader }) => {
+    return collectorProfileLoader?.()
+  },
 }
 
 export default CollectorProfile
