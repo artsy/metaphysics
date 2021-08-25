@@ -31,7 +31,7 @@ RUN yarn build
 # Release image
 # ---------------------------------------------------------
 #
-# Release stage. This stage creates the final docker iamge that will be
+# Release stage. This stage creates the final docker image that will be
 # released. It contains only production dependencies and artifacts.
 #
 FROM node:14.17.5-alpine3.11 as production
