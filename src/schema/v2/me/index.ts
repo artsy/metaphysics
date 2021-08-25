@@ -144,6 +144,9 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     phone: {
       type: GraphQLString,
     },
+    profession: {
+      type: GraphQLString,
+    },
     receivePurchaseNotification: {
       description: "This user should receive purchase notifications",
       type: GraphQLBoolean,
