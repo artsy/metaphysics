@@ -20,12 +20,8 @@ if [[ ! -z $NVM_DIR ]]; then # skip if nvm is not available
   nvm install
 fi
 
-# Install yarn if it does not exist, otherwise ensure its up-to-date.
-echo "Installing yarn"
-npm install --global yarn@latest
-
 echo "Installing dependencies..."
-yarn install
+yarn install || (npm install --global yarn@latest && yarn install)
 
 if [ -e ".env" ]; then
   echo '.env file already exists, so skipping initialization...'
