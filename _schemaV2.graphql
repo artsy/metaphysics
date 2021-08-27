@@ -10167,6 +10167,15 @@ type Query {
 
   # Home screen content
   homePage: HomePage
+
+  # A connection of interestingworks
+  interestingWorks(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+  ): ArtworkConnection
   marketingCategories: [MarketingCollectionCategory!]!
   marketingCollection(slug: String!): MarketingCollection
   marketingCollections(
@@ -12812,6 +12821,15 @@ type Viewer {
 
   # Home screen content
   homePage: HomePage
+
+  # A connection of interestingworks
+  interestingWorks(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+  ): ArtworkConnection
   marketingCollections(
     artistID: String
     category: String
