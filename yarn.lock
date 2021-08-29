@@ -55,10 +55,10 @@
   resolved "https://registry.yarnpkg.com/@apollographql/graphql-playground-html/-/graphql-playground-html-1.6.6.tgz#022209e28a2b547dcde15b219f0c50f47aa5beb3"
   integrity sha512-lqK94b+caNtmKFs5oUVXlSpN3sm5IXZ+KfhMxOtr0LR2SqErzkoJilitjDvJ1WbjHlxLI7WtCjRmOLdOGJqtMQ==
 
-"@artsy/express-reloadable@^1.4.9":
-  version "1.4.9"
-  resolved "https://registry.yarnpkg.com/@artsy/express-reloadable/-/express-reloadable-1.4.9.tgz#e6a77672905f986a58585d998faaafe329453b84"
-  integrity sha512-9NJXJdNk13S17I3VZH9YjEwUpfGlymDMZWOk9M46raV3iCqaDcw1a5IvmTz4uz4PxxvBS+KihAnJbOXC1TOsCg==
+"@artsy/express-reloadable@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@artsy/express-reloadable/-/express-reloadable-1.5.0.tgz#f1affb10ce7cd95230033d5b8b651fe91737516d"
+  integrity sha512-tYSbAfswKuIVjtnCNq/HuLOFeDsLz1UVFI0MSUMKBAK1XKoRZKfxblY9V3v3gvpN/MtHnDxrPl6OCCSB3GbuXg==
   dependencies:
     chalk "^2.3.1"
     chokidar "^3.0.0"
