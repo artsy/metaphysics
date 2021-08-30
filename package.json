@@ -38,7 +38,6 @@
   "author": "Art.sy Inc",
   "license": "MIT",
   "dependencies": {
-    "@algolia/client-search": "^4.10.3",
     "@artsy/xapp": "1.0.6",
     "@babel/cli": "7.4.4",
     "@babel/core": "7.4.5",
