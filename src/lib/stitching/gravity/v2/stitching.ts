@@ -147,6 +147,10 @@ export const gravityStitchingEnvironment = (
       extend type Viewer {
         viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!], partnerID: ID): ViewingRoomsConnection
       }
+
+      extend type System {
+        algolia: Algolia
+      }
     `,
     resolvers: {
       Me: {
@@ -656,6 +660,20 @@ export const gravityStitchingEnvironment = (
                 artworkID,
                 ...args,
               },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      System: {
+        algolia: {
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_algolia",
+              args: args,
               context,
               info,
             })

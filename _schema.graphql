@@ -86,6 +86,17 @@ type Agreement {
   updatedAt: ISO8601DateTime!
 }
 
+type Algolia {
+  apiKey: String!
+  appID: String!
+  indices: [AlgoliaIndex!]!
+}
+
+type AlgoliaIndex {
+  displayName: String!
+  name: String!
+}
+
 type AnalyticsArtist {
   entityId: String!
 }
@@ -11684,6 +11695,17 @@ type PartnerCounts {
   ): FormattedNumber
 }
 
+# A location
+type PartnerLocation {
+  address: String
+  address2: String
+  city: String
+  country: String
+  id: ID!
+  postalCode: String
+  state: String
+}
+
 enum PartnersAggregation {
   CATEGORY
   LOCATION
@@ -12258,6 +12280,9 @@ type Query {
     last: Int
     userId: ID!
   ): AuctionsLotStandingConnection!
+
+  # Get Algolia configuration
+  _unused_gravity_algolia: Algolia!
 
   # Autocomplete resolvers.
   _unused_gravity_match_partners(
