@@ -9,7 +9,7 @@ import { createLoaders } from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
 import { schema as schemaV1 } from "./schema/v1"
-import { schema as schemaV2 } from "./schema/v2"
+import { getSchema as getSchemaV2 } from "./schema/v2"
 import moment from "moment-timezone"
 import morgan from "artsy-morgan"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
@@ -267,8 +267,15 @@ function startApp(appSchema, path: string) {
 
 const app = express()
 
-// This order is important for dd-trace to be able to find the nested routes.
-app.use("/v2", startApp(schemaV2, "/"))
-app.use("/", startApp(schemaV1, "/"))
+;(async () => {
+  try {
+    const schemaV2 = await getSchemaV2()
+    // This order is important for dd-trace to be able to find the nested routes.
+    app.use("/v2", (req, res, next) => startApp(schemaV2, "/")(req, res, next))
+    app.use("/", (req, res, next) => startApp(schemaV1, "/")(req, res, next))
+  } catch (error) {
+    console.log(error)
+  }
+})()
 
 export default app
