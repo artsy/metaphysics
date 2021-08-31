@@ -5,7 +5,6 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { PartnerType } from "../partner"
 
 export interface Response {
   total_count: number
@@ -13,7 +12,7 @@ export interface Response {
   current_page: number
   next_page: number
   _embedded: {
-    galleries: Gallery[]
+    auction_houses: AuctionHouse[]
   }
   _links: {
     self: Link
@@ -21,12 +20,13 @@ export interface Response {
   }
 }
 
-interface Gallery {
+interface AuctionHouse {
   id: number
   name: string
-  artsy_partner_id?: string
+  country?: string
   city?: string
-  region?: string
+  end_at?: string
+  start_at?: string
   _links: {
     self: Link
   }
@@ -36,22 +36,15 @@ interface Link {
   href: string
 }
 
-export const galaxyGalleryType = new GraphQLObjectType<
-  Gallery,
+export const extenralAuctionHouseType = new GraphQLObjectType<
+  AuctionHouse,
   ResolverContext
 >({
-  name: "GalaxyGallery",
+  name: "ExternalAuctionHouse",
   fields: {
     id: { type: new GraphQLNonNull(GraphQLInt) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     city: { type: GraphQLString },
-    region: { type: GraphQLString },
-    partner: {
-      type: PartnerType,
-      resolve: ({ artsy_partner_id }, _args, { partnerLoader }) => {
-        if (!artsy_partner_id) return null
-        return partnerLoader(artsy_partner_id)
-      },
-    },
+    country: { type: GraphQLString },
   },
 })
