@@ -5,8 +5,9 @@ module.exports = {
       moduleFileExtensions: ["js", "jsx", "json", "ts", "tsx"],
       setupFilesAfterEnv: ["jest-extended", "<rootDir>/src/test/helper.js"],
       testMatch: ["**/v1/**/?(*.)+(test).[jt]s"],
+      testPathIgnorePatterns: ["/node_modules/", "/build/"],
       transform: {
-        "^.+\\.(js|ts)$": "babel-jest",
+        "^.+\\.(js|ts)$": require.resolve("babel-jest"),
       },
     },
   ],
