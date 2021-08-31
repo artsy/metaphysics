@@ -4,6 +4,7 @@ import {
   GraphQLFieldConfig,
   GraphQLObjectType,
   GraphQLNonNull,
+  GraphQLInt,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
@@ -23,46 +24,59 @@ const externalType = new GraphQLObjectType<
   name: "External",
   fields: {
     auctionHouses: {
-      args: { term: { type: GraphQLString } },
+      args: {
+        term: { type: GraphQLString },
+        size: { type: GraphQLInt },
+      },
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(extenralAuctionHouseType))
       ),
       resolve: async (
         _parent,
-        { term }: { term?: string },
+        { term, size }: { term?: string; size?: number },
         { galaxyAuctionHousesLoader }
       ) => {
         const res: AuctionHousesResponse = await galaxyAuctionHousesLoader({
           term,
+          size,
         })
         return res._embedded.auction_houses
       },
     },
     fairs: {
-      args: { term: { type: GraphQLString } },
+      args: {
+        term: { type: GraphQLString },
+        size: { type: GraphQLInt },
+      },
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(externalFairType))
       ),
       resolve: async (
         _parent,
-        { term }: { term?: string },
+        { term, size }: { term?: string; size?: number },
         { galaxyFairsLoader }
       ) => {
-        const res: FairsResponse = await galaxyFairsLoader({ term })
+        const res: FairsResponse = await galaxyFairsLoader({ term, size })
         return res._embedded.fairs
       },
     },
     galleries: {
-      args: { term: { type: GraphQLString } },
+      args: {
+        term: { type: GraphQLString },
+        size: { type: GraphQLInt },
+      },
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(externalGalleryType))
       ),
       resolve: async (
         _parent,
-        { term }: { term?: string },
+        { term, size }: { term?: string; size?: number },
         { galaxyGalleriesLoader }
       ) => {
-        const res: GalleriesResponse = await galaxyGalleriesLoader({ term })
+        const res: GalleriesResponse = await galaxyGalleriesLoader({
+          term,
+          size,
+        })
         return res._embedded.galleries
       },
     },
