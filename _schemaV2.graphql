@@ -6221,9 +6221,9 @@ enum EventStatus {
 }
 
 type External {
-  auctionHouses(term: String): [ExternalAuctionHouse!]!
-  fairs(term: String): [ExternalFair!]!
-  galleries(term: String): [ExternalGallery!]!
+  auctionHouses(size: Int, term: String): [ExternalAuctionHouse!]!
+  fairs(size: Int, term: String): [ExternalFair!]!
+  galleries(size: Int, term: String): [ExternalGallery!]!
 }
 
 type ExternalAuctionHouse {
