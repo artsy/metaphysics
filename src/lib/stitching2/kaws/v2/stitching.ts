@@ -5,6 +5,7 @@ import {
 } from "schema/v2/filterArtworksConnection"
 import gql from "lib/gql"
 import { printType } from "lib/stitching/lib/printType"
+import { delegateToSchema } from "@graphql-tools/delegate"
 
 export const kawsStitchingEnvironmentV2 = (
   localSchema: GraphQLSchema,
@@ -41,17 +42,12 @@ export const kawsStitchingEnvironmentV2 = (
     resolvers: {
       Artist: {
         marketingCollections: {
-          fragment: `
-          ... on Artist {
-            internalID
-          }
-        `,
+          selectionSet: `{ internalID }`,
           resolve: ({ internalID: artistID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
+            return delegateToSchema({
               schema: kawsSchema,
               operation: "query",
               fieldName: "marketingCollections",
-
               args: {
                 artistID,
                 ...args,
@@ -71,7 +67,7 @@ export const kawsStitchingEnvironmentV2 = (
         `,
           resolve: ({ kawsCollectionSlugs: slugs }, args, context, info) => {
             if (slugs.length === 0) return []
-            return info.mergeInfo.delegateToSchema({
+            return info.stitchingInfo.delegateToSchema({
               schema: kawsSchema,
               operation: "query",
               fieldName: "marketingCollections",

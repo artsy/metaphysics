@@ -24,18 +24,21 @@ export const incrementalMergeSchemas2 = async (localSchema) => {
   }
 
   const kawsSchema = await executableKawsSchema()
-  subschemas.push(kawsSchema.schema)
-  useStitchingEnvironment(
-    kawsStitchingEnvironmentV2(localSchema, kawsSchema.schema)
-  )
+  subschemas.push(kawsSchema)
+  useStitchingEnvironment(kawsStitchingEnvironmentV2(localSchema, kawsSchema))
 
-  const stitchedSchemas = stitchSchemas({
+  const stitchedSchema = stitchSchemas({
     subschemas,
     resolvers: extensionResolvers,
     typeDefs: extensionSchemas,
   })
 
+  // Because __allowedLegacyNames isn't in the public API
+  Object.defineProperty(stitchedSchema, "__allowedLegacyNames", {
+    value: ["__id"],
+  })
+
   // debugger
 
-  return stitchedSchemas
+  return stitchedSchema
 }

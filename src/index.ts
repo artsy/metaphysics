@@ -271,8 +271,8 @@ const app = express()
   try {
     const schemaV2 = await getSchemaV2()
     // This order is important for dd-trace to be able to find the nested routes.
-    app.use("/v2", (req, res, next) => startApp(schemaV2, "/")(req, res, next))
-    app.use("/", (req, res, next) => startApp(schemaV1, "/")(req, res, next))
+    app.use("/v2", startApp(schemaV2, "/"))
+    app.use("/", startApp(schemaV1, "/"))
   } catch (error) {
     console.log(error)
   }
