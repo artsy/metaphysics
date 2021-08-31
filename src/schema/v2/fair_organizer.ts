@@ -19,6 +19,8 @@ import { fairConnection } from "./fair"
 import { articleConnection } from "./article"
 import ArticleSorts, { ArticleSort } from "./sorts/article_sorts"
 import { formatMarkdownValue, markdown } from "./fields/markdown"
+import { FairSorts } from "./sorts/fair_sorts"
+import { EventStatus } from "./input_fields/event_status"
 
 export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
   name: "FairOrganizer",
@@ -99,16 +101,47 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
       },
       fairsConnection: {
         type: fairConnection.connectionType,
-        args: pageable(),
-        resolve: async ({ profile_id }, args, { fairsLoader }) => {
+        args: {
+          hasFullFeature: {
+            type: GraphQLBoolean,
+          },
+          hasHomepageSection: {
+            type: GraphQLBoolean,
+          },
+          hasListing: {
+            type: GraphQLBoolean,
+          },
+          sort: FairSorts,
+          status: EventStatus,
+          ...pageable(),
+        },
+        resolve: async (
+          { profile_id },
+          {
+            fairOrganizerID,
+            hasFullFeature,
+            hasHomepageSection,
+            hasListing,
+            sort,
+            status,
+            ...args
+          },
+          { fairsLoader }
+        ) => {
+          const connectionArgs = pick(args, "before", "after", "first", "last")
           const { size, page, offset } = convertConnectionArgsToGravityArgs(
-            args
+            connectionArgs
           )
           const gravityOptions = {
             fair_organizer_id: profile_id,
-            total_count: true,
-            size,
+            has_full_feature: hasFullFeature,
+            has_homepage_section: hasHomepageSection,
+            has_listing: hasListing,
             page,
+            size,
+            sort,
+            status,
+            total_count: true,
           }
 
           const { body, headers } = await fairsLoader(gravityOptions)
@@ -117,11 +150,10 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
           return {
             totalCount,
             pageCursors: createPageCursors({ page, size }, totalCount),
-            ...connectionFromArraySlice(
-              body,
-              pick(args, "before", "after", "first", "last"),
-              { sliceStart: offset, arrayLength: totalCount }
-            ),
+            ...connectionFromArraySlice(body, connectionArgs, {
+              sliceStart: offset,
+              arrayLength: totalCount,
+            }),
           }
         },
       },
