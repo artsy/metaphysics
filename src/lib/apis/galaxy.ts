@@ -10,5 +10,6 @@ export default (path) => {
     "Content-Type": "application/hal+json",
     "Http-Authorization": GALAXY_TOKEN,
   }
+
   return fetch(urljoin(GALAXY_API_BASE, path), { headers })
 }

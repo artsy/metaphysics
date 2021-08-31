@@ -102,6 +102,7 @@ import { UserField } from "./user"
 import { Users } from "./users"
 import VanityURLEntity from "./vanityURLEntity"
 import FairOrganizer from "./fair_organizer"
+import Galaxy from "./Galaxy/Galaxy"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -143,6 +144,7 @@ const rootFields = {
   feature: Feature,
   filterPartners: FilterPartners,
   // filterArtworksConnection: filterArtworksConnection(),
+  galaxy: Galaxy,
   gene: Gene,
   genes: Genes,
   // suggestedGenes: SuggestedGenes,

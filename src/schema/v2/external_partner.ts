@@ -34,8 +34,8 @@ const ExternalPartner: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The ID of the Partner",
     },
   },
-  resolve: (_root, { id }, { galaxyGalleriesLoader }) => {
-    return galaxyGalleriesLoader(id)
+  resolve: (_root, { id }, { galaxyGalleryLoader }) => {
+    return galaxyGalleryLoader(id)
   },
 }
 

@@ -565,13 +565,13 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (
           { partner, galaxy_partner_id },
           _options,
-          { galaxyGalleriesLoader }
+          { galaxyGalleryLoader }
         ) => {
           if (partner) {
             return partner
           }
           if (galaxy_partner_id) {
-            return galaxyGalleriesLoader(galaxy_partner_id)
+            return galaxyGalleryLoader(galaxy_partner_id)
           }
         },
       },
