@@ -5,6 +5,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { date } from "../fields/date"
 
 export interface Response {
   total_count: number
@@ -12,7 +13,7 @@ export interface Response {
   current_page: number
   next_page: number
   _embedded: {
-    auction_houses: AuctionHouse[]
+    fairs: Fair[]
   }
   _links: {
     self: Link
@@ -20,7 +21,7 @@ export interface Response {
   }
 }
 
-interface AuctionHouse {
+interface Fair {
   id: number
   name: string
   country?: string
@@ -36,15 +37,14 @@ interface Link {
   href: string
 }
 
-export const galaxyAuctionHouseType = new GraphQLObjectType<
-  AuctionHouse,
-  ResolverContext
->({
-  name: "GalaxyAuctionHouse",
+export const externalFairType = new GraphQLObjectType<Fair, ResolverContext>({
+  name: "ExternalFair",
   fields: {
     id: { type: new GraphQLNonNull(GraphQLInt) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     city: { type: GraphQLString },
     country: { type: GraphQLString },
+    startAt: date(({ start_at }) => start_at),
+    endAt: date(({ end_at }) => end_at),
   },
 })

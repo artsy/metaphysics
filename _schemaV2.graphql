@@ -6220,6 +6220,50 @@ enum EventStatus {
   UPCOMING
 }
 
+type External {
+  auctionHouses(term: String): [ExternalAuctionHouse!]!
+  fairs(term: String): [ExternalFair!]!
+  galleries(term: String): [ExternalGallery!]!
+}
+
+type ExternalAuctionHouse {
+  city: String
+  country: String
+  id: Int!
+  name: String!
+}
+
+type ExternalFair {
+  city: String
+  country: String
+  endAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  id: Int!
+  name: String!
+  startAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+}
+
+type ExternalGallery {
+  city: String
+  id: Int!
+  name: String!
+  partner: Partner
+  region: String
+}
+
 type ExternalPartner {
   city: String
 
@@ -7040,50 +7084,6 @@ type FormattedDaySchedules {
 # The `FormattedNumber` type represents a number that can optionally be returnedas
 # a formatted String. It does not try to coerce the type.
 scalar FormattedNumber
-
-type Galaxy {
-  auctionHouses(term: String): [GalaxyAuctionHouse!]!
-  fairs(term: String): [GalaxyFair!]!
-  galleries(term: String): [GalaxyGallery!]!
-}
-
-type GalaxyAuctionHouse {
-  city: String
-  country: String
-  id: Int!
-  name: String!
-}
-
-type GalaxyFair {
-  city: String
-  country: String
-  endAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
-    # http://www.iana.org/time-zones,
-    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
-  id: Int!
-  name: String!
-  startAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
-    # http://www.iana.org/time-zones,
-    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
-}
-
-type GalaxyGallery {
-  city: String
-  id: Int!
-  name: String!
-  partner: Partner
-  region: String
-}
 
 # An entry from gemini
 type GeminiEntry {
@@ -10247,6 +10247,9 @@ type Query {
     id: String!
   ): CreditCard
 
+  # A namespace external partners (provided by Galaxy)
+  external: External
+
   # A Fair
   fair(
     # The slug or ID of the Fair
@@ -10335,9 +10338,6 @@ type Query {
     term: String
     type: [PartnerClassification]
   ): FilterPartners
-
-  # A namespace external partners (provided by the Galaxy API)
-  galaxy: Galaxy
   gene(
     # The slug or ID of the Gene
     id: String!
@@ -12927,6 +12927,9 @@ type Viewer {
     id: String!
   ): CreditCard
 
+  # A namespace external partners (provided by Galaxy)
+  external: External
+
   # A Fair
   fair(
     # The slug or ID of the Fair
@@ -13015,9 +13018,6 @@ type Viewer {
     term: String
     type: [PartnerClassification]
   ): FilterPartners
-
-  # A namespace external partners (provided by the Galaxy API)
-  galaxy: Galaxy
   gene(
     # The slug or ID of the Gene
     id: String!
