@@ -6223,7 +6223,12 @@ enum EventStatus {
 type External {
   auctionHouses(size: Int, term: String): [ExternalAuctionHouse!]!
   fairs(size: Int, term: String): [ExternalFair!]!
-  galleries(size: Int, term: String): [ExternalGallery!]!
+  galleries(
+    # Limit results to only galleries on Artsy
+    artsyOnly: Boolean = true
+    size: Int
+    term: String
+  ): [ExternalGallery!]!
 }
 
 type ExternalAuctionHouse {
