@@ -1,10 +1,6 @@
-import {
-  GraphQLInt,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-} from "graphql"
+import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { IDFields } from "../object_identification"
 import { PartnerType } from "../partner"
 
 export interface Response {
@@ -42,7 +38,7 @@ export const externalGalleryType = new GraphQLObjectType<
 >({
   name: "ExternalGallery",
   fields: {
-    id: { type: new GraphQLNonNull(GraphQLInt) },
+    ...IDFields,
     name: { type: new GraphQLNonNull(GraphQLString) },
     city: { type: GraphQLString },
     region: { type: GraphQLString },
