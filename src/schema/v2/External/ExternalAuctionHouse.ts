@@ -1,10 +1,6 @@
-import {
-  GraphQLInt,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-} from "graphql"
+import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { IDFields } from "../object_identification"
 
 export interface Response {
   total_count: number
@@ -42,7 +38,7 @@ export const extenralAuctionHouseType = new GraphQLObjectType<
 >({
   name: "ExternalAuctionHouse",
   fields: {
-    id: { type: new GraphQLNonNull(GraphQLInt) },
+    ...IDFields,
     name: { type: new GraphQLNonNull(GraphQLString) },
     city: { type: GraphQLString },
     country: { type: GraphQLString },

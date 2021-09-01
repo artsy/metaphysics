@@ -5,6 +5,7 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLInt,
+  GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
@@ -64,18 +65,28 @@ const externalType = new GraphQLObjectType<
       args: {
         term: { type: GraphQLString },
         size: { type: GraphQLInt },
+        artsyOnly: {
+          type: GraphQLBoolean,
+          description: "Limit results to only galleries on Artsy",
+          defaultValue: true,
+        },
       },
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(externalGalleryType))
       ),
       resolve: async (
         _parent,
-        { term, size }: { term?: string; size?: number },
+        {
+          term,
+          size,
+          artsyOnly,
+        }: { term?: string; size?: number; artsyOnly?: boolean },
         { galaxyGalleriesLoader }
       ) => {
         const res: GalleriesResponse = await galaxyGalleriesLoader({
           term,
           size,
+          artsy_only: artsyOnly,
         })
         return res._embedded.galleries
       },

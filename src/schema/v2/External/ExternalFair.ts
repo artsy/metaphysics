@@ -1,11 +1,7 @@
-import {
-  GraphQLInt,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-} from "graphql"
+import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { date } from "../fields/date"
+import { IDFields } from "../object_identification"
 
 export interface Response {
   total_count: number
@@ -40,7 +36,7 @@ interface Link {
 export const externalFairType = new GraphQLObjectType<Fair, ResolverContext>({
   name: "ExternalFair",
   fields: {
-    id: { type: new GraphQLNonNull(GraphQLInt) },
+    ...IDFields,
     name: { type: new GraphQLNonNull(GraphQLString) },
     city: { type: GraphQLString },
     country: { type: GraphQLString },
