@@ -10,7 +10,7 @@ import { error } from "lib/loggers"
 import { dateRange } from "lib/date"
 import { ShowType } from "../show"
 import { SaleType } from "../sale"
-import { date as DateFormat } from "schema/v2/fields/date"
+import { formatDate } from "schema/v2/fields/date"
 import { ResolverContext } from "types/graphql"
 
 const UnderlyingCurrentEventType = new GraphQLUnionType({
@@ -67,7 +67,7 @@ const FORMAT = "MMM D h:mm A z"
 const DEFAULT_TZ = "America/New_York"
 
 const saleDetails = (sale, timezone) => {
-  const dateLabel = DateFormat(
+  const dateLabel = formatDate(
     sale.live_start_at || sale.end_at,
     FORMAT,
     timezone

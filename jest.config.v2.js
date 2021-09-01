@@ -20,7 +20,7 @@ module.exports = {
         "src/schema/v2/__tests__/ecommerce/",
       ],
       transform: {
-        "^.+\\.(js|ts)$": "babel-jest",
+        "^.+\\.(js|ts)$": require.resolve("babel-jest"),
       },
     },
   ],

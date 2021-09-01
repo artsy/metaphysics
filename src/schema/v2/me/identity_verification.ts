@@ -6,7 +6,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "schema/v2/object_identification"
-import dateField, { date } from "../fields/date"
+import dateField, { formatDate } from "../fields/date"
 
 export type IdentityVerificationGravityResponse = {
   id: string
@@ -26,7 +26,7 @@ const dateFieldForVerificationExpiresAt: GraphQLFieldConfig<
     { defaultTimezone }
   ) => {
     const timezoneString = timezone || defaultTimezone
-    return date(rawDate, format, timezoneString)
+    return formatDate(rawDate, format, timezoneString)
   },
 }
 

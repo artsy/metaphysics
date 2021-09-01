@@ -1,6 +1,5 @@
 import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 
-import Algolia from "./algolia"
 import CausalityJWT from "./causality_jwt"
 import SystemTime from "./time"
 import Services from "./services"
@@ -9,7 +8,6 @@ import { ResolverContext } from "types/graphql"
 const SystemType = new GraphQLObjectType<any, ResolverContext>({
   name: "System",
   fields: {
-    algolia: Algolia,
     services: Services,
     time: SystemTime,
     causalityJWT: CausalityJWT,
