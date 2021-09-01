@@ -39,6 +39,7 @@ FROM node:14.17.5-alpine3.11 as production
 WORKDIR /app
 
 RUN apk --no-cache --quiet add \
+  bash \
   dumb-init \
   git \
   && adduser -D -g '' deploy
