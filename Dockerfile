@@ -49,6 +49,7 @@ RUN chown deploy:deploy $(pwd)
 # Switch to deploy user
 USER deploy
 
+COPY --chown=deploy:deploy --from=builder-base /app/.circleci ./.circleci
 COPY --chown=deploy:deploy --from=builder-base /app/build ./build
 COPY --chown=deploy:deploy --from=builder-base /app/src/data ./src/data
 COPY --chown=deploy:deploy --from=builder-base /opt/node_modules.prod ./node_modules
