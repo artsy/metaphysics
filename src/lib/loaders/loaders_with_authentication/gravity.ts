@@ -310,5 +310,6 @@ export default (accessToken, userID, opts) => {
     usersLoader: gravityLoader("users"),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
+    userInterestsLoader: gravityLoader("me/user_interests"),
   }
 }
