@@ -824,13 +824,15 @@ describe("Artwork type", () => {
     it("returns '[Price], on hold' if work is on hold with a price", () => {
       artwork.sale_message = "Not for sale"
       artwork.price = "$420,000"
+      artwork.price_cents = [42000000]
+      artwork.price_currency = "USD"
       artwork.availability = "on hold"
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
             slug: "richard-prince-untitled-portrait",
-            saleMessage: "$420,000, on hold",
+            saleMessage: "US$420,000, on hold",
           },
         })
       })
@@ -905,7 +907,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns the gravity sale_message if for sale", () => {
+    it("returns the gravity sale_message if for sale but there is no price", () => {
       artwork.availability = "for sale"
       artwork.sale_message = "something from gravity"
 
@@ -914,6 +916,37 @@ describe("Artwork type", () => {
           artwork: {
             slug: "richard-prince-untitled-portrait",
             saleMessage: "something from gravity",
+          },
+        })
+      })
+    })
+
+    it("returns the formatted price if for sale", () => {
+      artwork.availability = "for sale"
+      artwork.price_cents = [42000]
+      artwork.price_currency = "USD"
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            saleMessage: "US$420",
+          },
+        })
+      })
+    })
+
+    it("returns the formatted price range if sale is a price range", () => {
+      artwork.availability = "for sale"
+      artwork.sale_message = "something from gravity"
+      artwork.price_cents = [6900, 42000]
+      artwork.price_currency = "USD"
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            saleMessage: "US$69–US$420",
           },
         })
       })
