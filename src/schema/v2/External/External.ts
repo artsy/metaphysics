@@ -95,7 +95,7 @@ const externalType = new GraphQLObjectType<
 })
 
 export const externalField: GraphQLFieldConfig<void, ResolverContext> = {
-  type: externalType,
+  type: new GraphQLNonNull(externalType),
   description: "A namespace external partners (provided by Galaxy)",
   resolve: (_root, _options, _context) => {
     return {}
