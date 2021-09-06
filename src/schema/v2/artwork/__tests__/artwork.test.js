@@ -1323,16 +1323,16 @@ describe("Artwork type", () => {
       `
 
       describe("if the artwork is able to be used with View in Room", () => {
-        it("is hangable if ink artwork is 2d and has reasonable dimensions", () => {
+        it("is hangable if print artwork is 2D and has reasonable dimensions", () => {
           artwork.width = 100
           artwork.height = 100
-          artwork.category = "ink"
+          artwork.category = "print"
           return runQuery(query, context).then((data) => {
             expect(data.artwork.isHangable).toBe(true)
           })
         })
 
-        it("is hangable if artwork is 2d with a reasonable dimensions + tiny depth", () => {
+        it("is hangable if artwork is not 3D category with a reasonable dimensions + tiny depth", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.depth = 0.5
@@ -1342,7 +1342,17 @@ describe("Artwork type", () => {
           })
         })
 
-        it("is hangable if painting artwork is 2d and has reasonable dimensions", () => {
+        it("is hangable if artwork is not in the 3D category or 2D category but has a depth of less than 3", () => {
+          artwork.width = 100
+          artwork.height = 100
+          artwork.depth = 2
+          artwork.category = "ink"
+          return runQuery(query, context).then((data) => {
+            expect(data.artwork.isHangable).toBe(true)
+          })
+        })
+
+        it("is hangable if painting artwork is in 2d category and has reasonable dimensions", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.category = "painting"
@@ -1353,8 +1363,8 @@ describe("Artwork type", () => {
       })
 
       describe("if the artwork is not able to be used with View in Room", () => {
-        it("is not hangable if the category is not applicable to wall display like sculpture", () => {
-          artwork.category = "sculpture"
+        it("is not hangable if the artwork is in a 3D category", () => {
+          artwork.category = "fashion"
           artwork.width = 100
           artwork.height = 100
           return runQuery(query, context).then((data) => {
@@ -1362,8 +1372,8 @@ describe("Artwork type", () => {
           })
         })
 
-        it("is not hangable if the category is not applicable to wall display like installations", () => {
-          artwork.category = "installation"
+        it("is not hangable if the artwork is in a 3D category like sound", () => {
+          artwork.category = "sound"
           artwork.width = 100
           artwork.height = 100
           return runQuery(query, context).then((data) => {
@@ -1371,7 +1381,7 @@ describe("Artwork type", () => {
           })
         })
 
-        it("is not hangable if the work is 3d", () => {
+        it("is not hangable if the work has a large depth", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.depth = 100

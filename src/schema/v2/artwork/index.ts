@@ -472,12 +472,36 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       isHangable: {
         type: GraphQLBoolean,
         resolve: (artwork) => {
-          const is3D =
-            _.includes(artwork.category, "sculpture") ||
-            _.includes(artwork.category, "installation") ||
-            _.includes(artwork.category, "design")
+          const categories3D = [
+            "installation",
+            "design",
+            "performance",
+            "sound",
+            "fashion",
+            "architecture",
+            "books_and_portfolios",
+            "jewelry",
+            "other",
+          ]
+          const categories2D = [
+            "print",
+            "drawing_collage_other_work_on_paper",
+            "painting",
+            "photography",
+            "posters",
+            "work_on_paper",
+          ]
 
-          return !is3D && isTwoDimensional(artwork) && !isTooBig(artwork)
+          const areIncluded = (category) =>
+            _.includes(artwork.category, category)
+
+          const is3DCategory = categories3D.some(areIncluded)
+          const is2DCategory = categories2D.some(areIncluded)
+
+          return (
+            (is2DCategory || (!is3DCategory && isTwoDimensional(artwork))) &&
+            !isTooBig(artwork)
+          )
         },
       },
       isInquireable: {
