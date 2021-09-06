@@ -57,6 +57,7 @@ import { ArtworkContextGrids } from "./artworkContextGrids"
 import { PageInfoType } from "graphql-relay"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { InquiryQuestionType } from "../inquiry_question"
+import { LocationType } from "schema/v2/location"
 
 const has_price_range = (price) => {
   return new RegExp(/\-/).test(price)
@@ -554,6 +555,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       literature: markdown(({ literature }) =>
         literature.replace(/^literature:\s+/i, "")
       ),
+      location: {
+        type: LocationType,
+        resolve: ({ location }) => location,
+      },
       manufacturer: markdown(),
       medium: {
         type: GraphQLString,
