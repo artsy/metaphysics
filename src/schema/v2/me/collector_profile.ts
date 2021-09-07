@@ -7,8 +7,10 @@ import {
   GraphQLList,
   GraphQLFieldConfig,
   GraphQLFieldConfigMap,
+  GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { userInterestType } from "./userInterests"
 
 export const CollectorProfileFields: GraphQLFieldConfigMap<
   any,
@@ -33,6 +35,12 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   selfReportedPurchases: {
     type: GraphQLString,
     resolve: ({ self_reported_purchases }) => self_reported_purchases,
+  },
+  userInterests: {
+    type: new GraphQLNonNull(new GraphQLList(userInterestType)),
+    resolve: (_collectorProfile, _args, { userInterestsLoader }) => {
+      return userInterestsLoader?.()
+    },
   },
 }
 
