@@ -57,10 +57,11 @@ import { ArtworkContextGrids } from "./artworkContextGrids"
 import { PageInfoType } from "graphql-relay"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { InquiryQuestionType } from "../inquiry_question"
+import { priceDisplayText } from "lib/moneyHelpers"
 import { LocationType } from "schema/v2/location"
 
 const has_price_range = (price) => {
-  return new RegExp(/\-/).test(price)
+  return new RegExp(/-/).test(price)
 }
 
 const has_multiple_editions = (edition_sets) => {
@@ -666,7 +667,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       shipsToContinentalUSOnly: {
         type: GraphQLBoolean,
         description:
-          "Is this work available for shipping only within the Contenental US?",
+          "Is this work available for shipping only within the Continental US?",
         deprecationReason: deprecate({
           inVersion: 2,
           preferUsageOf: "onlyShipsDomestically",
@@ -897,7 +898,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           sale_message,
           availability,
           availability_hidden,
-          price,
+          price_cents,
+          price_currency,
         }) => {
           // Don't display anything if availability is hidden, or artwork is not for sale.
           if (availability_hidden || availability === "not for sale") {
@@ -915,15 +917,18 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             return "Sold"
           }
 
+          const price =
+            price_cents && priceDisplayText(price_cents, price_currency, "")
+
           // If on hold, prepend the price (if there is one).
           if (availability === "on hold") {
-            if (price) {
+            if (price_cents) {
               return `${price}, on hold`
             }
             return "On hold"
           }
 
-          return sale_message
+          return price || sale_message
         },
       },
       series: markdown(),
