@@ -10,9 +10,13 @@ import { ArtistType } from "../artist"
 import { GeneType } from "../gene"
 import { IDFields } from "../object_identification"
 
-interface UserInterest {
+export type UserInterestCategory =
+  | "collected_before"
+  | "interested_in_collecting"
+
+export interface UserInterest {
   body?: string
-  category: "collected_before" | "interested_in_collecting"
+  category: UserInterestCategory
   created_at: string
   id: number
   interest: unknown // Artist | Gene
@@ -20,7 +24,7 @@ interface UserInterest {
   updated_at: string
 }
 
-const userInterestCategoryEnum = new GraphQLEnumType({
+export const userInterestCategoryEnum = new GraphQLEnumType({
   name: "UserInterestCategory",
   values: {
     COLLECTED_BEFORE: { value: "collected_before" },
@@ -28,7 +32,7 @@ const userInterestCategoryEnum = new GraphQLEnumType({
   },
 })
 
-const userInterestInterestUnion = new GraphQLUnionType({
+export const userInterestInterestUnion = new GraphQLUnionType({
   name: "UserInterestInterest",
   types: [ArtistType, GeneType],
   resolveType: (object) => ("birthday" in object ? ArtistType : GeneType),

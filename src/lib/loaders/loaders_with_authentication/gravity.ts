@@ -46,6 +46,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createUserInterestLoader: gravityLoader(
+      "me/user_interest",
+      {},
+      { method: "POST" }
+    ),
     creditCardLoader: gravityLoader((id) => `credit_card/${id}`),
     deleteSavedArtworkLoader: gravityLoader(
       (id) => `collection/saved-artwork/artwork/${id}`,

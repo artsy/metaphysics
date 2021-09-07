@@ -103,6 +103,7 @@ import { Users } from "./users"
 import VanityURLEntity from "./vanityURLEntity"
 import FairOrganizer from "./fair_organizer"
 import { externalField } from "./External/External"
+import { createUserInterestMutation } from "./me/createUserInterestMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -211,6 +212,7 @@ export default new GraphQLSchema({
       createBidderPosition: BidderPositionMutation,
       createCreditCard: createCreditCardMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
+      createUserInterest: createUserInterestMutation,
       deleteCreditCard: deleteCreditCardMutation,
       endSale: endSaleMutation,
       followArtist: FollowArtist,
