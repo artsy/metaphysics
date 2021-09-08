@@ -5,6 +5,10 @@ export default (opts) => {
   const vortexLoader = vortexLoaderWithoutAuthenticationFactory
 
   return {
+    vortexGraphqlLoader: (body) =>
+      vortexLoader("/api/graphql", body, {
+        method: "POST",
+      }),
     vortexUserLoader: vortexLoader((userId) => `/api/users/${userId}`),
   }
 }

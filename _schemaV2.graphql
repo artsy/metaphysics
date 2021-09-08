@@ -10168,7 +10168,7 @@ type Query {
   # Home screen content
   homePage: HomePage
 
-  # A connection of interestingworks
+  # A connection of new works by artists the user interacted with.
   interestingWorks(
     after: String
     before: String
@@ -12822,7 +12822,7 @@ type Viewer {
   # Home screen content
   homePage: HomePage
 
-  # A connection of interestingworks
+  # A connection of new works by artists the user interacted with.
   interestingWorks(
     after: String
     before: String
