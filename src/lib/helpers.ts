@@ -42,7 +42,7 @@ export const isExisty = (x) => {
 }
 
 // Coerce a usable value or nothing at all
-export const existyValue = (x) => {
+export const existyValue = <T>(x: T): T | undefined => {
   if (isExisty(x)) return x
 }
 
