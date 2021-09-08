@@ -23,7 +23,9 @@ const InterestingWorksConnection: GraphQLFieldConfig<void, ResolverContext> = {
   ) => {
     if (!vortexGraphqlLoader || !artworksLoader) return
 
-    const result = await vortexGraphqlLoader({
+    // Fetch artist IDs from Vortex
+
+    const vortexResult = await vortexGraphqlLoader({
       query: gql`
         query artistAffinitiesQuery {
           artistAffinities(first: ${MAX_ARTISTS}) {
@@ -39,11 +41,11 @@ const InterestingWorksConnection: GraphQLFieldConfig<void, ResolverContext> = {
       `,
     })()
 
-    const artistIds = result.data.artistAffinities.edges.map(
+    const artistIds = vortexResult.data.artistAffinities.edges.map(
       (edge) => edge.node.artistId
     )
 
-    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+    // Fetch artworks from Gravity
 
     const artworks = await artworksLoader({
       artist_ids: artistIds,
@@ -52,6 +54,7 @@ const InterestingWorksConnection: GraphQLFieldConfig<void, ResolverContext> = {
     })
 
     const count = artworks.length
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     return {
       totalCount: count,
