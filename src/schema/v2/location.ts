@@ -133,7 +133,7 @@ export const locationsConnection = connectionWithCursorInfo({
   nodeType: LocationType,
 })
 
-const COUNTRIES = {
+export const COUNTRIES = {
   AC: "Ascension Island",
   AD: "Andorra",
   AE: "United Arab Emirates",
