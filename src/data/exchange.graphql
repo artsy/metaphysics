@@ -1547,6 +1547,7 @@ input SellerAcceptOfferInput {
   """
   clientMutationId: String
   offerId: ID!
+  shippingContact: ShippingContactAttributes
 }
 
 """
@@ -1602,6 +1603,7 @@ input SellerCounterOfferInput {
   clientMutationId: String
   note: String
   offerId: ID!
+  shippingContact: ShippingContactAttributes
 }
 
 """
