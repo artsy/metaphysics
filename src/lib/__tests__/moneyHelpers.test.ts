@@ -15,7 +15,7 @@ describe("currencyPrefix", () => {
     expect(currencyPrefix("USD")).toBe("US$")
     expect(currencyPrefix("HKD")).toBe("HK$")
     expect(currencyPrefix("CAD")).toBe("C$")
-    expect(currencyPrefix("AUD")).toBe("A$")
+    expect(currencyPrefix("AUD")).toBe("AU$")
     expect(currencyPrefix("MXN")).toBe("MX$")
   })
 
