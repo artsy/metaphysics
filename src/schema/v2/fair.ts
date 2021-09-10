@@ -356,17 +356,16 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           if (!root._id) {
             return []
           }
+          interface Exhibitor {
+            name: string
+            profile_id: string
+            id: string
+            partner_id: string
+          }
           const exhibitor_groups: {
             [letter: string]: {
               letter: string
-              exhibitors: [
-                {
-                  name: string
-                  profile_id: string
-                  id: string
-                  partner_id: string
-                }
-              ]
+              exhibitors: Exhibitor[]
             }
           } = {}
           const fetch = allViaLoader(fairPartnersLoader, { path: root._id })
@@ -409,6 +408,29 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
                 }
               }
             }
+
+            // Special characters first, then numbers
+            if (exhibitor_groups["#"]) {
+              const numericExhibitors: Exhibitor[] = []
+              const specialCharacterExhibitors: Exhibitor[] = []
+
+              for (const exhibitor of exhibitor_groups["#"].exhibitors) {
+                const letter = exhibitor.name.charAt(0)
+
+                // Numeric letter
+                if (/[0-9]/.test(letter)) {
+                  numericExhibitors.push(exhibitor)
+                } else {
+                  specialCharacterExhibitors.push(exhibitor)
+                }
+              }
+
+              exhibitor_groups["#"].exhibitors = [
+                ...specialCharacterExhibitors,
+                ...numericExhibitors,
+              ]
+            }
+
             return Object.values(exhibitor_groups)
           })
         },

@@ -267,6 +267,187 @@ describe("Fair", () => {
     })
   })
 
+  it("fair exhibitors with special characters or numbers should be within '#'", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          slug
+          name
+          exhibitorsGroupedByName {
+            letter
+            exhibitors {
+              name
+              slug
+              partnerID
+              profileID
+            }
+          }
+        }
+      }
+    `
+
+    context.fairPartnersLoader = sinon.stub().returns(
+      Promise.resolve({
+        body: [
+          {
+            name: "ArtHelix Gallery",
+            id: "arthelix-gallery",
+            partner_id: "1234567890",
+            partner_show_ids: ["arthelix-gallery"],
+          },
+          {
+            name: "192 Gallery",
+            id: "192-gallery",
+            partner_id: "192-partner-id",
+            partner_show_ids: ["192-gallery"],
+          },
+          {
+            name: "{Suit}",
+            id: "suit-gallery",
+            partner_id: "suit-partner-id",
+            partner_show_ids: ["suit-gallery"],
+          },
+        ],
+        headers: {
+          "x-total-count": 3,
+        },
+      })
+    )
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      fair: {
+        slug: "aqua-art-miami-2018",
+        name: "Aqua Art Miami 2018",
+        exhibitorsGroupedByName: [
+          {
+            letter: "#",
+            exhibitors: [
+              {
+                name: "{Suit}",
+                slug: "suit-gallery",
+                partnerID: "suit-partner-id",
+                profileID: "suit-gallery",
+              },
+              {
+                name: "192 Gallery",
+                slug: "192-gallery",
+                partnerID: "192-partner-id",
+                profileID: "192-gallery",
+              },
+            ],
+          },
+          {
+            letter: "A",
+            exhibitors: [
+              {
+                name: "ArtHelix Gallery",
+                slug: "arthelix-gallery",
+                partnerID: "1234567890",
+                profileID: "arthelix-gallery",
+              },
+            ],
+          },
+        ],
+      },
+    })
+  })
+
+  it("in the '#' group would go special characters first, then numbers", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          slug
+          name
+          exhibitorsGroupedByName {
+            letter
+            exhibitors {
+              name
+              slug
+              partnerID
+              profileID
+            }
+          }
+        }
+      }
+    `
+
+    context.fairPartnersLoader = sinon.stub().returns(
+      Promise.resolve({
+        body: [
+          {
+            name: "192 Gallery",
+            id: "192-gallery",
+            partner_id: "192-gallery-partner-id",
+            partner_show_ids: ["192-gallery"],
+          },
+          {
+            name: "{Suit}",
+            id: "suit-gallery",
+            partner_id: "suit-gallery-partner-id",
+            partner_show_ids: ["suit-gallery"],
+          },
+          {
+            name: "313 Art Project",
+            id: "313-art-project",
+            partner_id: "313-art-project-partner-id",
+            partner_show_ids: ["313-art-project"],
+          },
+          {
+            name: "#hashtag",
+            id: "hashtag-gallery",
+            partner_id: "hashtag-gallery-partner-id",
+            partner_show_ids: ["hashtag-gallery"],
+          },
+        ],
+        headers: {
+          "x-total-count": 4,
+        },
+      })
+    )
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      fair: {
+        slug: "aqua-art-miami-2018",
+        name: "Aqua Art Miami 2018",
+        exhibitorsGroupedByName: [
+          {
+            letter: "#",
+            exhibitors: [
+              {
+                name: "#hashtag",
+                slug: "hashtag-gallery",
+                partnerID: "hashtag-gallery-partner-id",
+                profileID: "hashtag-gallery",
+              },
+              {
+                name: "{Suit}",
+                slug: "suit-gallery",
+                partnerID: "suit-gallery-partner-id",
+                profileID: "suit-gallery",
+              },
+              {
+                name: "192 Gallery",
+                slug: "192-gallery",
+                partnerID: "192-gallery-partner-id",
+                profileID: "192-gallery",
+              },
+              {
+                name: "313 Art Project",
+                slug: "313-art-project",
+                partnerID: "313-art-project-partner-id",
+                profileID: "313-art-project",
+              },
+            ],
+          },
+        ],
+      },
+    })
+  })
+
   it("exposes the partner type when grouping exhibitors alphanumerically", async () => {
     const query = gql`
       {
