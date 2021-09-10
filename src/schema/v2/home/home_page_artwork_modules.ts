@@ -1,16 +1,6 @@
 import { GraphQLFieldConfig, GraphQLInt, GraphQLList } from "graphql"
 import { ResolverContext } from "types/graphql"
-import {
-  filter,
-  find,
-  findIndex,
-  keys,
-  map,
-  remove,
-  set,
-  slice,
-  without,
-} from "lodash"
+import { find, findIndex, keys, map, remove, set, slice, without } from "lodash"
 import addGenericGenes from "./add_generic_genes"
 import {
   featuredAuction,
@@ -29,20 +19,26 @@ import {
 
 const filterModules = (
   modules: HomePageArtworkModuleDetails[],
-  max_rails: number,
+  maxRails: number,
   exclude: string[],
   include?: string[]
 ) => {
-  let allModules: HomePageArtworkModuleDetails[]
-  if (
-    exclude.includes("generic_gene") ||
-    (include && !include?.includes("generic_gene"))
-  ) {
-    allModules = filter(modules, ["display", true])
-  } else {
-    allModules = addGenericGenes(filter(modules, ["display", true]))
+  let allModules: HomePageArtworkModuleDetails[] = addGenericGenes(modules)
+
+  // If `include` key is provided, ignore `exclude`
+  if (include?.length === 0 || include?.length) {
+    allModules = modules.filter((module) => include?.includes(module.key))
+  } else if (exclude?.length) {
+    allModules = modules.filter((module) => !exclude?.includes(module.key))
   }
-  return max_rails < 0 ? allModules : slice(allModules, 0, max_rails)
+
+  // Only show display=true modules
+  allModules = allModules.filter((module) => module.display)
+
+  const filteredRails =
+    maxRails < 0 ? allModules : slice(allModules, 0, maxRails)
+
+  return filteredRails
 }
 
 const addFollowedGenes = (
