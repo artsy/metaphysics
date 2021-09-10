@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLInputObjectType,
   GraphQLList,
   GraphQLNonNull,
@@ -46,6 +47,10 @@ export const InquiryRequest = new GraphQLObjectType<any, ResolverContext>({
   description: "A request to inquire on an artwork",
   fields: () => ({
     ...InternalIDFields,
+    contactGallery: {
+      type: GraphQLBoolean,
+      resolve: ({ contact_gallery }) => contact_gallery,
+    },
     inquireable: {
       type: InquiryItemType,
       resolve: (result) => {
@@ -82,6 +87,11 @@ export const submitInquiryRequestMutation = mutationWithClientMutationId<
   name: "SubmitInquiryRequestMutation",
   description: "Create an artwork inquiry request",
   inputFields: {
+    contactGallery: {
+      type: GraphQLBoolean,
+      description:
+        "Whether or not to contact the gallery (for instance, for specialist questions)",
+    },
     inquireableID: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The inquireable object id (Artwork ID or Show ID)",
@@ -107,7 +117,7 @@ export const submitInquiryRequestMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: (
-    { inquireableID, inquireableType, message, questions },
+    { contactGallery, inquireableID, inquireableType, message, questions },
     { submitArtworkInquiryRequestLoader }
   ) => {
     if (inquireableType === "Artwork") {
@@ -125,6 +135,7 @@ export const submitInquiryRequestMutation = mutationWithClientMutationId<
       }
       return submitArtworkInquiryRequestLoader({
         artwork: inquireableID,
+        contact_gallery: contactGallery,
         message,
         inquiry_questions: questions?.map((question) => question.questionID),
         inquiry_shipping_location: inquiryShippingLocation,
