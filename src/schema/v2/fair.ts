@@ -362,6 +362,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             id: string
             partner_id: string
           }
+          const SPECIAL_GROUP_KEY = "#"
           const exhibitor_groups: {
             [letter: string]: {
               letter: string
@@ -384,7 +385,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
 
               // Numeric or special symbol
               if (/[^A-Z]/i.test(letter)) {
-                letter = "#"
+                letter = SPECIAL_GROUP_KEY
               }
 
               if (exhibitor_groups[letter]) {
@@ -410,11 +411,12 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             }
 
             // Special characters first, then numbers
-            if (exhibitor_groups["#"]) {
+            if (exhibitor_groups[SPECIAL_GROUP_KEY]) {
               const numericExhibitors: Exhibitor[] = []
               const specialCharacterExhibitors: Exhibitor[] = []
+              const exhibitors = exhibitor_groups[SPECIAL_GROUP_KEY].exhibitors
 
-              for (const exhibitor of exhibitor_groups["#"].exhibitors) {
+              for (const exhibitor of exhibitors) {
                 const letter = exhibitor.name.charAt(0)
 
                 // Numeric letter
@@ -425,7 +427,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
                 }
               }
 
-              exhibitor_groups["#"].exhibitors = [
+              exhibitor_groups[SPECIAL_GROUP_KEY].exhibitors = [
                 ...specialCharacterExhibitors,
                 ...numericExhibitors,
               ]
