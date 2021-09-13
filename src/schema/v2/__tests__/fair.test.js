@@ -354,6 +354,93 @@ describe("Fair", () => {
     })
   })
 
+  it("group correctly exhibitors whose names start with accented characters", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          slug
+          name
+          exhibitorsGroupedByName {
+            letter
+            exhibitors {
+              name
+              slug
+              partnerID
+              profileID
+            }
+          }
+        }
+      }
+    `
+
+    context.fairPartnersLoader = sinon.stub().returns(
+      Promise.resolve({
+        body: [
+          {
+            name: "Ánother Gallery",
+            id: "another-gallery",
+            partner_id: "another-partner-id",
+            partner_show_ids: ["another-gallery"],
+          },
+          {
+            name: "Öther name",
+            id: "other-name",
+            partner_id: "other-partner-id",
+            partner_show_ids: ["other-name"],
+          },
+          {
+            name: "ArtHelix Gallery",
+            id: "arthelix-gallery",
+            partner_id: "1234567890",
+            partner_show_ids: ["arthelix-gallery"],
+          },
+        ],
+        headers: {
+          "x-total-count": 3,
+        },
+      })
+    )
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      fair: {
+        slug: "aqua-art-miami-2018",
+        name: "Aqua Art Miami 2018",
+        exhibitorsGroupedByName: [
+          {
+            letter: "A",
+            exhibitors: [
+              {
+                name: "ArtHelix Gallery",
+                slug: "arthelix-gallery",
+                partnerID: "1234567890",
+                profileID: "arthelix-gallery",
+              },
+              {
+                name: "Ánother Gallery",
+                slug: "another-gallery",
+                partnerID: "another-partner-id",
+                profileID: "another-gallery",
+              },
+            ],
+          },
+          {
+            letter: "O",
+            exhibitors: [
+              {
+                name: "Öther name",
+                slug: "other-name",
+                partnerID: "other-partner-id",
+                profileID: "other-name",
+              },
+            ],
+          },
+        ],
+      },
+    })
+  })
+
   it("in the '#' group would go special characters first, then numbers", async () => {
     const query = gql`
       {

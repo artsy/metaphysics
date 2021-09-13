@@ -1,4 +1,4 @@
-import { omit, map } from "lodash"
+import { omit, map, deburr } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -381,7 +381,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             for (const fairExhibitor of fairExhibitors) {
               const names = fairExhibitor.name.split(" ")
               const firstName = names[0]
-              let letter = firstName.charAt(0).toUpperCase()
+              let letter = deburr(firstName.charAt(0).toUpperCase())
 
               // Numeric or special symbol
               if (/[^A-Z]/i.test(letter)) {
