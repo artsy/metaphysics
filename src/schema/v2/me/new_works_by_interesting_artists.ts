@@ -10,7 +10,10 @@ import gql from "lib/gql"
 const MAX_ARTISTS = 50
 const MAX_ARTWORKS = 100
 
-const InterestingWorksConnection: GraphQLFieldConfig<void, ResolverContext> = {
+const NewWorksByInterestingArtists: GraphQLFieldConfig<
+  void,
+  ResolverContext
+> = {
   description: "A connection of new works by artists the user interacted with.",
   type: artworkConnection.connectionType,
   args: pageable({
@@ -67,4 +70,4 @@ const InterestingWorksConnection: GraphQLFieldConfig<void, ResolverContext> = {
   },
 }
 
-export default InterestingWorksConnection
+export default NewWorksByInterestingArtists

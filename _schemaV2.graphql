@@ -8095,6 +8095,15 @@ type Me implements Node {
     sort: MyCollectionArtworkSorts
   ): MyCollectionConnection
   name: String
+
+  # A connection of new works by artists the user interacted with.
+  newWorksByInterestingArtists(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+  ): ArtworkConnection
   orders(
     after: String
     before: String
@@ -10167,15 +10176,6 @@ type Query {
 
   # Home screen content
   homePage: HomePage
-
-  # A connection of new works by artists the user interacted with.
-  interestingWorks(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    page: Int
-  ): ArtworkConnection
   marketingCategories: [MarketingCollectionCategory!]!
   marketingCollection(slug: String!): MarketingCollection
   marketingCollections(
@@ -12821,15 +12821,6 @@ type Viewer {
 
   # Home screen content
   homePage: HomePage
-
-  # A connection of new works by artists the user interacted with.
-  interestingWorks(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    page: Int
-  ): ArtworkConnection
   marketingCollections(
     artistID: String
     category: String

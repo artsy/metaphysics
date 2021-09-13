@@ -102,7 +102,6 @@ import { UserField } from "./user"
 import { Users } from "./users"
 import VanityURLEntity from "./vanityURLEntity"
 import FairOrganizer from "./fair_organizer"
-import InterestingWorksConnection from "./interesting_works"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -121,7 +120,6 @@ const rootFields = {
   article: Article,
   articles: Articles,
   articlesConnection: ArticlesConnection,
-  interestingWorks: InterestingWorksConnection,
   artwork: Artwork,
   // artworkVersion: ArtworkVersionResolver,
   artworksConnection: filterArtworksConnection(),
