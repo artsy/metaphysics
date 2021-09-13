@@ -1,4 +1,4 @@
-import { omit, map } from "lodash"
+import { omit, map, deburr } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -356,17 +356,17 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           if (!root._id) {
             return []
           }
+          interface Exhibitor {
+            name: string
+            profile_id: string
+            id: string
+            partner_id: string
+          }
+          const SPECIAL_GROUP_KEY = "#"
           const exhibitor_groups: {
             [letter: string]: {
               letter: string
-              exhibitors: [
-                {
-                  name: string
-                  profile_id: string
-                  id: string
-                  partner_id: string
-                }
-              ]
+              exhibitors: Exhibitor[]
             }
           } = {}
           const fetch = allViaLoader(fairPartnersLoader, { path: root._id })
@@ -381,7 +381,13 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             for (const fairExhibitor of fairExhibitors) {
               const names = fairExhibitor.name.split(" ")
               const firstName = names[0]
-              const letter = firstName.charAt(0).toUpperCase()
+              let letter = deburr(firstName.charAt(0).toUpperCase())
+
+              // Numeric or special symbol
+              if (/[^A-Z]/i.test(letter)) {
+                letter = SPECIAL_GROUP_KEY
+              }
+
               if (exhibitor_groups[letter]) {
                 exhibitor_groups[letter].exhibitors.push({
                   name: fairExhibitor.name,
@@ -403,6 +409,30 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
                 }
               }
             }
+
+            // Special characters first, then numbers
+            if (exhibitor_groups[SPECIAL_GROUP_KEY]) {
+              const numericExhibitors: Exhibitor[] = []
+              const specialCharacterExhibitors: Exhibitor[] = []
+              const exhibitors = exhibitor_groups[SPECIAL_GROUP_KEY].exhibitors
+
+              for (const exhibitor of exhibitors) {
+                const letter = exhibitor.name.charAt(0)
+
+                // Numeric letter
+                if (/[0-9]/.test(letter)) {
+                  numericExhibitors.push(exhibitor)
+                } else {
+                  specialCharacterExhibitors.push(exhibitor)
+                }
+              }
+
+              exhibitor_groups[SPECIAL_GROUP_KEY].exhibitors = [
+                ...specialCharacterExhibitors,
+                ...numericExhibitors,
+              ]
+            }
+
             return Object.values(exhibitor_groups)
           })
         },
