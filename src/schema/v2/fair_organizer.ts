@@ -116,7 +116,7 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
           ...pageable(),
         },
         resolve: async (
-          { profile_id },
+          { id },
           {
             fairOrganizerID,
             hasFullFeature,
@@ -133,7 +133,7 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
             connectionArgs
           )
           const gravityOptions = {
-            fair_organizer_id: profile_id,
+            fair_organizer_id: id,
             has_full_feature: hasFullFeature,
             has_homepage_section: hasHomepageSection,
             has_listing: hasListing,
