@@ -322,6 +322,17 @@ describe("Fair", () => {
         name: "Aqua Art Miami 2018",
         exhibitorsGroupedByName: [
           {
+            letter: "A",
+            exhibitors: [
+              {
+                name: "ArtHelix Gallery",
+                slug: "arthelix-gallery",
+                partnerID: "1234567890",
+                profileID: "arthelix-gallery",
+              },
+            ],
+          },
+          {
             letter: "#",
             exhibitors: [
               {
@@ -335,17 +346,6 @@ describe("Fair", () => {
                 slug: "192-gallery",
                 partnerID: "192-partner-id",
                 profileID: "192-gallery",
-              },
-            ],
-          },
-          {
-            letter: "A",
-            exhibitors: [
-              {
-                name: "ArtHelix Gallery",
-                slug: "arthelix-gallery",
-                partnerID: "1234567890",
-                profileID: "arthelix-gallery",
               },
             ],
           },

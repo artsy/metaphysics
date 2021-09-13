@@ -363,6 +363,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             partner_id: string
           }
           const SPECIAL_GROUP_KEY = "#"
+          const LETTERS_ORDER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#"
           const exhibitor_groups: {
             [letter: string]: {
               letter: string
@@ -433,7 +434,14 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
               ]
             }
 
-            return Object.values(exhibitor_groups)
+            const values = Object.values(exhibitor_groups).sort((asc, desc) => {
+              return (
+                LETTERS_ORDER.indexOf(asc.letter) -
+                LETTERS_ORDER.indexOf(desc.letter)
+              )
+            })
+
+            return values
           })
         },
       },
