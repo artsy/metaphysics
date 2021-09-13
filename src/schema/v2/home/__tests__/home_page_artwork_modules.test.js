@@ -1,5 +1,6 @@
 /* eslint-disable promise/always-return */
 import { map, find } from "lodash"
+import moment from "moment"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("HomePageArtworkModules", () => {
@@ -354,5 +355,42 @@ describe("HomePageArtworkModules", () => {
 
       expect(keys).toEqual(["followed_galleries"])
     })
+  })
+
+  it("returns first running fair", async () => {
+    const query = `
+    {
+      homePage {
+        artworkModules(
+          maxFollowedGeneRails: -1
+          include: [CURRENT_FAIRS]
+        ) {
+          key
+          title
+        }
+      }
+    }`
+
+    context.fairsLoader = () =>
+      Promise.resolve({
+        body: [
+          {
+            start_at: moment().add(1, "day"),
+            end_at: moment().add(10, "day"),
+            has_homepage_section: true,
+            name: "fair-1",
+          },
+          {
+            start_at: moment().subtract(2, "day"),
+            end_at: moment().add(2, "day"),
+            has_homepage_section: true,
+            name: "fair-2",
+          },
+        ],
+      })
+
+    const { homePage } = await runAuthenticatedQuery(query, context)
+
+    expect(homePage.artworkModules[0].title).toBe("fair-1")
   })
 })
