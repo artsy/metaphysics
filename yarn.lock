@@ -23,6 +23,14 @@
     chokidar "^3.0.0"
     decache "^4.4.0"
 
+"@artsy/morgan@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@artsy/morgan/-/morgan-1.0.2.tgz#b1e0704bef59bb0329357c0648c22376a92bc5f9"
+  integrity sha512-CKhQH8iielhh2z1fqqU7/uMil2X2HAPqQY8WlH3BrFOZ/56BI/uOewC+WWUS7Ydo+0oHWQJyYyjxTievrq4zgw==
+  dependencies:
+    chalk "^1.1.3"
+    morgan "^1.8.1"
+
 "@artsy/update-repo@0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@artsy/update-repo/-/update-repo-0.4.0.tgz#97a00e5cf4bf847214e75d06336c0fb22a7c59b0"
@@ -2614,13 +2622,6 @@ arrify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
   integrity sha1-iYUI2iIm84DfkEcoRWhJwVAaSw0=
-
-"artsy-morgan@git://github.com/artsy/artsy-morgan.git":
-  version "1.0.1"
-  resolved "git://github.com/artsy/artsy-morgan.git#be1c28aadbe18faac80f215f36ebd37aff4c77dc"
-  dependencies:
-    chalk "^1.1.3"
-    morgan "^1.8.1"
 
 asap@~2.0.3:
   version "2.0.6"

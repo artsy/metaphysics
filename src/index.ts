@@ -11,7 +11,7 @@ import express from "express"
 import { schema as schemaV1 } from "./schema/v1"
 import { schema as schemaV2 } from "./schema/v2"
 import moment from "moment-timezone"
-import morgan from "artsy-morgan"
+import morgan from "@artsy/morgan"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import {
   fetchLoggerSetup,

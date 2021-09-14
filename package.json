@@ -38,6 +38,7 @@
   "author": "Art.sy Inc",
   "license": "MIT",
   "dependencies": {
+    "@artsy/morgan": "^1.0.2",
     "@artsy/xapp": "1.0.6",
     "@graphql-tools/delegate": "6.0.10",
     "@sentry/node": "5.18.1",
@@ -47,7 +48,6 @@
     "apollo-link-http": "1.5.4",
     "apollo-server-express": "2.4.8",
     "appmetrics": "5.1.1",
-    "artsy-morgan": "git://github.com/artsy/artsy-morgan.git",
     "basic-auth": "1.1.0",
     "bluebird": "3.5.1",
     "body-parser": "1.18.2",
