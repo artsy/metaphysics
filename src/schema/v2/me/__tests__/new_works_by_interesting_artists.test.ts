@@ -46,7 +46,7 @@ describe("new_works_by_interesting_artists", () => {
             },
           },
         ],
-        "totalCount": 1,
+        "totalCount": 100,
       }
     `)
 

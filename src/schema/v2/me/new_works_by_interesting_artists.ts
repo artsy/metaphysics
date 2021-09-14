@@ -22,7 +22,7 @@ const NewWorksByInterestingArtists: GraphQLFieldConfig<
   resolve: async (
     _root,
     args: CursorPageable,
-    { vortexGraphqlLoader, artworksLoader }
+    { vortexGraphqlLoader, artworksLoader, userID }
   ) => {
     if (!vortexGraphqlLoader || !artworksLoader) return
 
@@ -33,7 +33,7 @@ const NewWorksByInterestingArtists: GraphQLFieldConfig<
     const vortexResult = await vortexGraphqlLoader({
       query: gql`
         query artistAffinitiesQuery {
-          artistAffinities(first: ${MAX_ARTISTS}) {
+          artistAffinities(userId: "${userID}", first: ${MAX_ARTISTS}) {
             totalCount
             edges {
               node {
@@ -46,19 +46,24 @@ const NewWorksByInterestingArtists: GraphQLFieldConfig<
       `,
     })()
 
-    const artistIds = vortexResult.data.artistAffinities.edges.map(
-      (edge) => edge.node.artistId
-    )
+    const artistIds = vortexResult.data?.artistAffinities?.edges
+      .filter((edge) => edge.node.artistId !== "4dd1584de0091e000100207c") // TODO: Remove banksy filter
+      .map((edge) => edge.node.artistId)
 
-    // Fetch artworks from Gravity
+    let artworks = []
 
-    const artworks = await artworksLoader({
-      artist_ids: artistIds,
-      sort: "-published_at",
-      size,
-      offset,
-    })
+    // Fetch artworks from ArtworksLoader if ids are present
 
+    if (artistIds?.length) {
+      artworks = await artworksLoader({
+        artist_ids: artistIds,
+        sort: "-published_at",
+        size,
+        offset,
+      })
+    }
+
+    // TODO: get count from artworks loader
     const count = artworks.length === 0 ? 0 : MAX_ARTWORKS
 
     return {
