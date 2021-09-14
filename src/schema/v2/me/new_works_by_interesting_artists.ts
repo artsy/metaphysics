@@ -26,6 +26,8 @@ const NewWorksByInterestingArtists: GraphQLFieldConfig<
   ) => {
     if (!vortexGraphqlLoader || !artworksLoader) return
 
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
     // Fetch artist IDs from Vortex
 
     const vortexResult = await vortexGraphqlLoader({
@@ -53,11 +55,11 @@ const NewWorksByInterestingArtists: GraphQLFieldConfig<
     const artworks = await artworksLoader({
       artist_ids: artistIds,
       sort: "-published_at",
-      size: MAX_ARTWORKS,
+      size,
+      offset,
     })
 
-    const count = artworks.length
-    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+    const count = artworks.length === 0 ? 0 : MAX_ARTWORKS
 
     return {
       totalCount: count,
