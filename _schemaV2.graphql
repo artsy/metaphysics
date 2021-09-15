@@ -8096,7 +8096,7 @@ type Me implements Node {
   ): MyCollectionConnection
   name: String
 
-  # A connection of new works by artists the user interacted with.
+  # A connection of new works by artists the user interacted with (sorted by publication date).
   newWorksByInterestingArtists(
     after: String
     before: String

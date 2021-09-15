@@ -14,7 +14,8 @@ const NewWorksByInterestingArtists: GraphQLFieldConfig<
   void,
   ResolverContext
 > = {
-  description: "A connection of new works by artists the user interacted with.",
+  description:
+    "A connection of new works by artists the user interacted with (sorted by publication date).",
   type: artworkConnection.connectionType,
   args: pageable({
     page: { type: GraphQLInt },
