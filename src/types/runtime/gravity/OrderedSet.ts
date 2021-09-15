@@ -8,15 +8,15 @@ export const OrderedSet = Record({
   name: String.Or(Null),
   internal_name: String.Or(Null),
   description: String.Or(Null),
-  item_type: Literal("Profile")
-    .Or(Literal("FeaturedLink"))
-    .Or(Literal("Sale"))
-    .Or(Literal("Gene"))
-    .Or(Literal("User"))
+  item_type: Literal("Artist")
     .Or(Literal("Artwork"))
-    .Or(Literal("PartnerShow"))
+    .Or(Literal("FeaturedLink"))
+    .Or(Literal("Gene"))
     .Or(Literal("OrderedSet"))
-    .Or(Literal("Artist")),
+    .Or(Literal("PartnerShow"))
+    .Or(Literal("Profile"))
+    .Or(Literal("Sale"))
+    .Or(Literal("User")),
   owner_type: Literal("Fair")
     .Or(Literal("Feature"))
     .Or(Literal("Post"))

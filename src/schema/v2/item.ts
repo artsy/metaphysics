@@ -7,6 +7,7 @@ import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { Gravity } from "types/runtime"
 import { SaleType } from "./sale"
 import { ShowType } from "./show"
+import { ProfileType } from "./profile"
 
 export const OrderedSetItemType = new GraphQLUnionType({
   name: "OrderedSetItem",
@@ -15,6 +16,7 @@ export const OrderedSetItemType = new GraphQLUnionType({
     ArtworkType,
     FeaturedLinkType,
     GeneType,
+    ProfileType,
     SaleType,
     ShowType,
   ],
@@ -32,6 +34,8 @@ export const OrderedSetItemType = new GraphQLUnionType({
         return GeneType
       case "PartnerShow":
         return ShowType
+      case "Profile":
+        return ProfileType
       case "Sale":
         return SaleType
       default:
