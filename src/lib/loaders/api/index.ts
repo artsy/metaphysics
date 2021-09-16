@@ -8,7 +8,7 @@ import geodata from "lib/apis/geodata"
 import gravity from "lib/apis/gravity"
 import impulse from "lib/apis/impulse"
 import positron from "lib/apis/positron"
-import vortex from "lib/apis/vortex"
+import { vortex } from "lib/apis/vortex"
 
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"

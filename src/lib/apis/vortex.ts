@@ -5,7 +5,7 @@ import config from "config"
 
 const { VORTEX_API_BASE, VORTEX_TOKEN } = config
 
-export default (path, accessToken, fetchOptions = {}) => {
+export const vortex = (path, accessToken, fetchOptions = {}) => {
   const headers = { Accept: "application/json" }
   const token = accessToken || VORTEX_TOKEN
 

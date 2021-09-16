@@ -2,7 +2,7 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("new_works_by_interesting_artists", () => {
+describe("newWorksByInterestingArtists", () => {
   it("returns works by artists the user interacted with", async () => {
     const query = gql`
       {

@@ -1,6 +1,6 @@
 import factories from "../api"
 
-export default (opts) => {
+export const vortexLoaders = (opts) => {
   const { vortexLoaderWithoutAuthenticationFactory } = factories(opts)
   const vortexLoader = vortexLoaderWithoutAuthenticationFactory
 

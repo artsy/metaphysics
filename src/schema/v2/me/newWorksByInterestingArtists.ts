@@ -23,7 +23,7 @@ const NewWorksByInterestingArtists: GraphQLFieldConfig<
   resolve: async (
     _root,
     args: CursorPageable,
-    { vortexGraphqlLoader, artworksLoader, userID }
+    { vortexGraphqlLoader, artworksLoader }
   ) => {
     if (!vortexGraphqlLoader || !artworksLoader) return
 
@@ -34,7 +34,7 @@ const NewWorksByInterestingArtists: GraphQLFieldConfig<
     const vortexResult = await vortexGraphqlLoader({
       query: gql`
         query artistAffinitiesQuery {
-          artistAffinities(userId: "${userID}", first: ${MAX_ARTISTS}) {
+          artistAffinities(first: ${MAX_ARTISTS}) {
             totalCount
             edges {
               node {
