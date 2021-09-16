@@ -88,6 +88,7 @@ export default (opts) => {
     inquiryRequestQuestionsLoader: gravityLoader(`inquiry_request_questions`),
     matchArtistsLoader: gravityLoader("match/artists"),
     matchGeneLoader: gravityLoader("match/genes"),
+    pageLoader: gravityLoader((id) => `page/${id}`),
     partnerArtistLoader: gravityLoader<
       any,
       { artist_id: string; partner_id: string }

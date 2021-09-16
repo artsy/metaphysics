@@ -104,6 +104,7 @@ import VanityURLEntity from "./vanityURLEntity"
 import FairOrganizer from "./fair_organizer"
 import { externalField } from "./External/External"
 import { createUserInterestMutation } from "./me/createUserInterestMutation"
+import { page } from "./page"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -163,6 +164,7 @@ const rootFields = {
   node: ObjectIdentification.NodeField,
   orderedSet: OrderedSet,
   orderedSets: OrderedSets,
+  page,
   partner: Partner,
   partnerArtworks: PartnerArtworks,
   partnerCategories: PartnerCategories,
