@@ -1736,6 +1736,8 @@ type Shipment {
   deliveryEnd: DateTime
   deliveryStart: DateTime
   deliveryWindowModifier: String
+  estimatedDeliveryWindow: String
+  estimatedPickupWindow: String
   id: ID!
   pickupEnd: DateTime
   pickupStart: DateTime
