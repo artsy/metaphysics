@@ -2112,6 +2112,18 @@ describe("Artwork type", () => {
       })
     })
 
+    it("is set to calculated at checkout when Arta shipping", () => {
+      artwork.arta_enabled = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Shipping: Calculated in checkout",
+          },
+        })
+      })
+    })
+
     describe("for artworks that is located within continental EU", () => {
       beforeEach(() => {
         artwork.eu_shipping_origin = true
@@ -2215,89 +2227,6 @@ describe("Artwork type", () => {
             artwork: {
               shippingInfo:
                 "Shipping: €10 within Continental Europe, €20 rest of world",
-            },
-          })
-        })
-      })
-    })
-
-    describe("for Arta shipping", () => {
-      beforeEach(() => {
-        artwork.arta_enabled = true
-      })
-
-      it("is set to domestic calculated at checkout only when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
-        artwork.domestic_shipping_fee_cents = null
-        artwork.international_shipping_fee_cents = null
-
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo: "Shipping: domestic calculated at checkout only",
-            },
-          })
-        })
-      })
-
-      it("is set to domestic calculated at checkout when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is 0", () => {
-        artwork.domestic_shipping_fee_cents = 0
-        artwork.international_shipping_fee_cents = 0
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: domestic calculated at checkout, free rest of world",
-            },
-          })
-        })
-      })
-
-      it("is set to domestic calculated at checkout only when its domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
-        artwork.domestic_shipping_fee_cents = 1000
-        artwork.international_shipping_fee_cents = null
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo: "Shipping: domestic calculated at checkout only",
-            },
-          })
-        })
-      })
-
-      it("is set to domestic calculated at checkout and free international shipping when domestic_shipping_fee_cents is 0 and domestic_shipping_fee_cents is present", () => {
-        artwork.domestic_shipping_fee_cents = 1000
-        artwork.international_shipping_fee_cents = 0
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: domestic calculated at checkout, free rest of world",
-            },
-          })
-        })
-      })
-
-      it("is set to domestic calculated at checkout and intermational shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
-        artwork.domestic_shipping_fee_cents = 0
-        artwork.international_shipping_fee_cents = 10000
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: domestic calculated at checkout, $100 rest of world",
-            },
-          })
-        })
-      })
-
-      it("is set to domestic calculated at checkout and intermational shipping when both domestic_shipping_fee_cents and present and international_shipping_fee_cents are set", () => {
-        artwork.domestic_shipping_fee_cents = 1000
-        artwork.international_shipping_fee_cents = 2000
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: domestic calculated at checkout, $20 rest of world",
             },
           })
         })
