@@ -2118,7 +2118,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: calculated at checkout",
+            shippingInfo: "Shipping: Calculated in checkout",
           },
         })
       })
