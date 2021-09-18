@@ -102,6 +102,9 @@ import { UserField } from "./user"
 import { Users } from "./users"
 import VanityURLEntity from "./vanityURLEntity"
 import FairOrganizer from "./fair_organizer"
+import { externalField } from "./External/External"
+import { createUserInterestMutation } from "./me/createUserInterestMutation"
+import { page } from "./page"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -143,6 +146,7 @@ const rootFields = {
   feature: Feature,
   filterPartners: FilterPartners,
   // filterArtworksConnection: filterArtworksConnection(),
+  external: externalField,
   gene: Gene,
   genes: Genes,
   // suggestedGenes: SuggestedGenes,
@@ -160,6 +164,7 @@ const rootFields = {
   node: ObjectIdentification.NodeField,
   orderedSet: OrderedSet,
   orderedSets: OrderedSets,
+  page,
   partner: Partner,
   partnerArtworks: PartnerArtworks,
   partnerCategories: PartnerCategories,
@@ -209,6 +214,7 @@ export default new GraphQLSchema({
       createBidderPosition: BidderPositionMutation,
       createCreditCard: createCreditCardMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
+      createUserInterest: createUserInterestMutation,
       deleteCreditCard: deleteCreditCardMutation,
       endSale: endSaleMutation,
       followArtist: FollowArtist,

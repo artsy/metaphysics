@@ -58,7 +58,7 @@ describe("Show type", () => {
           },
         })
       ),
-      galaxyGalleriesLoader: sinon.stub().returns(Promise.resolve(galaxyData)),
+      galaxyGalleryLoader: sinon.stub().returns(Promise.resolve(galaxyData)),
       partnerShowLoader: sinon.stub().returns(Promise.resolve(showData)),
       unauthenticatedLoaders: {
         showLoader: sinon.stub().returns(Promise.resolve(showData)),

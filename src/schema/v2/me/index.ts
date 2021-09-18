@@ -39,6 +39,7 @@ import LotStandings from "./lot_standings"
 import { MyBids } from "./myBids"
 import { MyCollection } from "./myCollection"
 import { NewWorksByInterestingArtists } from "./newWorksByInterestingArtists"
+import { myLocationType } from "./myLocation"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import { SaleRegistrationConnection } from "./sale_registrations"
 import { SavedArtworks } from "./savedArtworks"
@@ -55,6 +56,12 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     bidderStatus: BidderStatus,
     bidderPositions: BidderPositions,
     bidderPosition: BidderPosition,
+    collectorLevel: {
+      type: GraphQLInt,
+      resolve: ({ collector_level }) => {
+        return collector_level
+      },
+    },
     collectorProfile: CollectorProfile,
     conversation: Conversation,
     conversationsConnection: Conversations,
@@ -123,11 +130,18 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ identity_verified }) => identity_verified,
     },
+    isCollector: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ is_collector }) => {
+        return !!is_collector
+      },
+    },
     labFeatures: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
       description: "List of lab features for this user",
       resolve: ({ lab_features }) => lab_features || [],
     },
+    location: { type: myLocationType },
     lotsByFollowedArtistsConnection: SaleArtworksConnectionField,
     lotStanding: LotStanding,
     lotStandings: LotStandings,
@@ -197,6 +211,12 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     },
     recentlyViewedArtworksConnection: RecentlyViewedArtworks,
     saleRegistrationsConnection: SaleRegistrationConnection,
+    shareFollows: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ share_follows }) => {
+        return !!share_follows
+      },
+    },
     type: {
       type: GraphQLString,
     },

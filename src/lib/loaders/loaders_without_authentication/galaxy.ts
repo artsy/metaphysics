@@ -5,6 +5,9 @@ export default (opts) => {
   const galaxyLoader = galaxyLoaderWithoutAuthenticationFactory
 
   return {
-    galaxyGalleriesLoader: galaxyLoader((id) => `galleries/${id}`),
+    galaxyAuctionHousesLoader: galaxyLoader("auction_houses"),
+    galaxyFairsLoader: galaxyLoader("fairs"),
+    galaxyGalleriesLoader: galaxyLoader("galleries"),
+    galaxyGalleryLoader: galaxyLoader((id) => `galleries/${id}`),
   }
 }

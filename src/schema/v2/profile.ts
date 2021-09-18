@@ -20,10 +20,6 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
     bio: {
       type: GraphQLString,
     },
-    fullBio: {
-      type: GraphQLString,
-      resolve: ({ full_bio }) => full_bio,
-    },
     counts: {
       resolve: (profile) => profile,
       type: new GraphQLObjectType<any, ResolverContext>({
@@ -33,19 +29,18 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
         },
       }),
     },
-    href: {
-      type: GraphQLString,
-      resolve: ({ id }) => `/${id}`,
-    },
     displayArtistsSection: {
       type: GraphQLBoolean,
       deprecationReason: "Prefer displayArtistsSection in Partner type",
       resolve: ({ owner }) => owner.display_artists_section,
     },
-    profileArtistsLayout: {
+    fullBio: {
       type: GraphQLString,
-      deprecationReason: "Prefer profileArtistsLayout in Partner type",
-      resolve: ({ owner }) => owner.profile_artists_layout,
+      resolve: ({ full_bio }) => full_bio,
+    },
+    href: {
+      type: GraphQLString,
+      resolve: ({ id }) => `/${id}`,
     },
     icon: {
       type: Image.type,
@@ -63,17 +58,26 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
         return followedProfileLoader(id).then(({ is_followed }) => is_followed)
       },
     },
+    isPubliclyVisible: {
+      type: GraphQLBoolean,
+      resolve: (profile) => profile && profile.published && !profile.private,
+    },
     isPublished: {
       type: GraphQLBoolean,
       resolve: ({ published }) => published,
+    },
+    location: {
+      type: GraphQLString,
+      resolve: ({ location }) => location,
     },
     name: {
       type: GraphQLString,
       resolve: ({ owner }) => owner.name,
     },
-    isPubliclyVisible: {
-      type: GraphQLBoolean,
-      resolve: (profile) => profile && profile.published && !profile.private,
+    profileArtistsLayout: {
+      type: GraphQLString,
+      deprecationReason: "Prefer profileArtistsLayout in Partner type",
+      resolve: ({ owner }) => owner.profile_artists_layout,
     },
   }),
 })
@@ -87,7 +91,9 @@ const Profile: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The slug or ID of the Profile",
     },
   },
-  resolve: (_root, { id }, { profileLoader }) => profileLoader(id),
+  resolve: (_root, { id }, { profileLoader }) => {
+    return profileLoader(id)
+  },
 }
 
 export default Profile

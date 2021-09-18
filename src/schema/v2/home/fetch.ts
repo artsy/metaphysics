@@ -19,6 +19,8 @@ export const featuredFair = (
   return fairsLoader({
     size: 5,
     active: true,
+    sort: "-start_at",
+    status: "running",
     has_homepage_section: true,
   }).then(({ body: fairs }) => {
     if (fairs.length) {

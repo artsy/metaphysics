@@ -8,14 +8,14 @@ describe("currencyPrefix", () => {
   it("returns the currency symbol if in symbol only list", () => {
     expect(currencyPrefix("EUR")).toBe("€")
     expect(currencyPrefix("GBP")).toBe("£")
-    expect(currencyPrefix("USD")).toBe("$")
     expect(currencyPrefix("MYR")).toBe("RM")
   })
 
   it("returns symbol with prefix if disambiguate_symbol exists", () => {
+    expect(currencyPrefix("USD")).toBe("US$")
     expect(currencyPrefix("HKD")).toBe("HK$")
     expect(currencyPrefix("CAD")).toBe("C$")
-    expect(currencyPrefix("AUD")).toBe("A$")
+    expect(currencyPrefix("AUD")).toBe("AU$")
     expect(currencyPrefix("MXN")).toBe("MX$")
   })
 

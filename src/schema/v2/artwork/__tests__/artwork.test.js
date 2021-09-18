@@ -824,13 +824,15 @@ describe("Artwork type", () => {
     it("returns '[Price], on hold' if work is on hold with a price", () => {
       artwork.sale_message = "Not for sale"
       artwork.price = "$420,000"
+      artwork.price_cents = [42000000]
+      artwork.price_currency = "USD"
       artwork.availability = "on hold"
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
             slug: "richard-prince-untitled-portrait",
-            saleMessage: "$420,000, on hold",
+            saleMessage: "US$420,000, on hold",
           },
         })
       })
@@ -905,7 +907,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns the gravity sale_message if for sale", () => {
+    it("returns the gravity sale_message if for sale but there is no price", () => {
       artwork.availability = "for sale"
       artwork.sale_message = "something from gravity"
 
@@ -914,6 +916,37 @@ describe("Artwork type", () => {
           artwork: {
             slug: "richard-prince-untitled-portrait",
             saleMessage: "something from gravity",
+          },
+        })
+      })
+    })
+
+    it("returns the formatted price if for sale", () => {
+      artwork.availability = "for sale"
+      artwork.price_cents = [42000]
+      artwork.price_currency = "USD"
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            saleMessage: "US$420",
+          },
+        })
+      })
+    })
+
+    it("returns the formatted price range if sale is a price range", () => {
+      artwork.availability = "for sale"
+      artwork.sale_message = "something from gravity"
+      artwork.price_cents = [6900, 42000]
+      artwork.price_currency = "USD"
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            saleMessage: "US$69–US$420",
           },
         })
       })
@@ -1323,16 +1356,16 @@ describe("Artwork type", () => {
       `
 
       describe("if the artwork is able to be used with View in Room", () => {
-        it("is hangable if ink artwork is 2d and has reasonable dimensions", () => {
+        it("is hangable if print artwork is 2D and has reasonable dimensions", () => {
           artwork.width = 100
           artwork.height = 100
-          artwork.category = "ink"
+          artwork.category = "print"
           return runQuery(query, context).then((data) => {
             expect(data.artwork.isHangable).toBe(true)
           })
         })
 
-        it("is hangable if artwork is 2d with a reasonable dimensions + tiny depth", () => {
+        it("is hangable if artwork is not 3D category with a reasonable dimensions + tiny depth", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.depth = 0.5
@@ -1342,7 +1375,17 @@ describe("Artwork type", () => {
           })
         })
 
-        it("is hangable if painting artwork is 2d and has reasonable dimensions", () => {
+        it("is hangable if artwork is not in the 3D category or 2D category but has a depth of less than 3", () => {
+          artwork.width = 100
+          artwork.height = 100
+          artwork.depth = 2
+          artwork.category = "ink"
+          return runQuery(query, context).then((data) => {
+            expect(data.artwork.isHangable).toBe(true)
+          })
+        })
+
+        it("is hangable if painting artwork is in 2d category and has reasonable dimensions", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.category = "painting"
@@ -1353,8 +1396,8 @@ describe("Artwork type", () => {
       })
 
       describe("if the artwork is not able to be used with View in Room", () => {
-        it("is not hangable if the category is not applicable to wall display like sculpture", () => {
-          artwork.category = "sculpture"
+        it("is not hangable if the artwork is in a 3D category", () => {
+          artwork.category = "fashion"
           artwork.width = 100
           artwork.height = 100
           return runQuery(query, context).then((data) => {
@@ -1362,8 +1405,8 @@ describe("Artwork type", () => {
           })
         })
 
-        it("is not hangable if the category is not applicable to wall display like installations", () => {
-          artwork.category = "installation"
+        it("is not hangable if the artwork is in a 3D category like sound", () => {
+          artwork.category = "sound"
           artwork.width = 100
           artwork.height = 100
           return runQuery(query, context).then((data) => {
@@ -1371,7 +1414,7 @@ describe("Artwork type", () => {
           })
         })
 
-        it("is not hangable if the work is 3d", () => {
+        it("is not hangable if the work has a large depth", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.depth = 100
@@ -2069,6 +2112,18 @@ describe("Artwork type", () => {
       })
     })
 
+    it("is set to calculated at checkout when Arta shipping", () => {
+      artwork.arta_enabled = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Shipping: Calculated in checkout",
+          },
+        })
+      })
+    })
+
     describe("for artworks that is located within continental EU", () => {
       beforeEach(() => {
         artwork.eu_shipping_origin = true
@@ -2172,89 +2227,6 @@ describe("Artwork type", () => {
             artwork: {
               shippingInfo:
                 "Shipping: €10 within Continental Europe, €20 rest of world",
-            },
-          })
-        })
-      })
-    })
-
-    describe("for Arta shipping", () => {
-      beforeEach(() => {
-        artwork.arta_enabled = true
-      })
-
-      it("is set to domestic calculated at checkout only when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
-        artwork.domestic_shipping_fee_cents = null
-        artwork.international_shipping_fee_cents = null
-
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo: "Shipping: domestic calculated at checkout only",
-            },
-          })
-        })
-      })
-
-      it("is set to domestic calculated at checkout when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is 0", () => {
-        artwork.domestic_shipping_fee_cents = 0
-        artwork.international_shipping_fee_cents = 0
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: domestic calculated at checkout, free rest of world",
-            },
-          })
-        })
-      })
-
-      it("is set to domestic calculated at checkout only when its domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
-        artwork.domestic_shipping_fee_cents = 1000
-        artwork.international_shipping_fee_cents = null
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo: "Shipping: domestic calculated at checkout only",
-            },
-          })
-        })
-      })
-
-      it("is set to domestic calculated at checkout and free international shipping when domestic_shipping_fee_cents is 0 and domestic_shipping_fee_cents is present", () => {
-        artwork.domestic_shipping_fee_cents = 1000
-        artwork.international_shipping_fee_cents = 0
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: domestic calculated at checkout, free rest of world",
-            },
-          })
-        })
-      })
-
-      it("is set to domestic calculated at checkout and intermational shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
-        artwork.domestic_shipping_fee_cents = 0
-        artwork.international_shipping_fee_cents = 10000
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: domestic calculated at checkout, $100 rest of world",
-            },
-          })
-        })
-      })
-
-      it("is set to domestic calculated at checkout and intermational shipping when both domestic_shipping_fee_cents and present and international_shipping_fee_cents are set", () => {
-        artwork.domestic_shipping_fee_cents = 1000
-        artwork.international_shipping_fee_cents = 2000
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              shippingInfo:
-                "Shipping: domestic calculated at checkout, $20 rest of world",
             },
           })
         })

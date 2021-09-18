@@ -37,7 +37,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "UpdateCollectorProfile",
   description: "Updating a collector profile (loyalty applicant status).",
   inputFields: {
-    affiliatedAuctionIds: {
+    affiliatedAuctionHouseIds: {
       description: "List of affiliated auction house ids, referencing Galaxy.",
       type: new GraphQLList(GraphQLString),
     },

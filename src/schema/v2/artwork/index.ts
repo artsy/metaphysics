@@ -57,9 +57,11 @@ import { ArtworkContextGrids } from "./artworkContextGrids"
 import { PageInfoType } from "graphql-relay"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { InquiryQuestionType } from "../inquiry_question"
+import { priceDisplayText } from "lib/moneyHelpers"
+import { LocationType } from "schema/v2/location"
 
 const has_price_range = (price) => {
-  return new RegExp(/\-/).test(price)
+  return new RegExp(/-/).test(price)
 }
 
 const has_multiple_editions = (edition_sets) => {
@@ -471,12 +473,36 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       isHangable: {
         type: GraphQLBoolean,
         resolve: (artwork) => {
-          const is3D =
-            _.includes(artwork.category, "sculpture") ||
-            _.includes(artwork.category, "installation") ||
-            _.includes(artwork.category, "design")
+          const categories3D = [
+            "installation",
+            "design",
+            "performance",
+            "sound",
+            "fashion",
+            "architecture",
+            "books_and_portfolios",
+            "jewelry",
+            "other",
+          ]
+          const categories2D = [
+            "print",
+            "drawing_collage_other_work_on_paper",
+            "painting",
+            "photography",
+            "posters",
+            "work_on_paper",
+          ]
 
-          return !is3D && isTwoDimensional(artwork) && !isTooBig(artwork)
+          const areIncluded = (category) =>
+            _.includes(artwork.category, category)
+
+          const is3DCategory = categories3D.some(areIncluded)
+          const is2DCategory = categories2D.some(areIncluded)
+
+          return (
+            (is2DCategory || (!is3DCategory && isTwoDimensional(artwork))) &&
+            !isTooBig(artwork)
+          )
         },
       },
       isInquireable: {
@@ -554,6 +580,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       literature: markdown(({ literature }) =>
         literature.replace(/^literature:\s+/i, "")
       ),
+      location: {
+        type: LocationType,
+        resolve: ({ location }) => location,
+      },
       manufacturer: markdown(),
       medium: {
         type: GraphQLString,
@@ -637,7 +667,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       shipsToContinentalUSOnly: {
         type: GraphQLBoolean,
         description:
-          "Is this work available for shipping only within the Contenental US?",
+          "Is this work available for shipping only within the Continental US?",
         deprecationReason: deprecate({
           inVersion: 2,
           preferUsageOf: "onlyShipsDomestically",
@@ -688,14 +718,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "The string that describes domestic and international shipping.",
         resolve: (artwork) => {
+          if (artwork.arta_enabled) {
+            return "Shipping: Calculated in checkout"
+          }
+
           if (
-            !artwork.arta_enabled &&
             artwork.domestic_shipping_fee_cents == null &&
             artwork.international_shipping_fee_cents == null
           )
             return "Shipping, tax, and additional fees quoted by seller"
           if (
-            !artwork.arta_enabled &&
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents == null
           )
@@ -704,7 +736,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               : "Free domestic shipping only"
 
           if (
-            !artwork.arta_enabled &&
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents === 0
           )
@@ -730,20 +761,18 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             ? "within Continental Europe"
             : "domestic"
 
+          if (
+            domesticShipping &&
+            artwork.international_shipping_fee_cents == null
+          )
+            return `Shipping: ${domesticShipping} ${shippingRegion} only`
+
           if (artwork.domestic_shipping_fee_cents === 0)
             domesticShipping = "Free"
           if (artwork.international_shipping_fee_cents === 0)
             internationalShipping = "free"
 
-          const domesticShippingMessage = artwork.arta_enabled
-            ? "domestic calculated at checkout"
-            : `${domesticShipping} ${shippingRegion}`
-
-          if (artwork.international_shipping_fee_cents == null) {
-            return `Shipping: ${domesticShippingMessage} only`
-          }
-
-          return `Shipping: ${domesticShippingMessage}, ${internationalShipping} rest of world`
+          return `Shipping: ${domesticShipping} ${shippingRegion}, ${internationalShipping} rest of world`
         },
       },
       shippingOrigin: {
@@ -868,7 +897,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           sale_message,
           availability,
           availability_hidden,
-          price,
+          price_cents,
+          price_currency,
         }) => {
           // Don't display anything if availability is hidden, or artwork is not for sale.
           if (availability_hidden || availability === "not for sale") {
@@ -886,15 +916,18 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             return "Sold"
           }
 
+          const price =
+            price_cents && priceDisplayText(price_cents, price_currency, "")
+
           // If on hold, prepend the price (if there is one).
           if (availability === "on hold") {
-            if (price) {
+            if (price_cents) {
               return `${price}, on hold`
             }
             return "On hold"
           }
 
-          return sale_message
+          return price || sale_message
         },
       },
       series: markdown(),

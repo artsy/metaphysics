@@ -484,15 +484,15 @@ describe("gravity/stitching", () => {
     it("resolves the exhibitionPeriod field on ViewingRoom", async () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { exhibitionPeriod } = resolvers.ViewingRoom
-      const startAt = moment().add(1, "days").format("MMM D")
-      const endAt = moment().add(30, "days").format("MMM D")
+      const startAt = moment("2021-09-01T00:00:00Z")
+      const endAt = moment("2021-09-30T00:00:00Z")
 
       expect(
         exhibitionPeriod.resolve({
-          startAt: momentAdd(1, "days"),
-          endAt: momentAdd(30, "days"),
+          startAt: startAt,
+          endAt: endAt,
         })
-      ).toEqual(`${startAt} – ${endAt}`)
+      ).toEqual("Sep 1 – 30")
     })
 
     it("returns Invalid dates if dates are missing", async () => {

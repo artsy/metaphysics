@@ -1,7 +1,7 @@
 import currencyCodes from "lib/currency_codes.json"
 import numeral from "numeral"
 
-const symbolOnly = ["USD", "GBP", "EUR", "MYR"]
+const symbolOnly = ["GBP", "EUR", "MYR"]
 
 /**
  * Adds the currency to a price and returns the display text.
@@ -42,11 +42,14 @@ export const isCurrencySupported = (currency: string): boolean => {
  * Builds price display text (e.g. "$100").
  */
 export const priceDisplayText = (
-  priceCents: number,
+  priceCents: number | [number, number],
   currency: string,
   format: string
 ): string => {
-  return currencyPrefix(currency) + priceAmount(priceCents, currency, format)
+  if (typeof priceCents === "number") {
+    return currencyPrefix(currency) + priceAmount(priceCents, currency, format)
+  }
+  return priceRangeDisplayText(priceCents[0], priceCents[1], currency, format)
 }
 
 /**

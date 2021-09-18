@@ -167,7 +167,7 @@ describe("fairOrganizer", () => {
       gql`
         {
           fairOrganizer(id: "the-armory-show") {
-            fairsConnection(first: 5) {
+            fairsConnection(first: 5, sort: START_AT_DESC) {
               edges {
                 node {
                   internalID
@@ -185,6 +185,7 @@ describe("fairOrganizer", () => {
       page: 1,
       size: 5,
       total_count: true,
+      sort: "-start_at",
     })
 
     expect(result.fairOrganizer.fairsConnection).toEqual({

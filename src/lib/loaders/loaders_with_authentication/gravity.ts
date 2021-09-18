@@ -46,6 +46,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createUserInterestLoader: gravityLoader(
+      "me/user_interest",
+      {},
+      { method: "POST" }
+    ),
     creditCardLoader: gravityLoader((id) => `credit_card/${id}`),
     deleteSavedArtworkLoader: gravityLoader(
       (id) => `collection/saved-artwork/artwork/${id}`,
@@ -310,5 +315,6 @@ export default (accessToken, userID, opts) => {
     usersLoader: gravityLoader("users"),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
+    userInterestsLoader: gravityLoader("me/user_interests"),
   }
 }
