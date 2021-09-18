@@ -53,7 +53,7 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
 
     let artworks = []
 
-    // Fetch artworks from ArtworksLoader if ids are present
+    // Fetch artworks from ArtworksLoader if the user interacted with any artists
 
     if (artistIds?.length) {
       artworks = await artworksLoader({
@@ -64,7 +64,7 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
       })
     }
 
-    // TODO: get count from artworks loader
+    // TODO: get count from artworks loader to optimize pagination
     const count = artworks.length === 0 ? 0 : MAX_ARTWORKS
 
     return {
