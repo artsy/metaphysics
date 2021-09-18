@@ -6,7 +6,7 @@ export const vortexLoaders = (opts) => {
 
   return {
     vortexGraphqlLoader: (body) =>
-      vortexLoader("/api/graphql", body, {
+      vortexLoader("/graphql", body, {
         method: "POST",
       }),
     vortexUserLoader: vortexLoader((userId) => `/api/users/${userId}`),
