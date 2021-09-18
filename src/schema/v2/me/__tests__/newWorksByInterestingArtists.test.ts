@@ -3,24 +3,24 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("newWorksByInterestingArtists", () => {
-  it("returns works by artists the user interacted with", async () => {
-    const query = gql`
-      {
-        me {
-          newWorksByInterestingArtists(first: 100) {
-            totalCount
-            edges {
-              node {
-                internalID
-                slug
-                id
-              }
+  const query = gql`
+    {
+      me {
+        newWorksByInterestingArtists(first: 100) {
+          totalCount
+          edges {
+            node {
+              internalID
+              slug
+              id
             }
           }
         }
       }
-    `
+    }
+  `
 
+  it("returns works by artists the user interacted with", async () => {
     const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
 
     const artworksLoader = jest.fn(async () => mockArtworksResponse)
@@ -52,6 +52,39 @@ describe("newWorksByInterestingArtists", () => {
 
     expect(vortexGraphqlLoader).toHaveBeenCalled()
     expect(artworksLoader).toHaveBeenCalled()
+  })
+
+  it("doesn't return works if user hasn't interacted with any artists", async () => {
+    const vortexGraphqlLoader = jest.fn(() => async () => ({
+      data: {
+        artistAffinities: {
+          totalCount: 0,
+          edges: [],
+        },
+      },
+    }))
+
+    const artworksLoader = jest.fn(async () => mockArtworksResponse)
+
+    const context = {
+      meLoader: () => Promise.resolve({}),
+      vortexGraphqlLoader,
+      artworksLoader,
+    }
+
+    const {
+      me: { newWorksByInterestingArtists },
+    } = await runAuthenticatedQuery(query, context)
+
+    expect(newWorksByInterestingArtists).toMatchInlineSnapshot(`
+      Object {
+        "edges": Array [],
+        "totalCount": 0,
+      }
+    `)
+
+    expect(vortexGraphqlLoader).toHaveBeenCalled()
+    expect(artworksLoader).not.toHaveBeenCalled()
   })
 })
 
