@@ -10,7 +10,7 @@ import gql from "lib/gql"
 const MAX_ARTISTS = 50
 const MAX_ARTWORKS = 100
 
-const NewWorksByInterestingArtists: GraphQLFieldConfig<
+export const NewWorksByInterestingArtists: GraphQLFieldConfig<
   void,
   ResolverContext
 > = {
@@ -77,5 +77,3 @@ const NewWorksByInterestingArtists: GraphQLFieldConfig<
     }
   },
 }
-
-export default NewWorksByInterestingArtists

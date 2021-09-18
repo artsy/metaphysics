@@ -38,7 +38,7 @@ import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { MyBids } from "./myBids"
 import { MyCollection } from "./myCollection"
-import newWorksByInterestingArtists from "./newWorksByInterestingArtists"
+import { NewWorksByInterestingArtists } from "./newWorksByInterestingArtists"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import { SaleRegistrationConnection } from "./sale_registrations"
 import { SavedArtworks } from "./savedArtworks"
@@ -136,7 +136,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     name: {
       type: GraphQLString,
     },
-    newWorksByInterestingArtists: newWorksByInterestingArtists,
+    newWorksByInterestingArtists: NewWorksByInterestingArtists,
     initials: initials("name"),
     paddleNumber: {
       type: GraphQLString,
