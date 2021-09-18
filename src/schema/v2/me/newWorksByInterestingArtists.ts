@@ -51,9 +51,9 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
       (edge) => edge?.node?.artistId
     )
 
-    let artworks = []
-
     // Fetch artworks from ArtworksLoader if the user interacted with any artists
+
+    let artworks = []
 
     if (artistIds?.length) {
       artworks = await artworksLoader({
