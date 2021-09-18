@@ -47,9 +47,9 @@ const NewWorksByInterestingArtists: GraphQLFieldConfig<
       `,
     })()
 
-    const artistIds = vortexResult.data?.artistAffinities?.edges
-      .filter((edge) => edge.node.artistId !== "4dd1584de0091e000100207c") // TODO: Remove banksy filter
-      .map((edge) => edge.node.artistId)
+    const artistIds = vortexResult.data?.artistAffinities?.edges?.map(
+      (edge) => edge?.node?.artistId
+    )
 
     let artworks = []
 
