@@ -59,6 +59,7 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
       artworks = await artworksLoader({
         artist_ids: artistIds,
         sort: "-published_at",
+        availability: "for sale",
         size,
         offset,
       })
