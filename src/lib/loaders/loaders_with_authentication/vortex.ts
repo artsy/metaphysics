@@ -6,7 +6,10 @@ const { VORTEX_APP_ID } = config
 export default (accessToken, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
 
-  const { gravityLoaderWithAuthenticationFactory } = factories(opts)
+  const {
+    gravityLoaderWithAuthenticationFactory,
+    vortexLoaderWithAuthenticationFactory,
+  } = factories(opts)
 
   const gravityLoader = gravityLoaderWithAuthenticationFactory(
     gravityAccessTokenLoader
@@ -19,7 +22,18 @@ export default (accessToken, opts) => {
     { method: "POST" }
   )
 
+  const vortexAccessTokenLoader = () =>
+    vortexTokenLoader().then((data) => data.token)
+
+  const vortexLoader = vortexLoaderWithAuthenticationFactory(
+    vortexAccessTokenLoader
+  )
+
   return {
     vortexTokenLoader,
+    vortexGraphqlLoader: (body) =>
+      vortexLoader("/graphql", body, {
+        method: "POST",
+      }),
   }
 }

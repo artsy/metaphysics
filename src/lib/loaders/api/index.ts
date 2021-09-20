@@ -123,21 +123,6 @@ export default (opts) => ({
     }
   ),
 
-  /**
-   * The Vortex loaders produced by this factory _will_ cache responses for the duration of query execution but do
-   * **not** cache to memcache.
-   *
-   * Use this for authenticated requests.
-   */
-  vortexLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
-    vortex,
-    "vortex",
-    {
-      requestIDs: opts.requestIDs,
-      userAgent: opts.userAgent,
-    }
-  ),
-
   // Authenticated loaders
 
   /**
@@ -179,6 +164,21 @@ export default (opts) => ({
   impulseLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
     impulse,
     "impulse",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
+  ),
+
+  /**
+   * The Vortex loaders produced by this factory _will_ cache responses for the duration of query execution but do
+   * **not** cache to memcache.
+   *
+   * Use this for authenticated requests.
+   */
+  vortexLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
+    vortex,
+    "vortex",
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
