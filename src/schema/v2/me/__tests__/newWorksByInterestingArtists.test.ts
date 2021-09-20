@@ -51,7 +51,13 @@ describe("newWorksByInterestingArtists", () => {
     `)
 
     expect(vortexGraphqlLoader).toHaveBeenCalled()
-    expect(artworksLoader).toHaveBeenCalled()
+    expect(artworksLoader).toHaveBeenCalledWith({
+      artist_ids: ["608a7417bdfbd1a789ba092a", "608a7416bdfbd1a789ba0911"],
+      availability: "for sale",
+      offset: 0,
+      size: 100,
+      sort: "-published_at",
+    })
   })
 
   it("doesn't return works if user hasn't interacted with any artists", async () => {
