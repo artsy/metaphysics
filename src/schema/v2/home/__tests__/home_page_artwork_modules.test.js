@@ -176,7 +176,7 @@ describe("HomePageArtworkModules", () => {
       {
         homePage {
           artworkModule(
-            key: "similar_to_recently_viewed"
+            key: SIMILAR_TO_RECENTLY_VIEWED
           ) {
             results { slug }
           }
@@ -212,7 +212,7 @@ describe("HomePageArtworkModules", () => {
       {
         homePage {
           artworkModule(
-            key: "similar_to_saved_works"
+            key: SIMILAR_TO_SAVED_WORKS
           ) {
             results { slug }
           }

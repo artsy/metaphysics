@@ -15,6 +15,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { HomePageArtworkModuleTypes } from "./types"
 
 let possibleArgs
 
@@ -61,7 +62,7 @@ const HomePageArtworkModule: GraphQLFieldConfig<void, ResolverContext> = {
       description: "ID of generic gene rail to target",
     },
     key: {
-      type: GraphQLString,
+      type: HomePageArtworkModuleTypes,
       description: "Module key",
     },
     relatedArtistID: {

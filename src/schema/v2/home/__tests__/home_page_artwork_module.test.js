@@ -9,7 +9,7 @@ describe("HomePageArtworkModule", () => {
         {
           homePage {
             artworkModule(
-              key: "related_artists"
+              key: RELATED_ARTISTS
               followedArtistID: "banksy"
               relatedArtistID: "rob-pruitt"
             ) {
@@ -40,7 +40,7 @@ describe("HomePageArtworkModule", () => {
       const query = gql`
         {
           homePage {
-            artworkModule(key: "followed_artist", followedArtistID: "banksy") {
+            artworkModule(key: FOLLOWED_ARTIST, followedArtistID: "banksy") {
               context {
                 ... on HomePageFollowedArtistArtworkModule {
                   artist {
@@ -66,7 +66,7 @@ describe("HomePageArtworkModule", () => {
       const query = gql`
         {
           homePage {
-            artworkModule(key: "genes", id: "catty-art") {
+            artworkModule(key: GENERIC_GENES, id: "catty-art") {
               results {
                 slug
               }
@@ -89,7 +89,7 @@ describe("HomePageArtworkModule", () => {
     const query = gql`
       {
         homePage {
-          artworkModule(key: "genes") {
+          artworkModule(key: GENERIC_GENES) {
             results {
               slug
             }
@@ -113,7 +113,7 @@ describe("HomePageArtworkModule", () => {
       const query = gql`
         {
           homePage {
-            artworkModule(key: "popular_artists") {
+            artworkModule(key: POPULAR_ARTISTS) {
               key
               title
             }
