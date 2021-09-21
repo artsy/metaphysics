@@ -1121,6 +1121,9 @@ type UserAddress {
   # Phone number
   phoneNumber: String
 
+  # Phone number country code
+  phoneNumberCountryCode: String
+
   # Postal Code
   postalCode: String
 
@@ -1150,6 +1153,9 @@ input UserAddressAttributes {
 
   # Phone number
   phoneNumber: String
+
+  # ISO Phone number country code
+  phoneNumberCountryCode: String
 
   # Postal code
   postalCode: String
