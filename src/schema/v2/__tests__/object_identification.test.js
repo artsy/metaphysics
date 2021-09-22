@@ -158,7 +158,7 @@ describe("Object Identification", () => {
         const query = `
           {
             homePage {
-              artworkModule(key: "popular_artists") {
+              artworkModule(key: POPULAR_ARTISTS) {
                 id
               }
             }
@@ -204,7 +204,7 @@ describe("Object Identification", () => {
         const query = `
           {
             homePage {
-              artworkModule(key: "generic_gene", id: "abstract-art") {
+              artworkModule(key: GENERIC_GENES, id: "abstract-art") {
                 id
               }
             }
@@ -261,7 +261,7 @@ describe("Object Identification", () => {
         const query = `
           {
             homePage {
-              artworkModule(key: "related_artists",
+              artworkModule(key: RELATED_ARTISTS,
                              relatedArtistID: "charles-broskoski",
                              followedArtistID: "pablo-picasso") {
                 id
