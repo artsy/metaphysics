@@ -78,6 +78,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    followedArtistsShowsLoader: gravityLoader(
+      "me/follow/artists/shows",
+      {},
+      { headers: true }
+    ),
     followedArtistsLoader: gravityLoader(
       "me/follow/artists",
       {},

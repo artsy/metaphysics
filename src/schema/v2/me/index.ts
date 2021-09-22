@@ -44,6 +44,7 @@ import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import { SaleRegistrationConnection } from "./sale_registrations"
 import { SavedArtworks } from "./savedArtworks"
 import { WatchedLotConnection } from "./watchedLotConnection"
+import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -220,6 +221,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     type: {
       type: GraphQLString,
     },
+    showsByFollowedArtists: ShowsByFollowedArtists,
     unreadNotificationsCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: "A count of unread notifications.",
