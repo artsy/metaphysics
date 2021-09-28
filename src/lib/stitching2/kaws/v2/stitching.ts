@@ -44,6 +44,7 @@ export const kawsStitchingEnvironmentV2 = (
         marketingCollections: {
           selectionSet: `{ internalID }`,
           resolve: ({ internalID: artistID }, args, context, info) => {
+            console.log("************************* resolving here!")
             return delegateToSchema({
               schema: kawsSchema,
               operation: "query",
@@ -152,12 +153,12 @@ export const kawsStitchingEnvironmentV2 = (
       MarketingCollection: {
         artworksConnection: {
           fragment: `
-          fragment MarketingCollectionQuery on MarketingCollection {
-            query {
-              ${Object.keys(filterArtworksArgs).join("\n")}
-            }
-          }
-        `,
+						fragment MarketingCollectionQuery on MarketingCollection {
+							query {
+								${Object.keys(filterArtworksArgs).join("\n")}
+							}
+						}
+					`,
           resolve: (parent, _args, context, info) => {
             const query = parent.query
             const hasKeyword = Boolean(parent.query.keyword)

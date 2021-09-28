@@ -2,9 +2,11 @@ import { ExecutorMiddleware } from "lib/stitching2/lib/createRemoteExecutor"
 import extensionsLogger from "lib/loaders/api/extensionsLogger"
 import config from "config"
 
+const { ENABLE_REQUEST_LOGGING, LOG_HTTP_LINKS } = config
+
 const shouldLogLinkTraffic =
-  !!process.env.LOG_HTTP_LINKS && typeof jest === "undefined"
-const { ENABLE_REQUEST_LOGGING } = config
+  LOG_HTTP_LINKS === "true" && typeof jest === "undefined"
+
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 
 export const responseLoggerMiddleware = (name: string): ExecutorMiddleware => {
