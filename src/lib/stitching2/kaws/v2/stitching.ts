@@ -44,7 +44,7 @@ export const kawsStitchingEnvironmentV2 = (
         marketingCollections: {
           selectionSet: `{ internalID }`,
           resolve: ({ internalID: artistID }, args, context, info) => {
-            console.log("************************* resolving here!")
+            debugger
             return delegateToSchema({
               schema: kawsSchema,
               operation: "query",
