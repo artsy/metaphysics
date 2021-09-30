@@ -9,7 +9,7 @@ import { createPageCursors } from "./fields/pagination"
 import { ShowsConnection } from "./show"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { connectionFromArray } from "graphql-relay"
+import { connectionFromArraySlice } from "graphql-relay"
 import ShowSorts, { ShowSortsType } from "./sorts/show_sorts"
 import { pick } from "lodash"
 import EventStatus, { EventStatusType } from "./input_fields/event_status"
@@ -50,7 +50,7 @@ export const Shows: GraphQLFieldConfig<
     },
   }),
   resolve: async (_root, args, { showsWithHeadersLoader }) => {
-    const { page, size } = convertConnectionArgsToGravityArgs(args)
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     const { body, headers } = await showsWithHeadersLoader({
       total_count: true,
@@ -69,9 +69,13 @@ export const Shows: GraphQLFieldConfig<
     return {
       totalCount,
       pageCursors: createPageCursors({ page, size }, totalCount),
-      ...connectionFromArray(
+      ...connectionFromArraySlice(
         body,
-        pick(args, "before", "after", "first", "last")
+        pick(args, "before", "after", "first", "last"),
+        {
+          arrayLength: totalCount,
+          sliceStart: offset,
+        }
       ),
     }
   },

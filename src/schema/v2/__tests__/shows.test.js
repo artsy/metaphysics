@@ -12,7 +12,7 @@ describe("Shows", () => {
 
     const query = gql`
       {
-        showsConnection(ids: ["example"]) {
+        showsConnection(ids: ["example"], first: 5) {
           totalCount
           edges {
             node {
@@ -29,6 +29,7 @@ describe("Shows", () => {
     expect(showsWithHeadersLoader).toBeCalledWith({
       id: ["example"],
       page: 1,
+      size: 5,
       total_count: true,
       displayable: true,
     })
