@@ -40,11 +40,22 @@ describe("priceRangeDisplayText", () => {
     expect(priceRangeDisplayText(100, 200, "VUV", "")).toBe("VUV Vt100–Vt200")
   })
 
-  it("builds display text with lowest", () => {
-    expect(priceRangeDisplayText(10000, 0, "EUR", "")).toBe("€100")
+  it("doesn't care if low and high prices passed in are out of order", () => {
+    expect(priceRangeDisplayText(10000, 0, "EUR", "")).toBe("€100–€0")
+    expect(priceRangeDisplayText(10000, 100, "EUR", "")).toBe("€100–€1")
   })
 
-  it("builds display text with highest", () => {
-    expect(priceRangeDisplayText(0, 20000, "EUR", "")).toBe("€200")
+  it("returns an empty string when both low and high prices are empty", () => {
+    expect(priceRangeDisplayText(null, null, "EUR", "")).toBe("")
+  })
+
+  it("prepends text 'Under' when low price is not given", () => {
+    expect(priceRangeDisplayText(null, 10000, "EUR", "")).toBe("Under €100")
+    expect(priceRangeDisplayText(null, 100, "VUV", "")).toBe("Under VUV Vt100")
+  })
+
+  it("appends text 'and up' when high price is not given", () => {
+    expect(priceRangeDisplayText(10000, null, "EUR", "")).toBe("€100 and up")
+    expect(priceRangeDisplayText(100, null, "VUV", "")).toBe("VUV Vt100 and up")
   })
 })

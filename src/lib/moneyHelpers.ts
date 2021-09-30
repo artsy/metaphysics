@@ -56,32 +56,32 @@ export const priceDisplayText = (
  * Builds price range display text (e.g. "$100–$200" or "VUV Vt100–Vt200")..
  */
 export const priceRangeDisplayText = (
-  lowerPriceCents: number,
-  higherPriceCents: number,
+  lowerPriceCents: number | null,
+  higherPriceCents: number | null,
   currency: string,
   format: string
 ): string => {
-  if (!lowerPriceCents || !higherPriceCents) {
-    return priceDisplayText(
-      lowerPriceCents || higherPriceCents,
-      currency,
-      format
-    )
+  if (lowerPriceCents == null && higherPriceCents == null) {
+    return ""
   }
 
-  const lowerCurrencyPrefix = currencyPrefix(currency)
-  const higherCurrencyPrefix = lowerCurrencyPrefix.includes(" ")
-    ? lowerCurrencyPrefix.split(" ")[1]
-    : lowerCurrencyPrefix
+  const fullPrefix = currencyPrefix(currency)
+  const shortPrefix = fullPrefix.includes(" ")
+    ? fullPrefix.split(" ")[1]
+    : fullPrefix
 
-  const lowerPriceAmount = priceAmount(lowerPriceCents, currency, format)
-  const higherPriceAmount = priceAmount(higherPriceCents, currency, format)
+  if (lowerPriceCents == null) {
+    const amount = priceAmount(higherPriceCents as number, currency, format)
+    return `Under ${fullPrefix}${amount}`
+  }
 
-  return (
-    lowerCurrencyPrefix +
-    lowerPriceAmount +
-    "–" +
-    higherCurrencyPrefix +
-    higherPriceAmount
-  )
+  if (higherPriceCents == null) {
+    const amount = priceAmount(lowerPriceCents as number, currency, format)
+    return `${fullPrefix}${amount} and up`
+  }
+
+  const low = priceAmount(lowerPriceCents, currency, format)
+  const high = priceAmount(higherPriceCents, currency, format)
+
+  return `${fullPrefix}${low}–${shortPrefix}${high}`
 }
