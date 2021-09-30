@@ -2717,6 +2717,7 @@ type CommerceBuyerRejectOfferPayload {
 }
 
 type CommerceBuyOrder implements CommerceOrder {
+  artsyRemitsTaxes: Boolean
   buyer: CommerceOrderPartyUnion!
   buyerDetails: OrderParty
   buyerPhoneNumber: String
@@ -3353,6 +3354,7 @@ type CommerceOfferEdge {
 }
 
 type CommerceOfferOrder implements CommerceOrder {
+  artsyRemitsTaxes: Boolean
   awaitingResponseFrom: CommerceOrderParticipantEnum
   buyer: CommerceOrderPartyUnion!
 
@@ -3566,6 +3568,7 @@ type CommerceOfferSubmittedEvent implements CommerceEventInterface {
 
 # Order
 interface CommerceOrder {
+  artsyRemitsTaxes: Boolean
   buyer: CommerceOrderPartyUnion!
   buyerDetails: OrderParty
   buyerPhoneNumber: String
