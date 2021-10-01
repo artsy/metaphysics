@@ -26,6 +26,7 @@ import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
+import { createPageCursors } from "../fields/pagination"
 
 export interface TCity {
   slug: string
@@ -252,14 +253,10 @@ async function loadData(
   loader: StaticPathLoader<BodyAndHeaders>,
   baseParams: { [key: string]: any }
 ) {
-  let response
-  let offset
-
   if (args.first === MAX_GRAPHQL_INT) {
-    // TODO: We could throw an error if the `after` arg is passed, but not
-    //       doing so, for now.
-    offset = 0
-    response = await allViaLoader(loader, {
+    // TODO: We could throw an error if the `after` arg is passed, but not doing so, for now.
+    const offset = 0
+    const response = await allViaLoader(loader, {
       params: baseParams,
       api: {
         requestThrottleMs: 7200000, // 1000 * 60 * 60 * 2 = 2 hours
@@ -271,23 +268,35 @@ async function loadData(
       body: data,
       headers: { "x-total-count": data.length.toString() },
     }))
-  } else {
-    const connectionParams = convertConnectionArgsToGravityArgs(args)
-    offset = connectionParams.offset
-    response = await loader({
-      ...baseParams,
-      size: connectionParams.size || 0,
-      page: connectionParams.page || 1,
-      total_count: true,
-    })
+
+    const { headers, body } = response
+    const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+    return {
+      totalCount,
+      ...connectionFromArraySlice(body, args, {
+        arrayLength: totalCount,
+        sliceStart: offset,
+      }),
+    }
   }
 
-  const { headers, body: fairs } = response
+  const { offset, size, page } = convertConnectionArgsToGravityArgs(args)
+
+  const response = await loader({
+    ...baseParams,
+    size: size ?? 0,
+    page: page ?? 1,
+    total_count: true,
+  })
+
+  const { headers, body } = response
   const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
   return {
     totalCount,
-    ...connectionFromArraySlice(fairs, args, {
+    pageCursors: createPageCursors({ page, size }, totalCount),
+    ...connectionFromArraySlice(body, args, {
       arrayLength: totalCount,
       sliceStart: offset,
     }),
