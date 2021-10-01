@@ -92,11 +92,15 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
         }),
-        resolve: async (city, args, { showsWithHeadersLoader }) => {
+        resolve: async (city: TCity, args, { showsWithHeadersLoader }) => {
           return loadData(args, showsWithHeadersLoader, {
-            near: city.coords.join(","),
-            max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-            has_location: true,
+            ...(city.slug === "online"
+              ? { has_location: false }
+              : {
+                  near: city.coords.join(","),
+                  max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+                  has_location: true,
+                }),
             at_a_fair: false,
             ...(args.partnerType && { partner_types: args.partnerType }),
             ...(args.dayThreshold && { day_threshold: args.dayThreshold }),
@@ -179,6 +183,13 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
   },
 })
 
+const ONLINE: TCity = {
+  slug: "online",
+  name: "Online",
+  full_name: "Online",
+  coords: [0, 0], // https://en.wikipedia.org/wiki/Null_Island
+}
+
 export const City: GraphQLFieldConfig<void, ResolverContext> = {
   type: CityType,
   description: "A city-based entry point for local discovery",
@@ -201,6 +212,10 @@ export const City: GraphQLFieldConfig<void, ResolverContext> = {
 
     if (!slug && !near) {
       throw new Error('One of the arguments "slug" or "near" is required.')
+    }
+
+    if (slug === "online") {
+      return ONLINE
     }
 
     const allCities = await geodataCitiesLoader()
