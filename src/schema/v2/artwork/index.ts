@@ -57,7 +57,7 @@ import { ArtworkContextGrids } from "./artworkContextGrids"
 import { PageInfoType } from "graphql-relay"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { InquiryQuestionType } from "../inquiry_question"
-import { priceDisplayText } from "lib/moneyHelpers"
+import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
 import { LocationType } from "schema/v2/location"
 
 const has_price_range = (price) => {
@@ -916,18 +916,31 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             return "Sold"
           }
 
-          const price =
-            price_cents && priceDisplayText(price_cents, price_currency, "")
+          let formatted
+
+          if (price_cents) {
+            formatted =
+              price_cents.length === 1
+                ? priceDisplayText(price_cents[0], price_currency, "")
+                : priceRangeDisplayText(
+                    price_cents[0],
+                    price_cents[1],
+                    price_currency,
+                    ""
+                  )
+          } else {
+            formatted = sale_message
+          }
 
           // If on hold, prepend the price (if there is one).
           if (availability === "on hold") {
             if (price_cents) {
-              return `${price}, on hold`
+              return `${formatted}, on hold`
             }
             return "On hold"
           }
 
-          return price || sale_message
+          return formatted
         },
       },
       series: markdown(),
