@@ -89,6 +89,8 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
             type: GraphQLBoolean,
             description: "Whether to include local discovery stubs",
           },
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
         }),
         resolve: async (city, args, { showsWithHeadersLoader }) => {
           return loadData(args, showsWithHeadersLoader, {
