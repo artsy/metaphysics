@@ -39,21 +39,18 @@ export const isCurrencySupported = (currency: string): boolean => {
 }
 
 /**
- * Builds price display text (e.g. "$100").
+ * Builds price display text (e.g. "US$100").
  */
 export const priceDisplayText = (
-  priceCents: number | [number, number],
+  priceCents: number,
   currency: string,
   format: string
 ): string => {
-  if (typeof priceCents === "number") {
-    return currencyPrefix(currency) + priceAmount(priceCents, currency, format)
-  }
-  return priceRangeDisplayText(priceCents[0], priceCents[1], currency, format)
+  return currencyPrefix(currency) + priceAmount(priceCents, currency, format)
 }
 
 /**
- * Builds price range display text (e.g. "$100–$200" or "VUV Vt100–Vt200")..
+ * Builds price range display text (e.g. "US$100–US$200" or "VUV Vt100–Vt200")..
  */
 export const priceRangeDisplayText = (
   lowerPriceCents: number | null,

@@ -27,6 +27,7 @@ describe("currencyPrefix", () => {
 
 describe("priceDisplayText", () => {
   it("builds display text", () => {
+    expect(priceDisplayText(100, "USD", "")).toBe("US$1")
     expect(priceDisplayText(100, "EUR", "")).toBe("€1")
     expect(priceDisplayText(100, "CAD", "")).toBe("C$1")
     expect(priceDisplayText(100, "VUV", "")).toBe("VUV Vt100")
@@ -35,6 +36,7 @@ describe("priceDisplayText", () => {
 
 describe("priceRangeDisplayText", () => {
   it("builds display text with range", () => {
+    expect(priceRangeDisplayText(10000, 20000, "USD", "")).toBe("US$100–US$200")
     expect(priceRangeDisplayText(10000, 20000, "EUR", "")).toBe("€100–€200")
     expect(priceRangeDisplayText(100, 200, "MXN", "")).toBe("MX$1–MX$2")
     expect(priceRangeDisplayText(100, 200, "VUV", "")).toBe("VUV Vt100–Vt200")
