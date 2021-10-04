@@ -27,6 +27,7 @@ import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
 import { createPageCursors } from "../fields/pagination"
+import { HTTPError } from "lib/HTTPError"
 
 export interface TCity {
   slug: string
@@ -234,7 +235,7 @@ const lookupCity = (slug: string, cities: TCity[]) => {
   const city = cities.find((c) => c.slug === slug)
 
   if (!city) {
-    throw new Error(`City "${slug}" not found`)
+    throw new HTTPError(`City "${slug}" not found`, 404)
   }
 
   return city
