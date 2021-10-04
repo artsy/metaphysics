@@ -49,7 +49,7 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
           },
         }),
         resolve: async (
-          { profile_id },
+          { id },
           args: {
             inEditorialFeed?: boolean
             sort?: ArticleSort
@@ -61,7 +61,7 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
           )
 
           const gravityOptions = {
-            fair_organizer_id: profile_id,
+            fair_organizer_id: id,
             size: 100,
           }
 
