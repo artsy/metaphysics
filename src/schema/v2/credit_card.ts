@@ -48,7 +48,7 @@ const CreditCardMutationFailureType = new GraphQLObjectType<
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
-      resolve: (err) => err,
+      resolve: (err) => err.message || err,
     },
   }),
 })
