@@ -75,6 +75,7 @@ type ApproveOrderPayload {
 }
 
 type BuyOrder implements Order {
+  artsyRemitsTaxes: Boolean
   buyer: OrderPartyUnion!
   buyerPhoneNumber: String
   buyerTotalCents: Int
@@ -928,6 +929,7 @@ type OfferEdge {
 }
 
 type OfferOrder implements Order {
+  artsyRemitsTaxes: Boolean
   awaitingResponseFrom: OrderParticipantEnum
   buyer: OrderPartyUnion!
 
@@ -1030,6 +1032,7 @@ type OfferSubmittedEvent implements EventInterface {
 Order
 """
 interface Order {
+  artsyRemitsTaxes: Boolean
   buyer: OrderPartyUnion!
   buyerPhoneNumber: String
   buyerTotalCents: Int
