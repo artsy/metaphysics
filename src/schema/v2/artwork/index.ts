@@ -59,6 +59,7 @@ import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/ut
 import { InquiryQuestionType } from "../inquiry_question"
 import { priceDisplayText } from "lib/moneyHelpers"
 import { LocationType } from "schema/v2/location"
+import { ComparableArtworks } from "./comparableArtworks"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -1117,6 +1118,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLFloat,
         resolve: ({ size_score }) => size_score,
       },
+      comparableArtworks: ComparableArtworks,
       sizeBucket: {
         description:
           "size bucket assigned to an artwork based on its dimensions",

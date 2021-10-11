@@ -105,6 +105,7 @@ import FairOrganizer from "./fair_organizer"
 import { externalField } from "./External/External"
 import { createUserInterestMutation } from "./me/createUserInterestMutation"
 import { page } from "./page"
+import { ComparableArtworks } from "./artwork/comparableArtworks"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -127,6 +128,7 @@ const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
   artworksConnection: filterArtworksConnection(),
   artworks: Artworks,
+  comparableArtworks: ComparableArtworks,
   artist: Artist,
   artists: Artists,
   artistsConnection,

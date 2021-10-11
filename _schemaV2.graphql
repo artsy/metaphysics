@@ -1342,6 +1342,12 @@ type Artwork implements Node & Searchable & Sellable {
   # Returns the display label and detail when artwork has a certificate of authenticity
   certificateOfAuthenticity: ArtworkInfoRow
   collectingInstitution: String
+
+  # An comparable artworks
+  comparableArtworks(
+    # The ID artwork
+    id: String!
+  ): ComparableArtworks
   conditionDescription: ArtworkInfoRow
   contactLabel: String
 
@@ -4278,6 +4284,52 @@ type CommerceSubmitPendingOfferPayload {
 
 type CommerceUser {
   id: String!
+}
+
+type ComparableArtworks implements Node {
+  artist: Artist
+  artistID: String!
+  boughtIn: Boolean
+  categoryText: String
+  currency: String
+  date(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  dateText: String
+  description: String
+  dimensionText: String
+  externalURL: String
+
+  # A globally unique ID.
+  id: ID!
+  images: ComparableArtworksImages
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  location: String
+  mediumText: String
+  organization: String
+  saleDate(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  saleDateText: String
+  saleTitle: String
+  title: String
+}
+
+type ComparableArtworksImages {
+  larger: Image
+  thumbnail: Image
 }
 
 type ConditionReportRequest {
@@ -10335,6 +10387,12 @@ type Query {
     states: [CommerceOrderStateEnum!]
   ): CommerceOrderConnectionWithTotalCount
 
+  # An comparable artworks
+  comparableArtworks(
+    # The ID artwork
+    id: String!
+  ): ComparableArtworks
+
   # Sold or bought-in consignments
   consignments(
     # Returns the elements in the list that come after the specified cursor.
@@ -13070,6 +13128,12 @@ type Viewer {
     # A slug for the city, conforming to Gravity's city slug naming conventions
     slug: String
   ): City
+
+  # An comparable artworks
+  comparableArtworks(
+    # The ID artwork
+    id: String!
+  ): ComparableArtworks
 
   # A user's credit card
   creditCard(

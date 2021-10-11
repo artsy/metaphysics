@@ -8,5 +8,8 @@ export default (opts) => {
     auctionLotsLoader: diffusionLoader("lots"),
     auctionLotLoader: diffusionLoader((id) => `lots/${id}`),
     auctionCreatedYearRangeLoader: diffusionLoader("lots/created_dates"),
+    comparableArtworksLoader: diffusionLoader(
+      (id) => `lots/comparable_artworks/${id}`
+    ),
   }
 }
