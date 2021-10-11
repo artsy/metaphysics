@@ -251,6 +251,12 @@ function startApp(appSchema, path: string) {
         validationRules,
         extensions: ({ document, result }) =>
           createExtensions(document, result, requestID),
+        formatError: (error) => ({
+          // better errors formatting for clients
+          // See errorMiddleware in  https://github.com/relay-tools/react-relay-network-modern/blob/master/README.md#built-in-middlewares
+          message: error.message,
+          stack: !PRODUCTION_ENV ? error.stack.split("\n") : null,
+        }),
       }
     })
 
