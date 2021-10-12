@@ -25,9 +25,8 @@ describe("ComparableArtwork type", () => {
     }
 
     return runQuery(query, context!).then((data) => {
-      console.log(data)
-      expect(data.auctionResult.currency).toBe("EUR")
-      expect(data.auctionResult.saleDateText).toEqual("10-12-2020")
+      expect(data.comparableArtworks.currency).toBe("EUR")
+      expect(data.comparableArtworks.saleDateText).toEqual("10-12-2020")
     })
   })
 })
