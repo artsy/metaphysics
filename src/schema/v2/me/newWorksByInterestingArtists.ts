@@ -9,6 +9,7 @@ import gql from "lib/gql"
 
 const MAX_ARTISTS = 50
 const MAX_ARTWORKS = 100
+const MIN_AFFINITY_SCORE = 0.5
 
 export const NewWorksByInterestingArtists: GraphQLFieldConfig<
   void,
@@ -34,7 +35,7 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
     const vortexResult = await vortexGraphqlLoader({
       query: gql`
         query artistAffinitiesQuery {
-          artistAffinities(first: ${MAX_ARTISTS}) {
+          artistAffinities(first: ${MAX_ARTISTS}, minScore: ${MIN_AFFINITY_SCORE}) {
             totalCount
             edges {
               node {
