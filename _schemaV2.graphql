@@ -1342,12 +1342,6 @@ type Artwork implements Node & Searchable & Sellable {
   # Returns the display label and detail when artwork has a certificate of authenticity
   certificateOfAuthenticity: ArtworkInfoRow
   collectingInstitution: String
-
-  # An comparable artworks
-  comparableArtworks(
-    # The ID artwork
-    id: String!
-  ): ComparableArtworks
   conditionDescription: ArtworkInfoRow
   contactLabel: String
 
