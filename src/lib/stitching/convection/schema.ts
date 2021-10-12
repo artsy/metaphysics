@@ -20,6 +20,7 @@ export const executableConvectionSchema = () => {
   // metaphysics ecosystem.
   const remap = {
     Asset: "ConsignmentSubmissionCategoryAsset",
+    AttributionClass: "ConsignmentAttributionClass",
     Category: "ConsignmentSubmissionCategoryAggregation",
     Offer: "ConsignmentOffer",
     OfferConnection: "ConsignmentOfferConnection",
