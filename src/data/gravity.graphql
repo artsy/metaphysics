@@ -1743,7 +1743,9 @@ type SaleArtworkEdge {
 Saved Search User Alert Settings
 """
 type SavedSearchUserAlertSettings {
+  email: Boolean!
   name: String
+  push: Boolean!
 }
 
 """
@@ -2298,7 +2300,9 @@ union UserAddressOrErrorsUnion = Errors | UserAddress
 Settings for user saved search
 """
 input UserAlertSettingsInput {
+  email: Boolean
   name: String
+  push: Boolean
 }
 
 """

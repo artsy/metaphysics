@@ -13843,7 +13843,9 @@ type SaveArtworkPayload {
 
 # Saved Search User Alert Settings
 type SavedSearchUserAlertSettings {
+  email: Boolean!
   name: String
+  push: Boolean!
 }
 
 # An object that may be searched for
@@ -15164,7 +15166,9 @@ union UserAddressOrErrorsUnion = Errors | UserAddress
 
 # Settings for user saved search
 input UserAlertSettingsInput {
+  email: Boolean
   name: String
+  push: Boolean
 }
 
 # A wildcard used to support complex root queries in Relay
