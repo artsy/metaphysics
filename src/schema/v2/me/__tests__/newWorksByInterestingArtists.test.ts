@@ -50,7 +50,21 @@ describe("newWorksByInterestingArtists", () => {
       }
     `)
 
-    expect(vortexGraphqlLoader).toHaveBeenCalled()
+    expect(vortexGraphqlLoader).toHaveBeenCalledWith({
+      query: gql`
+        query artistAffinitiesQuery {
+          artistAffinities(first: 50, minScore: 0.5) {
+            totalCount
+            edges {
+              node {
+                artistId
+                score
+              }
+            }
+          }
+        }
+      `,
+    })
     expect(artworksLoader).toHaveBeenCalledWith({
       artist_ids: ["608a7417bdfbd1a789ba092a", "608a7416bdfbd1a789ba0911"],
       availability: "for sale",
