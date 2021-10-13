@@ -86,6 +86,7 @@ type BuyOrder implements Order {
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
+  displayState: String
   id: ID!
   internalID: ID!
 
@@ -946,6 +947,7 @@ type OfferOrder implements Order {
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
+  displayState: String
   id: ID!
   impulseConversationId: String
   internalID: ID!
@@ -1043,6 +1045,7 @@ interface Order {
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
+  displayState: String
   id: ID!
   internalID: ID!
 
