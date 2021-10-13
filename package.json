@@ -46,7 +46,7 @@
     "apollo-link": "1.2.1",
     "apollo-link-context": "1.0.8",
     "apollo-link-http": "1.5.4",
-    "apollo-server-express": "2.4.8",
+    "apollo-server-express": "2.14.2",
     "appmetrics": "5.1.1",
     "basic-auth": "1.1.0",
     "bluebird": "3.5.1",
