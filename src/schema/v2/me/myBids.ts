@@ -256,16 +256,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
           "isHighestBidder" | "lotState"
         >[] = watchedLotsFromSale
           .map((watchedLot) => {
-            // Check to see if a user has both watched AND bid on a lot, if so,
-            // only take the lot that user bid on and reject the watched one.
-            const duplicatedBidOnLot = bidUponLots.find(
-              (saleArtwork) => saleArtwork._id === watchedLot._id
-            )
-            if (duplicatedBidOnLot) {
-              return { ...duplicatedBidOnLot, isWatching: true }
-            } else {
-              return { ...watchedLot, isWatching: true }
-            }
+            return { ...watchedLot, isWatching: true }
           })
           .concat(
             bidUponLots
