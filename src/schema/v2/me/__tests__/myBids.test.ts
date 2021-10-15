@@ -43,6 +43,7 @@ describe("myBids", () => {
 
     const context = getContext({ auctionState: "open" })
     const data = await runAuthenticatedQuery(query, context)
+    console.warn(data)
 
     expect(data.me.myBids).toEqual({
       active: [
@@ -123,7 +124,7 @@ describe("myBids", () => {
 
     const context = getContext({ auctionState: "closed" })
     const data = await runAuthenticatedQuery(query, context)
-
+    console.warn(data)
     expect(data.me.myBids).toEqual({
       closed: [
         {
@@ -183,7 +184,7 @@ function getContext(props: { auctionState: "open" | "closed" }) {
               soldStatus: "ForSale",
               saleId: "6043c59e45cea0000643f139",
               floorSellingPriceCents: 450000,
-              internalID: "6043c5a145cea0000643f141",
+              internalID: "gravity-sale-artwork-1",
             },
           },
         },
@@ -194,6 +195,7 @@ function getContext(props: { auctionState: "open" | "closed" }) {
   const saleArtworksAllLoaderResponse = {
     body: [
       {
+        _id: "gravity-sale-artwork-1",
         artwork: {
           _id: "6043c5a145cea0000643f141",
           id: "mario-giacomelli-io-non-ho-mani-che-mi-accarezzino-il-volto-22",
@@ -207,7 +209,6 @@ function getContext(props: { auctionState: "open" | "closed" }) {
         id: "mario-giacomelli-io-non-ho-mani-che-mi-accarezzino-il-volto-22",
         minimum_next_bid_cents: 200000,
         sale_id: "6043c59e45cea0000643f139",
-        _id: "6043c59e45cea0000643f139",
         currency: "EUR",
         estimate_cents: null,
         high_estimate_cents: 250000,
