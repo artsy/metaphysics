@@ -32,7 +32,7 @@ interface SaleArtworkResponse {
   }
 }
 
-interface SaleInfo {
+interface SaleSortingInfo {
   isLiveAuction: boolean
   isClosed: boolean
   isActive: boolean
@@ -43,7 +43,7 @@ interface SaleInfo {
 interface SaleArtworkWithPosition extends SaleArtworkResponse {
   isHighestBidder: boolean
   isWatching: boolean
-  lotState: LotStandingResponse["lot"]
+  lotState?: LotStandingResponse["lot"]
 }
 
 interface MyBid {
@@ -148,7 +148,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     }) as Promise<{
       lotStandingConnection: { edges: Array<{ node: LotStandingResponse }> }
     }>
-    // return { active: [], closed: [] }
+
     // Queue up promise for all registered sales
     const registeredSalesPromise = salesLoaderWithHeaders({
       registered: true,
@@ -223,7 +223,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     )
 
     // Transform data into proper shape for MyBid type plus SaleInfo (used for sorting)
-    const loadedSales: Array<MyBid & SaleInfo> = combinedSales.map(
+    const fullyLoadedSales: Array<MyBid & SaleSortingInfo> = combinedSales.map(
       (sale: any, index) => {
         // Once sales fetched, search for active lots
         const lots = causalityLotStandings.filter((node) => {
@@ -235,7 +235,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
           SaleArtworkWithPosition,
           "isHighestBidder" | "lotState"
         >[] = watchedSaleArtworksResponse.body
-          .filter((saleArtwork) => saleArtwork.sale_id === sale.id)
+          .filter((saleArtwork) => saleArtwork.sale_id === sale._id)
           .map((saleArtwork) => {
             // Attach an isWatching prop to response so that SaleArtwork type
             // can resolve the watching status
@@ -269,7 +269,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
           })
           .concat(
             bidUponLots
-              .filter((lot) => watchedLotIds.includes(lot._id))
+              .filter((lot) => !watchedLotIds.includes(lot._id))
               .map((lot) => {
                 return { ...lot, isWatching: false }
               })
@@ -277,27 +277,16 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
 
         // Attach lot state to each sale artwork
         const saleArtworksWithPosition: SaleArtworkWithPosition[] = allLots.map(
-          (saleArtwork, saIndex) => {
-            console.warn(
-              saleArtwork._id,
-              lots.map((l) => l.lot.internalID)
+          (saleArtwork) => {
+            const causalityLot = lots.find(
+              (lotStanding) => lotStanding.lot.internalID === saleArtwork._id
             )
-            const causalityLot = lots[saIndex]
-            // const causalityLot = lots.find(
-            //   (lotStanding) => lotStanding.lot.internalID === saleArtwork._id
-            // )
-
-            if (!causalityLot) {
-              throw new Error(
-                `Causality lot with id ${saleArtwork._id} not found`
-              )
-            }
 
             // Attach to SaleArtwork.lotState field
             const result = {
               ...saleArtwork,
-              lotState: causalityLot.lot,
-              isHighestBidder: causalityLot.isHighestBidder,
+              lotState: causalityLot?.lot,
+              isHighestBidder: Boolean(causalityLot?.isHighestBidder),
             }
 
             return result
@@ -312,47 +301,53 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       }
     )
 
-    // Lastly, divide sales by opened / closed and sort by position
-    const sorted = sortSales(loadedSales)
+    const sorted = sortSales(fullyLoadedSales)
 
     return sorted
   },
 }
 
-// TODO: Should this fn actually be typed to return MyBidsLists (active/closed)
-// type MyBidsList = Array<MyBid>
+/**
+ * Lastly, divide sales by opened / closed, sort by position
+ *   and remove watched-only lots from the closed sale response
+ */
 function sortSales(
-  saleBidsInfoAggregate: (MyBid & SaleInfo)[]
+  saleBidsInfoAggregate: (MyBid & SaleSortingInfo)[]
 ): { active: MyBid[]; closed: MyBid[] } {
-  const [closed, active] = _.partition(
-    saleBidsInfoAggregate,
-    (sale) => sale.isClosed
-  )
-
   // Sort sale by relevant end time (liveStartAt or endAt, depending on type)
-  const activeSortedByEnd: (MyBid & SaleInfo)[] = _.sortBy(
-    active,
+  const allSortedByEnd: (MyBid & SaleSortingInfo)[] = _.sortBy(
+    saleBidsInfoAggregate,
     (saleInfo) => {
       return moment(saleInfo.endAt).unix()
     }
   )
 
-  // Sort sale artworks by position
-  activeSortedByEnd.forEach((sale) => {
+  // sort each sale's lots by position
+  allSortedByEnd.forEach((myBid) => {
     const artworksSortedByPosition: SaleArtworkWithPosition[] = _.sortBy(
-      sale.saleArtworks,
+      myBid.saleArtworks,
       "position"
     )
-    sale.saleArtworks = artworksSortedByPosition
+    myBid.saleArtworks = artworksSortedByPosition
+  })
+
+  const [closed, active] = _.partition(allSortedByEnd, (sale) => sale.isClosed)
+
+  // prune watched lots from closed lots
+  closed.forEach((myBid) => {
+    const biddedOnlySaleArtworks = myBid.saleArtworks.filter((saleArtwork) =>
+      Boolean(saleArtwork.lotState)
+    )
+    myBid.saleArtworks = biddedOnlySaleArtworks
   })
 
   return {
-    active: activeSortedByEnd,
-    closed,
+    active: active,
+    closed: closed,
   }
 }
 
-function withSaleInfo(sale): SaleInfo {
+function withSaleInfo(sale): SaleSortingInfo {
   const isLiveAuction = Boolean(sale.live_start_at)
   const isClosed = sale.auction_state === "closed"
   const isActive = Boolean(sale.auction_state?.match(/(open|preview)/)?.length)
