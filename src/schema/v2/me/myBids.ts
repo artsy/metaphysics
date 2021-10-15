@@ -183,9 +183,12 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
         })
 
       // Attach lot state to each sale artwork
+      console.warn(lots)
       const saleArtworksWithCausalityState = saleSaleArtworks[index].body.map(
-        (saleArtwork, artworkIndex) => {
-          const causalityLot = lots[artworkIndex]
+        (saleArtwork) => {
+          const causalityLot = lots.find(
+            (lotStanding) => lotStanding.lot.internalID === saleArtwork._id
+          )
 
           // Attach to SaleArtwork.lotState field
           saleArtwork.lotState = causalityLot.lot
@@ -200,7 +203,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
           // Check to see if a user has both watched AND bid on a lot, if so,
           // only take the lot that user bid on and reject the watched one.
           const foundWatchedAndBidOnLot = saleArtworksWithCausalityState.find(
-            (saleArtwork) => saleArtwork.lotState.internalID === watchedLot._id
+            (saleArtwork) => saleArtwork._id === watchedLot._id
           )
 
           if (!foundWatchedAndBidOnLot) {
