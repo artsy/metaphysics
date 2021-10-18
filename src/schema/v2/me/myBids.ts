@@ -175,16 +175,16 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     ])
 
     // Map over response to gather all sale IDs
-    const lotStandings = (
+    const causalityLotStandings = (
       causalityResponse?.lotStandingConnection?.edges ?? []
     ).map(({ node }) => node)
 
-    const lotStandingsBySaleId = _.groupBy(
-      lotStandings,
+    const causalityLotStandingsBySaleId = _.groupBy(
+      causalityLotStandings,
       (lotStanding) => lotStanding.lot.saleId
     )
 
-    const lotStandingsSaleIds = Object.keys(lotStandingsBySaleId)
+    const causalitySaleIds = Object.keys(causalityLotStandingsBySaleId)
     const registeredSaleIds = registeredSalesResponse.body.map(
       (sale) => sale._id
     )
@@ -194,7 +194,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
 
     // Combine ids from categories and dedupe
     const combinedSaleIds = _.uniq([
-      ...lotStandingsSaleIds,
+      ...causalitySaleIds,
       ...registeredSaleIds,
       ...watchedSaleSlugs,
     ])
@@ -214,9 +214,10 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     }
     const bidUponSaleArtworksBySaleId: SaleArtworksBySaleId = await Promise.all(
       combinedSales.map((sale: any) => {
-        const lotStandingsInSale = lotStandingsBySaleId[sale._id] || []
+        const causalityLotStandingsInSale =
+          causalityLotStandingsBySaleId[sale._id] || []
 
-        const lotIds = lotStandingsInSale.map(
+        const lotIds = causalityLotStandingsInSale.map(
           (causalityLot) => causalityLot.lot.internalID
         )
         return saleArtworksLoader(sale._id, {
@@ -281,20 +282,21 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
           )
 
         // Find lot standings for sale
-        const lotStandingsInSale = lotStandingsBySaleId[sale._id] || []
+        const causalityLotStandingsInSale =
+          causalityLotStandingsBySaleId[sale._id] || []
 
         // Attach lot state to each sale artwork
         const saleArtworksWithPosition: SaleArtworkWithPosition[] = allLots.map(
           (saleArtwork) => {
-            const lotStanding = lotStandingsInSale.find(
+            const causalityLotStanding = causalityLotStandingsInSale.find(
               (lotStanding) => lotStanding.lot.internalID === saleArtwork._id
             )
 
             // Attach to SaleArtwork.lotState field
             const result = {
               ...saleArtwork,
-              lotState: lotStanding?.lot,
-              isHighestBidder: Boolean(lotStanding?.isHighestBidder),
+              lotState: causalityLotStanding?.lot,
+              isHighestBidder: Boolean(causalityLotStanding?.isHighestBidder),
             }
 
             return result
@@ -350,8 +352,8 @@ function sortSales(
   })
 
   return {
-    active: active,
-    closed: closed,
+    active,
+    closed,
   }
 }
 
