@@ -6,6 +6,54 @@ import gql from "lib/gql"
 import Sale from "../sale"
 import { SaleArtworkType } from "../sale_artwork"
 
+import { BodyAndHeaders } from "lib/loaders"
+
+interface LotStandingResponse {
+  isHighestBidder: boolean
+  lot: {
+    // Same as SaleArtwork._id
+    internalID: string
+    saleId: string
+  }
+}
+
+interface SaleResponse {
+  _id: string
+  isClosed: boolean
+  endAt: string
+}
+
+interface SaleArtworkResponse {
+  _id: string
+  sale_id: string
+  // we attach this manually
+  artwork: {
+    sale_ids: string[]
+  }
+}
+
+interface SaleSortingInfo {
+  isLiveAuction: boolean
+  isClosed: boolean
+  isActive: boolean
+  endAt: any
+  liveBiddingStarted: () => boolean
+}
+
+interface SaleArtworkWithPosition extends SaleArtworkResponse {
+  isHighestBidder: boolean
+  isWatching: boolean
+  lotState?: LotStandingResponse["lot"]
+}
+
+interface MyBid {
+  sale: SaleResponse
+  saleArtworks: SaleArtworkWithPosition[]
+}
+
+/**
+ * A Sale and associated sale artworks, including bidder position and watching status for user
+ */
 export const MyBidType = new GraphQLObjectType<any, ResolverContext>({
   name: "MyBid",
   fields: () => ({
@@ -43,7 +91,10 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       salesLoaderWithHeaders,
       saleLoader,
     }
-  ) => {
+  ): Promise<{
+    active: Array<MyBid>
+    closed: Array<MyBid>
+  } | null> => {
     if (
       !(
         causalityLoader &&
@@ -65,10 +116,10 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     const FETCH_COUNT = 99
 
     // Grab userID to pass to causality
-    const me = await meLoader()
+    const me: { id: string } = await meLoader()
 
     // Fetch all auction lot standings from a given user
-    const causalityPromise: any = causalityLoader({
+    const causalityPromise = causalityLoader({
       query: gql`
         query LotStandingsConnection($userId: ID!, $first: Int) {
           lotStandingConnection(userId: $userId, first: $first) {
@@ -94,21 +145,23 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
         first: FETCH_COUNT,
         userId: me.id,
       },
-    })
+    }) as Promise<{
+      lotStandingConnection: { edges: Array<{ node: LotStandingResponse }> }
+    }>
 
     // Queue up promise for all registered sales
     const registeredSalesPromise = salesLoaderWithHeaders({
       registered: true,
       is_auction: true,
       size: FETCH_COUNT,
-    })
+    }) as Promise<BodyAndHeaders<SaleResponse[]>>
 
     // Queue up promise for watched lots
     const watchedSaleArtworksPromise = saleArtworksAllLoader({
       include_watched_artworks: true,
       total_count: true,
       first: FETCH_COUNT,
-    })
+    }) as Promise<BodyAndHeaders<SaleArtworkResponse[]>>
 
     // Fetch everything in parallel
     const [
@@ -122,14 +175,20 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     ])
 
     // Map over response to gather all sale IDs
-    const causalityLots = (
+    const causalityLotStandings = (
       causalityResponse?.lotStandingConnection?.edges ?? []
     ).map(({ node }) => node)
-    const causalitySaleIds = causalityLots.map((node) => node.lot.saleId)
+
+    const causalityLotStandingsBySaleId = _.groupBy(
+      causalityLotStandings,
+      (lotStanding) => lotStanding.lot.saleId
+    )
+
+    const causalitySaleIds = Object.keys(causalityLotStandingsBySaleId)
     const registeredSaleIds = registeredSalesResponse.body.map(
       (sale) => sale._id
     )
-    const watchedSaleIds = watchedSaleArtworksResponse.body.map(
+    const watchedSaleSlugs = watchedSaleArtworksResponse.body.map(
       (saleArtwork) => saleArtwork.artwork.sale_ids[0]
     )
 
@@ -137,115 +196,168 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     const combinedSaleIds = _.uniq([
       ...causalitySaleIds,
       ...registeredSaleIds,
-      ...watchedSaleIds,
+      ...watchedSaleSlugs,
     ])
 
-    // Fetch all sales to format into a list
-    let combinedSales = await Promise.all(
+    // Fetch all sales to format into a list. Because we are fetching by
+    // both id + slug (watchedSaleIds) we must do another uniq.
+    // We finally remove invalid & duplicate sales from the results
+    const combinedSales: SaleResponse[] = await Promise.all(
       combinedSaleIds.map((id) => saleLoader(id))
-    )
+    ).then((sales) => {
+      return _.uniqBy(sales, (sale) => sale.id).filter(Boolean)
+    })
 
-    // Clean invalid sales
-    combinedSales = combinedSales.filter(Boolean)
-
-    // Fetch all sale artworks from sale
-    const saleSaleArtworks = await Promise.all(
+    // Fetch all sale artworks for lot standings
+    type SaleArtworksBySaleId = {
+      [saleId: string]: SaleArtworkResponse[] | undefined
+    }
+    const bidUponSaleArtworksBySaleId: SaleArtworksBySaleId = await Promise.all(
       combinedSales.map((sale: any) => {
-        const causalityLotsBySaleId = causalityLots.filter(
-          (node) => node.lot.saleId === sale._id
-        )
-        const artworkIds = causalityLotsBySaleId.map(
+        const causalityLotStandingsInSale =
+          causalityLotStandingsBySaleId[sale._id] || []
+
+        const lotIds = causalityLotStandingsInSale.map(
           (causalityLot) => causalityLot.lot.internalID
         )
         return saleArtworksLoader(sale._id, {
-          ids: artworkIds,
+          ids: lotIds,
           offset: 0,
-          size: artworkIds.length,
+          size: lotIds.length,
         })
       })
+    ).then(
+      (saleArtworksResponses: Array<BodyAndHeaders<SaleArtworkResponse[]>>) => {
+        return saleArtworksResponses.reduce((acc, saleArtworks, index) => {
+          const matchingSaleId = combinedSales[index]._id
+          return {
+            ...acc,
+            [matchingSaleId]: saleArtworks.body,
+          }
+        }, {} as SaleArtworksBySaleId)
+      }
     )
 
-    // Transform data into proper shape for MyBid type
-    combinedSales = combinedSales.map((sale: any, index) => {
-      // Once sales fetched, search for active lots
-      const lots = causalityLots.filter((node) => {
-        return node.lot.saleId === sale._id
-      })
+    // Transform data into proper shape for MyBid type plus SaleInfo (used for sorting)
+    const fullyLoadedSales: Array<MyBid & SaleSortingInfo> = combinedSales.map(
+      (sale: any) => {
+        // Find watched lots from sale
+        const watchedLotsFromSale: Omit<
+          SaleArtworkWithPosition,
+          "isHighestBidder" | "lotState"
+        >[] = watchedSaleArtworksResponse.body
+          .filter((saleArtwork) => {
+            const saleSlug = sale.id
+            return saleArtwork.sale_id === saleSlug
+          })
+          .map((saleArtwork) => {
+            // Attach an isWatching prop to response so that SaleArtwork type
+            // can resolve the watching status
+            const result = {
+              ...saleArtwork,
+              isWatching: true,
+            }
+            return result
+          })
 
-      // Check to see if there are any watched lots in the sale
-      const watchedLotsFromSale = watchedSaleArtworksResponse.body
-        .filter((saleArtwork) => saleArtwork.sale_id === sale.id)
-        .map((saleArtwork) => {
-          // Attach an isWatching prop to response so that SaleArtwork type
-          // can resolve the watching status
-          saleArtwork.isWatching = true
-          return saleArtwork
-        })
+        const watchedLotIds = watchedLotsFromSale.map(
+          (watchedLot) => watchedLot._id
+        )
 
-      // Attach lot state to each sale artwork
-      const saleArtworksWithCausalityState = saleSaleArtworks[index].body.map(
-        (saleArtwork, artworkIndex) => {
-          const causalityLot = lots[artworkIndex]
+        const bidUponLots = bidUponSaleArtworksBySaleId[sale._id] || []
 
-          // Attach to SaleArtwork.lotState field
-          saleArtwork.lotState = causalityLot.lot
-          saleArtwork.isHighestBidder = causalityLot.isHighestBidder
-          return saleArtwork
-        }
-      )
-
-      // Combine watched lots and sale artworks
-      const saleArtworks = watchedLotsFromSale
-        .filter((watchedLot) => {
-          // Check to see if a user has both watched AND bid on a lot, if so,
-          // only take the lot that user bid on and reject the watched one.
-          const foundWatchedAndBidOnLot = saleArtworksWithCausalityState.find(
-            (saleArtwork) => saleArtwork.lotState.internalID === watchedLot._id
+        const allLots: Omit<
+          SaleArtworkWithPosition,
+          "isHighestBidder" | "lotState"
+        >[] = watchedLotsFromSale
+          .map((watchedLot) => {
+            return { ...watchedLot, isWatching: true }
+          })
+          .concat(
+            bidUponLots
+              .filter((lot) => !watchedLotIds.includes(lot._id))
+              .map((lot) => {
+                return { ...lot, isWatching: false }
+              })
           )
 
-          if (!foundWatchedAndBidOnLot) {
-            return watchedLot
+        // Find lot standings for sale
+        const causalityLotStandingsInSale =
+          causalityLotStandingsBySaleId[sale._id] || []
+
+        // Attach lot state to each sale artwork
+        const saleArtworksWithPosition: SaleArtworkWithPosition[] = allLots.map(
+          (saleArtwork) => {
+            const causalityLotStanding = causalityLotStandingsInSale.find(
+              (lotStanding) => lotStanding.lot.internalID === saleArtwork._id
+            )
+
+            // Attach to SaleArtwork.lotState field
+            const result = {
+              ...saleArtwork,
+              lotState: causalityLotStanding?.lot,
+              isHighestBidder: Boolean(causalityLotStanding?.isHighestBidder),
+            }
+
+            return result
           }
-        })
-        // Merge all artworks together
-        .concat(saleArtworksWithCausalityState)
+        )
 
-      return {
-        lots,
-        sale,
-        saleArtworks,
-        isWatching: false,
-        ...withSaleInfo(sale),
+        return {
+          sale,
+          saleArtworks: saleArtworksWithPosition,
+          ...withSaleInfo(sale),
+        }
       }
-    })
+    )
 
-    // Lastly, divide sales by opened / closed and sort by position
-    const sorted = sortSales(combinedSales)
+    const sorted = sortSales(fullyLoadedSales)
+
     return sorted
   },
 }
 
-function sortSales(sales) {
-  const [closed, active] = _.partition(sales, (sale) => sale.isClosed)
-
+/**
+ * Lastly, divide sales by opened / closed, sort by position
+ *   and remove watched-only lots from the closed sale response
+ */
+function sortSales(
+  saleBidsInfoAggregate: (MyBid & SaleSortingInfo)[]
+): { active: MyBid[]; closed: MyBid[] } {
   // Sort sale by relevant end time (liveStartAt or endAt, depending on type)
-  const activeSortedByEnd = _.sortBy(active, (sale) => {
-    return moment(sale.endAt).unix()
+  const allSortedByEnd: (MyBid & SaleSortingInfo)[] = _.sortBy(
+    saleBidsInfoAggregate,
+    (saleInfo) => {
+      return moment(saleInfo.endAt).unix()
+    }
+  )
+
+  // sort each sale's lots by position
+  allSortedByEnd.forEach((myBid) => {
+    const artworksSortedByPosition: SaleArtworkWithPosition[] = _.sortBy(
+      myBid.saleArtworks,
+      "position"
+    )
+    myBid.saleArtworks = artworksSortedByPosition
   })
 
-  // Sort sale artworks by position
-  activeSortedByEnd.forEach((sale) => {
-    const artworksSortedByPosition = _.sortBy(sale.saleArtworks, "position")
-    sale.saleArtworks = artworksSortedByPosition
+  const [closed, active] = _.partition(allSortedByEnd, (sale) => sale.isClosed)
+
+  // prune watched lots from closed lots
+  closed.forEach((myBid) => {
+    const biddedOnlySaleArtworks = myBid.saleArtworks.filter((saleArtwork) =>
+      Boolean(saleArtwork.lotState)
+    )
+    myBid.saleArtworks = biddedOnlySaleArtworks
   })
 
   return {
-    active: activeSortedByEnd,
+    active,
     closed,
   }
 }
 
-function withSaleInfo(sale) {
+function withSaleInfo(sale): SaleSortingInfo {
   const isLiveAuction = Boolean(sale.live_start_at)
   const isClosed = sale.auction_state === "closed"
   const isActive = Boolean(sale.auction_state?.match(/(open|preview)/)?.length)
