@@ -184,9 +184,11 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
 
       // Attach lot state to each sale artwork
       const saleArtworksWithCausalityState = saleSaleArtworks[index].body.map(
-        (saleArtwork, artworkIndex) => {
-          const causalityLot = lots[artworkIndex]
-
+        (saleArtwork) => {
+          // const causalityLot = lots[artworkIndex]
+          const causalityLot = lots.find(
+            (lotStanding) => lotStanding.lot.internalID === saleArtwork._id
+          )
           // Attach to SaleArtwork.lotState field
           saleArtwork.lotState = causalityLot.lot
           saleArtwork.isHighestBidder = causalityLot.isHighestBidder
