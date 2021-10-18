@@ -8,6 +8,12 @@ import { SaleArtworkType } from "../sale_artwork"
 
 import { BodyAndHeaders } from "lib/loaders"
 
+/**
+ * Reader take note! To work on this section of the codebase one needs things:
+ * - CAUSALITY_TOKEN, set in .env. This can be grabbed via hokusai
+ * - `x-user-id` header set in your graphiql client
+ */
+
 interface LotStandingResponse {
   isHighestBidder: boolean
   lot: {
