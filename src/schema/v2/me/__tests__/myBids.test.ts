@@ -12,6 +12,7 @@ describe("myBids", () => {
                 liveStartAt
                 endAt
                 requireIdentityVerification
+                slug
               }
               saleArtworks {
                 position
@@ -51,6 +52,7 @@ describe("myBids", () => {
             liveStartAt: "2022-01-01T00:03:00+00:00",
             endAt: null,
             requireIdentityVerification: false,
+            slug: "sale-1-SLUG",
           },
           saleArtworks: [
             expect.objectContaining({
@@ -161,9 +163,15 @@ describe("myBids", () => {
 function getContext(props: { auctionState: "open" | "closed" }) {
   const watchedLotsIds = ["1-only-watched-lot", "2-watched-and-bid-lot"]
   const bidLotIds = ["3-only-bid-lot", "2-watched-and-bid-lot"]
+  // our lot ordering will be drawn from lot id's leading number
   const positionExtractor = (lotId) => Number(lotId[0])
 
   const saleIds = ["sale-1"]
+
+  // helpers to handle sale id/slug gotchas
+  const saleSlug = (id) => id + "-SLUG"
+  const unSlug = (idOrSlug) => idOrSlug.replace("-SLUG", "")
+
   const meLoaderResponse = {
     id: "some-use-id",
     name: "Some User",
@@ -197,12 +205,12 @@ function getContext(props: { auctionState: "open" | "closed" }) {
     body: saleIds.flatMap((saleId) =>
       watchedLotsIds.map((lotId) => ({
         _id: `${saleId}-${lotId}`,
-        sale_id: saleId,
+        sale_id: saleSlug(saleId),
         position: positionExtractor(lotId),
         artwork: {
           _id: "6043c5a145cea0000643f141",
           id: "mario-giacomelli-io-non-ho-mani-che-mi-accarezzino-il-volto-22",
-          sale_ids: [saleId],
+          sale_ids: [saleSlug(saleId)],
         },
         bidder_positions_count: 0,
         display_highest_bid_amount_dollars: null,
@@ -227,12 +235,13 @@ function getContext(props: { auctionState: "open" | "closed" }) {
 
   const saleLoaderResponseFactory = (saleId) => ({
     _id: saleId,
+    name: "Sale of id " + saleId,
+    id: saleSlug(saleId),
     auction_state: props.auctionState,
     created_at: "2021-03-13T17:26:38+00:00",
     currency: "CHF",
     end_at: null,
     ended_at: null,
-    id: "shared-live-mocktion",
     is_auction: true,
     is_benefit: false,
     live_start_at: "2022-01-01T00:03:00+00:00",
@@ -257,7 +266,7 @@ function getContext(props: { auctionState: "open" | "closed" }) {
     body: bidLotIds
       .map((lotId) => ({
         _id: `${saleId}-${lotId}`,
-        sale_id: saleId,
+        sale_id: saleSlug(saleId),
         bidder_positions_count: 0,
         display_highest_bid_amount_dollars: null,
         display_minimum_next_bid_dollars: "€2,000",
@@ -302,9 +311,10 @@ function getContext(props: { auctionState: "open" | "closed" }) {
     salesLoaderWithHeaders: () =>
       Promise.resolve(salesLoaderWithHeadersResponse), // Registered Sales
     saleArtworksAllLoader: () => Promise.resolve(saleArtworksAllLoaderResponse), // Watched Artworks
-    saleLoader: (saleId) => Promise.resolve(saleLoaderResponseFactory(saleId)), // All sales
+    saleLoader: (saleId) =>
+      Promise.resolve(saleLoaderResponseFactory(unSlug(saleId))), // All sales
     saleArtworksLoader: (saleId) =>
-      Promise.resolve(saleArtworksLoaderResponseFactory(saleId)), // Sale Sale artworks
+      Promise.resolve(saleArtworksLoaderResponseFactory(unSlug(saleId))), // Sale Sale artworks
     saleArtworkRootLoader: () => Promise.resolve(saleArtworkRootLoaderResponse), // From fields/money currency conversion
     moneyMajorResolver: () => Promise.resolve(moneyMajorResolverResponse), // From fields/money currency conversion
   }

@@ -175,67 +175,80 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     ])
 
     // Map over response to gather all sale IDs
-    const causalityLotStandings = (
+    const lotStandings = (
       causalityResponse?.lotStandingConnection?.edges ?? []
     ).map(({ node }) => node)
-    const causalitySaleIds = causalityLotStandings.map(
-      (node) => node.lot.saleId
+
+    const lotStandingsBySaleId = _.groupBy(
+      lotStandings,
+      (lotStanding) => lotStanding.lot.saleId
     )
+
+    const lotStandingsSaleIds = Object.keys(lotStandingsBySaleId)
     const registeredSaleIds = registeredSalesResponse.body.map(
       (sale) => sale._id
     )
-    const watchedSaleIds = watchedSaleArtworksResponse.body.map(
+    const watchedSaleSlugs = watchedSaleArtworksResponse.body.map(
       (saleArtwork) => saleArtwork.artwork.sale_ids[0]
     )
 
     // Combine ids from categories and dedupe
     const combinedSaleIds = _.uniq([
-      ...causalitySaleIds,
+      ...lotStandingsSaleIds,
       ...registeredSaleIds,
-      ...watchedSaleIds,
+      ...watchedSaleSlugs,
     ])
 
-    // Fetch all sales to format into a list
-    let combinedSales: SaleResponse[] = await Promise.all(
+    // Fetch all sales to format into a list. Because we are fetching by
+    // both id + slug (watchedSaleIds) we must do another uniq.
+    // We finally remove invalid & duplicate sales from the results
+    const combinedSales: SaleResponse[] = await Promise.all(
       combinedSaleIds.map((id) => saleLoader(id))
-    )
+    ).then((sales) => {
+      return _.uniqBy(sales, (sale) => sale.id).filter(Boolean)
+    })
 
-    // Clean invalid sales
-    combinedSales = combinedSales.filter(Boolean)
-
-    // Fetch all sale artworks from sale
-    const saleSaleArtworks: Array<BodyAndHeaders<
-      SaleArtworkResponse[]
-    >> = await Promise.all(
+    // Fetch all sale artworks for lot standings
+    type SaleArtworksBySaleId = {
+      [saleId: string]: SaleArtworkResponse[] | undefined
+    }
+    const bidUponSaleArtworksBySaleId: SaleArtworksBySaleId = await Promise.all(
       combinedSales.map((sale: any) => {
-        const causalityLotsBySaleId = causalityLotStandings.filter(
-          (node) => node.lot.saleId === sale._id
-        )
-        const artworkIds = causalityLotsBySaleId.map(
+        const lotStandingsInSale = lotStandingsBySaleId[sale._id] || []
+
+        const lotIds = lotStandingsInSale.map(
           (causalityLot) => causalityLot.lot.internalID
         )
         return saleArtworksLoader(sale._id, {
-          ids: artworkIds,
+          ids: lotIds,
           offset: 0,
-          size: artworkIds.length,
+          size: lotIds.length,
         })
       })
+    ).then(
+      (saleArtworksResponses: Array<BodyAndHeaders<SaleArtworkResponse[]>>) => {
+        return saleArtworksResponses.reduce((acc, saleArtworks, index) => {
+          const matchingSaleId = combinedSales[index]._id
+          return {
+            ...acc,
+            [matchingSaleId]: saleArtworks.body,
+          }
+        }, {} as SaleArtworksBySaleId)
+      }
     )
 
     // Transform data into proper shape for MyBid type plus SaleInfo (used for sorting)
     const fullyLoadedSales: Array<MyBid & SaleSortingInfo> = combinedSales.map(
-      (sale: any, index) => {
-        // Once sales fetched, search for active lots
-        const lots = causalityLotStandings.filter((node) => {
-          return node.lot.saleId === sale._id
-        })
-
-        // Check to see if there are any watched lots in the sale
+      (sale: any) => {
+        // Find watched lots from sale
         const watchedLotsFromSale: Omit<
           SaleArtworkWithPosition,
           "isHighestBidder" | "lotState"
         >[] = watchedSaleArtworksResponse.body
-          .filter((saleArtwork) => saleArtwork.sale_id === sale._id)
+          .filter((saleArtwork) => {
+            const saleSlug = sale.id
+            return saleArtwork.sale_id === saleSlug
+          })
           .map((saleArtwork) => {
             // Attach an isWatching prop to response so that SaleArtwork type
             // can resolve the watching status
@@ -249,7 +262,8 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
         const watchedLotIds = watchedLotsFromSale.map(
           (watchedLot) => watchedLot._id
         )
-        const bidUponLots = saleSaleArtworks[index].body
+
+        const bidUponLots = bidUponSaleArtworksBySaleId[sale._id] || []
 
         const allLots: Omit<
           SaleArtworkWithPosition,
@@ -266,18 +280,21 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
               })
           )
 
+        // Find lot standings for sale
+        const lotStandingsInSale = lotStandingsBySaleId[sale._id] || []
+
         // Attach lot state to each sale artwork
         const saleArtworksWithPosition: SaleArtworkWithPosition[] = allLots.map(
           (saleArtwork) => {
-            const causalityLot = lots.find(
+            const lotStanding = lotStandingsInSale.find(
               (lotStanding) => lotStanding.lot.internalID === saleArtwork._id
             )
 
             // Attach to SaleArtwork.lotState field
             const result = {
               ...saleArtwork,
-              lotState: causalityLot?.lot,
-              isHighestBidder: Boolean(causalityLot?.isHighestBidder),
+              lotState: lotStanding?.lot,
+              isHighestBidder: Boolean(lotStanding?.isHighestBidder),
             }
 
             return result
