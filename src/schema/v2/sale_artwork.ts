@@ -258,7 +258,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
       isWatching: {
         type: GraphQLBoolean,
         description:
-          "Is this sale artwork being watched by a user. (Currently only used on me.myBids and me.watchedLotsConnection.)",
+          "True if this sale artwork is being watched by a user and they have not bid on it. (Currently only used on me.myBids and me.watchedLotsConnection.)",
         // TODO: At some point we might want to migrate this property to Gravity
         resolve: (saleArtwork) => {
           return Boolean(saleArtwork.isWatching)
