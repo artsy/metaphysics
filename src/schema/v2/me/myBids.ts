@@ -247,9 +247,11 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     // Transform data into proper shape for MyBid type plus SaleInfo (used for sorting)
     const fullyLoadedSales: Array<MyBid & SaleSortingInfo> = combinedSales.map(
       (sale: any) => {
-        const bidUponSaleArtworksWithoutWatching =
+        const bidUponSaleArtworksWithoutWatchStatus =
           bidUponSaleArtworksBySaleId[sale._id] || ([] as SaleArtworkResponse[])
-        const bidUponSaleArtworks = bidUponSaleArtworksWithoutWatching.map(
+
+        // mark lots wit a bid `isWatching: false`
+        const bidUponSaleArtworks = bidUponSaleArtworksWithoutWatchStatus.map(
           (sa) => {
             return { ...sa, isWatching: false }
           }
@@ -259,7 +261,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
         )
 
         // mark lots that are watched but not bid on with the `isWatching` prop
-        const watchedOnlyLots = watchedSaleArtworksResponse.body
+        const watchedOnlySaleArtworks = watchedSaleArtworksResponse.body
           .filter((saleArtwork) => {
             const saleSlug = sale.id
             return (
@@ -268,22 +270,20 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
             )
           })
           .map((saleArtwork) => {
-            // Attach an isWatching prop to response so that SaleArtwork type
-            // can resolve the watching status
             return { ...saleArtwork, isWatching: true }
           })
 
-        const allLots: Omit<
+        const allSaleArtworks: Omit<
           SaleArtworkWithPosition,
           "isHighestBidder" | "lotState"
-        >[] = watchedOnlyLots.concat(bidUponSaleArtworks)
+        >[] = watchedOnlySaleArtworks.concat(bidUponSaleArtworks)
 
         // Find lot standings for sale
         const causalityLotStandingsInSale =
           causalityLotStandingsBySaleId[sale._id] || []
 
         // Attach lot state to each sale artwork
-        const saleArtworksWithPosition: SaleArtworkWithPosition[] = allLots.map(
+        const saleArtworksWithPosition: SaleArtworkWithPosition[] = allSaleArtworks.map(
           (saleArtwork) => {
             const causalityLotStanding = causalityLotStandingsInSale.find(
               (lotStanding) => lotStanding.lot.internalID === saleArtwork._id
