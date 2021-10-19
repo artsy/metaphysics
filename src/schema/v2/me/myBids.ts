@@ -247,45 +247,36 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     // Transform data into proper shape for MyBid type plus SaleInfo (used for sorting)
     const fullyLoadedSales: Array<MyBid & SaleSortingInfo> = combinedSales.map(
       (sale: any) => {
-        // Find watched lots from sale
-        const watchedLotsFromSale: Omit<
-          SaleArtworkWithPosition,
-          "isHighestBidder" | "lotState"
-        >[] = watchedSaleArtworksResponse.body
+        const bidUponSaleArtworksWithoutWatching =
+          bidUponSaleArtworksBySaleId[sale._id] || ([] as SaleArtworkResponse[])
+        const bidUponSaleArtworks = bidUponSaleArtworksWithoutWatching.map(
+          (sa) => {
+            return { ...sa, isWatching: false }
+          }
+        )
+        const bidUponSaleArtworkIds = bidUponSaleArtworks.map(
+          (lotStanding) => lotStanding._id
+        )
+
+        // mark lots that are watched but not bid on with the `isWatching` prop
+        const watchedOnlyLots = watchedSaleArtworksResponse.body
           .filter((saleArtwork) => {
             const saleSlug = sale.id
-            return saleArtwork.sale_id === saleSlug
+            return (
+              saleArtwork.sale_id === saleSlug &&
+              !bidUponSaleArtworkIds.includes(saleArtwork._id)
+            )
           })
           .map((saleArtwork) => {
             // Attach an isWatching prop to response so that SaleArtwork type
             // can resolve the watching status
-            const result = {
-              ...saleArtwork,
-              isWatching: true,
-            }
-            return result
+            return { ...saleArtwork, isWatching: true }
           })
-
-        const watchedLotIds = watchedLotsFromSale.map(
-          (watchedLot) => watchedLot._id
-        )
-
-        const bidUponLots = bidUponSaleArtworksBySaleId[sale._id] || []
 
         const allLots: Omit<
           SaleArtworkWithPosition,
           "isHighestBidder" | "lotState"
-        >[] = watchedLotsFromSale
-          .map((watchedLot) => {
-            return { ...watchedLot, isWatching: true }
-          })
-          .concat(
-            bidUponLots
-              .filter((lot) => !watchedLotIds.includes(lot._id))
-              .map((lot) => {
-                return { ...lot, isWatching: false }
-              })
-          )
+        >[] = watchedOnlyLots.concat(bidUponSaleArtworks)
 
         // Find lot standings for sale
         const causalityLotStandingsInSale =

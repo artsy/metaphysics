@@ -16,6 +16,7 @@ describe("myBids", () => {
               }
               saleArtworks {
                 position
+                internalID
                 isWatching
                 isHighestBidder
                 lotState {
@@ -23,7 +24,6 @@ describe("myBids", () => {
                   floorSellingPrice {
                     display
                   }
-                  internalID
                   onlineAskingPrice {
                     display
                   }
@@ -56,26 +56,27 @@ describe("myBids", () => {
           },
           saleArtworks: [
             expect.objectContaining({
+              internalID: "sale-1-1-only-watched-lot",
               position: 1,
               isWatching: true,
               isHighestBidder: false,
               lotState: null,
             }),
             expect.objectContaining({
+              internalID: "sale-1-2-watched-and-bid-lot",
               position: 2,
-              isWatching: true,
+              isWatching: false,
               isHighestBidder: true,
               lotState: expect.objectContaining({
-                internalID: "sale-1-2-watched-and-bid-lot",
                 saleId: "sale-1",
               }),
             }),
             expect.objectContaining({
+              internalID: "sale-1-3-only-bid-lot",
               position: 3,
               isWatching: false,
               isHighestBidder: true,
               lotState: expect.objectContaining({
-                internalID: "sale-1-3-only-bid-lot",
                 saleId: "sale-1",
               }),
             }),
@@ -137,7 +138,7 @@ describe("myBids", () => {
           saleArtworks: [
             expect.objectContaining({
               position: 2,
-              isWatching: true,
+              isWatching: false,
               isHighestBidder: true,
               lotState: expect.objectContaining({
                 internalID: "sale-1-2-watched-and-bid-lot",
