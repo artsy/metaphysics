@@ -31,6 +31,13 @@
     chalk "^1.1.3"
     morgan "^1.8.1"
 
+"@artsy/multienv@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@artsy/multienv/-/multienv-1.2.0.tgz#ff4bb0b86ee8bb1c2867e5d887931d274024e68a"
+  integrity sha512-ElwKuJ4DVw3/X27t/v+/hBJLNx4gP76foiVTX11kguiurzBFDln3k/nRTYnalOkU+33nCWgZnpj5elI4jUPqSg==
+  dependencies:
+    dotenv "^10.0.0"
+
 "@artsy/update-repo@0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@artsy/update-repo/-/update-repo-0.4.0.tgz#97a00e5cf4bf847214e75d06336c0fb22a7c59b0"
@@ -3974,7 +3981,7 @@ domexception@^1.0.0:
   dependencies:
     webidl-conversions "^4.0.2"
 
-dotenv@10.0.0:
+dotenv@10.0.0, dotenv@^10.0.0:
   version "10.0.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
   integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==

@@ -39,6 +39,7 @@
   "license": "MIT",
   "dependencies": {
     "@artsy/morgan": "^1.0.2",
+    "@artsy/multienv": "^1.2.0",
     "@artsy/xapp": "1.0.6",
     "@graphql-tools/delegate": "6.0.10",
     "@sentry/node": "5.18.1",
