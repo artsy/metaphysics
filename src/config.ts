@@ -1,3 +1,4 @@
+import "./lib/loadenv"
 import chalk from "chalk"
 import xapp from "@artsy/xapp"
 
