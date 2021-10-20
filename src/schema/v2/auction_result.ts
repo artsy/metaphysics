@@ -13,6 +13,8 @@ import { isNil } from "lodash"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import Image, { normalizeImageData } from "schema/v2/image"
 import { ResolverContext } from "types/graphql"
+import { merge } from "lodash"
+import { pageable } from "relay-cursor-paging"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 import { YearRange } from "./types/yearRange"
@@ -23,6 +25,9 @@ import {
   priceRangeDisplayText,
 } from "lib/moneyHelpers"
 import { ArtistType } from "./artist"
+import { createPageCursors } from "schema/v2/fields/pagination"
+import { connectionFromArraySlice } from "graphql-relay"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 export const AuctionResultSorts = {
   type: new GraphQLEnumType({
@@ -69,6 +74,44 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
     categoryText: {
       type: GraphQLString,
       resolve: ({ category_text }) => category_text,
+    },
+    comparableAuctionResults: {
+      type: auctionResultConnection.connectionType,
+      description: "Comparable auction results ",
+      args: pageable({}),
+      resolve: async (parent, options, { comparableAuctionResultsLoader }) => {
+        if (!comparableAuctionResultsLoader) {
+          return null
+        }
+
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(
+          options
+        )
+
+        const {
+          _embedded: { items },
+          total_count,
+        } = await comparableAuctionResultsLoader(parent.id)
+
+        return merge(
+          {
+            pageCursors: createPageCursors(
+              {
+                page,
+                size,
+              },
+              total_count
+            ),
+          },
+          {
+            totalCount: total_count,
+          },
+          connectionFromArraySlice(items, options, {
+            arrayLength: total_count,
+            sliceStart: offset,
+          })
+        )
+      },
     },
     dimensionText: {
       type: GraphQLString,

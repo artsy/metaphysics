@@ -152,3 +152,97 @@ describe("AuctionResult type", () => {
     })
   })
 })
+
+const mockComparableComparableAuctionResults = {
+  total_count: 2,
+  _embedded: {
+    items: [
+      {
+        sale_date_text: "10-12-2020",
+        currency: "EUR",
+        images: [
+          {
+            thumbnail: {
+              image_url: "https://path.to.1.jpg",
+            },
+          },
+        ],
+      },
+      {
+        sale_date_text: "10-10-2021",
+        currency: "EUR",
+        images: [
+          {
+            thumbnail: {
+              image_url: "https://path.to.2.jpg",
+            },
+          },
+        ],
+      },
+    ],
+  },
+}
+
+describe("Comparable Auction Results", () => {
+  it("fetches comparable auction results", () => {
+    const query = `
+    {
+      auctionResult(id: "foo-bar") {
+        saleDateText
+        saleTitle
+        comparableAuctionResults(first:25) {
+          totalCount
+          edges {
+            node {
+              saleDateText
+              currency
+              images {
+                thumbnail {
+                  imageURL
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    `
+
+    const context = {
+      auctionLotLoader: jest.fn(() => Promise.resolve(mockAuctionResult)),
+      comparableAuctionResultsLoader: jest.fn(() =>
+        Promise.resolve(mockComparableComparableAuctionResults)
+      ),
+    }
+
+    return runQuery(query, context!).then((data) => {
+      expect(data.auctionResult.comparableAuctionResults).toEqual({
+        totalCount: 2,
+        edges: [
+          {
+            node: {
+              saleDateText: "10-12-2020",
+              currency: "EUR",
+              images: {
+                thumbnail: {
+                  imageURL: "https://path.to.1.jpg",
+                },
+              },
+            },
+          },
+          {
+            node: {
+              saleDateText: "10-10-2021",
+              currency: "EUR",
+              images: {
+                thumbnail: {
+                  imageURL: "https://path.to.2.jpg",
+                },
+              },
+            },
+          },
+        ],
+      })
+    })
+  })
+})
