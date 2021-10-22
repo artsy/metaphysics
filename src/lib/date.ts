@@ -158,9 +158,9 @@ export function dateRange(startAt, endAt, timezone) {
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
   const thisMoment = moment.tz(moment(), timezone)
-  let startFormat = "MMM D"
+  let startFormat = "MMMM D"
   let endFormat = "D"
-  let singleDateFormat = "MMM D"
+  let singleDateFormat = "MMMM D"
 
   if (startMoment.year() !== endMoment.year()) {
     // Adds years if the dates are not the same year
@@ -176,7 +176,7 @@ export function dateRange(startAt, endAt, timezone) {
     startMoment.year() !== endMoment.year()
   ) {
     // Show the end month if the month is different
-    endFormat = "MMM ".concat(endFormat)
+    endFormat = "MMMM ".concat(endFormat)
   }
 
   if (
