@@ -590,7 +590,7 @@ describe("Show type", () => {
     const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
-        exhibition_period: "Feb 25 – May 24, 2015",
+        exhibition_period: "February 25 – May 24, 2015",
       },
     })
   })

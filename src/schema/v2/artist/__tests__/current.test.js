@@ -153,7 +153,7 @@ describe("Artist type", () => {
         expect(status).toBe("Currently on view")
         expect(href).toBe("/show/catty-show")
         expect(partner).toBe("Catty Partner")
-        expect(details).toBe("Quonochontaug, Dec 21 – 31, 2018")
+        expect(details).toBe("Quonochontaug, December 21 – 31, 2018")
         expect(event).toEqual({ __typename: "Show", slug: "catty-show" })
       }
     )

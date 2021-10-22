@@ -674,7 +674,7 @@ describe("Fair", () => {
     const data = await runQuery(query, context)
     expect(data).toEqual({
       fair: {
-        exhibitionPeriod: "Feb 15 – 17, 2019",
+        exhibitionPeriod: "February 15 – 17, 2019",
       },
     })
   })
