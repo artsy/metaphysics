@@ -18,7 +18,7 @@ export const GravityMutationErrorType = new GraphQLObjectType<
       type: GraphQLString,
     },
     message: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     detail: {
       type: GraphQLString,
