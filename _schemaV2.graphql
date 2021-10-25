@@ -7352,7 +7352,7 @@ type GravityMutationError {
   detail: String
   error: String
   fieldErrors: [FieldErrorResults]
-  message: String
+  message: String!
   type: String
 }
 
