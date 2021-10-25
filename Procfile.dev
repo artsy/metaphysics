@@ -1,1 +1,0 @@
-web: node_modules/.bin/babel-node --extensions '.ts,.js' --inspect index.js

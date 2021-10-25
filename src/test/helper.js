@@ -1,5 +1,3 @@
-// Do not require the use of node-foreman during testing
-
 require("jest-extended")
 
 import fs from "fs"
