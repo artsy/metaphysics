@@ -38,6 +38,7 @@ import {
 import config from "config"
 import { ResolverContext } from "types/graphql"
 import { allViaLoader } from "lib/all"
+import { markdown } from "../fields/markdown"
 
 const { PREDICTION_ENDPOINT } = config
 
@@ -174,7 +175,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       coverImage: Image,
       currency: { type: GraphQLString },
-      description: { type: GraphQLString },
+      description: markdown(),
       displayTimelyAt: {
         type: GraphQLString,
         resolve: (sale, _options, { meBiddersLoader, defaultTimezone }) => {
