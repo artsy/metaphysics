@@ -8,13 +8,13 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { BodyAndHeaders } from "lib/loaders"
 import { GraphQLBoolean, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "schema/v2/object_identification"
+import { GlobalIDField } from "schema/v2/object_identification"
 
 export const SaleRegistrationType = new GraphQLObjectType<any, ResolverContext>(
   {
     name: "SaleRegistration",
     fields: () => ({
-      ...InternalIDFields,
+      id: GlobalIDField,
       bidder: {
         type: Bidder.type,
       },
@@ -59,7 +59,7 @@ export const SaleRegistrationConnection: GraphQLFieldConfig<
         const bidders = await meBiddersLoader({ sale_id: sale.id })
 
         return {
-          id: `sale-registration-${sale.id}`,
+          id: sale.id,
           sale,
           bidder: first(bidders),
           isRegistered: bidders.length > 0,
