@@ -2,10 +2,6 @@ import "./lib/loadenv"
 import chalk from "chalk"
 import xapp from "@artsy/xapp"
 
-require("dotenv").config({
-  path: require("path").join(process.cwd(), ".env"),
-})
-
 const {
   ALGOLIA_APP_ID,
   ALGOLIA_RESTRICT_INDICES,
