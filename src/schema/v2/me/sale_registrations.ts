@@ -57,7 +57,9 @@ export const SaleRegistrationConnection: GraphQLFieldConfig<
     const saleRegistrations = await Promise.all(
       sales.map(async (sale) => {
         const bidders = await meBiddersLoader({ sale_id: sale.id })
+
         return {
+          id: `sale-registration-${sale.id}`,
           sale,
           bidder: first(bidders),
           isRegistered: bidders.length > 0,
