@@ -407,18 +407,18 @@ describe("date formatting", () => {
       expect(period).toBe("January 1 – April 19, 2011")
     })
 
-    it("include only one month if dates have same month and same year", () => {
+    it("include month and year if dates have same month and same year", () => {
       const period = dateRange("2011-01-01", "2011-01-19", "UTC")
       expect(period).toBe("January 1 – 19, 2011")
     })
 
-    it("does not include the year if both years are the same as the present year", () => {
+    it("include the year if both years are the same as the present year", () => {
       const period = dateRange(
-        moment.tz("UTC").format("YYYY-01-01"),
-        moment.tz("UTC").format("YYYY-01-19"),
+        moment.tz("UTC").format("2018-01-01"),
+        moment.tz("UTC").format("2018-01-19"),
         "UTC"
       )
-      expect(period).toBe("January 1 – 19")
+      expect(period).toBe("January 1 – 19, 2018")
     })
   })
 

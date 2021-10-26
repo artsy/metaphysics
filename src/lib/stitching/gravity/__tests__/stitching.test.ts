@@ -492,7 +492,7 @@ describe("gravity/stitching", () => {
           startAt: startAt,
           endAt: endAt,
         })
-      ).toEqual("September 1 – 30")
+      ).toEqual("September 1 – 30, 2021")
     })
 
     it("returns Invalid dates if dates are missing", async () => {
