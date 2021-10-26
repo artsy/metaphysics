@@ -77,6 +77,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
         "Please make sure to supply the TOTAL aggregation if you will be setting any aggregations",
     },
     artistIDs: { type: new GraphQLList(GraphQLString) },
+    biddableSale: { type: GraphQLBoolean },
     estimateRange: { type: GraphQLString },
     geneIDs: { type: new GraphQLList(GraphQLString) },
     includeArtworksByFollowedArtists: {
@@ -97,6 +98,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     _root,
     {
       artistIDs,
+      biddableSale,
       estimateRange,
       geneIDs,
       includeArtworksByFollowedArtists: requestIncludeArtworksByFollowedArtists,
@@ -125,6 +127,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
 
     const args = {
       artist_ids: artistIDs,
+      biddable_sale: biddableSale,
       estimate_range: estimateRange,
       gene_ids: geneIDs,
       include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
