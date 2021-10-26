@@ -1,4 +1,4 @@
-import { clone, pick } from "lodash"
+import { clone, identity, pick, pickBy } from "lodash"
 import Partner, { PartnerType } from "./partner"
 import PartnerTypeType from "./input_fields/partner_type_type"
 import {
@@ -126,8 +126,11 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       partner_categories: partnerCategories,
       ..._options,
     }
-    const cleanedOptions = clone(options)
-    // make ids singular to match gravity :id
+
+    // Removes null/undefined values from options
+    const cleanedOptions = pickBy(clone(options), identity)
+
+    // Make `ids` singular to match Gravity `id`
     if (options.ids) {
       cleanedOptions.id = options.ids
       delete cleanedOptions.ids
