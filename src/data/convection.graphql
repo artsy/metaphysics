@@ -452,7 +452,7 @@ input CreateSubmissionMutationInput {
   edition: Boolean
   editionNumber: String
   editionSize: Int
-  editionSizeTemp: String
+  editionSizeFormatted: String
   height: String
   locationCity: String
   locationCountry: String
@@ -1227,8 +1227,8 @@ type Submission {
   dimensionsMetric: String
   edition: String
   editionNumber: String
-  editionSize: Int
-  editionSizeTemp: String
+  editionSize: String
+  editionSizeFormatted: String
   height: String
 
   """
@@ -1955,7 +1955,7 @@ input UpdateSubmissionMutationInput {
   edition: Boolean
   editionNumber: String
   editionSize: Int
-  editionSizeTemp: String
+  editionSizeFormatted: String
   height: String
   id: ID!
   locationCity: String
