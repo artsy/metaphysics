@@ -316,6 +316,16 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updateCollectorProfileIconLoader: gravityLoader(
+      "me/collector_profile/icon",
+      {},
+      { method: "PUT" }
+    ),
+    deleteCollectorProfileIconLoader: gravityLoader(
+      "me/collector_profile/icon",
+      {},
+      { method: "DELETE" }
+    ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
     usersLoader: gravityLoader("users"),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),

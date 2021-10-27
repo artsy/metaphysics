@@ -1,5 +1,55 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`UpdateMeMutation does not update icon when it is not from S3 1`] = `
+Object {
+  "updateMyUserProfile": Object {
+    "me": Object {
+      "name": "andy-warhol",
+    },
+    "user": Object {
+      "location": Object {
+        "address": "123 my street",
+        "city": null,
+      },
+      "name": "andy-warhol",
+      "phone": "1234890",
+      "priceRange": "-1:1000000000000",
+      "receiveLotOpeningSoonNotification": false,
+      "receiveNewSalesNotification": false,
+      "receiveNewWorksNotification": true,
+      "receiveOutbidNotification": false,
+      "receivePromotionNotification": false,
+      "receivePurchaseNotification": false,
+      "receiveSaleOpeningClosingNotification": false,
+    },
+    "userOrError": Object {
+      "user": Object {
+        "internalID": "106",
+      },
+    },
+  },
+}
+`;
+
+exports[`UpdateMeMutation does not update the icon when source url is not from s3 1`] = `
+Object {
+  "updateMyUserProfile": Object {
+    "me": Object {
+      "name": "andy-warhol",
+    },
+    "user": Object {
+      "name": "andy-warhol",
+      "phone": "1234890",
+    },
+    "userOrError": Object {
+      "user": Object {
+        "internalID": "106",
+      },
+    },
+  },
+}
+`;
+
 exports[`UpdateMeMutation updates the user profile and returns its new data payload 1`] = `
 Object {
   "updateMyUserProfile": Object {
