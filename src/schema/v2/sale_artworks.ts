@@ -71,43 +71,26 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
   ResolverContext
 > = {
   args: pageable({
-    includeArtworksByFollowedArtists: {
-      type: GraphQLBoolean,
-      description:
-        "When called under the Me field, this defaults to true. Otherwise it defaults to false",
-    },
-    artistIDs: {
-      type: new GraphQLList(GraphQLString),
-    },
     aggregations: {
       type: new GraphQLList(SaleArtworksAggregation),
       description:
         "Please make sure to supply the TOTAL aggregation if you will be setting any aggregations",
     },
-    liveSale: {
+    artistIDs: { type: new GraphQLList(GraphQLString) },
+    biddableSale: { type: GraphQLBoolean },
+    estimateRange: { type: GraphQLString },
+    geneIDs: { type: new GraphQLList(GraphQLString) },
+    includeArtworksByFollowedArtists: {
       type: GraphQLBoolean,
+      description:
+        "When called under the Me field, this defaults to true. Otherwise it defaults to false",
     },
-    isAuction: {
-      type: GraphQLBoolean,
-    },
-    geneIDs: {
-      type: new GraphQLList(GraphQLString),
-    },
-    estimateRange: {
-      type: GraphQLString,
-    },
-    saleID: {
-      type: GraphQLID,
-    },
-    sort: {
-      type: GraphQLString,
-    },
-    page: {
-      type: GraphQLInt,
-    },
-    size: {
-      type: GraphQLInt,
-    },
+    isAuction: { type: GraphQLBoolean },
+    liveSale: { type: GraphQLBoolean },
+    page: { type: GraphQLInt },
+    saleID: { type: GraphQLID },
+    size: { type: GraphQLInt },
+    sort: { type: GraphQLString },
   }),
   description: "Sale Artworks search results",
   type: SaleArtworksConnectionType,
@@ -115,11 +98,12 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     _root,
     {
       artistIDs,
-      includeArtworksByFollowedArtists: requestIncludeArtworksByFollowedArtists,
-      liveSale,
-      isAuction,
-      geneIDs,
+      biddableSale,
       estimateRange,
+      geneIDs,
+      includeArtworksByFollowedArtists: requestIncludeArtworksByFollowedArtists,
+      isAuction,
+      liveSale,
       saleID,
       ..._args
     },
@@ -143,11 +127,12 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
 
     const args = {
       artist_ids: artistIDs,
-      include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
-      live_sale: liveSale,
-      is_auction: isAuction,
-      gene_ids: geneIDs,
+      biddable_sale: biddableSale,
       estimate_range: estimateRange,
+      gene_ids: geneIDs,
+      include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
+      is_auction: isAuction,
+      live_sale: liveSale,
       sale_id: saleID,
       ..._args,
     }
