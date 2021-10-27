@@ -492,14 +492,14 @@ describe("gravity/stitching", () => {
           startAt: startAt,
           endAt: endAt,
         })
-      ).toEqual("Sep 1 – 30")
+      ).toEqual("September 1 – 30, 2021")
     })
 
     it("returns Invalid dates if dates are missing", async () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { exhibitionPeriod } = resolvers.ViewingRoom
-      const startAt = moment().add(1, "days").format("MMM D")
-      const endAt = moment().add(30, "days").format("MMM D")
+      const startAt = moment().add(1, "days").format("MMMM D")
+      const endAt = moment().add(30, "days").format("MMMM D")
       const startAtYear = moment().format("YYYY")
       const endAtAtYear = moment().format("YYYY")
 

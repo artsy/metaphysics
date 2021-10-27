@@ -144,7 +144,7 @@ describe("PartnerShow type", () => {
     return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         partner_show: {
-          exhibition_period: "Feb 25 – May 24, 2015",
+          exhibition_period: "February 25 – May 24, 2015",
         },
       })
     })

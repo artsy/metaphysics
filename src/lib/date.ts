@@ -157,18 +157,13 @@ export function dateTimeRange(
 export function dateRange(startAt, endAt, timezone) {
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
-  const thisMoment = moment.tz(moment(), timezone)
-  let startFormat = "MMM D"
-  let endFormat = "D"
-  let singleDateFormat = "MMM D"
+  let startFormat = "MMMM D"
+  let endFormat = "D, YYYY"
+  const singleDateFormat = "MMMM D, YYYY"
 
   if (startMoment.year() !== endMoment.year()) {
-    // Adds years if the dates are not the same year
+    // Adds year to start date if the dates are not the same year
     startFormat = startFormat.concat(", YYYY")
-    endFormat = endFormat.concat(", YYYY")
-  } else if (endMoment.year() !== thisMoment.year()) {
-    // Otherwise if they're the same year, but not this year, add year to endFormat
-    endFormat = endFormat.concat(", YYYY")
   }
 
   if (
@@ -176,17 +171,14 @@ export function dateRange(startAt, endAt, timezone) {
     startMoment.year() !== endMoment.year()
   ) {
     // Show the end month if the month is different
-    endFormat = "MMM ".concat(endFormat)
+    endFormat = "MMMM ".concat(endFormat)
   }
 
+  // Duration is the same day
   if (
     startMoment.dayOfYear() === endMoment.dayOfYear() &&
     startMoment.year() === endMoment.year()
   ) {
-    // Duration is the same day
-    if (endMoment.year() !== thisMoment.year()) {
-      singleDateFormat = singleDateFormat.concat(", YYYY")
-    }
     return endMoment.format(singleDateFormat)
   } else {
     // Show date range if not the same day

@@ -44,7 +44,7 @@ describe("Fair type", () => {
     }
   `
 
-  let context = {
+  const context = {
     fairLoader: sinon.stub().returns(Promise.resolve(fair)),
   }
 
@@ -317,7 +317,7 @@ describe("Fair", () => {
     const data = await runQuery(query, context)
     expect(data).toEqual({
       fair: {
-        exhibition_period: "Feb 15 – 17, 2019",
+        exhibition_period: "February 15 – 17, 2019",
       },
     })
   })
@@ -358,7 +358,7 @@ describe("Fair", () => {
 
   describe("isActive flag", () => {
     describe("when active_start_at and end_at are in the past", () => {
-      it("is false ", async () => {
+      it("is false", async () => {
         const mockFair = {
           id: "this-fair-was-active",
           active_start_at: moment().subtract(14, "days").toISOString(),
@@ -389,7 +389,7 @@ describe("Fair", () => {
     })
 
     describe("when active_start_at is in the past and end_at is in the future", () => {
-      it("is true ", async () => {
+      it("is true", async () => {
         const mockFair = {
           id: "this-fair-is-active",
           active_start_at: moment().subtract(7, "days").toISOString(),
@@ -420,7 +420,7 @@ describe("Fair", () => {
     })
 
     describe("when active_start_at and end_at are in the future", () => {
-      it("is false ", async () => {
+      it("is false", async () => {
         const mockFair = {
           id: "this-fair-not-yet-active",
           active_start_at: moment().add(7, "days").toISOString(),
