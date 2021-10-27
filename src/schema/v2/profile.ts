@@ -9,8 +9,12 @@ import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLFieldConfig,
+  GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { PartnerType } from "./partner"
+import { FairOrganizerType } from "./fair_organizer"
+import { FairType } from "./fair"
 
 export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
   name: "Profile",
@@ -78,6 +82,28 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       deprecationReason: "Prefer profileArtistsLayout in Partner type",
       resolve: ({ owner }) => owner.profile_artists_layout,
+    },
+    owner: {
+      type: new GraphQLNonNull(
+        new GraphQLUnionType({
+          name: "ProfileOwnerType",
+          types: [PartnerType, FairOrganizerType, FairType],
+          resolveType: (owner) => {
+            switch (owner.__ownerType) {
+              case "Fair":
+                return FairType
+              case "FairOrganizer":
+                return FairOrganizerType
+              default:
+                return PartnerType
+            }
+          },
+        })
+      ),
+      resolve: ({ owner, owner_type }) => ({
+        __ownerType: owner_type,
+        ...owner,
+      }),
     },
   }),
 })
