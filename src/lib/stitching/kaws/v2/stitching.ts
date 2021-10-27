@@ -117,9 +117,11 @@ export const kawsStitchingEnvironmentV2 = (
                 fieldName: "marketingCollections",
                 args: {
                   slugs: [
-                    "new-this-week",
+                    "highlights-this-month",
+                    "new-from-emerging-artists",
+                    "new-from-established-artists",
+                    "limited-edition-prints-trending-artists",
                     "auction-highlights",
-                    "trending-emerging-artists",
                   ],
                 },
                 context,
