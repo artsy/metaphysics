@@ -20,7 +20,7 @@ import EventStatus from "schema/v2/input_fields/event_status"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
-import { ShowsConnection } from "./show"
+import { ShowsConnection, ShowType } from "./show"
 import { ArtistType } from "./artist"
 import ArtworkSorts from "./sorts/artwork_sorts"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
@@ -447,6 +447,22 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       defaultProfileID: {
         type: GraphQLString,
         resolve: ({ default_profile_id }) => default_profile_id,
+      },
+      featuredShow: {
+        type: ShowType,
+        resolve: async ({ id }, _args, { partnerShowsLoader }) => {
+          const { body: shows }: { body: any[] } = await partnerShowsLoader(
+            id,
+            {
+              page: 1,
+              size: 1,
+              sort: "-featured,-end_at",
+              displayable: true,
+            }
+          )
+
+          return shows[0]
+        },
       },
       filterArtworksConnection: filterArtworksConnection("partner_id"),
       vatNumber: {
