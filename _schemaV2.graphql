@@ -12930,18 +12930,18 @@ type UserEdge {
   node: User
 }
 
-type UserIconDeleteFailure {
+type UserIconDeleteFailureType {
   mutationError: GravityMutationError
 }
 
-type UserIconDeleteSuccess {
+type UserIconDeleteSuccessType {
   icon: Image
   success: Boolean
 }
 
 union UserIconDeletionMutationType =
-    UserIconDeleteFailure
-  | UserIconDeleteSuccess
+    UserIconDeleteFailureType
+  | UserIconDeleteSuccessType
 
 type UserInterest {
   body: String

@@ -8,7 +8,7 @@ import Image from "../image"
 import { GraphQLBoolean, GraphQLObjectType, GraphQLUnionType } from "graphql"
 
 const UserIconDeleteSuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UserIconDeleteSuccess",
+  name: "UserIconDeleteSuccessType",
   isTypeOf: (data) => {
     return data.id
   },
@@ -25,7 +25,7 @@ const UserIconDeleteSuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const UserIconDeleteFailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UserIconDeleteFailure",
+  name: "UserIconDeleteFailureType",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
