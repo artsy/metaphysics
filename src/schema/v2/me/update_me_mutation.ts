@@ -210,9 +210,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     )
 
     if (!updateMeLoader || !updateCollectorProfileIconLoader) {
-      throw new Error(
-        "No updateMeLoader or updateMeIconLoader loader found in root values"
-      )
+      throw new Error("You need to be signed in to perform this action")
     }
 
     try {
