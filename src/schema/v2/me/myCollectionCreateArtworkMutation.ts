@@ -5,7 +5,7 @@ import { GraphQLNonNull } from "graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { formatGravityError } from "lib/gravityErrorHandler"
 
-export const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
+const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
 export const computeImageSources = (externalImageUrls) => {
   const imageSources = externalImageUrls.map((url) => {
