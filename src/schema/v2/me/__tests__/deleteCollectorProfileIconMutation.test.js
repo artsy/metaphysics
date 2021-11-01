@@ -11,7 +11,7 @@ describe("Delete Collector Profile Icon mutation", () => {
 
   const mutation = `
   mutation {
-    deleteMyIconMutation(input: {}) {
+    deleteMyIcon(input: {}) {
       iconOrError {
         ... on UserIconDeleteSuccess {
           icon {
@@ -37,7 +37,7 @@ describe("Delete Collector Profile Icon mutation", () => {
   it("deletes icon successfully", async () => {
     const data = await runAuthenticatedQuery(mutation, context)
     expect(data).toEqual({
-      deleteMyIconMutation: {
+      deleteMyIcon: {
         iconOrError: { icon: { internalID: "555" } },
       },
     })
@@ -54,7 +54,7 @@ describe("Delete Collector Profile Icon mutation", () => {
     }
     const data = await runAuthenticatedQuery(mutation, errorRootValue)
     expect(data).toEqual({
-      deleteMyIconMutation: {
+      deleteMyIcon: {
         iconOrError: {
           mutationError: {
             detail: null,
