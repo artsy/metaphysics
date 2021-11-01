@@ -45,6 +45,7 @@ import { SaleRegistrationConnection } from "./sale_registrations"
 import { SavedArtworks } from "./savedArtworks"
 import { WatchedLotConnection } from "./watchedLotConnection"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
+import Image, { normalizeImageData } from "../image"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -57,6 +58,15 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     bidderStatus: BidderStatus,
     bidderPositions: BidderPositions,
     bidderPosition: BidderPosition,
+    bio: {
+      type: GraphQLString,
+      resolve: (_root, options, { collectorProfileLoader }) => {
+        if (!collectorProfileLoader) {
+          throw new Error("You need to be signed in to perform this action")
+        }
+        return collectorProfileLoader(options).then(({ bio }) => bio)
+      },
+    },
     collectorLevel: {
       type: GraphQLInt,
       resolve: ({ collector_level }) => {
@@ -124,6 +134,17 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     hasSecondFactorEnabled: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ second_factor_enabled }) => second_factor_enabled,
+    },
+    icon: {
+      type: Image.type,
+      resolve: (_root, options, { collectorProfileLoader }) => {
+        if (!collectorProfileLoader) {
+          throw new Error("You need to be signed in to perform this action")
+        }
+        return collectorProfileLoader(options).then(({ icon }) =>
+          normalizeImageData(icon)
+        )
+      },
     },
     invoice: Invoice,
     identityVerification: IdentityVerification,

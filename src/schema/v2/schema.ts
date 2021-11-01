@@ -70,6 +70,7 @@ import saveArtworkMutation from "./me/saveArtworkMutation"
 import { sendConfirmationEmailMutation } from "./me/sendConfirmationEmailMutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
+import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileIconMutation"
 import ObjectIdentification from "./object_identification"
 import { OrderedSet } from "./OrderedSet"
 import OrderedSets from "./ordered_sets"
@@ -235,6 +236,7 @@ export default new GraphQLSchema({
       updateCollectorProfile: UpdateCollectorProfile,
       updateConversation: UpdateConversationMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
+      deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({

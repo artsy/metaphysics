@@ -17,6 +17,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { snakeCase } from "lodash"
+import { computeImageSources } from "./myCollectionCreateArtworkMutation"
 
 export const EditableLocationFields = new GraphQLInputObjectType({
   name: "EditableLocation",
@@ -102,6 +103,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: GraphQLString,
       description: "Number of artworks purchased per year.",
     },
+    bio: {
+      type: GraphQLString,
+      description: "The user's bio",
+    },
     collectorLevel: {
       description: "The collector level for the user",
       type: GraphQLInt,
@@ -121,6 +126,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       description: "Works in the art industry?",
     },
     isCollector: { type: GraphQLBoolean, description: "Is a collector?" },
+    iconUrl: {
+      type: GraphQLString,
+      description: "User's icon source_url for Gemini",
+    },
     location: {
       description: "The given location of the user as structured data",
       type: EditableLocationFields,
@@ -190,18 +199,27 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     },
     me: Me,
   },
-  mutateAndGetPayload: async (args, { updateMeLoader }) => {
+  mutateAndGetPayload: async (
+    { iconUrl, ...args },
+    { updateMeLoader, updateCollectorProfileIconLoader }
+  ) => {
     // snake_case keys for Gravity (keys are the same otherwise)
     const user = Object.keys(args).reduce(
       (acc, key) => ({ ...acc, [snakeCase(key)]: args[key] }),
       {}
     )
 
-    if (!updateMeLoader) {
-      throw new Error("No updateMeLoader loader found in root values")
+    if (!updateMeLoader || !updateCollectorProfileIconLoader) {
+      throw new Error("You need to be signed in to perform this action")
     }
 
     try {
+      if (iconUrl) {
+        const imageSource = computeImageSources([iconUrl])
+        for (const payload of imageSource) {
+          await updateCollectorProfileIconLoader(payload)
+        }
+      }
       return updateMeLoader(user)
     } catch (error) {
       const formattedErr = formatGravityError(error)
