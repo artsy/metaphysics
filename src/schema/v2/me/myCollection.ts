@@ -67,13 +67,24 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         },
       }),
     },
+    excludePurchasedArtworks: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+      description:
+        "Exclude artworks that have been purchased on Artsy and automatically added to the collection.",
+    },
   }),
   resolve: ({ id: userId }, options, { collectionArtworksLoader }) => {
     if (!collectionArtworksLoader) {
       return null
     }
     const gravityOptions = Object.assign(
-      { private: true, total_count: true, user_id: userId },
+      {
+        exclude_purchased_artworks: options.excludePurchasedArtworks,
+        private: true,
+        total_count: true,
+        user_id: userId,
+      },
       convertConnectionArgsToGravityArgs(options)
     )
 
