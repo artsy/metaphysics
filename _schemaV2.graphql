@@ -8769,7 +8769,7 @@ type Mutation {
   deleteCreditCard(input: DeleteCreditCardInput!): DeleteCreditCardPayload
 
   # Remove the user icon
-  deleteMyIcon(input: DeleteUserIconInput!): DeleteUserIconPayload
+  deleteMyUserProfileIcon(input: DeleteUserIconInput!): DeleteUserIconPayload
   deleteUserAddress(input: DeleteUserAddressInput!): DeleteUserAddressPayload
   deleteViewingRoom(input: DeleteViewingRoomInput!): DeleteViewingRoomPayload
   deliverSecondFactor(

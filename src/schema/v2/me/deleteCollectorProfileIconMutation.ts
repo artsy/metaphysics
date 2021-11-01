@@ -7,7 +7,7 @@ import {
 import Image from "../image"
 import { GraphQLBoolean, GraphQLObjectType, GraphQLUnionType } from "graphql"
 
-const UserIconDeleteSuccess = new GraphQLObjectType<any, ResolverContext>({
+const UserIconDeleteSuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserIconDeleteSuccess",
   isTypeOf: (data) => {
     return data.id
@@ -24,7 +24,7 @@ const UserIconDeleteSuccess = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-const UserIconDeleteFailure = new GraphQLObjectType<any, ResolverContext>({
+const UserIconDeleteFailureType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserIconDeleteFailure",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
@@ -39,10 +39,14 @@ const UserIconDeleteFailure = new GraphQLObjectType<any, ResolverContext>({
 
 export const UserIconDeletionMutationType = new GraphQLUnionType({
   name: "UserIconDeletionMutationType",
-  types: [UserIconDeleteSuccess, UserIconDeleteFailure],
+  types: [UserIconDeleteSuccessType, UserIconDeleteFailureType],
 })
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+export const deleteCollectorProfileIconMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
   name: "DeleteUserIcon",
   description: "Remove the user icon",
   inputFields: {},
