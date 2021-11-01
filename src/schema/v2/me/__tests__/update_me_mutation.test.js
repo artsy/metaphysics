@@ -11,7 +11,7 @@ describe("UpdateMeMutation", () => {
             clientMutationId: "1232"
             collectorLevel: 1
             bio: "A very long story"
-            icon: "https://gggg.s3.amazonaws.com/thekey"
+            iconUrl: "https://gggg.s3.amazonaws.com/thekey"
             location: { address: "123 my street" }
             phone: "1234890"
             priceRangeMax: 1000000000000
@@ -129,7 +129,8 @@ describe("UpdateMeMutation", () => {
     })
 
     expect(mockUpdateCollectorProfileIconLoader).toBeCalledWith({
-      remote_image_url: "https://gggg.s3.amazonaws.com/thekey",
+      source_bucket: "gggg",
+      source_key: "thekey",
     })
 
     expect.assertions(3)
@@ -143,7 +144,7 @@ describe("UpdateMeMutation", () => {
             clientMutationId: "1232"
             collectorLevel: 1
             bio: "A very long story"
-            icon: "https://gggg.notS3.com/thekey"
+            iconUrl: "https://gggg.notS3.com/thekey"
           }
         ) {
           user {

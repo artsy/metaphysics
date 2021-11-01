@@ -17,7 +17,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { snakeCase } from "lodash"
-import { externalUrlRegex } from "./myCollectionCreateArtworkMutation"
+import { computeImageSources } from "./myCollectionCreateArtworkMutation"
 
 export const EditableLocationFields = new GraphQLInputObjectType({
   name: "EditableLocation",
@@ -126,7 +126,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       description: "Works in the art industry?",
     },
     isCollector: { type: GraphQLBoolean, description: "Is a collector?" },
-    icon: {
+    iconUrl: {
       type: GraphQLString,
       description: "User's icon source_url for Gemini",
     },
@@ -200,7 +200,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     me: Me,
   },
   mutateAndGetPayload: async (
-    { icon, ...args },
+    { iconUrl, ...args },
     { updateMeLoader, updateCollectorProfileIconLoader }
   ) => {
     // snake_case keys for Gravity (keys are the same otherwise)
@@ -216,9 +216,11 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     }
 
     try {
-      if (icon && icon.match(externalUrlRegex)) {
-        const payload = { remote_image_url: icon }
-        await updateCollectorProfileIconLoader(payload)
+      if (iconUrl) {
+        const imageSource = computeImageSources([iconUrl])
+        for (const payload of imageSource) {
+          await updateCollectorProfileIconLoader(payload)
+        }
       }
       return updateMeLoader(user)
     } catch (error) {

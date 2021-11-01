@@ -8769,7 +8769,7 @@ type Mutation {
   deleteCreditCard(input: DeleteCreditCardInput!): DeleteCreditCardPayload
 
   # Remove the user icon
-  deleteMyIconMutation(input: DeleteUserIconInput!): DeleteUserIconPayload
+  deleteMyIcon(input: DeleteUserIconInput!): DeleteUserIconPayload
   deleteUserAddress(input: DeleteUserAddressInput!): DeleteUserAddressPayload
   deleteViewingRoom(input: DeleteViewingRoomInput!): DeleteViewingRoomPayload
   deliverSecondFactor(
@@ -12517,7 +12517,7 @@ input UpdateMyProfileInput {
   gender: String
 
   # User's icon source_url for Gemini
-  icon: String
+  iconUrl: String
 
   # Works in the art industry?
   industry: String

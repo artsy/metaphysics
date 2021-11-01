@@ -49,22 +49,23 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   outputFields: {
     iconOrError: {
       type: UserIconDeletionMutationType,
+      resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: ({ deleteMeIconLoader }) => {
-    if (!deleteMeIconLoader) {
+  mutateAndGetPayload: (_, { deleteCollectorProfileIconLoader }) => {
+    if (!deleteCollectorProfileIconLoader) {
       return new Error("You need to be signed in to perform this action")
     }
-    try {
-      return deleteMeIconLoader()
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
+    return deleteCollectorProfileIconLoader()
+      .then((response) => response)
+      .catch((error) => {
+        const formattedErr = formatGravityError(error)
 
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
-      }
-    }
+        if (formattedErr) {
+          return { ...formattedErr, _type: "GravityMutationError" }
+        } else {
+          throw new Error(error)
+        }
+      })
   },
 })

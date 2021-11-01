@@ -60,6 +60,12 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     bidderPosition: BidderPosition,
     bio: {
       type: GraphQLString,
+      resolve: (_root, options, { collectorProfileLoader }) => {
+        if (!collectorProfileLoader) {
+          throw new Error("You need to be signed in to perform this action")
+        }
+        return collectorProfileLoader(options).then(({ bio }) => bio)
+      },
     },
     collectorLevel: {
       type: GraphQLInt,
@@ -131,7 +137,14 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     },
     icon: {
       type: Image.type,
-      resolve: ({ icon }) => normalizeImageData(icon),
+      resolve: (_root, options, { collectorProfileLoader }) => {
+        if (!collectorProfileLoader) {
+          throw new Error("You need to be signed in to perform this action")
+        }
+        return collectorProfileLoader(options).then(({ icon }) =>
+          normalizeImageData(icon)
+        )
+      },
     },
     invoice: Invoice,
     identityVerification: IdentityVerification,
