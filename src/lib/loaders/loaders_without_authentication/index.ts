@@ -1,5 +1,6 @@
 import deltaLoaders from "./delta"
 import diffusionLoaders from "./diffusion"
+import convectionLoaders from "./convection"
 import galaxyLoaders from "./galaxy"
 import geminiLoaders from "./gemini"
 import geodataLoaders from "./geodata"
@@ -9,6 +10,7 @@ import positronLoaders from "./positron"
 export const createLoadersWithoutAuthentication = (opts) => ({
   ...deltaLoaders(opts),
   ...diffusionLoaders(opts),
+  ...convectionLoaders(opts),
   ...galaxyLoaders(opts),
   ...geminiLoaders(),
   ...gravityLoaders(opts),
