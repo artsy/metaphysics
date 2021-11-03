@@ -8436,7 +8436,7 @@ type Me implements Node {
     before: String
 
     # Exclude artworks that have been purchased on Artsy and automatically added to the collection.
-    excludePurchasedArtworks: Boolean
+    excludePurchasedArtworks: Boolean = false
     first: Int
     last: Int
     sort: MyCollectionArtworkSorts
@@ -10722,7 +10722,14 @@ type Query {
 
     # Coordinates to find partners closest to
     near: String
+
+    #
+    #         Only return partners of the specified partner categories.
+    #         Accepts list of slugs.
+    #
+    partnerCategories: [String]
     sort: PartnersSortType
+    type: [PartnerClassification]
   ): PartnerConnection
 
   # Get all price insights for an artist.
@@ -13429,7 +13436,14 @@ type Viewer {
 
     # Coordinates to find partners closest to
     near: String
+
+    #
+    #         Only return partners of the specified partner categories.
+    #         Accepts list of slugs.
+    #
+    partnerCategories: [String]
     sort: PartnersSortType
+    type: [PartnerClassification]
   ): PartnerConnection
 
   # A requested location
