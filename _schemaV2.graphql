@@ -5548,7 +5548,9 @@ type ConversationOfferSubmitted implements Node {
   createdAt(
     format: String
 
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
   fromParticipant: ConversationOfferPartyType
@@ -5561,7 +5563,9 @@ type ConversationOrderStateChanged implements Node {
   createdAt(
     format: String
 
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
   id: ID!
@@ -8502,7 +8506,7 @@ type Me implements Node {
     before: String
 
     # Exclude artworks that have been purchased on Artsy and automatically added to the collection.
-    excludePurchasedArtworks: Boolean
+    excludePurchasedArtworks: Boolean = false
     first: Int
     last: Int
     sort: MyCollectionArtworkSorts
