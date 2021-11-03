@@ -7,7 +7,7 @@ import {
   fetchOrderEventsForPagination,
 } from "./orderEvents"
 import { fetchMessagesForPagination } from "./messageEvents"
-import { fetchForPaginationArgs } from "./combinedPagination"
+import { fetchForPaginationArgs } from "./hybridConnection/combinedPagination"
 import { hybridConnectionFromArraySlice } from "./hybridConnection"
 
 /*

@@ -4,9 +4,9 @@
 // }
 
 import { ConnectionArguments } from "graphql-relay"
-import { verbose } from "lib/loggers"
 import { sortBy } from "lodash"
-import { cursorToOffsets, HybridOffsets, NodeWMeta } from "./hybridConnection"
+import { NodeWMeta } from "./hybridConnectionFromArraySlice"
+import { HybridOffsets } from "./hybridOffsets"
 
 // some typical relay pagination args (maybe there is a type for this)
 type SortDirection = "ASC" | "DESC"
@@ -15,11 +15,10 @@ type SortDirection = "ASC" | "DESC"
 type SourceKeys = "msg" | "ord"
 
 /**
- * A fetching function for a given source. Based on the incoming `sortDirection`
- * and `offset` it should return a minimum of `limit` records
- * (or less if the collection cannot fulfill it)
+ * A fetching function for a given source that can respect standard
+ * `limit` `offset` and `sort` arguments.
  */
-export type PaginatedFetcher = <T = any>(
+export type FetcherForLimitAndOffset = <T = any>(
   limit: number,
   offset: number,
   sort: SortDirection
@@ -52,7 +51,7 @@ export type PaginatedFetcher = <T = any>(
  */
 export const fetchForPaginationArgs = async (
   { first, last, before, after }: ConnectionArguments,
-  fetchers: Record<SourceKeys, PaginatedFetcher>
+  fetchers: Record<SourceKeys, FetcherForLimitAndOffset>
 ): Promise<{ totalCount: number; nodes: Array<any>; totalOffset: number }> => {
   // 1. check args
   if (before || last) {

@@ -1,5 +1,5 @@
 import { get } from "lodash"
-import { PaginatedFetcher } from "./combinedPagination"
+import { FetcherForLimitAndOffset } from "./hybridConnection/combinedPagination"
 
 const lastMessageId = (conversation) => {
   return get(conversation, "_embedded.last_message.id")
@@ -21,7 +21,7 @@ export const fetchMessagesForPagination = (
   conversationId: string,
   conversationMessagesLoader: any,
   parent: { initial_message: any; from_name: any; from_email: any }
-): PaginatedFetcher => async (size, offset, _sort) => {
+): FetcherForLimitAndOffset => async (size, offset, _sort) => {
   const { initial_message, from_name, from_email } = parent
 
   const page = size ? Math.round((size + offset) / size) : 1
