@@ -95,14 +95,16 @@ const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLList(PartnerTypeType),
     },
   },
-  resolve: (_root, options, { partnersLoader }) => {
+  resolve: async (_root, options, { partnersLoader }) => {
     const cleanedOptions = clone(options)
     // make ids singular to match gravity :id
     if (options.ids) {
       cleanedOptions.id = options.ids
       delete cleanedOptions.ids
     }
-    return partnersLoader(cleanedOptions)
+    const { body } = await partnersLoader(cleanedOptions)
+
+    return body
   },
 }
 

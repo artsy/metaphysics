@@ -5,12 +5,12 @@ describe("PartnersConnection", () => {
   it("returns a list of partners matching array of ids", async () => {
     const partnersLoader = ({ id }) => {
       if (id) {
-        return Promise.resolve(
-          id.map((id) => ({
-            _id: id,
-          }))
-        )
+        return Promise.resolve({
+          body: id.map((id) => ({ _id: id })),
+          headers: { "x-total-count": 1 },
+        })
       }
+
       throw new Error("Unexpected invocation")
     }
 
@@ -25,7 +25,10 @@ describe("PartnersConnection", () => {
         }
       }
     `
-    const { partnersConnection } = await runQuery(query, { partnersLoader })
+    const { partnersConnection } = await runQuery(query, {
+      partnersLoader,
+    })
+
     expect(partnersConnection.edges[0].node.internalID).toEqual(
       "5a958e8e7622dd49f4f4176d"
     )
