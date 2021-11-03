@@ -179,7 +179,7 @@ function getContext(props: { auctionState: "open" | "closed" }) {
   }
 
   // the request for bidded lots
-  const causalityLoaderResponse = {
+  const causalityGraphQLLoaderResponse = {
     lotStandingConnection: {
       edges: saleIds.flatMap((saleId) =>
         bidLotIds.map((lotId) => ({
@@ -308,7 +308,8 @@ function getContext(props: { auctionState: "open" | "closed" }) {
 
   return {
     meLoader: () => Promise.resolve(meLoaderResponse),
-    causalityLoader: () => Promise.resolve(causalityLoaderResponse), // Causality lot state
+    causalityGraphQLLoader: () =>
+      Promise.resolve(causalityGraphQLLoaderResponse), // Causality lot state
     salesLoaderWithHeaders: () =>
       Promise.resolve(salesLoaderWithHeadersResponse), // Registered Sales
     saleArtworksAllLoader: () => Promise.resolve(saleArtworksAllLoaderResponse), // Watched Artworks
