@@ -8436,11 +8436,12 @@ type Me implements Node {
     before: String
 
     # Exclude artworks that have been purchased on Artsy and automatically added to the collection.
-    excludePurchasedArtworks: Boolean
+    excludePurchasedArtworks: Boolean = false
     first: Int
     last: Int
     sort: MyCollectionArtworkSorts
   ): MyCollectionConnection
+  myCollectionInfo: MyCollectionInfo
   name: String
 
   # A connection of new works by artists the user interacted with (sorted by publication date).
@@ -9040,6 +9041,22 @@ type MyCollectionEdge {
 
   # The item at the end of the edge
   node: Artwork
+}
+
+type MyCollectionInfo {
+  default: Boolean
+  description: String
+
+  # A globally unique ID.
+  id: ID!
+  imageURL: String
+  imageVersions: [String]
+  includesPurchasedArtworks: Boolean
+
+  # A type-specific ID.
+  internalID: ID!
+  name: String
+  private: Boolean
 }
 
 input MyCollectionUpdateArtworkInput {
