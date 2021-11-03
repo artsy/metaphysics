@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLFieldConfig,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
@@ -56,3 +57,14 @@ export const MyCollectionInfoType = new GraphQLObjectType<
     },
   }),
 })
+
+export const MyCollectionInfo: GraphQLFieldConfig<void, ResolverContext> = {
+  type: MyCollectionInfoType,
+  description: "The current user's MyCollection general information",
+  resolve: (_root, {}, { meMyCollectionInfoLoader }) => {
+    if (!meMyCollectionInfoLoader) {
+      return null
+    }
+    return meMyCollectionInfoLoader().then(({ info }) => info)
+  },
+}

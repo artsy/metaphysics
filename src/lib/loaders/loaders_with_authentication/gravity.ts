@@ -181,7 +181,7 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     meLoader: gravityLoader("me"),
-    meMyCollectionLoader: gravityLoader("me/my_collection"),
+    meMyCollectionInfoLoader: gravityLoader("me/my_collection"),
     mePartnersLoader: gravityLoader("me/partners"),
     createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
     createArtworkImageLoader: gravityLoader(

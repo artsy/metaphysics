@@ -8441,6 +8441,8 @@ type Me implements Node {
     last: Int
     sort: MyCollectionArtworkSorts
   ): MyCollectionConnection
+
+  # The current user's MyCollection general information
   myCollectionInfo: MyCollectionInfo
   name: String
 

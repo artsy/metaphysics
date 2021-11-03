@@ -46,7 +46,7 @@ import { SavedArtworks } from "./savedArtworks"
 import { WatchedLotConnection } from "./watchedLotConnection"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import Image, { normalizeImageData } from "../image"
-import { MyCollectionInfoType } from "./myCollectionInfo"
+import { MyCollectionInfo } from "./myCollectionInfo"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -169,15 +169,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     lotStanding: LotStanding,
     lotStandings: LotStandings,
     myCollectionConnection: MyCollection,
-    myCollectionInfo: {
-      type: MyCollectionInfoType,
-      resolve: (_root, options, { meMyCollectionLoader }) => {
-        if (!meMyCollectionLoader) {
-          return null
-        }
-        return meMyCollectionLoader(options).then(({ info }) => info)
-      },
-    },
+    myCollectionInfo: MyCollectionInfo,
     myBids: MyBids,
     name: {
       type: GraphQLString,
