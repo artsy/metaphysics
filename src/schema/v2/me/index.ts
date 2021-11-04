@@ -37,7 +37,7 @@ import {
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { MyBids } from "./myBids"
-import { MyCollection } from "./myCollection"
+import { MyCollection, MyCollectionInfo } from "./myCollection"
 import { NewWorksByInterestingArtists } from "./newWorksByInterestingArtists"
 import { myLocationType } from "./myLocation"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
@@ -168,6 +168,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     lotStanding: LotStanding,
     lotStandings: LotStandings,
     myCollectionConnection: MyCollection,
+    myCollectionInfo: MyCollectionInfo,
     myBids: MyBids,
     name: {
       type: GraphQLString,
