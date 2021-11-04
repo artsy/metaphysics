@@ -174,7 +174,10 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
       total_count: true,
     }
 
-    const { body, headers } = await partnersLoader(gravityArgs)
+    // Removes null/undefined values from options
+    const cleanedGravityArgs = pickBy(clone(gravityArgs), identity)
+
+    const { body, headers } = await partnersLoader(cleanedGravityArgs)
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
     return {
