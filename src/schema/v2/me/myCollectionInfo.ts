@@ -63,8 +63,10 @@ export const MyCollectionInfo: GraphQLFieldConfig<void, ResolverContext> = {
   description: "The current user's MyCollection general information",
   resolve: (_root, {}, { meMyCollectionInfoLoader }) => {
     if (!meMyCollectionInfoLoader) {
-      return null
+      throw new Error("You need to be signed in to perform this action")
     }
-    return meMyCollectionInfoLoader().then(({ info }) => info)
+    return meMyCollectionInfoLoader().then(
+      (myCollectionInfo) => myCollectionInfo
+    )
   },
 }
