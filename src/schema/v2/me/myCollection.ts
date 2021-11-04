@@ -31,6 +31,10 @@ const MyCollectionConnection = connectionWithCursorInfo({
     default: {
       type: new GraphQLNonNull(GraphQLBoolean),
     },
+    includesPurchasedArtworks: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: (it) => it.includes_purchased_artworks,
+    },
     name: {
       type: new GraphQLNonNull(GraphQLString),
     },

@@ -73,6 +73,10 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
     default: {
       type: new GraphQLNonNull(GraphQLBoolean),
     },
+    includesPurchasedArtworks: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: (it) => it.includes_purchased_artworks,
+    },
     name: {
       type: new GraphQLNonNull(GraphQLString),
     },

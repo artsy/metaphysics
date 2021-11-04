@@ -8441,9 +8441,6 @@ type Me implements Node {
     last: Int
     sort: MyCollectionArtworkSorts
   ): MyCollectionConnection
-
-  # The current user's MyCollection general information
-  myCollectionInfo: MyCollectionInfo
   name: String
 
   # A connection of new works by artists the user interacted with (sorted by publication date).
@@ -8990,6 +8987,7 @@ type MyCollectionConnection {
 
   # A list of edges.
   edges: [MyCollectionEdge]
+  includesPurchasedArtworks: Boolean!
   name: String!
   pageCursors: PageCursors!
 
@@ -9043,22 +9041,6 @@ type MyCollectionEdge {
 
   # The item at the end of the edge
   node: Artwork
-}
-
-type MyCollectionInfo {
-  default: Boolean
-  description: String
-
-  # A globally unique ID.
-  id: ID!
-  imageURL: String
-  imageVersions: [String]
-  includesPurchasedArtworks: Boolean
-
-  # A type-specific ID.
-  internalID: ID!
-  name: String
-  private: Boolean
 }
 
 input MyCollectionUpdateArtworkInput {

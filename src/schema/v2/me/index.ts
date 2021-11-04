@@ -46,7 +46,6 @@ import { SavedArtworks } from "./savedArtworks"
 import { WatchedLotConnection } from "./watchedLotConnection"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import Image, { normalizeImageData } from "../image"
-import { MyCollectionInfo } from "./myCollectionInfo"
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -169,7 +168,6 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     lotStanding: LotStanding,
     lotStandings: LotStandings,
     myCollectionConnection: MyCollection,
-    myCollectionInfo: MyCollectionInfo,
     myBids: MyBids,
     name: {
       type: GraphQLString,
@@ -297,7 +295,6 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "lotsByFollowedArtistsConnection",
       "identityVerification",
       "unreadNotificationsCount",
-      "myCollectionInfo",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader()
