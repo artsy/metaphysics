@@ -12,7 +12,7 @@ import { MessageType } from "schema/v2/me/conversation/message"
 import { NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import gql from "lib/gql"
-import { FetcherForLimitAndOffset } from "./hybridConnection/combinedPagination"
+import { FetcherForLimitAndOffset } from "./hybridConnection/fetchHybridConnection"
 
 // Fetch all events for conversation because we will need them no matter what
 // todo: mode into orderEvents
@@ -21,7 +21,7 @@ export const fetchOrderEventsForPagination = (
   userID: string,
   exchangeGraphQLLoader: any
 ): FetcherForLimitAndOffset => async (limit, offset, sort) => {
-  console.log("FetchOrderEvents", { limit, offset, conversationId })
+  console.log("fetchOrderEvents", { limit, offset, conversationId })
 
   const orderEvents: Array<any> = await fetchOrderEvents(conversationId, {
     exchangeGraphQLLoader,

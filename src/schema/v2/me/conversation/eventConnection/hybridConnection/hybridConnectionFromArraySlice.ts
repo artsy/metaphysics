@@ -1,12 +1,5 @@
-import { ConnectionArguments, Connection } from "graphql-relay"
+import { Connection } from "graphql-relay"
 import { HybridOffsets } from "./hybridOffsets"
-
-// // we will position our items using the index in their own collection as well as the combined collection
-// // Type parameter T refers to labels for each source
-// export type HybridOffsets<T extends string> = Record<
-//   T | "position",
-//   number | null
-// >
 
 /**
  * A node with an additional `_cursorMeta` property for storing intermediate data
@@ -18,8 +11,7 @@ export type NodeWMeta<
 > = Node & {
   _cursorMeta: {
     source: Keys
-    index: number
-    offsets?: HybridOffsets<Keys>
+    offsets: HybridOffsets<Keys>
   }
 }
 
@@ -35,77 +27,50 @@ export type NodeWMeta<
  * total result large enough to cover the range specified in `args`.
  */
 export function hybridConnectionFromArraySlice<
-  T extends Record<string, unknown>,
-  S extends string
->(
-  arraySlice: Array<NodeWMeta<S, T>>,
-  args: ConnectionArguments,
-  meta: { totalCount: number }
-): Connection<T> {
-  const { _after, _before, first, last } = args
-  const { totalCount } = meta
+  K extends string,
+  T extends Record<string, unknown>
+>({
+  nodes: arraySlice,
+  totalCount,
+}: {
+  nodes: Array<NodeWMeta<K, T>>
+  totalCount: number
+}): Connection<T> {
+  const edges: Array<{
+    cursor: string
+    node: NodeWMeta<K, T>
+  }> = arraySlice.map((node) => {
+    const {
+      _cursorMeta: { offsets },
+    } = node
+    const cursor = offsets.encoded
 
-  // TODO: fix commented-out code left over from graphql-relay-js connection.ts
+    console.log("***** Adding cursor from offsets: *****")
+    console.log({ cursor, offsets })
 
-  if (typeof first === "number") {
-    if (first < 0) {
-      throw new Error('Argument "first" must be a non-negative integer')
+    return {
+      cursor,
+      node,
     }
-  } else {
-    throw new Error("'first' is required")
-  }
+  })
 
-  if (typeof last === "number") {
-    throw new Error('only "first" is supported for now')
-  }
-
-  console.log(
-    "incoming",
-    arraySlice.map((v) => [v._cursorMeta.source, v.createdAt])
-  )
-  const slice = arraySlice.slice(0, first)
-  console.log(
-    "sliced",
-    slice.map((v) => [v._cursorMeta.source, v.createdAt, v.body || v.state])
-  )
-
-  const edges: Array<{ cursor: string; node: NodeWMeta<S, T> }> = slice.map(
-    (value) => {
-      const {
-        _cursorMeta: { offsets },
-      } = value
-      const cursor = offsets!.encoded
-
-      console.log("***** Adding cursor from offsets: *****")
-      console.log({ cursor, offsets })
-
-      return {
-        cursor,
-        // FIXME
-        node: value,
-      }
-    }
-  )
-
-  console.log(edges.map((e) => e.node._cursorMeta.source))
   const firstEdge = edges[0]
   const lastEdge = edges[edges.length - 1]
-  // TODO: fix commented-out code left over from graphql-relay-js connection.ts
-  // const lowerBound = after != null ? afterOffset + 1 : 0
-  // const upperBound = before != null ? beforeOffset : arrayLength
-  return {
+
+  const result = {
     edges,
     pageInfo: {
       startCursor: firstEdge ? firstEdge.cursor : null,
       endCursor: lastEdge ? lastEdge.cursor : null,
       hasPreviousPage: firstEdge
-        ? firstEdge.node._cursorMeta.offsets!.position! > 0
+        ? firstEdge.node._cursorMeta.offsets.position! > 0
         : false,
       hasNextPage: lastEdge
         ? lastEdge.node._cursorMeta.offsets!.position! + 1 < totalCount
         : false,
     },
   }
+  return result
 }
 
 // /**

@@ -5377,7 +5377,6 @@ type Conversation implements Node {
     before: String
     first: Int
     last: Int
-    sort: sortMessages
   ): ConversationEventConnection
   createdAt(
     format: String
@@ -12281,11 +12280,6 @@ input SmsSecondFactorAttributes {
 union SmsSecondFactorOrErrorsUnion = Errors | SmsSecondFactor
 
 enum sort {
-  ASC
-  DESC
-}
-
-enum sortMessages {
   ASC
   DESC
 }

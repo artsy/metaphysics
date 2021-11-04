@@ -2,9 +2,9 @@ import { ConnectionCursor } from "graphql-relay"
 import qs from "qs"
 import { URLSearchParams } from "url"
 
-type OffsetState<T extends string> = { position: number | null } & Record<
+type OffsetState<T extends string> = { _position: number | null } & Record<
   T,
-  number | null
+  number
 >
 
 const PREFIX = "offsets"
@@ -16,12 +16,17 @@ const unBase64 = (str: string) => Buffer.from(str, "base64").toString("utf-8")
 export class HybridOffsets<T extends string> {
   readonly state: OffsetState<T>
 
+  /**
+   * create an empty HybridOffsets with the supplied source keys plus `position`.
+   * Each offset key is initialized to 0, while `position` is a 0-indexed counter
+   * of the entire collection and thus starts at `null`, then 0, 1, etc.
+   */
   static empty<U extends string>(keys: Array<U>): HybridOffsets<U> {
     const offsets = keys.reduce<OffsetState<U>>(
       (acc: OffsetState<U>, key: U) => {
-        return { ...acc, [key]: null }
+        return { ...acc, [key]: 0 }
       },
-      { position: null } as OffsetState<U>
+      { _position: null } as OffsetState<U>
     )
     return new HybridOffsets(offsets)
   }
@@ -48,20 +53,25 @@ export class HybridOffsets<T extends string> {
     this.state = offsets
   }
 
+  /**
+   * Increment the offsets, returning a new object with
+   * supplied `key` arg updated - because `position` is
+   * (0-indexed, so currently null values increment to 0)
+   */
   increment(key: T) {
     const current: number | null = this.state[key]
-    const currentPosition: number | null = this.state.position
+    const currentPosition: number | null = this.position
 
     const newOffsets = {
       ...this.state,
       [key]: current === null ? 0 : current + 1,
-      position: currentPosition === null ? 0 : currentPosition + 1,
+      _position: currentPosition === null ? 0 : currentPosition + 1,
     }
     return new HybridOffsets<T>(newOffsets)
   }
 
   get position() {
-    return this.state.position
+    return this.state._position
   }
 
   get serialized() {

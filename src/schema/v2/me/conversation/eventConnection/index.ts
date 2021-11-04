@@ -1,5 +1,5 @@
 import { pageable } from "relay-cursor-paging"
-import { GraphQLEnumType, GraphQLFieldConfig } from "graphql"
+import { GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import {
@@ -7,8 +7,7 @@ import {
   fetchOrderEventsForPagination,
 } from "./orderEvents"
 import { fetchMessagesForPagination } from "./messageEvents"
-import { fetchForPaginationArgs } from "./hybridConnection/combinedPagination"
-import { hybridConnectionFromArraySlice } from "./hybridConnection"
+import { fetchHybridConnection } from "./hybridConnection"
 
 /*
 TODO: cursors and pagination must be encoded and decoded correctly.
@@ -19,17 +18,17 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
   type: connectionWithCursorInfo({
     nodeType: ConversationEventUnion,
   }).connectionType,
-  args: pageable({
-    sort: {
-      type: new GraphQLEnumType({
-        name: "sortMessages",
-        values: {
-          DESC: { value: "desc" },
-          ASC: { value: "asc" },
-        },
-      }),
-    },
-  }),
+  args: pageable({}),
+  //   sort: {
+  //     type: new GraphQLEnumType({
+  //       name: "sortMessages",
+  //       values: {
+  //         DESC: { value: "desc" },
+  //         ASC: { value: "asc" },
+  //       },
+  //     }),
+  //   },
+  // }),
   resolve: async (
     parent,
     args,
@@ -45,7 +44,7 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
     if (!(conversationMessagesLoader && exchangeGraphQLLoader && userID))
       return null
 
-    const combinedPaginationResult = await fetchForPaginationArgs(args, {
+    const result = await fetchHybridConnection(args, {
       msg: fetchMessagesForPagination(
         conversationID,
         conversationMessagesLoader,
@@ -58,18 +57,7 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
       ),
     })
 
-    // console.log(combinedPaginationResult)
-    const { nodes, totalCount, totalOffset } = combinedPaginationResult
-
-    // TODO: Assuming everything has worked up to this point, the cursors
-    // are probably still not working right.
-    const connectionResult = {
-      ...hybridConnectionFromArraySlice(nodes, args, {
-        totalCount,
-      }),
-      totalCount,
-    }
-
-    return connectionResult
+    console.log(result)
+    return result
   },
 }
