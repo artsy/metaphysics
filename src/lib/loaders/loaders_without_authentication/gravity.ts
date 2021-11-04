@@ -158,7 +158,7 @@ export default (opts) => {
       {},
       { headers: true }
     ),
-    partnersLoader: gravityLoader("partners"),
+    partnersLoader: gravityLoader("partners", {}, { headers: true }),
     popularArtistsLoader: gravityLoader(`artists/popular`),
     profileLoader: gravityLoader((id) => `profile/${id}`),
     relatedArtworksLoader: gravityLoader("related/artworks"),
