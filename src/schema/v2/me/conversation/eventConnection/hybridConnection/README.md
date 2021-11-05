@@ -69,3 +69,4 @@ Buffer.from(cursor, "base64").toString("utf-8") ===
 
 - Only supports one-directional relay pagination args `first`/`after` and descending sort
 - Expects fetchers to accept `limit`/`offset` args (plus a descending sort)
+- If a new element is added to the front of the list (eg a new message in a chat) the offsets will all be off which will probably screw up querying. This seems like an inherent limitation of offset-based pagination. (TODO: for pr: make exchange give a fake event id that starts from earliest event so ids will remain stable within a conversation - new events get added to the pile instead of pushing into the bottom)

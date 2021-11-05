@@ -131,6 +131,7 @@ export const fetchHybridConnection = async <
   })
 
   const slicedNodes = finalNodes.slice(0, limit)
+
   return hybridConnectionFromArraySlice({
     nodes: slicedNodes,
     totalCount,

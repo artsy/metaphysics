@@ -21,8 +21,6 @@ export const fetchOrderEventsForPagination = (
   userID: string,
   exchangeGraphQLLoader: any
 ): FetcherForLimitAndOffset => async (limit, offset, sort) => {
-  console.log("fetchOrderEvents", { limit, offset, conversationId })
-
   const orderEvents: Array<any> = await fetchOrderEvents(conversationId, {
     exchangeGraphQLLoader,
     userID,
@@ -38,6 +36,8 @@ export const fetchOrderEventsForPagination = (
     nodes: sortedNodes.slice(offset, limit + offset),
   }
 }
+
+const fakeEventId = (prefix, index) => `${prefix}-event-${index}`
 
 /**
  * fetch all order events for a conversation from exchange
@@ -65,7 +65,7 @@ const fetchOrderEvents = async (
           totalCount
           nodes {
               orderHistory {
-                exchangeType: __typename
+                context_type: __typename
                 ... on OrderStateChangedEvent {
                   createdAt
                   state
@@ -94,8 +94,10 @@ const fetchOrderEvents = async (
       conversationId: String(conversationId),
     },
   })
-  const orderEvents = exchangeData.orders.nodes.flatMap(
-    (node) => node.orderHistory
+  const orderEvents = exchangeData.orders.nodes.flatMap((node) =>
+    node.orderHistory.map((event, index) => {
+      return { ...event, id: fakeEventId(conversationId, index) }
+    })
   )
   return orderEvents
 }
@@ -156,20 +158,16 @@ export const ConversationEventUnion = new GraphQLUnionType({
     ConversationOfferSubmittedEventType,
     ConversationOrderStateChangedType,
   ],
-  resolveType: (value) => {
-    // debugger
-    const { exchangeType } = value
-    if (!exchangeType) {
-      return "Message"
-    }
-    console.log(exchangeType)
-    switch (exchangeType) {
+  resolveType: (value, ..._args) => {
+    switch (value.context_type) {
+      case "Message":
+        return MessageType
       case "OrderStateChangedEvent":
-        return "ConversationOrderStateChanged"
+        return ConversationOrderStateChangedType
       case "OfferSubmittedEvent":
-        return "ConversationOfferSubmitted"
+        return ConversationOfferSubmittedEventType
       default:
-        return "Message"
+        throw new Error(`Unknown context type: ${value.context_type}`)
     }
   },
 })
