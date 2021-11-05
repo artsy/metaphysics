@@ -16,7 +16,7 @@ import {
   connectionWithCursorInfo,
   createPageCursors,
 } from "./fields/pagination"
-import { connectionFromArray } from "graphql-relay"
+import { connectionFromArraySlice } from "graphql-relay"
 
 export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Partner.type),
@@ -102,7 +102,7 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLList(PartnerTypeType),
     },
   },
-  resolve: (
+  resolve: async (
     _root,
     {
       defaultProfilePublic,
@@ -135,7 +135,9 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       cleanedOptions.id = options.ids
       delete cleanedOptions.ids
     }
-    return partnersLoader(cleanedOptions)
+    const { body } = await partnersLoader(cleanedOptions)
+
+    return body
   },
 }
 
@@ -148,31 +150,47 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
     },
     ...pick(
       Partners.args,
-      "near",
-      "eligibleForListing",
       "defaultProfilePublic",
-      "sort"
+      "eligibleForListing",
+      "near",
+      "partnerCategories",
+      "sort",
+      "type"
     ),
   }),
-  resolve: (_root, options, { partnersLoader }) => {
-    const { page, size } = convertConnectionArgsToGravityArgs(options)
-    const gravityArgs: any = {
-      id: options.ids,
+  resolve: async (_root, args, { partnersLoader }) => {
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    const options = {
+      id: args.ids,
       page,
       size,
-      near: options.near,
-      eligible_for_listing: options.eligibleForListing,
-      default_profile_public: options.defaultProfilePublic,
-      sort: options.sort,
+      near: args.near,
+      eligible_for_listing: args.eligibleForListing,
+      default_profile_public: args.defaultProfilePublic,
+      sort: args.sort,
+      partner_categories: args.partnerCategories,
+      type: args.type,
+      total_count: true,
     }
 
-    return partnersLoader(gravityArgs).then((body) => {
-      const totalCount = body.length
-      return {
-        totalCount,
-        pageCursors: createPageCursors({ page, size }, totalCount),
-        ...connectionFromArray(body, gravityArgs),
-      }
-    })
+    // Removes null/undefined values from options
+    const cleanedOptions = pickBy(clone(options), identity)
+
+    const { body, headers } = await partnersLoader(cleanedOptions)
+    const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+    return {
+      totalCount,
+      pageCursors: createPageCursors({ page, size }, totalCount),
+      ...connectionFromArraySlice(
+        body,
+        pick(args, "before", "after", "first", "last"),
+        {
+          sliceStart: offset ?? 0,
+          arrayLength: totalCount,
+        }
+      ),
+    }
   },
 }
