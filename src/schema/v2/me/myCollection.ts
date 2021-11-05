@@ -69,7 +69,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
     },
     excludePurchasedArtworks: {
       type: GraphQLBoolean,
-      defaultValue: false,
+      defaultValue: true,
       description:
         "Exclude artworks that have been purchased on Artsy and automatically added to the collection.",
     },
