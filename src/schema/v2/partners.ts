@@ -158,32 +158,39 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
       "type"
     ),
   }),
-  resolve: async (_root, options, { partnersLoader }) => {
-    const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
+  resolve: async (_root, args, { partnersLoader }) => {
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const gravityArgs: any = {
-      id: options.ids,
+    const options = {
+      id: args.ids,
       page,
       size,
-      near: options.near,
-      eligible_for_listing: options.eligibleForListing,
-      default_profile_public: options.defaultProfilePublic,
-      sort: options.sort,
-      partner_categories: options.partnerCategories,
-      type: options.type,
+      near: args.near,
+      eligible_for_listing: args.eligibleForListing,
+      default_profile_public: args.defaultProfilePublic,
+      sort: args.sort,
+      partner_categories: args.partnerCategories,
+      type: args.type,
       total_count: true,
     }
 
-    const { body, headers } = await partnersLoader(gravityArgs)
+    // Removes null/undefined values from options
+    const cleanedOptions = pickBy(clone(options), identity)
+
+    const { body, headers } = await partnersLoader(cleanedOptions)
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
     return {
       totalCount,
       pageCursors: createPageCursors({ page, size }, totalCount),
-      ...connectionFromArraySlice(body, gravityArgs, {
-        sliceStart: offset ?? 0,
-        arrayLength: totalCount,
-      }),
+      ...connectionFromArraySlice(
+        body,
+        pick(args, "before", "after", "first", "last"),
+        {
+          sliceStart: offset ?? 0,
+          arrayLength: totalCount,
+        }
+      ),
     }
   },
 }
