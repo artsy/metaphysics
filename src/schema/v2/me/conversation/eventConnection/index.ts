@@ -57,7 +57,6 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
       ),
     })
 
-    console.log(result)
     return result
   },
 }
