@@ -45,9 +45,6 @@ export function hybridConnectionFromArraySlice<
     } = node
     const cursor = offsets.encoded
 
-    console.log("***** Adding cursor from offsets: *****")
-    console.log({ cursor, offsets })
-
     return {
       cursor,
       node,

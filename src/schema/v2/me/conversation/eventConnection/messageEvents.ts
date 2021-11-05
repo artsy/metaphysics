@@ -25,9 +25,7 @@ export const fetchMessagesForPagination = (
   const { initial_message, from_name, from_email } = parent
 
   const page = size ? Math.round((size + offset) / size) : 1
-  setImmediate(() => {
-    console.log({ page, size, offset })
-  })
+
   const {
     total_count: totalMessageCount,
     message_details: messageDetails,
@@ -45,6 +43,7 @@ export const fetchMessagesForPagination = (
   const messages = messageDetails.map((message) => {
     return {
       ...message,
+      context_type: "Message",
       createdAt: message.created_at,
       conversation_initial_message: initial_message,
       conversation_from_name: from_name,
