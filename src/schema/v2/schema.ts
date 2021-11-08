@@ -93,7 +93,7 @@ import { Shows } from "./shows"
 import { startIdentityVerificationMutation } from "./startIdentityVerificationMutation"
 import StaticContent from "./static_content"
 import System from "./system"
-// import PartnerCategory from "./partner_category"
+import PartnerCategory from "./partner_category"
 import PartnerCategories from "./partner_categories"
 // import SuggestedGenes from "./suggested_genes"
 import { TagField } from "./tag"
@@ -169,7 +169,7 @@ const rootFields = {
   partner: Partner,
   partnerArtworks: PartnerArtworks,
   partnerCategories: PartnerCategories,
-  // partnerCategory: PartnerCategory,
+  partnerCategory: PartnerCategory,
   partnersConnection: PartnersConnection,
   // profile: Profile,
   requestLocation: RequestLocationField,
