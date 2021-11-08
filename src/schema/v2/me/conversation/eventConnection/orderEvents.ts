@@ -109,7 +109,7 @@ const ConversationOfferSubmittedEventType = new GraphQLObjectType<
   name: "ConversationOfferSubmitted",
   interfaces: [NodeInterface],
   description: "An offer submitted in a conversation",
-  fields: {
+  fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
     },
@@ -131,7 +131,11 @@ const ConversationOfferSubmittedEventType = new GraphQLObjectType<
       type: GraphQLBoolean,
       resolve: ({ respondTo }) => Boolean(respondTo),
     },
-  },
+    respondsTo: {
+      type: ConversationOfferSubmittedEventType,
+      resolve: ({ respondTo }) => respondTo,
+    },
+  }),
 })
 
 const ConversationOrderStateChangedType = new GraphQLObjectType<
