@@ -22,7 +22,8 @@ export const createGravityLink = () => {
       const headers = {
         ...(graphqlContext && requestIDHeaders(graphqlContext.requestIDs)),
       }
-      Object.assign(headers, { "X-XAPP-TOKEN": config.GRAVITY_XAPP_TOKEN })
+      const xappToken = graphqlContext.appToken || config.GRAVITY_XAPP_TOKEN
+      Object.assign(headers, { "X-XAPP-TOKEN": xappToken })
       if (graphqlContext.accessToken) {
         Object.assign(headers, { "X-ACCESS-TOKEN": graphqlContext.accessToken })
       }
