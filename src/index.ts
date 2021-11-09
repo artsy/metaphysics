@@ -224,6 +224,7 @@ function startApp(appSchema, path: string) {
         exchangeSchema,
         requestIDs,
         userAgent,
+        appToken,
       }
 
       const validationRules = [

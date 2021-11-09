@@ -3,6 +3,7 @@ import { createLoaders } from "../lib/loaders"
 import { ImageData } from "schema/v2/image/normalize"
 
 export interface ResolverContextValues {
+  appToken?: string
   /** Optionally you can include an access token for a logged in user */
   accessToken?: string
   /** Optionally you can include a user token for a logged in user */
