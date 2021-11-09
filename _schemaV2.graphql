@@ -10741,6 +10741,12 @@ type Query {
     size: Int
   ): [PartnerCategory]
 
+  # A PartnerCategory
+  partnerCategory(
+    # The slug or ID of the PartnerCategory
+    id: String!
+  ): PartnerCategory
+
   # A list of Partners
   partnersConnection(
     after: String
@@ -13455,6 +13461,12 @@ type Viewer {
     internal: Boolean = false
     size: Int
   ): [PartnerCategory]
+
+  # A PartnerCategory
+  partnerCategory(
+    # The slug or ID of the PartnerCategory
+    id: String!
+  ): PartnerCategory
 
   # A list of Partners
   partnersConnection(
