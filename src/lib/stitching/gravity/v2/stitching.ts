@@ -83,6 +83,9 @@ export const gravityStitchingEnvironment = (
       extend type UserAddress {
         id: ID!
       }
+      extend type User {
+        devices: [Device!]!
+      }
       extend type ViewingRoom {
         artworksConnection(
           first: Int
@@ -202,6 +205,25 @@ export const gravityStitchingEnvironment = (
               operation: "query",
               fieldName: "_unused_gravity_userAddressConnection",
               args: { ...args, userId: context.userID },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      User: {
+        devices: {
+          fragment: gql`
+            ... on User {
+            internalID
+          }
+          `,
+          resolve: ({ internalID: userId }, _args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_devices",
+              args: { userId },
               context,
               info,
             })

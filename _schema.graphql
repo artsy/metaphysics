@@ -7488,6 +7488,26 @@ type Delivery {
   ): String
 }
 
+type Device {
+  # E.g., net.artsy.artsy
+  appId: String!
+
+  # Unique ID for this device
+  id: ID!
+
+  # Name of the device
+  name: String!
+
+  # Either android or ios
+  platform: String!
+
+  # If device is beta/dev or prod.
+  production: Boolean!
+
+  # The device token
+  token: String!
+}
+
 type dimensions {
   cm: String
   in: String
@@ -12458,6 +12478,7 @@ type Query {
 
   # Get Algolia configuration
   _unused_gravity_algolia: Algolia!
+  _unused_gravity_devices(userId: ID!): [Device!]!
 
   # Autocomplete resolvers.
   _unused_gravity_match_partners(
