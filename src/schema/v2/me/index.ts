@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLFieldConfig,
+  GraphQLFloat,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -152,6 +153,13 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ identity_verified }) => identity_verified,
     },
+    inquiryIntroduction: {
+      type: GraphQLString,
+      resolve: async (_me, _options, { inquiryIntroductionLoader }) => {
+        const { introduction } = await inquiryIntroductionLoader?.()
+        return introduction
+      },
+    },
     isCollector: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ is_collector }) => {
@@ -182,6 +190,18 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     pendingIdentityVerification: PendingIdentityVerification,
     phone: {
       type: GraphQLString,
+    },
+    priceRange: {
+      type: GraphQLString,
+      resolve: ({ price_range }) => price_range,
+    },
+    priceRangeMin: {
+      type: GraphQLFloat,
+      resolve: ({ price_range }) => price_range?.split(":")[0],
+    },
+    priceRangeMax: {
+      type: GraphQLFloat,
+      resolve: ({ price_range }) => price_range?.split(":")[1],
     },
     profession: {
       type: GraphQLString,

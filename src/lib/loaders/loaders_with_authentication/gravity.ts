@@ -157,6 +157,11 @@ export default (accessToken, userID, opts) => {
     homepageSuggestedArtworksLoader: gravityLoader(
       "me/suggested/artworks/homepage"
     ),
+    inquiryIntroductionLoader: gravityLoader(
+      "me/inquiry_introduction",
+      {},
+      { method: "POST" }
+    ),
     inquiryRequestsLoader: gravityLoader(
       "me/inquiry_requests",
       {},
