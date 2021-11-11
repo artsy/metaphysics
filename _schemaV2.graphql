@@ -5799,6 +5799,7 @@ input CreateUserInterestMutationInput {
 
 type CreateUserInterestMutationPayload {
   clientMutationId: String
+  me: Me!
   userInterest: UserInterest!
 }
 
@@ -6048,6 +6049,7 @@ input DeleteUserInterestMutationInput {
 
 type DeleteUserInterestMutationPayload {
   clientMutationId: String
+  me: Me!
   userInterest: UserInterest!
 }
 

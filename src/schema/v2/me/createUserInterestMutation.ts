@@ -9,6 +9,7 @@ import {
   userInterestType,
 } from "./userInterests"
 import { snakeCase } from "lodash"
+import { meType } from "./index"
 
 interface Input {
   interestId: string
@@ -47,6 +48,12 @@ export const createUserInterestMutation = mutationWithClientMutationId<
     userInterest: {
       type: new GraphQLNonNull(userInterestType),
       resolve: (userInterest) => userInterest,
+    },
+    me: {
+      type: new GraphQLNonNull(meType),
+      resolve: (_source, _args, { meLoader }) => {
+        return meLoader?.()
+      },
     },
   },
   mutateAndGetPayload: async (args, { createUserInterestLoader }) => {

@@ -4,6 +4,7 @@ import { GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { UserInterest, userInterestType } from "./userInterests"
 import { snakeCase } from "lodash"
+import { meType } from "./index"
 
 interface Input {
   id: string
@@ -28,6 +29,12 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
     userInterest: {
       type: new GraphQLNonNull(userInterestType),
       resolve: (userInterest) => userInterest,
+    },
+    me: {
+      type: new GraphQLNonNull(meType),
+      resolve: (_source, _args, { meLoader }) => {
+        return meLoader?.()
+      },
     },
   },
   mutateAndGetPayload: async (args, { deleteUserInterestLoader }) => {
