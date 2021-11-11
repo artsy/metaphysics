@@ -1,46 +1,27 @@
-import { GraphQLString, GraphQLEnumType } from "graphql"
+import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
-import {
-  UserInterest,
-  UserInterestCategory,
-  userInterestCategoryEnum,
-  userInterestType,
-} from "./userInterests"
+import { UserInterest, userInterestType } from "./userInterests"
 import { snakeCase } from "lodash"
 import { meType } from "./index"
 
 interface Input {
-  interestId: string
-  interestType: "Artist" | "Gene"
-  category: UserInterestCategory
-  body?: string
+  id: string
   anonymousSessionId?: string
   sessionId?: string
 }
 
-const userInterestInterestTypeEnum = new GraphQLEnumType({
-  name: "UserInterestInterestType",
-  values: {
-    ARTIST: { value: "Artist" },
-    GENE: { value: "Gene" },
-  },
-})
-
-export const createUserInterestMutation = mutationWithClientMutationId<
+export const deleteUserInterestMutation = mutationWithClientMutationId<
   Input,
   UserInterest | null,
   ResolverContext
 >({
-  name: "CreateUserInterestMutation",
+  name: "DeleteUserInterestMutation",
   description:
-    "Creates a UserInterest on the logged in User's CollectorProfile.",
+    "Deletes a UserInterest on the logged in User's CollectorProfile.",
   inputFields: {
-    interestId: { type: new GraphQLNonNull(GraphQLString) },
-    interestType: { type: new GraphQLNonNull(userInterestInterestTypeEnum) },
-    category: { type: new GraphQLNonNull(userInterestCategoryEnum) },
-    body: { type: GraphQLString, description: "Optional body for note" },
+    id: { type: new GraphQLNonNull(GraphQLString) },
     anonymousSessionId: { type: GraphQLString },
     sessionID: { type: GraphQLString },
   },
@@ -56,20 +37,21 @@ export const createUserInterestMutation = mutationWithClientMutationId<
       },
     },
   },
-  mutateAndGetPayload: async (args, { createUserInterestLoader }) => {
-    if (!createUserInterestLoader) {
+  mutateAndGetPayload: async (args, { deleteUserInterestLoader }) => {
+    if (!deleteUserInterestLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     // snake_case keys for Gravity (keys are the same otherwise)
-    const userInterestInput = Object.keys(args).reduce(
+    const { id, ...gravityOptions } = Object.keys(args).reduce(
       (acc, key) => ({ ...acc, [snakeCase(key)]: args[key] }),
-      {}
+      {} as GravityInput
     )
 
     try {
-      const userInterest: UserInterest = await createUserInterestLoader?.(
-        userInterestInput
+      const userInterest: UserInterest = await deleteUserInterestLoader?.(
+        id,
+        gravityOptions
       )
 
       return userInterest
@@ -83,6 +65,12 @@ export const createUserInterestMutation = mutationWithClientMutationId<
     }
   },
 })
+
+interface GravityInput {
+  id: string
+  anonymous_session_id?: string
+  session_id?: string
+}
 
 interface GravityError {
   statusCode: number

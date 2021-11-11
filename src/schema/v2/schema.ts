@@ -106,6 +106,7 @@ import FairOrganizer from "./fair_organizer"
 import { externalField } from "./External/External"
 import { createUserInterestMutation } from "./me/createUserInterestMutation"
 import { page } from "./page"
+import { deleteUserInterestMutation } from "./me/deleteUserInterestMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -217,6 +218,7 @@ export default new GraphQLSchema({
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createUserInterest: createUserInterestMutation,
       deleteCreditCard: deleteCreditCardMutation,
+      deleteUserInterest: deleteUserInterestMutation,
       endSale: endSaleMutation,
       followArtist: FollowArtist,
       followGene: FollowGene,

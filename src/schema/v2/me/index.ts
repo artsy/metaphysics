@@ -48,7 +48,7 @@ import { WatchedLotConnection } from "./watchedLotConnection"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import Image, { normalizeImageData } from "../image"
 
-const Me = new GraphQLObjectType<any, ResolverContext>({
+export const meType = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
   interfaces: [NodeInterface],
   fields: {
@@ -292,7 +292,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const MeField: GraphQLFieldConfig<void, ResolverContext> = {
-  type: Me,
+  type: meType,
   resolve: (_root, _options, { userID, meLoader }, info) => {
     if (!meLoader) return null
     const fieldsNotRequireLoader = [
