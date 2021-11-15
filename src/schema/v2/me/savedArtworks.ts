@@ -5,12 +5,16 @@ import {
   GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { connectionWithCursorInfo } from "../fields/pagination"
+import {
+  connectionWithCursorInfo,
+  createPageCursors,
+} from "../fields/pagination"
 import { ArtworkType } from "../artwork"
 import { pageable } from "relay-cursor-paging"
 import CollectionSorts from "../sorts/collection_sorts"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
+import { pick } from "lodash"
 
 const COLLECTION_ID = "saved-artwork"
 
@@ -35,39 +39,60 @@ export const SavedArtworksConnection = connectionWithCursorInfo({
 
 export const SavedArtworks: GraphQLFieldConfig<any, ResolverContext> = {
   type: SavedArtworksConnection.connectionType,
-  args: {
-    ...pageable({}),
+  args: pageable({
     private: {
       type: GraphQLBoolean,
       defaultValue: false,
     },
     sort: {
       type: CollectionSorts,
+      defaultValue: "-position",
     },
-  },
-  resolve: (_source, options, { collectionArtworksLoader }) => {
+  }),
+  resolve: async (_source, args, { collectionArtworksLoader }) => {
     if (!collectionArtworksLoader) return null
 
-    const gravityOptions = Object.assign(
-      { total_count: true },
-      convertConnectionArgsToGravityArgs(options)
-    )
-    // Adds a default case for the sort
-    gravityOptions.sort = gravityOptions.sort || "-position"
-    // @ts-expect-error FIXME: Make `page` an optional parameter on `gravityOptions`
-    delete gravityOptions.page // this can't also be used with the offset in gravity
-    return collectionArtworksLoader(COLLECTION_ID, gravityOptions)
-      .then(({ body, headers }) => {
-        return connectionFromArraySlice(body, options, {
-          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-          sliceStart: gravityOptions.offset,
-        })
-      })
-      .catch(() => {
-        // For some users with no favourites, Gravity produces an error of "Collection Not Found".
-        // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
-        // and return an empty list instead.
-        return connectionFromArray([], options)
-      })
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    const gravityOptions = {
+      page,
+      size,
+      private: args.private,
+      sort: args.sort,
+      total_count: true,
+    }
+
+    try {
+      const { body, headers } = await collectionArtworksLoader(
+        COLLECTION_ID,
+        gravityOptions
+      )
+
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+      return {
+        totalCount,
+        pageCursors: createPageCursors({ page, size }, totalCount),
+        ...connectionFromArraySlice(
+          body,
+          pick(args, "before", "after", "first", "last"),
+          {
+            arrayLength: totalCount,
+            sliceStart: offset,
+          }
+        ),
+      }
+    } catch {
+      // For some users with no favourites, Gravity produces an error of "Collection Not Found".
+      // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
+      // and return an empty list instead.
+      return {
+        totalCount: 0,
+        ...connectionFromArray(
+          [],
+          pick(args, "before", "after", "first", "last")
+        ),
+      }
+    }
   },
 }
