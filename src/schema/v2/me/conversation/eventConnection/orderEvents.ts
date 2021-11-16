@@ -7,12 +7,13 @@ import {
   GraphQLBoolean,
   GraphQLUnionType,
 } from "graphql"
-import date from "schema/v2/fields/date"
+import { date } from "schema/v2/fields/date"
 import { MessageType } from "schema/v2/me/conversation/message"
 import { NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import gql from "lib/gql"
 import { FetcherForLimitAndOffset } from "./hybridConnection/fetchHybridConnection"
+import { amount } from "schema/v1/fields/money"
 
 // Fetch all events for conversation because we will need them no matter what
 // todo: mode into orderEvents
@@ -37,7 +38,8 @@ export const fetchOrderEventsForPagination = (
   }
 }
 
-const fakeEventId = (prefix, index) => `${prefix}-event-${index}`
+const fakeEventId = (prefix, index, orderIndex) =>
+  `${prefix}-event-${index}-${orderIndex}`
 
 /**
  * fetch all order events for a conversation from exchange
@@ -94,9 +96,9 @@ const fetchOrderEvents = async (
       conversationId: String(conversationId),
     },
   })
-  const orderEvents = exchangeData.orders.nodes.flatMap((node) =>
+  const orderEvents = exchangeData.orders.nodes.flatMap((node, orderIndex) =>
     node.orderHistory.map((event, index) => {
-      return { ...event, id: fakeEventId(conversationId, index) }
+      return { ...event, id: fakeEventId(conversationId, index, orderIndex) }
     })
   )
   return orderEvents
@@ -113,11 +115,8 @@ const ConversationOfferSubmittedEventType = new GraphQLObjectType<
     id: {
       type: new GraphQLNonNull(GraphQLID),
     },
-    createdAt: date,
-    amount: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ offer }) => offer.amountCents,
-    },
+    createdAt: date(),
+    amount: amount(({ offer }) => offer.amountCents),
     fromParticipant: {
       type: new GraphQLEnumType({
         name: "ConversationOfferPartyType",
@@ -154,7 +153,7 @@ const ConversationOrderStateChangedType = new GraphQLObjectType<
     id: {
       type: new GraphQLNonNull(GraphQLID),
     },
-    createdAt: date,
+    createdAt: date(),
     state: { type: new GraphQLNonNull(GraphQLString) },
     stateReason: { type: GraphQLString },
   },

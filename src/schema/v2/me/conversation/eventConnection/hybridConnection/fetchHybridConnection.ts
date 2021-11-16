@@ -104,9 +104,13 @@ export const fetchHybridConnection = async <
     return nodes.map((node) => ({ ...node, _cursorMeta: { source } }))
   })
 
+  const extractNodeDate = (node) => {
+    return node["createdAt"] || node["created_at"]
+  }
+
   // 6. sort the nodes (only supports sorting by createdAt/_at key)
   const sorter = (node) => {
-    const nodeDate = Date.parse(node["createdAt"] || node["created_at"])
+    const nodeDate = Date.parse(extractNodeDate(node))
     if (isNaN(nodeDate)) {
       throw new Error(
         "A node didn't have a createdAt or created_at, which is required"
@@ -117,6 +121,13 @@ export const fetchHybridConnection = async <
   }
 
   const sortedNodes = sortBy(allNodes, sorter)
+
+  console.log(
+    "SORTED NODES",
+    sortedNodes.map((node) => {
+      return [extractNodeDate(node), node._cursorMeta.source]
+    })
+  )
 
   // 7. Finally, iterate over nodes and increment their offsets
   let offsets = initialOffsets

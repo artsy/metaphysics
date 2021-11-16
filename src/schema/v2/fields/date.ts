@@ -48,6 +48,8 @@ export const date = <T>(
         ? fn(obj)
         : obj[snakeCase(fieldName)] ?? obj[fieldName]
 
+      console.log("VALUE", value)
+
       if (!value) {
         return null
       }
