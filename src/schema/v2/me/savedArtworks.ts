@@ -3,6 +3,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
   GraphQLBoolean,
+  GraphQLInt,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
@@ -48,6 +49,8 @@ export const SavedArtworks: GraphQLFieldConfig<any, ResolverContext> = {
       type: CollectionSorts,
       defaultValue: "-position",
     },
+    page: { type: GraphQLInt },
+    size: { type: GraphQLInt },
   }),
   resolve: async (_source, args, { collectionArtworksLoader }) => {
     if (!collectionArtworksLoader) return null
