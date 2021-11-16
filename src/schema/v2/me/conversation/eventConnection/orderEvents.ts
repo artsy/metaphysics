@@ -126,14 +126,19 @@ const ConversationOfferSubmittedEventType = new GraphQLObjectType<
           SELLER: { value: "SELLER" },
         },
       }),
+      resolve: ({ offer }) => offer.fromParticipant,
     },
     isCounter: {
       type: GraphQLBoolean,
-      resolve: ({ respondTo }) => Boolean(respondTo),
+      resolve: ({ offer }) => Boolean(offer.respondsTo),
+    },
+    offerAmountChanged: {
+      type: GraphQLBoolean,
+      resolve: ({ offer }) => Boolean(offer.offerAmountChanged),
     },
     respondsTo: {
       type: ConversationOfferSubmittedEventType,
-      resolve: ({ respondTo }) => respondTo,
+      resolve: ({ offer }) => offer.respondsTo,
     },
   }),
 })
