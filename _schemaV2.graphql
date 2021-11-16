@@ -5543,7 +5543,16 @@ enum ConversationOfferPartyType {
 
 # An offer submitted in a conversation
 type ConversationOfferSubmitted implements Node {
-  amount: String!
+  # A formatted price with various currency formatting options.
+  amount(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
   createdAt(
     format: String
 
