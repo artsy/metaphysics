@@ -78,7 +78,7 @@ const PhoneNumberType: GraphQLObjectType<
   },
 })
 
-export const PhoneNumber: GraphQLFieldConfig<void, ResolverContext> = {
+export const PhoneNumber: GraphQLFieldConfig<any, ResolverContext> = {
   type: PhoneNumberType,
   description: "Phone number information",
   args: {
