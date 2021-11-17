@@ -1,8 +1,3 @@
-// interface PaginatedSourceInput<T> {
-//   source: string
-//   nodes: Array<T>
-// }
-
 import { Connection, ConnectionArguments } from "graphql-relay"
 import { hybridConnectionFromArraySlice } from "./hybridConnectionFromArraySlice"
 import { NodeWMeta } from "./hybridConnectionFromArraySlice"
@@ -22,29 +17,7 @@ export type FetcherForLimitAndOffset<U = unknown> = (args: {
 }) => Promise<{ nodes: Array<U>; totalCount: number }>
 
 /**
- * Combine the response from multiple sources to return a single paginated result
- * @param paginationArgs The pagination args
- * @param fetchers an object with keys 'msg' and 'ord' and values that are a fetcher accepting limit/offset args
- * @returns an object that looks like this:
- * ```ts
- * {
- *   totalCount: number
- *   totalOffset: number
- *   nodes: Array<{
- *     // initial node response plus...
- *     id: GlobalId             // id encoding the node's overall position in the collection
- *     meta: {
- *       source: 'msg' | 'ord', // source fetcher
- *       index: number          // position in _that_ fetcher's entire collection
- *     }
- *     offsets: {
- *       ord: number            // last-seen order event (from node.meta.index)
- *       msg: number            // last-seen message event
- *       position: number       // overall position in the paginated collection
- *     }
- *   }>
- * }
- * ```
+ * Combine the response from multiple sources to return a single relay connection result
  */
 export const fetchHybridConnection = async <
   /* string union of source labels */
@@ -70,9 +43,7 @@ export const fetchHybridConnection = async <
   const { first, last, before, after } = args
   // 1. check args
   if (before || last) {
-    throw new Error(
-      "only descending pagination with first/after args are supported"
-    )
+    throw new Error("only first/after args are supported")
   }
   if (typeof first === "number") {
     if (first <= 0) {
@@ -83,8 +54,8 @@ export const fetchHybridConnection = async <
   }
 
   // assume latest messages are coming through first
-  // (don't support a sort arg yet - descending only)
-  const sort: "ASC" | "DESC" = "DESC"
+  // (does not support a sort arg yet - descending only)
+  const sort: SortDirection = "DESC"
   const limit: number = first
   const sources = Object.keys(fetchers)
 
@@ -93,7 +64,7 @@ export const fetchHybridConnection = async <
     ? HybridOffsets.decode(after)
     : HybridOffsets.empty(sources)
 
-  // 3. overfetch enough to fulfill request from either service
+  // 3. over-fetch enough to fulfill request from either service
   const requests = sources.map<ReturnType<FetcherForLimitAndOffset<T>>>(
     (source) => {
       return fetchers[source]({
@@ -122,6 +93,7 @@ export const fetchHybridConnection = async <
     return nodes.map((node) => ({ ...node, _cursorMeta: { source } }))
   })
 
+  // 6. Apply any transforms from the caller (good opportunity to sort)
   const transformedNodes = transform ? transform(args, allNodes) : allNodes
 
   // 7. Finally, iterate over nodes and increment their offsets
@@ -131,11 +103,14 @@ export const fetchHybridConnection = async <
   transformedNodes.forEach((node) => {
     const source = node._cursorMeta.source
     offsets = offsets.increment(source)
+
     const nodeWithFullMeta = node as NodeWMeta<K, T>
     nodeWithFullMeta._cursorMeta.offsets = offsets
+
     nodesWithOffsets.push(nodeWithFullMeta)
   })
 
+  // return requested number of nodes
   const slicedNodes = nodesWithOffsets.slice(0, limit)
 
   return hybridConnectionFromArraySlice({

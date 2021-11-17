@@ -1,5 +1,5 @@
 import { get } from "lodash"
-import { FetcherForLimitAndOffset } from "./hybridConnection/fetchHybridConnection"
+import { FetcherForLimitAndOffset } from "../../../fields/hybridConnection/fetchHybridConnection"
 
 const lastMessageId = (conversation) => {
   return get(conversation, "_embedded.last_message.id")

@@ -1,18 +1,18 @@
+import { URLSearchParams } from "url"
 import { ConnectionCursor } from "graphql-relay"
 import qs from "qs"
-import { URLSearchParams } from "url"
+import { unBase64, base64 } from "lib/base64"
 
-type OffsetState<T extends string> = { _position: number | null } & Record<
-  T,
-  number
->
+type OffsetState<T extends string> = Record<T, number> & {
+  // this is kind of strange; the _position attr is the overall
+  // (0-based) index in the collection. It starts out null
+  _position: number | null
+}
 
 const PREFIX = "offsets"
 
-// cursor serializers
-const base64 = (str: string) => Buffer.from(str, "utf-8").toString("base64")
-const unBase64 = (str: string) => Buffer.from(str, "base64").toString("utf-8")
-
+// increment a number input or `null` to 0
+const incrementFromNull = (x: number | null): number => (x === null ? 0 : x + 1)
 export class HybridOffsets<T extends string> {
   readonly state: OffsetState<T>
 
@@ -42,7 +42,9 @@ export class HybridOffsets<T extends string> {
       const value = valueString === "null" ? null : Number(valueString)
 
       if (value !== null && isNaN(value)) {
-        throw new Error("Deserialization error")
+        throw new Error(
+          `Hybrid offsets deserialization failed on ${key} - ${offsetsString}`
+        )
       }
       return { ...acc, [key]: value }
     }, {} as OffsetState<U>)
@@ -55,17 +57,15 @@ export class HybridOffsets<T extends string> {
 
   /**
    * Increment the offsets, returning a new object with
-   * supplied `key` arg updated - because `position` is
-   * (0-indexed, so currently null values increment to 0)
+   * supplied `key` arg + overall position updated
    */
   increment(key: T) {
-    const current: number | null = this.state[key]
-    const currentPosition: number | null = this.position
+    const { [key]: current, _position: currentPosition } = this.state
 
     const newOffsets = {
       ...this.state,
-      [key]: current === null ? 0 : current + 1,
-      _position: currentPosition === null ? 0 : currentPosition + 1,
+      [key]: current + 1,
+      _position: incrementFromNull(currentPosition),
     }
     return new HybridOffsets<T>(newOffsets)
   }

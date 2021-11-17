@@ -16,7 +16,7 @@ export type NodeWMeta<
 }
 
 /**
- * TODO: update docs. It's a connectionFromArraySlice where the objects come from multiple sources.
+ * It's a connectionFromArraySlice where the objects come from multiple sources.
  *
  * Given a slice (subset) of an array, returns a connection object for use in
  * GraphQL.
@@ -69,41 +69,3 @@ export function hybridConnectionFromArraySlice<
   }
   return result
 }
-
-// /**
-//  * Return the cursor associated with an object in an array.
-//  */
-// export function cursorForObjectInConnection<T>(
-//   data: $ReadOnlyArray<T>,
-//   object: T
-// ): ConnectionCursor | null {
-//   const offset = data.indexOf(object)
-//   if (offset === -1) {
-//     return null
-//   }
-//   return offsetToCursor(offset)
-// }
-
-// /**
-//  * A clumsy function to confirm a cursor decodes to an offsets properly.
-//  */
-// const isValidOffsets = (offsets: HybridOffsets<any>) =>
-//   typeof offsets === "object" &&
-//   offsets !== null &&
-//   Object.keys(offsets).includes("position")
-
-/**
- * Given an optional cursor and a default offset, returns the offset
- * to use; if the cursor contains a valid offset, that will be used,
- * otherwise it will be the default.
- */
-// export function getOffsetsWithDefault<K extends string>(
-//   cursor: ConnectionCursor | null | void,
-//   defaultOffsets: HybridOffsets<K>
-// ): HybridOffsets<K> {
-//   if (typeof cursor !== "string") {
-//     return defaultOffsets
-//   }
-//   const offset = cursorToOffsets(cursor)
-//   return isValidOffsets(offset) ? offset : defaultOffsets
-// }

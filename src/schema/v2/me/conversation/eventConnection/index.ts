@@ -7,28 +7,14 @@ import {
   fetchOrderEventsForPagination,
 } from "./orderEvents"
 import { fetchMessagesForPagination } from "./messageEvents"
-import { fetchHybridConnection } from "./hybridConnection"
+import { fetchHybridConnection } from "../../../fields/hybridConnection"
 
-/*
-TODO: cursors and pagination must be encoded and decoded correctly.
-Ids are already encoded with positions.
-*/
 export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
   description: "Messages and other events in a conversation.",
   type: connectionWithCursorInfo({
     nodeType: ConversationEventUnion,
   }).connectionType,
   args: pageable({}),
-  //   sort: {
-  //     type: new GraphQLEnumType({
-  //       name: "sortMessages",
-  //       values: {
-  //         DESC: { value: "desc" },
-  //         ASC: { value: "asc" },
-  //       },
-  //     }),
-  //   },
-  // }),
   resolve: async (
     parent,
     args,
@@ -59,7 +45,7 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
         ),
       },
       transform: (args, nodes) => {
-        // 6. sort the nodes (only supports sorting by createdAt/_at key)
+        // sort the nodes before returning the relevant slice
         const sorter =
           args.sort === "DESC"
             ? (a, b) =>
