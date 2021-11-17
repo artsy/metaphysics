@@ -16,22 +16,25 @@ export const prepareConversationArgs = (conversation, args) => {
 
   return conversationArgs
 }
-
+type ReturnedNodeShape = any
 export const fetchMessagesForPagination = (
   conversationId: string,
   conversationMessagesLoader: any,
   parent: { initial_message: any; from_name: any; from_email: any }
-): FetcherForLimitAndOffset => async (size, offset, _sort) => {
+): FetcherForLimitAndOffset<ReturnedNodeShape> => async ({
+  limit: limit,
+  offset,
+}) => {
   const { initial_message, from_name, from_email } = parent
 
-  const page = size ? Math.round((size + offset) / size) : 1
+  const page = limit ? Math.round((limit + offset) / limit) : 1
 
   const {
     total_count: totalMessageCount,
     message_details: messageDetails,
   } = await conversationMessagesLoader({
     page,
-    size,
+    size: limit,
     sort: "desc", // double check this is the right place for this arg
     conversation_id: conversationId,
     "expand[]": "deliveries",

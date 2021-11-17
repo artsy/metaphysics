@@ -44,19 +44,36 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
     if (!(conversationMessagesLoader && exchangeGraphQLLoader && userID))
       return null
 
-    const result = await fetchHybridConnection(args, {
-      msg: fetchMessagesForPagination(
-        conversationID,
-        conversationMessagesLoader,
-        parent
-      ),
-      ord: fetchOrderEventsForPagination(
-        conversationID,
-        userID,
-        exchangeGraphQLLoader
-      ),
+    const result = await fetchHybridConnection({
+      args,
+      fetchers: {
+        msg: fetchMessagesForPagination(
+          conversationID,
+          conversationMessagesLoader,
+          parent
+        ),
+        ord: fetchOrderEventsForPagination(
+          conversationID,
+          userID,
+          exchangeGraphQLLoader
+        ),
+      },
+      transform: (args, nodes) => {
+        // 6. sort the nodes (only supports sorting by createdAt/_at key)
+        const sorter =
+          args.sort === "DESC"
+            ? (a, b) =>
+                extractNodeDate(a.createdAt) - extractNodeDate(b.createdAt)
+            : (a, b) =>
+                extractNodeDate(b.createdAt) - extractNodeDate(a.createdAt)
+
+        return nodes.sort(sorter)
+      },
     })
 
     return result
   },
+}
+const extractNodeDate = (node) => {
+  return node["createdAt"] || node["created_at"]
 }
