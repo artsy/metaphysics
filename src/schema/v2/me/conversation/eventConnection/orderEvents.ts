@@ -15,13 +15,18 @@ import gql from "lib/gql"
 import { FetcherForLimitAndOffset } from "./hybridConnection/fetchHybridConnection"
 import { amount } from "schema/v1/fields/money"
 
+type ReturnedNodeShape = any
 // Fetch all events for conversation because we will need them no matter what
 // todo: mode into orderEvents
 export const fetchOrderEventsForPagination = (
   conversationId: any,
   userID: string,
   exchangeGraphQLLoader: any
-): FetcherForLimitAndOffset => async (limit, offset, sort) => {
+): FetcherForLimitAndOffset<ReturnedNodeShape> => async ({
+  limit,
+  offset,
+  sort,
+}) => {
   const orderEvents: Array<any> = await fetchOrderEvents(conversationId, {
     exchangeGraphQLLoader,
     userID,

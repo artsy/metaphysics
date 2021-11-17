@@ -4,7 +4,6 @@
 // }
 
 import { Connection, ConnectionArguments } from "graphql-relay"
-import { sortBy } from "lodash"
 import { hybridConnectionFromArraySlice } from "./hybridConnectionFromArraySlice"
 import { NodeWMeta } from "./hybridConnectionFromArraySlice"
 import { HybridOffsets } from "./hybridOffsets"
@@ -16,11 +15,11 @@ type SortDirection = "ASC" | "DESC"
  * A fetching function for a given source that can respect standard
  * `limit` `offset` and `sort` arguments.
  */
-export type FetcherForLimitAndOffset<U = unknown> = (
-  limit: number,
-  offset: number,
+export type FetcherForLimitAndOffset<U = unknown> = (args: {
+  limit: number
+  offset: number
   sort: SortDirection
-) => Promise<{ nodes: Array<U>; totalCount: number }>
+}) => Promise<{ nodes: Array<U>; totalCount: number }>
 
 /**
  * Combine the response from multiple sources to return a single paginated result
@@ -51,11 +50,24 @@ export const fetchHybridConnection = async <
   /* string union of source labels */
   K extends string,
   /* the generic nodes themselves */
-  T extends Record<string, unknown>
->(
-  { first, last, before, after }: ConnectionArguments,
+  T extends Record<string, unknown>,
+  A = unknown
+>({
+  args,
+  fetchers,
+  transform,
+}: {
+  // The arguments from the relay query
+  args: ConnectionArguments & A
+  // Fetchers accepting limit/offset/sort for each source using an arbitrary key
   fetchers: Record<K, FetcherForLimitAndOffset<T>>
-): Promise<Connection<T>> => {
+  // Any transformations to apply to the combined collection (particularly sorting)
+  transform?: (
+    args: ConnectionArguments & A,
+    nodes: T[]
+  ) => Array<NodeWMeta<K, T>>
+}): Promise<Connection<T>> => {
+  const { first, last, before, after } = args
   // 1. check args
   if (before || last) {
     throw new Error(
@@ -84,7 +96,11 @@ export const fetchHybridConnection = async <
   // 3. overfetch enough to fulfill request from either service
   const requests = sources.map<ReturnType<FetcherForLimitAndOffset<T>>>(
     (source) => {
-      return fetchers[source](limit, initialOffsets.state[source], sort)
+      return fetchers[source]({
+        limit,
+        offset: initialOffsets.state[source],
+        sort,
+      })
     }
   )
 
@@ -94,54 +110,33 @@ export const fetchHybridConnection = async <
   const totalCount = results.reduce((acc, result) => acc + result.totalCount, 0)
 
   // 5. flatten all nodes into a single array and add their source.
-  const allNodes: Array<{
-    _cursorMeta: {
-      source: K
+  const allNodes: Array<
+    T & {
+      _cursorMeta: {
+        source: K
+      }
     }
-  }> = results.flatMap((resultArray, i) => {
+  > = results.flatMap((resultArray, i) => {
     const source = sources[i]
     const nodes: any[] = resultArray.nodes
     return nodes.map((node) => ({ ...node, _cursorMeta: { source } }))
   })
 
-  const extractNodeDate = (node) => {
-    return node["createdAt"] || node["created_at"]
-  }
-
-  // 6. sort the nodes (only supports sorting by createdAt/_at key)
-  const sorter = (node) => {
-    const nodeDate = Date.parse(extractNodeDate(node))
-    if (isNaN(nodeDate)) {
-      throw new Error(
-        "A node didn't have a createdAt or created_at, which is required"
-      )
-    }
-
-    return sort === "DESC" ? -nodeDate : nodeDate
-  }
-
-  const sortedNodes = sortBy(allNodes, sorter)
-
-  console.log(
-    "SORTED NODES",
-    sortedNodes.map((node) => {
-      return [extractNodeDate(node), node._cursorMeta.source]
-    })
-  )
+  const transformedNodes = transform ? transform(args, allNodes) : allNodes
 
   // 7. Finally, iterate over nodes and increment their offsets
   let offsets = initialOffsets
-  const finalNodes: Array<NodeWMeta<K, T>> = []
+  const nodesWithOffsets: Array<NodeWMeta<K, T>> = []
 
-  sortedNodes.forEach((node) => {
+  transformedNodes.forEach((node) => {
     const source = node._cursorMeta.source
     offsets = offsets.increment(source)
     const nodeWithFullMeta = node as NodeWMeta<K, T>
     nodeWithFullMeta._cursorMeta.offsets = offsets
-    finalNodes.push(nodeWithFullMeta)
+    nodesWithOffsets.push(nodeWithFullMeta)
   })
 
-  const slicedNodes = finalNodes.slice(0, limit)
+  const slicedNodes = nodesWithOffsets.slice(0, limit)
 
   return hybridConnectionFromArraySlice({
     nodes: slicedNodes,
