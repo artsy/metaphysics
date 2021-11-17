@@ -1,24 +1,35 @@
-import { getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { createPageCursors } from "schema/v2/fields/pagination"
 
 // options are connection related arguments
 // params are params passed into gravity to scope the results
-const followArtistsResolver = (params, connectionOptions, config) => {
+const followArtistsResolver = async (params, connectionOptions, config) => {
   if (!config.followedArtistsLoader) return null
-  const { limit: size, offset } = getPagingParameters(connectionOptions)
+
+  const { page, size, offset } = convertConnectionArgsToGravityArgs(
+    connectionOptions
+  )
 
   const gravityArgs = {
     size,
-    offset,
+    page,
     total_count: true,
     ...params,
   }
-  return config.followedArtistsLoader(gravityArgs).then(({ body, headers }) => {
-    return connectionFromArraySlice(body, connectionOptions, {
-      arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+
+  const { body, headers } = await config.followedArtistsLoader(gravityArgs)
+
+  const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+  return {
+    totalCount,
+    pageCursors: createPageCursors({ page, size }, totalCount),
+    ...connectionFromArraySlice(body, connectionOptions, {
+      arrayLength: totalCount,
       sliceStart: offset,
-    })
-  })
+    }),
+  }
 }
 
 export default followArtistsResolver
