@@ -1,6 +1,5 @@
+import { base64 } from "lib/base64"
 import { fetchHybridConnection } from "./fetchHybridConnection"
-
-const base64 = (str: string) => Buffer.from(str, "utf-8").toString("base64")
 
 describe("fetchHybridConnection()", () => {
   const sourceAFetcher = jest.fn()
@@ -25,6 +24,7 @@ describe("fetchHybridConnection()", () => {
       ],
     })
   })
+
   it("fetches from each collection from the beginning", async () => {
     const { edges, pageInfo } = await fetchHybridConnection({
       args: { first: 3, sort: "DESC" },
@@ -44,6 +44,35 @@ describe("fetchHybridConnection()", () => {
     expect(edges.map(({ node }) => node.id)).toEqual(["b-3", "a-3", "b-2"])
     expect(pageInfo.hasNextPage).toBeTrue()
     expect(pageInfo.hasPreviousPage).toBeFalse()
+  })
+
+  it("understands when you are on the last page", async () => {
+    sourceAFetcher.mockResolvedValue({
+      totalCount: 3,
+      nodes: [
+        { id: "a-1", createdAt: 1 },
+        { id: "a-2", createdAt: 3 },
+        { id: "a-3", createdAt: 5 },
+      ],
+    })
+    sourceBFetcher.mockResolvedValue({
+      totalCount: 3,
+      nodes: [
+        { id: "b-1", createdAt: 2 },
+        { id: "b-2", createdAt: 4 },
+        { id: "b-3", createdAt: 6 },
+      ],
+    })
+
+    const { edges, pageInfo } = await fetchHybridConnection({
+      args: { first: 20, sort: "DESC" },
+      fetchers: {
+        a: sourceAFetcher,
+        b: sourceBFetcher,
+      },
+    })
+    expect(edges.length).toEqual(6)
+    expect(pageInfo.hasNextPage).toBeFalse()
   })
 
   it("calls the provided fetchers with expected offset and size args", async () => {

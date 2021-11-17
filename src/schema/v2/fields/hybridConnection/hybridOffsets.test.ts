@@ -1,6 +1,5 @@
+import { base64 } from "lib/base64"
 import { HybridOffsets } from "./hybridOffsets"
-
-const base64 = (str: string) => Buffer.from(str, "utf-8").toString("base64")
 
 describe("HybridOffsets", () => {
   describe("static methods", () => {
