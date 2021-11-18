@@ -16,6 +16,7 @@ import { FetcherForLimitAndOffset } from "../../../fields/hybridConnection/fetch
 import { amount } from "schema/v1/fields/money"
 
 type ReturnedNodeShape = any
+
 // Fetch all events for conversation because we will need them no matter what
 // todo: mode into orderEvents
 export const fetchOrderEventsForPagination = (

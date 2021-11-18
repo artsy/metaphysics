@@ -3,9 +3,6 @@ import { hybridConnectionFromArraySlice } from "./hybridConnectionFromArraySlice
 import { NodeWMeta } from "./hybridConnectionFromArraySlice"
 import { HybridOffsets } from "./hybridOffsets"
 
-// some typical relay pagination args (maybe there is a type for this)
-type SortDirection = "ASC" | "DESC"
-
 /**
  * A fetching function for a given source that can respect standard
  * `limit` `offset` and `sort` arguments.
@@ -13,7 +10,7 @@ type SortDirection = "ASC" | "DESC"
 export type FetcherForLimitAndOffset<U = unknown> = (args: {
   limit: number
   offset: number
-  sort: SortDirection
+  sort: string
 }) => Promise<{ nodes: Array<U>; totalCount: number }>
 
 /**
@@ -24,7 +21,8 @@ export const fetchHybridConnection = async <
   K extends string,
   /* the generic nodes themselves */
   T extends Record<string, unknown>,
-  A = unknown
+  /* Additional args that the query may receive */
+  A extends { [argName: string]: any }
 >({
   args,
   fetchers,
@@ -53,9 +51,7 @@ export const fetchHybridConnection = async <
     throw new Error("'first' is required")
   }
 
-  // assume latest messages are coming through first
-  // (does not support a sort arg yet - descending only)
-  const sort: SortDirection = "DESC"
+  const sort = args.sort
   const limit: number = first
   const sources = Object.keys(fetchers)
 
