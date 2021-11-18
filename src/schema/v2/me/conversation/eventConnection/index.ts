@@ -30,6 +30,8 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
     if (!(conversationMessagesLoader && exchangeGraphQLLoader && userID))
       return null
 
+    // Messages are always served descending from most recent
+    args.sort = "DESC"
     const result = await fetchHybridConnection({
       args,
       fetchers: {
@@ -45,7 +47,7 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
         ),
       },
       transform: (args, nodes) => {
-        // sort the nodes before returning the relevant slice
+        // Sort the nodes before returning the relevant slice
         const sorter =
           args.sort === "DESC"
             ? (a, b) => extractNodeDate(a) - extractNodeDate(b)
