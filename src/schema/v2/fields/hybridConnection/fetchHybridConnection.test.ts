@@ -78,7 +78,7 @@ describe("fetchHybridConnection()", () => {
   it("calls the provided fetchers with expected offset and size args", async () => {
     const cursor = base64("offsets:_position=2&a=1&b=2")
     await fetchHybridConnection({
-      args: { first: 5, after: cursor },
+      args: { first: 5, after: cursor, sort: "DESC" },
       fetchers: {
         a: sourceAFetcher,
         b: sourceBFetcher,
