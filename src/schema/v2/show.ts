@@ -340,6 +340,13 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         description: "A formatted description of the start to end dates",
         resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
       },
+      shortExhibitionPeriod: {
+        type: GraphQLString,
+        description:
+          "A formatted description of the start to end dates with abbreviated months",
+        resolve: ({ start_at, end_at }) =>
+          dateRange(start_at, end_at, "UTC", true),
+      },
       fair: {
         description: "If the show is in a Fair, then that fair",
         type: Fair.type,
