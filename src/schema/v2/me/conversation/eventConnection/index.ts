@@ -50,10 +50,11 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
         // Sort the nodes before returning the relevant slice
         const sorter =
           args.sort === "DESC"
-            ? (a, b) => extractNodeDate(a) - extractNodeDate(b)
-            : (a, b) => extractNodeDate(b) - extractNodeDate(a)
+            ? (a, b) => extractNodeDate(b) - extractNodeDate(a)
+            : (a, b) => extractNodeDate(a) - extractNodeDate(b)
 
-        return nodes.sort(sorter)
+        const sortedNodes = nodes.sort(sorter)
+        return sortedNodes
       },
     })
 
@@ -62,6 +63,5 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
 }
 
 const extractNodeDate = (node) => {
-  const date = node["createdAt"] || node["created_at"]
-  return Date.parse(date)
+  return Date.parse(node["createdAt"] || node["created_at"])
 }
