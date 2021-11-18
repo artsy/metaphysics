@@ -13,6 +13,7 @@ const PREFIX = "offsets"
 
 // increment a number input or `null` to 0
 const incrementFromNull = (x: number | null): number => (x === null ? 0 : x + 1)
+
 export class HybridOffsets<T extends string> {
   readonly state: OffsetState<T>
 

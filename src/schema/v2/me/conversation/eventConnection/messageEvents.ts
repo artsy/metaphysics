@@ -16,7 +16,9 @@ export const prepareConversationArgs = (conversation, args) => {
 
   return conversationArgs
 }
+
 type ReturnedNodeShape = any
+
 export const fetchMessagesForPagination = (
   conversationId: string,
   conversationMessagesLoader: any,

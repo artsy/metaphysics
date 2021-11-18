@@ -58,6 +58,7 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
     return result
   },
 }
+
 const extractNodeDate = (node) => {
   const date = node["createdAt"] || node["created_at"]
   return Date.parse(date)
