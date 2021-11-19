@@ -490,6 +490,7 @@ input CreateSubmissionMutationInput {
   medium: String
   minimumPriceDollars: Int
   provenance: String
+  sessionId: String
   signature: Boolean
 
   """
@@ -2003,6 +2004,7 @@ input UpdateSubmissionMutationInput {
   medium: String
   minimumPriceDollars: Int
   provenance: String
+  sessionId: String
   signature: Boolean
   state: State
   title: String
