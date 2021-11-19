@@ -679,6 +679,24 @@ describe("Fair", () => {
     })
   })
 
+  it("includes a formatted exhibition period with abbreviated months", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          shortExhibitionPeriod
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      fair: {
+        shortExhibitionPeriod: "Feb 15 – 17, 2019",
+      },
+    })
+  })
+
+
   it("includes artists associated with the fair", async () => {
     const query = gql`
       {

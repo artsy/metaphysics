@@ -420,6 +420,11 @@ describe("date formatting", () => {
       )
       expect(period).toBe("January 1 – 19, 2018")
     })
+
+    it("abbreviates months when specified", () => {
+      const period = dateRange("2011-01-01", "2011-04-19", "UTC", true)
+      expect(period).toBe("Jan 1 – Apr 19, 2011")
+    })
   })
 
   describe("exhibitionStatus", () => {

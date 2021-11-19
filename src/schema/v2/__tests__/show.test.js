@@ -615,6 +615,23 @@ describe("Show type", () => {
     })
   })
 
+  it("includes a formatted exhibition period with abbreviated months", async () => {
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          shortExhibitionPeriod
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      show: {
+        shortExhibitionPeriod: "Feb 25 – May 24, 2015",
+      },
+    })
+  })
+
   it("includes an update on upcoming status changes", async () => {
     showData.end_at = moment().add(1, "d")
     const query = gql`

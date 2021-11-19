@@ -141,6 +141,13 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         description: "A formatted description of the start to end dates",
         resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
       },
+      shortExhibitionPeriod: {
+        type: GraphQLString,
+        description:
+          "A formatted description of the start to end dates with abbreviated months",
+        resolve: ({ start_at, end_at }) =>
+          dateRange(start_at, end_at, "UTC", true),
+      },
       formattedOpeningHours: {
         type: GraphQLString,
         description:

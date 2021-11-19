@@ -154,12 +154,13 @@ export function dateTimeRange(
  * Nov 1 – 4, 2018
  * Nov 1, 2018 – Jan 4, 2019
  */
-export function dateRange(startAt, endAt, timezone) {
+export function dateRange(startAt, endAt, timezone, abbreviateMonths = false) {
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
-  let startFormat = "MMMM D"
+  const monthFormat = abbreviateMonths ? "MMM" : "MMMM"
+  let startFormat = monthFormat + " D"
   let endFormat = "D, YYYY"
-  const singleDateFormat = "MMMM D, YYYY"
+  const singleDateFormat = monthFormat + " D, YYYY"
 
   if (startMoment.year() !== endMoment.year()) {
     // Adds year to start date if the dates are not the same year
@@ -171,7 +172,7 @@ export function dateRange(startAt, endAt, timezone) {
     startMoment.year() !== endMoment.year()
   ) {
     // Show the end month if the month is different
-    endFormat = "MMMM ".concat(endFormat)
+    endFormat = (monthFormat + " ").concat(endFormat)
   }
 
   // Duration is the same day
