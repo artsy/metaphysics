@@ -11,8 +11,11 @@ import {
   toGlobalId,
   ConnectionConfig,
   GraphQLConnectionDefinitions,
+  connectionFromArraySlice,
+  ConnectionArguments,
 } from "graphql-relay"
 import { warn } from "lib/loggers"
+import { pick } from "lodash"
 import { ResolverContext } from "types/graphql"
 
 const PREFIX = "arrayconnection"
@@ -174,4 +177,42 @@ export function connectionWithCursorInfo(
       ...config.connectionFields,
     },
   })
+}
+
+/**
+ * Everything you need to create a complete & usuable paginated connection
+ */
+export const paginationResolver = <T>({
+  totalCount,
+  offset,
+  page,
+  size,
+  body,
+  args,
+}: {
+  /** Args object containing either `page/size` or `first/after` */
+  args: ConnectionArguments
+  /** Returned from loader */
+  body: T[]
+  /** Returned from `convertConnectionArgsToGravityArgs` */
+  offset: number
+  /** Returned from `convertConnectionArgsToGravityArgs` */
+  page: number
+  /** Returned from `convertConnectionArgsToGravityArgs`; "per" */
+  size: number
+  /** Returned from the 'X-TOTAL-COUNT' header */
+  totalCount: number
+}) => {
+  return {
+    totalCount,
+    pageCursors: createPageCursors({ page, size }, totalCount),
+    ...connectionFromArraySlice(
+      body,
+      pick(args, "before", "after", "first", "last"),
+      {
+        arrayLength: totalCount,
+        sliceStart: offset,
+      }
+    ),
+  }
 }
