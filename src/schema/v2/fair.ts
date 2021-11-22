@@ -139,14 +139,18 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       exhibitionPeriod: {
         type: GraphQLString,
         description: "A formatted description of the start to end dates",
-        resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
-      },
-      shortExhibitionPeriod: {
-        type: GraphQLString,
-        description:
-          "A formatted description of the start to end dates with abbreviated months",
-        resolve: ({ start_at, end_at }) =>
-          dateRange(start_at, end_at, "UTC", true),
+        args: {
+          format: {
+            type: GraphQLString,
+            description:
+              "SHORT or LONG, SHORT returns a shorter exhbition period description, LONG returns a longer description, defaults to LONG",
+          },
+        },
+        resolve: ({ start_at, end_at }, args) => {
+          const { format } = args
+          const useShortFormat = format === "SHORT"
+          return dateRange(start_at, end_at, "UTC", useShortFormat)
+        },
       },
       formattedOpeningHours: {
         type: GraphQLString,

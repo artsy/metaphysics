@@ -6510,7 +6510,10 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
   ): String
 
   # A formatted description of the start to end dates
-  exhibitionPeriod: String
+  exhibitionPeriod(
+    # SHORT or LONG, SHORT returns a shorter exhbition period description, LONG returns a longer description, defaults to LONG
+    format: String
+  ): String
 
   # The exhibitors with booths in this fair with letter.
   exhibitorsGroupedByName: [FairExhibitorsGroup]
@@ -6603,9 +6606,6 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
   name: String
   organizer: FairOrganizer
   profile: Profile
-
-  # A formatted description of the start to end dates with abbreviated months
-  shortExhibitionPeriod: String
 
   # This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.
   showsConnection(
