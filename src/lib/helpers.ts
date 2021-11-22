@@ -134,7 +134,7 @@ export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(
       ...gravityArgs,
       size,
       page: options.page,
-      offset: (options.page - 1) * size,
+      offset: (options.page - 1) * size || 0,
     }
   }
 
