@@ -11966,7 +11966,10 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
   events: [ShowEventType]
 
   # A formatted description of the start to end dates
-  exhibitionPeriod: String
+  exhibitionPeriod(
+    # SHORT or LONG, SHORT returns a shorter exhbition period description, LONG returns a longer description, defaults to LONG
+    format: String
+  ): String
 
   # If the show is in a Fair, then that fair
   fair: Fair
@@ -12121,9 +12124,6 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
 
   # Link to the press release for this show
   pressReleaseUrl: String
-
-  # A formatted description of the start to end dates with abbreviated months
-  shortExhibitionPeriod: String
 
   # A slug ID.
   slug: ID!
