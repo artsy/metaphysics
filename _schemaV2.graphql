@@ -6392,6 +6392,11 @@ enum EventStatus {
   UPCOMING
 }
 
+enum ExhibitionPeriodFormat {
+  LONG
+  SHORT
+}
+
 type External {
   auctionHouses(size: Int, term: String): [ExternalAuctionHouse!]!
   fairs(size: Int, term: String): [ExternalFair!]!
@@ -6511,8 +6516,8 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
 
   # A formatted description of the start to end dates
   exhibitionPeriod(
-    # SHORT or LONG, SHORT returns a shorter exhbition period description, LONG returns a longer description, defaults to LONG
-    format: String
+    # SHORT or LONG, SHORT returns a shorter exhbition period description with months abbreviated, defaults to LONG
+    format: ExhibitionPeriodFormat
   ): String
 
   # The exhibitors with booths in this fair with letter.
@@ -11967,8 +11972,8 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
 
   # A formatted description of the start to end dates
   exhibitionPeriod(
-    # SHORT or LONG, SHORT returns a shorter exhbition period description, LONG returns a longer description, defaults to LONG
-    format: String
+    # SHORT or LONG, SHORT returns a shorter exhbition period description with months abbreviated, defaults to LONG
+    format: ExhibitionPeriodFormat
   ): String
 
   # If the show is in a Fair, then that fair

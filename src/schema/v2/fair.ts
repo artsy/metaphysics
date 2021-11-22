@@ -12,7 +12,7 @@ import Profile from "./profile"
 import Image from "./image"
 import Artist from "./artist"
 import Partner, { PartnerType } from "./partner"
-import { ShowsConnection } from "./show"
+import { ExhibitionPeriodFormatType, ShowsConnection } from "./show"
 import { LocationType } from "./location"
 import {
   SlugAndInternalIDFields,
@@ -141,9 +141,9 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         description: "A formatted description of the start to end dates",
         args: {
           format: {
-            type: GraphQLString,
+            type: ExhibitionPeriodFormatType,
             description:
-              "SHORT or LONG, SHORT returns a shorter exhbition period description, LONG returns a longer description, defaults to LONG",
+              "SHORT or LONG, SHORT returns a shorter exhbition period description with months abbreviated, defaults to LONG",
           },
         },
         resolve: ({ start_at, end_at }, args) => {

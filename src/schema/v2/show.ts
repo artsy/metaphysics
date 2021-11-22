@@ -37,6 +37,7 @@ import {
   GraphQLUnionType,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
+  GraphQLEnumType,
 } from "graphql"
 import { totalViaLoader } from "lib/total"
 import { find, flatten } from "lodash"
@@ -54,6 +55,18 @@ const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
       type: Artist.type,
     },
   }),
+})
+
+export const ExhibitionPeriodFormatType = new GraphQLEnumType({
+  name: "ExhibitionPeriodFormat",
+  values: {
+    SHORT: {
+      value: "SHORT",
+    },
+    LONG: {
+      value: "LONG",
+    },
+  },
 })
 
 const kind = ({ artists, fair, artists_without_artworks, group }) => {
@@ -340,9 +353,9 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         description: "A formatted description of the start to end dates",
         args: {
           format: {
-            type: GraphQLString,
+            type: ExhibitionPeriodFormatType,
             description:
-              "SHORT or LONG, SHORT returns a shorter exhbition period description, LONG returns a longer description, defaults to LONG",
+              "SHORT or LONG, SHORT returns a shorter exhbition period description with months abbreviated, defaults to LONG",
           },
         },
         resolve: ({ start_at, end_at }, args) => {

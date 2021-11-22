@@ -683,7 +683,7 @@ describe("Fair", () => {
     const query = gql`
       {
         fair(id: "aqua-art-miami-2018") {
-          exhibitionPeriod(format: "SHORT")
+          exhibitionPeriod(format: SHORT)
         }
       }
     `
