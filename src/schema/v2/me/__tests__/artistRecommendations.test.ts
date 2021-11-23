@@ -128,31 +128,43 @@ const mockVortexResponse = {
   },
 }
 
-const mockArtistsResponse = [
-  {
-    _id: "608a7417bdfbd1a789ba092a",
-    artists_count: 3,
-    birthday: "",
-    blurb: "",
-    consignable: false,
-    deathday: "",
-    forsale_artists_count: 2,
-    group_indicator: "individual",
-    id: "yayoi-kusama",
-    image_url: null,
-    image_urls: {},
-    image_versions: [],
-    medium_known_for: null,
-    name: "Yayoi Kusama",
-    nationality: "",
-    original_height: null,
-    original_width: null,
-    public: true,
-    published_artists_count: 3,
-    sortable_id: "kusama-yayoi",
-    target_supply: false,
-    target_supply_priority: null,
-    target_supply_type: null,
-    years: "",
-  },
-]
+const mockArtistsResponse = {
+  body: [
+    {
+      _id: "5d6f9f7e3a583e000e51956d",
+      artworks_count: 1,
+      birthday: "",
+      blurb: "",
+      consignable: false,
+      deathday: "",
+      forsale_artworks_count: 0,
+      group_indicator: "individual",
+      id: "1-plus-1-plus-1",
+      image_url:
+        "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/:version.jpg",
+      image_urls: {
+        square:
+          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/square.jpg",
+        four_thirds:
+          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/four_thirds.jpg",
+        large:
+          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/large.jpg",
+        tall:
+          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/tall.jpg",
+      },
+      image_versions: ["square", "four_thirds", "large", "tall"],
+      medium_known_for: null,
+      name: "1+1+1",
+      nationality: "Swedish Icelandic Finnish",
+      original_height: 5237,
+      original_width: 3491,
+      public: true,
+      published_artworks_count: 0,
+      sortable_id: "1-plus-1-plus-1",
+      target_supply: false,
+      target_supply_priority: null,
+      target_supply_type: null,
+      years: "",
+    },
+  ],
+}

@@ -52,11 +52,13 @@ export const ArtistRecommendations: GraphQLFieldConfig<
     let artists: any = []
 
     if (artistIds?.length) {
-      artists = await artistsLoader({
-        artist_ids: artistIds,
-        size,
-        offset,
-      })
+      artists = (
+        await artistsLoader({
+          artist_ids: artistIds,
+          size,
+          offset,
+        })
+      ).body
     }
 
     // TODO: get count from artists loader to optimize pagination
