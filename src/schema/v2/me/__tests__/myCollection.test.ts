@@ -30,11 +30,12 @@ describe("me.myCollection", () => {
     expect(data.me.myCollectionInfo.name).toBe("My Collection")
     expect(data.me.myCollectionInfo.includesPurchasedArtworks).toBe(true)
   })
+  
   it("returns artworks for a collection", async () => {
     const query = gql`
       {
         me {
-          myCollectionConnection(first: 10) {
+          myCollectionConnection {
             edges {
               node {
                 internalID
