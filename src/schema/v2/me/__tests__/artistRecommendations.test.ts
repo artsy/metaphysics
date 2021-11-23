@@ -46,14 +46,14 @@ describe("artistRecommendations", () => {
             },
           },
         ],
-        "totalCount": 20,
+        "totalCount": 50,
       }
     `)
 
     expect(vortexGraphqlLoader).toHaveBeenCalledWith({
       query: gql`
         query artistRecommendationsQuery {
-          artistRecommendations(first: 20) {
+          artistRecommendations(first: 50) {
             totalCount
             edges {
               node {

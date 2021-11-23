@@ -7,7 +7,7 @@ import { ResolverContext } from "types/graphql"
 import gql from "lib/gql"
 import { artistConnection } from "schema/v2/artist"
 
-const MAX_ARTISTS = 20
+const MAX_ARTISTS = 50
 
 export const ArtistRecommendations: GraphQLFieldConfig<
   void,
