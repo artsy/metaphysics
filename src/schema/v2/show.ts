@@ -57,14 +57,16 @@ const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-export const ExhibitionPeriodFormatType = new GraphQLEnumType({
+export const ExhibitionPeriodFormatEnum = new GraphQLEnumType({
   name: "ExhibitionPeriodFormat",
   values: {
     SHORT: {
-      value: "SHORT",
+      value: "short",
+      description: "Short formatted period e.g. Feb 25 - May 24, 2015",
     },
     LONG: {
-      value: "LONG",
+      value: "long",
+      description: "Long formatted period e.g. February 25 – May 24, 2015",
     },
   },
 })
@@ -353,14 +355,14 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         description: "A formatted description of the start to end dates",
         args: {
           format: {
-            type: ExhibitionPeriodFormatType,
-            description:
-              "SHORT or LONG, SHORT returns a shorter exhbition period description with months abbreviated, defaults to LONG",
+            type: new GraphQLNonNull(ExhibitionPeriodFormatEnum),
+            description: "Formatting option to apply to exhibition period",
+            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG"),
           },
         },
         resolve: ({ start_at, end_at }, args) => {
           const { format } = args
-          const useShortFormat = format === "SHORT"
+          const useShortFormat = format === "short"
           return dateRange(start_at, end_at, "UTC", useShortFormat)
         },
       },
