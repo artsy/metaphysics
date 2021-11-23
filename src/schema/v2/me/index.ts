@@ -29,6 +29,7 @@ import FollowedArtists from "./followed_artists"
 import FollowedArtistsArtworkGroups from "./followed_artists_artworks_group"
 import FollowedFairs from "./followed_fairs"
 import FollowedGalleries from "./followed_galleries"
+import { followedProfiles } from "./followedProfiles"
 import FollowedGenes from "./followed_genes"
 import FollowedShows from "./followed_shows"
 import {
@@ -102,6 +103,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
           artworksConnection: SavedArtworks,
           fairsConnection: FollowedFairs,
           galleriesConnection: FollowedGalleries,
+          profilesConnection: followedProfiles,
           genesConnection: FollowedGenes,
           showsConnection: FollowedShows,
         },

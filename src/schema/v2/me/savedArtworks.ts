@@ -8,13 +8,13 @@ import {
 import { ResolverContext } from "types/graphql"
 import {
   connectionWithCursorInfo,
-  createPageCursors,
+  paginationResolver,
 } from "../fields/pagination"
 import { ArtworkType } from "../artwork"
 import { pageable } from "relay-cursor-paging"
 import CollectionSorts from "../sorts/collection_sorts"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
+import { connectionFromArray } from "graphql-relay"
 import { pick } from "lodash"
 
 const COLLECTION_ID = "saved-artwork"
@@ -73,18 +73,7 @@ export const SavedArtworks: GraphQLFieldConfig<any, ResolverContext> = {
 
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-      return {
-        totalCount,
-        pageCursors: createPageCursors({ page, size }, totalCount),
-        ...connectionFromArraySlice(
-          body,
-          pick(args, "before", "after", "first", "last"),
-          {
-            arrayLength: totalCount,
-            sliceStart: offset,
-          }
-        ),
-      }
+      return paginationResolver({ totalCount, offset, page, size, body, args })
     } catch {
       // For some users with no favourites, Gravity produces an error of "Collection Not Found".
       // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
