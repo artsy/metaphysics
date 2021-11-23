@@ -8278,7 +8278,7 @@ type Me implements Node {
     last: Int
   ): UserAddressConnection
 
-  # A connection of artist recommendations.
+  # A connection of artist recommendations for the current user.
   artistRecommendations(
     after: String
     before: String

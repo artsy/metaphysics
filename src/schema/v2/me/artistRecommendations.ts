@@ -13,7 +13,7 @@ export const ArtistRecommendations: GraphQLFieldConfig<
   void,
   ResolverContext
 > = {
-  description: "A connection of artist recommendations.",
+  description: "A connection of artist recommendations for the current user.",
   type: artistConnection.connectionType,
   args: pageable({
     page: { type: GraphQLInt },
