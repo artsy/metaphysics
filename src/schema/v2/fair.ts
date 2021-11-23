@@ -41,6 +41,7 @@ import {
   createPageCursors,
 } from "./fields/pagination"
 import { FairOrganizerType } from "./fair_organizer"
+import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -139,14 +140,17 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       exhibitionPeriod: {
         type: GraphQLString,
         description: "A formatted description of the start to end dates",
-        resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
-      },
-      shortExhibitionPeriod: {
-        type: GraphQLString,
-        description:
-          "A formatted description of the start to end dates with abbreviated months",
-        resolve: ({ start_at, end_at }) =>
-          dateRange(start_at, end_at, "UTC", true),
+        args: {
+          format: {
+            type: new GraphQLNonNull(ExhibitionPeriodFormatEnum),
+            description: "Formatting option to apply to exhibition period",
+            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG"),
+          },
+        },
+        resolve: ({ start_at, end_at }, args) => {
+          const { format } = args
+          return dateRange(start_at, end_at, "UTC", format)
+        },
       },
       formattedOpeningHours: {
         type: GraphQLString,

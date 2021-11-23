@@ -46,6 +46,7 @@ import EventStatus from "./input_fields/event_status"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
+import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -338,14 +339,17 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       exhibitionPeriod: {
         type: GraphQLString,
         description: "A formatted description of the start to end dates",
-        resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
-      },
-      shortExhibitionPeriod: {
-        type: GraphQLString,
-        description:
-          "A formatted description of the start to end dates with abbreviated months",
-        resolve: ({ start_at, end_at }) =>
-          dateRange(start_at, end_at, "UTC", true),
+        args: {
+          format: {
+            type: new GraphQLNonNull(ExhibitionPeriodFormatEnum),
+            description: "Formatting option to apply to exhibition period",
+            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG"),
+          },
+        },
+        resolve: ({ start_at, end_at }, args) => {
+          const { format } = args
+          return dateRange(start_at, end_at, "UTC", format)
+        },
       },
       fair: {
         description: "If the show is in a Fair, then that fair",

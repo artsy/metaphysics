@@ -619,7 +619,7 @@ describe("Show type", () => {
     const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
-          shortExhibitionPeriod
+          exhibitionPeriod(format: SHORT)
         }
       }
     `
@@ -627,7 +627,7 @@ describe("Show type", () => {
     const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
-        shortExhibitionPeriod: "Feb 25 – May 24, 2015",
+        exhibitionPeriod: "Feb 25 – May 24, 2015",
       },
     })
   })

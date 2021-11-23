@@ -422,7 +422,7 @@ describe("date formatting", () => {
     })
 
     it("abbreviates months when specified", () => {
-      const period = dateRange("2011-01-01", "2011-04-19", "UTC", true)
+      const period = dateRange("2011-01-01", "2011-04-19", "UTC", "short")
       expect(period).toBe("Jan 1 – Apr 19, 2011")
     })
   })
