@@ -37,7 +37,6 @@ import {
   GraphQLUnionType,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
-  GraphQLEnumType,
 } from "graphql"
 import { totalViaLoader } from "lib/total"
 import { find, flatten } from "lodash"
@@ -47,6 +46,7 @@ import EventStatus from "./input_fields/event_status"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
+import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -55,20 +55,6 @@ const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
       type: Artist.type,
     },
   }),
-})
-
-export const ExhibitionPeriodFormatEnum = new GraphQLEnumType({
-  name: "ExhibitionPeriodFormat",
-  values: {
-    SHORT: {
-      value: "short",
-      description: "Short formatted period e.g. Feb 25 - May 24, 2015",
-    },
-    LONG: {
-      value: "long",
-      description: "Long formatted period e.g. February 25 – May 24, 2015",
-    },
-  },
 })
 
 const kind = ({ artists, fair, artists_without_artworks, group }) => {

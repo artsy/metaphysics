@@ -12221,10 +12221,10 @@ type ShowEventType {
   eventType: String
 
   # A formatted description of the start to end dates
-  exhibitionPeriod: String
-
-  # A formatted description of the start to end dates with abbreviated months
-  shortExhibitionPeriod: String
+  exhibitionPeriod(
+    # Formatting option to apply to exhibition period
+    format: ExhibitionPeriodFormat!
+  ): String
   startAt(
     format: String
 

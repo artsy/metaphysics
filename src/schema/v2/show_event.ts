@@ -1,7 +1,8 @@
 import dateField from "./fields/date"
-import { GraphQLString, GraphQLObjectType } from "graphql"
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { dateRange, dateTimeRange } from "lib/date"
+import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 
 const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowEventType",
@@ -29,14 +30,17 @@ const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
     exhibitionPeriod: {
       type: GraphQLString,
       description: "A formatted description of the start to end dates",
-      resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
-    },
-    shortExhibitionPeriod: {
-      type: GraphQLString,
-      description:
-        "A formatted description of the start to end dates with abbreviated months",
-      resolve: ({ start_at, end_at }) =>
-        dateRange(start_at, end_at, "UTC", true),
+      args: {
+        format: {
+          type: new GraphQLNonNull(ExhibitionPeriodFormatEnum),
+          description: "Formatting option to apply to exhibition period",
+          defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG"),
+        },
+      },
+      resolve: ({ start_at, end_at }, args) => {
+        const { format } = args
+        return dateRange(start_at, end_at, "UTC", format)
+      },
     },
   },
 })

@@ -12,7 +12,7 @@ import Profile from "./profile"
 import Image from "./image"
 import Artist from "./artist"
 import Partner, { PartnerType } from "./partner"
-import { ExhibitionPeriodFormatEnum, ShowsConnection } from "./show"
+import { ShowsConnection } from "./show"
 import { LocationType } from "./location"
 import {
   SlugAndInternalIDFields,
@@ -41,6 +41,7 @@ import {
   createPageCursors,
 } from "./fields/pagination"
 import { FairOrganizerType } from "./fair_organizer"
+import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
