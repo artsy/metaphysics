@@ -154,10 +154,10 @@ export function dateTimeRange(
  * Nov 1 – 4, 2018
  * Nov 1, 2018 – Jan 4, 2019
  */
-export function dateRange(startAt, endAt, timezone, abbreviateMonths = false) {
+export function dateRange(startAt, endAt, timezone, format = "long") {
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
-  const monthFormat = abbreviateMonths ? "MMM" : "MMMM"
+  const monthFormat = format === "short" ? "MMM" : "MMMM"
   let startFormat = monthFormat + " D"
   let endFormat = "D, YYYY"
   const singleDateFormat = monthFormat + " D, YYYY"

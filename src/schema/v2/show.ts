@@ -362,8 +362,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         },
         resolve: ({ start_at, end_at }, args) => {
           const { format } = args
-          const useShortFormat = format === "short"
-          return dateRange(start_at, end_at, "UTC", useShortFormat)
+          return dateRange(start_at, end_at, "UTC", format)
         },
       },
       fair: {
