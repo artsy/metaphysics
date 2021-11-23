@@ -9,6 +9,7 @@ input AddAssetToConsignmentSubmissionInput {
   """
   clientMutationId: String
   geminiToken: String!
+  sessionID: String
   submissionID: ID!
 }
 
@@ -35,6 +36,7 @@ input AddAssetsToConsignmentSubmissionInput {
   """
   clientMutationId: String
   geminiTokens: [String!]!
+  sessionID: String
   submissionID: ID!
 }
 
