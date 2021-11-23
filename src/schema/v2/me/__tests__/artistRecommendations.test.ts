@@ -46,7 +46,7 @@ describe("artistRecommendations", () => {
             },
           },
         ],
-        "totalCount": 50,
+        "totalCount": 1,
       }
     `)
 

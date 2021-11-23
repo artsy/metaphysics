@@ -63,8 +63,7 @@ export const ArtistRecommendations: GraphQLFieldConfig<
       ).body
     }
 
-    // TODO: get count from artists loader to optimize pagination
-    const count = artists.length === 0 ? 0 : MAX_ARTISTS
+    const count = artists.length
 
     return {
       totalCount: count,
