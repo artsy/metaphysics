@@ -40,9 +40,9 @@ describe("artistRecommendations", () => {
         "edges": Array [
           Object {
             "node": Object {
-              "id": "QXJ0aXN0OjYwOGE3NDE3YmRmYmQxYTc4OWJhMDkyYQ==",
-              "internalID": "608a7417bdfbd1a789ba092a",
-              "slug": "yayoi-kusama",
+              "id": "QXJ0aXN0OjVkNmY5ZjdlM2E1ODNlMDAwZTUxOTU2ZA==",
+              "internalID": "5d6f9f7e3a583e000e51956d",
+              "slug": "1-plus-1-plus-1",
             },
           },
         ],

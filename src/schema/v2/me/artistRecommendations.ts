@@ -49,6 +49,8 @@ export const ArtistRecommendations: GraphQLFieldConfig<
       (edge) => edge?.node?.artistId
     )
 
+    // Fetch artist details from Gravity
+
     let artists: any = []
 
     if (artistIds?.length) {
