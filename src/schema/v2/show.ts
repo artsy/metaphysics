@@ -341,7 +341,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         description: "A formatted description of the start to end dates",
         args: {
           format: {
-            type: new GraphQLNonNull(ExhibitionPeriodFormatEnum),
+            type: ExhibitionPeriodFormatEnum,
             description: "Formatting option to apply to exhibition period",
             defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG"),
           },
