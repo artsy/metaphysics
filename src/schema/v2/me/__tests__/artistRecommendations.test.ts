@@ -12,7 +12,6 @@ describe("artistRecommendations", () => {
             node {
               internalID
               slug
-              id
             }
           }
         }
@@ -40,13 +39,18 @@ describe("artistRecommendations", () => {
         "edges": Array [
           Object {
             "node": Object {
-              "id": "QXJ0aXN0OjVkNmY5ZjdlM2E1ODNlMDAwZTUxOTU2ZA==",
-              "internalID": "5d6f9f7e3a583e000e51956d",
+              "internalID": "608a7417bdfbd1a789ba092a",
               "slug": "1-plus-1-plus-1",
             },
           },
+          Object {
+            "node": Object {
+              "internalID": "608a7416bdfbd1a789ba0911",
+              "slug": "banksy",
+            },
+          },
         ],
-        "totalCount": 1,
+        "totalCount": 2,
       }
     `)
 
@@ -131,7 +135,43 @@ const mockVortexResponse = {
 const mockArtistsResponse = {
   body: [
     {
-      _id: "5d6f9f7e3a583e000e51956d",
+      _id: "608a7416bdfbd1a789ba0911",
+      artworks_count: 1,
+      birthday: "",
+      blurb: "",
+      consignable: false,
+      deathday: "",
+      forsale_artworks_count: 0,
+      group_indicator: "individual",
+      id: "banksy",
+      image_url:
+        "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/:version.jpg",
+      image_urls: {
+        square:
+          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/square.jpg",
+        four_thirds:
+          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/four_thirds.jpg",
+        large:
+          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/large.jpg",
+        tall:
+          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/tall.jpg",
+      },
+      image_versions: ["square", "four_thirds", "large", "tall"],
+      medium_known_for: null,
+      name: "1+1+1",
+      nationality: "Swedish Icelandic Finnish",
+      original_height: 5237,
+      original_width: 3491,
+      public: true,
+      published_artworks_count: 0,
+      sortable_id: "banksy",
+      target_supply: false,
+      target_supply_priority: null,
+      target_supply_type: null,
+      years: "",
+    },
+    {
+      _id: "608a7417bdfbd1a789ba092a",
       artworks_count: 1,
       birthday: "",
       blurb: "",
