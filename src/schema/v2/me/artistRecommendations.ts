@@ -56,7 +56,7 @@ export const ArtistRecommendations: GraphQLFieldConfig<
     if (artistIds?.length) {
       artists = (
         await artistsLoader({
-          artist_ids: artistIds,
+          ids: artistIds,
           size,
           offset,
         })
