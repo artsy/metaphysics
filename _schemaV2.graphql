@@ -6520,7 +6520,7 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
   # A formatted description of the start to end dates
   exhibitionPeriod(
     # Formatting option to apply to exhibition period
-    format: ExhibitionPeriodFormat!
+    format: ExhibitionPeriodFormat
   ): String
 
   # The exhibitors with booths in this fair with letter.
@@ -12019,7 +12019,7 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
   # A formatted description of the start to end dates
   exhibitionPeriod(
     # Formatting option to apply to exhibition period
-    format: ExhibitionPeriodFormat!
+    format: ExhibitionPeriodFormat
   ): String
 
   # If the show is in a Fair, then that fair
@@ -12266,7 +12266,7 @@ type ShowEventType {
   # A formatted description of the start to end dates
   exhibitionPeriod(
     # Formatting option to apply to exhibition period
-    format: ExhibitionPeriodFormat!
+    format: ExhibitionPeriodFormat
   ): String
   startAt(
     format: String
