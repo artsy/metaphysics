@@ -71,8 +71,6 @@ describe("artistRecommendations", () => {
     })
     expect(artistsLoader).toHaveBeenCalledWith({
       ids: ["608a7417bdfbd1a789ba092a", "608a7416bdfbd1a789ba0911"],
-      offset: 0,
-      size: 100,
     })
   })
 
