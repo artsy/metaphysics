@@ -8,6 +8,7 @@ import gql from "lib/gql"
 import { artistConnection } from "schema/v2/artist"
 import { find } from "lodash"
 
+// This limits the maximum number of artists we receive from Vortex and is related to how we implement the Connection in this resolver.
 const MAX_ARTISTS = 50
 
 export const ArtistRecommendations: GraphQLFieldConfig<
