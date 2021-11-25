@@ -1,6 +1,6 @@
 import { GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArray } from "graphql-relay"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { createPageCursors } from "schema/v1/fields/pagination"
 import { ResolverContext } from "types/graphql"
@@ -46,9 +46,9 @@ export const ArtistRecommendations: GraphQLFieldConfig<
       `,
     })()
 
-    const artistIds: string[] = vortexResult.data?.artistRecommendations?.edges?.map(
-      (edge) => edge?.node?.artistId
-    )
+    const artistIds = extractNodes(
+      vortexResult.data?.artistRecommendations
+    ).map((node: any) => node?.artistId)
 
     // Fetch artist details from Gravity
 
