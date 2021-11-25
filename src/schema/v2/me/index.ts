@@ -48,12 +48,14 @@ import { SavedArtworks } from "./savedArtworks"
 import { WatchedLotConnection } from "./watchedLotConnection"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import Image, { normalizeImageData } from "../image"
+import { ArtistRecommendations } from "./artistRecommendations"
 
 export const meType = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
   interfaces: [NodeInterface],
   fields: {
     ...IDFields,
+    artistRecommendations: ArtistRecommendations,
     artworkInquiriesConnection: ArtworkInquiries,
     auctionResultsByFollowedArtists: AuctionResultsByFollowedArtists,
     bidders: Bidders,

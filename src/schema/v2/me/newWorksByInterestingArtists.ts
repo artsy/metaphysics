@@ -1,6 +1,6 @@
 import { GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { createPageCursors } from "schema/v1/fields/pagination"
 import { ResolverContext } from "types/graphql"
@@ -48,8 +48,8 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
       `,
     })()
 
-    const artistIds = vortexResult.data?.artistAffinities?.edges?.map(
-      (edge) => edge?.node?.artistId
+    const artistIds = extractNodes(vortexResult.data?.artistAffinities).map(
+      (node: any) => node?.artistId
     )
 
     // Fetch artworks from ArtworksLoader if the user interacted with any artists
