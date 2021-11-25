@@ -6,7 +6,7 @@ import { createPageCursors } from "schema/v1/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import gql from "lib/gql"
 import { artistConnection } from "schema/v2/artist"
-import { find } from "lodash"
+import { compact, find } from "lodash"
 
 const MAX_ARTISTS = 50
 
@@ -63,9 +63,11 @@ export const ArtistRecommendations: GraphQLFieldConfig<
 
       // Apply order from Vortex result (score ASC)
 
-      artists = artistIds.map((artistId) => {
-        return find(artists, { _id: artistId })
-      })
+      artists = compact(
+        artistIds.map((artistId) => {
+          return find(artists, { _id: artistId })
+        })
+      )
     }
 
     const count = artists.length
