@@ -9923,12 +9923,18 @@ enum PartnersSortType {
 
 union PartnerTypes = ExternalPartner | Partner
 
+enum PhoneNumberFormats {
+  E164
+  INTERNATIONAL
+  NATIONAL
+  RFC3966
+}
+
 type PhoneNumberType {
   countryCode: String
+  display(format: PhoneNumberFormats): String
   errorMessage: String
-  internationalFormat: String
   isValid: Boolean
-  nationalFormat: String
   originalNumber: String
   regionCode: String
 }

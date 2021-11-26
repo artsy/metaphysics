@@ -2,28 +2,25 @@ import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("Phone number", () => {
-  it.each([
-    "+1 415 555-0132",
-    "415 555-0132",
-    "0207 111 1111",
-    "+44 207 111 1111",
-    "+375 29 222 22 22",
-  ])("check valid phone number: %s", async (phone) => {
-    const query = gql`
+  it.each(["+1 415 555-0132", "+44 207 111 1111", "+375 29 222 22 22"])(
+    "check valid phone number: %s",
+    async (phone) => {
+      const query = gql`
         {
           phoneNumber(phoneNumber: "${phone}") {
             isValid
           }
         }
       `
-    const data = await runQuery(query)
+      const data = await runQuery(query)
 
-    expect(data).toEqual({
-      phoneNumber: {
-        isValid: true,
-      },
-    })
-  })
+      expect(data).toEqual({
+        phoneNumber: {
+          isValid: true,
+        },
+      })
+    }
+  )
 
   it("returns US phone number information", async () => {
     const query = gql`
@@ -33,8 +30,8 @@ describe("Phone number", () => {
           countryCode
           regionCode
           originalNumber
-          nationalFormat
-          internationalFormat
+          nationalFormat: display(format: NATIONAL)
+          internationalFormat: display(format: INTERNATIONAL)
         }
       }
     `
@@ -60,8 +57,8 @@ describe("Phone number", () => {
           countryCode
           regionCode
           originalNumber
-          nationalFormat
-          internationalFormat
+          nationalFormat: display(format: NATIONAL)
+          internationalFormat: display(format: INTERNATIONAL)
         }
       }
     `

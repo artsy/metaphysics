@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -16,6 +17,26 @@ interface PhoneNumberTypeSource {
   phoneNumber: string
   parsedPhone?: GooglePhoneNumber
   phoneUtil: PhoneNumberUtil
+}
+
+export const PhoneNumberFormats = {
+  type: new GraphQLEnumType({
+    name: "PhoneNumberFormats",
+    values: {
+      INTERNATIONAL: {
+        value: PhoneNumberFormat.INTERNATIONAL,
+      },
+      E164: {
+        value: PhoneNumberFormat.E164,
+      },
+      NATIONAL: {
+        value: PhoneNumberFormat.NATIONAL,
+      },
+      RFC3966: {
+        value: PhoneNumberFormat.RFC3966,
+      },
+    },
+  }),
 }
 
 const PhoneNumberType: GraphQLObjectType<
@@ -63,17 +84,13 @@ const PhoneNumberType: GraphQLObjectType<
       resolve: ({ parsedPhone, phoneUtil }) =>
         parsedPhone && phoneUtil.getRegionCodeForNumber(parsedPhone),
     },
-    internationalFormat: {
+    display: {
       type: GraphQLString,
-      resolve: ({ parsedPhone, phoneUtil }) =>
-        parsedPhone &&
-        phoneUtil.format(parsedPhone, PhoneNumberFormat.INTERNATIONAL),
-    },
-    nationalFormat: {
-      type: GraphQLString,
-      resolve: ({ parsedPhone, phoneUtil }) =>
-        parsedPhone &&
-        phoneUtil.format(parsedPhone, PhoneNumberFormat.NATIONAL),
+      args: {
+        format: PhoneNumberFormats,
+      },
+      resolve: ({ parsedPhone, phoneUtil }, { format }) =>
+        parsedPhone && phoneUtil.format(parsedPhone, format),
     },
   },
 })
@@ -93,23 +110,10 @@ export const PhoneNumber: GraphQLFieldConfig<any, ResolverContext> = {
     const phoneUtil = PhoneNumberUtil.getInstance()
     let parsedPhone: GooglePhoneNumber | undefined
 
-    /*
-      Trying to parse phone number. If region code empty tries to parse phone
-      number as a number already with region code, then tries to parse using
-      most expectable regions.
-    */
-    for (const code of regionCode ? [regionCode] : ["", "us", "gb"]) {
-      try {
-        parsedPhone = phoneUtil.parse(phoneNumber, code)
-
-        if (parsedPhone && phoneUtil.isValidNumber(parsedPhone)) {
-          break
-        } else if (!regionCode) {
-          parsedPhone = undefined
-        }
-      } catch (e) {
-        console.error("Parse phone number error: ", e)
-      }
+    try {
+      parsedPhone = phoneUtil.parse(phoneNumber, regionCode || "")
+    } catch (e) {
+      console.error("Parse phone number error: ", e)
     }
 
     return {
