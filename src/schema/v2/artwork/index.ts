@@ -815,9 +815,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
 
           if (!vat_required) return true
 
-          const { vat_registered } = await partnerAllLoader(partner.id)
+          const { vat_status } = await partnerAllLoader(partner.id)
 
-          return vat_registered
+          return !!vat_status
         },
       },
       pricePaid: {
