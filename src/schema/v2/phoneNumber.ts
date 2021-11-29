@@ -82,7 +82,8 @@ const PhoneNumberType: GraphQLObjectType<
     regionCode: {
       type: GraphQLString,
       resolve: ({ parsedPhone, phoneUtil }) =>
-        parsedPhone && phoneUtil.getRegionCodeForNumber(parsedPhone),
+        parsedPhone &&
+        phoneUtil.getRegionCodeForNumber(parsedPhone)?.toLowerCase(),
     },
     display: {
       type: GraphQLString,

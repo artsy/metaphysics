@@ -41,7 +41,7 @@ describe("Phone number", () => {
       phoneNumber: {
         isValid: true,
         countryCode: "1",
-        regionCode: "US",
+        regionCode: "us",
         originalNumber: "+1 415 555-0132",
         nationalFormat: "(415) 555-0132",
         internationalFormat: "+1 415-555-0132",
@@ -68,7 +68,7 @@ describe("Phone number", () => {
       phoneNumber: {
         isValid: true,
         countryCode: "81",
-        regionCode: "JP",
+        regionCode: "jp",
         originalNumber: "90 1234 1234",
         nationalFormat: "090-1234-1234",
         internationalFormat: "+81 90-1234-1234",
