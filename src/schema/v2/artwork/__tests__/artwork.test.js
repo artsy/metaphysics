@@ -2424,11 +2424,11 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns true when artwork requires VAT and partner has any VAT status", () => {
+    it("returns true when artwork requires vat and partner is vat registered", () => {
       artwork.vat_required = true
       artwork.partner = { id: "123" }
       context.partnerAllLoader = jest.fn(() =>
-        Promise.resolve({ vat_status: "anything" })
+        Promise.resolve({ vat_registered: true })
       )
 
       return runQuery(query, context).then((data) => {
@@ -2437,24 +2437,11 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns false when artwork requires VAT and partner does not have a VAT status", () => {
+    it("returns false when artwork requires vat and partner is not vat registered", () => {
       artwork.vat_required = true
       artwork.partner = { id: "123" }
       context.partnerAllLoader = jest.fn(() =>
-        Promise.resolve({ vat_status: null })
-      )
-
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({ artwork: { vatRequirementComplete: false } })
-        expect(context.partnerAllLoader).toHaveBeenCalledWith("123")
-      })
-    })
-
-    it("returns false when artwork requires VAT and partner has an empty VAT status", () => {
-      artwork.vat_required = true
-      artwork.partner = { id: "123" }
-      context.partnerAllLoader = jest.fn(() =>
-        Promise.resolve({ vat_status: "" })
+        Promise.resolve({ vat_registered: false })
       )
 
       return runQuery(query, context).then((data) => {
