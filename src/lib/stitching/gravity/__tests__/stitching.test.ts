@@ -501,7 +501,7 @@ describe("gravity/stitching", () => {
       const startAt = moment().add(1, "days").format("MMMM D")
       const endAt = moment().add(30, "days").format("MMMM D")
       const startAtYear = moment().format("YYYY")
-      const endAtAtYear = moment().format("YYYY")
+      const endAtAtYear = moment().add(1, "year").format("YYYY")
 
       expect(
         exhibitionPeriod.resolve({
