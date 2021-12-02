@@ -500,8 +500,8 @@ describe("gravity/stitching", () => {
       const { exhibitionPeriod } = resolvers.ViewingRoom
       const startAt = moment().add(1, "days").format("MMMM D")
       const endAt = moment().add(30, "days").format("MMMM D")
-      const startAtYear = moment().format("YYYY")
-      const endAtAtYear = moment().format("YYYY")
+      const startAtYear = moment().add(1, "days").format("YYYY")
+      const endAtAtYear = moment().add(30, "days").format("YYYY")
 
       expect(
         exhibitionPeriod.resolve({

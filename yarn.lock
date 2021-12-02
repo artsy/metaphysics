@@ -1871,6 +1871,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/google-libphonenumber@^7.4.22":
+  version "7.4.22"
+  resolved "https://registry.yarnpkg.com/@types/google-libphonenumber/-/google-libphonenumber-7.4.22.tgz#97320192e6482eb4413b935f221d229da346d5db"
+  integrity sha512-Hax2fIzdnSH9zWHyUM6/z2scyE2NigZZQKyzst1IuAc/aW66iozy1y2mBvxJgRr3dBD5RikcRKNN8pQHhwiAjQ==
+
 "@types/graphql-relay@0.4.9", "@types/graphql-relay@^0.4.0":
   version "0.4.9"
   resolved "https://registry.yarnpkg.com/@types/graphql-relay/-/graphql-relay-0.4.9.tgz#0f34ee87a1bf1fc4c986eeefe0707318c7433212"
@@ -5115,6 +5120,11 @@ globrex@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/globrex/-/globrex-0.1.2.tgz#dd5d9ec826232730cd6793a5e33a9302985e6098"
   integrity sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==
+
+google-libphonenumber@^3.2.25:
+  version "3.2.25"
+  resolved "https://registry.yarnpkg.com/google-libphonenumber/-/google-libphonenumber-3.2.25.tgz#3bc1a041fa392739d201eacf66761df236f1614b"
+  integrity sha512-M/b5mij5o2aGnbe+Id9O3847jBtP0baW61foFkevxBxbuV4LH9AcujjYLd2UVkUPKVdMpKyBZxfeNwdxqobQFQ==
 
 graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
   version "4.1.15"
