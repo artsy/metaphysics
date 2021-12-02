@@ -83,7 +83,7 @@ describe("Phone number", () => {
         {
           phoneNumber(phoneNumber: "${phone}", regionCode: "us") {
             isValid
-            errorMessage
+            error
           }
         }
       `
@@ -92,7 +92,7 @@ describe("Phone number", () => {
       expect(data).toEqual({
         phoneNumber: {
           isValid: false,
-          errorMessage: "Too short",
+          error: "TOO_SHORT",
         },
       })
     }
@@ -105,7 +105,7 @@ describe("Phone number", () => {
         {
           phoneNumber(phoneNumber: "${phone}", regionCode: "us") {
             isValid
-            errorMessage
+            error
           }
         }
       `
@@ -114,7 +114,7 @@ describe("Phone number", () => {
       expect(data).toEqual({
         phoneNumber: {
           isValid: false,
-          errorMessage: "Too long",
+          error: "TOO_LONG",
         },
       })
     }
@@ -125,7 +125,7 @@ describe("Phone number", () => {
       {
         phoneNumber(phoneNumber: "999 555 1232", regionCode: "us") {
           isValid
-          errorMessage
+          error
         }
       }
     `
@@ -134,7 +134,7 @@ describe("Phone number", () => {
     expect(data).toEqual({
       phoneNumber: {
         isValid: false,
-        errorMessage: "Invalid number",
+        error: "INVALID_NUMBER",
       },
     })
   })

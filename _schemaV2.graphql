@@ -9923,6 +9923,13 @@ enum PartnersSortType {
 
 union PartnerTypes = ExternalPartner | Partner
 
+enum PhoneNumberErrors {
+  INVALID_COUNTRY_CODE
+  INVALID_NUMBER
+  TOO_LONG
+  TOO_SHORT
+}
+
 enum PhoneNumberFormats {
   E164
   INTERNATIONAL
@@ -9933,7 +9940,7 @@ enum PhoneNumberFormats {
 type PhoneNumberType {
   countryCode: String
   display(format: PhoneNumberFormats): String
-  errorMessage: String
+  error: PhoneNumberErrors
   isValid: Boolean
   originalNumber: String
   regionCode: String

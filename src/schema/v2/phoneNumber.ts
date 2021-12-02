@@ -39,6 +39,24 @@ export const PhoneNumberFormats = {
   }),
 }
 
+export const PhoneNumberErrors = new GraphQLEnumType({
+  name: "PhoneNumberErrors",
+  values: {
+    TOO_SHORT: {
+      value: "too_short",
+    },
+    TOO_LONG: {
+      value: "too_long",
+    },
+    INVALID_COUNTRY_CODE: {
+      value: "invalid_country_code",
+    },
+    INVALID_NUMBER: {
+      value: "invalid_number",
+    },
+  },
+})
+
 const PhoneNumberType: GraphQLObjectType<
   PhoneNumberTypeSource,
   ResolverContext
@@ -50,23 +68,23 @@ const PhoneNumberType: GraphQLObjectType<
       resolve: ({ parsedPhone, phoneUtil }) =>
         parsedPhone ? phoneUtil.isValidNumber(parsedPhone) : false,
     },
-    errorMessage: {
-      type: GraphQLString,
+    error: {
+      type: PhoneNumberErrors,
       resolve: ({ parsedPhone, phoneUtil }) => {
         if (parsedPhone) {
           switch (phoneUtil.isPossibleNumberWithReason(parsedPhone)) {
             case PhoneNumberUtil.ValidationResult.TOO_SHORT:
-              return "Too short"
+              return PhoneNumberErrors.getValue("TOO_SHORT")?.value
 
             case PhoneNumberUtil.ValidationResult.TOO_LONG:
-              return "Too long"
+              return PhoneNumberErrors.getValue("TOO_LONG")?.value
 
             case PhoneNumberUtil.ValidationResult.INVALID_COUNTRY_CODE:
-              return "Invalid country code"
+              return PhoneNumberErrors.getValue("INVALID_COUNTRY_CODE")?.value
           }
 
           if (!phoneUtil.isValidNumber(parsedPhone)) {
-            return "Invalid number"
+            return PhoneNumberErrors.getValue("INVALID_NUMBER")?.value
           }
         }
       },
