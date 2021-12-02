@@ -59,8 +59,6 @@ const fetchArtistsForPagination = (
   }
 }
 
-///////////////////////////////////////
-
 export const ArtworksAndArtistsUnion = new GraphQLUnionType({
   name: "ArtworkOrArtist",
   types: [ArtworkType, ArtistType],
@@ -105,22 +103,5 @@ export const artworksAndArtistsConnection: GraphQLFieldConfig<
       },
     })
     return result
-
-    // return artworksLoader({ ids, batched: respectParamsOrder }).then((body) => {
-    //   const totalCount = body.length
-    //   return {
-    //     totalCount,
-    //     pageCursors: createPageCursors({ page, size }, totalCount),
-    //     ...connectionFromArray(body, options),
-    //   }
-    // })
-    // return artistsLoader({ ids, batched: respectParamsOrder }).then((body) => {
-    //   const totalCount = body.length
-    //   return {
-    //     totalCount,
-    //     pageCursors: createPageCursors({ page, size }, totalCount),
-    //     ...connectionFromArray(body, options),
-    //   }
-    // })
   },
 }
