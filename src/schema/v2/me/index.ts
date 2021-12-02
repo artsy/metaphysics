@@ -49,6 +49,7 @@ import { WatchedLotConnection } from "./watchedLotConnection"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import Image, { normalizeImageData } from "../image"
 import { ArtistRecommendations } from "./artistRecommendations"
+import { PhoneNumber } from "../phoneNumber"
 
 export const meType = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -194,6 +195,11 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     pendingIdentityVerification: PendingIdentityVerification,
     phone: {
       type: GraphQLString,
+    },
+    phoneNumber: {
+      type: PhoneNumber.type,
+      resolve: ({ phone }, _, context, info) =>
+        PhoneNumber.resolve?.(null, { phoneNumber: phone }, context, info),
     },
     priceRange: {
       type: GraphQLString,

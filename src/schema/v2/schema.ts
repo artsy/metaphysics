@@ -107,6 +107,7 @@ import { externalField } from "./External/External"
 import { createUserInterestMutation } from "./me/createUserInterestMutation"
 import { page } from "./page"
 import { deleteUserInterestMutation } from "./me/deleteUserInterestMutation"
+import { PhoneNumber } from "./phoneNumber"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -172,6 +173,7 @@ const rootFields = {
   partnerCategories: PartnerCategories,
   partnerCategory: PartnerCategory,
   partnersConnection: PartnersConnection,
+  phoneNumber: PhoneNumber,
   // profile: Profile,
   requestLocation: RequestLocationField,
   sale: Sale,
