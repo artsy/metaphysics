@@ -70,6 +70,7 @@ import saveArtworkMutation from "./me/saveArtworkMutation"
 import { sendConfirmationEmailMutation } from "./me/sendConfirmationEmailMutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
+import { updateMyPasswordMutation } from "./me/updateMyPasswordMutation"
 import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileIconMutation"
 import ObjectIdentification from "./object_identification"
 import { OrderedSet } from "./OrderedSet"
@@ -239,6 +240,7 @@ export default new GraphQLSchema({
       startIdentityVerification: startIdentityVerificationMutation,
       updateCollectorProfile: UpdateCollectorProfile,
       updateConversation: UpdateConversationMutation,
+      updateMyPassword: updateMyPasswordMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
     },

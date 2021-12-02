@@ -337,6 +337,7 @@ export default (accessToken, userID, opts) => {
       { method: "DELETE" }
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
+    updateMyPasswordLoader: gravityLoader("me/password", {}, { method: "PUT" }),
     usersLoader: gravityLoader("users"),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
