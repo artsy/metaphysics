@@ -1523,6 +1523,16 @@ enum SubmissionSort {
   CREATED_AT_DESC
 
   """
+  sort by created_by in ascending order
+  """
+  CREATED_BY_ASC
+
+  """
+  sort by created_by in descending order
+  """
+  CREATED_BY_DESC
+
+  """
   sort by currency in ascending order
   """
   CURRENCY_ASC
