@@ -1733,6 +1733,28 @@ union ArtworkMutationType =
     ArtworkMutationDeleteSuccess
   | ArtworkMutationFailure
 
+union ArtworkOrArtist = Artist | Artwork
+
+# A connection to a list of items.
+type ArtworkOrArtistConnection {
+  # A list of edges.
+  edges: [ArtworkOrArtistEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type ArtworkOrArtistEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: ArtworkOrArtist
+}
+
 union ArtworkOrEditionSetType = Artwork | EditionSet
 
 # The results for one of the requested aggregations
@@ -10438,6 +10460,14 @@ type Query {
       reason: "This is only for use in resolving stitched queries, not for first-class client use."
     )
 
+  # A list of Artworks and Artists
+  artworksAndArtistsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkOrArtistConnection
+
   # Artworks Elastic Search results
   artworksConnection(
     acquireable: Boolean
@@ -13308,6 +13338,14 @@ type Viewer {
     @deprecated(
       reason: "This is only for use in resolving stitched queries, not for first-class client use."
     )
+
+  # A list of Artworks and Artists
+  artworksAndArtistsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkOrArtistConnection
 
   # Artworks Elastic Search results
   artworksConnection(

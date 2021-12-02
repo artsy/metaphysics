@@ -107,6 +107,7 @@ import { externalField } from "./External/External"
 import { createUserInterestMutation } from "./me/createUserInterestMutation"
 import { page } from "./page"
 import { deleteUserInterestMutation } from "./me/deleteUserInterestMutation"
+import { artworksAndArtistsConnection } from "./artworksAndArtistsConnection"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -128,6 +129,7 @@ const rootFields = {
   artwork: Artwork,
   // artworkVersion: ArtworkVersionResolver,
   artworksConnection: filterArtworksConnection(),
+  artworksAndArtistsConnection,
   artworks: Artworks,
   artist: Artist,
   artists: Artists,
