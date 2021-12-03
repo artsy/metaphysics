@@ -128,6 +128,12 @@ type ArtistSeriesEdge {
   node: ArtistSeries
 }
 
+enum ArtworkSizes {
+  LARGE
+  MEDIUM
+  SMALL
+}
+
 # Backup Two-Factor Authentication factor
 type BackupSecondFactor implements SecondFactor {
   code: String!
@@ -873,6 +879,7 @@ type SearchCriteria {
   priceRange: String
   userAlertSettings: SavedSearchUserAlertSettings!
   width: String
+  sizes: [ArtworkSizes]
 }
 
 # Attributes for a search criteria
@@ -893,6 +900,7 @@ input SearchCriteriaAttributes {
   partnerIDs: [String!] = []
   priceRange: String = null
   width: String = null
+  sizes: [ArtworkSizes] = []
 }
 
 # The connection type for SearchCriteria.
