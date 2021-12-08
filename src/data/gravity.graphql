@@ -1786,6 +1786,12 @@ type SavedSearchUserAlertSettings {
   push: Boolean!
 }
 
+enum ArtworkSizes {
+  LARGE
+  MEDIUM
+  SMALL
+}
+
 """
 Search criteria
 """
@@ -1808,6 +1814,7 @@ type SearchCriteria {
   priceRange: String
   userAlertSettings: SavedSearchUserAlertSettings!
   width: String
+  sizes: [ArtworkSizes]
 }
 
 """
@@ -1830,6 +1837,7 @@ input SearchCriteriaAttributes {
   partnerIDs: [String!] = []
   priceRange: String = null
   width: String = null
+  sizes: [ArtworkSizes] = []
 }
 
 """
