@@ -1,7 +1,7 @@
 import { executableConvectionSchema } from "../schema"
 import { getTypesFromSchema } from "lib/stitching/lib/getTypesFromSchema"
 
-it("Does not include blacklisted types", async () => {
+it("Does not include allowlisted types", async () => {
   const convectionSchema = await executableConvectionSchema()
   const convectionTypes = await getTypesFromSchema(convectionSchema)
 

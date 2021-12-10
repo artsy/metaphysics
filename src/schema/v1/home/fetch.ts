@@ -9,7 +9,7 @@ import {
   filter,
   sortBy,
 } from "lodash"
-import blacklist from "lib/artist_blacklist"
+import blacklist from "lib/artist_allowlist"
 import { LoadersWithAuthentication } from "lib/loaders/loaders_with_authentication"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 

@@ -9,7 +9,7 @@ import {
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
-const blacklistedTypes: string[] = []
+const allowlistedTypes: string[] = []
 const whitelistedRootFields: string[] = []
 const privateFields: string[] = ["lot", "lotStandingConnection"]
 const permittedRootFields = [...whitelistedRootFields, ...privateFields]
@@ -29,7 +29,7 @@ export const executableCausalitySchema = () => {
 
   // Return the new modified schema
   return transformSchema(schema, [
-    new FilterTypes((type) => !blacklistedTypes.includes(type.name)),
+    new FilterTypes((type) => !allowlistedTypes.includes(type.name)),
     new FilterRootFields((_operation, name, _field) => {
       return permittedRootFields.includes(name)
     }),

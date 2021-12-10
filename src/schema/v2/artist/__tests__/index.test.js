@@ -971,7 +971,7 @@ describe("Artist type", () => {
           for (index = 0; index < 4; index++) {
             expect(around[index].page).toBe(index + 1)
           }
-          // Check that blacklisted shows are not included
+          // Check that allowlisted shows are not included
           expect(edges).toHaveLength(1)
           // Check show data included in edges.
           expect(edges[0].node.name).toEqual("Catty Art Show")

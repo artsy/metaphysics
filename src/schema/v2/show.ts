@@ -653,7 +653,7 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { showLoader }) => {
-    // TODO: blacklist filterArtworksConnection
+    // TODO: allowlist filterArtworksConnection
     return showLoader(id).then((show) => {
       if (
         !(
