@@ -61,8 +61,8 @@ Our usage has a few moving parts:
   import { gravityLoaderWithoutAuthenticationFactory as gravityLoader } from "../api"
 
   export default {
-    artistArtworksLoader: gravityLoader(id => `artist/${id}/artworks`),
-    artistLoader: gravityLoader(id => `artist/${id}`),
+    artistArtworksLoader: gravityLoader((id) => `artist/${id}/artworks`),
+    artistLoader: gravityLoader((id) => `artist/${id}`),
     // [...]
   }
   ```
@@ -108,10 +108,10 @@ Our usage has a few moving parts:
     // [...]
   ```
 
-[api_grav]: https://github.com/artsy/metaphysics/blob/master/lib/apis/gravity.js
-[fetch]: https://github.com/artsy/metaphysics/blob/master/lib/apis/fetch.js
-[no_auth_loader]: https://github.com/artsy/metaphysics/blob/master/lib/loaders/api/loader_without_authentication_factory.js
-[auth_loader]: https://github.com/artsy/metaphysics/blob/master/lib/loaders/api/loader_with_authentication_factory.js
-[one_off_loader]: https://github.com/artsy/metaphysics/blob/master/lib/loaders/api/loader_one_off_factory.js
-[new_micro]: https://github.com/artsy/metaphysics/blob/master/docs/adding_a_new_microservice.md
-[loaders]: https://github.com/artsy/metaphysics/blob/master/lib/loaders/index.js
+[api_grav]: https://github.com/artsy/metaphysics/blob/main/lib/apis/gravity.js
+[fetch]: https://github.com/artsy/metaphysics/blob/main/lib/apis/fetch.js
+[no_auth_loader]: https://github.com/artsy/metaphysics/blob/main/lib/loaders/api/loader_without_authentication_factory.js
+[auth_loader]: https://github.com/artsy/metaphysics/blob/main/lib/loaders/api/loader_with_authentication_factory.js
+[one_off_loader]: https://github.com/artsy/metaphysics/blob/main/lib/loaders/api/loader_one_off_factory.js
+[new_micro]: https://github.com/artsy/metaphysics/blob/main/docs/adding_a_new_microservice.md
+[loaders]: https://github.com/artsy/metaphysics/blob/main/lib/loaders/index.js

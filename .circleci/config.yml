@@ -15,11 +15,11 @@ not_staging_or_release: &not_staging_or_release
         - staging
         - release
 
-only_master: &only_master
+only_main: &only_main
   context: hokusai
   filters:
     branches:
-      only: master
+      only: main
 
 only_release: &only_release
   context: hokusai
@@ -33,7 +33,7 @@ only_development: &only_development
       ignore:
         - staging
         - release
-        - master
+        - main
 
 jobs:
   push-schema-changes:
@@ -86,20 +86,20 @@ workflows:
       # staging
       - hokusai/push:
           name: push-staging-image
-          <<: *only_master
+          <<: *only_main
           requires:
             - test-jest-v1
             - test-jest-v2
 
       - hokusai/deploy-staging:
           name: deploy-staging
-          <<: *only_master
+          <<: *only_main
           project-name: metaphysics
           requires:
             - push-staging-image
 
       - push-schema-changes:
-          <<: *only_master
+          <<: *only_main
           context: hokusai
           requires:
             - push-staging-image

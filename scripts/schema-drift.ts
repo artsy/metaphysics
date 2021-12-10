@@ -44,7 +44,7 @@ interface BranchState {
 }
 
 /**
- * Gives status information on the current branch as compared to origin/master
+ * Gives status information on the current branch as compared to origin/main
  */
 const getBranchDrift = (): Promise<BranchState> =>
   new Promise((resolve, reject) => {
@@ -53,14 +53,14 @@ const getBranchDrift = (): Promise<BranchState> =>
       "rev-list",
       "--left-right",
       "--count",
-      "origin/master...HEAD",
+      "origin/main...HEAD",
     ])
 
-    delta.stdout.on("data", data => {
+    delta.stdout.on("data", (data) => {
       output += data
     })
 
-    delta.on("close", code => {
+    delta.on("close", (code) => {
       if (code !== 0) {
         reject("Failed to get branch drift")
       } else {
@@ -69,9 +69,9 @@ const getBranchDrift = (): Promise<BranchState> =>
           reject("Something was wrong with the branch drift output")
         }
 
-        let [, commitsBehind, commitsAhead] = Array.from(commitChanges!).map(
-          x => Number(x)
-        )
+        let [, commitsBehind, commitsAhead] = Array.from(
+          commitChanges!
+        ).map((x) => Number(x))
         resolve({
           commitsAhead,
           commitsBehind,
@@ -81,24 +81,24 @@ const getBranchDrift = (): Promise<BranchState> =>
   })
 
 /**
- * Uses git to generate a delta map of files that have changed since master
+ * Uses git to generate a delta map of files that have changed since main
  */
 const getChangedFiles = (): Promise<DeltaFileMap> =>
   new Promise((resolve, reject) => {
     let changedBlob = ""
-    const changed = spawn("git", ["diff", "--name-status", "origin/master"])
-    changed.stdout.on("data", data => {
+    const changed = spawn("git", ["diff", "--name-status", "origin/main"])
+    changed.stdout.on("data", (data) => {
       changedBlob += data
     })
 
-    changed.on("close", code => {
+    changed.on("close", (code) => {
       if (code !== 0) {
         reject("Failed to find changed files via git")
       } else {
         resolve(
           changedBlob
             .split("\n")
-            .map(status => {
+            .map((status) => {
               const match = status.match(/([A-Z])\s+(.+)/)
               if (match) {
                 const [, status, filePath] = match
@@ -130,11 +130,11 @@ const hashFile = (filePath: string): Promise<string> =>
     const stream = createReadStream(filePath)
     const hash = createHash("md5")
 
-    stream.on("data", data => hash.update(data, "utf8"))
+    stream.on("data", (data) => hash.update(data, "utf8"))
     stream.on("end", () => {
       resolve(hash.digest("hex"))
     })
-    stream.on("error", error => {
+    stream.on("error", (error) => {
       reject(error)
     })
   })
@@ -248,14 +248,14 @@ const switchSchemaPath = (filePath: string) =>
 const diffDirectories = (
   directory1: Directory,
   directory2: Directory,
-  directoryMapper = p => p
+  directoryMapper = (p) => p
 ): [string[], string[], string[]] => {
   const fileList1 = directory1.listFiles().map(directoryMapper)
   const fileList2 = directory2.listFiles().map(directoryMapper)
 
-  const sharedFiles = fileList1.filter(x => fileList2.includes(x))
-  const filesUniqueTo1 = fileList1.filter(x => !sharedFiles.includes(x))
-  const filesUniqueTo2 = fileList2.filter(x => !sharedFiles.includes(x))
+  const sharedFiles = fileList1.filter((x) => fileList2.includes(x))
+  const filesUniqueTo1 = fileList1.filter((x) => !sharedFiles.includes(x))
+  const filesUniqueTo2 = fileList2.filter((x) => !sharedFiles.includes(x))
 
   return [filesUniqueTo1, sharedFiles, filesUniqueTo2]
 }
@@ -266,9 +266,7 @@ const diffDirectories = (
 
   // Is there a better way to handle this?
   if (branchState.commitsBehind > 0) {
-    warn(
-      "Branch is currently behind master, might not reflect accurate state\n"
-    )
+    warn("Branch is currently behind main, might not reflect accurate state\n")
   }
 
   const fileChanges = Object.entries(await getChangedFiles()).filter(
@@ -315,7 +313,7 @@ const diffDirectories = (
   if (unknownChanges.length > 0) {
     error(
       "File changes detect with unknown git status, please verify the following and update the schema drift script\n" +
-        unknownChanges.map(file => `- ${file}\n`)
+        unknownChanges.map((file) => `- ${file}\n`)
     )
   }
 
@@ -325,7 +323,7 @@ const diffDirectories = (
 
   // File A was modified in (v1|v2), should it also be modified in (v2|v1)?
   modifiedFiles
-    .map(filePath => [fromSchemaRoot(filePath), filePath])
+    .map((filePath) => [fromSchemaRoot(filePath), filePath])
     .filter(([file]) => filesInBothSchemas.includes(file))
     .forEach(([, filePath]) => {
       if (isFromSchemaV1(filePath)) {
@@ -336,11 +334,7 @@ const diffDirectories = (
         if (schemaV1File.hash === schemaV2File.hash) return
 
         warn(
-          `${
-            schemaV1File.relativePath
-          } has been modified, should this update also happen in ${
-            schemaV2File.relativePath
-          }?`
+          `${schemaV1File.relativePath} has been modified, should this update also happen in ${schemaV2File.relativePath}?`
         )
       } else {
         const schemaV2File = schemaV2.getFile(filePath)
@@ -350,11 +344,7 @@ const diffDirectories = (
         if (schemaV2File.hash === schemaV1File.hash) return
 
         warn(
-          `${
-            schemaV2File.relativePath
-          } has been modified, should this update also happen in ${
-            schemaV1File.relativePath
-          }?`
+          `${schemaV2File.relativePath} has been modified, should this update also happen in ${schemaV1File.relativePath}?`
         )
       }
     })
@@ -363,7 +353,7 @@ const diffDirectories = (
 
   // File was added to v1, should it also exist in v2?
   addedFiles
-    .map(filePath => [fromSchemaRoot(filePath), filePath])
+    .map((filePath) => [fromSchemaRoot(filePath), filePath])
     .filter(([file]) => filesUniqueToSchemaV1.includes(file))
     .forEach(([, filePath]) => {
       const file = schemaV1.getFile(filePath)
@@ -377,14 +367,12 @@ const diffDirectories = (
   // An update was made to a file in v1, but it doesn't exist in V2. Double
   // check that there aren't updates required.
   modifiedFiles
-    .map(filePath => [fromSchemaRoot(filePath), filePath])
+    .map((filePath) => [fromSchemaRoot(filePath), filePath])
     .filter(([file]) => filesUniqueToSchemaV1.includes(file))
     .forEach(([, filePath]) => {
       const file = schemaV1.getFile(filePath)
       warn(
-        `${
-          file.relativePath
-        } was modified in v1, but doesn't exist in v2. Ensure no v2 changes are required.`
+        `${file.relativePath} was modified in v1, but doesn't exist in v2. Ensure no v2 changes are required.`
       )
     })
 })()

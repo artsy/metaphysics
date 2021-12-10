@@ -11,10 +11,10 @@ It is currently used in production all over the place in
 [Artsy.net](http://github.com/artsy/force/), and the
 [Artsy iOS App](http://github.com/artsy/eigen)
 
-## Meta [![CircleCI](https://circleci.com/gh/artsy/metaphysics.svg?style=svg)](https://circleci.com/gh/artsy/metaphysics) [![codecov](https://codecov.io/gh/artsy/metaphysics/branch/master/graph/badge.svg)](https://codecov.io/gh/artsy/metaphysics)
+## Meta [![CircleCI](https://circleci.com/gh/artsy/metaphysics.svg?style=svg)](https://circleci.com/gh/artsy/metaphysics) [![codecov](https://codecov.io/gh/artsy/metaphysics/branch/main/graph/badge.svg)](https://codecov.io/gh/artsy/metaphysics)
 
 - **State:** production
-- **CI/Deploys:** [CircleCi](https://circleci.com/gh/artsy/metaphysics); merged PRs to `artsy/metaphysics#master` are automatically deployed to staging; PRs from `staging` to `release` are automatically deployed to production. [Start a deploy...](https://github.com/artsy/metaphysics/compare/release...staging?expand=1)
+- **CI/Deploys:** [CircleCi](https://circleci.com/gh/artsy/metaphysics); merged PRs to `artsy/metaphysics#main` are automatically deployed to staging; PRs from `staging` to `release` are automatically deployed to production. [Start a deploy...](https://github.com/artsy/metaphysics/compare/release...staging?expand=1)
 - **Production:**
   - [Endpoint](https://metaphysics-production.artsy.net/v2)
   - [Kubernetes deployment dashboard](https://kubernetes.prd.artsy.systems/#!/deployment/default/metaphysics-web?namespace=default)
@@ -150,7 +150,7 @@ If any of these queries fail, it's probable that you misconfigured your
 - [Debugging with VS Code](docs/debugging_with_vscode.md)
 - [GraphQL Schema Design][]
 
-[graphql schema design]: https://github.com/artsy/README/blob/master/playbooks/graphql-schema-design.md
+[graphql schema design]: https://github.com/artsy/README/blob/main/playbooks/graphql-schema-design.md
 
 ### Docker and Kubernetes setup
 
@@ -181,7 +181,7 @@ this:
   ```
 
   Artsy staff should find follow the instructions in
-  https://github.com/artsy/potential/blob/master/platform/Kubernetes.md#hokusai
+  https://github.com/artsy/potential/blob/main/platform/Kubernetes.md#hokusai
 
 - Start the server
 
@@ -218,8 +218,8 @@ You can learn more about this work from [our blog][footer_blog] and by following
 our [job postings][footer_jobs]!
 
 [footer_website]: https://www.artsy.net/
-[footer_principles]: https://github.com/artsy/README/blob/master/culture/engineering-principles.md
-[footer_open]: https://github.com/artsy/README/blob/master/culture/engineering-principles.md#open-source-by-default
+[footer_principles]: https://github.com/artsy/README/blob/main/culture/engineering-principles.md
+[footer_open]: https://github.com/artsy/README/blob/main/culture/engineering-principles.md#open-source-by-default
 [footer_blog]: https://artsy.github.io/
 [footer_twitter]: https://twitter.com/ArtsyOpenSource
 [footer_api]: https://developers.artsy.net/

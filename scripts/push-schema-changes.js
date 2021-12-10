@@ -18,7 +18,7 @@ async function updateSchemaFile({
   repo,
   dest = "data/schema.graphql",
   body = "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process.",
-  targetBranch = "master",
+  targetBranch = "main",
 }) {
   await updateRepo({
     repo: {
