@@ -17,7 +17,7 @@ const {
   GRAVITY_API_URL,
   GRAVITY_ID,
   GRAVITY_SECRET,
-  IP_BLACKLIST,
+  IP_DENYLIST,
   NODE_ENV,
   PORT,
   PRODUCTION_ENV,
@@ -86,9 +86,9 @@ function bootApp() {
     app.set("trust proxy", 1)
   }
 
-  if (IP_BLACKLIST) {
+  if (IP_DENYLIST) {
     app.use(
-      ipfilter(IP_BLACKLIST.split(","), {
+      ipfilter(IP_DENYLIST.split(","), {
         allowedHeaders: ["x-forwarded-for"],
         log: false,
         mode: "deny",
