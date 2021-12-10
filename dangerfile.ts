@@ -10,11 +10,11 @@ import schema from "./src/schema/v1"
 export default async () => {
   // Rule: encourage all new files to be TypeScript
   const jsAppFiles = danger.git.created_files.filter(
-    f => f.startsWith("src/") && f.endsWith(".js")
+    (f) => f.startsWith("src/") && f.endsWith(".js")
   )
   const testFiles = danger.git.created_files
     .concat(danger.git.modified_files)
-    .filter(f => f.includes(".test.ts") || f.includes(".test.js"))
+    .filter((f) => f.includes(".test.ts") || f.includes(".test.js"))
 
   if (jsAppFiles.length) {
     const listed = danger.github.utils.fileLinks(jsAppFiles)
@@ -48,8 +48,8 @@ export default async () => {
     const skipCamelCaseCheck = danger.github.pr.body.includes("#skip_camel")
     const violation = skipCamelCaseCheck ? warn : fail
     let failed = false
-    diff.chunks.forEach(chunk => {
-      chunk.changes.forEach(change => {
+    diff.chunks.forEach((chunk) => {
+      chunk.changes.forEach((change) => {
         if (change.type === "add") {
           const offence = /^\+\s*([a-zA-Z]+_\w*):/.exec(change.content)
           if (offence) {
@@ -68,7 +68,7 @@ export default async () => {
     })
     if (!skipCamelCaseCheck && failed) {
       fail(
-        "Failed due to [`snake_case` field naming](https://github.com/artsy/README/blob/master/playbooks/graphql-schema-design.md#how-to-model-our-graph). " +
+        "Failed due to [`snake_case` field naming](https://github.com/artsy/README/blob/main/playbooks/graphql-schema-design.md#how-to-model-our-graph). " +
           "If you want to skip this check add `#skip_camel` to your post body and re-run CI."
       )
     }
@@ -76,9 +76,9 @@ export default async () => {
 
   // Make sure we don't leave in any testing shortcuts (ex: `it.only`)
   const testingShortcuts = ["it.only", "describe.only"]
-  testFiles.forEach(file => {
+  testFiles.forEach((file) => {
     const content = readFileSync(file, "utf8")
-    testingShortcuts.forEach(shortcut => {
+    testingShortcuts.forEach((shortcut) => {
       if (content.includes(shortcut)) {
         fail(`Found a testing shortcut ${shortcut} left in by accident.`, file)
       }
@@ -88,8 +88,8 @@ export default async () => {
   // No `debugger` statements.
   danger.git.modified_files
     .concat(danger.git.created_files)
-    .filter(f => f.endsWith(".js") || f.endsWith(".ts"))
-    .forEach(file => {
+    .filter((f) => f.endsWith(".js") || f.endsWith(".ts"))
+    .forEach((file) => {
       const content = readFileSync(file, "utf8")
       if (content.includes("debugger")) {
         fail(`Found a debugger statement left in by accident.`, file)

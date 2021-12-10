@@ -28,13 +28,13 @@ export const shouldAddQueryToMutations = (query: string) =>
 
 export const addQueryToMutations = (query: string) => {
   if (query.includes("saved_artworks")) {
-    // https://github.com/artsy/eigen/blob/master/Artsy/Networking/favorites.graphql
+    // https://github.com/artsy/eigen/blob/main/Artsy/Networking/favorites.graphql
     return `query FavoritesQuery ${query}`
   } else if (query.includes("sale_artworks")) {
-    // https://github.com/artsy/eigen/blob/master/Artsy/Networking/artworks_in_sale.graphql
+    // https://github.com/artsy/eigen/blob/main/Artsy/Networking/artworks_in_sale.graphql
     return `query ArtworksInSaleQuery ${query}`
   } else if (query.includes("totalUnreadCount")) {
-    // https://github.com/artsy/eigen/blob/master/Artsy/Networking/conversations.graphql
+    // https://github.com/artsy/eigen/blob/main/Artsy/Networking/conversations.graphql
     return `query TotalUnreadCountQuery ${query}`
   }
 
