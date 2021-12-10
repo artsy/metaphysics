@@ -9,7 +9,7 @@ import {
   filter,
   sortBy,
 } from "lodash"
-import blacklist from "lib/artist_blacklist"
+import allowlist from "lib/artist_allowlist"
 import { LoadersWithAuthentication } from "lib/loaders/loaders_with_authentication"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 
@@ -110,7 +110,7 @@ export const popularArtists = (deltaLoader) => {
     name: "artist_follow_2t",
   }).then((trending) => {
     const clonedTrending = clone(trending)
-    forEach(blacklist, (id) => delete clonedTrending[id])
+    forEach(allowlist, (id) => delete clonedTrending[id])
     return clonedTrending
   })
 }

@@ -7,7 +7,7 @@ import { GraphQLError, GraphQLFormattedError } from "graphql/error"
 import { HTTPError } from "./HTTPError"
 import * as Sentry from "@sentry/node"
 
-const blacklistHttpStatuses = [401, 403, 404]
+const allowlistHttpStatuses = [401, 403, 404]
 
 // This is an error class defined in https://github.com/apollographql/graphql-tools/blob/3f87d907af2ac97a32b5ab375bb97198ebfe9e2c/src/stitching/errors.ts#L87-L93
 declare class CombinedError extends Error {
@@ -72,7 +72,7 @@ export const shouldReportError = (
     if (error instanceof HTTPError) {
       return (
         error.statusCode < 500 &&
-        !blacklistHttpStatuses.includes(error.statusCode)
+        !allowlistHttpStatuses.includes(error.statusCode)
       )
     }
     if (error instanceof GraphQLTimeoutError) {

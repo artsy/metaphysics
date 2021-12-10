@@ -522,7 +522,7 @@ const Fair: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { fairLoader }) => {
-    // TODO: blacklist filterArtworksConnection
+    // TODO: allowlist filterArtworksConnection
     return fairLoader(id)
   },
 }
