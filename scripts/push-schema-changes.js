@@ -12,11 +12,13 @@ const { readFileSync, writeFileSync } = require("fs")
  * @param {string} input.repo - repo: name of the artsy repo to update
  * @param {string} [input.body] - body: The PR body descrption
  * @param {string} [input.dest] - dest: Path to schema file in target repo
+ * @param {string} [input.targetBranch] - targetBranch: default branch of the target repo
  */
 async function updateSchemaFile({
   repo,
   dest = "data/schema.graphql",
   body = "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process.",
+  targetBranch = "master",
 }) {
   await updateRepo({
     repo: {
@@ -25,7 +27,7 @@ async function updateSchemaFile({
     },
     branch: "update-schema",
     title: "Update metaphysics schema",
-    targetBranch: "master",
+    targetBranch,
     commitMessage: "Update metaphysics schema",
     body,
     assignees: ["artsyit"],
@@ -63,6 +65,7 @@ async function main() {
       repo: "eigen",
       body:
         "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process. #nochangelog",
+      targetBranch: "main",
     })
     await updateSchemaFile({ repo: "force" })
     await updateSchemaFile({
