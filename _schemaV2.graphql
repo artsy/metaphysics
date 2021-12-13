@@ -2309,6 +2309,22 @@ type AuctionsUser implements AuctionsNode {
   userId: ID!
 }
 
+enum AuthenticationProvider {
+  APPLE
+  FACEBOOK
+  GOOGLE
+}
+
+type AuthenticationType {
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  provider: AuthenticationProvider!
+  uid: String!
+}
+
 type Author {
   # A globally unique ID.
   id: ID!
@@ -8403,6 +8419,9 @@ type Me implements Node {
     first: Int
     last: Int
   ): AuctionsLotStandingConnection!
+
+  # A list of authenticated external services
+  authentications: [AuthenticationType!]!
 
   # Returns a single bidder position
   bidderPosition(id: String!): BidderPositionResult
