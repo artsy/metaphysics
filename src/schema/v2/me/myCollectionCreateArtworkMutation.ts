@@ -71,6 +71,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     height: {
       type: GraphQLString,
     },
+    artwork_location: {
+      type: GraphQLString,
+    },
     metric: {
       type: GraphQLString,
     },
@@ -105,6 +108,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       editionSize,
       editionNumber,
       externalImageUrls = [],
+      artwork_location,
       pricePaidCents,
       pricePaidCurrency,
       ...rest
@@ -131,6 +135,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         cost_minor: costMinor,
         price_paid_cents: pricePaidCents,
         price_paid_currency: pricePaidCurrency,
+        artwork_artwork_location: artwork_location,
         ...rest,
       })
 

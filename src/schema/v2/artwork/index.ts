@@ -133,6 +133,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      artworkLocation: { type: GraphQLString },
       availability: { type: GraphQLString },
       category: {
         type: GraphQLString,
