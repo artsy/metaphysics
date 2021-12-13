@@ -1349,6 +1349,7 @@ type Artwork implements Node & Searchable & Sellable {
     first: Int
     last: Int
   ): ArtistSeriesConnection
+  artworkLocation: String
 
   # Represents the "**classification**" of an artwork, such as _limited edition_
   attributionClass: AttributionClass
@@ -9143,6 +9144,7 @@ type MyCollectionConnection {
 
 input MyCollectionCreateArtworkInput {
   artistIds: [String]!
+  artworkLocation: String
   category: String
   clientMutationId: String
   costCurrencyCode: String
@@ -9198,6 +9200,7 @@ type MyCollectionInfo {
 input MyCollectionUpdateArtworkInput {
   artistIds: [String]
   artworkId: String!
+  artworkLocation: String
   category: String
   clientMutationId: String
   costCurrencyCode: String

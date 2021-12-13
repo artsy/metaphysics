@@ -23,7 +23,7 @@ interface MyCollectionArtworkUpdateMutationInput {
   editionNumber?: string
   editionSize?: string
   externalImageUrls?: [string]
-  artwork_location?: string
+  artworkLocation?: string
   pricePaidCents?: number
   pricePaidCurrency?: string
 }
@@ -72,7 +72,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     height: {
       type: GraphQLString,
     },
-    artwork_location: {
+    artworkLocation: {
       type: GraphQLString,
     },
     medium: {
@@ -113,7 +113,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       editionNumber,
       editionSize,
       externalImageUrls = [],
-      artwork_location,
+      artworkLocation,
       pricePaidCents,
       pricePaidCurrency,
       ...rest
@@ -141,7 +141,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         artists: artistIds,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
-        artwork_artwork_location: artwork_location,
+        artwork_artwork_location: artworkLocation,
         price_paid_cents: pricePaidCents,
         price_paid_currency: pricePaidCurrency,
         ...rest,

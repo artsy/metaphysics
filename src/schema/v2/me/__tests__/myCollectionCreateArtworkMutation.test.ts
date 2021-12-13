@@ -40,7 +40,7 @@ const computeMutationInput = ({
           editionSize: ${JSON.stringify(editionSize)}
           externalImageUrls: ${JSON.stringify(externalImageUrls)}
           height: "20"
-          artwork_location: "Berlin"
+          artworkLocation: "Berlin"
           medium: "Painting"
           metric: "in"
           pricePaidCents: 10000
