@@ -5,7 +5,7 @@ import { HybridOffsets } from "./hybridOffsets"
  * A node with an additional `_cursorMeta` property for storing intermediate data
  * used to generate our hybrid cursors
  */
-export type NodeWMeta<
+export type NodeWithCursorMeta<
   Keys extends string,
   Node = Record<string, unknown>
 > = Node & {
@@ -33,12 +33,12 @@ export function hybridConnectionFromArraySlice<
   nodes: arraySlice,
   totalCount,
 }: {
-  nodes: Array<NodeWMeta<K, T>>
+  nodes: Array<NodeWithCursorMeta<K, T>>
   totalCount: number
 }): Connection<T> {
   const edges: Array<{
     cursor: string
-    node: NodeWMeta<K, T>
+    node: NodeWithCursorMeta<K, T>
   }> = arraySlice.map((node) => {
     const {
       _cursorMeta: { offsets },
@@ -57,8 +57,8 @@ export function hybridConnectionFromArraySlice<
   const result = {
     edges,
     pageInfo: {
-      startCursor: firstEdge ? firstEdge.cursor : null,
-      endCursor: lastEdge ? lastEdge.cursor : null,
+      startCursor: firstEdge?.cursor ?? null,
+      endCursor: lastEdge?.cursor ?? null,
       hasPreviousPage: firstEdge
         ? firstEdge.node._cursorMeta.offsets.position! > 0
         : false,

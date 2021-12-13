@@ -35,12 +35,12 @@ export const eventConnection: GraphQLFieldConfig<any, ResolverContext> = {
     const result = await fetchHybridConnection({
       args,
       fetchers: {
-        msg: fetchMessagesForPagination(
+        messages: fetchMessagesForPagination(
           conversationID,
           conversationMessagesLoader,
           parent
         ),
-        ord: fetchOrderEventsForPagination(
+        orderEvents: fetchOrderEventsForPagination(
           conversationID,
           userID,
           exchangeGraphQLLoader

@@ -3,7 +3,7 @@ import convectionLoaders from "./convection"
 import diffusionLoaders from "./diffusion"
 import impulseLoaders from "./impulse"
 import gravityLoaders from "./gravity"
-import exchangeGraphQLLoaders from "./exchange"
+import { exchangeLoaders } from "./exchange"
 import vortexLoaders from "./vortex"
 
 export const createLoadersWithAuthentication = (accessToken, userID, opts) => ({
@@ -11,7 +11,7 @@ export const createLoadersWithAuthentication = (accessToken, userID, opts) => ({
   ...convectionLoaders(accessToken, opts),
   ...diffusionLoaders(accessToken, opts),
   ...impulseLoaders(accessToken, userID, opts),
-  ...exchangeGraphQLLoaders(accessToken, opts),
+  ...exchangeLoaders(accessToken, opts),
   ...vortexLoaders(accessToken, opts),
   ...causalityLoaders(accessToken, userID),
 })

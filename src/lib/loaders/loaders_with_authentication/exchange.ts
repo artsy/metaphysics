@@ -3,15 +3,15 @@ import config from "config"
 import fetch from "node-fetch"
 import urljoin from "url-join"
 import { GraphQLError } from "graphql"
-import { verbose } from "lib/loggers"
 
 const { EXCHANGE_APP_ID, EXCHANGE_API_BASE } = config
+
 interface GraphQLArgs {
   query: string
   variables: any
 }
 
-export default (accessToken, opts) => {
+export const exchangeLoaders = (accessToken, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
 
   const { gravityLoaderWithAuthenticationFactory } = factories(opts)
@@ -49,13 +49,12 @@ export default (accessToken, opts) => {
 
     const json = await response.json()
     const { data: exchangeData, errors: exchangeErrors } = json
-    verbose(json)
 
-    // If the causality request failed for some reason, throw its errors.
+    // If the exchange request failed for some reason, throw its errors.
     if (exchangeErrors) {
       const errors = exchangeErrors.reduce((acc, error) => {
         return acc + " " + error["message"]
-      }, "From exchange: ")
+      }, "[exchange]: Error ")
       throw new GraphQLError(errors)
     } else {
       return exchangeData

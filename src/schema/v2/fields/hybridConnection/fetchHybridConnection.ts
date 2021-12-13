@@ -1,6 +1,6 @@
 import { Connection, ConnectionArguments } from "graphql-relay"
 import { hybridConnectionFromArraySlice } from "./hybridConnectionFromArraySlice"
-import { NodeWMeta } from "./hybridConnectionFromArraySlice"
+import { NodeWithCursorMeta } from "./hybridConnectionFromArraySlice"
 import { HybridOffsets } from "./hybridOffsets"
 
 /**
@@ -22,7 +22,7 @@ export const fetchHybridConnection = async <
   /* the generic nodes themselves */
   T extends Record<string, unknown>,
   /* Additional args that the query may receive */
-  A extends { [argName: string]: any }
+  A extends { sort?: any }
 >({
   args,
   fetchers,
@@ -36,19 +36,15 @@ export const fetchHybridConnection = async <
   transform?: (
     args: ConnectionArguments & A,
     nodes: T[]
-  ) => Array<NodeWMeta<K, T>>
+  ) => Array<NodeWithCursorMeta<K, T>>
 }): Promise<Connection<T>> => {
   const { first, last, before, after } = args
   // 1. check args
   if (before || last) {
     throw new Error("only first/after args are supported")
   }
-  if (typeof first === "number") {
-    if (first <= 0) {
-      throw new Error('Argument "first" must be a non-negative integer')
-    }
-  } else {
-    throw new Error("'first' is required")
+  if (!first) {
+    throw new Error("Argument 'first' is required")
   }
 
   const sort = args.sort
@@ -60,10 +56,11 @@ export const fetchHybridConnection = async <
     ? HybridOffsets.decode(after)
     : HybridOffsets.empty(sources)
 
-  // 3. over-fetch enough to fulfill request from either service
+  // 3. Over-fetch enough to fulfill request from either service
   const requests = sources.map<ReturnType<FetcherForLimitAndOffset<T>>>(
     (source) => {
-      return fetchers[source]({
+      const fetcher = fetchers[source]
+      return fetcher({
         limit,
         offset: initialOffsets.state[source],
         sort,
@@ -73,10 +70,10 @@ export const fetchHybridConnection = async <
 
   const results = await Promise.all(requests)
 
-  // 4. total count can be summed from results
+  // 4. Sum the total count from all results.
   const totalCount = results.reduce((acc, result) => acc + result.totalCount, 0)
 
-  // 5. flatten all nodes into a single array and add their source.
+  // 5. Flatten all nodes into a single array and add their source.
   const allNodes: Array<
     T & {
       _cursorMeta: {
@@ -89,28 +86,29 @@ export const fetchHybridConnection = async <
     return nodes.map((node) => ({ ...node, _cursorMeta: { source } }))
   })
 
-  // 6. Apply any transforms from the caller (good opportunity to sort)
+  // 6. Apply any transforms from the caller (good opportunity to sort).
   const transformedNodes = transform ? transform(args, allNodes) : allNodes
 
-  // 7. Finally, iterate over nodes and increment their offsets
+  // 7. Iterate over nodes and increment their offsets.
   let offsets = initialOffsets
-  const nodesWithOffsets: Array<NodeWMeta<K, T>> = []
+  const nodesWithOffsets: Array<NodeWithCursorMeta<K, T>> = []
 
   transformedNodes.forEach((node) => {
     const source = node._cursorMeta.source
     offsets = offsets.increment(source)
 
-    const nodeWithFullMeta = node as NodeWMeta<K, T>
+    const nodeWithFullMeta = node as NodeWithCursorMeta<K, T>
     nodeWithFullMeta._cursorMeta.offsets = offsets
 
     nodesWithOffsets.push(nodeWithFullMeta)
   })
 
-  // return requested number of nodes
+  // 8. Slice the requested number of nodes from the result set.
   const slicedNodes = nodesWithOffsets.slice(0, limit)
 
-  return hybridConnectionFromArraySlice({
+  const result = hybridConnectionFromArraySlice({
     nodes: slicedNodes,
     totalCount,
   })
+  return result
 }

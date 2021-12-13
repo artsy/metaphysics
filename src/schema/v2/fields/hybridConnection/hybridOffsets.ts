@@ -49,7 +49,9 @@ export class HybridOffsets<T extends string> {
       }
       return { ...acc, [key]: value }
     }, {} as OffsetState<U>)
-    return new HybridOffsets<U>(offsets)
+
+    const result = new HybridOffsets<U>(offsets)
+    return result
   }
 
   private constructor(offsets: OffsetState<T>) {
