@@ -47,6 +47,7 @@ type Algolia {
 
 type AlgoliaIndex {
   displayName: String!
+  key: String!
   name: String!
 }
 
@@ -126,12 +127,6 @@ type ArtistSeriesEdge {
 
   # The item at the end of the edge.
   node: ArtistSeries
-}
-
-enum ArtworkSizes {
-  LARGE
-  MEDIUM
-  SMALL
 }
 
 # Backup Two-Factor Authentication factor
@@ -569,6 +564,15 @@ scalar ISO8601DateTime
 # Represents untyped JSON
 scalar JSON
 
+type MarketingCollection {
+  description: String
+
+  # Unique ID for this marketing collection
+  internalID: ID!
+  slug: String!
+  title: String!
+}
+
 # A money object with amount in minor currency and a currency code, or an error object
 union MoneyOrErrorUnion = Error
 
@@ -718,6 +722,9 @@ type Query {
     last: Int
   ): ArtistSeriesConnection
   _unused_gravity_devices(userId: ID!): [Device!]!
+
+  # Find a marketing collection by ID or slug
+  _unused_gravity_marketingCollection(id: ID!): MarketingCollection
 
   # Autocomplete resolvers.
   _unused_gravity_matchPartners(matchType: String, page: Int = 1, size: Int = 5, term: String!): [DoNotUseThisPartner!]
@@ -877,9 +884,9 @@ type SearchCriteria {
   offerable: Boolean
   partnerIDs: [String!]!
   priceRange: String
+  sizes: [String!]!
   userAlertSettings: SavedSearchUserAlertSettings!
   width: String
-  sizes: [ArtworkSizes]
 }
 
 # Attributes for a search criteria
@@ -899,8 +906,8 @@ input SearchCriteriaAttributes {
   offerable: Boolean = null
   partnerIDs: [String!] = []
   priceRange: String = null
+  sizes: [String!] = []
   width: String = null
-  sizes: [ArtworkSizes] = []
 }
 
 # The connection type for SearchCriteria.
