@@ -34,6 +34,7 @@ export const executableGravitySchema = () => {
     "ArtworkEdge",
     "ArtworkConnection",
     "ArtistConnection",
+    "Lot",
     "Money",
     "MoneyInput",
     "Sale",
@@ -50,6 +51,7 @@ export const executableGravitySchema = () => {
   const unusedTypes = [
     "DebitCommissionExemptionInput",
     "DebitCommissionExemptionPayload",
+    "LotEvent",
     "RefundCommissionExemptionInput",
     "RefundCommissionExemptionPayload",
   ]

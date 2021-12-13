@@ -118,6 +118,7 @@ type Algolia {
 
 type AlgoliaIndex {
   displayName: String!
+  key: String!
   name: String!
 }
 
@@ -2836,12 +2837,6 @@ type ArtworkMeta {
 type ArtworksAggregationResults {
   counts: [AggregationCount]
   slice: ArtworkAggregation
-}
-
-enum ArtworkSizes {
-  LARGE
-  MEDIUM
-  SMALL
 }
 
 enum ArtworkSorts {
@@ -12509,6 +12504,9 @@ type Query {
   _unused_gravity_algolia: Algolia!
   _unused_gravity_devices(userId: ID!): [Device!]!
 
+  # Find a marketing collection by ID or slug
+  _unused_gravity_marketingCollection(id: ID!): MarketingCollection
+
   # Autocomplete resolvers.
   _unused_gravity_match_partners(
     match_type: String
@@ -14070,7 +14068,7 @@ type SearchCriteria {
   offerable: Boolean
   partnerIDs: [String!]!
   priceRange: String
-  sizes: [ArtworkSizes]
+  sizes: [String!]!
   userAlertSettings: SavedSearchUserAlertSettings!
   width: String
 }
@@ -14092,7 +14090,7 @@ input SearchCriteriaAttributes {
   offerable: Boolean = null
   partnerIDs: [String!] = []
   priceRange: String = null
-  sizes: [ArtworkSizes] = []
+  sizes: [String!] = []
   width: String = null
 }
 

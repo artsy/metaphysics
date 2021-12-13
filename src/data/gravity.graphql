@@ -79,6 +79,7 @@ type Algolia {
 
 type AlgoliaIndex {
   displayName: String!
+  key: String!
   name: String!
 }
 
@@ -1028,6 +1029,44 @@ Represents untyped JSON
 """
 scalar JSON
 
+type Lot {
+  bidCount: Int!
+  internalID: ID!
+  isWithdrawn: Boolean!
+  minimumNextBidMajorDisplay: String
+  minimumNextBidMinor: Int
+  reserveMajorDisplay: String
+  reserveMinor: Int
+  reserveStatus: String!
+  sellingPriceMajorDisplay: String
+  sellingPriceMinor: Int
+  startingBidMajorDisplay: String
+  startingBidMinor: Int
+}
+
+type LotEvent {
+  appliedErrors: [String!]!
+  bidMinor: Int
+  calculatedMinimumNextBidMinor: Int
+  calculatedReserveStatus: String
+  calculatedSellingPriceMinor: Int
+  internalID: ID!
+  type: String!
+  userAgent: String
+  userID: ID
+}
+
+type MarketingCollection {
+  description: String
+
+  """
+  Unique ID for this marketing collection
+  """
+  internalID: ID!
+  slug: String!
+  title: String!
+}
+
 type Money {
   """
   Amount in the minor unit of currency
@@ -1390,6 +1429,21 @@ type Query {
   """
   artworks(externalIds: [ID!], ids: [ID!], importSource: String): [Artwork!]
   devices(userId: ID!): [Device!]!
+
+  """
+  Find a Lot via ID, or sale artwork ID
+  """
+  lot(ID: ID, saleArtworkID: ID): Lot
+
+  """
+  Return lot events via a Lot ID
+  """
+  lotEvents(lotID: ID!): [LotEvent!]
+
+  """
+  Find a marketing collection by ID or slug
+  """
+  marketingCollection(id: ID!): MarketingCollection
 
   """
   Autocomplete resolvers.
@@ -1786,12 +1840,6 @@ type SavedSearchUserAlertSettings {
   push: Boolean!
 }
 
-enum ArtworkSizes {
-  LARGE
-  MEDIUM
-  SMALL
-}
-
 """
 Search criteria
 """
@@ -1812,9 +1860,9 @@ type SearchCriteria {
   offerable: Boolean
   partnerIDs: [String!]!
   priceRange: String
+  sizes: [String!]!
   userAlertSettings: SavedSearchUserAlertSettings!
   width: String
-  sizes: [ArtworkSizes]
 }
 
 """
@@ -1836,8 +1884,8 @@ input SearchCriteriaAttributes {
   offerable: Boolean = null
   partnerIDs: [String!] = []
   priceRange: String = null
+  sizes: [String!] = []
   width: String = null
-  sizes: [ArtworkSizes] = []
 }
 
 """
