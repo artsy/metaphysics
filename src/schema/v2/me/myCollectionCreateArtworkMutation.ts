@@ -135,7 +135,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         cost_minor: costMinor,
         price_paid_cents: pricePaidCents,
         price_paid_currency: pricePaidCurrency,
-        artwork_artwork_location: artworkLocation,
+        artwork_location: artworkLocation,
         ...rest,
       })
 
