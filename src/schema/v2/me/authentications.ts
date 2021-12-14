@@ -9,13 +9,15 @@ import {
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../object_identification"
 
-interface Authentication {
+export type Provider = "apple" | "facebook" | "google"
+
+export interface Authentication {
   id: string
   uid: string
-  provider: "apple" | "facebook" | "google"
+  provider: Provider
 }
 
-const AuthenticationProviderType = new GraphQLEnumType({
+export const AuthenticationProviderType = new GraphQLEnumType({
   name: "AuthenticationProvider",
   values: {
     APPLE: { value: "apple" },
@@ -24,7 +26,7 @@ const AuthenticationProviderType = new GraphQLEnumType({
   },
 })
 
-const AuthenticationType = new GraphQLObjectType<
+export const AuthenticationType = new GraphQLObjectType<
   Authentication,
   ResolverContext
 >({

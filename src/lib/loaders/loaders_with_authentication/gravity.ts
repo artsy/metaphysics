@@ -182,6 +182,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    linkAuthenticationLoader: gravityLoader(
+      (provider) => `me/authentications/${provider}`,
+      {},
+      { method: "POST" }
+    ),
     lotStandingLoader: gravityLoader("me/lot_standings", { size: 100 }),
     meBidderPositionLoader: gravityLoader(
       (id) => `me/bidder_position/${id}/`,
@@ -338,6 +343,11 @@ export default (accessToken, userID, opts) => {
     ),
     deleteCollectorProfileIconLoader: gravityLoader(
       "me/collector_profile/icon",
+      {},
+      { method: "DELETE" }
+    ),
+    unlinkAuthenticationLoader: gravityLoader(
+      (provider) => `me/authentications/${provider}`,
       {},
       { method: "DELETE" }
     ),
