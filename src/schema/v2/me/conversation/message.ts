@@ -1,4 +1,4 @@
-import date from "schema/v2/fields/date"
+import { date } from "schema/v2/fields/date"
 import {
   GraphQLBoolean,
   GraphQLList,
@@ -133,6 +133,6 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
       }),
       resolve: ({ metadata }) => isInvoiceMessage(metadata),
     },
-    createdAt: date,
+    createdAt: date(),
   },
 })
