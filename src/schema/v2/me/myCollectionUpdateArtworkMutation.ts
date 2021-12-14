@@ -23,6 +23,7 @@ interface MyCollectionArtworkUpdateMutationInput {
   editionNumber?: string
   editionSize?: string
   externalImageUrls?: [string]
+  artworkLocation?: string
   pricePaidCents?: number
   pricePaidCurrency?: string
 }
@@ -71,6 +72,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     height: {
       type: GraphQLString,
     },
+    artworkLocation: {
+      type: GraphQLString,
+    },
     medium: {
       type: GraphQLString,
     },
@@ -109,6 +113,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       editionNumber,
       editionSize,
       externalImageUrls = [],
+      artworkLocation,
       pricePaidCents,
       pricePaidCurrency,
       ...rest
@@ -136,6 +141,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         artists: artistIds,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
+        artwork_location: artworkLocation,
         price_paid_cents: pricePaidCents,
         price_paid_currency: pricePaidCurrency,
         ...rest,
@@ -158,7 +164,10 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         const editionSetId = response.edition_sets[0].id
 
         if (isEdition === false) {
-          await deleteArtworkEditionSetLoader({ artworkId, editionSetId })
+          await deleteArtworkEditionSetLoader({
+            artworkId,
+            editionSetId,
+          })
         } else {
           const payload = {
             edition_size: editionSize ? editionSize : null,

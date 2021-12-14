@@ -9,6 +9,7 @@ const artworkDetails = {
   medium: "Painting",
   price_paid_cents: 10000,
   price_paid_currency: "USD",
+  artwork_location: "Berlin",
 }
 const artworkLoader = jest.fn().mockResolvedValue(artworkDetails)
 
@@ -40,6 +41,7 @@ const computeMutationInput = ({
           editionSize: ${JSON.stringify(editionSize)}
           externalImageUrls: ${JSON.stringify(externalImageUrls)}
           height: "20"
+          artworkLocation: "Berlin"
           medium: "Painting"
           metric: "in"
           pricePaidCents: 10000
@@ -53,6 +55,7 @@ const computeMutationInput = ({
           ... on MyCollectionArtworkMutationSuccess {
             artwork {
               medium
+              artworkLocation
               pricePaid {
                 display
               }
@@ -125,6 +128,7 @@ describe("myCollectionCreateArtworkMutation", () => {
           pricePaid: {
             display: "$100",
           },
+          artworkLocation: "Berlin",
         },
         artworkEdge: {
           node: {
