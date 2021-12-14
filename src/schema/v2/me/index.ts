@@ -50,6 +50,7 @@ import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import Image, { normalizeImageData } from "../image"
 import { ArtistRecommendations } from "./artistRecommendations"
 import { PhoneNumber } from "../phoneNumber"
+import { authentications } from "./authentications"
 
 export const meType = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -59,6 +60,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     artistRecommendations: ArtistRecommendations,
     artworkInquiriesConnection: ArtworkInquiries,
     auctionResultsByFollowedArtists: AuctionResultsByFollowedArtists,
+    authentications: authentications,
     bidders: Bidders,
     bidderStatus: BidderStatus,
     bidderPositions: BidderPositions,

@@ -21,6 +21,11 @@ export default (accessToken, userID, opts) => {
     authenticatedArtworkVersionLoader: gravityLoader(
       (id) => `artwork_version/${id}`
     ),
+    authenticationsLoader: gravityLoader(
+      "me/authentications",
+      {},
+      { headers: true }
+    ),
     collectionArtworksLoader: gravityLoader(
       (id) => `collection/${id}/artworks`,
       { user_id: userID },
@@ -174,6 +179,11 @@ export default (accessToken, userID, opts) => {
     ),
     submitArtworkInquiryRequestLoader: gravityLoader(
       "me/artwork_inquiry_request",
+      {},
+      { method: "POST" }
+    ),
+    linkAuthenticationLoader: gravityLoader(
+      (provider) => `me/authentications/${provider}`,
       {},
       { method: "POST" }
     ),
@@ -333,6 +343,11 @@ export default (accessToken, userID, opts) => {
     ),
     deleteCollectorProfileIconLoader: gravityLoader(
       "me/collector_profile/icon",
+      {},
+      { method: "DELETE" }
+    ),
+    unlinkAuthenticationLoader: gravityLoader(
+      (provider) => `me/authentications/${provider}`,
       {},
       { method: "DELETE" }
     ),
