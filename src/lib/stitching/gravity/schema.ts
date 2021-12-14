@@ -29,11 +29,11 @@ export const executableGravitySchema = () => {
   // In the future, these could get merged into the MP types.
   const duplicatedTypes = [
     "Artist",
-    "Artwork",
-    "ArtistEdge",
-    "ArtworkEdge",
-    "ArtworkConnection",
     "ArtistConnection",
+    "ArtistEdge",
+    "Artwork",
+    "ArtworkConnection",
+    "ArtworkEdge",
     "Lot",
     "Money",
     "MoneyInput",
