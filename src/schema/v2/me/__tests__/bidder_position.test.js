@@ -98,7 +98,7 @@ describe("BidderPosition", () => {
         bidderPosition: {
           status: "RESERVE_NOT_MET",
           messageHeader: "Your bid wasn’t high enough",
-          messageDescriptionMD: `Your bid didn’t meet the reserve price\nfor this work.`,
+          messageDescriptionMD: `Your bid is below the reserve price. Please select a higher bid.`,
           position: {
             processedAt: "2018-04-26T14:15:52+00:00",
           },

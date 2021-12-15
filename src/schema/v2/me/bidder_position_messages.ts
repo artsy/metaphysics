@@ -26,7 +26,7 @@ export const BiddingMessages: BiddingMessage[] = [
     gravity_key: "Please enter a bid higher than",
     header: "Your bid wasn’t high enough",
     description_md: () =>
-      `Your bid didn’t meet the reserve price\nfor this work.`,
+      `Your bid is below the reserve price. Please select a higher bid.`,
   },
   {
     id: "SALE_CLOSED",
