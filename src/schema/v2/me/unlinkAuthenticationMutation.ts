@@ -37,7 +37,8 @@ export const unlinkAuthenticationMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await unlinkAuthenticationLoader(provider)
+      await unlinkAuthenticationLoader(provider)
+      return {}
     } catch (err) {
       if ("body" in (err as any)) {
         const e = err as GravityError
