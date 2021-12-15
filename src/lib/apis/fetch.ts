@@ -71,7 +71,8 @@ export default (url, options = {}) => {
       }
 
       try {
-        const shouldParse = typeof response.body === "string"
+        const shouldParse =
+          typeof response.body === "string" && response.body !== ""
         const parsed = shouldParse ? JSON.parse(response.body) : response.body
 
         resolve({
