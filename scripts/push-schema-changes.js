@@ -31,7 +31,7 @@ async function updateSchemaFile({
     commitMessage: "Update metaphysics schema",
     body,
     assignees: ["artsyit"],
-    labels: ["Merge On Green"],
+    labels: ["Squash On Green"],
     update: (repoDir) => {
       const repoDest = path.join(repoDir, dest)
       execSync("yarn config set ignore-engines true", { cwd: repoDir })
