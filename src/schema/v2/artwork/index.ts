@@ -137,7 +137,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: (artwork) => artwork.artwork_location,
         description:
-          'Represents the location of the artwork for "**My Collection**" artworks',
+          'Represents the location of the artwork for "My Collection" artworks',
       },
       availability: { type: GraphQLString },
       category: {

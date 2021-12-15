@@ -1351,7 +1351,7 @@ type Artwork implements Node & Searchable & Sellable {
     last: Int
   ): ArtistSeriesConnection
 
-  # Represents the location of the artwork for "**My Collection**" artworks
+  # Represents the location of the artwork for "My Collection" artworks
   artworkLocation: String
 
   # Represents the "**classification**" of an artwork, such as _limited edition_
