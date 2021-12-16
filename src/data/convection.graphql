@@ -1200,7 +1200,7 @@ type Query {
   """
   Get a Submission
   """
-  submission(id: ID): Submission
+  submission(id: ID!, sessionID: String): Submission
 
   """
   Filter all submission
