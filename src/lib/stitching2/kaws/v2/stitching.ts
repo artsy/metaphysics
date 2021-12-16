@@ -44,7 +44,6 @@ export const kawsStitchingEnvironmentV2 = (
         marketingCollections: {
           selectionSet: `{ internalID }`,
           resolve: ({ internalID: artistID }, args, context, info) => {
-            debugger
             return delegateToSchema({
               schema: kawsSchema,
               operation: "query",
@@ -61,14 +60,16 @@ export const kawsStitchingEnvironmentV2 = (
       },
       Fair: {
         marketingCollections: {
-          fragment: `
-          ... on Fair {
-            kawsCollectionSlugs
-          }
-        `,
+          selectionSet: gql`
+            {
+              ... on Fair {
+                kawsCollectionSlugs
+              }
+            }
+          `,
           resolve: ({ kawsCollectionSlugs: slugs }, args, context, info) => {
             if (slugs.length === 0) return []
-            return info.stitchingInfo.delegateToSchema({
+            return delegateToSchema({
               schema: kawsSchema,
               operation: "query",
               fieldName: "marketingCollections",
@@ -85,11 +86,13 @@ export const kawsStitchingEnvironmentV2 = (
       },
       HomePage: {
         marketingCollectionsModule: {
-          fragment: gql`
+          selectionSet: gql`
+            {
               ... on HomePage {
                 __typename
               }
-            `,
+            }
+          `,
           resolve: () => {
             return {}
           },
@@ -97,9 +100,11 @@ export const kawsStitchingEnvironmentV2 = (
       },
       HomePageMarketingCollectionsModule: {
         results: {
-          fragment: gql`
-            ... on HomePageMarketingCollectionsModule {
-              __typename
+          selectionSet: gql`
+            {
+              ... on HomePageMarketingCollectionsModule {
+                __typename
+              }
             }
           `,
           resolve: async (_source, _args, context, info) => {
@@ -107,7 +112,7 @@ export const kawsStitchingEnvironmentV2 = (
               // We hard-code the collections slugs here in MP so that the app
               // can display different collections based only on an MP change
               // (and not an app deploy).
-              return await info.mergeInfo.delegateToSchema({
+              return delegateToSchema({
                 schema: kawsSchema,
                 operation: "query",
                 fieldName: "marketingCollections",
@@ -132,17 +137,18 @@ export const kawsStitchingEnvironmentV2 = (
       },
       Viewer: {
         marketingCollections: {
-          fragment: gql`
-            ...on Viewer {
-              __typename
+          selectionSet: gql`
+            {
+              ... on Viewer {
+                __typename
+              }
             }
           `,
           resolve: async (_source, args, context, info) => {
-            return await info.mergeInfo.delegateToSchema({
+            return delegateToSchema({
               schema: kawsSchema,
               operation: "query",
               fieldName: "marketingCollections",
-
               args,
               context,
               info,
@@ -152,16 +158,16 @@ export const kawsStitchingEnvironmentV2 = (
       },
       MarketingCollection: {
         artworksConnection: {
-          fragment: `
+          selectionSet: gql`
 						fragment MarketingCollectionQuery on MarketingCollection {
 							query {
 								${Object.keys(filterArtworksArgs).join("\n")}
 							}
 						}
 					`,
-          resolve: (parent, _args, context, info) => {
+          resolve: (parent, args, context, info) => {
             const query = parent.query
-            const hasKeyword = Boolean(parent.query.keyword)
+            const hasKeyword = Boolean(args.keyword)
 
             const existingLoader =
               context.unauthenticatedLoaders.filterArtworksLoader
@@ -174,14 +180,14 @@ export const kawsStitchingEnvironmentV2 = (
             // TODO: Should this really modify the context in place?
             context.unauthenticatedLoaders.filterArtworksLoader = newLoader
 
-            return info.mergeInfo.delegateToSchema({
+            return delegateToSchema({
               schema: localSchema,
               operation: "query",
               fieldName: "artworksConnection",
               args: {
                 ...query,
                 keywordMatchExact: hasKeyword,
-                ..._args,
+                ...args,
               },
               context,
               info,
@@ -189,12 +195,14 @@ export const kawsStitchingEnvironmentV2 = (
           },
         },
         internalID: {
-          fragment: `
-          fragment MarketingCollectionIDQuery on MarketingCollection {
-            id
-          }
-        `,
-          resolve: ({ id }, _args, _context, _info) => id,
+          selectionSet: gql`
+            fragment MarketingCollectionIDQuery on MarketingCollection {
+              id
+            }
+          `,
+          resolve: ({ id }, _args, _context, _info) => {
+            return id
+          },
         },
       },
     },
