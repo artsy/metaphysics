@@ -111,6 +111,7 @@ import { deleteUserInterestMutation } from "./me/deleteUserInterestMutation"
 import { PhoneNumber } from "./phoneNumber"
 import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
 import { linkAuthenticationMutation } from "./me/linkAuthenticationMutation"
+import { authenticationStatus } from "./authenticationStatus"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -136,6 +137,7 @@ const rootFields = {
   artist: Artist,
   artists: Artists,
   artistsConnection,
+  authenticationStatus,
   city: City,
   cities,
   // collection: Collection,
