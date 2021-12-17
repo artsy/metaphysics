@@ -2059,6 +2059,7 @@ input UpdateSavedSearchInput {
   """
   A unique identifier for the client performing the mutation.
   """
+  attributes: SearchCriteriaAttributes
   clientMutationId: String
   searchCriteriaID: String!
   userAlertSettings: UserAlertSettingsInput
