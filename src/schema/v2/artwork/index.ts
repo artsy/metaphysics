@@ -59,6 +59,7 @@ import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/ut
 import { InquiryQuestionType } from "../inquiry_question"
 import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
 import { LocationType } from "schema/v2/location"
+import config from "config"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -447,6 +448,19 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       displayPriceRange: {
         type: GraphQLBoolean,
         resolve: ({ display_price_range }) => display_price_range,
+      },
+      downloadableImageUrl: {
+        type: GraphQLString,
+        resolve: ({ id, images }) => {
+          if (!images || !images.length) return null
+
+          const defaultImage =
+            images.find((image) => image.is_default) || images[0]
+
+          if (!defaultImage) return null
+
+          return `${config.GRAVITY_API_BASE}/artwork/${id}/image/${defaultImage.id}/original.jpg`
+        },
       },
       isBuyNowable: {
         type: GraphQLBoolean,
