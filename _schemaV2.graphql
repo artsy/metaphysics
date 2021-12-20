@@ -16,6 +16,16 @@ type AcceptPartnerAgreementPayload {
   partnerAgreementOrErrors: PartnerAgreementOrErrorsUnion!
 }
 
+type AccountMutationFailure {
+  mutationError: GravityMutationError
+}
+
+type AccountMutationSuccess {
+  success: Boolean
+}
+
+union AccountMutationType = AccountMutationFailure | AccountMutationSuccess
+
 type AccountRequest {
   # A globally unique ID.
   id: ID!
@@ -6127,6 +6137,16 @@ type DeepZoomImageSize {
   Width: Int
 }
 
+input DeleteAccountInput {
+  clientMutationId: String
+  id: String!
+}
+
+type DeleteAccountPayload {
+  clientMutationId: String
+  userAccountOrError: AccountMutationType
+}
+
 input DeleteArtworkImageInput {
   artworkID: String!
   clientMutationId: String
@@ -9099,6 +9119,9 @@ type Mutation {
 
   # Remove the user icon
   deleteMyUserProfileIcon(input: DeleteUserIconInput!): DeleteUserIconPayload
+
+  # Delete User Artsy Account
+  deleteUserAccount(input: DeleteAccountInput!): DeleteAccountPayload
   deleteUserAddress(input: DeleteUserAddressInput!): DeleteUserAddressPayload
 
   # Deletes a UserInterest on the logged in User's CollectorProfile.
