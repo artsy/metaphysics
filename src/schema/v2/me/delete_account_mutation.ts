@@ -1,21 +1,23 @@
-import { GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLUnionType } from "graphql";
+import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLUnionType } from "graphql";
 import { mutationWithClientMutationId } from "graphql-relay";
 import { formatGravityError, GravityMutationErrorType } from "lib/gravityErrorHandler";
 import { ResolverContext } from "types/graphql";
 
 
-const AccountMutationSuccessType = new GraphQLObjectType<
+const AccountMutationDeleteSuccessType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
   name: "AccountMutationSuccess",
-  isTypeOf: (data) => data.id,
+  isTypeOf: (data) => {
+    return data._type !== "GravityMutationError"
+  },
   fields: () => ({
-    me: {
-      type: me.type,
-      resolve: (me) => me,
-    }
-  }),
+    success: {
+      type: GraphQLBoolean,
+      resolve: () => true,
+    },
+  })
 })
 
 const AccountMutationFailureType = new GraphQLObjectType<
@@ -36,7 +38,7 @@ const AccountMutationFailureType = new GraphQLObjectType<
 
 export const AccountMutationType = new GraphQLUnionType({
   name: "AccountMutationType",
-  types: [AccountMutationSuccessType, AccountMutationFailureType],
+  types: [AccountMutationDeleteSuccessType, AccountMutationFailureType],
 })
 
 export const deleteUserAccountMutation = mutationWithClientMutationId<
