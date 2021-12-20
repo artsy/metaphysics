@@ -92,6 +92,10 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     width: {
       type: GraphQLString,
     },
+    attributionClass: {
+      // TODO: change to AttributionClass
+      type: GraphQLString,
+    },
   },
   outputFields: {
     artworkOrError: {
@@ -111,6 +115,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       artworkLocation,
       pricePaidCents,
       pricePaidCurrency,
+      attributionClass,
       ...rest
     },
     {
@@ -136,6 +141,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         price_paid_cents: pricePaidCents,
         price_paid_currency: pricePaidCurrency,
         artwork_location: artworkLocation,
+        attribution_class: attributionClass,
         ...rest,
       })
 
