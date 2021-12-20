@@ -109,6 +109,9 @@ import { createUserInterestMutation } from "./me/createUserInterestMutation"
 import { page } from "./page"
 import { deleteUserInterestMutation } from "./me/deleteUserInterestMutation"
 import { PhoneNumber } from "./phoneNumber"
+import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
+import { linkAuthenticationMutation } from "./me/linkAuthenticationMutation"
+import { authenticationStatus } from "./authenticationStatus"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -134,6 +137,7 @@ const rootFields = {
   artist: Artist,
   artists: Artists,
   artistsConnection,
+  authenticationStatus,
   city: City,
   cities,
   // collection: Collection,
@@ -227,6 +231,7 @@ export default new GraphQLSchema({
       followGene: FollowGene,
       followProfile: FollowProfile,
       followShow: FollowShow,
+      linkAuthentication: linkAuthenticationMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
@@ -238,6 +243,7 @@ export default new GraphQLSchema({
       submitInquiryRequestMutation,
       sendFeedback: sendFeedbackMutation,
       startIdentityVerification: startIdentityVerificationMutation,
+      unlinkAuthentication: unlinkAuthenticationMutation,
       updateCollectorProfile: UpdateCollectorProfile,
       updateConversation: UpdateConversationMutation,
       updateMyPassword: updateMyPasswordMutation,

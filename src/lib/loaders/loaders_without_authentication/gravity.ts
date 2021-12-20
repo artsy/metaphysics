@@ -50,6 +50,7 @@ export default (opts) => {
     >(({ artwork_id, image_id }) => `artwork/${artwork_id}/image/${image_id}`),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
     artworksLoader: gravityLoader("artworks"),
+    authenticationStatusLoader: gravityLoader("me", {}, { headers: true }),
     bidderLoader: gravityLoader((id) => `bidder/${id}`),
     exchangeRatesLoader: gravityLoader(
       "exchange_rates",
