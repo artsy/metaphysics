@@ -1,8 +1,10 @@
-import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLUnionType } from "graphql";
-import { mutationWithClientMutationId } from "graphql-relay";
-import { formatGravityError, GravityMutationErrorType } from "lib/gravityErrorHandler";
-import { ResolverContext } from "types/graphql";
-
+import { GraphQLBoolean, GraphQLObjectType, GraphQLUnionType } from "graphql"
+import { mutationWithClientMutationId } from "graphql-relay"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
+import { ResolverContext } from "types/graphql"
 
 const AccountMutationDeleteSuccessType = new GraphQLObjectType<
   any,
@@ -17,13 +19,10 @@ const AccountMutationDeleteSuccessType = new GraphQLObjectType<
       type: GraphQLBoolean,
       resolve: () => true,
     },
-  })
+  }),
 })
 
-const AccountMutationFailureType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
+const AccountMutationFailureType = new GraphQLObjectType<any, ResolverContext>({
   name: "AccountMutationFailure",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
@@ -48,33 +47,28 @@ export const deleteUserAccountMutation = mutationWithClientMutationId<
 >({
   name: "DeleteAccount",
   description: "Delete User Artsy Account",
-  inputFields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-  },
+  inputFields: {},
   outputFields: {
     userAccountOrError: {
       type: AccountMutationType,
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: ({ id }, { deleteUserAccountLoader }) => {
+  mutateAndGetPayload: (_args, { deleteUserAccountLoader }) => {
     if (!deleteUserAccountLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
-    return (deleteUserAccountLoader(id)
+    return deleteUserAccountLoader()
       .then((result) => result)
       .catch((error) => {
         const formattedErr = formatGravityError(error)
 
-        if(formattedErr) {
+        if (formattedErr) {
           return { ...formattedErr, _type: "GravityMutationError" }
         } else {
           throw new Error(error)
         }
       })
-    )
   },
 })
