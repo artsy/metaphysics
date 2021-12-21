@@ -48,8 +48,12 @@ export const deleteUserAccountMutation = mutationWithClientMutationId<
   name: "DeleteAccount",
   description: "Delete User Artsy Account",
   inputFields: {
-    explanation: new GraphQLNonNull(GraphQLString),
-    url: new GraphQLNonNull(GraphQLString)
+    explanation: {
+      type: new GraphQLNonNull(GraphQLString)
+    },
+    url: {
+      type: new GraphQLNonNull(GraphQLString)
+    }
   },
   outputFields: {
     userAccountOrError: {
