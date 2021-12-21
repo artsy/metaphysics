@@ -9298,7 +9298,7 @@ type MyCollectionConnection {
 input MyCollectionCreateArtworkInput {
   artistIds: [String]!
   artworkLocation: String
-  attributionClass: ArtworkAttributionClassType!
+  attributionClass: ArtworkAttributionClassType
   category: String
   clientMutationId: String
   costCurrencyCode: String
@@ -9355,7 +9355,7 @@ input MyCollectionUpdateArtworkInput {
   artistIds: [String]
   artworkId: String!
   artworkLocation: String
-  attributionClass: ArtworkAttributionClassType!
+  attributionClass: ArtworkAttributionClassType
   category: String
   clientMutationId: String
   costCurrencyCode: String

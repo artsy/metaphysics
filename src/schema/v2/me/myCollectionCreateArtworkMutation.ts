@@ -35,16 +35,16 @@ export const ArtworkAttributionClassEnum = new GraphQLEnumType({
   name: "ArtworkAttributionClassType",
   values: {
     LIMITED_EDITION: {
-      value: "limited_edition",
+      value: "limited edition",
     },
     OPEN_EDITION: {
-      value: "open_edition",
+      value: "open edition",
     },
     UNIQUE: {
       value: "unique",
     },
     UNKNOWN_EDITION: {
-      value: "unknown_edition",
+      value: "unknown edition",
     },
   },
 })
@@ -117,7 +117,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
     },
     attributionClass: {
-      type: new GraphQLNonNull(ArtworkAttributionClassEnum),
+      type: ArtworkAttributionClassEnum,
     },
   },
   outputFields: {

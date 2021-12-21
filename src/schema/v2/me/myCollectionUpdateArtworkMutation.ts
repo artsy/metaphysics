@@ -101,7 +101,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
     },
     attributionClass: {
-      type: new GraphQLNonNull(ArtworkAttributionClassEnum),
+      type: ArtworkAttributionClassEnum,
     },
   },
   outputFields: {
