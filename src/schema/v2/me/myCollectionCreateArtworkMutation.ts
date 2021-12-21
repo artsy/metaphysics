@@ -1,4 +1,10 @@
-import { GraphQLString, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
+import {
+  GraphQLString,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+  GraphQLEnumType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { GraphQLNonNull } from "graphql"
@@ -24,6 +30,24 @@ export const computeImageSources = (externalImageUrls) => {
   const filteredImageSources = imageSources.filter(Boolean)
   return filteredImageSources
 }
+
+export const ArtworkAttributionClassEnum = new GraphQLEnumType({
+  name: "ArtworkAttributionClassType",
+  values: {
+    LIMITED_EDITION: {
+      value: "limited_edition",
+    },
+    OPEN_EDITION: {
+      value: "open_edition",
+    },
+    UNIQUE: {
+      value: "unique",
+    },
+    UNKNOWN_EDITION: {
+      value: "unknown_edition",
+    },
+  },
+})
 
 export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   any,
@@ -93,8 +117,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
     },
     attributionClass: {
-      // TODO: change to AttributionClass
-      type: GraphQLString,
+      type: new GraphQLNonNull(ArtworkAttributionClassEnum),
     },
   },
   outputFields: {
