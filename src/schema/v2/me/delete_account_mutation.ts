@@ -1,4 +1,4 @@
-import { GraphQLBoolean, GraphQLObjectType, GraphQLUnionType } from "graphql"
+import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLUnionType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
   formatGravityError,
@@ -47,7 +47,10 @@ export const deleteUserAccountMutation = mutationWithClientMutationId<
 >({
   name: "DeleteAccount",
   description: "Delete User Artsy Account",
-  inputFields: {},
+  inputFields: {
+    explanation: new GraphQLNonNull(GraphQLString),
+    url: new GraphQLNonNull(GraphQLString)
+  },
   outputFields: {
     userAccountOrError: {
       type: AccountMutationType,
