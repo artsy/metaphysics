@@ -49,9 +49,11 @@ export const deleteUserAccountMutation = mutationWithClientMutationId<
   description: "Delete User Artsy Account",
   inputFields: {
     explanation: {
+      description: "Reason for deleting the account.",
       type: new GraphQLNonNull(GraphQLString)
     },
     url: {
+      description: "Referrer location",
       type: new GraphQLNonNull(GraphQLString)
     }
   },
@@ -61,13 +63,12 @@ export const deleteUserAccountMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: (_args, { deleteUserAccountLoader }) => {
+  mutateAndGetPayload: (args, { deleteUserAccountLoader }) => {
     if (!deleteUserAccountLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
-    return deleteUserAccountLoader()
-      .then((result) => result)
+    return deleteUserAccountLoader(args)
       .catch((error) => {
         const formattedErr = formatGravityError(error)
 
