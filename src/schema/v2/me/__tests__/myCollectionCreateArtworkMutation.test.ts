@@ -10,6 +10,7 @@ const artworkDetails = {
   price_paid_cents: 10000,
   price_paid_currency: "USD",
   artwork_location: "Berlin",
+  attribution_class: "open edition",
 }
 const artworkLoader = jest.fn().mockResolvedValue(artworkDetails)
 
@@ -63,6 +64,9 @@ const computeMutationInput = ({
             artworkEdge {
               node {
                 medium
+                attributionClass{
+                  name
+                }
               }
             }
           }
@@ -133,6 +137,9 @@ describe("myCollectionCreateArtworkMutation", () => {
         artworkEdge: {
           node: {
             medium: "Painting",
+            attributionClass: {
+              name: "Open edition",
+            },
           },
         },
       })
