@@ -1,5 +1,4 @@
 import "moment-timezone"
-import Bluebird from "bluebird"
 import xapp from "@artsy/xapp"
 import compression from "compression"
 import forceSSL from "express-force-ssl"
@@ -22,8 +21,6 @@ const {
   PORT,
   PRODUCTION_ENV,
 } = config
-
-global.Promise = Bluebird
 
 const port = PORT
 const isDevelopment = NODE_ENV === "development"
