@@ -9,7 +9,10 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { formatGravityError } from "lib/gravityErrorHandler"
-import { computeImageSources } from "./myCollectionCreateArtworkMutation"
+import {
+  ArtworkAttributionClassEnum,
+  computeImageSources,
+} from "./myCollectionCreateArtworkMutation"
 
 interface MyCollectionArtworkUpdateMutationInput {
   artworkId: string
@@ -26,6 +29,7 @@ interface MyCollectionArtworkUpdateMutationInput {
   artworkLocation?: string
   pricePaidCents?: number
   pricePaidCurrency?: string
+  attributionClass?: string
 }
 
 export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
@@ -96,6 +100,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     width: {
       type: GraphQLString,
     },
+    attributionClass: {
+      type: ArtworkAttributionClassEnum,
+    },
   },
   outputFields: {
     artworkOrError: {
@@ -116,6 +123,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       artworkLocation,
       pricePaidCents,
       pricePaidCurrency,
+      attributionClass,
       ...rest
     },
     {
@@ -144,6 +152,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         artwork_location: artworkLocation,
         price_paid_cents: pricePaidCents,
         price_paid_currency: pricePaidCurrency,
+        attribution_class: attributionClass,
         ...rest,
       })
 

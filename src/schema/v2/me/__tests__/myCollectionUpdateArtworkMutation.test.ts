@@ -33,6 +33,7 @@ const defaultArtworkDetails = ({
   provenance: "Pat Hearn Gallery",
   title: "hey now",
   width: "20",
+  attribution_class: "open edition",
 })
 
 const artworkLoader = jest.fn().mockResolvedValue(defaultArtworkDetails())
@@ -92,6 +93,9 @@ const computeMutationInput = ({
               width
               pricePaid {
                 display
+              }
+              attributionClass{
+                name
               }
             }
             artworkEdge {
@@ -179,6 +183,9 @@ describe("myCollectionUpdateArtworkMutation", () => {
           provenance: "Pat Hearn Gallery",
           title: "hey now",
           width: "20",
+          attributionClass: {
+            name: "Open edition",
+          },
         },
         artworkEdge: {
           node: {

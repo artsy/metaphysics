@@ -1,4 +1,10 @@
-import { GraphQLString, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
+import {
+  GraphQLString,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+  GraphQLEnumType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { GraphQLNonNull } from "graphql"
@@ -24,6 +30,24 @@ export const computeImageSources = (externalImageUrls) => {
   const filteredImageSources = imageSources.filter(Boolean)
   return filteredImageSources
 }
+
+export const ArtworkAttributionClassEnum = new GraphQLEnumType({
+  name: "ArtworkAttributionClassType",
+  values: {
+    LIMITED_EDITION: {
+      value: "limited edition",
+    },
+    OPEN_EDITION: {
+      value: "open edition",
+    },
+    UNIQUE: {
+      value: "unique",
+    },
+    UNKNOWN_EDITION: {
+      value: "unknown edition",
+    },
+  },
+})
 
 export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   any,
@@ -92,6 +116,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     width: {
       type: GraphQLString,
     },
+    attributionClass: {
+      type: ArtworkAttributionClassEnum,
+    },
   },
   outputFields: {
     artworkOrError: {
@@ -111,6 +138,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       artworkLocation,
       pricePaidCents,
       pricePaidCurrency,
+      attributionClass,
       ...rest
     },
     {
@@ -136,6 +164,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         price_paid_cents: pricePaidCents,
         price_paid_currency: pricePaidCurrency,
         artwork_location: artworkLocation,
+        attribution_class: attributionClass,
         ...rest,
       })
 
