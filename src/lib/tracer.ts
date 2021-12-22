@@ -10,7 +10,16 @@ export function init() {
     service: DD_TRACER_SERVICE_NAME,
     hostname: DD_TRACER_HOSTNAME,
     plugins: false,
-    logger: { debug, error },
+    logger: {
+      debug,
+      error,
+      warn: () => {
+        // Noop
+      },
+      info: () => {
+        // Noop
+      },
+    },
     debug: !PRODUCTION_ENV,
   })
   tracer.use("express", {

@@ -14,16 +14,16 @@ import {
   trim,
 } from "lodash"
 import moment, { LocaleSpecification } from "moment"
-import now from "performance-now"
+import { performance } from "perf_hooks"
 import { stringify } from "qs"
 import { getPagingParameters, CursorPageable } from "relay-cursor-paging"
 import { formatMarkdownValue } from "schema/v1/fields/markdown"
 
-const loadNs = now()
+const loadNs = performance.now()
 const loadMs = Date.now()
 
 export function timestamp() {
-  return Math.round((loadMs + now() - loadNs) * 100000) / 100000
+  return Math.round((loadMs + performance.now() - loadNs) * 100000) / 100000
 }
 
 export function enhance(xs = [], source = {}) {
