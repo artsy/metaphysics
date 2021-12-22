@@ -64,7 +64,7 @@
     "express-ipfilter": "0.3.1",
     "express-rate-limit": "3.2.0",
     "google-libphonenumber": "^3.2.25",
-    "graphiql": "0.11.11",
+    "graphiql": "1.4.7",
     "graphql": "14.5.4",
     "graphql-depth-limit": "1.1.0",
     "graphql-extensions": "0.5.7",
