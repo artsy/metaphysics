@@ -215,6 +215,12 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLFloat,
       resolve: ({ price_range }) => price_range?.split(":")[1],
     },
+    privacy: {
+      type: GraphQLInt,
+      resolve: ({ privacy }) => {
+        return privacy
+      },
+    },
     profession: {
       type: GraphQLString,
     },
