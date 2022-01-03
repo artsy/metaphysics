@@ -43,6 +43,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     artworkId: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    title: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
     artistIds: {
       type: new GraphQLList(GraphQLString),
     },
@@ -92,9 +95,6 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
     },
     provenance: {
-      type: GraphQLString,
-    },
-    title: {
       type: GraphQLString,
     },
     width: {

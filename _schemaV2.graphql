@@ -9315,12 +9315,12 @@ input MyCollectionCreateArtworkInput {
   externalImageUrls: [String]
   height: String
   isEdition: Boolean
-  medium: String!
+  medium: String
   metric: String
   pricePaidCents: Int
   pricePaidCurrency: String
   provenance: String
-  title: String
+  title: String!
   width: String
 }
 
@@ -9377,7 +9377,7 @@ input MyCollectionUpdateArtworkInput {
   pricePaidCents: Int
   pricePaidCurrency: String
   provenance: String
-  title: String
+  title: String!
   width: String
 }
 

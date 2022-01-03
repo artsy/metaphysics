@@ -60,11 +60,14 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     artistIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
     },
-    medium: {
+    title: {
       type: new GraphQLNonNull(GraphQLString),
     },
 
     // Optional
+    medium: {
+      type: GraphQLString,
+    },
     category: {
       type: GraphQLString,
     },
@@ -108,9 +111,6 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
     },
     provenance: {
-      type: GraphQLString,
-    },
-    title: {
       type: GraphQLString,
     },
     width: {
