@@ -16,6 +16,7 @@ describe("UpdateMeMutation", () => {
             phone: "1234890"
             priceRangeMax: 1000000000000
             priceRangeMin: -1
+            privacy: 1
             profession: "Juggler"
             receiveLotOpeningSoonNotification: false
             receiveNewSalesNotification: false
@@ -117,6 +118,7 @@ describe("UpdateMeMutation", () => {
       phone: "1234890",
       price_range_max: 1000000000000,
       price_range_min: -1,
+      privacy: 1,
       profession: "Juggler",
       receive_lot_opening_soon_notification: false,
       receive_new_sales_notification: false,
@@ -145,6 +147,7 @@ describe("UpdateMeMutation", () => {
             collectorLevel: 1
             bio: "A very long story"
             iconUrl: "https://gggg.notS3.com/thekey"
+            privacy: 1
           }
         ) {
           user {
@@ -211,6 +214,7 @@ describe("UpdateMeMutation", () => {
       client_mutation_id: "1232",
       collector_level: 1,
       bio: "A very long story",
+      privacy: 1,
     })
 
     expect(mockUpdateCollectorProfileIconLoader).not.toHaveBeenCalled()
