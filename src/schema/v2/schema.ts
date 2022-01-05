@@ -226,7 +226,7 @@ export default new GraphQLSchema({
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createUserInterest: createUserInterestMutation,
       deleteCreditCard: deleteCreditCardMutation,
-      deleteUserAccount: deleteUserAccountMutation,
+      deleteMyAccountMutation: deleteUserAccountMutation,
       deleteUserInterest: deleteUserInterestMutation,
       endSale: endSaleMutation,
       followArtist: FollowArtist,

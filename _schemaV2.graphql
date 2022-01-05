@@ -6139,6 +6139,12 @@ type DeepZoomImageSize {
 
 input DeleteAccountInput {
   clientMutationId: String
+
+  # Reason for deleting the account.
+  explanation: String!
+
+  # Referrer location
+  url: String!
 }
 
 type DeleteAccountPayload {
@@ -9116,11 +9122,11 @@ type Mutation {
   # Remove a credit card
   deleteCreditCard(input: DeleteCreditCardInput!): DeleteCreditCardPayload
 
+  # Delete User Artsy Account
+  deleteMyAccountMutation(input: DeleteAccountInput!): DeleteAccountPayload
+
   # Remove the user icon
   deleteMyUserProfileIcon(input: DeleteUserIconInput!): DeleteUserIconPayload
-
-  # Delete User Artsy Account
-  deleteUserAccount(input: DeleteAccountInput!): DeleteAccountPayload
   deleteUserAddress(input: DeleteUserAddressInput!): DeleteUserAddressPayload
 
   # Deletes a UserInterest on the logged in User's CollectorProfile.
