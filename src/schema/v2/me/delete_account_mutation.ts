@@ -1,4 +1,10 @@
-import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLUnionType } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
   formatGravityError,
@@ -50,12 +56,12 @@ export const deleteUserAccountMutation = mutationWithClientMutationId<
   inputFields: {
     explanation: {
       description: "Reason for deleting the account.",
-      type: new GraphQLNonNull(GraphQLString)
+      type: GraphQLString,
     },
     url: {
       description: "Referrer location",
-      type: new GraphQLNonNull(GraphQLString)
-    }
+      type: GraphQLString,
+    },
   },
   outputFields: {
     userAccountOrError: {
@@ -68,15 +74,14 @@ export const deleteUserAccountMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    return deleteUserAccountLoader(args)
-      .catch((error) => {
-        const formattedErr = formatGravityError(error)
+    return deleteUserAccountLoader(args).catch((error) => {
+      const formattedErr = formatGravityError(error)
 
-        if (formattedErr) {
-          return { ...formattedErr, _type: "GravityMutationError" }
-        } else {
-          throw new Error(error)
-        }
-      })
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
+    })
   },
 })

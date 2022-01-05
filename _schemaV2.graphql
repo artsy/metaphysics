@@ -6141,10 +6141,10 @@ input DeleteAccountInput {
   clientMutationId: String
 
   # Reason for deleting the account.
-  explanation: String!
+  explanation: String
 
   # Referrer location
-  url: String!
+  url: String
 }
 
 type DeleteAccountPayload {
