@@ -841,10 +841,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return !!vat_status
         },
       },
-      vatExemptApprovalComplete: {
+      vatExemptApprovalRequired: {
         type: GraphQLBoolean,
         description:
-          "Based on artwork location and status, verify that VAT exempt partners are approved.",
+          "Based on artwork location and status, verify that partner needs VAT exemption approval from Artsy.",
         resolve: async (
           { vat_required, partner },
           {},
@@ -853,15 +853,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           if (vat_required == null || _.isEmpty(partner) || !partnerAllLoader)
             return null
 
-          if (!vat_required) return true
+          if (!vat_required) return false
 
           const { vat_status, vat_exempt_approved } = await partnerAllLoader(
             partner.id
           )
 
-          if (vat_status === "registered") return true
+          if (vat_status == null || vat_status === "registered") return false
 
-          return vat_exempt_approved
+          return !vat_exempt_approved
         },
       },
       pricePaid: {
