@@ -743,17 +743,17 @@ type ArticleEdge {
 
 type ArticleSectionCallout {
   article: String
-  hide_image: String
+  hideImage: String
   text: String
-  thumbnail_url: String
-  top_stories: String
+  thumbnailUrl: String
+  topStories: String
   type: String
 }
 
 type ArticleSectionEmbed {
   height: String
   layout: String
-  mobile_height: String
+  mobileHeight: String
   type: String
   url: String
 }
@@ -791,9 +791,9 @@ type ArticleSectionText {
 }
 
 type ArticleSectionVideo {
-  background_color: String
+  backgroundColor: String
   caption: String
-  cover_image_url: String
+  coverImageUrl: String
   layout: String
   type: String
   url: String

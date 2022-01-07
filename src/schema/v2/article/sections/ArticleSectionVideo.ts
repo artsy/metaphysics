@@ -16,14 +16,16 @@ export const ArticleSectionVideo = new GraphQLObjectType<any, ResolverContext>({
     caption: {
       type: GraphQLString,
     },
-    cover_image_url: {
+    coverImageUrl: {
       type: GraphQLString,
+      resolve: ({ cover_image_url }) => cover_image_url,
     },
     layout: {
       type: GraphQLString,
     },
-    background_color: {
+    backgroundColor: {
       type: GraphQLString,
+      resolve: ({ background_color }) => background_color,
     },
   }),
 })

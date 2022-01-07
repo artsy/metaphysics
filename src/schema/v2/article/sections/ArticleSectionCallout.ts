@@ -13,8 +13,9 @@ export const ArticleSectionCallout = new GraphQLObjectType<
     type: {
       type: GraphQLString,
     },
-    thumbnail_url: {
+    thumbnailUrl: {
       type: GraphQLString,
+      resolve: ({ thumbnail_url }) => thumbnail_url,
     },
     text: {
       type: GraphQLString,
@@ -22,11 +23,13 @@ export const ArticleSectionCallout = new GraphQLObjectType<
     article: {
       type: GraphQLString,
     },
-    hide_image: {
+    hideImage: {
       type: GraphQLString,
+      resolve: ({ hide_image }) => hide_image,
     },
-    top_stories: {
+    topStories: {
       type: GraphQLString,
+      resolve: ({ top_stories }) => top_stories,
     },
   }),
 })

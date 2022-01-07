@@ -16,8 +16,9 @@ export const ArticleSectionEmbed = new GraphQLObjectType<any, ResolverContext>({
     height: {
       type: GraphQLString,
     },
-    mobile_height: {
+    mobileHeight: {
       type: GraphQLString,
+      resolve: ({ mobile_height }) => mobile_height,
     },
     layout: {
       type: GraphQLString,
