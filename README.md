@@ -116,18 +116,6 @@ or the contents of `Metaphysics INTROSPECT_TOKEN` in 1Password.
 Once you have the GraphiQL client running against your local service,
 you can verify things are working by executing these queries:
 
-#### Get popular artists
-
-```
-{
-  popular_artists {
-    artists {
-      name
-    }
-  }
-}
-```
-
 #### Get your account information
 
 ```
@@ -144,6 +132,7 @@ If any of these queries fail, it's probable that you misconfigured your
 
 ### Docs
 
+- [Intro to GraphQL](https://github.com/artsy/graphql-workshop)
 - [How we use DataLoaders](docs/dataloaders.md)
 - [Adding a GraphQL micro-service to Metaphysics](docs/adding_a_new_graphql_microservice.md)
 - [Adding a rest micro-service to Metaphysics](docs/adding_a_new_rest_microservice.md)
