@@ -18,25 +18,30 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
       description:
         "Articles that are ready to be publicly viewed in the feed by everyone.",
     },
+    featured: {
+      type: GraphQLBoolean,
+    },
   }),
   resolve: async (
     _root,
     args: {
+      featured?: boolean
       inEditorialFeed?: boolean
       sort?: ArticleSort
     } & CursorPageable,
     { articlesLoader }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-    const { sort, inEditorialFeed } = args
+    const { sort, inEditorialFeed, featured } = args
 
     const articlesLoaderArgs = {
-      published: true,
-      limit: size,
       count: true,
-      offset,
-      sort,
+      featured,
       in_editorial_feed: inEditorialFeed,
+      limit: size,
+      offset,
+      published: true,
+      sort,
     }
 
     const { results, count } = await articlesLoader(articlesLoaderArgs)
