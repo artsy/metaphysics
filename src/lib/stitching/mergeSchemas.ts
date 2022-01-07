@@ -23,6 +23,7 @@ import { consignmentStitchingEnvironment as convectionStitchingEnvironmentV1 } f
 import { consignmentStitchingEnvironment as convectionStitchingEnvironmentV2 } from "./convection/v2/stitching"
 import { causalityStitchingEnvironment as causalityStitchingEnvironmentV1 } from "./causality/v1/stitching"
 import { causalityStitchingEnvironment as causalityStitchingEnvironmentV2 } from "./causality/v2/stitching"
+import { executablePositronSchema } from "./positron/schema"
 
 /**
  * Incrementally merges in schemas according to `process.env`
@@ -128,6 +129,9 @@ export const incrementalMergeSchemas = (localSchema, version: 1 | 2) => {
   } else {
     useStitchingEnvironment(kawsStitchingEnvironmentV2(localSchema, kawsSchema))
   }
+
+  const positronSchema = executablePositronSchema()
+  schemas.push(positronSchema)
 
   // The order should only matter in that extension schemas come after the
   // objects that they are expected to build upon

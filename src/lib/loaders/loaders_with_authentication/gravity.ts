@@ -72,6 +72,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deleteUserAccountLoader: gravityLoader("me", {}, { method: "DELETE" }),
     endSaleLoader: gravityLoader(
       (id) => `sale/${id}/end_sale`,
       {},

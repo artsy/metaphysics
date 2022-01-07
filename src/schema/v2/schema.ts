@@ -112,6 +112,7 @@ import { PhoneNumber } from "./phoneNumber"
 import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
 import { linkAuthenticationMutation } from "./me/linkAuthenticationMutation"
 import { authenticationStatus } from "./authenticationStatus"
+import { deleteUserAccountMutation } from "./me/delete_account_mutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -225,6 +226,7 @@ export default new GraphQLSchema({
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createUserInterest: createUserInterestMutation,
       deleteCreditCard: deleteCreditCardMutation,
+      deleteMyAccountMutation: deleteUserAccountMutation,
       deleteUserInterest: deleteUserInterestMutation,
       endSale: endSaleMutation,
       followArtist: FollowArtist,

@@ -152,6 +152,11 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       description: "The minimum price collector has selected",
       type: GraphQLInt,
     },
+    privacy: {
+      description:
+        "Wheter or not the collector shares detailed profile information with galleries.",
+      type: GraphQLInt,
+    },
     profession: { type: GraphQLString, description: "Profession." },
     receiveLotOpeningSoonNotification: {
       description: "This user should receive lot opening notifications",

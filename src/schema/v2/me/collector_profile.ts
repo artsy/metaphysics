@@ -30,6 +30,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   intents: { type: new GraphQLList(GraphQLString) },
   loyaltyApplicantAt: date,
   name: { type: GraphQLString },
+  privacy: { type: GraphQLInt },
   professionalBuyerAppliedAt: date,
   professionalBuyerAt: date,
   selfReportedPurchases: {

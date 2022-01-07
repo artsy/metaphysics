@@ -10,6 +10,7 @@ let exportedSchema = localSchema
 // If DISABLE_SCHEMA_STITCHING is set in the env
 // then don't stitch
 const enableSchemaStitching = !DISABLE_SCHEMA_STITCHING
+
 if (enableSchemaStitching) {
   try {
     if (typeof jest == "undefined") {
