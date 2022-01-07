@@ -5,14 +5,22 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import AuthorType from "./author"
-import cached from "./fields/cached"
-import date from "./fields/date"
-import Image, { normalizeImageData } from "./image"
-import { IDFields, NodeInterface } from "./object_identification"
+import AuthorType from "schema/v2/author"
+import cached from "schema/v2/fields/cached"
+import date from "schema/v2/fields/date"
+import Image, { normalizeImageData } from "schema/v2/image"
+import { IDFields, NodeInterface } from "schema/v2/object_identification"
+import { ArticleSectionImageCollection } from "./sections/ArticleSectionImageCollection"
+import { ArticleSectionText } from "./sections/ArticleSectionText"
+import { ArticleSectionVideo } from "./sections/ArticleSectionVideo"
+import { ArticleSectionCallout } from "./sections/ArticleSectionCallout"
+import { ArticleSectionEmbed } from "./sections/ArticleSectionEmbed"
+import { ArticleSectionImageSet } from "./sections/ArticleSectionImageSet"
+import { ArticleSectionSocialEmbed } from "./sections/ArticleSectionSocialEmbed"
 
 export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Article",
@@ -37,6 +45,22 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ slug }) => `/article/${slug}`,
     },
     publishedAt: date,
+    sections: {
+      type: new GraphQLList(
+        new GraphQLUnionType({
+          name: "ArticleSectionsType",
+          types: [
+            ArticleSectionCallout,
+            ArticleSectionEmbed,
+            ArticleSectionImageCollection,
+            ArticleSectionImageSet,
+            ArticleSectionSocialEmbed,
+            ArticleSectionText,
+            ArticleSectionVideo,
+          ],
+        })
+      ),
+    },
     slug: {
       type: GraphQLString,
     },
@@ -75,7 +99,10 @@ const Article: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The ID of the Article",
     },
   },
-  resolve: (_root, { id }, { articleLoader }) => articleLoader(id),
+  resolve: async (_root, { id }, { articleLoader }) => {
+    const data = await articleLoader(id)
+    return data
+  },
 }
 
 export default Article

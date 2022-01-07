@@ -703,6 +703,7 @@ type Article implements Node {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+  sections: [ArticleSectionsType]
   slug: String
   thumbnailImage: Image
   thumbnailTeaser: String
@@ -738,6 +739,64 @@ type ArticleEdge {
 
   # The item at the end of the edge
   node: Article
+}
+
+type ArticleSectionCallout {
+  article: String
+  hide_image: String
+  text: String
+  thumbnail_url: String
+  top_stories: String
+  type: String
+}
+
+type ArticleSectionEmbed {
+  height: String
+  layout: String
+  mobile_height: String
+  type: String
+  url: String
+}
+
+type ArticleSectionImageCollection {
+  layout: String
+  type: String
+}
+
+type ArticleSectionImageSet {
+  layout: String
+  title: String
+  type: String
+}
+
+type ArticleSectionSocialEmbed {
+  layout: String
+  type: String
+  url: String
+}
+
+union ArticleSectionsType =
+    ArticleSectionCallout
+  | ArticleSectionEmbed
+  | ArticleSectionImageCollection
+  | ArticleSectionImageSet
+  | ArticleSectionSocialEmbed
+  | ArticleSectionText
+  | ArticleSectionVideo
+
+type ArticleSectionText {
+  body: String
+  layout: String
+  type: String
+}
+
+type ArticleSectionVideo {
+  background_color: String
+  caption: String
+  cover_image_url: String
+  layout: String
+  type: String
+  url: String
 }
 
 enum ArticleSorts {
