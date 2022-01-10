@@ -32,6 +32,19 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       type: AuthorType,
       resolve: ({ author }) => author,
     },
+    byline: {
+      type: GraphQLString,
+      description:
+        'The byline for the article. Defaults to "Artsy Editorial" if no authors are present.',
+      resolve: ({ author, contributing_authors }) => {
+        const contributingAuthors = contributing_authors
+          ?.map((author) => author?.name)
+          .join(", ")
+          .replace(/,\s([^,]+)$/, " and $1)")
+
+        return contributingAuthors || author?.name || "Artsy Editorial"
+      },
+    },
     channelID: {
       type: GraphQLString,
       resolve: ({ channel_id }) => channel_id,
