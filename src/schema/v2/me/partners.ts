@@ -1,5 +1,4 @@
-import { pageable } from "relay-cursor-paging"
-import { GraphQLFieldConfig, GraphQLList } from "graphql/type"
+import { GraphQLFieldConfig } from "graphql/type"
 import { ResolverContext } from "types/graphql"
 import { Partners } from "../partners"
 
