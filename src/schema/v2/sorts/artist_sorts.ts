@@ -1,6 +1,12 @@
 import { GraphQLEnumType } from "graphql"
 
 export const ARTIST_SORTS = {
+  CREATED_AT_ASC: {
+    value: "created_at",
+  },
+  CREATED_AT_DESC: {
+    value: "-created_at",
+  },
   SORTABLE_ID_ASC: {
     value: "sortable_id",
   },
