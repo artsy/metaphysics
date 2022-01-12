@@ -1361,6 +1361,8 @@ type ArtistSeriesEdge {
 }
 
 enum ArtistSorts {
+  CREATED_AT_ASC
+  CREATED_AT_DESC
   SORTABLE_ID_ASC
   SORTABLE_ID_DESC
   TRENDING_DESC
