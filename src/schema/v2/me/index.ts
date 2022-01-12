@@ -51,6 +51,7 @@ import Image, { normalizeImageData } from "../image"
 import { ArtistRecommendations } from "./artistRecommendations"
 import { PhoneNumber } from "../phoneNumber"
 import { authentications } from "./authentications"
+import { ManagedPartners } from "./partners"
 
 export const meType = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -182,6 +183,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     lotsByFollowedArtistsConnection: SaleArtworksConnectionField,
     lotStanding: LotStanding,
     lotStandings: LotStandings,
+    partners: ManagedPartners,
     myCollectionConnection: MyCollection,
     myCollectionInfo: MyCollectionInfo,
     myBids: MyBids,
