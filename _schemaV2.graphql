@@ -906,6 +906,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   deathday: String
   disablePriceContext: Boolean
   displayLabel: String
+  duplicates: [Artist]
 
   # Custom-sorted list of shows for an artist, in order of significance.
   exhibitionHighlights(
@@ -1121,6 +1122,7 @@ type ArtistCounts {
     label: String
   ): FormattedNumber
   auctionResults: Int
+  duplicates: Int
   ecommerceArtworks(
     # Returns a `String` when format is specified. e.g.`'0,0.0000''`
     format: String

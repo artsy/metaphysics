@@ -497,6 +497,18 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
                   return total_count
                 }),
             },
+            duplicates: {
+              type: GraphQLInt,
+              resolve: async ({ id }, _args, { artistDuplicatesLoader }) => {
+                if (!artistDuplicatesLoader) {
+                  throw new Error(
+                    "You need to be signed in to perform this action"
+                  )
+                }
+                const { headers } = await artistDuplicatesLoader(id)
+                return headers["x-total-count"] || 0
+              },
+            },
           },
         }),
         resolve: (artist) => artist,
@@ -671,6 +683,15 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
         resolve: ({ id }, options, { partnerArtistsForArtistLoader }) =>
           partnerArtistsForArtistLoader(id, options),
+      },
+      duplicates: {
+        type: new GraphQLList(Artist.type),
+        resolve: ({ id }, _args, { artistDuplicatesLoader }, _info) => {
+          if (!artistDuplicatesLoader) {
+            throw new Error("You need to be signed in to perform this action")
+          }
+          return artistDuplicatesLoader(id).then(({ body: dupes }) => dupes)
+        },
       },
       related: Related,
       sales: {

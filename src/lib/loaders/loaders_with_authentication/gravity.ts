@@ -17,6 +17,11 @@ export default (accessToken, userID, opts) => {
     identityVerificationLoader: gravityLoader(
       (id) => `identity_verification/${id}`
     ),
+    artistDuplicatesLoader: gravityLoader(
+      (id) => `artist/${id}/duplicates`,
+      {},
+      { headers: true }
+    ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
     authenticatedArtworkVersionLoader: gravityLoader(
       (id) => `artwork_version/${id}`
