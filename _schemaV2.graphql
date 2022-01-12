@@ -894,6 +894,14 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     size: Int
   ): [Artist]
   counts: ArtistCounts
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
   currentEvent: CurrentEvent
   deathday: String
   disablePriceContext: Boolean

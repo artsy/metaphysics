@@ -59,6 +59,7 @@ import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
 import { ArtistTargetSupply } from "./targetSupply"
 import { PartnerType } from "../partner"
+import { date } from "schema/v2/fields/date"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -500,6 +501,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: (artist) => artist,
       },
+      createdAt: date(),
       currentEvent: CurrentEvent,
       deathday: { type: GraphQLString },
       disablePriceContext: {
