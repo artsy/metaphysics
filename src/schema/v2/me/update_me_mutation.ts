@@ -155,7 +155,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     privacy: {
       description:
         "Wheter or not the collector shares detailed profile information with galleries.",
-      type: GraphQLInt,
+      type: GraphQLString,
     },
     profession: { type: GraphQLString, description: "Profession." },
     receiveLotOpeningSoonNotification: {
