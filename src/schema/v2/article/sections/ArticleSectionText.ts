@@ -7,14 +7,7 @@ export const ArticleSectionText = new GraphQLObjectType<any, ResolverContext>({
     return data.type === "text"
   },
   fields: () => ({
-    type: {
-      type: GraphQLString,
-    },
-    body: {
-      type: GraphQLString,
-    },
-    layout: {
-      type: GraphQLString,
-    },
+    body: { type: GraphQLString },
+    layout: { type: GraphQLString },
   }),
 })
