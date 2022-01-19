@@ -158,6 +158,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: GraphQLString,
     },
     profession: { type: GraphQLString, description: "Profession." },
+    otherRelevantPosition: {
+      type: GraphQLString,
+      description: "Collector's position with relevant institutions",
+    },
     receiveLotOpeningSoonNotification: {
       description: "This user should receive lot opening notifications",
       type: GraphQLBoolean,

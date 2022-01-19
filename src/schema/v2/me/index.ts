@@ -221,6 +221,9 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     profession: {
       type: GraphQLString,
     },
+    otherRelevantPosition: {
+      type: GraphQLString,
+    },
     receivePurchaseNotification: {
       description: "This user should receive purchase notifications",
       type: GraphQLBoolean,
