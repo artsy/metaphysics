@@ -124,6 +124,7 @@ type BuyOrder implements Order {
   seller: OrderPartyUnion!
   sellerTotalCents: Int
   shippingTotalCents: Int
+  source: OrderSourceEnum!
   state: OrderStateEnum!
   stateExpiresAt: DateTime
   stateReason: String
@@ -1015,6 +1016,7 @@ type OfferOrder implements Order {
   seller: OrderPartyUnion!
   sellerTotalCents: Int
   shippingTotalCents: Int
+  source: OrderSourceEnum!
   state: OrderStateEnum!
   stateExpiresAt: DateTime
   stateReason: String
@@ -1083,6 +1085,7 @@ interface Order {
   seller: OrderPartyUnion!
   sellerTotalCents: Int
   shippingTotalCents: Int
+  source: OrderSourceEnum!
   state: OrderStateEnum!
   stateExpiresAt: DateTime
   stateReason: String
@@ -1287,6 +1290,18 @@ type OrderRequiresAction {
   Data related to action needed
   """
   actionData: OrderActionData!
+}
+
+enum OrderSourceEnum {
+  """
+  The order was originated on the artwork page
+  """
+  artwork_page
+
+  """
+  The order was originated on a conversation
+  """
+  inquiry
 }
 
 type OrderStateChangedEvent implements EventInterface {
