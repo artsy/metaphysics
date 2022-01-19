@@ -52,12 +52,14 @@ export const ArticleSectionImageCollection = new GraphQLObjectType<
         return Promise.all(
           section.images.map((image) => {
             if (image.type === "artwork") {
-              return artworkLoader(image.slug)
+              // Articles may have unpublished artworks
+              return artworkLoader(image.slug).catch(() => null)
             }
 
             return Promise.resolve(image)
           })
-        )
+          // Filter out any null (unpublished) figures
+        ).then((figures) => figures.filter(Boolean))
       },
     },
   }),
