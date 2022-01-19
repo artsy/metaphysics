@@ -55,7 +55,7 @@ export const ArticleSectionImageSet = new GraphQLObjectType<
           const figure = images[0]
 
           if (figure.type === "artwork") {
-            return artworkLoader(figure.slug)
+            return artworkLoader(figure.slug).catch(() => null)
           }
         },
       },
@@ -67,12 +67,14 @@ export const ArticleSectionImageSet = new GraphQLObjectType<
           return Promise.all(
             section.images.map((figure) => {
               if (figure.type === "artwork") {
-                return artworkLoader(figure.slug)
+                // Articles may have unpublished artworks
+                return artworkLoader(figure.slug).catch(() => null)
               }
 
               return Promise.resolve(figure)
             })
-          )
+            // Filter out any null (unpublished) figures
+          ).then((figures) => figures.filter(Boolean))
         },
       },
       counts: {
