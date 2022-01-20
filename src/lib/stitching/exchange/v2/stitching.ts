@@ -254,10 +254,19 @@ export const exchangeStitchingEnvironment = ({
       orders(first: Int, last: Int, after: String, before: String, mode: CommerceOrderModeEnum, sellerId: String, sort: CommerceOrderConnectionSortEnum, states: [CommerceOrderStateEnum!]): CommerceOrderConnectionWithTotalCount
     }
 
+    extend input CommerceSubmitOrderWithOfferInput {
+      note: String
+      from: String
+      artworkId: ID
+    }
+
     extend type Mutation {
       createInquiryOfferOrder(
         input: CommerceCreateInquiryOfferOrderWithArtworkInput!
       ): CommerceCreateInquiryOfferOrderWithArtworkPayload
+      submitOrderOffer(
+        input: CommerceSubmitOrderWithOfferInput!
+      ): CommerceSubmitOrderWithOfferPayload
     }
   `,
 
@@ -544,6 +553,77 @@ export const exchangeStitchingEnvironment = ({
             }
 
             return offerResult
+          },
+        },
+        submitOrderOffer: {
+          resolve: async (_source, args, context, info) => {
+            const {
+              artworkId,
+              note,
+              confirmedSetupIntentId,
+              offerId,
+            } = args.input
+            const { submitArtworkInquiryRequestLoader } = context
+
+            const submitOrderWithOffer = await info.mergeInfo.delegateToSchema({
+              schema: exchangeSchema,
+              operation: "mutation",
+              fieldName: "commerceSubmitOrderWithOffer",
+              args: {
+                input: {
+                  offerId,
+                  confirmedSetupIntentId,
+                },
+              },
+              context,
+              info,
+              transforms: [
+                // add orderOrError.order.internalID to the Order selectionSet
+                new WrapQuery(
+                  ["commerceSubmitOrderWithOffer", "orderOrError", "order"],
+                  (selectionSet: SelectionSetNode) => {
+                    const newSelections = [
+                      ...selectionSet.selections,
+                      {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "internalID",
+                        },
+                      },
+                    ]
+                    return { ...selectionSet, selections: newSelections }
+                  },
+                  (result) => {
+                    return result
+                  }
+                ),
+              ],
+            })
+
+            const { orderOrError } = submitOrderWithOffer
+
+            if (orderOrError.error || !orderOrError.order) {
+              // if we got an error from exchange or don't receive impulse_conversation_id, return it immediately
+              return submitOrderWithOffer
+            }
+
+            try {
+              const {
+                order: { internalID: orderId },
+              } = orderOrError
+              await submitArtworkInquiryRequestLoader({
+                artwork: artworkId,
+                message: note,
+                order_id: orderId,
+              })
+            } catch (e) {
+              throw new GraphQLError(
+                `[metaphysics @ exchange/v2/stitching] Gravity: request to create inquiry failed`
+              )
+            }
+
+            return submitOrderWithOffer
           },
         },
       },
