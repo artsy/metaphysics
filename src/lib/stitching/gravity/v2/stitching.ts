@@ -156,19 +156,19 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type CreateUserAddressPayload {
-        me : Me!
+        me : Me
       }
 
       extend type UpdateUserAddressPayload {
-        me : Me!
+        me : Me
       }
 
       extend type DeleteUserAddressPayload {
-        me : Me!
+        me : Me
       }
 
       extend type UpdateUserDefaultAddressPayload {
-        me : Me!
+        me : Me
       }
     `,
     resolvers: {
@@ -732,46 +732,47 @@ export const gravityStitchingEnvironment = (
           },
         },
       },
-    },
-    UpdateUserAddressPayload: {
-      me: {
-        resolve: (_parent, args, context, info) => {
-          return info.mergeInfo.delegateToSchema({
-            schema: localSchema,
-            operation: "query",
-            fieldName: "me",
-            args,
-            context,
-            info,
-          })
+      UpdateUserAddressPayload: {
+        me: {
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "me",
+              args,
+              context,
+              info,
+            })
+          },
         },
       },
-    },
-    DeleteUserAddressPayload: {
-      me: {
-        resolve: (_parent, args, context, info) => {
-          return info.mergeInfo.delegateToSchema({
-            schema: localSchema,
-            operation: "query",
-            fieldName: "me",
-            args,
-            context,
-            info,
-          })
+      DeleteUserAddressPayload: {
+        me: {
+          resolve: (_parent, args, context, info) => {
+            console.log("DELETE: DeleteUserAddressPayload")
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "me",
+              args,
+              context,
+              info,
+            })
+          },
         },
       },
-    },
-    UpdateUserDefaultAddressPayload: {
-      me: {
-        resolve: (_parent, args, context, info) => {
-          return info.mergeInfo.delegateToSchema({
-            schema: localSchema,
-            operation: "query",
-            fieldName: "me",
-            args,
-            context,
-            info,
-          })
+      UpdateUserDefaultAddressPayload: {
+        me: {
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "me",
+              args,
+              context,
+              info,
+            })
+          },
         },
       },
     },
