@@ -24,26 +24,24 @@ export const fetchOrderEventsForPagination = (
   userID: string,
   exchangeGraphQLLoader: any
 ): FetcherForLimitAndOffset<ReturnedNodeShape> => async ({
-  limit,
-  offset,
-  sort,
+  // We don't care about these because we return the entire collection and let
+  // the fetchHybridConnection worry about coalating and handling the result
+  limit: _limit,
+  offset: _offset,
+  sort: _sort,
 }) => {
   const orderEvents: Array<any> = await fetchOrderEvents(conversationId, {
     exchangeGraphQLLoader,
     userID,
   })
-  const sortedNodes = orderEvents.sort((event) => {
-    const date: number = Date.parse(event.createdAt)
-
-    return sort === "DESC" ? -date : date
-  })
 
   return {
-    totalCount: sortedNodes.length,
-    nodes: sortedNodes.slice(offset, limit + offset),
+    totalCount: orderEvents.length,
+    nodes: orderEvents,
   }
 }
 
+// TODO: implement this in exchange instead of making it up.
 const fakeEventId = (prefix, index, orderIndex) =>
   `${prefix}-event-${index}-${orderIndex}`
 
