@@ -154,6 +154,22 @@ export const gravityStitchingEnvironment = (
       extend type System {
         algolia: Algolia
       }
+
+      extend type CreateUserAddressPayload {
+        me : Me!
+      }
+
+      extend type UpdateUserAddressPayload {
+        me : Me!
+      }
+
+      extend type DeleteUserAddressPayload {
+        me : Me!
+      }
+
+      extend type UpdateUserDefaultAddressPayload {
+        me : Me!
+      }
     `,
     resolvers: {
       Me: {
@@ -700,6 +716,62 @@ export const gravityStitchingEnvironment = (
               info,
             })
           },
+        },
+      },
+      CreateUserAddressPayload: {
+        me: {
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "me",
+              args,
+              context,
+              info,
+            })
+          },
+        },
+      },
+    },
+    UpdateUserAddressPayload: {
+      me: {
+        resolve: (_parent, args, context, info) => {
+          return info.mergeInfo.delegateToSchema({
+            schema: localSchema,
+            operation: "query",
+            fieldName: "me",
+            args,
+            context,
+            info,
+          })
+        },
+      },
+    },
+    DeleteUserAddressPayload: {
+      me: {
+        resolve: (_parent, args, context, info) => {
+          return info.mergeInfo.delegateToSchema({
+            schema: localSchema,
+            operation: "query",
+            fieldName: "me",
+            args,
+            context,
+            info,
+          })
+        },
+      },
+    },
+    UpdateUserDefaultAddressPayload: {
+      me: {
+        resolve: (_parent, args, context, info) => {
+          return info.mergeInfo.delegateToSchema({
+            schema: localSchema,
+            operation: "query",
+            fieldName: "me",
+            args,
+            context,
+            info,
+          })
         },
       },
     },
