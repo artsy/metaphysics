@@ -13,9 +13,13 @@ import date from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
 import { IDFields, NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
+import Image, { normalizeImageData } from "../image"
+import { PhoneNumber } from "../phoneNumber"
 import { SaleArtworksConnectionField } from "../sale_artworks"
+import { ArtistRecommendations } from "./artistRecommendations"
 import ArtworkInquiries from "./artwork_inquiries"
 import AuctionResultsByFollowedArtists from "./auction_results_by_followed_artists"
+import { authentications } from "./authentications"
 import Bidders from "./bidders"
 import { BidderPosition } from "./bidder_position"
 import BidderPositions from "./bidder_positions"
@@ -25,11 +29,11 @@ import Conversation from "./conversation"
 import Invoice from "./conversation/invoice"
 import Conversations from "./conversations"
 import { CreditCards } from "./credit_cards"
+import { followedProfiles } from "./followedProfiles"
 import FollowedArtists from "./followed_artists"
 import FollowedArtistsArtworkGroups from "./followed_artists_artworks_group"
 import FollowedFairs from "./followed_fairs"
 import FollowedGalleries from "./followed_galleries"
-import { followedProfiles } from "./followedProfiles"
 import FollowedGenes from "./followed_genes"
 import FollowedShows from "./followed_shows"
 import {
@@ -40,18 +44,14 @@ import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { MyBids } from "./myBids"
 import { MyCollection, MyCollectionInfo } from "./myCollection"
-import { NewWorksByInterestingArtists } from "./newWorksByInterestingArtists"
 import { myLocationType } from "./myLocation"
+import { NewWorksByInterestingArtists } from "./newWorksByInterestingArtists"
+import { ManagedPartners } from "./partners"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import { SaleRegistrationConnection } from "./sale_registrations"
 import { SavedArtworks } from "./savedArtworks"
-import { WatchedLotConnection } from "./watchedLotConnection"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
-import Image, { normalizeImageData } from "../image"
-import { ArtistRecommendations } from "./artistRecommendations"
-import { PhoneNumber } from "../phoneNumber"
-import { authentications } from "./authentications"
-import { ManagedPartners } from "./partners"
+import { WatchedLotConnection } from "./watchedLotConnection"
 
 export const meType = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -222,6 +222,11 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     otherRelevantPosition: {
+      type: GraphQLString,
+      description: "Collector's position with relevant institutions",
+      deprecationReason: "Use `otherRelevantPositions` instead",
+    },
+    otherRelevantPositions: {
       type: GraphQLString,
       description: "Collector's position with relevant institutions",
     },
