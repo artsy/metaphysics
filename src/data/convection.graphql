@@ -1664,6 +1664,16 @@ enum SubmissionSort {
   EXHIBITION_DESC
 
   """
+  sort by external_id in ascending order
+  """
+  EXTERNAL_ID_ASC
+
+  """
+  sort by external_id in descending order
+  """
+  EXTERNAL_ID_DESC
+
+  """
   sort by ext_user_id in ascending order
   """
   EXT_USER_ID_ASC
