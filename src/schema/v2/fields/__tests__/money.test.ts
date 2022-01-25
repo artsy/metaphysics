@@ -62,7 +62,7 @@ describe("amount", () => {
         obj: { symbol: "$", currencyCode: "GBP" },
         args: {},
       })
-    ).toMatchInlineSnapshot(`"$12.34"`)
+    ).toMatchInlineSnapshot(`"£12.34"`)
   })
 
   it("prefers argument symbol over currencyCode", () => {
@@ -70,13 +70,30 @@ describe("amount", () => {
       getResult({
         obj: { symbol: "£", currencyCode: "GBP" },
       })
-    ).toMatchInlineSnapshot(`"$12.34"`)
+    ).toMatchInlineSnapshot(`"£12.34"`)
   })
 
   it("doesn't break when it can't find a currencyCode", () => {
     expect(getResult({ obj: { currencyCode: "BLAH" } })).toMatchInlineSnapshot(
       `"$12.34"`
     )
+  })
+
+  it("returns disambiguate symbol over symbol when optional param passed", () => {
+    expect(
+      getResult({
+        obj: { currencyCode: "USD", symbol: "$" },
+        args: { disambiguate: true },
+      })
+    ).toMatchInlineSnapshot(`"US$12.34"`)
+  })
+
+  it("returns symbol over disambiguate symbol by default", () => {
+    expect(
+      getResult({
+        obj: { currencyCode: "USD", symbol: "$" },
+      })
+    ).toMatchInlineSnapshot(`"$12.34"`)
   })
 })
 
