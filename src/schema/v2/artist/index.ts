@@ -59,6 +59,7 @@ import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
 import { ArtistTargetSupply } from "./targetSupply"
 import { PartnerType } from "../partner"
+import { date } from "schema/v2/fields/date"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -496,10 +497,23 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
                   return total_count
                 }),
             },
+            duplicates: {
+              type: GraphQLInt,
+              resolve: async ({ id }, _args, { artistDuplicatesLoader }) => {
+                if (!artistDuplicatesLoader) {
+                  throw new Error(
+                    "You need to be signed in to perform this action"
+                  )
+                }
+                const { headers } = await artistDuplicatesLoader(id)
+                return headers["x-total-count"] || 0
+              },
+            },
           },
         }),
         resolve: (artist) => artist,
       },
+      createdAt: date(),
       currentEvent: CurrentEvent,
       deathday: { type: GraphQLString },
       disablePriceContext: {
@@ -669,6 +683,15 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
         resolve: ({ id }, options, { partnerArtistsForArtistLoader }) =>
           partnerArtistsForArtistLoader(id, options),
+      },
+      duplicates: {
+        type: new GraphQLList(Artist.type),
+        resolve: ({ id }, _args, { artistDuplicatesLoader }, _info) => {
+          if (!artistDuplicatesLoader) {
+            throw new Error("You need to be signed in to perform this action")
+          }
+          return artistDuplicatesLoader(id).then(({ body: dupes }) => dupes)
+        },
       },
       related: Related,
       sales: {

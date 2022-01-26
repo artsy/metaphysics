@@ -37,7 +37,7 @@ export const getDefault = (images) => {
   return images
 }
 
-const ImageType = new GraphQLObjectType<any, ResolverContext>({
+export const ImageType = new GraphQLObjectType<any, ResolverContext>({
   name: "Image",
   fields: (): any => ({
     ...NullableIDField,

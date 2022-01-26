@@ -1,22 +1,21 @@
 import {
   GraphQLBoolean,
-  GraphQLString,
   GraphQLFloat,
-  GraphQLInt,
   GraphQLInputObjectType,
-  GraphQLUnionType,
+  GraphQLInt,
   GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-
-import { UserType } from "../user"
-import Me from "./"
-import { ResolverContext } from "types/graphql"
 import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { snakeCase } from "lodash"
+import { ResolverContext } from "types/graphql"
+import { UserType } from "../user"
+import Me from "./"
 import { computeImageSources } from "./myCollectionCreateArtworkMutation"
 
 export const EditableLocationFields = new GraphQLInputObjectType({
@@ -155,9 +154,13 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     privacy: {
       description:
         "Wheter or not the collector shares detailed profile information with galleries.",
-      type: GraphQLInt,
+      type: GraphQLString,
     },
     profession: { type: GraphQLString, description: "Profession." },
+    otherRelevantPositions: {
+      type: GraphQLString,
+      description: "Collector's positions with relevant institutions",
+    },
     receiveLotOpeningSoonNotification: {
       description: "This user should receive lot opening notifications",
       type: GraphQLBoolean,

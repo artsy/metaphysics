@@ -154,6 +154,22 @@ export const gravityStitchingEnvironment = (
       extend type System {
         algolia: Algolia
       }
+
+      extend type CreateUserAddressPayload {
+        me : Me
+      }
+
+      extend type UpdateUserAddressPayload {
+        me : Me
+      }
+
+      extend type DeleteUserAddressPayload {
+        me : Me
+      }
+
+      extend type UpdateUserDefaultAddressPayload {
+        me : Me
+      }
     `,
     resolvers: {
       Me: {
@@ -696,6 +712,63 @@ export const gravityStitchingEnvironment = (
               operation: "query",
               fieldName: "_unused_gravity_algolia",
               args: args,
+              context,
+              info,
+            })
+          },
+        },
+      },
+      CreateUserAddressPayload: {
+        me: {
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "me",
+              args,
+              context,
+              info,
+            })
+          },
+        },
+      },
+      UpdateUserAddressPayload: {
+        me: {
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "me",
+              args,
+              context,
+              info,
+            })
+          },
+        },
+      },
+      DeleteUserAddressPayload: {
+        me: {
+          resolve: (_parent, args, context, info) => {
+            console.log("DELETE: DeleteUserAddressPayload")
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "me",
+              args,
+              context,
+              info,
+            })
+          },
+        },
+      },
+      UpdateUserDefaultAddressPayload: {
+        me: {
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "me",
+              args,
               context,
               info,
             })

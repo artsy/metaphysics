@@ -57,6 +57,12 @@ export default {
       "Intermedia; Multimedia work that does not fall into another category.",
     name: "Mixed Media",
   },
+  NFT: {
+    id: "NFT",
+    long_description:
+      "Non-fungible token. Indicates that the primary medium of the work is the NFT.",
+    name: "NFT",
+  },
   Other: {
     id: "Other",
     long_description:

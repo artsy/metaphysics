@@ -25,7 +25,7 @@ describe("Me", () => {
         email: "percy@cat.com",
         self_reported_purchases: "treats",
         intents: ["buy art & design"],
-        privacy: 1,
+        privacy: "public",
       }
 
       const expectedProfileData = {
@@ -34,7 +34,7 @@ describe("Me", () => {
         email: "percy@cat.com",
         selfReportedPurchases: "treats",
         intents: ["buy art & design"],
-        privacy: 1,
+        privacy: "public",
       }
 
       const context = {

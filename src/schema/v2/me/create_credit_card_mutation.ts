@@ -3,6 +3,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { CreditCardMutationType } from "../credit_card"
 import { ResolverContext } from "types/graphql"
+import { meType } from "./index"
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "CreditCard",
@@ -17,6 +18,12 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     },
   },
   outputFields: {
+    me: {
+      type: meType,
+      resolve: (_result, _args, { meLoader }) => {
+        return meLoader?.()
+      },
+    },
     creditCardOrError: {
       type: CreditCardMutationType,
       resolve: (result) => result,
