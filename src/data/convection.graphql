@@ -8,11 +8,12 @@ input AddAssetToConsignmentSubmissionInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
+  externalSubmissionId: ID
   filename: String
   geminiToken: String!
   sessionID: String
   size: String
-  submissionID: ID!
+  submissionID: ID
 }
 
 """
@@ -37,11 +38,12 @@ input AddAssetsToConsignmentSubmissionInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
+  externalSubmissionId: ID
   filename: String
   geminiTokens: [String!]!
   sessionID: String
   size: String
-  submissionID: ID!
+  submissionID: ID
 }
 
 """
@@ -1206,7 +1208,7 @@ type Query {
   """
   Get a Submission
   """
-  submission(id: ID!, sessionID: String): Submission
+  submission(externalId: ID, id: ID, sessionID: String): Submission
 
   """
   Filter all submission
@@ -1308,6 +1310,11 @@ type Submission {
   edition: String
   editionNumber: String
   editionSize: String
+
+  """
+  UUID visible to users
+  """
+  externalId: ID!
   height: String
 
   """
@@ -2069,8 +2076,9 @@ input UpdateSubmissionMutationInput {
   """
   editionSize: Int
   editionSizeFormatted: String
+  externalId: ID
   height: String
-  id: ID!
+  id: ID
   locationCity: String
   locationCountry: String
   locationState: String
