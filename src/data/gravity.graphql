@@ -1055,9 +1055,11 @@ type LotEvent {
   createdAt: String!
   internalID: ID!
   key: String!
+  paddleNumber: String
   type: String!
   userAgent: String
   userID: ID
+  userName: String
 }
 
 type MarketingCollection {
@@ -1894,7 +1896,8 @@ Search criteria
 type SearchCriteria {
   acquireable: Boolean
   additionalGeneIDs: [String!]!
-  artistID: String
+  artistID: String @deprecated(reason: "Deprecated in favor of artistIDs array")
+  artistIDs: [String!]
   atAuction: Boolean
   attributionClass: [String!]!
   colors: [String!]!
@@ -1919,7 +1922,12 @@ Attributes for a search criteria
 input SearchCriteriaAttributes {
   acquireable: Boolean = null
   additionalGeneIDs: [String!] = []
+
+  """
+  DEPRECATED Please use artistIDs instead
+  """
   artistID: String = null
+  artistIDs: [String!] = []
   atAuction: Boolean = null
   attributionClass: [String!] = []
   colors: [String!] = []
