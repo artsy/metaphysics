@@ -9504,6 +9504,7 @@ input MyCollectionCreateArtworkInput {
   pricePaidCurrency: String
   provenance: String
   title: String!
+  userId: String
   width: String
 }
 
