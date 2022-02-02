@@ -40,6 +40,10 @@ export default (accessToken, userID, opts) => {
       user_id: userID,
     }),
     collectorProfileLoader: gravityLoader("me/collector_profile"),
+    collectorProfileInterestsLoader: gravityLoader(
+      (owner_id) =>
+        `user_interests?owner_id=${owner_id}&owner_type=CollectorProfile`
+    ),
     createAccountRequestLoader: gravityLoader(
       "account_requests",
       {},

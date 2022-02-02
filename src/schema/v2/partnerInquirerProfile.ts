@@ -1,17 +1,50 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLFieldConfigMap,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+// import Artist from "./artist"
+import { ArtistType } from "./artist"
 import date from "./fields/date"
+import { GeneType } from "./gene"
 import Image, { normalizeImageData } from "./image"
 import { myLocationType } from "./me/myLocation"
 import { InternalIDFields } from "./object_identification"
+
+const UserInterestCategoryEnum = new GraphQLEnumType({
+  name: "CollectorProfileInterestCategory",
+  values: {
+    COLLECTED_BEFORE: { value: "collected_before" },
+    INTERESTED_IN_COLLECTING: { value: "interested_in_collecting" },
+  },
+})
+
+const UserInterestInterestUnion = new GraphQLUnionType({
+  name: "CollectorProfileInterest",
+  types: [ArtistType, GeneType],
+  resolveType: (object) => ("birthday" in object ? ArtistType : GeneType),
+})
+
+const CollectorProfileInterestsType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "CollectorProfileInterests",
+  fields: {
+    ...InternalIDFields,
+    body: { type: GraphQLString },
+    category: { type: new GraphQLNonNull(UserInterestCategoryEnum) },
+    interest: { type: new GraphQLNonNull(UserInterestInterestUnion) },
+  },
+})
 
 const CollectorProfileFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   ...InternalIDFields,
@@ -80,6 +113,13 @@ const CollectorProfileFields: GraphQLFieldConfigMap<any, ResolverContext> = {
     type: GraphQLBoolean,
     resolve: ({ previously_registered_for_auction }) =>
       previously_registered_for_auction,
+  },
+  // FIXME: this breaks the code
+  userInterests: {
+    type: new GraphQLList(CollectorProfileInterestsType),
+    resolve: ({ id }, _args, { collectorProfileInterestsLoader }) => {
+      return collectorProfileInterestsLoader?.(id)
+    },
   },
 }
 
