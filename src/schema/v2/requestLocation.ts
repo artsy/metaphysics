@@ -31,7 +31,7 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, args) => {
-    const url = `https://freegeoip.app/json/${args.ip}?apikey=${config.FREEGEOIP_API_KEY}`
+    const url = `https://api.freegeoip.app/json/${args.ip}?apikey=${config.FREEGEOIP_API_KEY}`
     return fetch(url)
       .then((response) => {
         if (config.ENABLE_GEOLOCATION_LOGGING) {
