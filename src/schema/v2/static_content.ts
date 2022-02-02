@@ -5,6 +5,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { markdown } from "./fields/markdown"
 import { SlugAndInternalIDFields } from "./object_identification"
 
 const StaticContentType = new GraphQLObjectType<any, ResolverContext>({
@@ -14,9 +15,7 @@ const StaticContentType = new GraphQLObjectType<any, ResolverContext>({
     name: {
       type: GraphQLString,
     },
-    content: {
-      type: GraphQLString,
-    },
+    content: markdown(),
   },
 })
 
