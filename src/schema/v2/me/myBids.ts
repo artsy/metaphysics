@@ -401,8 +401,15 @@ function formatGravityLotStandingsToMatchCausalityLotStandings(
   gravityLotStandings
 ): LotStandingResponse {
   return gravityLotStandings.map((lotStanding) => {
-    const { sale_artwork, id, bidder, highest_bid_amount_cents } = lotStanding
+    const {
+      sale_artwork,
+      id,
+      bidder,
+      highest_bid_amount_cents,
+      leading_position,
+    } = lotStanding
     return {
+      isHighestBidder: !!leading_position,
       lot: {
         bidCount: sale_artwork.bidder_positions_count,
         reserveStatus: sale_artwork.reserve_status,
@@ -418,7 +425,7 @@ function formatGravityLotStandingsToMatchCausalityLotStandings(
 function getSoldStatus(lotStanding): string {
   const { sale_artwork } = lotStanding
   const { artwork } = sale_artwork
-  if (artwork.forSale) {
+  if (artwork.forsale) {
     return "ForSale"
   } else if (artwork.sold) {
     return "Sold"
