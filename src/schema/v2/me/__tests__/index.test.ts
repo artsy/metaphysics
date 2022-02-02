@@ -269,4 +269,31 @@ describe("me/index", () => {
       expect(response).toEqual({ me: { canRequestEmailConfirmation: false } })
     })
   })
+
+  describe("emailConfirmed", () => {
+    const emailConfirmedQuery = gql`
+      query {
+        me {
+          emailConfirmed
+        }
+      }
+    `
+
+    it("returns email confirmed when the email is confirmed in gravity", () => {
+      return runAuthenticatedQuery(emailConfirmedQuery, {
+        meLoader: () =>
+          Promise.resolve({ confirmed_at: "2020-10-01T20:21:45+00:00" }),
+      }).then((data) => {
+        expect(data).toEqual({ me: { emailConfirmed: true } })
+      })
+    })
+
+    it("returns email is not confirmed when the email is not confirmed in gravity", () => {
+      return runQuery(emailConfirmedQuery, {
+        meLoader: () => Promise.resolve({ emailConfirmed: false }),
+      }).then((data) => {
+        expect(data).toEqual({ me: { emailConfirmed: false } })
+      })
+    })
+  })
 })

@@ -82,6 +82,16 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     collectorProfile: CollectorProfile,
+    emailConfirmed: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: "User has confirmed their email address",
+      resolve: ({ confirmed_at }) => {
+        if (confirmed_at) {
+          return true
+        }
+        return false
+      },
+    },
     conversation: Conversation,
     conversationsConnection: Conversations,
     createdAt: date,
