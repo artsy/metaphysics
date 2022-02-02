@@ -243,6 +243,12 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
         const lotIds = causalityLotStandingsInSale.map(
           (causalityLot) => causalityLot.lot.internalID
         )
+
+        // Avoid unnecessary fetch for sales that don't have lot standings
+        if (lotIds.length == 0) {
+          return { body: [], headers: {} }
+        }
+
         return saleArtworksLoader(sale._id, {
           ids: lotIds,
           offset: 0,
@@ -401,15 +407,15 @@ function formatGravityLotStandingsToMatchCausalityLotStandings(
   gravityLotStandings
 ): LotStandingResponse {
   return gravityLotStandings.map((lotStanding) => {
-    const { sale_artwork, id, bidder, highest_bid_amount_cents } = lotStanding
+    const { sale_artwork, bidder } = lotStanding
     return {
       lot: {
         bidCount: sale_artwork.bidder_positions_count,
         reserveStatus: sale_artwork.reserve_status,
-        internalID: id,
-        saleId: bidder.sale.id,
+        internalID: sale_artwork._id,
+        saleId: bidder.sale._id,
         soldStatus: getSoldStatus(lotStanding),
-        sellingPriceCents: highest_bid_amount_cents,
+        sellingPriceCents: sale_artwork.highest_bid?.amount_cents,
       },
     }
   })
