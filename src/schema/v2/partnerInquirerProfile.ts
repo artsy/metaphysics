@@ -1,74 +1,32 @@
 import {
   GraphQLBoolean,
-  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLFieldConfigMap,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-// import Artist from "./artist"
-import { ArtistType } from "./artist"
 import date from "./fields/date"
-import { GeneType } from "./gene"
 import Image, { normalizeImageData } from "./image"
+import { CollectorProfileFields } from "./me/collector_profile"
 import { myLocationType } from "./me/myLocation"
-import { InternalIDFields } from "./object_identification"
 
-const UserInterestCategoryEnum = new GraphQLEnumType({
-  name: "CollectorProfileInterestCategory",
-  values: {
-    COLLECTED_BEFORE: { value: "collected_before" },
-    INTERESTED_IN_COLLECTING: { value: "interested_in_collecting" },
-  },
-})
-
-const UserInterestInterestUnion = new GraphQLUnionType({
-  name: "CollectorProfileInterest",
-  types: [ArtistType, GeneType],
-  resolveType: (object) => ("birthday" in object ? ArtistType : GeneType),
-})
-
-const CollectorProfileInterestsType = new GraphQLObjectType<
+export const CollectorProfileArtists = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "CollectorProfileInterests",
+  name: "CollectorProfileArtists",
   fields: {
-    ...InternalIDFields,
-    body: { type: GraphQLString },
-    category: { type: new GraphQLNonNull(UserInterestCategoryEnum) },
-    interest: { type: new GraphQLNonNull(UserInterestInterestUnion) },
+    name: { type: GraphQLString },
   },
 })
 
-const CollectorProfileFields: GraphQLFieldConfigMap<any, ResolverContext> = {
-  ...InternalIDFields,
+const InquirerCollectorProfileFields: GraphQLFieldConfigMap<
+  any,
+  ResolverContext
+> = {
+  ...CollectorProfileFields,
   location: { type: myLocationType },
-  collectorLevel: {
-    type: GraphQLInt,
-    resolve: ({ collector_level }) => collector_level,
-  },
-  confirmedBuyerAt: date,
-  email: { type: GraphQLString },
-  institutionalAffiliations: {
-    type: GraphQLString,
-    resolve: ({ institutional_affiliations }) => institutional_affiliations,
-  },
-  intents: { type: new GraphQLList(GraphQLString) },
-  loyaltyApplicantAt: date,
-  name: { type: GraphQLString, resolve: ({ name }) => name },
-  privacy: { type: GraphQLString },
-  professionalBuyerAppliedAt: date,
-  professionalBuyerAt: date,
-  selfReportedPurchases: {
-    type: GraphQLString,
-    resolve: ({ self_reported_purchases }) => self_reported_purchases,
-  },
   artsyUserSince: date,
   icon: {
     type: Image.type,
@@ -114,25 +72,25 @@ const CollectorProfileFields: GraphQLFieldConfigMap<any, ResolverContext> = {
     resolve: ({ previously_registered_for_auction }) =>
       previously_registered_for_auction,
   },
-  // FIXME: this breaks the code
-  userInterests: {
-    type: new GraphQLList(CollectorProfileInterestsType),
-    resolve: ({ id }, _args, { collectorProfileInterestsLoader }) => {
-      return collectorProfileInterestsLoader?.(id)
-    },
+  collectorProfileArtists: {
+    type: CollectorProfileArtists,
+    resolve: ({ collector_artists }) => collector_artists,
   },
 }
 
-const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CollectorProfile",
-  fields: CollectorProfileFields,
+const InquirerCollectorProfileType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "InquirerCollectorProfile",
+  fields: InquirerCollectorProfileFields,
 })
 
 export const PartnerInquirerCollectorProfile: GraphQLFieldConfig<
   void,
   ResolverContext
 > = {
-  type: CollectorProfileType,
+  type: InquirerCollectorProfileType,
   description: "Inquiry requester's profile",
 }
 
@@ -140,11 +98,8 @@ export const InquiryRequestType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerInquiryRequest",
   fields: {
     collectorProfile: {
-      type: PartnerInquirerCollectorProfile.type,
-      resolve: (collectorProfile) => {
-        console.log({ collectorProfile })
-        return collectorProfile
-      },
+      type: InquirerCollectorProfileType,
+      resolve: (collectorProfile) => collectorProfile,
     },
   },
 })
