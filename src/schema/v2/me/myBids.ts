@@ -237,12 +237,9 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     }
     const bidUponSaleArtworksBySaleId: SaleArtworksBySaleId = await Promise.all(
       combinedSales.map((sale: any) => {
-        const causalityLotStandingsInSale =
-          allLotStandingsBySaleId[sale._id] || []
+        const lotStandingsInSale = allLotStandingsBySaleId[sale._id] || []
 
-        const lotIds = causalityLotStandingsInSale.map(
-          (causalityLot) => causalityLot.lot.internalID
-        )
+        const lotIds = lotStandingsInSale.map((lot) => lot.lot.internalID)
 
         // Avoid unnecessary fetch for sales that don't have lot standings
         if (lotIds.length == 0) {
@@ -302,21 +299,20 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
         >[] = watchedOnlySaleArtworks.concat(bidUponSaleArtworks)
 
         // Find lot standings for sale
-        const causalityLotStandingsInSale =
-          allLotStandingsBySaleId[sale._id] || []
+        const lotStandingsInSale = allLotStandingsBySaleId[sale._id] || []
 
         // Attach lot state to each sale artwork
         const saleArtworksWithPosition: SaleArtworkWithPosition[] = allSaleArtworks.map(
           (saleArtwork) => {
-            const causalityLotStanding = causalityLotStandingsInSale.find(
+            const lotStanding = lotStandingsInSale.find(
               (lotStanding) => lotStanding.lot.internalID === saleArtwork._id
             )
 
             // Attach to SaleArtwork.lotState field
             const result = {
               ...saleArtwork,
-              lotState: causalityLotStanding?.lot,
-              isHighestBidder: Boolean(causalityLotStanding?.isHighestBidder),
+              lotState: lotStanding?.lot,
+              isHighestBidder: Boolean(lotStanding?.isHighestBidder),
             }
 
             return result
