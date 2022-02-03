@@ -256,7 +256,6 @@ export const exchangeStitchingEnvironment = ({
 
     extend input CommerceSubmitOrderWithOfferInput {
       note: String
-      from: String
       artworkId: ID
     }
 
@@ -604,7 +603,6 @@ export const exchangeStitchingEnvironment = ({
             const { orderOrError } = submitOrderWithOffer
 
             if (orderOrError.error || !orderOrError.order) {
-              // if we got an error from exchange or don't receive impulse_conversation_id, return it immediately
               return submitOrderWithOffer
             }
 
