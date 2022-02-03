@@ -202,7 +202,6 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       formattedLotStandingsWithoutSyncToCausality
     )
 
-    debugger
     const allLotStandingsBySaleId = _.groupBy(
       allLotStandings,
       (lotStanding) => lotStanding.lot.saleId
@@ -408,7 +407,6 @@ function formatGravityLotStandingsToMatchCausalityLotStandings(
   gravityLotStandings
 ): LotStandingResponse {
   return gravityLotStandings.map((lotStanding) => {
-    console.log(lotStanding)
     const { sale_artwork, bidder, leading_position } = lotStanding
     return {
       isHighestBidder: !!leading_position,
