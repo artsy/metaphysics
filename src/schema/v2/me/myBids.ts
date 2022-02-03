@@ -202,6 +202,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       formattedLotStandingsWithoutSyncToCausality
     )
 
+    debugger
     const allLotStandingsBySaleId = _.groupBy(
       allLotStandings,
       (lotStanding) => lotStanding.lot.saleId
@@ -430,12 +431,19 @@ function getSoldStatus(lotStanding): string | undefined {
   if (sale.auction_state === "open") {
     return "ForSale"
   } else if (sale.auction_state == "closed") {
-    return reserveStatusMap[sale_artwork.reserve_status]
+    if (
+      sale_artwork.reserve_status == "reserve_met" ||
+      sale_artwork.reserve_status == "no_reserve"
+    ) {
+      return "Sold"
+    } else {
+      return "Passed"
+    }
   }
 }
 
 const reserveStatusMap = {
   reserve_met: "ReserveMet",
-  no_reserve: "ReserveNotMet",
+  no_reserve: "NoReserve",
   reserve_not_met: "ReserveNotMet",
 }
