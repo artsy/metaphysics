@@ -423,24 +423,19 @@ function formatGravityLotStandingsToMatchCausalityLotStandings(
   })
 }
 
-function getSoldStatus(lotStanding): string | null {
+function getSoldStatus(lotStanding): string | undefined {
   const {
     bidder: { sale, sale_artwork },
   } = lotStanding
   if (sale.auction_state === "open") {
     return "ForSale"
   } else if (sale.auction_state == "closed") {
-    if (sale_artwork.reserve_status == "reserve_met") {
-      return "Sold"
-    } else {
-      return "Passed"
-    }
-  } else {
-    return null
+    return reserveStatusMap[sale_artwork.reserve_status]
   }
 }
 
 const reserveStatusMap = {
   reserve_met: "ReserveMet",
+  no_reserve: "ReserveNotMet",
   reserve_not_met: "ReserveNotMet",
 }
