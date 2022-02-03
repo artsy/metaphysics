@@ -407,11 +407,13 @@ function formatGravityLotStandingsToMatchCausalityLotStandings(
   gravityLotStandings
 ): LotStandingResponse {
   return gravityLotStandings.map((lotStanding) => {
-    const { sale_artwork, bidder } = lotStanding
+    console.log(lotStanding)
+    const { sale_artwork, bidder, leading_position } = lotStanding
     return {
+      isHighestBidder: !!leading_position,
       lot: {
         bidCount: sale_artwork.bidder_positions_count,
-        reserveStatus: sale_artwork.reserve_status,
+        reserveStatus: reserveStatusMap[sale_artwork.reserve_status],
         internalID: sale_artwork._id,
         saleId: bidder.sale._id,
         soldStatus: getSoldStatus(lotStanding),
@@ -421,14 +423,24 @@ function formatGravityLotStandingsToMatchCausalityLotStandings(
   })
 }
 
-function getSoldStatus(lotStanding): string {
-  const { sale_artwork } = lotStanding
-  const { artwork } = sale_artwork
-  if (artwork.forSale) {
+function getSoldStatus(lotStanding): string | null {
+  const {
+    bidder: { sale, sale_artwork },
+  } = lotStanding
+  if (sale.auction_state === "open") {
     return "ForSale"
-  } else if (artwork.sold) {
-    return "Sold"
+  } else if (sale.auction_state == "closed") {
+    if (sale_artwork.reserve_status == "reserve_met") {
+      return "Sold"
+    } else {
+      return "Passed"
+    }
   } else {
-    return "Passed" // this is incorrect
+    return null
   }
+}
+
+const reserveStatusMap = {
+  reserve_met: "ReserveMet",
+  reserve_not_met: "ReserveNotMet",
 }
