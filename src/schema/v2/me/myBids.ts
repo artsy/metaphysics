@@ -178,8 +178,8 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
 
     // Fetch everything in parallel
     const [
-      causalityResponse,
-      newBiddingEngineLotStandingsResponse,
+      causalityLotStandingsResponse,
+      lotStandingsWithoutSyncToCausalityResponse,
       registeredSalesResponse,
       watchedSaleArtworksResponse,
     ] = await Promise.all([
@@ -190,16 +190,16 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     ])
 
     const causalityLotStandings = (
-      causalityResponse?.lotStandingConnection?.edges ?? []
+      causalityLotStandingsResponse?.lotStandingConnection?.edges ?? []
     ).map(({ node }) => node)
 
     // This method maps gravity endpoint's fields to the causality fields
-    const formattedLotStandingsNotSyncedToCausality = formatGravityLotStandingsToMatchCausalityLotStandings(
-      newBiddingEngineLotStandingsResponse
+    const formattedLotStandingsWithoutSyncToCausality = formatGravityLotStandingsToMatchCausalityLotStandings(
+      lotStandingsWithoutSyncToCausalityResponse
     )
 
     const allLotStandings = causalityLotStandings.concat(
-      formattedLotStandingsNotSyncedToCausality
+      formattedLotStandingsWithoutSyncToCausality
     )
 
     const allLotStandingsBySaleId = _.groupBy(
