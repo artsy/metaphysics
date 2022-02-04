@@ -120,7 +120,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
             omit: [id, ...(related_article_ids ?? [])],
             published: true,
             sort: "-published_at",
-            tags: tags?.length > 0 ? tags : null,
+            tags: tags ?? [],
             ...(args.inVertical
               ? {
                   has_published_media: true,
