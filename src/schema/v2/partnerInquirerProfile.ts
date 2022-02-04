@@ -2,6 +2,8 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLFieldConfigMap,
+  GraphQLID,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
@@ -28,25 +30,17 @@ const InquirerCollectorProfileFields: GraphQLFieldConfigMap<
   ...CollectorProfileFields,
   location: { type: myLocationType },
   artsyUserSince: date,
+  ownerID: {
+    type: new GraphQLNonNull(GraphQLID),
+    description: "User ID of the collector profile's owner",
+    resolve: ({ owner: { id } }) => id,
+  },
   icon: {
     type: Image.type,
-    resolve: (_root, options, { collectorProfileLoader }) => {
-      if (!collectorProfileLoader) {
-        throw new Error("You need to be signed in to perform this action")
-      }
-      return collectorProfileLoader(options).then(({ icon }) =>
-        normalizeImageData(icon)
-      )
-    },
+    resolve: ({ icon }) => normalizeImageData(icon),
   },
   bio: {
     type: GraphQLString,
-    resolve: (_root, options, { collectorProfileLoader }) => {
-      if (!collectorProfileLoader) {
-        throw new Error("You need to be signed in to perform this action")
-      }
-      return collectorProfileLoader(options).then(({ bio }) => bio)
-    },
   },
   profession: { type: GraphQLString },
   otherRelevantPositions: {

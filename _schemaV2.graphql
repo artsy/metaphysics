@@ -8185,6 +8185,9 @@ type InquirerCollectorProfile {
 
   # Collector's position with relevant institutions
   otherRelevantPositions: String
+
+  # User ID of the collector profile's owner
+  ownerID: ID!
   privacy: String
   profession: String
   professionalBuyerAppliedAt(
