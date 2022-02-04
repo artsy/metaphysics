@@ -82,6 +82,27 @@ describe("myBids", () => {
             }),
           ],
         },
+        {
+          sale: {
+            liveStartAt: "2022-01-01T00:03:00+00:00",
+            endAt: null,
+            requireIdentityVerification: false,
+            slug: "sale-2-SLUG",
+          },
+          saleArtworks: [
+            expect.objectContaining({
+              internalID: "sale-2-4-gravity-bid-lot",
+              position: 4,
+              isWatching: false,
+              isHighestBidder: true,
+              lotState: expect.objectContaining({
+                saleId: "sale-2",
+              }),
+              slug:
+                "mario-giacomelli-io-non-ho-mani-che-mi-accarezzino-il-volto-22",
+            }),
+          ],
+        },
       ],
     })
   })
@@ -156,6 +177,25 @@ describe("myBids", () => {
             }),
           ],
         },
+        {
+          sale: {
+            liveStartAt: "2022-01-01T00:03:00+00:00",
+            endAt: null,
+            requireIdentityVerification: false,
+          },
+          saleArtworks: [
+            expect.objectContaining({
+              position: 4,
+              isWatching: false,
+              isHighestBidder: true,
+              lotState: expect.objectContaining({
+                saleId: "sale-2",
+              }),
+              slug:
+                "mario-giacomelli-io-non-ho-mani-che-mi-accarezzino-il-volto-22",
+            }),
+          ],
+        },
       ],
     })
   })
@@ -163,11 +203,16 @@ describe("myBids", () => {
 
 function getContext(props: { auctionState: "open" | "closed" }) {
   const watchedLotsIds = ["1-only-watched-lot", "2-watched-and-bid-lot"]
-  const bidLotIds = ["3-only-bid-lot", "2-watched-and-bid-lot"]
+  const bidLotIds = {
+    "sale-1": ["3-only-bid-lot", "2-watched-and-bid-lot"],
+    "sale-2": ["4-gravity-bid-lot"],
+  }
   // our lot ordering will be drawn from lot id's leading number
   const positionExtractor = (lotId) => Number(lotId[0])
 
   const saleIds = ["sale-1"]
+
+  const gravitySaleIds = ["sale-2"]
 
   // helpers to handle sale id/slug gotchas
   const saleSlug = (id) => id + "-SLUG"
@@ -178,11 +223,11 @@ function getContext(props: { auctionState: "open" | "closed" }) {
     name: "Some User",
   }
 
-  // the request for bidded lots
+  // the request for bidded lots synced to causality
   const causalityGraphQLLoaderResponse = {
     lotStandingConnection: {
       edges: saleIds.flatMap((saleId) =>
-        bidLotIds.map((lotId) => ({
+        bidLotIds[saleId].map((lotId) => ({
           node: {
             isHighestBidder: true,
             lot: {
@@ -200,6 +245,30 @@ function getContext(props: { auctionState: "open" | "closed" }) {
       ),
     },
   }
+
+  // the request for bidded lots not synced to causality
+  const lotStandingsWithoutSyncToCausalityResponse = [
+    {
+      bidder: {
+        sale: {
+          _id: "sale-2",
+          auction_state: "open",
+        },
+      },
+      sale_artwork: {
+        bidder_positions_count: 1,
+        highest_bid: {
+          amount_cents: 37500,
+        },
+        lot_id: "5e0d3ace-1cef-4833-957d-e4648aaa7696",
+        _id: "sale-2-4-gravity-bid-lot",
+        reserve_status: "no_reserve",
+      },
+      leading_position: {
+        active: true,
+      },
+    },
+  ]
 
   // the request for watched lots
   const saleArtworksAllLoaderResponse = {
@@ -256,15 +325,15 @@ function getContext(props: { auctionState: "open" | "closed" }) {
   })
 
   const salesLoaderWithHeadersResponse = {
-    body: saleIds.map(saleLoaderResponseFactory),
+    body: saleIds.concat(gravitySaleIds).map(saleLoaderResponseFactory),
     headers: {},
   }
 
   // the request for gravity sale artworks corresponding
-  // to causality lot standings - reversed to make sure our
+  // to causality and gravity lot standings - reversed to make sure our
   // sorting logic works. assuming only one sale.
   const saleArtworksLoaderResponseFactory = (saleId) => ({
-    body: bidLotIds
+    body: bidLotIds[saleId]
       .map((lotId) => ({
         _id: `${saleId}-${lotId}`,
         sale_id: saleSlug(saleId),
@@ -319,5 +388,7 @@ function getContext(props: { auctionState: "open" | "closed" }) {
       Promise.resolve(saleArtworksLoaderResponseFactory(unSlug(saleId))), // Sale Sale artworks
     saleArtworkRootLoader: () => Promise.resolve(saleArtworkRootLoaderResponse), // From fields/money currency conversion
     moneyMajorResolver: () => Promise.resolve(moneyMajorResolverResponse), // From fields/money currency conversion
+    lotStandingLoader: () =>
+      Promise.resolve(lotStandingsWithoutSyncToCausalityResponse),
   }
 }

@@ -96,6 +96,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       saleArtworksAllLoader,
       salesLoaderWithHeaders,
       saleLoader,
+      lotStandingLoader,
     }
   ): Promise<{
     active: Array<MyBid>
@@ -108,7 +109,8 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
         saleArtworksLoader &&
         saleArtworksAllLoader &&
         salesLoaderWithHeaders &&
-        saleLoader
+        saleLoader &&
+        lotStandingLoader
       )
     ) {
       return null
@@ -124,7 +126,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     // Grab userID to pass to causality
     const me: { id: string } = await meLoader()
 
-    // Fetch all auction lot standings from a given user
+    // Fetch all auction lot standings in causality from a given user
     const causalityPromise = causalityGraphQLLoader({
       query: gql`
         query LotStandingsConnection($userId: ID!, $first: Int) {
@@ -155,6 +157,11 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       lotStandingConnection: { edges: Array<{ node: LotStandingResponse }> }
     }>
 
+    // Queue up promise for lot standings not synced to causality from a given user
+    const lotStandingsWithoutSyncToCausalityPromise = lotStandingLoader({
+      causality_sync_off: true,
+    })
+
     // Queue up promise for all registered sales
     const registeredSalesPromise = salesLoaderWithHeaders({
       registered: true,
@@ -171,26 +178,36 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
 
     // Fetch everything in parallel
     const [
-      causalityResponse,
+      causalityLotStandingsResponse,
+      lotStandingsWithoutSyncToCausalityResponse,
       registeredSalesResponse,
       watchedSaleArtworksResponse,
     ] = await Promise.all([
       causalityPromise,
+      lotStandingsWithoutSyncToCausalityPromise,
       registeredSalesPromise,
       watchedSaleArtworksPromise,
     ])
 
-    // Map over response to gather all sale IDs
     const causalityLotStandings = (
-      causalityResponse?.lotStandingConnection?.edges ?? []
+      causalityLotStandingsResponse?.lotStandingConnection?.edges ?? []
     ).map(({ node }) => node)
 
-    const causalityLotStandingsBySaleId = _.groupBy(
-      causalityLotStandings,
+    // This method maps gravity endpoint's fields to the causality fields
+    const formattedLotStandingsWithoutSyncToCausality = formatGravityLotStandingsToMatchCausalityLotStandings(
+      lotStandingsWithoutSyncToCausalityResponse
+    )
+
+    const allLotStandings = causalityLotStandings.concat(
+      formattedLotStandingsWithoutSyncToCausality
+    )
+
+    const allLotStandingsBySaleId = _.groupBy(
+      allLotStandings,
       (lotStanding) => lotStanding.lot.saleId
     )
 
-    const causalitySaleIds = Object.keys(causalityLotStandingsBySaleId)
+    const causalitySaleIds = Object.keys(allLotStandingsBySaleId)
     const registeredSaleIds = registeredSalesResponse.body.map(
       (sale) => sale._id
     )
@@ -220,12 +237,15 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     }
     const bidUponSaleArtworksBySaleId: SaleArtworksBySaleId = await Promise.all(
       combinedSales.map((sale: any) => {
-        const causalityLotStandingsInSale =
-          causalityLotStandingsBySaleId[sale._id] || []
+        const lotStandingsInSale = allLotStandingsBySaleId[sale._id] || []
 
-        const lotIds = causalityLotStandingsInSale.map(
-          (causalityLot) => causalityLot.lot.internalID
-        )
+        const lotIds = lotStandingsInSale.map((lot) => lot.lot.internalID)
+
+        // Avoid unnecessary fetch for sales that don't have lot standings
+        if (lotIds.length == 0) {
+          return { body: [], headers: {} }
+        }
+
         return saleArtworksLoader(sale._id, {
           ids: lotIds,
           offset: 0,
@@ -279,21 +299,20 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
         >[] = watchedOnlySaleArtworks.concat(bidUponSaleArtworks)
 
         // Find lot standings for sale
-        const causalityLotStandingsInSale =
-          causalityLotStandingsBySaleId[sale._id] || []
+        const lotStandingsInSale = allLotStandingsBySaleId[sale._id] || []
 
         // Attach lot state to each sale artwork
         const saleArtworksWithPosition: SaleArtworkWithPosition[] = allSaleArtworks.map(
           (saleArtwork) => {
-            const causalityLotStanding = causalityLotStandingsInSale.find(
+            const lotStanding = lotStandingsInSale.find(
               (lotStanding) => lotStanding.lot.internalID === saleArtwork._id
             )
 
             // Attach to SaleArtwork.lotState field
             const result = {
               ...saleArtwork,
-              lotState: causalityLotStanding?.lot,
-              isHighestBidder: Boolean(causalityLotStanding?.isHighestBidder),
+              lotState: lotStanding?.lot,
+              isHighestBidder: Boolean(lotStanding?.isHighestBidder),
             }
 
             return result
@@ -378,4 +397,47 @@ function withSaleInfo(sale): SaleSortingInfo {
     endAt,
     liveBiddingStarted,
   }
+}
+
+function formatGravityLotStandingsToMatchCausalityLotStandings(
+  gravityLotStandings
+): LotStandingResponse {
+  return gravityLotStandings.map((lotStanding) => {
+    const { sale_artwork, bidder, leading_position } = lotStanding
+    return {
+      isHighestBidder: !!leading_position,
+      lot: {
+        bidCount: sale_artwork.bidder_positions_count,
+        reserveStatus: reserveStatusMap[sale_artwork.reserve_status],
+        internalID: sale_artwork._id,
+        saleId: bidder.sale._id,
+        soldStatus: getSoldStatus(lotStanding),
+        sellingPriceCents: sale_artwork.highest_bid?.amount_cents,
+      },
+    }
+  })
+}
+
+function getSoldStatus(lotStanding): string | undefined {
+  const {
+    bidder: { sale, sale_artwork },
+  } = lotStanding
+  if (sale.auction_state === "open") {
+    return "ForSale"
+  } else if (sale.auction_state == "closed") {
+    if (
+      sale_artwork.reserve_status == "reserve_met" ||
+      sale_artwork.reserve_status == "no_reserve"
+    ) {
+      return "Sold"
+    } else {
+      return "Passed"
+    }
+  }
+}
+
+const reserveStatusMap = {
+  reserve_met: "ReserveMet",
+  no_reserve: "NoReserve",
+  reserve_not_met: "ReserveNotMet",
 }
