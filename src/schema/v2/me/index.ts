@@ -9,11 +9,12 @@ import {
   GraphQLString,
 } from "graphql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
+import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import date from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
 import { IDFields, NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
-import Image, { normalizeImageData } from "../image"
+import Image from "../image"
 import { PhoneNumber } from "../phoneNumber"
 import { SaleArtworksConnectionField } from "../sale_artworks"
 import { ArtistRecommendations } from "./artistRecommendations"
@@ -53,6 +54,22 @@ import { SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { WatchedLotConnection } from "./watchedLotConnection"
 
+/**
+ * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
+ */
+const collectorProfileResolver = (field: string) => async (
+  _root,
+  options,
+  { collectorProfileLoader }: { collectorProfileLoader?: StaticPathLoader<any> }
+) => {
+  if (!collectorProfileLoader) {
+    throw new Error("You need to be signed in to perform this action")
+  }
+
+  const result = await collectorProfileLoader(options)
+  return result?.[field]
+}
+
 export const meType = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
   interfaces: [NodeInterface],
@@ -68,12 +85,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     bidderPosition: BidderPosition,
     bio: {
       type: GraphQLString,
-      resolve: (_root, options, { collectorProfileLoader }) => {
-        if (!collectorProfileLoader) {
-          throw new Error("You need to be signed in to perform this action")
-        }
-        return collectorProfileLoader(options).then(({ bio }) => bio)
-      },
+      resolve: collectorProfileResolver("bio"),
     },
     collectorLevel: {
       type: GraphQLInt,
@@ -156,14 +168,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     },
     icon: {
       type: Image.type,
-      resolve: (_root, options, { collectorProfileLoader }) => {
-        if (!collectorProfileLoader) {
-          throw new Error("You need to be signed in to perform this action")
-        }
-        return collectorProfileLoader(options).then(({ icon }) =>
-          normalizeImageData(icon)
-        )
-      },
+      resolve: collectorProfileResolver("icon"),
     },
     invoice: Invoice,
     identityVerification: IdentityVerification,
@@ -239,7 +244,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     otherRelevantPositions: {
       type: GraphQLString,
       description: "Collector's position with relevant institutions",
-      resolve: ({ other_relevant_positions }) => other_relevant_positions,
+      resolve: collectorProfileResolver("other_relevant_positions"),
     },
     receivePurchaseNotification: {
       description: "This user should receive purchase notifications",
