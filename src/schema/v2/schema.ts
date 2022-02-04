@@ -29,6 +29,7 @@ import { AuctionResult } from "./auction_result"
 import { cities } from "./cities"
 import {
   notificationPreferences,
+  updateNotificationPreferencesMutation,
 } from "./notification_preferences"
 import { City } from "./city"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
@@ -254,6 +255,7 @@ export default new GraphQLSchema({
       updateConversation: UpdateConversationMutation,
       updateMyPassword: updateMyPasswordMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
+      updateNotificationPreferences: updateNotificationPreferencesMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
     },
   }),

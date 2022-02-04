@@ -3,9 +3,11 @@ import {
   GraphQLNonNull,
   GraphQLFieldConfig,
   GraphQLList,
+  GraphQLInputObjectType,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 
 const subGroupfields = {
@@ -36,6 +38,11 @@ const NotificationPreferenceType = new GraphQLObjectType({
   fields: subGroupfields,
 })
 
+const NotificationPreferenceInputType = new GraphQLInputObjectType({
+  name: "NotificationPreferenceInput",
+  fields: subGroupfields,
+})
+
 export const notificationPreferences: GraphQLFieldConfig<
   void,
   ResolverContext
@@ -61,3 +68,48 @@ export const notificationPreferences: GraphQLFieldConfig<
     return anonNotificationPreferencesLoader(args.authenticationToken)
   },
 }
+
+export const updateNotificationPreferencesMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
+  name: "updateNotificationPreferencesMutation",
+  description: "Update notification preferences.",
+  inputFields: {
+    authenticationToken: {
+      type: GraphQLString,
+    },
+    subscriptionGroups: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(NotificationPreferenceInputType))
+      ),
+    },
+  },
+  outputFields: {},
+  mutateAndGetPayload: (
+    args,
+    {
+      anonUpdateNotificationPreferencesLoader,
+      updateNotificationPreferencesLoader,
+    }
+  ) => {
+    const subGroups = args.subscriptionGroups
+
+    const gravityGroups = subGroups.reduce((previous, current) => {
+      previous[current.name] = current.status.toLowerCase()
+      return previous
+    }, {})
+
+    const params = { subscription_groups: gravityGroups }
+
+    if (updateNotificationPreferencesLoader) {
+      return updateNotificationPreferencesLoader(params)
+    }
+
+    return anonUpdateNotificationPreferencesLoader(
+      args.authenticationToken,
+      params
+    )
+  },
+})

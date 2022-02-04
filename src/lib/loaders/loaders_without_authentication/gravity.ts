@@ -93,6 +93,12 @@ export default (opts) => {
       (authenticationToken) =>
         `notification_preferences/?authentication_token=${authenticationToken}`
     ),
+    anonUpdateNotificationPreferencesLoader: gravityLoader(
+      (authenticationToken) =>
+        `notification_preferences/?authentication_token=${authenticationToken}`,
+      {},
+      { method: "POST" }
+    ),
     pageLoader: gravityLoader((id) => `page/${id}`),
     partnerArtistLoader: gravityLoader<
       any,
