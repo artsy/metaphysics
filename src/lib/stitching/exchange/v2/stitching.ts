@@ -254,16 +254,12 @@ export const exchangeStitchingEnvironment = ({
       orders(first: Int, last: Int, after: String, before: String, mode: CommerceOrderModeEnum, sellerId: String, sort: CommerceOrderConnectionSortEnum, states: [CommerceOrderStateEnum!]): CommerceOrderConnectionWithTotalCount
     }
 
-    extend input CommerceSubmitOrderWithOfferInput {
-      note: String
-      artworkId: ID
-    }
-
     extend type Mutation {
       createInquiryOfferOrder(
         input: CommerceCreateInquiryOfferOrderWithArtworkInput!
       ): CommerceCreateInquiryOfferOrderWithArtworkPayload
-      submitOrderOffer(
+      # Submits an OfferOrder and creates a conversation for it
+      submitOfferOrderWithConversation(
         input: CommerceSubmitOrderWithOfferInput!
       ): CommerceSubmitOrderWithOfferPayload
     }
@@ -554,30 +550,20 @@ export const exchangeStitchingEnvironment = ({
             return offerResult
           },
         },
-        submitOrderOffer: {
+        submitOfferOrderWithConversation: {
           resolve: async (_source, args, context, info) => {
-            const {
-              artworkId,
-              note,
-              confirmedSetupIntentId,
-              offerId,
-            } = args.input
             const { submitArtworkInquiryRequestLoader } = context
 
             const submitOrderWithOffer = await info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
               operation: "mutation",
               fieldName: "commerceSubmitOrderWithOffer",
-              args: {
-                input: {
-                  offerId,
-                  confirmedSetupIntentId,
-                },
-              },
+              args,
               context,
               info,
               transforms: [
-                // add orderOrError.order.internalID to the Order selectionSet
+                // add orderOrError.order.internalID, orderOrError.order.lastOffer.note, orderOrError.order.lineItems.edges[0].node.artworkId
+                // to the Order selectionSet
                 new WrapQuery(
                   ["commerceSubmitOrderWithOffer", "orderOrError", "order"],
                   (selectionSet: SelectionSetNode) => {
@@ -588,6 +574,83 @@ export const exchangeStitchingEnvironment = ({
                         name: {
                           kind: Kind.NAME,
                           value: "internalID",
+                        },
+                      },
+                      {
+                        kind: Kind.INLINE_FRAGMENT,
+                        typeCondition: {
+                          kind: Kind.NAMED_TYPE,
+                          name: {
+                            kind: Kind.NAME,
+                            value: "CommerceOfferOrder",
+                          },
+                        },
+                        selectionSet: {
+                          kind: Kind.SELECTION_SET,
+                          selections: [
+                            {
+                              kind: Kind.FIELD,
+                              name: {
+                                kind: Kind.NAME,
+                                value: "myLastOffer",
+                              },
+                              selectionSet: {
+                                kind: Kind.SELECTION_SET,
+                                selections: [
+                                  {
+                                    kind: Kind.FIELD,
+                                    name: {
+                                      kind: Kind.NAME,
+                                      value: "note",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            {
+                              kind: Kind.FIELD,
+                              name: {
+                                kind: Kind.NAME,
+                                value: "lineItems",
+                              },
+                              selectionSet: {
+                                kind: Kind.SELECTION_SET,
+                                selections: [
+                                  {
+                                    kind: Kind.FIELD,
+                                    name: {
+                                      kind: Kind.NAME,
+                                      value: "edges",
+                                    },
+                                    selectionSet: {
+                                      kind: Kind.SELECTION_SET,
+                                      selections: [
+                                        {
+                                          kind: Kind.FIELD,
+                                          name: {
+                                            kind: Kind.NAME,
+                                            value: "node",
+                                          },
+                                          selectionSet: {
+                                            kind: Kind.SELECTION_SET,
+                                            selections: [
+                                              {
+                                                kind: Kind.FIELD,
+                                                name: {
+                                                  kind: Kind.NAME,
+                                                  value: "artworkId",
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
                         },
                       },
                     ]
@@ -607,13 +670,12 @@ export const exchangeStitchingEnvironment = ({
             }
 
             try {
-              const {
-                order: { internalID: orderId },
-              } = orderOrError
+              const { order } = orderOrError
+
               await submitArtworkInquiryRequestLoader({
-                artwork: artworkId,
-                message: note,
-                order_id: orderId,
+                artwork: order.lineItems.edges[0].node.artworkId,
+                message: order.myLastOffer.note,
+                order_id: order.internalID,
               })
             } catch (e) {
               throw new GraphQLError(

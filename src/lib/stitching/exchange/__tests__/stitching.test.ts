@@ -305,11 +305,30 @@ describe("createInquiryOfferOrder", () => {
   })
 })
 
-describe("submitOrderOffer", () => {
+describe("submitOfferOrderWithConversation", () => {
   const context = {
     submitArtworkInquiryRequestLoader: jest.fn(),
   }
   const mergeInfo = { delegateToSchema: jest.fn() }
+  const validOrderResult = {
+    orderOrError: {
+      order: {
+        internalID: "order-id",
+        myLastOffer: {
+          note: "test note",
+        },
+        lineItems: {
+          edges: [
+            {
+              node: {
+                artworkId: "artwork-id",
+              },
+            },
+          ],
+        },
+      },
+    },
+  }
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -317,17 +336,13 @@ describe("submitOrderOffer", () => {
 
   it("calls submitArtworkInquiryRequestLoader after creating the order", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
-    const resolver = resolvers.Mutation.submitOrderOffer.resolve
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
     const args = {
       input: {
-        artworkId: "artwork-id",
-        note: "test message",
         offerId: "offer-id",
-        confirmedSetupIntentId: "confirmed-setup-intent-id",
       },
     }
-    const orderResult = { orderOrError: { order: { internalID: "order-id" } } }
-    mergeInfo.delegateToSchema.mockResolvedValue(orderResult)
+    mergeInfo.delegateToSchema.mockResolvedValue(validOrderResult)
 
     const result = await resolver({}, args, context, { mergeInfo })
 
@@ -335,7 +350,6 @@ describe("submitOrderOffer", () => {
       args: {
         input: {
           offerId: "offer-id",
-          confirmedSetupIntentId: "confirmed-setup-intent-id",
         },
       },
       fieldName: "commerceSubmitOrderWithOffer",
@@ -345,23 +359,20 @@ describe("submitOrderOffer", () => {
       info: expect.anything(),
       transforms: [expect.anything()],
     })
-    expect(result).toEqual(orderResult)
+    expect(result).toEqual(validOrderResult)
     expect(context.submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
       artwork: "artwork-id",
-      message: "test message",
+      message: "test note",
       order_id: "order-id",
     })
   })
 
   it("returns an error from exchange", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
-    const resolver = resolvers.Mutation.submitOrderOffer.resolve
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
     const args = {
       input: {
-        artworkId: "artwork-id",
-        note: "test message",
         offerId: "offer-id",
-        confirmedSetupIntentId: "confirmed-setup-intent-id",
       },
     }
     const orderResult = { orderOrError: { error: { message: "who cares" } } }
@@ -375,15 +386,14 @@ describe("submitOrderOffer", () => {
 
   it("returns an error if the submitArtworkInquiryRequestLoader fails", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
-    const resolver = resolvers.Mutation.submitOrderOffer.resolve
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
     const args = {
       input: {
         artworkId: "artwork-id",
-        impulseConversationId: "conversation-id",
       },
     }
-    const orderResult = { orderOrError: { order: { internalID: "order-id" } } }
-    mergeInfo.delegateToSchema.mockResolvedValue(orderResult)
+
+    mergeInfo.delegateToSchema.mockResolvedValue(validOrderResult)
     context.submitArtworkInquiryRequestLoader.mockRejectedValue({
       message: "bad stuff",
     })
