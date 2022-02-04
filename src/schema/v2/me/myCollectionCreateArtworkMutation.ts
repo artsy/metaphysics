@@ -57,9 +57,6 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   name: "MyCollectionCreateArtwork",
   description: "Create an artwork in my collection",
   inputFields: {
-    userId: {
-      type: GraphQLString,
-    },
     artistIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
     },
@@ -68,6 +65,12 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
 
     // Optional
+    userId: {
+      type: GraphQLString,
+    },
+    submissionId: {
+      type: GraphQLString,
+    },
     medium: {
       type: GraphQLString,
     },
