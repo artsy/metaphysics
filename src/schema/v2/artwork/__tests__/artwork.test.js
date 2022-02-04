@@ -567,6 +567,30 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#processWithArtaShipping", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          processWithArtaShipping
+        }
+      }
+    `
+
+    it("passes true from gravity", () => {
+      artwork.process_with_arta_shipping = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            processWithArtaShipping: true,
+          },
+        })
+      })
+    })
+  })
+
   describe("#images", () => {
     const query = `
       {
