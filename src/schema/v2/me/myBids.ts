@@ -158,7 +158,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
     }>
 
     // Queue up promise for lot standings not synced to causality from a given user
-    const lotStandingsNotSyncedToCausalityPromise = lotStandingLoader({
+    const lotStandingsWithoutSyncToCausalityPromise = lotStandingLoader({
       causality_sync_off: true,
     })
 
@@ -184,7 +184,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       watchedSaleArtworksResponse,
     ] = await Promise.all([
       causalityPromise,
-      lotStandingsNotSyncedToCausalityPromise,
+      lotStandingsWithoutSyncToCausalityPromise,
       registeredSalesPromise,
       watchedSaleArtworksPromise,
     ])
