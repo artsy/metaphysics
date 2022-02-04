@@ -89,6 +89,10 @@ export default (opts) => {
     inquiryRequestQuestionsLoader: gravityLoader(`inquiry_request_questions`),
     matchArtistsLoader: gravityLoader("match/artists"),
     matchGeneLoader: gravityLoader("match/genes"),
+    anonNotificationPreferencesLoader: gravityLoader(
+      (authenticationToken) =>
+        `notification_preferences/?authentication_token=${authenticationToken}`
+    ),
     pageLoader: gravityLoader((id) => `page/${id}`),
     partnerArtistLoader: gravityLoader<
       any,
