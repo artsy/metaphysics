@@ -48,7 +48,7 @@ const InquirerCollectorProfileFields: GraphQLFieldConfigMap<
     description: "Collector's position with relevant institutions",
     resolve: ({ other_relevant_positions }) => other_relevant_positions,
   },
-  emailVerified: {
+  emailConfirmed: {
     type: GraphQLBoolean,
     resolve: ({ owner }) => owner.confirmed_at ?? false,
   },
@@ -64,7 +64,7 @@ const InquirerCollectorProfileFields: GraphQLFieldConfigMap<
   isActiveBidder: {
     type: GraphQLBoolean,
     resolve: ({ previously_registered_for_auction }) =>
-      previously_registered_for_auction,
+      previously_registered_for_auction ?? false,
   },
   collectorProfileArtists: {
     type: CollectorProfileArtists,

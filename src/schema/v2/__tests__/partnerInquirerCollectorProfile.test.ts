@@ -37,6 +37,8 @@ describe("partnerInquirerCollectorProfile", () => {
               }
               profession
               bio
+              isActiveInquirer
+              isActiveBidder
             }
           }
         }
@@ -53,6 +55,8 @@ describe("partnerInquirerCollectorProfile", () => {
             location: { city: "Around", country: "The Globe" },
             profession: "Superhuman",
             bio: "I got snacks to the roof",
+            isActiveInquirer: false,
+            isActiveBidder: false,
           },
         },
       },

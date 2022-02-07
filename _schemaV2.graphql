@@ -8159,7 +8159,7 @@ type InquirerCollectorProfile {
     timezone: String
   ): String
   email: String
-  emailVerified: Boolean
+  emailConfirmed: Boolean
   icon: Image
 
   # A globally unique ID.
