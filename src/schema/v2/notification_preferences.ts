@@ -10,6 +10,17 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 
+export const convertSubGroups = (subGroups) => {
+  const gravityGroups = subGroups.reduce((previous, current) => {
+    previous[current.name] = current.status.toLowerCase()
+    return previous
+  }, {})
+
+  const params = { subscription_groups: gravityGroups }
+
+  return params
+}
+
 const subGroupfields = {
   id: {
     type: GraphQLString,
@@ -95,13 +106,7 @@ export const updateNotificationPreferencesMutation = mutationWithClientMutationI
     }
   ) => {
     const subGroups = args.subscriptionGroups
-
-    const gravityGroups = subGroups.reduce((previous, current) => {
-      previous[current.name] = current.status.toLowerCase()
-      return previous
-    }, {})
-
-    const params = { subscription_groups: gravityGroups }
+    const params = convertSubGroups(subGroups)
 
     if (updateNotificationPreferencesLoader) {
       return updateNotificationPreferencesLoader(params)
