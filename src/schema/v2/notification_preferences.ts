@@ -23,13 +23,13 @@ export const convertSubGroups = (subGroups) => {
 
 const subGroupfields = {
   id: {
-    type: GraphQLString,
+    type: new GraphQLNonNull(GraphQLString),
   },
   name: {
-    type: GraphQLString,
+    type: new GraphQLNonNull(GraphQLString),
   },
   channel: {
-    type: GraphQLString,
+    type: new GraphQLNonNull(GraphQLString),
   },
   status: {
     type: new GraphQLNonNull(
