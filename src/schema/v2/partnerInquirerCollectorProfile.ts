@@ -3,6 +3,7 @@ import {
   GraphQLFieldConfig,
   GraphQLFieldConfigMap,
   GraphQLID,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -67,8 +68,9 @@ const InquirerCollectorProfileFields: GraphQLFieldConfigMap<
       previously_registered_for_auction ?? false,
   },
   collectorProfileArtists: {
-    type: CollectorProfileArtists,
-    resolve: ({ collector_artists }) => collector_artists,
+    type: new GraphQLList(CollectorProfileArtists),
+    description: "List of artists names the Collector is interested in",
+    resolve: ({ collected_artist_names }) => collected_artist_names,
   },
 }
 

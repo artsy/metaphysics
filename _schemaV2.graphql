@@ -8149,7 +8149,9 @@ type InquirerCollectorProfile {
   ): String
   bio: String
   collectorLevel: Int
-  collectorProfileArtists: CollectorProfileArtists
+
+  # List of artists names the Collector is interested in
+  collectorProfileArtists: [CollectorProfileArtists]
   confirmedBuyerAt(
     format: String
 
