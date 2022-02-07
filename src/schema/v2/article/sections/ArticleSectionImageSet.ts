@@ -57,6 +57,8 @@ export const ArticleSectionImageSet = new GraphQLObjectType<
           if (figure.type === "artwork") {
             return artworkLoader(figure.slug).catch(() => null)
           }
+
+          return figure
         },
       },
       figures: {
