@@ -65,6 +65,12 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
 
     // Optional
+    userId: {
+      type: GraphQLString,
+    },
+    submissionId: {
+      type: GraphQLString,
+    },
     medium: {
       type: GraphQLString,
     },
