@@ -267,7 +267,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerInquirerProfileLoader: gravityLoader<
+    partnerInquirerCollectorProfileLoader: gravityLoader<
       any,
       { partnerId: string; inquiryId: string }
     >(

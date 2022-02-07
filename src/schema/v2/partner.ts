@@ -41,7 +41,7 @@ import { allViaLoader } from "lib/all"
 import { truncate } from "lib/helpers"
 import { setVersion } from "./image/normalize"
 import { compact } from "lodash"
-import { InquiryRequestType } from "./partnerInquirerProfile"
+import { InquiryRequestType } from "./partnerInquirerCollectorProfile"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -758,10 +758,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
         description: "Inquiry Request details",
-        resolve: ({ id }, { inquiryId }, { partnerInquirerProfileLoader }) => {
-          if (!partnerInquirerProfileLoader) return
+        resolve: (
+          { id },
+          { inquiryId },
+          { partnerInquirerCollectorProfileLoader }
+        ) => {
+          if (!partnerInquirerCollectorProfileLoader) return
 
-          return partnerInquirerProfileLoader({
+          return partnerInquirerCollectorProfileLoader({
             partnerId: id,
             inquiryId,
           }).then((collectorProfile) => collectorProfile)

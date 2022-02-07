@@ -1,7 +1,7 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("partnerInquirerProfile", () => {
+describe("partnerInquirerCollectorProfile", () => {
   const partnerData = {
     id: "catty-partner",
     slug: "catty-partner",
@@ -19,7 +19,8 @@ describe("partnerInquirerProfile", () => {
   }
 
   const context = {
-    partnerInquirerProfileLoader: () => Promise.resolve(collectorProfile),
+    partnerInquirerCollectorProfileLoader: () =>
+      Promise.resolve(collectorProfile),
     partnerLoader: () => Promise.resolve(partnerData),
   }
 
