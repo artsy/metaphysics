@@ -859,10 +859,10 @@ type ArticleSectionText {
 type ArticleSectionVideo {
   backgroundColor: String
   caption: String
-  coverImageUrl: String
 
   # Only YouTube and Vimeo are supported
-  embed: String
+  embed(autoPlay: Boolean = false): String
+  image: Image
   layout: ArticleSectionVideoLayout
   url: String!
 }
