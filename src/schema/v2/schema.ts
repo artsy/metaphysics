@@ -27,6 +27,10 @@ import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutat
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
 import { AuctionResult } from "./auction_result"
 import { cities } from "./cities"
+import {
+  notificationPreferences,
+  updateNotificationPreferencesMutation,
+} from "./notification_preferences"
 import { City } from "./city"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
 // import Collection from "./collection"
@@ -141,6 +145,7 @@ const rootFields = {
   authenticationStatus,
   city: City,
   cities,
+  notificationPreferences,
   // collection: Collection,
   _do_not_use_conversation: {
     ...Conversation,
@@ -250,6 +255,7 @@ export default new GraphQLSchema({
       updateConversation: UpdateConversationMutation,
       updateMyPassword: updateMyPasswordMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
+      updateNotificationPreferences: updateNotificationPreferencesMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
     },
   }),

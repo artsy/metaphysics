@@ -23,6 +23,12 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
+    notificationPreferencesLoader: gravityLoader("notification_preferences"),
+    updateNotificationPreferencesLoader: gravityLoader(
+      "notification_preferences",
+      {},
+      { method: "POST" }
+    ),
     authenticatedArtworkVersionLoader: gravityLoader(
       (id) => `artwork_version/${id}`
     ),
