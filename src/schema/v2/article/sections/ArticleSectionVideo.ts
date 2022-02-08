@@ -32,7 +32,6 @@ export const ArticleSectionVideo = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
-
     layout: {
       type: new GraphQLEnumType({
         name: "ArticleSectionVideoLayout",
@@ -57,6 +56,7 @@ export const ArticleSectionVideo = new GraphQLObjectType<any, ResolverContext>({
       },
       type: GraphQLString,
       resolve: ({ url }, { autoPlay }) => {
+        if (!url) return null
         const options = { autoplay: autoPlay ? 1 : 0 }
         return extractEmbed(url, options)
       },
