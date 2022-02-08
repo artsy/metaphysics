@@ -26,15 +26,14 @@ const OPTIONS: Record<Provider, Options> = {
 }
 
 const detectProvider = ({ hostname }: URL): Provider | null => {
-  if (hostname.indexOf("vimeo.com") > -1) {
-    return "vimeo"
+  switch (true) {
+    case hostname.includes("vimeo.com"):
+      return "vimeo"
+    case hostname.includes("youtu"):
+      return "youtube"
+    default:
+      return null
   }
-
-  if (hostname.indexOf("youtu") > -1) {
-    return "youtube"
-  }
-
-  return null
 }
 
 const detectId = ({ pathname, search }: URL, provider: Provider): string => {
