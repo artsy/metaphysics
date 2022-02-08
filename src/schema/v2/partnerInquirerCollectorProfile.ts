@@ -69,7 +69,7 @@ const InquirerCollectorProfileFields: GraphQLFieldConfigMap<
   },
   collectorProfileArtists: {
     type: new GraphQLList(CollectorProfileArtists),
-    description: "List of artists names the Collector is interested in",
+    description: "List of artists the Collector is interested in.",
     resolve: ({ collected_artist_names }) => collected_artist_names,
   },
 }
