@@ -73,8 +73,12 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
         new GraphQLEnumType({
           name: "ArticleLayout",
           values: {
-            STANDARD: { value: "standard" },
+            CLASSIC: { value: "classic" },
             FEATURE: { value: "feature" },
+            NEWS: { value: "news" },
+            SERIES: { value: "series" },
+            STANDARD: { value: "standard" },
+            VIDEO: { value: "video" },
           },
         })
       ),
