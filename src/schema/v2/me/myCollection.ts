@@ -1,25 +1,25 @@
-import { ResolverContext } from "types/graphql"
-import { pageable } from "relay-cursor-paging"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import {
-  connectionFromArraySlice,
-  connectionFromArray,
-  cursorForObjectInConnection,
-} from "graphql-relay"
-
-import { connectionWithCursorInfo } from "../fields/pagination"
-import { ArtworkType } from "../artwork"
-
-import {
+  GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLNonNull,
-  GraphQLString,
-  GraphQLBoolean,
   GraphQLObjectType,
+  GraphQLResolveInfo,
+  GraphQLString,
   GraphQLUnionType,
-  GraphQLEnumType,
 } from "graphql"
+import {
+  connectionFromArray,
+  connectionFromArraySlice,
+  cursorForObjectInConnection,
+} from "graphql-relay"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { StaticPathLoader } from "lib/loaders/api/loader_interface"
+import { pageable } from "relay-cursor-paging"
+import { ResolverContext } from "types/graphql"
+import { ArtworkType } from "../artwork"
+import { connectionWithCursorInfo } from "../fields/pagination"
 
 const myCollectionFields = {
   description: {
@@ -103,10 +103,16 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         "Exclude artworks that have been purchased on Artsy and automatically added to the collection.",
     },
   }),
-  resolve: ({ id: userId }, options, { collectionArtworksLoader }) => {
-    if (!collectionArtworksLoader) {
+  resolve: async (
+    { id: userId },
+    options,
+    { collectionArtworksLoader, submissionsLoader },
+    info
+  ) => {
+    if (!collectionArtworksLoader || !submissionsLoader) {
       return null
     }
+
     const gravityOptions = Object.assign(
       {
         exclude_purchased_artworks: options.excludePurchasedArtworks,
@@ -121,27 +127,60 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
     // @ts-expect-error FIXME: Make `page` is an optional param of `gravityOptions`
     delete gravityOptions.page
 
-    return collectionArtworksLoader("my-collection", gravityOptions)
-      .then(({ body, headers }) => {
-        return connectionFromArraySlice(body, options, {
-          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-          sliceStart: gravityOptions.offset,
-        })
-      })
-      .catch((error) => {
-        console.error("[schema/v2/me/my_collection] Error:", error)
+    try {
+      const { body: artworks, headers } = await collectionArtworksLoader(
+        "my-collection",
+        gravityOptions
+      )
 
-        if (error.message == "Collection Not Found") {
-          // For some users with no items, Gravity produces an error of
-          // "Collection Not Found". This can cause the Gravity endpoint to
-          // produce a 404, so we will intercept the error and return an empty
-          // list instead.
-          return connectionFromArray([], options)
-        } else {
-          throw error
-        }
+      const artworksWithSubmissions = await enrichArtworks(
+        artworks,
+        submissionsLoader,
+        info
+      )
+
+      return connectionFromArraySlice(artworksWithSubmissions, options, {
+        arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+        sliceStart: gravityOptions.offset,
       })
+    } catch (error) {
+      console.error("[schema/v2/me/my_collection] Error:", error)
+
+      if (error.message == "Collection Not Found") {
+        // For some users with no items, Gravity produces an error of
+        // "Collection Not Found". This can cause the Gravity endpoint to
+        // produce a 404, so we will intercept the error and return an empty
+        // list instead.
+        return connectionFromArray([], options)
+      } else {
+        throw error
+      }
+    }
   },
+}
+
+const enrichArtworks = async (
+  artworks: any,
+  submissionsLoader: StaticPathLoader<any>,
+  _info: GraphQLResolveInfo
+) => {
+  // TODO: Fix this test
+  const hasConsignmentSubmissionField = true
+  // const hasConsignmentSubmissionField = hasIntersectionWithSelectionSet(info, [
+  //   "title",
+  // ])
+
+  if (!hasConsignmentSubmissionField) return artworks
+
+  const submissions = await submissionsLoader()
+
+  return artworks.map((artwork) => {
+    const consignmentSubmission = submissions.find(
+      (submission) => submission.my_collection_artwork_id === artwork.id
+    )
+
+    return { ...artwork, consignmentSubmission }
+  })
 }
 
 /**
