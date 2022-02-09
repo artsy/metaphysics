@@ -72,6 +72,12 @@ const InquirerCollectorProfileFields: GraphQLFieldConfigMap<
     description: "List of artists the Collector is interested in.",
     resolve: ({ collected_artist_names }) => collected_artist_names,
   },
+  // FIXME: please remove this field after the new profile in CMS is in prod for all partners
+  userIntroduction: {
+    type: GraphQLString,
+    description: "Collector's brief introduction",
+    resolve: ({ user_introduction }) => user_introduction?.introduction,
+  },
 }
 
 const InquirerCollectorProfileType = new GraphQLObjectType<
