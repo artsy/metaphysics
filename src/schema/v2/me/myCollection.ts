@@ -20,6 +20,7 @@ import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
 import { connectionWithCursorInfo } from "../fields/pagination"
+import { hasIntersectionWithSelectionSet } from "lib/hasFieldSelection"
 
 const myCollectionFields = {
   description: {
@@ -164,20 +165,12 @@ const enrichArtworks = async (
   submissionsLoader: StaticPathLoader<any>,
   _info: GraphQLResolveInfo
 ) => {
-  // TODO: Fix this test
-  const hasConsignmentSubmissionField = true
-  // const hasConsignmentSubmissionField = hasIntersectionWithSelectionSet(info, [
-  //   "title",
-  // ])
-
-  if (!hasConsignmentSubmissionField) return artworks
-
   const submissions = await submissionsLoader()
 
   return artworks.map((artwork) => {
-    const consignmentSubmission = submissions.find(
-      (submission) => submission.my_collection_artwork_id === artwork.id
-    )
+    const consignmentSubmission = submissions.find((submission) => {
+      return submission.my_collection_artwork_id === artwork.id
+    })
 
     return { ...artwork, consignmentSubmission }
   })

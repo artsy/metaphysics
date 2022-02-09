@@ -69,6 +69,36 @@ const has_multiple_editions = (edition_sets) => {
   return edition_sets && edition_sets.length > 1
 }
 
+const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ArtworkConsignmentSubmission",
+  fields: () => {
+    return {
+      state: {
+        type: GraphQLString,
+      },
+      displayText: {
+        type: GraphQLString,
+        resolve: (consignmentSubmission) => {
+          const statusEnum = {
+            draft: "Not displayed in My Collection",
+            submitted: "Submission in progress",
+            approved: "Submission in progress",
+            published: "Submission in progress",
+            rejected: "Submission in progress",
+            hold: "Submission in progress",
+            closed: "Submission evaluated",
+          }
+
+          return statusEnum[consignmentSubmission.state]
+        },
+      },
+    }
+  },
+})
+
 export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "Artwork",
   interfaces: [NodeInterface, Searchable, Sellable],
@@ -79,6 +109,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       additionalInformation: markdown(
         ({ additional_information }) => additional_information
       ),
+      consignmentSubmission: {
+        type: ArtworkConsignmentSubmissionType,
+        resolve: (artwork) => {
+          return artwork.consignmentSubmission
+        },
+      },
       artist: {
         type: Artist.type,
         args: {
