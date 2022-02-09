@@ -1782,7 +1782,6 @@ interface ArtworkConnectionInterface {
 
 type ArtworkConsignmentSubmission {
   displayText: String
-  state: String
 }
 
 union ArtworkContext = Fair | Sale | Show

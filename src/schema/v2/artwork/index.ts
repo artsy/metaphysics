@@ -76,9 +76,6 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
   name: "ArtworkConsignmentSubmission",
   fields: () => {
     return {
-      state: {
-        type: GraphQLString,
-      },
       displayText: {
         type: GraphQLString,
         resolve: (consignmentSubmission) => {
