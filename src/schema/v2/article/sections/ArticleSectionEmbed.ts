@@ -1,27 +1,37 @@
-import { GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLEnumType,
+  GraphQLInt,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 
 export const ArticleSectionEmbed = new GraphQLObjectType<any, ResolverContext>({
   name: "ArticleSectionEmbed",
-  isTypeOf: (data) => {
-    return data.type === "embed"
+  isTypeOf: (section) => {
+    return section.type === "embed"
   },
   fields: () => ({
-    type: {
-      type: GraphQLString,
-    },
     url: {
       type: GraphQLString,
     },
     height: {
-      type: GraphQLString,
+      type: GraphQLInt,
     },
     mobileHeight: {
-      type: GraphQLString,
+      type: GraphQLInt,
       resolve: ({ mobile_height }) => mobile_height,
     },
     layout: {
-      type: GraphQLString,
+      type: new GraphQLEnumType({
+        name: "ArticleSectionEmbedLayout",
+        values: {
+          COLUMN_WIDTH: { value: "column_width" },
+          OVERFLOW: { value: "overflow" },
+          OVERFLOW_FILLWIDTH: { value: "overflow_fillwidth" },
+          FILLWIDTH: { value: "fillwidth" },
+        },
+      }),
     },
   }),
 })
