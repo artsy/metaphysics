@@ -35,6 +35,17 @@ export default (opts) => {
       {},
       { method: "POST" }
     ),
+    createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
+    createArtworkImageLoader: gravityLoader(
+      (id) => `artwork/${id}/image`,
+      {},
+      { method: "POST" }
+    ),
+    createArtworkEditionSetLoader: gravityLoader(
+      (artworkID) => `artwork/${artworkID}/edition_set`,
+      {},
+      { method: "POST" }
+    ),
     artistArtworksLoader: gravityLoader((id) => `artist/${id}/artworks`),
     artistGenesLoader: gravityLoader((id) => `artist/${id}/genome/genes`),
     artistLoader: gravityLoader((id) => `artist/${id}`),
