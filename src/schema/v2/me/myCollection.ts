@@ -152,13 +152,18 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
-const enrichArtworks = (artworks: any, submissions: any) => {
+/** Enriches artworks with submissions (filters out draft submissions). */
+const enrichArtworks = (artworks: any[], submissions: any[]) => {
   if (submissions.length === 0) {
     return artworks
   }
 
+  const filteredSubmissions = submissions.filter(
+    (submission) => submission.state !== "draft"
+  )
+
   return artworks.map((artwork) => {
-    const consignmentSubmission = submissions.find((submission) => {
+    const consignmentSubmission = filteredSubmissions.find((submission) => {
       return submission.my_collection_artwork_id === artwork.id
     })
 

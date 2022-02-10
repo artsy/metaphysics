@@ -109,6 +109,11 @@ describe("me.myCollection", () => {
               id: "artwork_id_without_submission",
               title: "some title 2",
             },
+            {
+              _id: "artwork_id_with_draft_submission",
+              id: "artwork_id_with_draft_submission",
+              title: "some title 3",
+            },
           ],
           headers: {
             "x-total-count": "10",
@@ -119,6 +124,10 @@ describe("me.myCollection", () => {
           {
             my_collection_artwork_id: "artwork_id_with_submission",
             state: "submitted",
+          },
+          {
+            my_collection_artwork_id: "artwork_id_with_draft_submission",
+            state: "draft",
           },
         ]),
     }
@@ -138,6 +147,13 @@ describe("me.myCollection", () => {
     )
     expect(
       data.me.myCollectionConnection.edges[1].node.consignmentSubmission
+    ).toBeFalsy()
+
+    expect(data.me.myCollectionConnection.edges[2].node.title).toBe(
+      "some title 3"
+    )
+    expect(
+      data.me.myCollectionConnection.edges[2].node.consignmentSubmission
     ).toBeFalsy()
   })
 
