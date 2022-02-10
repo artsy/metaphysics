@@ -1,5 +1,5 @@
-import { ResolverContext } from "types/graphql"
 import { GraphQLObjectType, GraphQLString } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
   any,
