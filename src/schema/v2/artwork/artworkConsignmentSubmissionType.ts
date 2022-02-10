@@ -12,7 +12,6 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
         type: GraphQLString,
         resolve: (consignmentSubmission) => {
           const statusDisplayTexts = {
-            draft: "Not displayed in My Collection",
             submitted: "Submission in progress",
             approved: "Submission in progress",
             published: "Submission in progress",
