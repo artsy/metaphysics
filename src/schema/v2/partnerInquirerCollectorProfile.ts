@@ -72,6 +72,20 @@ const InquirerCollectorProfileFields: GraphQLFieldConfigMap<
     description: "List of artists the Collector is interested in.",
     resolve: ({ collected_artist_names }) => collected_artist_names,
   },
+  // FIXME: please remove this field after the new collector profile in CMS is in prod for all partners
+  userIntroduction: {
+    type: GraphQLString,
+    description: "Collector's brief introduction",
+    resolve: ({ user_introduction }) => user_introduction?.introduction,
+  },
+  affiliatedAuctionHouseIds: {
+    description: "List of affiliated auction house ids, referencing Galaxy.",
+    type: new GraphQLList(GraphQLString),
+  },
+  affiliatedGalleryIds: {
+    description: "List of affiliated gallery ids, referencing Galaxy.",
+    type: new GraphQLList(GraphQLString),
+  },
 }
 
 const InquirerCollectorProfileType = new GraphQLObjectType<
