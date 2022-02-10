@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString } from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLBoolean } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
@@ -21,6 +21,24 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
           }
 
           return statusDisplayTexts[consignmentSubmission.state]
+        },
+      },
+      inProgress: {
+        type: GraphQLBoolean,
+        resolve: (consignmentSubmission) => {
+          const inProgressSubmissionStates = [
+            "submitted",
+            "published",
+            "approved",
+            "hold",
+            "open",
+          ]
+
+          return inProgressSubmissionStates.includes(
+            consignmentSubmission.state
+          )
+            ? true
+            : false
         },
       },
     }
