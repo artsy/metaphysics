@@ -72,7 +72,7 @@ describe("me.myCollection", () => {
     )
   })
 
-  it("enriches artwork with consingment submissions data", async () => {
+  it("enriches artwork with consignment submissions data", async () => {
     const query = gql`
       {
         me {

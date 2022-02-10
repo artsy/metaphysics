@@ -977,6 +977,36 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#consignmentSubmission", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          consignmentSubmission {
+            displayText
+            inProgress
+          }
+        }
+      }
+    `
+
+    it("returns artwork's submission", () => {
+      artwork.consignmentSubmission = { state: "submitted" }
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            consignmentSubmission: {
+              displayText: "Submission in progress",
+              inProgress: true,
+            },
+          },
+        })
+      })
+    })
+  })
+
   describe("#contactMessage", () => {
     const query = `
       {
