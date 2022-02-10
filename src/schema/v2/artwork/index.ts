@@ -44,6 +44,7 @@ import {
 import AttributionClass from "schema/v2/artwork/attributionClass"
 // Mapping of attribution_class ids to AttributionClass values
 import attributionClasses from "lib/attributionClasses"
+import ArtworkConsignmentSubmissionType from "./artworkConsignmentSubmissionType"
 import ArtworkMedium from "schema/v2/artwork/artworkMedium"
 // Mapping of category ids to MediumType values
 import artworkMediums from "lib/artworkMediums"
@@ -69,33 +70,6 @@ const has_multiple_editions = (edition_sets) => {
   return edition_sets && edition_sets.length > 1
 }
 
-const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "ArtworkConsignmentSubmission",
-  fields: () => {
-    return {
-      displayText: {
-        type: GraphQLString,
-        resolve: (consignmentSubmission) => {
-          const statusDisplayTexts = {
-            draft: "Not displayed in My Collection",
-            submitted: "Submission in progress",
-            approved: "Submission in progress",
-            published: "Submission in progress",
-            rejected: "Submission in progress",
-            hold: "Submission in progress",
-            closed: "Submission evaluated",
-          }
-
-          return statusDisplayTexts[consignmentSubmission.state]
-        },
-      },
-    }
-  },
-})
-
 export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "Artwork",
   interfaces: [NodeInterface, Searchable, Sellable],
@@ -106,12 +80,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       additionalInformation: markdown(
         ({ additional_information }) => additional_information
       ),
-      consignmentSubmission: {
-        type: ArtworkConsignmentSubmissionType,
-        resolve: (artwork) => {
-          return artwork.consignmentSubmission
-        },
-      },
       artist: {
         type: Artist.type,
         args: {
@@ -184,6 +152,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ collecting_institution }) =>
           existyValue(collecting_institution),
+      },
+      consignmentSubmission: {
+        type: ArtworkConsignmentSubmissionType,
+        resolve: (artwork) => {
+          return artwork.consignmentSubmission
+        },
       },
       contactLabel: {
         type: GraphQLString,
