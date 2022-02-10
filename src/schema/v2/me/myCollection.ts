@@ -158,9 +158,11 @@ const enrichArtworks = (artworks: any, submissions: any) => {
   }
 
   return artworks.map((artwork) => {
-    const consignmentSubmission = submissions.find((submission) => {
-      return submission.my_collection_artwork_id === artwork.id
-    })
+    const consignmentSubmission = submissions
+      .filter((submission) => submission.state !== "draft")
+      .find((submission) => {
+        return submission.my_collection_artwork_id === artwork.id
+      })
 
     return { ...artwork, consignmentSubmission }
   })
