@@ -1,65 +1,65 @@
+import config from "config"
+import {
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLFloat,
+  GraphQLInt,
+  GraphQLInterfaceType,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
+import { PageInfoType } from "graphql-relay"
+// Mapping of category ids to MediumType values
+import artworkMediums from "lib/artworkMediums"
+// Mapping of attribution_class ids to AttributionClass values
+import attributionClasses from "lib/attributionClasses"
+import { deprecate } from "lib/deprecation"
+import { capitalizeFirstCharacter, enhance, existyValue } from "lib/helpers"
+import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
 import _ from "lodash"
-import { isTwoDimensional, isTooBig, isEmbeddedVideo, embed } from "./utilities"
-import { enhance, existyValue } from "lib/helpers"
-import cached from "schema/v2/fields/cached"
-import { markdown } from "schema/v2/fields/markdown"
 import Article from "schema/v2/article"
 import Artist from "schema/v2/artist"
-import Image, { getDefault, normalizeImageData } from "schema/v2/image"
-import { setVersion } from "schema/v2/image/normalize"
+import ArtworkMedium from "schema/v2/artwork/artworkMedium"
+import AttributionClass from "schema/v2/artwork/attributionClass"
+import Dimensions from "schema/v2/dimensions"
+import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
 import Fair from "schema/v2/fair"
-import Sale from "schema/v2/sale"
-import SaleArtwork from "schema/v2/sale_artwork"
+import cached from "schema/v2/fields/cached"
+import { listPrice } from "schema/v2/fields/listPrice"
+import { markdown } from "schema/v2/fields/markdown"
+import { amount, Money, symbolFromCurrencyCode } from "schema/v2/fields/money"
 import {
   connectionWithCursorInfo,
   PageCursorsType,
 } from "schema/v2/fields/pagination"
-import ShowSorts from "schema/v2/sorts/show_sorts"
-import Partner from "schema/v2/partner"
-import Context from "./context"
-import Meta, { artistNames } from "./meta"
-import { ArtworkHighlightType } from "./highlight"
-import Dimensions from "schema/v2/dimensions"
-import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
-import { Sellable } from "schema/v2/sellable"
-import { Searchable } from "schema/v2/searchable"
-import ArtworkLayer from "./layer"
-import ArtworkLayers, { artworkLayers } from "./layers"
-import { deprecate } from "lib/deprecation"
+import Image, { getDefault, normalizeImageData } from "schema/v2/image"
+import { setVersion } from "schema/v2/image/normalize"
+import { LocationType } from "schema/v2/location"
 import {
   NodeInterface,
   SlugAndInternalIDFields,
 } from "schema/v2/object_identification"
-import {
-  GraphQLObjectType,
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLList,
-  GraphQLInt,
-  GraphQLFieldConfig,
-  GraphQLFloat,
-  GraphQLInterfaceType,
-} from "graphql"
-import AttributionClass from "schema/v2/artwork/attributionClass"
-// Mapping of attribution_class ids to AttributionClass values
-import attributionClasses from "lib/attributionClasses"
-import ArtworkMedium from "schema/v2/artwork/artworkMedium"
-// Mapping of category ids to MediumType values
-import artworkMediums from "lib/artworkMediums"
-import { LotStandingType } from "../me/lot_standing"
-import { amount, Money, symbolFromCurrencyCode } from "schema/v2/fields/money"
-import { capitalizeFirstCharacter } from "lib/helpers"
-import { ResolverContext } from "types/graphql"
-import { listPrice } from "schema/v2/fields/listPrice"
+import Partner from "schema/v2/partner"
+import Sale from "schema/v2/sale"
+import SaleArtwork from "schema/v2/sale_artwork"
+import { Searchable } from "schema/v2/searchable"
+import { Sellable } from "schema/v2/sellable"
 import Show from "schema/v2/show"
-import { ArtworkContextGrids } from "./artworkContextGrids"
-import { PageInfoType } from "graphql-relay"
+import ShowSorts from "schema/v2/sorts/show_sorts"
+import { ResolverContext } from "types/graphql"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { InquiryQuestionType } from "../inquiry_question"
-import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
-import { LocationType } from "schema/v2/location"
-import config from "config"
+import { LotStandingType } from "../me/lot_standing"
+import ArtworkConsignmentSubmissionType from "./artworkConsignmentSubmissionType"
+import { ArtworkContextGrids } from "./artworkContextGrids"
+import Context from "./context"
+import { ArtworkHighlightType } from "./highlight"
+import ArtworkLayer from "./layer"
+import ArtworkLayers, { artworkLayers } from "./layers"
+import Meta, { artistNames } from "./meta"
+import { embed, isEmbeddedVideo, isTooBig, isTwoDimensional } from "./utilities"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -151,6 +151,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ collecting_institution }) =>
           existyValue(collecting_institution),
+      },
+      consignmentSubmission: {
+        type: ArtworkConsignmentSubmissionType,
       },
       contactLabel: {
         type: GraphQLString,
