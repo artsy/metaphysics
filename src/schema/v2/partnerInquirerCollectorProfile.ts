@@ -78,6 +78,14 @@ const InquirerCollectorProfileFields: GraphQLFieldConfigMap<
     description: "Collector's brief introduction",
     resolve: ({ user_introduction }) => user_introduction?.introduction,
   },
+  affiliatedAuctionHouseIds: {
+    description: "List of affiliated auction house ids, referencing Galaxy.",
+    type: new GraphQLList(GraphQLString),
+  },
+  affiliatedGalleryIds: {
+    description: "List of affiliated gallery ids, referencing Galaxy.",
+    type: new GraphQLList(GraphQLString),
+  },
 }
 
 const InquirerCollectorProfileType = new GraphQLObjectType<
