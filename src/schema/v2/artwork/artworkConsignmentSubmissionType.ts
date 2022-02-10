@@ -37,8 +37,6 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
           return inProgressSubmissionStates.includes(
             consignmentSubmission.state
           )
-            ? true
-            : false
         },
       },
     }
