@@ -79,7 +79,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
       displayText: {
         type: GraphQLString,
         resolve: (consignmentSubmission) => {
-          const statusEnum = {
+          const statusDisplayTexts = {
             draft: "Not displayed in My Collection",
             submitted: "Submission in progress",
             approved: "Submission in progress",
@@ -89,7 +89,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
             closed: "Submission evaluated",
           }
 
-          return statusEnum[consignmentSubmission.state]
+          return statusDisplayTexts[consignmentSubmission.state]
         },
       },
     }
