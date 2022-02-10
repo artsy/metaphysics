@@ -4,7 +4,6 @@ import {
   GraphQLFieldConfig,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLResolveInfo,
   GraphQLString,
   GraphQLUnionType,
 } from "graphql"
@@ -15,7 +14,6 @@ import {
 } from "graphql-relay"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
@@ -106,8 +104,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (
     { id: userId },
     options,
-    { collectionArtworksLoader, submissionsLoader },
-    info
+    { collectionArtworksLoader, submissionsLoader }
   ) => {
     if (!collectionArtworksLoader || !submissionsLoader) {
       return null
@@ -127,44 +124,38 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
     // @ts-expect-error FIXME: Make `page` is an optional param of `gravityOptions`
     delete gravityOptions.page
 
-    try {
-      const { body: artworks, headers } = await collectionArtworksLoader(
-        "my-collection",
-        gravityOptions
-      )
+    return Promise.all([
+      collectionArtworksLoader("my-collection", gravityOptions),
+      submissionsLoader(),
+    ])
+      .then(([{ body: artworks, headers }, submissions]) => {
+        const artworksWithSubmissions = enrichArtworks(artworks, submissions)
 
-      const artworksWithSubmissions = await enrichArtworks(
-        artworks,
-        submissionsLoader,
-        info
-      )
-
-      return connectionFromArraySlice(artworksWithSubmissions, options, {
-        arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-        sliceStart: gravityOptions.offset,
+        return connectionFromArraySlice(artworksWithSubmissions, options, {
+          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+          sliceStart: gravityOptions.offset,
+        })
       })
-    } catch (error) {
-      console.error("[schema/v2/me/my_collection] Error:", error)
+      .catch((error) => {
+        console.error("[schema/v2/me/my_collection] Error:", error)
 
-      if (error.message == "Collection Not Found") {
-        // For some users with no items, Gravity produces an error of
-        // "Collection Not Found". This can cause the Gravity endpoint to
-        // produce a 404, so we will intercept the error and return an empty
-        // list instead.
-        return connectionFromArray([], options)
-      } else {
-        throw error
-      }
-    }
+        if (error.message == "Collection Not Found") {
+          // For some users with no items, Gravity produces an error of
+          // "Collection Not Found". This can cause the Gravity endpoint to
+          // produce a 404, so we will intercept the error and return an empty
+          // list instead.
+          return connectionFromArray([], options)
+        } else {
+          throw error
+        }
+      })
   },
 }
 
-const enrichArtworks = async (
-  artworks: any,
-  submissionsLoader: StaticPathLoader<any>,
-  _info: GraphQLResolveInfo
-) => {
-  const submissions = await submissionsLoader({ size: 1000 })
+const enrichArtworks = (artworks: any, submissions: any) => {
+  if (submissions.length === 0) {
+    return artworks
+  }
 
   return artworks.map((artwork) => {
     const consignmentSubmission = submissions.find((submission) => {
