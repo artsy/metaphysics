@@ -44,7 +44,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
         const contributingAuthors = contributing_authors
           ?.map((author) => author?.name?.trim())
           .join(", ")
-          .replace(/,\s([^,]+)$/, " and $1)")
+          .replace(/,\s([^,]+)$/, " and $1")
 
         return contributingAuthors || author?.name?.trim() || "Artsy Editorial"
       },
@@ -109,10 +109,23 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
         new GraphQLList(new GraphQLNonNull(ArticleType))
       ),
       resolve: async (
-        { related_article_ids, id, channel_id, tags, vertical },
+        { related_article_ids, id, channel_id, tags, vertical, layout },
         args,
         { articlesLoader }
       ) => {
+        // When an article is a series, ignore the default size and
+        // only return related articles
+        if (layout === "series" && related_article_ids?.length > 0) {
+          const { results } = await articlesLoader({
+            has_published_media: true,
+            ids: related_article_ids,
+            limit: 25, // Arbitrary limit, possible this needs to be increased
+            published: true,
+          })
+
+          return results
+        }
+
         const [
           { results: articlesFeed },
           { results: relatedArticles },
@@ -166,6 +179,17 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
         )
       ),
       resolve: ({ sections }) => (sections ? sections : []),
+    },
+    series: {
+      type: new GraphQLObjectType({
+        name: "ArticleSeries",
+        fields: {
+          description: {
+            description: "HTML string describing the series",
+            type: GraphQLString,
+          },
+        },
+      }),
     },
     slug: {
       type: GraphQLString,
