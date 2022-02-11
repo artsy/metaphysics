@@ -1,12 +1,11 @@
 import DataLoader from "dataloader"
-import { pick } from "lodash"
-
-import { loaderInterface } from "./loader_interface"
-import timer from "lib/timer"
-import { verbose, warn } from "lib/loggers"
 import extensionsLogger, { formatBytes } from "lib/loaders/api/extensionsLogger"
+import { verbose, warn } from "lib/loggers"
+import timer from "lib/timer"
+import { pick } from "lodash"
 import { LoaderFactory } from "../index"
 import { DataLoaderKey } from "./index"
+import { loaderInterface } from "./loader_interface"
 
 /**
  * This returns a function that takes an access token to create a data loader factory for the given `api`.
