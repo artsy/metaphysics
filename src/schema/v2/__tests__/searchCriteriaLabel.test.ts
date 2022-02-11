@@ -260,4 +260,25 @@ describe("resolveSearchCriteriaLabels", () => {
       },
     ])
   })
+
+  it("formats material criteria", async () => {
+    const parent = {
+      materialsTerms: ["acrylic", "c-print"],
+    }
+
+    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+    expect(labels).toIncludeAllMembers([
+      {
+        name: "Material",
+        value: "Acrylic",
+        field: "materialsTerms",
+      },
+      {
+        name: "Material",
+        value: "C-Print",
+        field: "materialsTerms",
+      },
+    ])
+  })
 })

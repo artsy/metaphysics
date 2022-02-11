@@ -794,6 +794,7 @@ export const gravityStitchingEnvironment = (
               atAuction
               inquireableOnly
               offerable
+              materialsTerms
             }
             `,
           resolve: resolveSearchCriteriaLabels,

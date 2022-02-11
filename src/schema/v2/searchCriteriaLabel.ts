@@ -65,6 +65,7 @@ export const resolveSearchCriteriaLabels = async (
     atAuction,
     inquireableOnly,
     offerable,
+    materialsTerms,
   } = parent
 
   const { artistLoader } = context
@@ -85,6 +86,7 @@ export const resolveSearchCriteriaLabels = async (
       offerable,
     })
   )
+  labels.push(getMaterialLabels(materialsTerms))
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -248,4 +250,20 @@ function getWaysToBuyLabels(waysToBuy: {
     })
 
   return labels
+}
+
+function getMaterialLabels(materialsTerms: string[]) {
+  if (!materialsTerms?.length) return []
+
+  return materialsTerms.map((term) => {
+    return {
+      name: "Material",
+      value: capitalizeWords(term),
+      field: "materialsTerms",
+    }
+  })
+}
+
+function capitalizeWords(str: string) {
+  return str.replace(/\b([a-z])/g, (_match, p1) => p1.toUpperCase())
 }
