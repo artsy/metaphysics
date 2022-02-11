@@ -302,4 +302,25 @@ describe("resolveSearchCriteriaLabels", () => {
       },
     ])
   })
+
+  it("formats time period criteria", async () => {
+    const parent = {
+      majorPeriods: ["1990", "Early 19th Century"],
+    }
+
+    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+    expect(labels).toIncludeAllMembers([
+      {
+        name: "Time Period",
+        value: "1990–1999",
+        field: "majorPeriods",
+      },
+      {
+        name: "Time Period",
+        value: "Early 19th Century",
+        field: "majorPeriods",
+      },
+    ])
+  })
 })

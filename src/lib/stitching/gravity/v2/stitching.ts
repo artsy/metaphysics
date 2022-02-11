@@ -796,6 +796,7 @@ export const gravityStitchingEnvironment = (
               offerable
               materialsTerms
               locationCities
+              majorPeriods
             }
             `,
           resolve: resolveSearchCriteriaLabels,

@@ -67,6 +67,7 @@ export const resolveSearchCriteriaLabels = async (
     offerable,
     materialsTerms,
     locationCities,
+    majorPeriods,
   } = parent
 
   const { artistLoader } = context
@@ -89,6 +90,7 @@ export const resolveSearchCriteriaLabels = async (
   )
   labels.push(getMaterialLabels(materialsTerms))
   labels.push(getLocationLabels(locationCities))
+  labels.push(getPeriodLabels(majorPeriods))
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -274,6 +276,34 @@ function getLocationLabels(locationCities: string[]): SearchCriteriaLabel[] {
     value: city,
     field: "locationCities",
   }))
+}
+
+function getPeriodLabels(majorPeriods: string[]) {
+  if (!majorPeriods?.length) return []
+
+  const DISPLAY_TEXT: Record<string, string> = {
+    "2020": "2020–Today",
+    "2010": "2010–2019",
+    "2000": "2000–2009",
+    "1990": "1990–1999",
+    "1980": "1980–1989",
+    "1970": "1970–1979",
+    "1960": "1960–1969",
+    "1950": "1950–1959",
+    "1940": "1940–1949",
+    "1930": "1930–1939",
+    "1920": "1920–1929",
+    "1910": "1910–1919",
+    "1900": "1900–1909",
+  }
+
+  return majorPeriods.map((period) => {
+    return {
+      name: "Time Period",
+      value: DISPLAY_TEXT[period] ?? period,
+      field: "majorPeriods",
+    }
+  })
 }
 
 function capitalizeWords(str: string) {
