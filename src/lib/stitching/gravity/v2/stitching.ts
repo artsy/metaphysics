@@ -788,6 +788,8 @@ export const gravityStitchingEnvironment = (
               additionalGeneIDs
               priceRange
               sizes
+              width
+              height
             }
             `,
           resolve: resolveSearchCriteriaLabels,

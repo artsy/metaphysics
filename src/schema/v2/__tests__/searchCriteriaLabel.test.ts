@@ -204,4 +204,26 @@ describe("resolveSearchCriteriaLabels", () => {
       },
     ])
   })
+
+  it("formats custom size criteria", async () => {
+    const parent = {
+      height: "1-10",
+      width: "2-20",
+    }
+
+    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+    expect(labels).toIncludeAllMembers([
+      {
+        name: "Size",
+        value: "w: 5–51 cm", // TODO: fix this placeholder formatting
+        field: "width",
+      },
+      {
+        name: "Size",
+        value: "h: 3–25 cm", // TODO: fix this placeholder formatting
+        field: "height",
+      },
+    ])
+  })
 })

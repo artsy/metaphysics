@@ -59,6 +59,8 @@ export const resolveSearchCriteriaLabels = async (
     additionalGeneIDs,
     priceRange,
     sizes,
+    width,
+    height,
   } = parent
 
   const { artistLoader } = context
@@ -70,6 +72,7 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(getMediumLabels(additionalGeneIDs))
   labels.push(getPriceLabel(priceRange))
   labels.push(getSizeLabels(sizes))
+  labels.push(getCustomSizeLabels({ width, height }))
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -151,4 +154,46 @@ function getSizeLabels(sizes: string[]) {
     value: startCase(size.toLowerCase()), // TODO: this a placeholder, we need to format these properly
     field: "sizes",
   }))
+}
+
+function getCustomSizeLabels({
+  height,
+  width,
+}: {
+  height: string
+  width: string
+}) {
+  const labels: SearchCriteriaLabel[] = []
+
+  // TODO: this a placeholder, we need to format these properly
+
+  if (width) {
+    const [wmin, wmax] = width
+      .split(/-/)
+      .map(parseFloat)
+      .map((n) => n * 2.54)
+      .map(Math.round)
+
+    labels.push({
+      name: "Size",
+      value: `w: ${wmin}–${wmax} cm`,
+      field: "width",
+    })
+  }
+
+  if (height) {
+    const [hmin, hmax] = height
+      .split(/-/)
+      .map(parseFloat)
+      .map((n) => n * 2.54)
+      .map(Math.round)
+
+    labels.push({
+      name: "Size",
+      value: `h: ${hmin}–${hmax} cm`,
+      field: "height",
+    })
+  }
+
+  return labels
 }
