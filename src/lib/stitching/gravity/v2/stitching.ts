@@ -784,6 +784,7 @@ export const gravityStitchingEnvironment = (
           fragment: gql`
             ... on SearchCriteria {
               artistIDs
+              attributionClass
             }
             `,
           resolve: resolveSearchCriteriaLabels,

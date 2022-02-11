@@ -1,6 +1,8 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 
+import allAttributionClasses from "lib/attributionClasses"
+
 type SearchCriteriaLabel = {
   /** The GraphQL field name of the filter facet */
   field: string
@@ -50,13 +52,14 @@ export const resolveSearchCriteriaLabels = async (
   context,
   _info
 ) => {
-  const { artistIDs } = parent
+  const { artistIDs, attributionClass } = parent
 
   const { artistLoader } = context
 
   const labels: any[] = []
 
   labels.push(await getArtistLabels(artistIDs, artistLoader))
+  labels.push(getRarityLabels(attributionClass))
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -74,4 +77,14 @@ async function getArtistLabels(artistIDs: string[], artistLoader) {
       }
     })
   )
+}
+
+function getRarityLabels(attributionClasses: string[]) {
+  if (!attributionClasses?.length) return []
+
+  return attributionClasses.map((attributionClass) => ({
+    name: "Rarity",
+    value: allAttributionClasses[attributionClass].name,
+    field: "attributionClass",
+  }))
 }
