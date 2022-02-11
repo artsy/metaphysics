@@ -719,6 +719,7 @@ type Article implements Node {
     size: Int = 3
   ): [Article!]!
   sections: [ArticleSections!]!
+  series: ArticleSeries
   slug: String
   thumbnailImage: Image
   thumbnailTeaser: String
@@ -779,8 +780,12 @@ type ArticleImageSection {
 }
 
 enum ArticleLayout {
+  CLASSIC
   FEATURE
+  NEWS
+  SERIES
   STANDARD
+  VIDEO
 }
 
 type ArticleSectionCallout {
@@ -793,11 +798,17 @@ type ArticleSectionCallout {
 }
 
 type ArticleSectionEmbed {
-  height: String
-  layout: String
-  mobileHeight: String
-  type: String
+  height: Int
+  layout: ArticleSectionEmbedLayout
+  mobileHeight: Int
   url: String
+}
+
+enum ArticleSectionEmbedLayout {
+  COLUMN_WIDTH
+  FILLWIDTH
+  OVERFLOW
+  OVERFLOW_FILLWIDTH
 }
 
 type ArticleSectionImageCollection {
@@ -842,8 +853,8 @@ union ArticleSections =
   | ArticleSectionVideo
 
 type ArticleSectionSocialEmbed {
-  layout: String
-  type: String
+  # oEmbed HTML response. Only Twitter is currently supported.
+  embed: String
   url: String
 }
 
@@ -855,10 +866,23 @@ type ArticleSectionText {
 type ArticleSectionVideo {
   backgroundColor: String
   caption: String
-  coverImageUrl: String
-  layout: String
-  type: String
-  url: String
+
+  # Only YouTube and Vimeo are supported
+  embed(autoPlay: Boolean = false): String
+  image: Image
+  layout: ArticleSectionVideoLayout
+  url: String!
+}
+
+enum ArticleSectionVideoLayout {
+  COLUMN_WIDTH
+  FILLWIDTH
+  OVERFLOW_FILLWIDTH
+}
+
+type ArticleSeries {
+  # HTML string describing the series
+  description: String
 }
 
 enum ArticleSorts {
@@ -1514,6 +1538,7 @@ type Artwork implements Node & Searchable & Sellable {
   certificateOfAuthenticity: ArtworkInfoRow
   collectingInstitution: String
   conditionDescription: ArtworkInfoRow
+  consignmentSubmission: ArtworkConsignmentSubmission
   contactLabel: String
 
   # Pre-filled inquiry text
@@ -1668,6 +1693,7 @@ type Artwork implements Node & Searchable & Sellable {
   # The price paid for the artwork in a user's 'my collection'
   pricePaid: Money
   pricingContext: AnalyticsPricingContext
+  processWithArtaShipping: Boolean
   provenance(format: Format): String
 
   # Whether this artwork is published or not
@@ -1776,6 +1802,11 @@ interface ArtworkConnectionInterface {
   edges: [ArtworkEdgeInterface]
   pageCursors: PageCursors!
   pageInfo: PageInfo!
+}
+
+type ArtworkConsignmentSubmission {
+  displayText: String
+  inProgress: Boolean
 }
 
 union ArtworkContext = Fair | Sale | Show
@@ -2762,6 +2793,10 @@ type CitySponsoredContent {
 enum CollectionSorts {
   POSITION_ASC
   POSITION_DESC
+}
+
+type CollectorProfileArtists {
+  name: String
 }
 
 type CollectorProfileType {
@@ -8134,6 +8169,88 @@ type ImageURLs {
   normalized: String
 }
 
+type InquirerCollectorProfile {
+  # List of affiliated auction house ids, referencing Galaxy.
+  affiliatedAuctionHouseIds: [String]
+
+  # List of affiliated gallery ids, referencing Galaxy.
+  affiliatedGalleryIds: [String]
+  artsyUserSince(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  bio: String
+  collectorLevel: Int
+
+  # List of artists the Collector is interested in.
+  collectorProfileArtists: [CollectorProfileArtists]
+  confirmedBuyerAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  email: String
+  emailConfirmed: Boolean
+  icon: Image
+
+  # A globally unique ID.
+  id: ID!
+  identityVerified: Boolean
+  institutionalAffiliations: String
+  intents: [String]
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  isActiveBidder: Boolean
+  isActiveInquirer: Boolean
+  location: MyLocation
+  loyaltyApplicantAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  name: String
+
+  # Collector's position with relevant institutions
+  otherRelevantPositions: String
+
+  # User ID of the collector profile's owner
+  ownerID: ID!
+  privacy: String
+  profession: String
+  professionalBuyerAppliedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  professionalBuyerAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  selfReportedPurchases: String
+  userInterests: [UserInterest]!
+
+  # Collector's brief introduction
+  userIntroduction: String
+}
+
 union InquiryItemType = Artwork | Show
 
 type InquiryQuestion {
@@ -8312,7 +8429,7 @@ type LatLng {
 
 input LinkAuthenticationMutationInput {
   # Unique Apple user id. **Required** for Apple authentication.
-  applieUid: String
+  appleUid: String
   clientMutationId: String
 
   # User email, only used for Apple authentication.
@@ -8791,6 +8908,9 @@ type Me implements Node {
     last: Int
   ): CreditCardConnection
   email: String
+
+  # User has confirmed their email address
+  emailConfirmed: Boolean!
 
   # Frequency of marketing emails.
   emailFrequency: String
@@ -9390,6 +9510,11 @@ type Mutation {
     input: SubmitInquiryRequestMutationInput!
   ): SubmitInquiryRequestMutationPayload
 
+  # Submits an OfferOrder and creates a conversation for it
+  submitOfferOrderWithConversation(
+    input: CommerceSubmitOrderWithOfferInput!
+  ): CommerceSubmitOrderWithOfferPayload
+
   # Unlinks a 3rd party account
   unlinkAuthentication(
     input: UnlinkAuthenticationMutationInput!
@@ -9422,6 +9547,11 @@ type Mutation {
 
   # Update the current logged in user.
   updateMyUserProfile(input: UpdateMyProfileInput!): UpdateMyProfilePayload
+
+  # Update notification preferences.
+  updateNotificationPreferences(
+    input: updateNotificationPreferencesMutationInput!
+  ): updateNotificationPreferencesMutationPayload
   updateSavedSearch(input: UpdateSavedSearchInput!): UpdateSavedSearchPayload
   updateSmsSecondFactor(
     input: UpdateSmsSecondFactorInput!
@@ -9511,7 +9641,9 @@ input MyCollectionCreateArtworkInput {
   pricePaidCents: Int
   pricePaidCurrency: String
   provenance: String
+  submissionId: String
   title: String!
+  userId: String
   width: String
 }
 
@@ -9607,6 +9739,20 @@ input Near {
 interface Node {
   # A globally unique ID.
   id: ID!
+}
+
+type NotificationPreference {
+  channel: String!
+  id: String!
+  name: String!
+  status: SubGroupStatus!
+}
+
+input NotificationPreferenceInput {
+  channel: String!
+  id: String!
+  name: String!
+  status: SubGroupStatus!
 }
 
 # Consignment Offer Response
@@ -9927,6 +10073,12 @@ type Partner implements Node {
   # A globally unique ID.
   id: ID!
   initials(length: Int = 3): String
+
+  # Inquiry Request details
+  inquiryRequest(
+    # The inquiry id
+    inquiryId: String!
+  ): PartnerInquiryRequest
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
@@ -10253,6 +10405,10 @@ type PartnerEdge {
 
   # The item at the end of the edge
   node: Partner
+}
+
+type PartnerInquiryRequest {
+  collectorProfile: InquirerCollectorProfile
 }
 
 # A location
@@ -11175,6 +11331,11 @@ type Query {
     # The globally unique ID of the node.
     id: ID!
   ): Node
+
+  # User's notification preferences
+  notificationPreferences(
+    authenticationToken: String
+  ): [NotificationPreference!]!
 
   # Get an Offer
   offer(
@@ -12207,6 +12368,7 @@ type SearchCriteria {
   colors: [String!]!
   dimensionRange: String
   height: String
+  href: String!
   inquireableOnly: Boolean
   internalID: ID!
   locationCities: [String!]!
@@ -12841,7 +13003,7 @@ type StartIdentityVerificationSuccess {
 }
 
 type StaticContent {
-  content: String
+  content(format: Format): String
 
   # A globally unique ID.
   id: ID!
@@ -12852,6 +13014,11 @@ type StaticContent {
 
   # A slug ID.
   slug: ID!
+}
+
+enum SubGroupStatus {
+  SUBSCRIBED
+  UNSUBSCRIBED
 }
 
 # An edge in a connection.
@@ -13277,6 +13444,16 @@ type UpdateMyProfilePayload {
   me: Me
   user: User
   userOrError: UpdateMyProfileMutation
+}
+
+input updateNotificationPreferencesMutationInput {
+  authenticationToken: String
+  clientMutationId: String
+  subscriptionGroups: [NotificationPreferenceInput!]!
+}
+
+type updateNotificationPreferencesMutationPayload {
+  clientMutationId: String
 }
 
 # Autogenerated input type of UpdateSavedSearch
@@ -14011,6 +14188,11 @@ type Viewer {
     # The globally unique ID of the node.
     id: ID!
   ): Node
+
+  # User's notification preferences
+  notificationPreferences(
+    authenticationToken: String
+  ): [NotificationPreference!]!
 
   # An OrderedSet
   orderedSet(

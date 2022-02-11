@@ -305,6 +305,105 @@ describe("createInquiryOfferOrder", () => {
   })
 })
 
+describe("submitOfferOrderWithConversation", () => {
+  const context = {
+    submitArtworkInquiryRequestLoader: jest.fn(),
+  }
+  const mergeInfo = { delegateToSchema: jest.fn() }
+  const validOrderResult = {
+    orderOrError: {
+      order: {
+        internalID: "order-id",
+        myLastOffer: {
+          note: "test note",
+        },
+        lineItems: {
+          edges: [
+            {
+              node: {
+                artworkId: "artwork-id",
+              },
+            },
+          ],
+        },
+      },
+    },
+  }
+
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+
+  it("calls submitArtworkInquiryRequestLoader after creating the order", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
+    const args = {
+      input: {
+        offerId: "offer-id",
+      },
+    }
+    mergeInfo.delegateToSchema.mockResolvedValue(validOrderResult)
+
+    const result = await resolver({}, args, context, { mergeInfo })
+
+    expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+      args: {
+        input: {
+          offerId: "offer-id",
+        },
+      },
+      fieldName: "commerceSubmitOrderWithOffer",
+      operation: "mutation",
+      schema: expect.anything(),
+      context: expect.anything(),
+      info: expect.anything(),
+      transforms: [expect.anything()],
+    })
+    expect(result).toEqual(validOrderResult)
+    expect(context.submitArtworkInquiryRequestLoader).toHaveBeenCalledWith({
+      artwork: "artwork-id",
+      message: "test note",
+      order_id: "order-id",
+    })
+  })
+
+  it("returns an error from exchange", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
+    const args = {
+      input: {
+        offerId: "offer-id",
+      },
+    }
+    const orderResult = { orderOrError: { error: { message: "who cares" } } }
+
+    mergeInfo.delegateToSchema.mockResolvedValue(orderResult)
+    const result = await resolver({}, args, context, { mergeInfo })
+
+    expect(result).toEqual(orderResult)
+    expect(context.submitArtworkInquiryRequestLoader).not.toHaveBeenCalled()
+  })
+
+  it("returns an error if the submitArtworkInquiryRequestLoader fails", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
+    const args = {
+      input: {
+        artworkId: "artwork-id",
+      },
+    }
+
+    mergeInfo.delegateToSchema.mockResolvedValue(validOrderResult)
+    context.submitArtworkInquiryRequestLoader.mockRejectedValue({
+      message: "bad stuff",
+    })
+
+    await expect(resolver({}, args, context, { mergeInfo })).rejects.toThrow(
+      "Gravity: request to create inquiry failed"
+    )
+  })
+})
+
 describe("Conversation with orders", () => {
   it("delegates buyer request for Conversation.orderConnection to exchange schema", async () => {
     const { resolvers } = await getExchangeStitchedSchema()

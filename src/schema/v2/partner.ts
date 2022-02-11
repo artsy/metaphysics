@@ -41,6 +41,7 @@ import { allViaLoader } from "lib/all"
 import { truncate } from "lib/helpers"
 import { setVersion } from "./image/normalize"
 import { compact } from "lodash"
+import { InquiryRequestType } from "./partnerInquirerCollectorProfile"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -747,6 +748,28 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         description: "Indicates the partner is a trusted seller on Artsy",
         type: GraphQLBoolean,
         resolve: ({ verified_seller }) => verified_seller,
+      },
+      inquiryRequest: {
+        type: InquiryRequestType,
+        args: {
+          inquiryId: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "The inquiry id",
+          },
+        },
+        description: "Inquiry Request details",
+        resolve: (
+          { id },
+          { inquiryId },
+          { partnerInquirerCollectorProfileLoader }
+        ) => {
+          if (!partnerInquirerCollectorProfileLoader) return
+
+          return partnerInquirerCollectorProfileLoader({
+            partnerId: id,
+            inquiryId,
+          }).then((collectorProfile) => collectorProfile)
+        },
       },
     }
   },

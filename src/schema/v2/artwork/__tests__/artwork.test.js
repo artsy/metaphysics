@@ -567,6 +567,30 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#processWithArtaShipping", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          processWithArtaShipping
+        }
+      }
+    `
+
+    it("passes true from gravity", () => {
+      artwork.process_with_arta_shipping = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            processWithArtaShipping: true,
+          },
+        })
+      })
+    })
+  })
+
   describe("#images", () => {
     const query = `
       {
@@ -947,6 +971,36 @@ describe("Artwork type", () => {
           artwork: {
             slug: "richard-prince-untitled-portrait",
             saleMessage: "US$69–US$420",
+          },
+        })
+      })
+    })
+  })
+
+  describe("#consignmentSubmission", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          consignmentSubmission {
+            displayText
+            inProgress
+          }
+        }
+      }
+    `
+
+    it("returns artwork's submission", () => {
+      artwork.consignmentSubmission = { state: "submitted" }
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            consignmentSubmission: {
+              displayText: "Submission in progress",
+              inProgress: true,
+            },
           },
         })
       })

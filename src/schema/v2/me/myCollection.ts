@@ -1,25 +1,23 @@
-import { ResolverContext } from "types/graphql"
-import { pageable } from "relay-cursor-paging"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import {
-  connectionFromArraySlice,
-  connectionFromArray,
-  cursorForObjectInConnection,
-} from "graphql-relay"
-
-import { connectionWithCursorInfo } from "../fields/pagination"
-import { ArtworkType } from "../artwork"
-
-import {
+  GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLNonNull,
-  GraphQLString,
-  GraphQLBoolean,
   GraphQLObjectType,
+  GraphQLString,
   GraphQLUnionType,
-  GraphQLEnumType,
 } from "graphql"
+import {
+  connectionFromArray,
+  connectionFromArraySlice,
+  cursorForObjectInConnection,
+} from "graphql-relay"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
+import { ResolverContext } from "types/graphql"
+import { ArtworkType } from "../artwork"
+import { connectionWithCursorInfo } from "../fields/pagination"
 
 const myCollectionFields = {
   description: {
@@ -103,10 +101,15 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         "Exclude artworks that have been purchased on Artsy and automatically added to the collection.",
     },
   }),
-  resolve: ({ id: userId }, options, { collectionArtworksLoader }) => {
-    if (!collectionArtworksLoader) {
+  resolve: async (
+    { id: userId },
+    options,
+    { collectionArtworksLoader, submissionsLoader }
+  ) => {
+    if (!collectionArtworksLoader || !submissionsLoader) {
       return null
     }
+
     const gravityOptions = Object.assign(
       {
         exclude_purchased_artworks: options.excludePurchasedArtworks,
@@ -121,9 +124,14 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
     // @ts-expect-error FIXME: Make `page` is an optional param of `gravityOptions`
     delete gravityOptions.page
 
-    return collectionArtworksLoader("my-collection", gravityOptions)
-      .then(({ body, headers }) => {
-        return connectionFromArraySlice(body, options, {
+    return Promise.all([
+      collectionArtworksLoader("my-collection", gravityOptions),
+      submissionsLoader(),
+    ])
+      .then(([{ body: artworks, headers }, submissions]) => {
+        const artworksWithSubmissions = enrichArtworks(artworks, submissions)
+
+        return connectionFromArraySlice(artworksWithSubmissions, options, {
           arrayLength: parseInt(headers["x-total-count"] || "0", 10),
           sliceStart: gravityOptions.offset,
         })
@@ -142,6 +150,25 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         }
       })
   },
+}
+
+/** Enriches artworks with submissions (filters out draft submissions). */
+const enrichArtworks = (artworks: any[], submissions: any[]) => {
+  if (submissions.length === 0) {
+    return artworks
+  }
+
+  const filteredSubmissions = submissions.filter(
+    (submission) => submission.state !== "draft"
+  )
+
+  return artworks.map((artwork) => {
+    const consignmentSubmission = filteredSubmissions.find((submission) => {
+      return submission.my_collection_artwork_id === artwork.id
+    })
+
+    return { ...artwork, consignmentSubmission }
+  })
 }
 
 /**

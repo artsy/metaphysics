@@ -34,7 +34,7 @@ export const userInterestCategoryEnum = new GraphQLEnumType({
 
 export const userInterestInterestUnion = new GraphQLUnionType({
   name: "UserInterestInterest",
-  types: [ArtistType, GeneType],
+  types: () => [ArtistType, GeneType],
   resolveType: (object) => ("birthday" in object ? ArtistType : GeneType),
 })
 

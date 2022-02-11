@@ -23,6 +23,12 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
+    notificationPreferencesLoader: gravityLoader("notification_preferences"),
+    updateNotificationPreferencesLoader: gravityLoader(
+      "notification_preferences",
+      {},
+      { method: "POST" }
+    ),
     authenticatedArtworkVersionLoader: gravityLoader(
       (id) => `artwork_version/${id}`
     ),
@@ -266,6 +272,13 @@ export default (accessToken, userID, opts) => {
       (id) => `partner/${id}/artworks/all`,
       {},
       { headers: true }
+    ),
+    partnerInquirerCollectorProfileLoader: gravityLoader<
+      any,
+      { partnerId: string; inquiryId: string }
+    >(
+      ({ partnerId, inquiryId }) =>
+        `partner/${partnerId}/inquiry_request/${inquiryId}/collector_profile`
     ),
     popularArtistsLoader: gravityLoader("artists/popular"),
     recordArtworkViewLoader: gravityLoader(

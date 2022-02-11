@@ -6,6 +6,7 @@ import {
 } from "graphql"
 import fetch from "node-fetch"
 import { ResolverContext } from "types/graphql"
+import config from "config"
 
 export const RequestLocationType = new GraphQLObjectType<any, ResolverContext>({
   name: "RequestLocation",
@@ -30,8 +31,23 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, args) => {
-    return fetch(`https://freegeoip.app/json/${args.ip}`)
-      .then((response) => response.json())
+    const url = `https://api.freegeoip.app/json/${args.ip}?apikey=${config.FREEGEOIP_API_KEY}`
+    return fetch(url)
+      .then((response) => {
+        if (config.ENABLE_GEOLOCATION_LOGGING) {
+          const headers = response.headers
+          // @ts-ignore
+          const headerKeys = [...headers.keys()]
+          const matchingHeaders = headerKeys
+            .filter((key) => /rate/.test(key))
+            .map((key) => `${key}: ${headers.get(key)}`)
+            .join(", ")
+
+          console.log("[schema/requestLocation.ts] Headers:", matchingHeaders)
+        }
+
+        return response.json()
+      })
       .then((response) => {
         return response
       })

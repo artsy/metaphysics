@@ -9,7 +9,7 @@ import { snakeCase } from "lodash"
 interface Input {
   provider: Provider
   oauthToken: string
-  applieUid?: string
+  appleUid?: string
   idToken?: string
   name?: string
   email?: string
@@ -36,7 +36,7 @@ export const linkAuthenticationMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "An OAuth token.",
     },
-    applieUid: {
+    appleUid: {
       type: GraphQLString,
       description:
         "Unique Apple user id. **Required** for Apple authentication.",
