@@ -15,7 +15,7 @@ import {
 import { snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { UserType } from "../user"
-import Me from "./"
+import Me, { CurrencyPreference, LengthUnitPreference } from "./"
 import { computeImageSources } from "./myCollectionCreateArtworkMutation"
 
 export const EditableLocationFields = new GraphQLInputObjectType({
@@ -114,6 +114,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       description: "The user completed onboarding.",
       type: GraphQLBoolean,
     },
+    currencyPreference: {
+      description: "Currency preference of the user",
+      type: CurrencyPreference,
+    },
     email: { description: "The given email of the user.", type: GraphQLString },
     emailFrequency: {
       description: "Frequency of marketing emails.",
@@ -132,6 +136,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     location: {
       description: "The given location of the user as structured data",
       type: EditableLocationFields,
+    },
+    lengthUnitPreference: {
+      description: "Length unit preference of the user",
+      type: LengthUnitPreference,
     },
     name: { description: "The given name of the user.", type: GraphQLString },
     notes: { type: GraphQLString, description: "Additional personal notes." },
