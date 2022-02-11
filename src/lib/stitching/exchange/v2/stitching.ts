@@ -577,6 +577,13 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                       {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "source",
+                        },
+                      },
+                      {
                         kind: Kind.INLINE_FRAGMENT,
                         typeCondition: {
                           kind: Kind.NAMED_TYPE,
@@ -665,7 +672,11 @@ export const exchangeStitchingEnvironment = ({
 
             const { orderOrError } = submitOrderWithOffer
 
-            if (orderOrError.error || !orderOrError.order) {
+            if (
+              orderOrError.error ||
+              !orderOrError.order ||
+              orderOrError.order.source === "inquiry"
+            ) {
               return submitOrderWithOffer
             }
 
@@ -678,6 +689,7 @@ export const exchangeStitchingEnvironment = ({
                 order_id: order.internalID,
               })
             } catch (e) {
+              console.error(e)
               throw new GraphQLError(
                 `[metaphysics @ exchange/v2/stitching] Gravity: request to create inquiry failed`
               )
