@@ -313,6 +313,7 @@ describe("submitOfferOrderWithConversation", () => {
   const validOrderResult = {
     orderOrError: {
       order: {
+        source: "artwork_page",
         internalID: "order-id",
         myLastOffer: {
           note: "test note",
@@ -365,6 +366,42 @@ describe("submitOfferOrderWithConversation", () => {
       message: "test note",
       order_id: "order-id",
     })
+  })
+
+  it("does not call submitArtworkInquiryRequestLoader given inquiry offer", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
+    const args = {
+      input: {
+        offerId: "offer-id",
+      },
+    }
+    const order = {
+      orderOrError: {
+        order: {
+          source: "inquiry",
+        },
+      },
+    }
+    mergeInfo.delegateToSchema.mockResolvedValue(order)
+
+    const result = await resolver({}, args, context, { mergeInfo })
+
+    expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+      args: {
+        input: {
+          offerId: "offer-id",
+        },
+      },
+      fieldName: "commerceSubmitOrderWithOffer",
+      operation: "mutation",
+      schema: expect.anything(),
+      context: expect.anything(),
+      info: expect.anything(),
+      transforms: [expect.anything()],
+    })
+    expect(result).toEqual(order)
+    expect(context.submitArtworkInquiryRequestLoader).not.toHaveBeenCalled()
   })
 
   it("returns an error from exchange", async () => {
