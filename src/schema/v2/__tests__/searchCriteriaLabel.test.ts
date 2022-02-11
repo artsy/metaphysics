@@ -66,4 +66,100 @@ describe("resolveSearchCriteriaLabels", () => {
       },
     ])
   })
+
+  it("formats medium criteria", async () => {
+    const parent = {
+      additionalGeneIDs: [
+        "painting",
+        "photography",
+        "sculpture",
+        "prints",
+        "work-on-paper",
+        "nft",
+        "design",
+        "drawing",
+        "installation",
+        "film-slash-video",
+        "jewelry",
+        "performance-art",
+        "reproduction",
+        "ephemera-or-merchandise",
+      ],
+    }
+
+    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+    expect(labels).toIncludeAllMembers([
+      {
+        name: "Medium",
+        value: "Painting",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Photography",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Sculpture",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Prints",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Work on Paper",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "NFT",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Design",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Drawing",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Installation",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Film/Video",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Jewelry",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Performance Art",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Reproduction",
+        field: "additionalGeneIDs",
+      },
+      {
+        name: "Medium",
+        value: "Ephemera or Merchandise",
+        field: "additionalGeneIDs",
+      },
+    ])
+  })
 })

@@ -52,7 +52,7 @@ export const resolveSearchCriteriaLabels = async (
   context,
   _info
 ) => {
-  const { artistIDs, attributionClass } = parent
+  const { artistIDs, attributionClass, additionalGeneIDs } = parent
 
   const { artistLoader } = context
 
@@ -60,6 +60,7 @@ export const resolveSearchCriteriaLabels = async (
 
   labels.push(await getArtistLabels(artistIDs, artistLoader))
   labels.push(getRarityLabels(attributionClass))
+  labels.push(getMediumLabels(additionalGeneIDs))
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -86,5 +87,38 @@ function getRarityLabels(attributionClasses: string[]) {
     name: "Rarity",
     value: allAttributionClasses[attributionClass].name,
     field: "attributionClass",
+  }))
+}
+
+function getMediumLabels(additionalGeneIDs: string[]) {
+  if (!additionalGeneIDs?.length) return []
+
+  // Corresponds to the list of options under
+  // the Medium facet on an artwork grid.
+  //
+  // Being a list of genes, this is related to,
+  // but not the same as, the list of artwork medium types.
+
+  const MEDIUM_GENES = {
+    painting: "Painting",
+    photography: "Photography",
+    sculpture: "Sculpture",
+    prints: "Prints",
+    "work-on-paper": "Work on Paper",
+    nft: "NFT",
+    design: "Design",
+    drawing: "Drawing",
+    installation: "Installation",
+    "film-slash-video": "Film/Video",
+    jewelry: "Jewelry",
+    "performance-art": "Performance Art",
+    reproduction: "Reproduction",
+    "ephemera-or-merchandise": "Ephemera or Merchandise",
+  }
+
+  return additionalGeneIDs.map((geneID) => ({
+    name: "Medium",
+    value: MEDIUM_GENES[geneID],
+    field: "additionalGeneIDs",
   }))
 }

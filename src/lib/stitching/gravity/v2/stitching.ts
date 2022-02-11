@@ -785,6 +785,7 @@ export const gravityStitchingEnvironment = (
             ... on SearchCriteria {
               artistIDs
               attributionClass
+              additionalGeneIDs
             }
             `,
           resolve: resolveSearchCriteriaLabels,
