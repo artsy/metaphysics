@@ -117,6 +117,7 @@ import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
 import { linkAuthenticationMutation } from "./me/linkAuthenticationMutation"
 import { authenticationStatus } from "./authenticationStatus"
 import { deleteUserAccountMutation } from "./me/delete_account_mutation"
+import { SearchCriteriaLabel } from "./searchCriteriaLabel"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -278,6 +279,7 @@ export default new GraphQLSchema({
     RelatedArtworkGridType,
     ShowArtworkGridType,
     ArtworkOrEditionSetType,
+    SearchCriteriaLabel,
   ],
   directives: specifiedDirectives.concat([
     PrincipalFieldDirective,
