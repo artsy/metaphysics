@@ -790,6 +790,10 @@ export const gravityStitchingEnvironment = (
               sizes
               width
               height
+              acquireable
+              atAuction
+              inquireableOnly
+              offerable
             }
             `,
           resolve: resolveSearchCriteriaLabels,

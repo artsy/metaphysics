@@ -61,6 +61,10 @@ export const resolveSearchCriteriaLabels = async (
     sizes,
     width,
     height,
+    acquireable,
+    atAuction,
+    inquireableOnly,
+    offerable,
   } = parent
 
   const { artistLoader } = context
@@ -73,6 +77,14 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(getPriceLabel(priceRange))
   labels.push(getSizeLabels(sizes))
   labels.push(getCustomSizeLabels({ width, height }))
+  labels.push(
+    getWaysToBuyLabels({
+      acquireable,
+      atAuction,
+      inquireableOnly,
+      offerable,
+    })
+  )
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -194,6 +206,46 @@ function getCustomSizeLabels({
       field: "height",
     })
   }
+
+  return labels
+}
+
+function getWaysToBuyLabels(waysToBuy: {
+  acquireable: boolean
+  atAuction: boolean
+  inquireableOnly: boolean
+  offerable: boolean
+}) {
+  const { acquireable, atAuction, inquireableOnly, offerable } = waysToBuy
+  const labels: SearchCriteriaLabel[] = []
+
+  if (acquireable)
+    labels.push({
+      name: "Ways to Buy",
+      value: "Buy Now",
+      field: "acquireable",
+    })
+
+  if (atAuction)
+    labels.push({
+      name: "Ways to Buy",
+      value: "Bid",
+      field: "atAuction",
+    })
+
+  if (inquireableOnly)
+    labels.push({
+      name: "Ways to Buy",
+      value: "Inquire",
+      field: "inquireableOnly",
+    })
+
+  if (offerable)
+    labels.push({
+      name: "Ways to Buy",
+      value: "Make Offer",
+      field: "offerable",
+    })
 
   return labels
 }

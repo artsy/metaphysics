@@ -226,4 +226,38 @@ describe("resolveSearchCriteriaLabels", () => {
       },
     ])
   })
+
+  it("formats ways-to-buy criteria", async () => {
+    const parent = {
+      acquireable: true,
+      atAuction: true,
+      inquireableOnly: true,
+      offerable: true,
+    }
+
+    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+    expect(labels).toIncludeAllMembers([
+      {
+        name: "Ways to Buy",
+        value: "Buy Now",
+        field: "acquireable",
+      },
+      {
+        name: "Ways to Buy",
+        value: "Bid",
+        field: "atAuction",
+      },
+      {
+        name: "Ways to Buy",
+        value: "Inquire",
+        field: "inquireableOnly",
+      },
+      {
+        name: "Ways to Buy",
+        value: "Make Offer",
+        field: "offerable",
+      },
+    ])
+  })
 })
