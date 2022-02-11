@@ -66,6 +66,7 @@ export const resolveSearchCriteriaLabels = async (
     inquireableOnly,
     offerable,
     materialsTerms,
+    locationCities,
   } = parent
 
   const { artistLoader } = context
@@ -87,6 +88,7 @@ export const resolveSearchCriteriaLabels = async (
     })
   )
   labels.push(getMaterialLabels(materialsTerms))
+  labels.push(getLocationLabels(locationCities))
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -262,6 +264,16 @@ function getMaterialLabels(materialsTerms: string[]) {
       field: "materialsTerms",
     }
   })
+}
+
+function getLocationLabels(locationCities: string[]): SearchCriteriaLabel[] {
+  if (!locationCities?.length) return []
+
+  return locationCities.map((city) => ({
+    name: "Artwork Location",
+    value: city,
+    field: "locationCities",
+  }))
 }
 
 function capitalizeWords(str: string) {

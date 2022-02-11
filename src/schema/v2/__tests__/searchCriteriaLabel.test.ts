@@ -281,4 +281,25 @@ describe("resolveSearchCriteriaLabels", () => {
       },
     ])
   })
+
+  it("formats artwork location criteria", async () => {
+    const parent = {
+      locationCities: ["Durham, PA, USA", "New York, NY, USA"],
+    }
+
+    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+    expect(labels).toIncludeAllMembers([
+      {
+        name: "Artwork Location",
+        value: "Durham, PA, USA",
+        field: "locationCities",
+      },
+      {
+        name: "Artwork Location",
+        value: "New York, NY, USA",
+        field: "locationCities",
+      },
+    ])
+  })
 })
