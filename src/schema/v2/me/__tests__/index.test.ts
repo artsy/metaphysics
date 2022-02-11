@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 describe("me/index", () => {
   const query = gql`
     query {
@@ -20,6 +20,8 @@ describe("me/index", () => {
         receiveNewWorksNotification
         receiveNewSalesNotification
         receivePromotionNotification
+        currencyPreference
+        lengthUnitPreference
       }
     }
   `
@@ -72,6 +74,8 @@ describe("me/index", () => {
       receive_new_works_notification: false,
       receive_new_sales_notification: true,
       receive_promotion_notification: false,
+      currency_preference: "USD",
+      length_unit_preference: "in",
     }
 
     return runAuthenticatedQuery(query, {
@@ -94,6 +98,8 @@ describe("me/index", () => {
           receiveNewWorksNotification: false,
           receiveNewSalesNotification: true,
           receivePromotionNotification: false,
+          currencyPreference: "USD",
+          lengthUnitPreference: "IN",
         },
       })
     })

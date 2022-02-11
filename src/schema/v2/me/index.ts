@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLFloat,
   GraphQLInt,
@@ -70,6 +71,33 @@ const collectorProfileResolver = (field: string) => async (
   return result?.[field]
 }
 
+export const CurrencyPreference = new GraphQLEnumType({
+  name: "CurrencyPreference",
+  values: {
+    EUR: {
+      value: "EUR",
+    },
+    USD: {
+      value: "USD",
+    },
+    GBP: {
+      value: "GBP",
+    },
+  },
+})
+
+export const LengthUnitPreference = new GraphQLEnumType({
+  name: "LengthUnitPreference",
+  values: {
+    CM: {
+      value: "cm",
+    },
+    IN: {
+      value: "in",
+    },
+  },
+})
+
 export const meType = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
   interfaces: [NodeInterface],
@@ -121,6 +149,16 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       description: "Whether user is allowed to request email confirmation",
       resolve: ({ can_request_email_confirmation }) =>
         can_request_email_confirmation,
+    },
+    currencyPreference: {
+      type: new GraphQLNonNull(CurrencyPreference),
+      description: "Currency preference of the user",
+      resolve: ({ currency_preference }) => currency_preference,
+    },
+    lengthUnitPreference: {
+      type: new GraphQLNonNull(LengthUnitPreference),
+      description: "Length unit preference of the user",
+      resolve: ({ length_unit_preference }) => length_unit_preference,
     },
     followsAndSaves: {
       type: new GraphQLObjectType<any, ResolverContext>({
