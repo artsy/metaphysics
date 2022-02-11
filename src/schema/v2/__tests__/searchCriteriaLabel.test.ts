@@ -162,4 +162,20 @@ describe("resolveSearchCriteriaLabels", () => {
       },
     ])
   })
+
+  it("formats price criteria", async () => {
+    const parent = {
+      priceRange: "42-420",
+    }
+
+    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+    expect(labels).toIncludeAllMembers([
+      {
+        name: "Price",
+        value: expect.anything(), // TODO: fix this placeholder formatting
+        field: "priceRange",
+      },
+    ])
+  })
 })

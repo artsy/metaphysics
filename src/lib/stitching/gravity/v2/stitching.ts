@@ -786,6 +786,7 @@ export const gravityStitchingEnvironment = (
               artistIDs
               attributionClass
               additionalGeneIDs
+              priceRange
             }
             `,
           resolve: resolveSearchCriteriaLabels,

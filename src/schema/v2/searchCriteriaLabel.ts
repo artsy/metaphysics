@@ -52,7 +52,7 @@ export const resolveSearchCriteriaLabels = async (
   context,
   _info
 ) => {
-  const { artistIDs, attributionClass, additionalGeneIDs } = parent
+  const { artistIDs, attributionClass, additionalGeneIDs, priceRange } = parent
 
   const { artistLoader } = context
 
@@ -61,6 +61,7 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(await getArtistLabels(artistIDs, artistLoader))
   labels.push(getRarityLabels(attributionClass))
   labels.push(getMediumLabels(additionalGeneIDs))
+  labels.push(getPriceLabel(priceRange))
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -121,4 +122,15 @@ function getMediumLabels(additionalGeneIDs: string[]) {
     value: MEDIUM_GENES[geneID],
     field: "additionalGeneIDs",
   }))
+}
+
+function getPriceLabel(priceRange: string): SearchCriteriaLabel | undefined {
+  if (!priceRange) return
+
+  const [min, max] = priceRange.split(/-/)
+  return {
+    name: "Price",
+    value: `USD ${min}–${max}`, // TODO: this a placeholder, we need to format these properly
+    field: "priceRange",
+  }
 }
