@@ -1,5 +1,6 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { startCase } from "lodash"
 
 import allAttributionClasses from "lib/attributionClasses"
 
@@ -52,7 +53,13 @@ export const resolveSearchCriteriaLabels = async (
   context,
   _info
 ) => {
-  const { artistIDs, attributionClass, additionalGeneIDs, priceRange } = parent
+  const {
+    artistIDs,
+    attributionClass,
+    additionalGeneIDs,
+    priceRange,
+    sizes,
+  } = parent
 
   const { artistLoader } = context
 
@@ -62,6 +69,7 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(getRarityLabels(attributionClass))
   labels.push(getMediumLabels(additionalGeneIDs))
   labels.push(getPriceLabel(priceRange))
+  labels.push(getSizeLabels(sizes))
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -133,4 +141,14 @@ function getPriceLabel(priceRange: string): SearchCriteriaLabel | undefined {
     value: `USD ${min}–${max}`, // TODO: this a placeholder, we need to format these properly
     field: "priceRange",
   }
+}
+
+function getSizeLabels(sizes: string[]) {
+  if (!sizes?.length) return []
+
+  return sizes.map((size) => ({
+    name: "Size",
+    value: startCase(size.toLowerCase()), // TODO: this a placeholder, we need to format these properly
+    field: "sizes",
+  }))
 }

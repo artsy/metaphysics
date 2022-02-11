@@ -787,6 +787,7 @@ export const gravityStitchingEnvironment = (
               attributionClass
               additionalGeneIDs
               priceRange
+              sizes
             }
             `,
           resolve: resolveSearchCriteriaLabels,

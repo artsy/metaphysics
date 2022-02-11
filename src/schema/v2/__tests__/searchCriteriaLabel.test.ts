@@ -178,4 +178,30 @@ describe("resolveSearchCriteriaLabels", () => {
       },
     ])
   })
+
+  it("formats size bucket criteria", async () => {
+    const parent = {
+      sizes: ["LARGE", "MEDIUM", "SMALL"],
+    }
+
+    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+    expect(labels).toIncludeAllMembers([
+      {
+        name: "Size",
+        value: "Large", // TODO: fix this placeholder formatting
+        field: "sizes",
+      },
+      {
+        name: "Size",
+        value: "Medium", // TODO: fix this placeholder formatting
+        field: "sizes",
+      },
+      {
+        name: "Size",
+        value: "Small", // TODO: fix this placeholder formatting
+        field: "sizes",
+      },
+    ])
+  })
 })
