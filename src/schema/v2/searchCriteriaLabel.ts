@@ -70,9 +70,10 @@ export const resolveSearchCriteriaLabels = async (
     locationCities,
     majorPeriods,
     colors,
+    partnerIDs,
   } = parent
 
-  const { artistLoader } = context
+  const { artistLoader, partnerLoader } = context
 
   const labels: any[] = []
 
@@ -94,6 +95,7 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(getLocationLabels(locationCities))
   labels.push(getPeriodLabels(majorPeriods))
   labels.push(getColorLabels(colors))
+  labels.push(await getPartnerLabels(partnerIDs, partnerLoader))
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -322,6 +324,21 @@ function getColorLabels(colors: string[]) {
       field: "colors",
     }
   })
+}
+
+async function getPartnerLabels(partnerIDs: string[], partnerLoader) {
+  if (!partnerIDs?.length) return []
+
+  return Promise.all(
+    partnerIDs.map(async (id) => {
+      const partner = await partnerLoader(id)
+      return {
+        name: "Galleries and Institutions",
+        value: partner.name,
+        field: "partnerIDs",
+      }
+    })
+  )
 }
 
 function capitalizeWords(str: string) {

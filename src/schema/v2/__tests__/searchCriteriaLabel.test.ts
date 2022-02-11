@@ -344,4 +344,32 @@ describe("resolveSearchCriteriaLabels", () => {
       },
     ])
   })
+
+  it("formats partner criteria", async () => {
+    const parent = {
+      partnerIDs: ["foo-bar-gallery", "baz-qux-gallery"],
+    }
+
+    const context = {
+      partnerLoader: jest
+        .fn()
+        .mockReturnValueOnce(Promise.resolve({ name: "Foo Bar Gallery" }))
+        .mockReturnValueOnce(Promise.resolve({ name: "Baz Qux Gallery" })),
+    }
+
+    const labels = await resolveSearchCriteriaLabels(parent, _, context, _)
+
+    expect(labels).toIncludeAllMembers([
+      {
+        name: "Galleries and Institutions",
+        value: "Foo Bar Gallery",
+        field: "partnerIDs",
+      },
+      {
+        name: "Galleries and Institutions",
+        value: "Baz Qux Gallery",
+        field: "partnerIDs",
+      },
+    ])
+  })
 })

@@ -798,6 +798,7 @@ export const gravityStitchingEnvironment = (
               locationCities
               majorPeriods
               colors
+              partnerIDs
             }
             `,
           resolve: resolveSearchCriteriaLabels,
