@@ -8919,7 +8919,7 @@ type Me implements Node {
     last: Int
   ): CreditCardConnection
 
-  # CurrencyPreference preference for user
+  # Currency preference of the user
   currencyPreference: CurrencyPreference!
   email: String
 
@@ -8966,7 +8966,7 @@ type Me implements Node {
   # List of lab features for this user
   labFeatures: [String!]!
 
-  # Length unit preference for user
+  # Length unit preference of the user
   lengthUnitPreference: LengthUnitPreference!
   location: MyLocation
 

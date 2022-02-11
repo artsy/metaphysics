@@ -152,12 +152,12 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     },
     currencyPreference: {
       type: new GraphQLNonNull(CurrencyPreference),
-      description: "CurrencyPreference preference for user",
+      description: "Currency preference of the user",
       resolve: ({ currency_preference }) => currency_preference,
     },
     lengthUnitPreference: {
       type: new GraphQLNonNull(LengthUnitPreference),
-      description: "Length unit preference for user",
+      description: "Length unit preference of the user",
       resolve: ({ length_unit_preference }) => length_unit_preference,
     },
     followsAndSaves: {
