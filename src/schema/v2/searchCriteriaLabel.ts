@@ -3,6 +3,7 @@ import { ResolverContext } from "types/graphql"
 import { startCase } from "lodash"
 
 import allAttributionClasses from "lib/attributionClasses"
+import { COLORS } from "lib/colors"
 
 type SearchCriteriaLabel = {
   /** The GraphQL field name of the filter facet */
@@ -68,6 +69,7 @@ export const resolveSearchCriteriaLabels = async (
     materialsTerms,
     locationCities,
     majorPeriods,
+    colors,
   } = parent
 
   const { artistLoader } = context
@@ -91,6 +93,7 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(getMaterialLabels(materialsTerms))
   labels.push(getLocationLabels(locationCities))
   labels.push(getPeriodLabels(majorPeriods))
+  labels.push(getColorLabels(colors))
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -302,6 +305,21 @@ function getPeriodLabels(majorPeriods: string[]) {
       name: "Time Period",
       value: DISPLAY_TEXT[period] ?? period,
       field: "majorPeriods",
+    }
+  })
+}
+
+function getColorLabels(colors: string[]) {
+  if (!colors?.length) return []
+
+  return colors.map((value) => {
+    const color = COLORS.find((c) => value === c.value)
+    if (!color) throw new Error(`Color not found: ${value}`)
+
+    return {
+      name: "Color",
+      value: color.name,
+      field: "colors",
     }
   })
 }
