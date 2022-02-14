@@ -421,7 +421,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       is_inquireable: {
         type: GraphQLBoolean,
         description: "Do we want to encourage inquiries on this work?",
-        resolve: ({ ecommerce, inquireable }) => !ecommerce && inquireable,
+        resolve: ({ inquireable }) => inquireable,
       },
       is_in_auction: {
         type: GraphQLBoolean,
