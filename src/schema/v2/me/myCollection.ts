@@ -124,51 +124,30 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
     // @ts-expect-error FIXME: Make `page` is an optional param of `gravityOptions`
     delete gravityOptions.page
 
-    return Promise.all([
-      collectionArtworksLoader("my-collection", gravityOptions),
-      submissionsLoader(),
-    ])
-      .then(([{ body: artworks, headers }, submissions]) => {
-        const artworksWithSubmissions = enrichArtworks(artworks, submissions)
+    try {
+      const { body: artworks, headers } = await collectionArtworksLoader(
+        "my-collection",
+        gravityOptions
+      )
 
-        return connectionFromArraySlice(artworksWithSubmissions, options, {
-          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-          sliceStart: gravityOptions.offset,
-        })
+      return connectionFromArraySlice(artworks, options, {
+        arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+        sliceStart: gravityOptions.offset,
       })
-      .catch((error) => {
-        console.error("[schema/v2/me/my_collection] Error:", error)
+    } catch (error) {
+      console.error("[schema/v2/me/my_collection] Error:", error)
 
-        if (error.message == "Collection Not Found") {
-          // For some users with no items, Gravity produces an error of
-          // "Collection Not Found". This can cause the Gravity endpoint to
-          // produce a 404, so we will intercept the error and return an empty
-          // list instead.
-          return connectionFromArray([], options)
-        } else {
-          throw error
-        }
-      })
+      if (error.message == "Collection Not Found") {
+        // For some users with no items, Gravity produces an error of
+        // "Collection Not Found". This can cause the Gravity endpoint to
+        // produce a 404, so we will intercept the error and return an empty
+        // list instead.
+        return connectionFromArray([], options)
+      } else {
+        throw error
+      }
+    }
   },
-}
-
-/** Enriches artworks with submissions (filters out draft submissions). */
-const enrichArtworks = (artworks: any[], submissions: any[]) => {
-  if (submissions.length === 0) {
-    return artworks
-  }
-
-  const filteredSubmissions = submissions.filter(
-    (submission) => submission.state !== "draft"
-  )
-
-  return artworks.map((artwork) => {
-    const consignmentSubmission = filteredSubmissions.find((submission) => {
-      return submission.my_collection_artwork_id === artwork.id
-    })
-
-    return { ...artwork, consignmentSubmission }
-  })
 }
 
 /**
