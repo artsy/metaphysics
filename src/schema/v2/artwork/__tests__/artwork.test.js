@@ -991,7 +991,15 @@ describe("Artwork type", () => {
     `
 
     it("returns artwork's submission", () => {
-      artwork.consignmentSubmission = { state: "submitted" }
+      const submissions = [
+        {
+          state: "submitted",
+          my_collection_artwork_id: "richard-prince-untitled-portrait",
+        },
+      ]
+      context.submissionsLoader = sinon
+        .stub()
+        .returns(Promise.resolve(submissions))
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({

@@ -154,6 +154,20 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       consignmentSubmission: {
         type: ArtworkConsignmentSubmissionType,
+        resolve: async ({ id }, _options, { submissionsLoader }) => {
+          if (!submissionsLoader) {
+            return
+          }
+
+          const submissions = await submissionsLoader({ size: 1000 })
+          const filteredSubmissions = submissions.filter(
+            (submission) => submission.state !== "draft"
+          )
+
+          return filteredSubmissions.find((submission) => {
+            return submission.my_collection_artwork_id === id
+          })
+        },
       },
       contactLabel: {
         type: GraphQLString,
