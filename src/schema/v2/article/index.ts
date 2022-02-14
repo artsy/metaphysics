@@ -145,6 +145,16 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
         },
       }),
     },
+    newsSource: {
+      type: new GraphQLObjectType({
+        name: "ArticleNewsSource",
+        fields: {
+          title: { type: GraphQLString },
+          url: { type: GraphQLString },
+        },
+      }),
+      resolve: ({ news_source }) => news_source,
+    },
     postscript: { type: GraphQLString },
     publishedAt: date(({ published_at }) => published_at),
     relatedArticles: {
