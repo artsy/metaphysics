@@ -49,6 +49,29 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
         return contributingAuthors || author?.name?.trim() || "Artsy Editorial"
       },
     },
+    channelArticles: {
+      args: {
+        size: {
+          type: GraphQLInt,
+          description: "Number of articles to return",
+          defaultValue: 12,
+        },
+      },
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ArticleType))
+      ),
+      resolve: async ({ id, channel_id }, args, { articlesLoader }) => {
+        const { results } = await articlesLoader({
+          channel_id,
+          limit: args.size,
+          omit: [id],
+          published: true,
+          sort: "-published_at",
+        })
+
+        return results
+      },
+    },
     channelID: {
       type: GraphQLString,
       resolve: ({ channel_id }) => channel_id,
