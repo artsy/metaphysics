@@ -1,3 +1,4 @@
+
 # Type not included by sangria's SchemaRenderer
 scalar Long
 
@@ -23,13 +24,10 @@ type IncrementPolicy {
   changes: [IncrementPolicyChange!]!
 
   "Generate a list of asking prices across a given range."
-  enumerate(
-    from: Long = 0
-    until: Long = 0
+  enumerate(from: Long = 0, until: Long = 0,
 
     "Defines treatment of off-increment `from` values."
-    nextIncrementRule: NextIncrementRule = SnapToPresetIncrements
-  ): [Money!]!
+    nextIncrementRule: NextIncrementRule = SnapToPresetIncrements): [Money!]!
 }
 
 "Change thresholds and amounts for IncrementPolicy."
@@ -70,16 +68,13 @@ type Lot {
   "The Gravity Sale ID."
   saleId: ID!
 
-  "total number of actual bids placed by users on the lot"
+  "total number of bids placed on the lot"
   bidCount: Int!
-
-  "current bid amount in minor unit, whether reserve is met or not"
-  sellingPriceCents: Long!
 
   "selling price, in minor unit, on the live auction floor"
   floorSellingPriceCents: Long
 
-  "The bidder currently winning the live floor portion of the auction"
+  "The bidder currently winning the online portion of the auction"
   floorWinningBidder: Bidder
 
   "asking price, in minor unit, for online bidders"
@@ -139,24 +134,21 @@ type Money {
   "Formatted string version of currency amount"
   displayAmount(
     "Number of decimal places for the currency."
-    fractionalDigits: Int = 2
+    fractionalDigits: Int = 2,
 
     "The 1000s separator."
-    groupingSeparator: String = ","
+    groupingSeparator: String = ",",
 
     "The decimal separator."
-    decimalSeparator: String = "."
+    decimalSeparator: String = ".",
 
     "Whether to show the fractional units."
-    showFractionalDigits: Boolean = true
-  ): String!
+    showFractionalDigits: Boolean = true): String!
 }
 
 type Mutation {
   "Permanently add a new increment policy to the database. It cannot be removed once added"
-  addIncrementPolicy(
-    newIncrementPolicy: NewIncrementPolicyInput!
-  ): IncrementPolicy
+  addIncrementPolicy(newIncrementPolicy: NewIncrementPolicyInput!): IncrementPolicy
   addSale(id: ID!): Sale
   banUserFromSale(saleId: ID!, userId: ID!): Sale
   unbanUserFromSale(userId: ID!, saleId: ID!): Sale
@@ -176,8 +168,7 @@ type NewIncrementPolicy {
   "A listing of increments by tier"
   prettyPrintedIncrements(
     "Number of decimal places for the currency."
-    fractionalDigits: Int = 2
-  ): [String!]!
+    fractionalDigits: Int = 2): [String!]!
 
   "The minimum percentage change between increments (~4% is typical)."
   minPercentChange: Float!
@@ -230,21 +221,13 @@ type PageInfo {
 
 type Query {
   "Lot standings for a user"
-  lotStandingConnection(
-    userId: ID!
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): LotStandingConnection!
+  lotStandingConnection(userId: ID!, before: String, after: String, first: Int, last: Int): LotStandingConnection!
 
   "Returns an increment policy with specific `id`."
   incrementPolicy(id: ID!): IncrementPolicy
 
   "Previews a draft of a new increment policy."
-  previewIncrementPolicy(
-    newIncrementPolicy: NewIncrementPolicyInput!
-  ): NewIncrementPolicy!
+  previewIncrementPolicy(newIncrementPolicy: NewIncrementPolicyInput!): NewIncrementPolicy!
 
   "All increment polices"
   incrementPolicies: [IncrementPolicy!]!
@@ -262,16 +245,20 @@ type Query {
   sale(id: ID!): Sale
 
   "Fetches an object given its ID"
-  node("The ID of an object" id: ID!): Node
+  node(
+    "The ID of an object"
+    id: ID!): Node
 
   "Fetches objects given their IDs"
-  nodes("The IDs of objects" ids: [ID!]!): [Node]!
+  nodes(
+    "The IDs of objects"
+    ids: [ID!]!): [Node]!
 }
 
 enum ReserveStatus {
   NoReserve
-  ReserveNotMet
   ReserveMet
+  ReserveNotMet
 }
 
 "The state of a sale"
@@ -315,8 +302,8 @@ type Sale {
 
 enum SoldStatus {
   ForSale
-  Sold
   Passed
+  Sold
 }
 
 "An Artsy User"

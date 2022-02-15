@@ -1054,6 +1054,7 @@ type LotEvent {
   calculatedSellingPriceMinor: Int
   createdAt: String!
   internalID: ID!
+  isWithdrawn: Boolean
   key: String!
   paddleNumber: String
   type: String!
@@ -1106,40 +1107,26 @@ A money object with amount in minor currency and a currency code, or an error ob
 union MoneyOrErrorUnion = Error | Money
 
 type Mutation {
-  acceptPartnerAgreement(
-    input: AcceptPartnerAgreementInput!
-  ): AcceptPartnerAgreementPayload
+  acceptPartnerAgreement(input: AcceptPartnerAgreementInput!): AcceptPartnerAgreementPayload
   captureHold(input: CaptureHoldInput!): CaptureHoldPayload
   confirmPassword(input: ConfirmPasswordInput!): ConfirmPasswordPayload
-  createAppSecondFactor(
-    input: CreateAppSecondFactorInput!
-  ): CreateAppSecondFactorPayload
-  createBackupSecondFactors(
-    input: CreateBackupSecondFactorsInput!
-  ): CreateBackupSecondFactorsPayload
+  createAppSecondFactor(input: CreateAppSecondFactorInput!): CreateAppSecondFactorPayload
+  createBackupSecondFactors(input: CreateBackupSecondFactorsInput!): CreateBackupSecondFactorsPayload
   createImage(input: CreateImageInput!): CreateImagePayload
   createSavedSearch(input: CreateSavedSearchInput!): CreateSavedSearchPayload
-  createSmsSecondFactor(
-    input: CreateSmsSecondFactorInput!
-  ): CreateSmsSecondFactorPayload
+  createSmsSecondFactor(input: CreateSmsSecondFactorInput!): CreateSmsSecondFactorPayload
   createUserAddress(input: CreateUserAddressInput!): CreateUserAddressPayload
   createViewingRoom(input: CreateViewingRoomInput!): CreateViewingRoomPayload
 
   """
   Deduct from the partner's exemption balance, against which they can make sales and not pay commission
   """
-  debitCommissionExemption(
-    input: DebitCommissionExemptionInput!
-  ): DebitCommissionExemptionPayload
+  debitCommissionExemption(input: DebitCommissionExemptionInput!): DebitCommissionExemptionPayload
   deleteUserAddress(input: DeleteUserAddressInput!): DeleteUserAddressPayload
   deleteViewingRoom(input: DeleteViewingRoomInput!): DeleteViewingRoomPayload
-  deliverSecondFactor(
-    input: DeliverSecondFactorInput!
-  ): DeliverSecondFactorPayload
+  deliverSecondFactor(input: DeliverSecondFactorInput!): DeliverSecondFactorPayload
   disableSavedSearch(input: DisableSavedSearchInput!): DisableSavedSearchPayload
-  disableSecondFactor(
-    input: DisableSecondFactorInput!
-  ): DisableSecondFactorPayload
+  disableSecondFactor(input: DisableSecondFactorInput!): DisableSecondFactorPayload
   enableSecondFactor(input: EnableSecondFactorInput!): EnableSecondFactorPayload
   holdInventory(input: HoldInventoryInput!): HoldInventoryPayload
   publishViewingRoom(input: PublishViewingRoomInput!): PublishViewingRoomPayload
@@ -1148,33 +1135,17 @@ type Mutation {
   """
   Refund commission exemption for a previous transaction
   """
-  refundCommissionExemption(
-    input: RefundCommissionExemptionInput!
-  ): RefundCommissionExemptionPayload
-  requestConditionReport(
-    input: RequestConditionReportInput!
-  ): RequestConditionReportPayload
-  unpublishViewingRoom(
-    input: UnpublishViewingRoomInput!
-  ): UnpublishViewingRoomPayload
-  updateAppSecondFactor(
-    input: UpdateAppSecondFactorInput!
-  ): UpdateAppSecondFactorPayload
+  refundCommissionExemption(input: RefundCommissionExemptionInput!): RefundCommissionExemptionPayload
+  requestConditionReport(input: RequestConditionReportInput!): RequestConditionReportPayload
+  unpublishViewingRoom(input: UnpublishViewingRoomInput!): UnpublishViewingRoomPayload
+  updateAppSecondFactor(input: UpdateAppSecondFactorInput!): UpdateAppSecondFactorPayload
   updateSavedSearch(input: UpdateSavedSearchInput!): UpdateSavedSearchPayload
-  updateSmsSecondFactor(
-    input: UpdateSmsSecondFactorInput!
-  ): UpdateSmsSecondFactorPayload
+  updateSmsSecondFactor(input: UpdateSmsSecondFactorInput!): UpdateSmsSecondFactorPayload
   updateUserAddress(input: UpdateUserAddressInput!): UpdateUserAddressPayload
-  updateUserDefaultAddress(
-    input: UpdateUserDefaultAddressInput!
-  ): UpdateUserDefaultAddressPayload
+  updateUserDefaultAddress(input: UpdateUserDefaultAddressInput!): UpdateUserDefaultAddressPayload
   updateViewingRoom(input: UpdateViewingRoomInput!): UpdateViewingRoomPayload
-  updateViewingRoomArtworks(
-    input: UpdateViewingRoomArtworksInput!
-  ): UpdateViewingRoomArtworksPayload
-  updateViewingRoomSubsections(
-    input: UpdateViewingRoomSubsectionsInput!
-  ): UpdateViewingRoomSubsectionsPayload
+  updateViewingRoomArtworks(input: UpdateViewingRoomArtworksInput!): UpdateViewingRoomArtworksPayload
+  updateViewingRoomSubsections(input: UpdateViewingRoomSubsectionsInput!): UpdateViewingRoomSubsectionsPayload
 }
 
 type PageCursor {
@@ -1449,22 +1420,12 @@ type Query {
   """
   Autocomplete resolvers.
   """
-  matchPartners(
-    matchType: String
-    page: Int = 1
-    size: Int = 5
-    term: String!
-  ): [Partner!]
+  matchPartners(matchType: String, page: Int = 1, size: Int = 5, term: String!): [Partner!]
 
   """
   Autocomplete resolvers.
   """
-  match_partners(
-    match_type: String
-    page: Int = 1
-    size: Int = 5
-    term: String!
-  ): [Partner!] @deprecated(reason: "Use matchPartners")
+  match_partners(match_type: String, page: Int = 1, size: Int = 5, term: String!): [Partner!] @deprecated(reason: "Use matchPartners")
 
   """
   Find a partner by ID
@@ -1524,9 +1485,7 @@ type Query {
   """
   List enabled Two-Factor Authentication factors
   """
-  secondFactors(
-    kinds: [SecondFactorKind!] = [app, sms, backup]
-  ): [SecondFactor!]!
+  secondFactors(kinds: [SecondFactorKind!] = [app, sms, backup]): [SecondFactor!]!
 
   """
   List of user's saved addresses

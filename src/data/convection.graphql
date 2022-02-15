@@ -8,11 +8,12 @@ input AddAssetToConsignmentSubmissionInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
+  externalSubmissionId: ID
   filename: String
   geminiToken: String!
   sessionID: String
   size: String
-  submissionID: ID!
+  submissionID: ID
 }
 
 """
@@ -37,11 +38,12 @@ input AddAssetsToConsignmentSubmissionInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
+  externalSubmissionId: ID
   filename: String
   geminiTokens: [String!]!
   sessionID: String
   size: String
-  submissionID: ID!
+  submissionID: ID
 }
 
 """
@@ -1206,7 +1208,7 @@ type Query {
   """
   Get a Submission
   """
-  submission(id: ID!, sessionID: String): Submission
+  submission(externalId: ID, id: ID, sessionID: String): Submission
 
   """
   Filter all submission
@@ -1308,6 +1310,11 @@ type Submission {
   edition: String
   editionNumber: String
   editionSize: String
+
+  """
+  UUID visible to users
+  """
+  externalId: ID!
   height: String
 
   """
@@ -1392,6 +1399,16 @@ enum SubmissionSort {
   sort by additional_info in descending order
   """
   ADDITIONAL_INFO_DESC
+
+  """
+  sort by admin_id in ascending order
+  """
+  ADMIN_ID_ASC
+
+  """
+  sort by admin_id in descending order
+  """
+  ADMIN_ID_DESC
 
   """
   sort by admin_receipt_sent_at in ascending order
@@ -1562,16 +1579,6 @@ enum SubmissionSort {
   sort by created_at in descending order
   """
   CREATED_AT_DESC
-
-  """
-  sort by created_by in ascending order
-  """
-  CREATED_BY_ASC
-
-  """
-  sort by created_by in descending order
-  """
-  CREATED_BY_DESC
 
   """
   sort by currency in ascending order
@@ -1752,6 +1759,16 @@ enum SubmissionSort {
   sort by minimum_price_cents in descending order
   """
   MINIMUM_PRICE_CENTS_DESC
+
+  """
+  sort by my_collection_artwork_id in ascending order
+  """
+  MY_COLLECTION_ARTWORK_ID_ASC
+
+  """
+  sort by my_collection_artwork_id in descending order
+  """
+  MY_COLLECTION_ARTWORK_ID_DESC
 
   """
   sort by offers_count in ascending order
@@ -2014,6 +2031,16 @@ enum SubmissionSort {
   UTM_TERM_DESC
 
   """
+  sort by uuid in ascending order
+  """
+  UUID_ASC
+
+  """
+  sort by uuid in descending order
+  """
+  UUID_DESC
+
+  """
   sort by width in ascending order
   """
   WIDTH_ASC
@@ -2059,8 +2086,9 @@ input UpdateSubmissionMutationInput {
   """
   editionSize: Int
   editionSizeFormatted: String
+  externalId: ID
   height: String
-  id: ID!
+  id: ID
   locationCity: String
   locationCountry: String
   locationState: String
