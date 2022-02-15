@@ -9,6 +9,7 @@ import Format from "schema/v2/input_fields/format"
 import { toGlobalId } from "graphql-relay"
 import { printType } from "lib/stitching/lib/printType"
 import { dateRange } from "lib/date"
+import { resolveSearchCriteriaLabels } from "schema/v2/searchCriteriaLabel"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -79,6 +80,9 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
         ): UserAddressConnection
+      }
+      extend type SearchCriteria {
+        labels: [SearchCriteriaLabel!]!
       }
       extend type UserAddress {
         id: ID!
@@ -773,6 +777,33 @@ export const gravityStitchingEnvironment = (
               info,
             })
           },
+        },
+      },
+      SearchCriteria: {
+        labels: {
+          fragment: gql`
+            ... on SearchCriteria {
+              artistIDs
+              attributionClass
+              additionalGeneIDs
+              priceRange
+              sizes
+              width
+              height
+              acquireable
+              atAuction
+              inquireableOnly
+              offerable
+              materialsTerms
+              locationCities
+              majorPeriods
+              colors
+              partnerIDs
+            }
+            `,
+          resolve: resolveSearchCriteriaLabels,
+          description:
+            "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
         },
       },
     },
