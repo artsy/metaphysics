@@ -7,5 +7,7 @@ export default (opts) => {
   return {
     articlesLoader: positronLoader("articles"),
     articleLoader: positronLoader((id) => `articles/${id}`),
+    authorsLoader: positronLoader("authors"),
+    authorLoader: positronLoader((id) => `authors/${id}`),
   }
 }
