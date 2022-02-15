@@ -2562,13 +2562,16 @@ type AuthenticationType {
 }
 
 type Author {
+  bio(format: Format): String
+
   # A globally unique ID.
   id: ID!
+  image: Image
 
   # A type-specific ID.
   internalID: ID!
   name: String
-  profileHandle: String
+  twitterHandle: String
 }
 
 # Backup Two-Factor Authentication factor
