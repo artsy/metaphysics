@@ -1,6 +1,6 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { startCase } from "lodash"
+import { toTitleCase } from "@artsy/to-title-case"
 
 import allAttributionClasses from "lib/attributionClasses"
 import { COLORS } from "lib/colors"
@@ -174,7 +174,7 @@ function getSizeLabels(sizes: string[]) {
 
   return sizes.map((size) => ({
     name: "Size",
-    value: startCase(size.toLowerCase()), // TODO: this a placeholder, we need to format these properly
+    value: toTitleCase(size.toLowerCase()), // TODO: this a placeholder, we need to format these properly
     field: "sizes",
   }))
 }
@@ -267,7 +267,7 @@ function getMaterialLabels(materialsTerms: string[]) {
   return materialsTerms.map((term) => {
     return {
       name: "Material",
-      value: capitalizeWords(term),
+      value: toTitleCase(term),
       field: "materialsTerms",
     }
   })
@@ -339,8 +339,4 @@ async function getPartnerLabels(partnerIDs: string[], partnerLoader) {
       }
     })
   )
-}
-
-function capitalizeWords(str: string) {
-  return str.replace(/\b([a-z])/g, (_match, p1) => p1.toUpperCase())
 }
