@@ -760,14 +760,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "The string that describes domestic and international shipping.",
         resolve: (artwork) => {
-          if (artwork.arta_enabled) {
+          if (artwork.process_with_arta_shipping) {
             return "Shipping: Calculated in checkout"
           }
 
-          if (
-            artwork.domestic_shipping_fee_cents == null &&
-            artwork.international_shipping_fee_cents == null
-          )
+          if (artwork.domestic_shipping_fee_cents == null)
             return "Shipping, tax, and additional fees quoted by seller"
           if (
             artwork.domestic_shipping_fee_cents === 0 &&
