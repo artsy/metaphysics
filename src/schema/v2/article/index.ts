@@ -32,8 +32,16 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     ...IDFields,
     cached,
+    authors: {
+      type: new GraphQLList(new GraphQLNonNull(AuthorType)),
+      resolve: async ({ author_ids }, _args, { authorsLoader }) => {
+        const { results } = await authorsLoader({ ids: author_ids })
+        return results
+      },
+    },
     author: {
       type: AuthorType,
+      deprecationReason: "Use `byline` or `authors` instead",
       resolve: ({ author }) => author,
     },
     byline: {
@@ -77,6 +85,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ channel_id }) => channel_id,
     },
     contributingAuthors: {
+      deprecationReason: "Use `byline` or `authors` instead",
       type: new GraphQLList(AuthorType),
       resolve: ({ contributing_authors }) => contributing_authors,
     },

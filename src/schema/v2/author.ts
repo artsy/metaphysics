@@ -3,6 +3,7 @@ import { GraphQLString, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { ImageType } from "./image"
 import { markdown } from "schema/v2/fields/markdown"
+import initials from "schema/v2/fields/initials"
 
 const AuthorType = new GraphQLObjectType<any, ResolverContext>({
   name: "Author",
@@ -11,6 +12,7 @@ const AuthorType = new GraphQLObjectType<any, ResolverContext>({
     name: {
       type: GraphQLString,
     },
+    initials: initials("name"),
     image: {
       type: ImageType,
       resolve: ({ image_url }) => {
