@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString } from "graphql"
+import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { startCase } from "lodash"
 
@@ -30,15 +30,15 @@ export const SearchCriteriaLabel = new GraphQLObjectType<
     "Human-friendly representation of a single SearchCriteria filter",
   fields: {
     field: {
-      type: GraphQLString,
+      type: GraphQLNonNull(GraphQLString),
       description: "The GraphQL field name of the filter facet",
     },
     name: {
-      type: GraphQLString,
+      type: GraphQLNonNull(GraphQLString),
       description: "The human-friendly name of the filter facet",
     },
     value: {
-      type: GraphQLString,
+      type: GraphQLNonNull(GraphQLString),
       description: "The human-friendly value of the filter facet",
     },
   },

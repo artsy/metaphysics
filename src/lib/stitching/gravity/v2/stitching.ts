@@ -82,7 +82,7 @@ export const gravityStitchingEnvironment = (
         ): UserAddressConnection
       }
       extend type SearchCriteria {
-        labels: [SearchCriteriaLabel]
+        labels: [SearchCriteriaLabel!]!
       }
       extend type UserAddress {
         id: ID!
