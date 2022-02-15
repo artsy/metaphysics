@@ -138,6 +138,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       costCurrencyCode,
       costMinor,
       isEdition,
+      userId,
       editionSize,
       editionNumber,
       externalImageUrls = [],
@@ -188,7 +189,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         }
 
         if (userId) {
-          payload["user_id"] = [userId]
+          payload["user_id"] = userId
         }
 
         await createArtworkEditionSetLoader(artworkId, payload)
@@ -198,7 +199,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
 
       for (const imageSource of imageSources) {
         if (userId) {
-          imageSource["user_id"] = [userId]
+          imageSource["user_id"] = userId
         }
         await createArtworkImageLoader(artworkId, imageSource)
       }
