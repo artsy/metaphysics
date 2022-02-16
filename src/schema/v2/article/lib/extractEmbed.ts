@@ -59,3 +59,8 @@ export const extractEmbed = (url: string, options: Options = {}) => {
 
   return `<iframe src="${src}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>`
 }
+
+export const isEmbed = (url: string) => {
+  const uri = new URL(url)
+  return !(detectProvider(uri) === null)
+}
