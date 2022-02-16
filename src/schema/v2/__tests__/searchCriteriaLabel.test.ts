@@ -189,17 +189,17 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Size",
-        value: "Large", // TODO: fix this placeholder formatting
+        value: "Large (over 100cm)",
         field: "sizes",
       },
       {
         name: "Size",
-        value: "Medium", // TODO: fix this placeholder formatting
+        value: "Medium (40 – 100cm)",
         field: "sizes",
       },
       {
         name: "Size",
-        value: "Small", // TODO: fix this placeholder formatting
+        value: "Small (under 40cm)",
         field: "sizes",
       },
     ])

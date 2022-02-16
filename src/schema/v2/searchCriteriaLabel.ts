@@ -5,6 +5,13 @@ import { toTitleCase } from "@artsy/to-title-case"
 import allAttributionClasses from "lib/attributionClasses"
 import { COLORS } from "lib/colors"
 
+// Taken from Force's SizeFilter component
+export const SIZES = {
+  SMALL: "Small (under 40cm)",
+  MEDIUM: "Medium (40 – 100cm)",
+  LARGE: "Large (over 100cm)",
+}
+
 type SearchCriteriaLabel = {
   /** The GraphQL field name of the filter facet */
   field: string
@@ -174,7 +181,7 @@ function getSizeLabels(sizes: string[]) {
 
   return sizes.map((size) => ({
     name: "Size",
-    value: toTitleCase(size.toLowerCase()), // TODO: this a placeholder, we need to format these properly
+    value: SIZES[`${size}`],
     field: "sizes",
   }))
 }
