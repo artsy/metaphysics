@@ -1,5 +1,6 @@
 import { ResolverContext } from "types/graphql"
 import {
+  GraphQLBoolean,
   GraphQLEnumType,
   GraphQLID,
   GraphQLNonNull,
@@ -9,6 +10,7 @@ import {
 } from "graphql"
 import { ImageType } from "../image"
 import uuid from "uuid/v5"
+import { extractEmbed, isEmbed } from "./lib/extractEmbed"
 
 export const ArticleImageSection = new GraphQLObjectType<any, ResolverContext>({
   name: "ArticleImageSection",
@@ -49,12 +51,31 @@ export const ArticleFeatureSection = new GraphQLObjectType({
   },
   fields: {
     title: { type: GraphQLString },
+    embed: {
+      description: "Only YouTube and Vimeo are supported",
+      args: {
+        autoPlay: {
+          type: GraphQLBoolean,
+          defaultValue: false,
+        },
+      },
+      type: GraphQLString,
+      resolve: ({ url }, { autoPlay }) => {
+        if (!url) return null
+        const options = { autoplay: autoPlay ? 1 : 0 }
+        return extractEmbed(url, options)
+      },
+    },
     image: {
       type: ImageType,
       resolve: ({ url }) => {
         if (!url) return null
 
-        // This... is the best we can do...
+        // Positron returns a single URL with no metadata for
+        // both images and embeds
+        if (isEmbed(url)) return null
+
+        // We don't currently save image dimensions, unfortunately
         return {
           image_url: url,
         }
