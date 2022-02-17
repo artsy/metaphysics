@@ -45,7 +45,7 @@ export const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
           inEditorialFeed: {
             type: GraphQLBoolean,
             description:
-              "Articles that are ready to be publicly viewed in the feed by everyone.",
+              "Get only articles with with 'standard', 'feature', 'series' or 'video' layouts.",
           },
         }),
         resolve: async (
