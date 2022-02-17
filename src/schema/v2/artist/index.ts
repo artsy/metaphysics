@@ -115,7 +115,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           inEditorialFeed: {
             type: GraphQLBoolean,
             description:
-              "Articles that are ready to be publicly viewed in the feed by everyone.",
+              "Get only articles with 'standard', 'feature', 'series' or 'video' layouts.",
           },
         }),
         type: articleConnection.connectionType,
