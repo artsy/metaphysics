@@ -991,7 +991,15 @@ describe("Artwork type", () => {
     `
 
     it("returns artwork's submission", () => {
-      artwork.consignmentSubmission = { state: "submitted" }
+      const submissions = [
+        {
+          state: "submitted",
+          my_collection_artwork_id: "richard-prince-untitled-portrait",
+        },
+      ]
+      context.submissionsLoader = sinon
+        .stub()
+        .returns(Promise.resolve(submissions))
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
@@ -1504,25 +1512,15 @@ describe("Artwork type", () => {
         }
       `
 
-      it("returns false for ecommerce works regardless of work inquireable status", () => {
+      it("returns true for inquireable works", () => {
         artwork.inquireable = true
-        artwork.ecommerce = true
-        return runQuery(query, context).then((data) => {
-          expect(data.artwork.isInquireable).toBe(false)
-        })
-      })
-
-      it("returns true for inquireable non ecommerce works", () => {
-        artwork.inquireable = true
-        artwork.ecommerce = false
         return runQuery(query, context).then((data) => {
           expect(data.artwork.isInquireable).toBe(true)
         })
       })
 
-      it("returns false for non inquireable non ecommerce works", () => {
+      it("returns false for non inquireable works", () => {
         artwork.inquireable = false
-        artwork.ecommerce = false
         return runQuery(query, context).then((data) => {
           expect(data.artwork.isInquireable).toBe(false)
         })

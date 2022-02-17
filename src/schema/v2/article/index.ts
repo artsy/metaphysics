@@ -13,8 +13,8 @@ import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import AuthorType from "schema/v2/author"
 import cached from "schema/v2/fields/cached"
-import date from "schema/v2/fields/date"
-import Image, { normalizeImageData } from "schema/v2/image"
+import { date } from "schema/v2/fields/date"
+import Image, { ImageType, normalizeImageData } from "schema/v2/image"
 import { IDFields, NodeInterface } from "schema/v2/object_identification"
 import { ArticleSectionImageCollection } from "./sections/ArticleSectionImageCollection"
 import { ArticleSectionText } from "./sections/ArticleSectionText"
@@ -32,21 +32,59 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     ...IDFields,
     cached,
+    authors: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AuthorType))),
+      resolve: async ({ author_ids }, _args, { authorsLoader }) => {
+        if (!author_ids || author_ids.length === 0) return []
+
+        const { results } = await authorsLoader({ ids: author_ids })
+
+        return results
+      },
+    },
     author: {
       type: AuthorType,
+      description:
+        'Maps to the "Primary Author" field in Positron. Ultimately this is only supposed to control the article slug',
+      deprecationReason: "Use `byline` or `authors` instead",
       resolve: ({ author }) => author,
     },
     byline: {
       type: GraphQLString,
       description:
-        'The byline for the article. Defaults to "Artsy Editorial" if no authors are present.',
-      resolve: ({ author, contributing_authors }) => {
-        const contributingAuthors = contributing_authors
-          ?.map((author) => author?.name?.trim())
-          .join(", ")
-          .replace(/,\s([^,]+)$/, " and $1")
+        'The byline for the article. Defaults to "Artsy Editors" if no authors are present.',
+      resolve: async ({ author_ids }, _args, { authorsLoader }) => {
+        if (!author_ids || author_ids.length === 0) return "Artsy Editors"
 
-        return contributingAuthors || author?.name?.trim() || "Artsy Editorial"
+        const { results } = await authorsLoader({ ids: author_ids })
+
+        const names = results.map(({ name }) => name?.trim()).filter(Boolean)
+        const byline = names.join(", ").replace(/,\s([^,]+)$/, " and $1")
+
+        return byline || "Artsy Editors"
+      },
+    },
+    channelArticles: {
+      args: {
+        size: {
+          type: GraphQLInt,
+          description: "Number of articles to return",
+          defaultValue: 12,
+        },
+      },
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ArticleType))
+      ),
+      resolve: async ({ id, channel_id }, args, { articlesLoader }) => {
+        const { results } = await articlesLoader({
+          channel_id,
+          limit: args.size,
+          omit: [id],
+          published: true,
+          sort: "-published_at",
+        })
+
+        return results
       },
     },
     channelID: {
@@ -54,6 +92,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ channel_id }) => channel_id,
     },
     contributingAuthors: {
+      deprecationReason: "Use `byline` or `authors` instead",
       type: new GraphQLList(AuthorType),
       resolve: ({ contributing_authors }) => contributing_authors,
     },
@@ -89,8 +128,51 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       ),
       resolve: ({ keywords }) => (keywords ? keywords : []),
     },
+    media: {
+      type: new GraphQLObjectType({
+        name: "ArticleMedia",
+        fields: {
+          coverImage: {
+            type: ImageType,
+            resolve: ({ cover_image_url }) => {
+              if (!cover_image_url) return null
+
+              // We don't currently save image dimensions, unfortunately
+              return {
+                image_url: cover_image_url,
+              }
+            },
+          },
+          credits: { type: GraphQLString },
+          description: { type: GraphQLString },
+          duration: {
+            type: GraphQLString,
+            resolve: ({ duration }) => {
+              if (!duration) return null
+              const minutes = Math.floor(duration / 60)
+              const seconds = duration % 60
+              return `${minutes < 10 ? "0" : ""}${minutes}:${
+                seconds < 10 ? "0" : ""
+              }${seconds}`
+            },
+          },
+          releaseDate: date(({ release_date }) => release_date),
+          url: { type: GraphQLString },
+        },
+      }),
+    },
+    newsSource: {
+      type: new GraphQLObjectType({
+        name: "ArticleNewsSource",
+        fields: {
+          title: { type: GraphQLString },
+          url: { type: GraphQLString },
+        },
+      }),
+      resolve: ({ news_source }) => news_source,
+    },
     postscript: { type: GraphQLString },
-    publishedAt: date,
+    publishedAt: date(({ published_at }) => published_at),
     relatedArticles: {
       args: {
         size: {
@@ -191,8 +273,55 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
         },
       }),
     },
+    seriesArticle: {
+      type: ArticleType,
+      resolve: async ({ id }, _args, { articlesLoader }) => {
+        const { results } = await articlesLoader({
+          layout: "series",
+          published: true,
+        })
+
+        return results.filter((seriesArticle) => {
+          return seriesArticle.related_article_ids?.includes(id)
+        })[0]
+      },
+    },
     slug: {
       type: GraphQLString,
+    },
+    sponsor: {
+      type: new GraphQLObjectType({
+        name: "ArticleSponsor",
+        fields: {
+          description: {
+            type: GraphQLString,
+          },
+          subTitle: {
+            type: GraphQLString,
+            resolve: ({ sub_title }) => sub_title,
+          },
+          partnerDarkLogo: {
+            type: GraphQLString,
+            resolve: ({ partner_dark_logo }) => partner_dark_logo,
+          },
+          partnerLightLogo: {
+            type: GraphQLString,
+            resolve: ({ partner_light_logo }) => partner_light_logo,
+          },
+          partnerCondensedLogo: {
+            type: GraphQLString,
+            resolve: ({ partner_condensed_logo }) => partner_condensed_logo,
+          },
+          partnerLogoLink: {
+            type: GraphQLString,
+            resolve: ({ partner_logo_link }) => partner_logo_link,
+          },
+          pixelTrackingCode: {
+            type: GraphQLString,
+            resolve: ({ pixel_tracking_code }) => pixel_tracking_code,
+          },
+        },
+      }),
     },
     thumbnailTitle: {
       type: GraphQLString,
@@ -215,7 +344,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
         return title?.trim() || search_title?.trim() || thumbnail_title?.trim()
       },
     },
-    updatedAt: date,
+    updatedAt: date(({ updated_at }) => updated_at),
     vertical: {
       type: GraphQLString,
       resolve: ({ vertical }) => vertical?.name,

@@ -1,4 +1,9 @@
-import { GraphQLBoolean, GraphQLFieldConfig, GraphQLInt } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLInt,
+  GraphQLString,
+} from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { CursorPageable, pageable } from "relay-cursor-paging"
@@ -11,20 +16,20 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
   description: "A connection of articles",
   type: articleConnection.connectionType,
   args: pageable({
-    sort: ArticleSorts,
-    page: { type: GraphQLInt },
+    channelId: { type: GraphQLString },
+    featured: { type: GraphQLBoolean },
     inEditorialFeed: {
       type: GraphQLBoolean,
       description:
         "Articles that are ready to be publicly viewed in the feed by everyone.",
     },
-    featured: {
-      type: GraphQLBoolean,
-    },
+    page: { type: GraphQLInt },
+    sort: ArticleSorts,
   }),
   resolve: async (
     _root,
     args: {
+      channelId?: string
       featured?: boolean
       inEditorialFeed?: boolean
       sort?: ArticleSort
@@ -32,10 +37,11 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
     { articlesLoader }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-    const { sort, inEditorialFeed, featured } = args
+    const { channelId, sort, inEditorialFeed, featured } = args
 
     const articlesLoaderArgs = {
       count: true,
+      channel_id: channelId,
       featured,
       in_editorial_feed: inEditorialFeed,
       limit: size,

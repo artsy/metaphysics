@@ -154,6 +154,20 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       consignmentSubmission: {
         type: ArtworkConsignmentSubmissionType,
+        resolve: async ({ id }, _options, { submissionsLoader }) => {
+          if (!submissionsLoader) {
+            return
+          }
+
+          const submissions = await submissionsLoader({ size: 1000 })
+          const filteredSubmissions = submissions.filter(
+            (submission) => submission.state !== "draft"
+          )
+
+          return filteredSubmissions.find((submission) => {
+            return submission.my_collection_artwork_id === id
+          })
+        },
       },
       contactLabel: {
         type: GraphQLString,
@@ -531,7 +545,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       isInquireable: {
         type: GraphQLBoolean,
         description: "Do we want to encourage inquiries on this work?",
-        resolve: ({ ecommerce, inquireable }) => !ecommerce && inquireable,
+        resolve: ({ inquireable }) => inquireable,
       },
       isInAuction: {
         type: GraphQLBoolean,

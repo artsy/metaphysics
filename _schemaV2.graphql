@@ -684,13 +684,20 @@ input ARImageInput {
 }
 
 type Article implements Node {
-  author: Author
+  # Maps to the "Primary Author" field in Positron. Ultimately this is only supposed to control the article slug
+  author: Author @deprecated(reason: "Use `byline` or `authors` instead")
+  authors: [Author!]!
 
-  # The byline for the article. Defaults to "Artsy Editorial" if no authors are present.
+  # The byline for the article. Defaults to "Artsy Editors" if no authors are present.
   byline: String
   cached: Int
+  channelArticles(
+    # Number of articles to return
+    size: Int = 12
+  ): [Article!]!
   channelID: String
   contributingAuthors: [Author]
+    @deprecated(reason: "Use `byline` or `authors` instead")
   description: String
   hero: ArticleHero
   href: String
@@ -702,6 +709,8 @@ type Article implements Node {
   internalID: ID!
   keywords: [String!]!
   layout: ArticleLayout!
+  media: ArticleMedia
+  newsSource: ArticleNewsSource
   postscript: String
   publishedAt(
     format: String
@@ -720,7 +729,9 @@ type Article implements Node {
   ): [Article!]!
   sections: [ArticleSections!]!
   series: ArticleSeries
+  seriesArticle: Article
   slug: String
+  sponsor: ArticleSponsor
   thumbnailImage: Image
   thumbnailTeaser: String
   thumbnailTitle: String
@@ -758,6 +769,8 @@ type ArticleEdge {
 }
 
 type ArticleFeatureSection {
+  # Only YouTube and Vimeo are supported
+  embed(autoPlay: Boolean = false): String
   image: Image
   layout: ArticleFeatureSectionType!
   title: String
@@ -786,6 +799,27 @@ enum ArticleLayout {
   SERIES
   STANDARD
   VIDEO
+}
+
+type ArticleMedia {
+  coverImage: Image
+  credits: String
+  description: String
+  duration: String
+  releaseDate(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  url: String
+}
+
+type ArticleNewsSource {
+  title: String
+  url: String
 }
 
 type ArticleSectionCallout {
@@ -888,6 +922,16 @@ type ArticleSeries {
 enum ArticleSorts {
   PUBLISHED_AT_ASC
   PUBLISHED_AT_DESC
+}
+
+type ArticleSponsor {
+  description: String
+  partnerCondensedLogo: String
+  partnerDarkLogo: String
+  partnerLightLogo: String
+  partnerLogoLink: String
+  pixelTrackingCode: String
+  subTitle: String
 }
 
 type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Searchable {
@@ -2523,13 +2567,17 @@ type AuthenticationType {
 }
 
 type Author {
+  bio(format: Format): String
+
   # A globally unique ID.
   id: ID!
+  image: Image
+  initials(length: Int = 3): String
 
   # A type-specific ID.
   internalID: ID!
   name: String
-  profileHandle: String
+  twitterHandle: String
 }
 
 # Backup Two-Factor Authentication factor
@@ -2624,6 +2672,7 @@ type BidderPositionMaxBid {
   # A formatted price with various currency formatting options.
   amount(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -2655,6 +2704,7 @@ type BidderPositionSuggestedNextBid {
   # A formatted price with various currency formatting options.
   amount(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -2689,6 +2739,7 @@ type BuyersPremium {
   # A formatted price with various currency formatting options.
   amount(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -6284,6 +6335,12 @@ type CroppedImageUrl {
   width: Int!
 }
 
+enum CurrencyPreference {
+  EUR
+  GBP
+  USD
+}
+
 type CurrentEvent {
   # Location and date of the event if available
   details: String
@@ -7864,6 +7921,7 @@ type HighestBid {
   # A formatted price with various currency formatting options.
   amount(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -8398,6 +8456,7 @@ type Invoice implements Node {
   # A formatted price with various currency formatting options.
   total(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -8425,6 +8484,11 @@ scalar JSON
 type LatLng {
   lat: Float
   lng: Float
+}
+
+enum LengthUnitPreference {
+  CM
+  IN
 }
 
 input LinkAuthenticationMutationInput {
@@ -8907,6 +8971,9 @@ type Me implements Node {
     first: Int
     last: Int
   ): CreditCardConnection
+
+  # Currency preference of the user
+  currencyPreference: CurrencyPreference!
   email: String
 
   # User has confirmed their email address
@@ -8951,6 +9018,9 @@ type Me implements Node {
 
   # List of lab features for this user
   labFeatures: [String!]!
+
+  # Length unit preference of the user
+  lengthUnitPreference: LengthUnitPreference!
   location: MyLocation
 
   # Sale Artworks search results
@@ -10874,6 +10944,7 @@ type Query {
   articlesConnection(
     after: String
     before: String
+    channelId: String
     featured: Boolean
     first: Int
 
@@ -12029,6 +12100,7 @@ type SaleArtworkCurrentBid {
   # A formatted price with various currency formatting options.
   amount(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -12057,6 +12129,7 @@ type SaleArtworkHighestBid {
   # A formatted price with various currency formatting options.
   amount(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -12081,6 +12154,7 @@ type SaleArtworkHighEstimate {
   # A formatted price with various currency formatting options.
   amount(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -12100,6 +12174,7 @@ type SaleArtworkLowEstimate {
   # A formatted price with various currency formatting options.
   amount(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -12119,6 +12194,7 @@ type SaleArtworkMinimumNextBid {
   # A formatted price with various currency formatting options.
   amount(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -12138,6 +12214,7 @@ type SaleArtworkOpeningBid {
   # A formatted price with various currency formatting options.
   amount(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -12157,6 +12234,7 @@ type SaleArtworkReserve {
   # A formatted price with various currency formatting options.
   amount(
     decimal: String = "."
+    disambiguate: Boolean = false
 
     # Allows control of symbol position (%v = value, %s = symbol)
     format: String = "%s%v"
@@ -12371,6 +12449,9 @@ type SearchCriteria {
   href: String!
   inquireableOnly: Boolean
   internalID: ID!
+
+  # Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity
+  labels: [SearchCriteriaLabel!]!
   locationCities: [String!]!
   majorPeriods: [String!]!
   materialsTerms: [String!]!
@@ -12428,6 +12509,18 @@ type SearchCriteriaEdge {
 
   # The item at the end of the edge.
   node: SearchCriteria
+}
+
+# Human-friendly representation of a single SearchCriteria filter
+type SearchCriteriaLabel {
+  # The GraphQL field name of the filter facet
+  field: String!
+
+  # The human-friendly name of the filter facet
+  name: String!
+
+  # The human-friendly value of the filter facet
+  value: String!
 }
 
 # A search criteria or errors object
@@ -13354,6 +13447,9 @@ input UpdateMyProfileInput {
   # The user completed onboarding.
   completedOnboarding: Boolean
 
+  # Currency preference of the user
+  currencyPreference: CurrencyPreference
+
   # The given email of the user.
   email: String
 
@@ -13371,6 +13467,9 @@ input UpdateMyProfileInput {
 
   # Is a collector?
   isCollector: Boolean
+
+  # Length unit preference of the user
+  lengthUnitPreference: LengthUnitPreference
 
   # The given location of the user as structured data
   location: EditableLocation
@@ -13877,6 +13976,7 @@ type Viewer {
   articlesConnection(
     after: String
     before: String
+    channelId: String
     featured: Boolean
     first: Int
 

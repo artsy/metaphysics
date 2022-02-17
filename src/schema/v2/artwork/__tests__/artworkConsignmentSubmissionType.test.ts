@@ -4,10 +4,14 @@ import sinon from "sinon"
 describe("ArtworkConsignmentSubmissionType", () => {
   const artwork = {
     id: "richard-prince-untitled-portrait",
-    consignmentSubmission: {
-      state: "draft",
-    },
   }
+
+  const consignmentSubmissions = [
+    {
+      state: "draft",
+      my_collection_artwork_id: "richard-prince-untitled-portrait",
+    },
+  ]
 
   let context = {}
 
@@ -17,6 +21,9 @@ describe("ArtworkConsignmentSubmissionType", () => {
         .stub()
         .withArgs(artwork.id)
         .returns(Promise.resolve(artwork)),
+      submissionsLoader: sinon
+        .stub()
+        .returns(Promise.resolve(consignmentSubmissions)),
     }
   })
 
@@ -33,37 +40,69 @@ describe("ArtworkConsignmentSubmissionType", () => {
     `
 
     it("returns correct displayText", async () => {
-      artwork.consignmentSubmission.state = "submitted"
+      consignmentSubmissions[0].state = "submitted"
       let data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.displayText).toEqual(
         "Submission in progress"
       )
 
-      artwork.consignmentSubmission.state = "approved"
+      consignmentSubmissions[0].state = "approved"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.displayText).toEqual(
         "Submission in progress"
       )
 
-      artwork.consignmentSubmission.state = "published"
+      consignmentSubmissions[0].state = "published"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.displayText).toEqual(
         "Submission in progress"
       )
 
-      artwork.consignmentSubmission.state = "rejected"
+      consignmentSubmissions[0].state = "rejected"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.displayText).toEqual(
         "Submission in progress"
       )
 
-      artwork.consignmentSubmission.state = "hold"
+      consignmentSubmissions[0].state = "hold"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.displayText).toEqual(
         "Submission in progress"
       )
 
-      artwork.consignmentSubmission.state = "closed"
+      consignmentSubmissions[0].state = "closed"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.displayText).toEqual(
+        "Submission evaluated"
+      )
+
+      consignmentSubmissions[0].state = "open"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.displayText).toEqual(
+        "Submission in progress"
+      )
+
+      consignmentSubmissions[0].state = "sold"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.displayText).toEqual("Sold")
+
+      consignmentSubmissions[0].state = "bought in"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.displayText).toEqual("Sold")
+
+      consignmentSubmissions[0].state = "canceled"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.displayText).toEqual(
+        "Submission evaluated"
+      )
+
+      consignmentSubmissions[0].state = "withdrawn - pre-launch"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.displayText).toEqual(
+        "Submission evaluated"
+      )
+
+      consignmentSubmissions[0].state = "withdrawn - post-launch"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.displayText).toEqual(
         "Submission evaluated"
@@ -84,27 +123,51 @@ describe("ArtworkConsignmentSubmissionType", () => {
     `
 
     it("returns correct inProgress", async () => {
-      artwork.consignmentSubmission.state = "submitted"
+      consignmentSubmissions[0].state = "submitted"
       let data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.inProgress).toBeTrue()
 
-      artwork.consignmentSubmission.state = "approved"
+      consignmentSubmissions[0].state = "approved"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.inProgress).toBeTrue()
 
-      artwork.consignmentSubmission.state = "published"
+      consignmentSubmissions[0].state = "published"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.inProgress).toBeTrue()
 
-      artwork.consignmentSubmission.state = "rejected"
+      consignmentSubmissions[0].state = "rejected"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.inProgress).toBeFalse()
 
-      artwork.consignmentSubmission.state = "hold"
+      consignmentSubmissions[0].state = "hold"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.inProgress).toBeTrue()
 
-      artwork.consignmentSubmission.state = "closed"
+      consignmentSubmissions[0].state = "closed"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.inProgress).toBeFalse()
+
+      consignmentSubmissions[0].state = "open"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.inProgress).toBeTrue()
+
+      consignmentSubmissions[0].state = "sold"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.inProgress).toBeFalse()
+
+      consignmentSubmissions[0].state = "bought in"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.inProgress).toBeFalse()
+
+      consignmentSubmissions[0].state = "canceled"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.inProgress).toBeFalse()
+
+      consignmentSubmissions[0].state = "withdrawn - pre-launch"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.inProgress).toBeFalse()
+
+      consignmentSubmissions[0].state = "withdrawn - post-launch"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.inProgress).toBeFalse()
     })

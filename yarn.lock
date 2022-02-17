@@ -26,6 +26,15 @@
   dependencies:
     dotenv "^10.0.0"
 
+"@artsy/to-title-case@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@artsy/to-title-case/-/to-title-case-1.1.0.tgz#ed22a9d926d88edc7b3833900c6c6cef9d5bc282"
+  integrity sha512-n2GISILNv3X9xVjkUC1thoOl7rVKPeDskobQJsC5G8poFpF4HNxxSJD97NjvCK3Ai1RplSMsN2MCmMAy7plx9Q==
+  dependencies:
+    lodash.deburr "^4.1.0"
+    lodash.isnumber "^3.0.3"
+    lodash.upperfirst "^4.3.1"
+
 "@artsy/update-repo@0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@artsy/update-repo/-/update-repo-0.5.0.tgz#9beb3fb574a2e039e8912fde3309a564e3f8270a"
@@ -6432,6 +6441,11 @@ lodash.debounce@^4.0.8:
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha1-gteb/zCmfEAF/9XiUVMArZyk168=
 
+lodash.deburr@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/lodash.deburr/-/lodash.deburr-4.1.0.tgz#ddb1bbb3ef07458c0177ba07de14422cb033ff9b"
+  integrity sha1-3bG7s+8HRYwBd7oH3hRCLLAz/5s=
+
 lodash.find@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/lodash.find/-/lodash.find-4.6.0.tgz#cb0704d47ab71789ffa0de8b97dd926fb88b13b1"
@@ -6540,6 +6554,11 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
+
+lodash.upperfirst@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/lodash.upperfirst/-/lodash.upperfirst-4.3.1.tgz#1365edf431480481ef0d1c68957a5ed99d49f7ce"
+  integrity sha1-E2Xt9DFIBIHvDRxolXpe2Z1J984=
 
 lodash@4.17.21, lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.5:
   version "4.17.21"

@@ -7,6 +7,7 @@ import {
   GraphQLFloat,
   GraphQLInputObjectType,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -50,11 +51,18 @@ export const amount = (centsResolver) => ({
       type: GraphQLString,
       defaultValue: ",",
     },
+    disambiguate: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+    },
   },
   resolve: (obj, options) => {
     const cents = centsResolver(obj)
+
     const symbol =
-      options.symbol || obj.symbol || symbolFromCurrencyCode(obj.currencyCode)
+      symbolFromCurrencyCode(obj.currencyCode, options.disambiguate) ||
+      options.symbol ||
+      obj.symbol
 
     if (typeof cents !== "number") {
       return null
@@ -74,11 +82,21 @@ export const amount = (centsResolver) => ({
   },
 })
 
-export const symbolFromCurrencyCode = (currencyCode) => {
-  return currencyCode
-    ? currencyCodes[currencyCode.toLowerCase()] &&
-        currencyCodes[currencyCode.toLowerCase()].symbol
-    : null
+export const symbolFromCurrencyCode = (currencyCode, disambiguate = false) => {
+  if (!currencyCode) {
+    return null
+  }
+
+  const disambiguateSymbol =
+    currencyCodes[currencyCode.toLowerCase()]?.disambiguate_symbol
+
+  const symbol = currencyCodes[currencyCode.toLowerCase()]?.symbol
+
+  if (disambiguate) {
+    return disambiguateSymbol ? disambiguateSymbol : symbol
+  }
+
+  return symbol
 }
 
 /**
