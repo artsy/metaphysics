@@ -118,6 +118,7 @@ import { linkAuthenticationMutation } from "./me/linkAuthenticationMutation"
 import { authenticationStatus } from "./authenticationStatus"
 import { deleteUserAccountMutation } from "./me/delete_account_mutation"
 import { SearchCriteriaLabel } from "./searchCriteriaLabel"
+import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerficationEmailMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -248,6 +249,7 @@ export default new GraphQLSchema({
       saveArtwork: saveArtworkMutation,
       sendConfirmationEmail: sendConfirmationEmailMutation,
       sendConversationMessage: SendConversationMessageMutation,
+      sendIdentityVerificationEmail: sendIdentityVerificationEmailMutation,
       submitInquiryRequestMutation,
       sendFeedback: sendFeedbackMutation,
       startIdentityVerification: startIdentityVerificationMutation,

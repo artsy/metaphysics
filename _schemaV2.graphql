@@ -8190,6 +8190,40 @@ type IdentityVerification {
   userID: String!
 }
 
+type IdentityVerificationEmail {
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  invitationExpiresAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+
+  # Where the identity verification is in its lifecycle
+  state: String!
+
+  # User ID of the identity verification's owner
+  userID: String!
+}
+
+type IdentityVerificationEmailMutationFailureType {
+  mutationError: GravityMutationError
+}
+
+type IdentityVerificationEmailMutationSuccessType {
+  identityVerificationEmail: IdentityVerificationEmail
+}
+
+union IdentityVerificationEmailMutationType =
+    IdentityVerificationEmailMutationFailureType
+  | IdentityVerificationEmailMutationSuccessType
+
 type Image {
   aspectRatio: Float!
   caption: String
@@ -9569,6 +9603,11 @@ type Mutation {
 
   # Send a feedback message
   sendFeedback(input: SendFeedbackMutationInput!): SendFeedbackMutationPayload
+
+  # Send a identity verification email
+  sendIdentityVerificationEmail(
+    input: SendIdentityVerificationEmailMutationInput!
+  ): SendIdentityVerificationEmailMutationPayload
 
   # Start an identity verification flow for a pending identity verification
   startIdentityVerification(
@@ -12668,6 +12707,16 @@ type SendFeedbackMutationSuccess {
 union SendFeedbackMutationType =
     SendFeedbackMutationFailure
   | SendFeedbackMutationSuccess
+
+input SendIdentityVerificationEmailMutationInput {
+  clientMutationId: String
+  userID: String
+}
+
+type SendIdentityVerificationEmailMutationPayload {
+  clientMutationId: String
+  confirmationOrError: IdentityVerificationEmailMutationType
+}
 
 type Services {
   convection: ConvectionService!
