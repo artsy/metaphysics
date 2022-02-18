@@ -15,6 +15,7 @@ const orderTotals = [
   "taxTotal",
   "shippingTotal",
   "transactionFee",
+  "artsyTotal",
 ]
 const orderTotalsSDL = orderTotals.map(amountSDL)
 
