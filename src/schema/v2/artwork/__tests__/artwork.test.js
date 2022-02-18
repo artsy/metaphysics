@@ -2067,9 +2067,8 @@ describe("Artwork type", () => {
       }
     `
 
-    it("is set to prompt string when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
+    it("is set to quoted by seller when domestic shipping fee is null", () => {
       artwork.domestic_shipping_fee_cents = null
-      artwork.international_shipping_fee_cents = null
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
@@ -2164,8 +2163,8 @@ describe("Artwork type", () => {
       })
     })
 
-    it("is set to calculated at checkout when Arta shipping", () => {
-      artwork.arta_enabled = true
+    it("is set to calculated at checkout when artwork will be processed with Arta shipping", () => {
+      artwork.process_with_arta_shipping = true
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
