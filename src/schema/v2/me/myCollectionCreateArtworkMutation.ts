@@ -65,9 +65,6 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
 
     // Optional
-    userId: {
-      type: GraphQLString,
-    },
     submissionId: {
       type: GraphQLString,
     },
@@ -135,6 +132,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   mutateAndGetPayload: async (
     {
       artistIds,
+      submissionId,
       costCurrencyCode,
       costMinor,
       isEdition,
@@ -164,6 +162,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     try {
       const response = await createArtworkLoader({
         artists: artistIds,
+        submission_id: submissionId,
         collection_id: "my-collection",
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
