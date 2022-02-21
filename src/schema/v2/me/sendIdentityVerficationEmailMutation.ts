@@ -21,7 +21,7 @@ const IdentityVerificationEmailType = new GraphQLObjectType<
     ...InternalIDFields,
     state: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "Where the identity verification is in its lifecycle",
+      description: "Identity verification lifecycle state",
     },
     userID: {
       description: "User ID of the identity verification's owner",

@@ -8197,7 +8197,7 @@ type IdentityVerificationEmail {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
-  # Where the identity verification is in its lifecycle
+  # Identity verification lifecycle state
   state: String!
 
   # User ID of the identity verification's owner
