@@ -307,7 +307,7 @@ describe("resolveSearchCriteriaLabels", () => {
       expect(labels).toIncludeAllMembers([
         {
           name: "Size",
-          value: "w: from 50 cm",
+          value: "w: to 51 cm",
           field: "width",
         },
         {
