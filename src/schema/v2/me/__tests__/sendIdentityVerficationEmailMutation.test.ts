@@ -9,6 +9,7 @@ const identityVerificationDetails = {
 
 const sendIdentityVerificationEmailMock = jest.fn().mockReturnValue(
   Promise.resolve({
+    id: "106",
     state: "pending",
     user_id: "id-123",
   })
@@ -65,21 +66,20 @@ describe("Send identity verification email mutation", () => {
     )
   })
 
-  fit("returns the state", async () => {
+  it("returns the state", async () => {
     const response = await runAuthenticatedQuery(mutation, context)
 
-    console.log("CHECK:: ", response)
-
-    // expect(response).toEqual({
-    //   // sendIdentityVerificationEmail: {
-    //   // confirmationOrError: {
-    //   // identityVerificationEmail: {
-    //   state: "pending",
-    //   userID: "id-123",
-    //   // },
-    //   // },
-    //   // },
-    // })
+    expect(response).toEqual({
+      sendIdentityVerificationEmail: {
+        confirmationOrError: {
+          identityVerificationEmail: {
+            internalID: "106",
+            state: "pending",
+            userID: "id-123",
+          },
+        },
+      },
+    })
   })
 
   it("throws an error if there is an unrecognizable error", async () => {

@@ -8196,14 +8196,6 @@ type IdentityVerificationEmail {
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
-  invitationExpiresAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
-    # http://www.iana.org/time-zones,
-    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
 
   # Where the identity verification is in its lifecycle
   state: String!

@@ -1,5 +1,4 @@
 import {
-  GraphQLFieldConfig,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -11,23 +10,7 @@ import {
   GravityMutationErrorType,
   formatGravityError,
 } from "lib/gravityErrorHandler"
-import dateField, { formatDate } from "../fields/date"
 import { InternalIDFields } from "../object_identification"
-
-const dateFieldForVerificationExpiresAt: GraphQLFieldConfig<
-  any,
-  ResolverContext
-> = {
-  ...dateField,
-  resolve: (
-    { invitation_expires_at: rawDate },
-    { format, timezone },
-    { defaultTimezone }
-  ) => {
-    const timezoneString = timezone || defaultTimezone
-    return formatDate(rawDate, format, timezoneString)
-  },
-}
 
 const IdentityVerificationEmailType = new GraphQLObjectType<
   any,
@@ -45,7 +28,6 @@ const IdentityVerificationEmailType = new GraphQLObjectType<
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ user_id }) => user_id,
     },
-    invitationExpiresAt: dateFieldForVerificationExpiresAt,
   }),
 })
 
@@ -112,18 +94,6 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
     if (!sendIdentityVerificationEmailLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
-
-    // try {
-    //   const response = await sendIdentityVerificationEmailLoader(user_id)
-    //   return response
-    // } catch (error) {
-    //   const formattedErr = formatGravityError(error)
-    //   if (formattedErr) {
-    //     return { ...formattedErr, _type: "GravityMutationError" }
-    //   } else {
-    //     throw new Error(error)
-    //   }
-    // }
 
     return sendIdentityVerificationEmailLoader(userID)
       .then((result) => result)
