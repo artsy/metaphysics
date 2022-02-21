@@ -4,6 +4,7 @@ import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 const identityVerificationDetails = {
   state: "pending",
   user_id: "id-123",
+  id: "106",
 }
 
 const sendIdentityVerificationEmailMock = jest.fn().mockReturnValue(
@@ -29,7 +30,6 @@ const computeMutationInput = ({
 							... on IdentityVerificationEmailMutationSuccessType{
 								identityVerificationEmail{
 									internalID
-									invitationExpiresAt
 									state
 									userID
 								}
