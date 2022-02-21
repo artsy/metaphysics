@@ -17,6 +17,11 @@ export default (accessToken, userID, opts) => {
     identityVerificationLoader: gravityLoader(
       (id) => `identity_verification/${id}`
     ),
+    sendIdentityVerificationEmailLoader: gravityLoader(
+      `identity_verification`,
+      {},
+      { method: "POST" }
+    ),
     artistDuplicatesLoader: gravityLoader(
       (id) => `artist/${id}/duplicates`,
       {},
