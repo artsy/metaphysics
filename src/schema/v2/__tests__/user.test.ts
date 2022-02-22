@@ -55,6 +55,35 @@ describe("User", () => {
     expect(user.userAlreadyExists).toEqual(false)
   })
 
+  it("falls back to email for name if name is blank", async () => {
+    const foundUser = {
+      id: "123456",
+      _id: "000012345",
+      name: null,
+      email: "foo@bar.org",
+      pin: "3141",
+      paddle_number: "314159",
+    }
+
+    const userByEmailLoader = (data) => {
+      if (data) {
+        return Promise.resolve(foundUser)
+      }
+      throw new Error("Unexpected invocation")
+    }
+
+    const query = gql`
+      {
+        user(email: "foo@bar.com") {
+          name
+        }
+      }
+    `
+
+    const { user } = await runAuthenticatedQuery(query, { userByEmailLoader })
+    expect(user.name).toEqual("foo@bar.org")
+  })
+
   it("returns push notification settings for a user", async () => {
     const foundUser = {
       id: "123456",
