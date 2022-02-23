@@ -10,6 +10,7 @@ import { CursorPageable, pageable } from "relay-cursor-paging"
 import { createPageCursors } from "schema/v1/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import { articleConnection } from "./article"
+import { ArticleLayout, ArticleLayoutEnum } from "./article/models"
 import ArticleSorts, { ArticleSort } from "./sorts/article_sorts"
 
 const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
@@ -23,6 +24,7 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
       description:
         "Get only articles with 'standard', 'feature', 'series' or 'video' layouts.",
     },
+    layout: { type: ArticleLayoutEnum },
     page: { type: GraphQLInt },
     sort: ArticleSorts,
   }),
@@ -32,18 +34,20 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
       channelId?: string
       featured?: boolean
       inEditorialFeed?: boolean
+      layout?: ArticleLayout
       sort?: ArticleSort
     } & CursorPageable,
     { articlesLoader }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-    const { channelId, sort, inEditorialFeed, featured } = args
+    const { channelId, sort, inEditorialFeed, featured, layout } = args
 
     const articlesLoaderArgs = {
       count: true,
       channel_id: channelId,
       featured,
       in_editorial_feed: inEditorialFeed,
+      layout,
       limit: size,
       offset,
       published: true,

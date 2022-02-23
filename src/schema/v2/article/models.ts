@@ -104,3 +104,19 @@ export const ArticleHero = new GraphQLUnionType({
   name: "ArticleHero",
   types: [ArticleFeatureSection],
 })
+
+export const ARTICLE_LAYOUTS = {
+  CLASSIC: { value: "classic" },
+  FEATURE: { value: "feature" },
+  NEWS: { value: "news" },
+  SERIES: { value: "series" },
+  STANDARD: { value: "standard" },
+  VIDEO: { value: "video" },
+} as const
+
+export type ArticleLayout = typeof ARTICLE_LAYOUTS[keyof typeof ARTICLE_LAYOUTS]["value"]
+
+export const ArticleLayoutEnum = new GraphQLEnumType({
+  name: "ArticleLayout",
+  values: ARTICLE_LAYOUTS,
+})

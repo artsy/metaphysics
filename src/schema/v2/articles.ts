@@ -7,17 +7,14 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { ArticleLayoutEnum } from "./article/models"
 
 const Articles: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Article.type),
   description: "A list of Articles",
   args: {
-    auctionID: {
-      type: GraphQLString,
-    },
-    featured: {
-      type: GraphQLBoolean,
-    },
+    auctionID: { type: GraphQLString },
+    featured: { type: GraphQLBoolean },
     ids: {
       type: new GraphQLList(GraphQLString),
       description: `
@@ -25,13 +22,9 @@ const Articles: GraphQLFieldConfig<void, ResolverContext> = {
         Accepts list of ids.
       `,
     },
-    published: {
-      type: GraphQLBoolean,
-      defaultValue: true,
-    },
-    showID: {
-      type: GraphQLString,
-    },
+    layout: { type: ArticleLayoutEnum },
+    published: { type: GraphQLBoolean, defaultValue: true },
+    showID: { type: GraphQLString },
     sort: ArticleSorts,
   },
   resolve: async (

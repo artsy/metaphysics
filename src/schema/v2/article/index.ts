@@ -1,6 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLInt,
   GraphQLList,
@@ -24,7 +23,7 @@ import { ArticleSectionEmbed } from "./sections/ArticleSectionEmbed"
 import { ArticleSectionImageSet } from "./sections/ArticleSectionImageSet"
 import { ArticleSectionSocialEmbed } from "./sections/ArticleSectionSocialEmbed"
 import { take } from "lodash"
-import { ArticleHero } from "./models"
+import { ArticleHero, ArticleLayoutEnum } from "./models"
 
 export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Article",
@@ -108,19 +107,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ slug }) => `/article/${slug}`,
     },
     layout: {
-      type: new GraphQLNonNull(
-        new GraphQLEnumType({
-          name: "ArticleLayout",
-          values: {
-            CLASSIC: { value: "classic" },
-            FEATURE: { value: "feature" },
-            NEWS: { value: "news" },
-            SERIES: { value: "series" },
-            STANDARD: { value: "standard" },
-            VIDEO: { value: "video" },
-          },
-        })
-      ),
+      type: new GraphQLNonNull(ArticleLayoutEnum),
     },
     keywords: {
       type: new GraphQLNonNull(
