@@ -34,6 +34,11 @@ export const BidderPosition: GraphQLFieldConfig<void, ResolverContext> = {
               status: "WINNING",
               position,
             }
+          } else if (
+            position.errors &&
+            position.errors.includes("Lot must be open")
+          ) {
+            status = "SALE_CLOSED"
           } else if (!position.processed_at) {
             return {
               status: "PENDING",
