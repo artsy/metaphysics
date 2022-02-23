@@ -19,6 +19,7 @@ import Image from "../image"
 import { PhoneNumber } from "../phoneNumber"
 import { SaleArtworksConnectionField } from "../sale_artworks"
 import { ArtistRecommendations } from "./artistRecommendations"
+import { ArtworkRecommendations } from "./artworkRecommendations"
 import ArtworkInquiries from "./artwork_inquiries"
 import AuctionResultsByFollowedArtists from "./auction_results_by_followed_artists"
 import { authentications } from "./authentications"
@@ -109,6 +110,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     ...IDFields,
     artistRecommendations: ArtistRecommendations,
+    artworkRecommendations: ArtworkRecommendations,
     artworkInquiriesConnection: ArtworkInquiries,
     auctionResultsByFollowedArtists: AuctionResultsByFollowedArtists,
     authentications: authentications,
