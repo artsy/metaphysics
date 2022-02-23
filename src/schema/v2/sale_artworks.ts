@@ -89,6 +89,11 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     liveSale: { type: GraphQLBoolean },
     page: { type: GraphQLInt },
     saleID: { type: GraphQLID },
+    saleSlug: {
+      description:
+        "Same as saleID argument, but matches the argument type of `sale(id: 'foo')` root field",
+      type: GraphQLString,
+    },
     size: { type: GraphQLInt },
     sort: { type: GraphQLString },
   }),
@@ -105,6 +110,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       isAuction,
       liveSale,
       saleID,
+      saleSlug,
       ..._args
     },
     { saleArtworksFilterLoader, saleArtworksAllLoader },
@@ -133,7 +139,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
       is_auction: isAuction,
       live_sale: liveSale,
-      sale_id: saleID,
+      sale_id: saleID || saleSlug,
       ..._args,
     }
 
