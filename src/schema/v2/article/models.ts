@@ -11,6 +11,7 @@ import {
 import { ImageType } from "../image"
 import uuid from "uuid/v5"
 import { extractEmbed, isEmbed } from "./lib/extractEmbed"
+import { isMedia } from "./lib/isMedia"
 
 export const ArticleImageSection = new GraphQLObjectType<any, ResolverContext>({
   name: "ArticleImageSection",
@@ -66,14 +67,21 @@ export const ArticleFeatureSection = new GraphQLObjectType({
         return extractEmbed(url, options)
       },
     },
+    media: {
+      type: GraphQLString,
+      resolve: ({ url }) => {
+        if (!url || !isMedia(url)) return null
+        return url
+      },
+    },
     image: {
       type: ImageType,
       resolve: ({ url }) => {
         if (!url) return null
 
-        // Positron returns a single URL with no metadata for
-        // both images and embeds
-        if (isEmbed(url)) return null
+        // Positron returns a single URL with no metadata
+        // for images, embeds, and media
+        if (isEmbed(url) || isMedia(url)) return null
 
         // We don't currently save image dimensions, unfortunately
         return {
