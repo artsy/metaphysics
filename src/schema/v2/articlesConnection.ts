@@ -2,6 +2,8 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
   GraphQLString,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
@@ -25,6 +27,7 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
         "Get only articles with 'standard', 'feature', 'series' or 'video' layouts.",
     },
     layout: { type: ArticleLayoutEnum },
+    omit: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
     page: { type: GraphQLInt },
     sort: ArticleSorts,
   }),
@@ -35,12 +38,13 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
       featured?: boolean
       inEditorialFeed?: boolean
       layout?: ArticleLayout
+      omit?: string[]
       sort?: ArticleSort
     } & CursorPageable,
     { articlesLoader }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-    const { channelId, sort, inEditorialFeed, featured, layout } = args
+    const { channelId, sort, inEditorialFeed, featured, layout, omit } = args
 
     const articlesLoaderArgs = {
       count: true,
@@ -50,6 +54,7 @@ const ArticlesConnection: GraphQLFieldConfig<void, ResolverContext> = {
       layout,
       limit: size,
       offset,
+      omit,
       published: true,
       sort,
     }
