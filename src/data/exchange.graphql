@@ -75,6 +75,10 @@ type ApproveOrderPayload {
 }
 
 type BuyOrder implements Order {
+  """
+  Whether Artsy collects taxes (e.g., sales tax or VAT) on this order.
+  """
+  artsyCollectsTaxes: Boolean
   artsyRemitsTaxes: Boolean
   artsyTotalCents: Int
   buyer: OrderPartyUnion!
@@ -943,6 +947,10 @@ type OfferEdge {
 }
 
 type OfferOrder implements Order {
+  """
+  Whether Artsy collects taxes (e.g., sales tax or VAT) on this order.
+  """
+  artsyCollectsTaxes: Boolean
   artsyRemitsTaxes: Boolean
   artsyTotalCents: Int
   awaitingResponseFrom: OrderParticipantEnum
@@ -1050,6 +1058,10 @@ type OfferSubmittedEvent implements EventInterface {
 Order
 """
 interface Order {
+  """
+  Whether Artsy collects taxes (e.g., sales tax or VAT) on this order.
+  """
+  artsyCollectsTaxes: Boolean
   artsyRemitsTaxes: Boolean
   artsyTotalCents: Int
   buyer: OrderPartyUnion!
