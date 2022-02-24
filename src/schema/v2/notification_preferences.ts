@@ -97,7 +97,9 @@ export const updateNotificationPreferencesMutation = mutationWithClientMutationI
       ),
     },
   },
-  outputFields: {},
+  outputFields: {
+    notificationPreferences,
+  },
   mutateAndGetPayload: (
     args,
     {
