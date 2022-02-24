@@ -4183,6 +4183,8 @@ type CommerceBuyerRejectOfferPayload {
 }
 
 type CommerceBuyOrder implements CommerceOrder {
+  # Whether Artsy collects taxes (e.g., sales tax or VAT) on this order.
+  artsyCollectsTaxes: Boolean
   artsyRemitsTaxes: Boolean
   artsyTotalCents: Int
   buyer: CommerceOrderPartyUnion!
@@ -4823,6 +4825,8 @@ type CommerceOfferEdge {
 }
 
 type CommerceOfferOrder implements CommerceOrder {
+  # Whether Artsy collects taxes (e.g., sales tax or VAT) on this order.
+  artsyCollectsTaxes: Boolean
   artsyRemitsTaxes: Boolean
   artsyTotalCents: Int
   awaitingResponseFrom: CommerceOrderParticipantEnum
@@ -5039,6 +5043,8 @@ type CommerceOfferSubmittedEvent implements CommerceEventInterface {
 
 # Order
 interface CommerceOrder {
+  # Whether Artsy collects taxes (e.g., sales tax or VAT) on this order.
+  artsyCollectsTaxes: Boolean
   artsyRemitsTaxes: Boolean
   artsyTotalCents: Int
   buyer: CommerceOrderPartyUnion!
