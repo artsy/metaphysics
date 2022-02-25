@@ -1,59 +1,59 @@
 // the description_md must be a function to delay interpolation of string literal
 
 interface BiddingMessage {
-  id:
+  status:
     | "OUTBID"
     | "RESERVE_NOT_MET"
     | "SALE_CLOSED"
     | "LIVE_BIDDING_STARTED"
     | "BIDDER_NOT_QUALIFIED"
     | "ERROR"
-  gravity_key: string
+  message: string
   header: string
-  description_md: (opts: any) => string
+  getDescription: (props?: { liveAuctionUrl: string }) => string
 }
 
-export const BiddingMessages: BiddingMessage[] = [
+export const bidderPositionMessages: BiddingMessage[] = [
   {
-    id: "OUTBID",
-    gravity_key: "Please enter a bid higher than",
+    status: "OUTBID",
+    message: "Please enter a bid higher than",
     header: "Your bid wasn’t high enough",
-    description_md: () =>
-      `Another bidder placed a higher max bid\nor the same max bid before you did.`,
+    getDescription: () =>
+      `Another bidder placed a higher max bid or the same max bid before you did.`,
   },
   {
-    id: "RESERVE_NOT_MET",
-    gravity_key: "Please enter a bid higher than",
+    status: "RESERVE_NOT_MET",
+    message: "Please enter a bid higher than",
     header: "Your bid wasn’t high enough",
-    description_md: () =>
+    getDescription: () =>
       `Your bid is below the reserve price. Please select a higher bid.`,
   },
   {
-    id: "SALE_CLOSED",
-    gravity_key: "Sale Closed to Bids",
+    status: "SALE_CLOSED",
+    message: "Sale Closed to Bids",
     header: "Lot closed",
-    description_md: () =>
-      "Sorry, your bid wasn’t received\nbefore the lot closed.",
+    getDescription: () =>
+      "Sorry, your bid wasn’t received before the lot closed.",
   },
   {
-    id: "LIVE_BIDDING_STARTED",
-    gravity_key: "Live Bidding has Started",
+    status: "LIVE_BIDDING_STARTED",
+    message: "Live Bidding has Started",
     header: "Live bidding has started",
-    description_md: (params) =>
-      `Sorry, your bid wasn’t received before\nlive bidding started. To continue\nbidding, please [join the live auction](${params.liveAuctionUrl}).`,
+    getDescription: (props) =>
+      `Sorry, your bid wasn’t received before live bidding started. To continue bidding, please [join the live auction](${props?.liveAuctionUrl}).`,
   },
   {
-    id: "BIDDER_NOT_QUALIFIED",
-    gravity_key: "Bidder not qualified to bid on this auction.",
+    status: "BIDDER_NOT_QUALIFIED",
+    message: "Bidder not qualified to bid on this auction.",
     header: "Bid not placed",
-    description_md: () =>
-      `Your bid can’t be placed at this time.\nPlease contact [support@artsy.net](mailto:support@artsy.net) for\nmore information.`,
+    getDescription: () =>
+      `Your bid can't be placed at this time. Please contact [support@artsy.net](mailto:support@artsy.net) for more information.`,
   },
   {
-    id: "ERROR",
-    gravity_key: "unknown error",
+    status: "ERROR",
+    message: "unknown error",
     header: "Bid not placed",
-    description_md: () =>
-      `Your bid can’t be placed at this time.\nPlease contact [support@artsy.net](mailto:support@artsy.net) for\nmore information.`,
+    getDescription: () =>
+      `Your bid can't be placed at this time. Please contact [support@artsy.net](mailto:support@artsy.net) for more information.`,
   },
 ]

@@ -1,7 +1,8 @@
 import { GraphQLNonNull, GraphQLString, GraphQLFieldConfig } from "graphql"
-import { BiddingMessages } from "./bidder_position_messages"
+import { bidderPositionMessages } from "./bidder_position_messages"
 import { BidderPositionResultType } from "../types/bidder_position_result"
 import { ResolverContext } from "types/graphql"
+import { last } from "lodash"
 
 const ANY_RESERVE_MET_STATUSES = ["no_reserve", "reserve_met"]
 
@@ -51,16 +52,22 @@ export const BidderPosition: GraphQLFieldConfig<void, ResolverContext> = {
           } else {
             status = "ERROR"
           }
-          const message =
-            BiddingMessages.find((d) => status.trim().startsWith(d.id)) ||
-            BiddingMessages[BiddingMessages.length - 1] // error
-          return {
+
+          const message = bidderPositionMessages.find((bidderPositionMessage) =>
+            status.startsWith(bidderPositionMessage.status)
+          )
+
+          if (!message) {
+            return last(bidderPositionMessages)
+          }
+
+          const formattedMessage = {
             status,
-            message_header: message.header,
-            // FIXME: Expected 1 arguments, but got 0.
-            // @ts-ignore
-            message_description_md: message.description_md(),
+            messageHeader: message.header,
+            messageDescriptionMD: message.getDescription(),
             position,
           }
+
+          return formattedMessage
         }),
 }
