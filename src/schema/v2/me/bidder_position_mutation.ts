@@ -2,9 +2,10 @@ import { GraphQLString, GraphQLFloat, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
 import { BidderPositionResultType } from "../types/bidder_position_result"
-import { BiddingMessages } from "./bidder_position_messages"
+import { bidderPositionMessages } from "./bidder_position_messages"
 import config from "config"
 import { ResolverContext } from "types/graphql"
+import { last } from "lodash"
 
 const { PREDICTION_ENDPOINT } = config
 
@@ -64,27 +65,44 @@ export const BidderPositionMutation = mutationWithClientMutationId<
       artwork_id,
       max_bid_amount_cents,
     })
-      .then((p) => {
-        return { status: "SUCCESS", position: p }
+      .then((position) => {
+        return {
+          status: "SUCCESS",
+          position,
+        }
       })
-      .catch((e) => {
-        const errorSplit = e.message.split(" - ")
-        const errorObject =
-          errorSplit.length > 1 ? JSON.parse(e.message.split(" - ")[1]) : null
-        if (errorObject) {
-          const errorMessage = errorObject.message || errorObject.error
-          const message =
-            BiddingMessages.find((d) =>
-              errorMessage.trim().startsWith(d.gravity_key)
-            ) || BiddingMessages[BiddingMessages.length - 1]
-          const liveAuctionUrl = `${PREDICTION_ENDPOINT}/${sale_id}`
+      .catch((error) => {
+        const rawError = error?.body?.message ?? error?.body?.error
+
+        try {
+          const message = bidderPositionMessages.find(
+            (bidderPositionMessage) => {
+              return rawError.startsWith(bidderPositionMessage.message)
+            }
+          )
+
+          if (!message) {
+            return last(bidderPositionMessages)
+          }
+
+          const formattedError = {
+            status: message.status,
+            messageHeader: message.header,
+            messageDescriptionMD: message.getDescription({
+              liveAuctionUrl: `${PREDICTION_ENDPOINT}/${sale_id}`,
+            }),
+            rawError,
+          }
+
+          return formattedError
+        } catch (error) {
+          console.error(error)
+
           return {
-            status: message.id,
-            message_header: message.header,
-            message_description_md: message.description_md({ liveAuctionUrl }),
+            ...last(bidderPositionMessages),
+            rawError,
           }
         }
-        return new Error(e)
       })
   },
 })

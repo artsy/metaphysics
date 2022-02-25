@@ -124,7 +124,7 @@ describe("BidderPosition", () => {
         bidderPosition: {
           status: "OUTBID",
           messageHeader: "Your bid wasn’t high enough",
-          messageDescriptionMD: `Another bidder placed a higher max bid\nor the same max bid before you did.`,
+          messageDescriptionMD: `Another bidder placed a higher max bid or the same max bid before you did.`,
           position: {
             processedAt: "2018-04-26T14:15:52+00:00",
           },
@@ -138,7 +138,7 @@ describe("BidderPosition", () => {
         bidderPosition: {
           status: "SALE_CLOSED",
           messageHeader: "Lot closed",
-          messageDescriptionMD: `Sorry, your bid wasn’t received\nbefore the lot closed.`,
+          messageDescriptionMD: `Sorry, your bid wasn’t received before the lot closed.`,
           position: {
             processedAt: "2018-04-26T14:15:52+00:00",
           },
