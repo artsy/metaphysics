@@ -168,11 +168,11 @@ function getPriceLabel(priceRange: string): SearchCriteriaLabel | undefined {
   let label
 
   if (min === "*") {
-    label = `$0-$${max}`
+    label = `$0–$${max}`
   } else if (max === "*") {
     label = `$${min}+`
   } else {
-    label = `$${min}-$${max}`
+    label = `$${min}–$${max}`
   }
 
   return {

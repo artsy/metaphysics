@@ -174,7 +174,7 @@ describe("resolveSearchCriteriaLabels", () => {
         expect(labels).toIncludeAllMembers([
           {
             name: "Price",
-            value: "$42-$420",
+            value: "$42–$420",
             field: "priceRange",
           },
         ])
@@ -208,7 +208,7 @@ describe("resolveSearchCriteriaLabels", () => {
         expect(labels).toIncludeAllMembers([
           {
             name: "Price",
-            value: "$0-$420",
+            value: "$0–$420",
             field: "priceRange",
           },
         ])
