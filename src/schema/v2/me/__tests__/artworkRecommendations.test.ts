@@ -20,9 +20,9 @@ describe("artworkRecommendations", () => {
   `
 
   it("returns artwork recommendations from Vortex", async () => {
-    const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
+    const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
 
-    const artworksLoader = jest.fn(async () => mockArtworksResponse)
+    const artworksLoader = jest.fn(async () => artworksResponse)
 
     const context = {
       meLoader: () => Promise.resolve({}),
@@ -84,7 +84,7 @@ describe("artworkRecommendations", () => {
       },
     }))
 
-    const artworksLoader = jest.fn(async () => mockArtworksResponse)
+    const artworksLoader = jest.fn(async () => artworksResponse)
 
     const context = {
       meLoader: () => Promise.resolve({}),
@@ -108,7 +108,7 @@ describe("artworkRecommendations", () => {
   })
 })
 
-const mockVortexResponse = {
+const vortexResponse = {
   data: {
     artworkRecommendations: {
       totalCount: 2,
@@ -130,17 +130,15 @@ const mockVortexResponse = {
   },
 }
 
-const mockArtworksResponse = {
-  body: [
-    {
-      _id: "608a7416bdfbd1a789ba0911",
-      id: "gerhard-richter-abendstimmung-evening-calm-2",
-      slug: "gerhard-richter-abendstimmung-evening-calm-2",
-    },
-    {
-      _id: "608a7417bdfbd1a789ba092a",
-      id: "pablo-picasso-deux-femmes-nues-dans-un-arbre-2",
-      slug: "pablo-picasso-deux-femmes-nues-dans-un-arbre-2",
-    },
-  ],
-}
+const artworksResponse = [
+  {
+    _id: "608a7416bdfbd1a789ba0911",
+    id: "gerhard-richter-abendstimmung-evening-calm-2",
+    slug: "gerhard-richter-abendstimmung-evening-calm-2",
+  },
+  {
+    _id: "608a7417bdfbd1a789ba092a",
+    id: "pablo-picasso-deux-femmes-nues-dans-un-arbre-2",
+    slug: "pablo-picasso-deux-femmes-nues-dans-un-arbre-2",
+  },
+]

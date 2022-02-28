@@ -56,17 +56,14 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
 
     // Fetch artwork details from Gravity
 
-    let artworks: any = []
+    let artworks: any[] = []
 
     if (artworkIds?.length) {
-      artworks = (
-        await artworksLoader({
-          ids: artworkIds,
-        })
-      ).body
+      artworks = await artworksLoader({
+        ids: artworkIds,
+      })
 
       // Apply order from Vortex result (score ASC)
-
       artworks = compact(
         artworkIds.map((artworkId) => {
           return find(artworks, { _id: artworkId })
