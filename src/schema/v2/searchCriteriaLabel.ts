@@ -5,6 +5,15 @@ import { toTitleCase } from "@artsy/to-title-case"
 import allAttributionClasses from "lib/attributionClasses"
 import { COLORS } from "lib/colors"
 
+// Taken from Force's SizeFilter component
+export const SIZES = {
+  SMALL: "Small (under 40cm)",
+  MEDIUM: "Medium (40 – 100cm)",
+  LARGE: "Large (over 100cm)",
+}
+
+const ONE_IN_TO_CM = 2.54
+
 type SearchCriteriaLabel = {
   /** The GraphQL field name of the filter facet */
   field: string
@@ -174,9 +183,35 @@ function getSizeLabels(sizes: string[]) {
 
   return sizes.map((size) => ({
     name: "Size",
-    value: toTitleCase(size.toLowerCase()), // TODO: this a placeholder, we need to format these properly
+    value: SIZES[`${size}`],
     field: "sizes",
   }))
+}
+
+const convertToCentimeters = (element: number) => {
+  return Math.round(element * ONE_IN_TO_CM)
+}
+
+const parseRange = (range = ""): (number | "*")[] => {
+  return range.split("-").map((s) => {
+    if (s === "*") return s
+    return convertToCentimeters(parseFloat(s))
+  })
+}
+
+const extractSizeLabel = (prefix: string, value: string) => {
+  const [min, max] = parseRange(value)
+
+  let label
+  if (max === "*") {
+    label = `from ${min}`
+  } else if (min === "*") {
+    label = `to ${max}`
+  } else {
+    label = `${min}–${max}`
+  }
+
+  return `${prefix}: ${label} cm`
 }
 
 function getCustomSizeLabels({
@@ -188,32 +223,18 @@ function getCustomSizeLabels({
 }) {
   const labels: SearchCriteriaLabel[] = []
 
-  // TODO: this a placeholder, we need to format these properly
-
   if (width) {
-    const [wmin, wmax] = width
-      .split(/-/)
-      .map(parseFloat)
-      .map((n) => n * 2.54)
-      .map(Math.round)
-
     labels.push({
       name: "Size",
-      value: `w: ${wmin}–${wmax} cm`,
+      value: extractSizeLabel("w", width),
       field: "width",
     })
   }
 
   if (height) {
-    const [hmin, hmax] = height
-      .split(/-/)
-      .map(parseFloat)
-      .map((n) => n * 2.54)
-      .map(Math.round)
-
     labels.push({
       name: "Size",
-      value: `h: ${hmin}–${hmax} cm`,
+      value: extractSizeLabel("h", height),
       field: "height",
     })
   }

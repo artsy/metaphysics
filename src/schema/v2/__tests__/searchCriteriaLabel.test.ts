@@ -189,42 +189,134 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Size",
-        value: "Large", // TODO: fix this placeholder formatting
+        value: "Large (over 100cm)",
         field: "sizes",
       },
       {
         name: "Size",
-        value: "Medium", // TODO: fix this placeholder formatting
+        value: "Medium (40 – 100cm)",
         field: "sizes",
       },
       {
         name: "Size",
-        value: "Small", // TODO: fix this placeholder formatting
+        value: "Small (under 40cm)",
         field: "sizes",
       },
     ])
   })
 
-  it("formats custom size criteria", async () => {
-    const parent = {
-      height: "1-10",
-      width: "2-20",
-    }
+  describe("formatting size criteria", () => {
+    it("handles range with min for height", async () => {
+      const parent = {
+        height: "0.39370078740157477-*",
+      }
 
-    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
 
-    expect(labels).toIncludeAllMembers([
-      {
-        name: "Size",
-        value: "w: 5–51 cm", // TODO: fix this placeholder formatting
-        field: "width",
-      },
-      {
-        name: "Size",
-        value: "h: 3–25 cm", // TODO: fix this placeholder formatting
-        field: "height",
-      },
-    ])
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Size",
+          value: "h: from 1 cm",
+          field: "height",
+        },
+      ])
+    })
+    it("handles range with max for height", async () => {
+      const parent = {
+        height: "*-3.937007874015748",
+      }
+
+      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Size",
+          value: "h: to 10 cm",
+          field: "height",
+        },
+      ])
+    })
+    it("handles range with min and max for height", async () => {
+      const parent = {
+        height: "0.39370078740157477-3.937007874015748",
+      }
+
+      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Size",
+          value: "h: 1–10 cm",
+          field: "height",
+        },
+      ])
+    })
+    it("handles range with min for width", async () => {
+      const parent = {
+        width: "0.39370078740157477-*",
+      }
+
+      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Size",
+          value: "w: from 1 cm",
+          field: "width",
+        },
+      ])
+    })
+    it("handles range with max for width", async () => {
+      const parent = {
+        width: "*-3.937007874015748",
+      }
+
+      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Size",
+          value: "w: to 10 cm",
+          field: "width",
+        },
+      ])
+    })
+    it("handles range with min and max for width", async () => {
+      const parent = {
+        width: "0.39370078740157477-3.937007874015748",
+      }
+
+      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Size",
+          value: "w: 1–10 cm",
+          field: "width",
+        },
+      ])
+    })
+    it("handles range with min and max for height and width", async () => {
+      const parent = {
+        height: "0.39370078740157477-3.937007874015748",
+        width: "*-20",
+      }
+
+      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Size",
+          value: "w: to 51 cm",
+          field: "width",
+        },
+        {
+          name: "Size",
+          value: "h: 1–10 cm",
+          field: "height",
+        },
+      ])
+    })
   })
 
   it("formats ways-to-buy criteria", async () => {
