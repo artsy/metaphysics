@@ -29,7 +29,7 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
 
     const { page, size } = convertConnectionArgsToGravityArgs(args)
 
-    // Fetch artwork IDs from Vortex
+    // Fetching artwork IDs from Vortex
 
     const vortexResult = await vortexGraphqlLoader({
       query: gql`
@@ -54,7 +54,7 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
       (node: any) => node?.artworkId
     )
 
-    // Fetch artwork details from Gravity
+    // Fetching artwork details from Gravity
 
     let artworks: any[] = []
 
@@ -63,7 +63,8 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
         ids: artworkIds,
       })
 
-      // Apply order from Vortex result (score ASC)
+      // Applying order from Vortex result (score ASC)
+
       artworks = compact(
         artworkIds.map((artworkId) => {
           return find(artworks, { _id: artworkId })

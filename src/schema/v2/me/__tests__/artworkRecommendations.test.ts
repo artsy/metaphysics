@@ -19,7 +19,7 @@ describe("artworkRecommendations", () => {
     }
   `
 
-  it("returns artwork recommendations from Vortex", async () => {
+  it("returns artwork recommendations with order from Vortex", async () => {
     const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
 
     const artworksLoader = jest.fn(async () => artworksResponse)
