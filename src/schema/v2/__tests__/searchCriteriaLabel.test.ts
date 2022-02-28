@@ -163,20 +163,57 @@ describe("resolveSearchCriteriaLabels", () => {
     ])
   })
 
-  it("formats price criteria", async () => {
-    const parent = {
-      priceRange: "42-420",
-    }
+  describe("price criteria", () => {
+    describe("min and max are set", () => {
+      it("formats price criteria", async () => {
+        const parent = {
+          priceRange: "42-420",
+        }
+        const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
 
-    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+        expect(labels).toIncludeAllMembers([
+          {
+            name: "Price",
+            value: "$42–$420",
+            field: "priceRange",
+          },
+        ])
+      })
+    })
 
-    expect(labels).toIncludeAllMembers([
-      {
-        name: "Price",
-        value: expect.anything(), // TODO: fix this placeholder formatting
-        field: "priceRange",
-      },
-    ])
+    describe("only min is set", () => {
+      it("formats price criteria", async () => {
+        const parent = {
+          priceRange: "42-*",
+        }
+        const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+        expect(labels).toIncludeAllMembers([
+          {
+            name: "Price",
+            value: "$42+",
+            field: "priceRange",
+          },
+        ])
+      })
+    })
+
+    describe("only max is set", () => {
+      it("formats price criteria", async () => {
+        const parent = {
+          priceRange: "*-420",
+        }
+        const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+        expect(labels).toIncludeAllMembers([
+          {
+            name: "Price",
+            value: "$0–$420",
+            field: "priceRange",
+          },
+        ])
+      })
+    })
   })
 
   it("formats size bucket criteria", async () => {

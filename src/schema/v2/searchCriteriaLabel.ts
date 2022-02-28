@@ -170,10 +170,23 @@ function getMediumLabels(additionalGeneIDs: string[]) {
 function getPriceLabel(priceRange: string): SearchCriteriaLabel | undefined {
   if (!priceRange) return
 
-  const [min, max] = priceRange.split(/-/)
+  const [min, max] = priceRange.split("-").map((value) => {
+    return value === "*" ? value : (+value).toLocaleString()
+  })
+
+  let label
+
+  if (min === "*") {
+    label = `$0–$${max}`
+  } else if (max === "*") {
+    label = `$${min}+`
+  } else {
+    label = `$${min}–$${max}`
+  }
+
   return {
     name: "Price",
-    value: `USD ${min}–${max}`, // TODO: this a placeholder, we need to format these properly
+    value: label,
     field: "priceRange",
   }
 }
