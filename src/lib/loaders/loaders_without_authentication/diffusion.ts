@@ -11,5 +11,6 @@ export default (opts) => {
     comparableAuctionResultsLoader: diffusionLoader(
       (id) => `lots/${id}/comparable_lots`
     ),
+    comparablesLoader: diffusionLoader("lots/comparable_lots"),
   }
 }

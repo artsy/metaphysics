@@ -153,7 +153,7 @@ describe("AuctionResult type", () => {
   })
 })
 
-const mockComparableComparableAuctionResults = {
+const mockComparableAuctionResults = {
   total_count: 2,
   _embedded: {
     items: [
@@ -211,7 +211,7 @@ describe("Comparable Auction Results", () => {
     const context = {
       auctionLotLoader: jest.fn(() => Promise.resolve(mockAuctionResult)),
       comparableAuctionResultsLoader: jest.fn(() =>
-        Promise.resolve(mockComparableComparableAuctionResults)
+        Promise.resolve(mockComparableAuctionResults)
       ),
     }
 
