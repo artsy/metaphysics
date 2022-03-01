@@ -1,28 +1,15 @@
 import { runQuery } from "schema/v2/test/utils"
-import sinon from "sinon"
 
 describe("ComparableAuctionResults", () => {
-  let context = {}
+  const artworkLoader = jest.fn(async () => mockArtwork)
+  const comparableAuctionResultsLoader = jest.fn(
+    async () => mockComparableAuctionResults
+  )
 
-  beforeEach(() => {
-    context = {
-      artworkLoader: sinon
-        .stub()
-        .withArgs(mockArtwork.id)
-        .returns(Promise.resolve(mockArtwork)),
-      comparableAuctionResultsLoader: sinon
-        .stub()
-        .withArgs({
-          artist_id: mockArtwork.artist.id,
-          date: mockArtwork.date,
-          height_cm: mockArtwork.height_cm,
-          width_cm: mockArtwork.width_cm,
-          depth_cm: mockArtwork.depth_cm,
-          diameter_cm: mockArtwork.diameter_cm,
-        })
-        .returns(Promise.resolve(mockComparableAuctionResults)),
-    }
-  })
+  const context = {
+    artworkLoader,
+    comparableAuctionResultsLoader,
+  }
 
   const query = `
       {
@@ -46,9 +33,21 @@ describe("ComparableAuctionResults", () => {
     `
 
   it("fetches comparable auction results", async () => {
-    let data = await runQuery(query, context)
+    const {
+      artwork: { comparableAuctionResults },
+    } = await runQuery(query, context)
 
-    expect(data.artwork.comparableAuctionResults).toMatchInlineSnapshot(`
+    expect(artworkLoader).toHaveBeenCalledWith(mockArtwork.id, {})
+    expect(comparableAuctionResultsLoader).toHaveBeenCalledWith({
+      artist_id: mockArtwork.artist.id,
+      date: mockArtwork.date,
+      height_cm: mockArtwork.height_cm,
+      width_cm: mockArtwork.width_cm,
+      depth_cm: mockArtwork.depth_cm,
+      diameter_cm: mockArtwork.diameter_cm,
+    })
+
+    expect(comparableAuctionResults).toMatchInlineSnapshot(`
       Object {
         "edges": Array [
           Object {
