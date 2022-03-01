@@ -10,7 +10,7 @@ describe("ComparableAuctionResults", () => {
         .stub()
         .withArgs(mockArtwork.id)
         .returns(Promise.resolve(mockArtwork)),
-      comparablesLoader: sinon
+      comparableAuctionResultsLoader: sinon
         .stub()
         .withArgs({
           artist_id: mockArtwork.artist.id,
