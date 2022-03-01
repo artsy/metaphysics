@@ -1,33 +1,33 @@
-import date from "./fields/date"
-import { NodeInterface, InternalIDFields } from "./object_identification"
+import * as Sentry from "@sentry/node"
 import {
+  GraphQLBoolean,
+  GraphQLEnumType,
+  GraphQLFieldConfig,
   GraphQLFloat,
   GraphQLNonNull,
-  GraphQLString,
   GraphQLObjectType,
-  GraphQLEnumType,
-  GraphQLBoolean,
-  GraphQLFieldConfig,
+  GraphQLString,
 } from "graphql"
-import { isNil } from "lodash"
-import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
-import Image, { normalizeImageData } from "schema/v2/image"
-import { ResolverContext } from "types/graphql"
-import { merge } from "lodash"
-import { pageable } from "relay-cursor-paging"
-
-// Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
-import { YearRange } from "./types/yearRange"
-import * as Sentry from "@sentry/node"
+import { connectionFromArraySlice } from "graphql-relay"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import {
   isCurrencySupported,
   priceDisplayText,
   priceRangeDisplayText,
 } from "lib/moneyHelpers"
+import { isNil, merge } from "lodash"
+import { pageable } from "relay-cursor-paging"
+import {
+  connectionWithCursorInfo,
+  createPageCursors,
+} from "schema/v2/fields/pagination"
+import Image, { normalizeImageData } from "schema/v2/image"
+import { ResolverContext } from "types/graphql"
 import { ArtistType } from "./artist"
-import { createPageCursors } from "schema/v2/fields/pagination"
-import { connectionFromArraySlice } from "graphql-relay"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import date from "./fields/date"
+import { InternalIDFields, NodeInterface } from "./object_identification"
+// Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
+import { YearRange } from "./types/yearRange"
 
 export const AuctionResultSorts = {
   type: new GraphQLEnumType({
@@ -79,8 +79,12 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
       type: auctionResultConnection.connectionType,
       description: "Comparable auction results ",
       args: pageable({}),
-      resolve: async (parent, options, { comparableAuctionResultsLoader }) => {
-        if (!comparableAuctionResultsLoader) {
+      resolve: async (
+        parent,
+        options,
+        { auctionResultComparableAuctionResultsLoader }
+      ) => {
+        if (!auctionResultComparableAuctionResultsLoader) {
           return null
         }
 
@@ -91,7 +95,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
         const {
           _embedded: { items },
           total_count,
-        } = await comparableAuctionResultsLoader(parent.id)
+        } = await auctionResultComparableAuctionResultsLoader(parent.id)
 
         return merge(
           {

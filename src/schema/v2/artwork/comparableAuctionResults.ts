@@ -14,8 +14,8 @@ export const ComparableAuctionResults: GraphQLFieldConfig<
   type: auctionResultConnection.connectionType,
   description: "Comparable auction results",
   args: pageable({}),
-  resolve: async (artwork, options, { comparablesLoader }) => {
-    if (!comparablesLoader) {
+  resolve: async (artwork, options, { comparableAuctionResultsLoader }) => {
+    if (!comparableAuctionResultsLoader) {
       return null
     }
 
@@ -24,7 +24,7 @@ export const ComparableAuctionResults: GraphQLFieldConfig<
     const {
       _embedded: { items },
       total_count: totalCount,
-    } = await comparablesLoader({
+    } = await comparableAuctionResultsLoader({
       artist_id: artwork.artist.id,
       date: artwork.date,
       height_cm: artwork.height_cm,

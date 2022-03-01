@@ -210,7 +210,7 @@ describe("Comparable Auction Results", () => {
 
     const context = {
       auctionLotLoader: jest.fn(() => Promise.resolve(mockAuctionResult)),
-      comparableAuctionResultsLoader: jest.fn(() =>
+      auctionResultComparableAuctionResultsLoader: jest.fn(() =>
         Promise.resolve(mockComparableAuctionResults)
       ),
     }
