@@ -14,6 +14,7 @@ describe("Sale type", () => {
   const sale: any = {
     id: "foo-foo",
     _id: "123",
+    cascading_end_time_interval: 120,
     collect_payments: true,
     currency: "USD",
     is_artsy_licensed: false,
