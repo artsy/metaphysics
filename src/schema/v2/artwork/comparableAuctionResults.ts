@@ -22,7 +22,7 @@ export const ComparableAuctionResults: GraphQLFieldConfig<
     const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
 
     const comparableAuctionResultsParams = {
-      artist_id: artwork.artist.id,
+      artist_id: artwork.artist._id,
       date: artwork.date,
       height_cm: artwork.height_cm,
       width_cm: artwork.width_cm,
