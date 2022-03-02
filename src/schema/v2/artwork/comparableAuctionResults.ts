@@ -1,7 +1,7 @@
 import { GraphQLFieldConfig } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { merge } from "lodash"
+import { isNull, merge, omitBy } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { auctionResultConnection } from "../auction_result"
@@ -21,17 +21,21 @@ export const ComparableAuctionResults: GraphQLFieldConfig<
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
 
-    const {
-      _embedded: { items },
-      total_count: totalCount,
-    } = await comparableAuctionResultsLoader({
+    const comparableAuctionResultsParams = {
       artist_id: artwork.artist.id,
       date: artwork.date,
       height_cm: artwork.height_cm,
       width_cm: artwork.width_cm,
       depth_cm: artwork.depth_cm,
       diameter_cm: artwork.diameter_cm,
-    })
+    }
+
+    const {
+      _embedded: { items },
+      total_count: totalCount,
+    } = await comparableAuctionResultsLoader(
+      omitBy(comparableAuctionResultsParams, isNull)
+    )
 
     return merge(
       {
