@@ -54,6 +54,7 @@ import { InquiryQuestionType } from "../inquiry_question"
 import { LotStandingType } from "../me/lot_standing"
 import ArtworkConsignmentSubmissionType from "./artworkConsignmentSubmissionType"
 import { ArtworkContextGrids } from "./artworkContextGrids"
+import { ComparableAuctionResults } from "./comparableAuctionResults"
 import Context from "./context"
 import { ArtworkHighlightType } from "./highlight"
 import ArtworkLayer from "./layer"
@@ -152,6 +153,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ collecting_institution }) =>
           existyValue(collecting_institution),
       },
+      comparableAuctionResults: ComparableAuctionResults,
       consignmentSubmission: {
         type: ArtworkConsignmentSubmissionType,
         resolve: async ({ id }, _options, { submissionsLoader }) => {
