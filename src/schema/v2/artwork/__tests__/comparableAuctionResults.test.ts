@@ -39,7 +39,7 @@ describe("ComparableAuctionResults", () => {
 
     expect(artworkLoader).toHaveBeenCalledWith(mockArtwork.id, {})
     expect(comparableAuctionResultsLoader).toHaveBeenCalledWith({
-      artist_id: mockArtwork.artist.id,
+      artist_id: mockArtwork.artist._id,
       date: mockArtwork.date,
       height_cm: mockArtwork.height_cm,
       width_cm: mockArtwork.width_cm,
@@ -81,7 +81,7 @@ describe("ComparableAuctionResults", () => {
 
 const mockArtwork = {
   id: "joan-miro-miro-milano-2",
-  artist: { id: "artist_id" },
+  artist: { _id: "an-artist-id", id: "artist-id" },
   date: "date",
   height_cm: "height_cm",
   width_cm: "width_cm",
