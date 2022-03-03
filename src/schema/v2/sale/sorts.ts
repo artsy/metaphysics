@@ -46,6 +46,9 @@ export default {
       TIMELY_AT_NAME_DESC: {
         value: "-timely_at,name",
       },
+      LICENSED_TIMELY_AT_NAME_DESC: {
+        value: "-is_artsy_licensed,timely_at,name",
+      },
     },
   }),
 }
