@@ -31,19 +31,21 @@ export const executableVortexSchema = ({
     (_operation, name) => !rootFieldsToFilter.includes(name)
   )
 
+  const renameTypesTransform = new RenameTypes((name) => {
+    if (
+      name.includes("PriceInsight") ||
+      name.includes("PageCursor") ||
+      ["BigInt", "ISO8601DateTime"].includes(name)
+    ) {
+      return name
+    } else {
+      return `Analytics${name}`
+    }
+  })
+
   const transforms = [
     ...(removeRootFields ? [filterTransform] : []),
-    new RenameTypes((name) => {
-      if (
-        name.includes("PriceInsight") ||
-        name.includes("PageCursor") ||
-        ["BigInt", "ISO8601DateTime"].includes(name)
-      ) {
-        return name
-      } else {
-        return `Analytics${name}`
-      }
-    }),
+    renameTypesTransform,
     new RenameRootFields((_operation, name) => {
       if (["priceInsights", "marketPriceInsights"].includes(name)) {
         return name
