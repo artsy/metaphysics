@@ -20,17 +20,15 @@ export const executableVortexSchema = ({
     link: vortexLink,
   })
 
-  const removeRootFieldList = [
-    "BigInt",
-    "artistAffinities",
-    "artistRecommendations",
+  const rootFieldsToFilter = [
+    "pricingContext",
     "partnerStat",
     "pricingContext",
     "userStat",
   ]
 
   const filterTransform = new FilterRootFields(
-    (_operation, name) => !removeRootFieldList.includes(name)
+    (_operation, name) => !rootFieldsToFilter.includes(name)
   )
 
   const transforms = [
