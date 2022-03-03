@@ -75,6 +75,8 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
         new GraphQLList(new GraphQLNonNull(ArticleType))
       ),
       resolve: async ({ id, channel_id }, args, { articlesLoader }) => {
+        if (!channel_id) return []
+
         const { results } = await articlesLoader({
           channel_id,
           limit: args.size,
@@ -207,7 +209,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
           { results: relatedArticles },
         ] = await Promise.all([
           articlesLoader({
-            channel_id,
+            ...(channel_id ? { channel_id } : {}),
             featured: true,
             limit: args.size,
             omit: [id, ...(related_article_ids ?? [])],
