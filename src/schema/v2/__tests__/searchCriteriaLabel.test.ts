@@ -455,7 +455,7 @@ describe("resolveSearchCriteriaLabels", () => {
 
   it("formats color criteria", async () => {
     const parent = {
-      colors: ["lightblue", "yellow"],
+      colors: ["blue", "yellow"],
     }
 
     const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
@@ -463,7 +463,7 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Color",
-        value: "Light Blue",
+        value: "Blue",
         field: "colors",
       },
       {
