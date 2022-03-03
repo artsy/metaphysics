@@ -31,11 +31,13 @@ export const executableVortexSchema = ({
     (_operation, name) => !rootFieldsToFilter.includes(name)
   )
 
+  const typesToNotRename = ["BigInt", "ISO8601DateTime"]
+
   const renameTypesTransform = new RenameTypes((name) => {
     if (
       name.includes("PriceInsight") ||
       name.includes("PageCursor") ||
-      ["BigInt", "ISO8601DateTime"].includes(name)
+      typesToNotRename.includes(name)
     ) {
       return name
     } else {
