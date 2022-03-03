@@ -42,16 +42,18 @@ export const executableVortexSchema = ({
     }
   })
 
+  const renameRootFieldTransform = new RenameRootFields((_operation, name) => {
+    if (["priceInsights", "marketPriceInsights"].includes(name)) {
+      return name
+    } else {
+      return `analytics${name.charAt(0).toUpperCase() + name.slice(1)}`
+    }
+  })
+
   const transforms = [
     ...(removeRootFields ? [filterTransform] : []),
     renameTypesTransform,
-    new RenameRootFields((_operation, name) => {
-      if (["priceInsights", "marketPriceInsights"].includes(name)) {
-        return name
-      } else {
-        return `analytics${name.charAt(0).toUpperCase() + name.slice(1)}`
-      }
-    }),
+    renameRootFieldTransform,
   ]
 
   return transformSchema(schema, transforms)
