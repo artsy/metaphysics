@@ -32,13 +32,10 @@ export const executableVortexSchema = ({
   )
 
   const typesToNotRename = ["BigInt", "ISO8601DateTime"]
+  const patternToNotRename = new RegExp(/(PageCursor|PriceInsight)/)
 
   const renameTypesTransform = new RenameTypes((name) => {
-    if (
-      name.includes("PriceInsight") ||
-      name.includes("PageCursor") ||
-      typesToNotRename.includes(name)
-    ) {
+    if (name.match(patternToNotRename) || typesToNotRename.includes(name)) {
       return name
     } else {
       return `Analytics${name}`
