@@ -29,8 +29,7 @@ export const executableVortexSchema = ({
     "userStat",
   ]
 
-  // Return the new modified schema
-  return transformSchema(schema, [
+  const transforms = [
     // we don't want pricingContext to be a root query field, it is
     // accessible through artwork
     ...(removeRootFields
@@ -58,5 +57,7 @@ export const executableVortexSchema = ({
         return `analytics${name.charAt(0).toUpperCase() + name.slice(1)}`
       }
     }),
-  ])
+  ]
+
+  return transformSchema(schema, transforms)
 }
