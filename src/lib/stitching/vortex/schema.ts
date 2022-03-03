@@ -42,8 +42,10 @@ export const executableVortexSchema = ({
     }
   })
 
+  const rootFieldsToNotRename = ["marketPriceInsights", "priceInsights"]
+
   const renameRootFieldTransform = new RenameRootFields((_operation, name) => {
-    if (["priceInsights", "marketPriceInsights"].includes(name)) {
+    if (rootFieldsToNotRename.includes(name)) {
       return name
     } else {
       return `analytics${name.charAt(0).toUpperCase() + name.slice(1)}`
