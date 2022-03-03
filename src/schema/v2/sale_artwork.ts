@@ -1,7 +1,7 @@
 import { isExisty } from "lib/helpers"
 import { assign, compact, get } from "lodash"
 import cached from "./fields/cached"
-import date from "./fields/date"
+import { date } from "./fields/date"
 import money, { amount } from "./fields/money"
 import { formatMoney } from "accounting"
 import numeral from "./fields/numeral"
@@ -123,6 +123,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
             saleArtwork.display_opening_bid_dollars,
         }),
       }),
+      endAt: date(({ end_at }) => end_at),
       estimate: {
         type: GraphQLString,
         resolve: ({
@@ -154,7 +155,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "SaleArtworkHighestBid",
           fields: {
-            createdAt: date,
+            createdAt: date(),
             isCancelled: {
               type: GraphQLBoolean,
               resolve: ({ cancelled }) => cancelled,
