@@ -27,16 +27,12 @@ export const executableVortexSchema = ({
     "BigInt",
   ]
 
+  const filterTransform = new FilterRootFields(
+    (_operation, name) => !removeRootFieldList.includes(name)
+  )
+
   const transforms = [
-    // we don't want pricingContext to be a root query field, it is
-    // accessible through artwork
-    ...(removeRootFields
-      ? [
-          new FilterRootFields(
-            (_operation, name) => !removeRootFieldList.includes(name)
-          ),
-        ]
-      : []),
+    ...(removeRootFields ? [filterTransform] : []),
     new RenameTypes((name) => {
       if (
         name.includes("PriceInsight") ||
