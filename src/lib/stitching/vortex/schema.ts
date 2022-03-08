@@ -24,7 +24,6 @@ export const executableVortexSchema = ({
     "BigInt",
     "artistAffinities",
     "artistRecommendations",
-    "artworkRecommendations",
     "partnerStat",
     "pricingContext",
     "userStat",
