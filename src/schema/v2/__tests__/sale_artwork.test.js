@@ -25,6 +25,8 @@ describe("SaleArtwork type", () => {
     reserve_status: "reserve_met",
     currency: "EUR",
     symbol: "€",
+    end_at: "2022-03-08T04:00:00+00:00",
+    ended_at: "2022-03-08T04:00:03+00:00",
   }
 
   const execute = async (
@@ -529,6 +531,26 @@ describe("SaleArtwork type", () => {
           },
         },
       })
+    })
+  })
+
+  it("formats dates correctly", async () => {
+    const query = gql`
+      {
+        node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+          ... on SaleArtwork {
+            endAt(format: "MMM Do, YYYY")
+            endedAt(format: "MMM Do, YYYY")
+          }
+        }
+      }
+    `
+
+    expect(await execute(query)).toEqual({
+      node: {
+        endAt: "Mar 8th, 2022",
+        endedAt: "Mar 8th, 2022",
+      },
     })
   })
 })
