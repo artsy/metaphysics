@@ -21,10 +21,13 @@ export const executableVortexSchema = ({
   })
 
   const rootFieldsToFilter = [
-    "pricingContext",
-    "partnerStat",
-    "userStat",
     "BigInt",
+    "artistAffinities",
+    "artistRecommendations",
+    "artworkRecommendations",
+    "partnerStat",
+    "pricingContext",
+    "userStat",
   ]
 
   const filterTransform = new FilterRootFields(
