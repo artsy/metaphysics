@@ -125,6 +125,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         }),
       }),
       endAt: date(({ end_at }) => end_at),
+      endedAt: date(({ ended_at }) => ended_at),
       estimate: {
         type: GraphQLString,
         resolve: ({
