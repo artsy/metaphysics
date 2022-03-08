@@ -21,7 +21,10 @@ export const executableVortexSchema = ({
   })
 
   const rootFieldsToFilter = [
-    "pricingContext",
+    "BigInt",
+    "artistAffinities",
+    "artistRecommendations",
+    "artworkRecommendations",
     "partnerStat",
     "pricingContext",
     "userStat",
