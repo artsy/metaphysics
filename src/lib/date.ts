@@ -242,6 +242,36 @@ export function formattedOpeningHours(startAt, endAt, timezone) {
   }
 }
 
+export function cascadingFormattedStartDateTime(
+  startAt,
+  endAt,
+  endedAt,
+  timezone
+) {
+  const thisMoment = moment.tz(moment(), timezone)
+  const startMoment = moment.tz(startAt, timezone)
+  const startEndMoment = moment.tz(endAt, timezone)
+  const endEndMoment = moment.tz(endedAt, timezone)
+
+  if (thisMoment.isBefore(startMoment)) {
+    return `${dateRange(startAt, endAt, timezone, "long")}`
+  }
+
+  if (thisMoment.isAfter(endEndMoment)) {
+    return `Closed ${endEndMoment.format("MMM D, YYYY")}`
+  }
+
+  if (thisMoment.isBefore(startEndMoment)) {
+    return `${dateRange(startAt, endAt, timezone, "long")}`
+  }
+
+  if (thisMoment.isAfter(startEndMoment) && thisMoment.isBefore(endEndMoment)) {
+    return "Closing soon"
+  } else {
+    return null
+  }
+}
+
 /**
  * Starts Mar 29 at 4:00pm
  * Ends Apr 3 at 12:30pm
