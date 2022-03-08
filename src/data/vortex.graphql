@@ -2,8 +2,167 @@ type Artist {
   entityId: String!
 }
 
+"""
+Artist Affinity
+"""
+type ArtistAffinity {
+  """
+  Artist ID
+  """
+  artistId: ID!
+
+  """
+  Calculated affinity Score
+  """
+  score: Float!
+}
+
+"""
+The connection type for ArtistAffinity.
+"""
+type ArtistAffinityConnection {
+  """
+  A list of edges.
+  """
+  edges: [ArtistAffinityEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [ArtistAffinity]
+  pageCursors: PageCursors
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+  totalPages: Int
+}
+
+"""
+An edge in a connection.
+"""
+type ArtistAffinityEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: ArtistAffinity
+}
+
+"""
+Artist Recommendation
+"""
+type ArtistRecommendation {
+  """
+  Artist ID
+  """
+  artistId: ID!
+
+  """
+  Calculated score
+  """
+  score: Float!
+}
+
+"""
+The connection type for ArtistRecommendation.
+"""
+type ArtistRecommendationConnection {
+  """
+  A list of edges.
+  """
+  edges: [ArtistRecommendationEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [ArtistRecommendation]
+  pageCursors: PageCursors
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+  totalPages: Int
+}
+
+"""
+An edge in a connection.
+"""
+type ArtistRecommendationEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: ArtistRecommendation
+}
+
 type Artwork {
   entityId: String!
+}
+
+"""
+Artwork Recommendation
+"""
+type ArtworkRecommendation {
+  """
+  Artwork ID
+  """
+  artworkId: ID!
+
+  """
+  Calculated score
+  """
+  score: Float!
+}
+
+"""
+The connection type for ArtworkRecommendation.
+"""
+type ArtworkRecommendationConnection {
+  """
+  A list of edges.
+  """
+  edges: [ArtworkRecommendationEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [ArtworkRecommendation]
+  pageCursors: PageCursors
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+  totalPages: Int
+}
+
+"""
+An edge in a connection.
+"""
+type ArtworkRecommendationEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: ArtworkRecommendation
 }
 
 """
@@ -23,11 +182,9 @@ exceed the size of a 32-bit integer, it's encoded as a string.
 scalar BigInt
 
 """
-An ISO 8601 datetime -- second one is because of moving price insights
-from Diffusion to Vortex.
+An ISO 8601 datetime
 """
 scalar DateTime
-scalar ISO8601DateTime
 
 """
 Visitor countries, device, referals and session page
@@ -119,11 +276,7 @@ enum GroupedStatsObjectTypeEnum {
 """
 A grouped stat item: country or device etc.
 """
-union GroupedStatsUnion =
-    VisitorsByCountry
-  | VisitorsByDevice
-  | VisitorsByLandingPage
-  | VisitorsByReferral
+union GroupedStatsUnion = VisitorsByCountry | VisitorsByDevice | VisitorsByLandingPage | VisitorsByReferral
 
 """
 A histogram bin
@@ -133,6 +286,11 @@ type HistogramBin {
   minPriceCents: Int!
   numArtworks: Int!
 }
+
+"""
+An ISO 8601-encoded datetime
+"""
+scalar ISO8601DateTime
 
 """
 Market Price Insights
@@ -318,10 +476,7 @@ type PartnerStats {
   """
   Time series data on number of artworks published
   """
-  artworksPublished(period: QueryPeriodEnum!): ArtworksPublishedStats
-    @deprecated(
-      reason: "Use artworkPublished for refactored time series bucket code"
-    )
+  artworksPublished(period: QueryPeriodEnum!): ArtworksPublishedStats @deprecated(reason: "Use artworkPublished for refactored time series bucket code")
 
   """
   Audience stats
@@ -369,8 +524,7 @@ type PartnerStats {
   """
   Different types of partner pageviews
   """
-  pageviews(period: QueryPeriodEnum!): PageviewStats
-    @deprecated(reason: "Use pageview for refactored time series bucket code")
+  pageviews(period: QueryPeriodEnum!): PageviewStats @deprecated(reason: "Use pageview for refactored time series bucket code")
   partnerId: String!
 
   """
@@ -428,14 +582,12 @@ type PartnerStats {
     Returns the last _n_ elements from the list.
     """
     last: Int
-  ): RankedStatsConnection
-    @deprecated(reason: "Use rankedStats(objectType: ) instead")
+  ): RankedStatsConnection @deprecated(reason: "Use rankedStats(objectType: ) instead")
 
   """
   Number of unique visitors
   """
-  uniqueVisitors(period: QueryPeriodEnum!): Int
-    @deprecated(reason: "Use audience() { uniqueVisitors } instead")
+  uniqueVisitors(period: QueryPeriodEnum!): Int @deprecated(reason: "Use audience() { uniqueVisitors } instead")
 }
 
 """
@@ -449,9 +601,7 @@ type PartnerStatsArtworksPublished {
   """
   Partner artworks published count time series
   """
-  timeSeries(
-    cumulative: Boolean = false
-  ): [PartnerStatsArtworksPublishedTimeSeries!]!
+  timeSeries(cumulative: Boolean = false): [PartnerStatsArtworksPublishedTimeSeries!]!
   totalCount: Int!
 }
 
@@ -499,6 +649,14 @@ type PartnerTimeSeriesStats {
   count: Int
   endTime: DateTime
   startTime: DateTime
+}
+
+"""
+Price Context Filter Type
+"""
+type PriceContextFilterType {
+  category: PricingContextCategoryEnum
+  dimension: PricingContextDimensionEnum
 }
 
 """
@@ -802,14 +960,6 @@ enum PriceInsightSort {
 }
 
 """
-Price Context Filter Type
-"""
-type PriceContextFilterType {
-  category: PricingContextCategoryEnum
-  dimension: PricingContextDimensionEnum
-}
-
-"""
 Pricing Context Histogram
 """
 type PricingContext {
@@ -933,6 +1083,83 @@ enum PricingContextDimensionEnum {
 
 type Query {
   """
+  Get all artists with an affinity score for the current user (sorted by affinity score).
+  """
+  artistAffinities(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    minScore: Float
+  ): ArtistAffinityConnection
+
+  """
+  Get all recommended artists for the current user.
+  """
+  artistRecommendations(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+  ): ArtistRecommendationConnection
+
+  """
+  Get all recommended artworks for the current user.
+  """
+  artworkRecommendations(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    userId: String
+  ): ArtworkRecommendationConnection
+
+  """
   Last updated timestamp
   """
   lastUpdatedAt: DateTime
@@ -981,11 +1208,7 @@ type Query {
   """
   Pricing Context Histograms
   """
-  pricingContext(
-    artistId: String!
-    category: PricingContextCategoryEnum!
-    sizeScore: Int!
-  ): PricingContext
+  pricingContext(artistId: String!, category: PricingContextCategoryEnum!, sizeScore: Int!): PricingContext
 
   """
   Query UserStats
