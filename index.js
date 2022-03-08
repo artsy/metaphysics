@@ -78,11 +78,6 @@ xapp.init(xappConfig, (_unused, token) => {
 }) // eslint-disable-line
 
 function bootApp() {
-  if (PRODUCTION_ENV) {
-    app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)
-    app.set("trust proxy", 1)
-  }
-
   if (IP_DENYLIST) {
     app.use(
       ipfilter(IP_DENYLIST.split(","), {
