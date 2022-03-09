@@ -15,7 +15,7 @@ import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
 import { auctionResultConnection, AuctionResultSorts } from "../auction_result"
 
-const MAX_FOLLOWED_ARTISTS = 100
+const MAX_FOLLOWED_ARTISTS_PER_STEP = 100
 const MAX_STEPS = 2
 
 const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
@@ -71,7 +71,7 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
       // Since we cannot query more than 100  artists at a time, we have to do this in several steps.
       for (let step = 0; step < MAX_STEPS; step++) {
         const gravityArgs = {
-          size: MAX_FOLLOWED_ARTISTS,
+          size: MAX_FOLLOWED_ARTISTS_PER_STEP,
           offset: step,
           total_count: false,
           ...params,
@@ -80,7 +80,7 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
 
         followedArtists = [...followedArtists, ...body]
 
-        if (body.followedArtists < MAX_FOLLOWED_ARTISTS) {
+        if (body.followedArtists < MAX_FOLLOWED_ARTISTS_PER_STEP) {
           break
         }
       }
