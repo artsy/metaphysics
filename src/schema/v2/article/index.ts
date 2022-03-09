@@ -218,6 +218,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
             tags: tags ?? [],
             ...(args.inVertical
               ? {
+                  tags: [],
                   has_published_media: true,
                   in_editorial_feed: true,
                   vertical: vertical?.id,
