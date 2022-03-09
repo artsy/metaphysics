@@ -24,9 +24,8 @@ export const createVortexLink = () => {
       const headers = {
         ...(graphqlContext && requestIDHeaders(graphqlContext.requestIDs)),
       }
-      // If a token loader exists for Vortex (i.e. this is an authenticated request), use that token to make
-      // user-authenticated requests to Vortex.
-      if (tokenLoader) {
+
+      if (tokenLoader && !graphqlContext.appToken) {
         return tokenLoader().then(({ token }) => {
           return {
             headers: Object.assign(headers, {
@@ -35,10 +34,14 @@ export const createVortexLink = () => {
           }
         })
       }
+
+      const token = graphqlContext.appToken || VORTEX_TOKEN
+      const bearer = `Bearer ${token}`
+
       return {
         headers: {
           ...headers,
-          Authorization: `Bearer ${VORTEX_TOKEN}`,
+          Authorization: bearer,
         },
       }
     }
