@@ -1,7 +1,6 @@
 import "moment-timezone"
 import xapp from "@artsy/xapp"
 import compression from "compression"
-import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
 import { info, error } from "./src/lib/loggers"
 import config from "config"
