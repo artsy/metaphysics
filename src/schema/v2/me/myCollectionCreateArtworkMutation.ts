@@ -1,15 +1,17 @@
 import {
-  GraphQLString,
-  GraphQLList,
-  GraphQLInt,
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
-import { GraphQLNonNull } from "graphql"
-import { MyCollectionArtworkMutationType } from "./myCollection"
 import { formatGravityError } from "lib/gravityErrorHandler"
+import { ResolverContext } from "types/graphql"
+import { NodeInterface } from "../object_identification"
+import { MyCollectionArtworkMutationType } from "./myCollection"
 
 const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
@@ -49,6 +51,17 @@ export const ArtworkAttributionClassEnum = new GraphQLEnumType({
   },
 })
 
+export const CustomArtistType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ArtworkVersion",
+  interfaces: [NodeInterface],
+  fields: () => ({
+    name: {
+      type: GraphQLString,
+      description: "Artist name",
+    },
+  }),
+})
+
 export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   any,
   any,
@@ -59,6 +72,10 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   inputFields: {
     artistIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+      defaultValue: [],
+    },
+    customArtistName: {
+      type: GraphQLString,
     },
     title: {
       type: new GraphQLNonNull(GraphQLString),

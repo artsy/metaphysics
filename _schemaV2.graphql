@@ -9832,13 +9832,14 @@ type MyCollectionConnection {
 }
 
 input MyCollectionCreateArtworkInput {
-  artistIds: [String]!
+  artistIds: [String]! = []
   artworkLocation: String
   attributionClass: ArtworkAttributionClassType
   category: String
   clientMutationId: String
   costCurrencyCode: String
   costMinor: Int
+  customArtistName: String
   date: String
   depth: String
   editionNumber: String

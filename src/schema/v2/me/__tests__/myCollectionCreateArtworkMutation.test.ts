@@ -1,6 +1,6 @@
-import { computeImageSources } from "../myCollectionCreateArtworkMutation"
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { computeImageSources } from "../myCollectionCreateArtworkMutation"
 
 const newArtwork = { id: "some-artwork-id" }
 const createArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
@@ -32,6 +32,7 @@ const computeMutationInput = ({
       myCollectionCreateArtwork(
         input: {
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
+          customArtistName: "The Artist"
           category: "some strange category"
           costCurrencyCode: "USD"
           costMinor: 200
@@ -60,6 +61,7 @@ const computeMutationInput = ({
               pricePaid {
                 display
               }
+              customArtistName
             }
             artworkEdge {
               node {
@@ -133,6 +135,7 @@ describe("myCollectionCreateArtworkMutation", () => {
             display: "$100",
           },
           artworkLocation: "Berlin",
+          customArtistName: "The Artist",
         },
         artworkEdge: {
           node: {
