@@ -57,6 +57,7 @@ describe("ArtistTargetSupply", () => {
       const response = await runQuery(query, context)
       expect(response.artist.targetSupply.isP1).toEqual(false)
     })
+
     it("returns false if target_supply_priority is null", async () => {
       targetSupplyPriority = null
       const response = await runQuery(query, context)
