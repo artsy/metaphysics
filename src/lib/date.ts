@@ -249,27 +249,14 @@ export function cascadingFormattedStartDateTime(
   timezone
 ) {
   const thisMoment = moment.tz(moment(), timezone)
-  const startMoment = moment.tz(startAt, timezone)
-  const startEndMoment = moment.tz(endAt, timezone)
-  const endEndMoment = moment.tz(endedAt, timezone)
+  const lotsClosingMoment = moment.tz(endAt, timezone)
+  const saleEndMoment = moment.tz(endedAt, timezone) // only used for formatting
 
-  if (thisMoment.isBefore(startMoment)) {
-    return `${dateRange(startAt, endAt, timezone, "long")}`
-  }
+  if (!!endedAt) return `Closed ${saleEndMoment.format("MMM D, YYYY")}`
 
-  if (thisMoment.isAfter(endEndMoment)) {
-    return `Closed ${endEndMoment.format("MMM D, YYYY")}`
-  }
+  if (thisMoment.isAfter(lotsClosingMoment)) return "Closing soon"
 
-  if (thisMoment.isBefore(startEndMoment)) {
-    return `${dateRange(startAt, endAt, timezone, "long")}`
-  }
-
-  if (thisMoment.isAfter(startEndMoment) && thisMoment.isBefore(endEndMoment)) {
-    return "Closing soon"
-  } else {
-    return null
-  }
+  return dateRange(startAt, endAt, timezone, "long")
 }
 
 /**

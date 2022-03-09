@@ -758,6 +758,9 @@ describe("Sale type", () => {
   })
 
   describe("formattedStartDateTime", () => {
+    beforeEach(() => {
+      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
+    })
     const query = `
       {
         sale(id: "foo-foo") {
@@ -835,6 +838,44 @@ describe("Sale type", () => {
         ended_at: null,
       })
       expect(response.sale.formattedStartDateTime).toContain("Ends")
+    })
+
+    it("returns date range when cascading end time interval is true and the sale has not opened", async () => {
+      const response = await execute(query, {
+        start_at: "2022-03-09 09+07:00",
+        end_at: "2022-03-12 09+07:00",
+        cascading_end_time_interval: 120,
+      })
+
+      expect(response.sale.formattedStartDateTime).toEqual("March 9 – 12, 2022")
+    })
+
+    it("returns date range when cascading interval is true while the sale is running", async () => {
+      const response = await execute(query, {
+        start_at: "2022-03-07 09+07:00",
+        end_at: "2022-03-12 09+07:00",
+        cascading_end_time_interval: 120,
+      })
+      expect(response.sale.formattedStartDateTime).toEqual("March 7 – 12, 2022")
+    })
+
+    it("returns the words closing soon when cascading interval is true while the sale is closing soon", async () => {
+      const response = await execute(query, {
+        start_at: moment().subtract(2, "hours"),
+        end_at: moment().subtract(1, "hours"),
+        cascading_end_time_interval: 120,
+      })
+      expect(response.sale.formattedStartDateTime).toEqual("Closing soon")
+    })
+
+    it("returns date and word closed when cascading interval is true while the sale is closing soon", async () => {
+      const response = await execute(query, {
+        start_at: "2022-03-07 09+07:00",
+        end_at: "2022-03-08 09+07:00",
+        ended_at: "2022-03-08 10+07:00",
+        cascading_end_time_interval: 120,
+      })
+      expect(response.sale.formattedStartDateTime).toEqual("Closed Mar 8, 2022")
     })
   })
 
