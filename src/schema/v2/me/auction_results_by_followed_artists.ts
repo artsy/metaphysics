@@ -1,21 +1,21 @@
 import {
-  GraphQLFieldConfig,
   GraphQLBoolean,
-  GraphQLString,
-  GraphQLList,
+  GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLList,
+  GraphQLString,
 } from "graphql"
-import { pageable } from "relay-cursor-paging"
-import { params } from "schema/v1/home/add_generic_genes"
-import { ResolverContext } from "types/graphql"
-import { auctionResultConnection, AuctionResultSorts } from "../auction_result"
+import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { compact, merge } from "lodash"
+import { pageable } from "relay-cursor-paging"
+import { params } from "schema/v1/home/add_generic_genes"
 import { createPageCursors } from "schema/v2/fields/pagination"
-import { connectionFromArraySlice } from "graphql-relay"
+import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
+import { auctionResultConnection, AuctionResultSorts } from "../auction_result"
 
-const MAX_FOLLOWED_ARTISTS = 50
+const MAX_FOLLOWED_ARTISTS = 100
 
 const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
   void,
