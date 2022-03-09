@@ -27,6 +27,7 @@ import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 import { NodeInterface } from "schema/v2/object_identification"
 import { CausalityLotState } from "./lot"
+import { DEFAULT_TZ, formattedStartDateTime } from "lib/date"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -144,6 +145,23 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLInt,
         description: "Singular estimate field, if specified",
         resolve: ({ estimate_cents }) => estimate_cents,
+      },
+      formattedStartDateTime: {
+        type: GraphQLString,
+        description:
+          "A formatted description of when the lot starts or ends or if it has ended",
+        resolve: (
+          { sale, ended_at, end_at },
+          _options,
+          { defaultTimezone }
+        ) => {
+          return formattedStartDateTime(
+            sale.start_at,
+            ended_at || end_at,
+            null,
+            defaultTimezone || DEFAULT_TZ
+          )
+        },
       },
       highEstimate: money({
         name: "SaleArtworkHighEstimate",

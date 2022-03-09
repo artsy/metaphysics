@@ -45,8 +45,6 @@ import { markdown } from "../fields/markdown"
 
 const { PREDICTION_ENDPOINT } = config
 
-const DEFAULT_TZ = "UTC"
-
 const BidIncrement = new GraphQLObjectType<any, ResolverContext>({
   name: "BidIncrement",
   fields: {
@@ -188,8 +186,6 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       displayTimelyAt: {
         type: GraphQLString,
         resolve: (sale, _options, { meBiddersLoader, defaultTimezone }) => {
-          const DEFAULT_TZ = "UTC"
-
           return displayTimelyAt({
             sale,
             meBiddersLoader,

@@ -1,5 +1,7 @@
 import moment from "moment-timezone"
 
+export const DEFAULT_TZ = "UTC"
+
 /**
  * Returns true if dates are on same day, timezone must be the same for both timestamps
  */
