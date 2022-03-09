@@ -16,6 +16,7 @@ import ArtworkSizes from "../artwork/artworkSizes"
 import { auctionResultConnection, AuctionResultSorts } from "../auction_result"
 
 const MAX_FOLLOWED_ARTISTS = 100
+const MAX_STEPS = 2
 
 const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
   void,
@@ -65,13 +66,24 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
     try {
       if (!followedArtistsLoader || !auctionLotsLoader) return null
 
-      const gravityArgs = {
-        size: MAX_FOLLOWED_ARTISTS,
-        offset: 0,
-        total_count: false,
-        ...params,
+      let followedArtists: any[] = []
+
+      // Since we cannot query more than 100  artists at a time, we have to do this in several steps.
+      for (let step = 0; step < MAX_STEPS; step++) {
+        const gravityArgs = {
+          size: MAX_FOLLOWED_ARTISTS,
+          offset: step,
+          total_count: false,
+          ...params,
+        }
+        const { body } = await followedArtistsLoader(gravityArgs)
+
+        followedArtists = [...followedArtists, ...body]
+
+        if (body.followedArtists < MAX_FOLLOWED_ARTISTS) {
+          break
+        }
       }
-      const { body: followedArtists } = await followedArtistsLoader(gravityArgs)
 
       const followedArtistIds = compact(
         followedArtists.map((artist) => artist?.artist?._id)
