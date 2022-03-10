@@ -24,6 +24,47 @@ describe("ArtistTargetSupply", () => {
       expect(response.artist.targetSupply.isTargetSupply).toEqual(true)
     })
   })
+
+  describe("isP1", () => {
+    let targetSupplyPriority: number | null
+
+    const query = `
+      {
+        artist(id:"andy-warhol") {
+          targetSupply {
+            isP1
+          }
+        }
+      }
+    `
+    const context = {
+      artistLoader: () => {
+        return Promise.resolve({
+          id: "andy-warhol",
+          target_supply_priority: targetSupplyPriority,
+        })
+      },
+    }
+
+    it("returns true if target_supply_priority is 1", async () => {
+      targetSupplyPriority = 1
+      const response = await runQuery(query, context)
+      expect(response.artist.targetSupply.isP1).toEqual(true)
+    })
+
+    it("returns false if target_supply_priority is 2", async () => {
+      targetSupplyPriority = 2
+      const response = await runQuery(query, context)
+      expect(response.artist.targetSupply.isP1).toEqual(false)
+    })
+
+    it("returns false if target_supply_priority is null", async () => {
+      targetSupplyPriority = null
+      const response = await runQuery(query, context)
+      expect(response.artist.targetSupply.isP1).toEqual(false)
+    })
+  })
+
   describe("isInMicrofunnel", () => {
     it("returns false if artist not in microfunnel", async () => {
       const query = `
