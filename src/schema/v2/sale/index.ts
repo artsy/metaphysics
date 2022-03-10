@@ -9,7 +9,10 @@ import cached from "schema/v2/fields/cached"
 import date from "schema/v2/fields/date"
 import moment from "moment"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
-import { formattedStartDateTime } from "lib/date"
+import {
+  formattedStartDateTime,
+  cascadingFormattedStartDateTime,
+} from "lib/date"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import {
   connectionFromArraySlice,
@@ -207,16 +210,31 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "A formatted description of when the auction starts or ends or if it has ended",
         resolve: (
-          { start_at, end_at, ended_at, live_start_at },
+          {
+            start_at,
+            end_at,
+            ended_at,
+            live_start_at,
+            cascading_end_time_interval,
+          },
           _options,
           { defaultTimezone }
         ) => {
-          return formattedStartDateTime(
-            start_at,
-            ended_at || end_at,
-            live_start_at,
-            defaultTimezone || DEFAULT_TZ
-          )
+          if (cascading_end_time_interval) {
+            return cascadingFormattedStartDateTime(
+              start_at,
+              end_at,
+              ended_at,
+              defaultTimezone || DEFAULT_TZ
+            )
+          } else {
+            return formattedStartDateTime(
+              start_at,
+              ended_at || end_at,
+              live_start_at,
+              defaultTimezone || DEFAULT_TZ
+            )
+          }
         },
       },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },

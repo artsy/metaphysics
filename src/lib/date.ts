@@ -242,6 +242,23 @@ export function formattedOpeningHours(startAt, endAt, timezone) {
   }
 }
 
+export function cascadingFormattedStartDateTime(
+  startAt,
+  endAt,
+  endedAt,
+  timezone
+) {
+  const thisMoment = moment.tz(moment(), timezone)
+  const lotsClosingMoment = moment.tz(endAt, timezone)
+  const saleEndMoment = moment.tz(endedAt, timezone) // only used for formatting
+
+  if (!!endedAt) return `Closed ${saleEndMoment.format("MMM D, YYYY")}`
+
+  if (thisMoment.isAfter(lotsClosingMoment)) return "Closing soon"
+
+  return dateRange(startAt, endAt, timezone, "long")
+}
+
 /**
  * Starts Mar 29 at 4:00pm
  * Ends Apr 3 at 12:30pm
