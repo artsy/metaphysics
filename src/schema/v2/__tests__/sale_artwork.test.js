@@ -25,8 +25,6 @@ describe("SaleArtwork type", () => {
     reserve_status: "reserve_met",
     currency: "EUR",
     symbol: "€",
-    end_at: "2022-03-08T04:00:00+00:00",
-    ended_at: "2022-03-08T04:00:03+00:00",
   }
 
   const execute = async (
@@ -534,7 +532,99 @@ describe("SaleArtwork type", () => {
     })
   })
 
+  describe("formattedStartDateTime", () => {
+    const query = gql`
+      {
+        node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+          ... on SaleArtwork {
+            formattedStartDateTime
+          }
+        }
+      }
+    `
+
+    const context = {
+      saleLoader: () => {
+        return Promise.resolve({
+          start_at: "2019-02-17T11:00:00+00:00",
+          cascading_end_time_interval: 120,
+        })
+      },
+    }
+
+    it("returns 'Starts date/time' when the sale's start time is in the future", async () => {
+      const context = {
+        saleLoader: () => {
+          return Promise.resolve({
+            start_at: "2029-02-17T11:00:00+00:00",
+            cascading_end_time_interval: 120,
+          })
+        },
+      }
+      saleArtwork.ended_at = null
+      saleArtwork.end_at = "2029-02-19T11:00:00+00:00"
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedStartDateTime: "Starts Feb 17, 2029 at 11:00am UTC",
+        },
+      })
+    })
+
+    it("returns 'Ends date/time' when the sale has started and the lot's close time is in the future", async () => {
+      saleArtwork.ended_at = null
+      saleArtwork.end_at = "2029-02-17T11:00:00+00:00"
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedStartDateTime: "Ends Feb 17, 2029 at 11:00am UTC",
+        },
+      })
+    })
+
+    it("returns 'Ended date/time' when the sale has started and the lot's end_at time has passed", async () => {
+      saleArtwork.ended_at = null
+      saleArtwork.end_at = "2020-02-17T11:00:00+00:00"
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedStartDateTime: "Ended Feb 17, 2020",
+        },
+      })
+    })
+
+    it("returns 'Ended date/time' when the sale has started and the lot's ended_at time has passed", async () => {
+      saleArtwork.ended_at = "2019-02-17T11:00:00+00:00"
+      saleArtwork.end_at = "2020-02-17T11:00:00+00:00"
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedStartDateTime: "Ended Feb 17, 2019",
+        },
+      })
+    })
+
+    it("returns null if cascading_end_time_interval is not present on the sale", async () => {
+      const context = {
+        saleLoader: () => {
+          return Promise.resolve({
+            start_at: "2020-02-17T11:00:00+00:00",
+          })
+        },
+      }
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedStartDateTime: null,
+        },
+      })
+    })
+  })
+
   it("formats dates correctly", async () => {
+    saleArtwork.end_at = "2022-03-08T04:00:00+00:00"
+    saleArtwork.ended_at = "2022-03-08T04:00:03+00:00"
+
     const query = gql`
       {
         node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
