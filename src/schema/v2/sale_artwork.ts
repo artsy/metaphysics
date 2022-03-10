@@ -164,7 +164,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
             return saleLoader(saleArtwork.sale_id).then((sale) => {
               return formattedStartDateTime(
                 sale.start_at,
-                saleArtwork.endedAt || saleArtwork.endAt || sale.end_at,
+                saleArtwork.ended_at || saleArtwork.end_at || sale.end_at,
                 null,
                 defaultTimezone || DEFAULT_TZ
               )
