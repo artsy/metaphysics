@@ -744,7 +744,9 @@ describe("Sale type", () => {
               is_auction: true,
               ...(input as any),
             },
-            { meBiddersLoader: () => Promise.resolve(bidders) }
+            {
+              meBiddersLoader: () => Promise.resolve(bidders),
+            }
           )
         })
       )
