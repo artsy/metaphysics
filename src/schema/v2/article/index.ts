@@ -114,6 +114,12 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
     layout: {
       type: new GraphQLNonNull(ArticleLayoutEnum),
     },
+    leadParagraph: {
+      type: GraphQLString,
+      description:
+        "Classic layout articles may have a lead paragraph. Returns HTML.",
+      resolve: ({ lead_paragraph }) => lead_paragraph,
+    },
     keywords: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLString))
