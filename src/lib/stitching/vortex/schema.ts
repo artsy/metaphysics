@@ -20,7 +20,7 @@ export const executableVortexSchema = ({
     link: vortexLink,
   })
 
-  const rootFieldsToFilter = [
+  const removeRootFieldList = [
     "BigInt",
     "artistAffinities",
     "artistRecommendations",
@@ -29,36 +29,34 @@ export const executableVortexSchema = ({
     "userStat",
   ]
 
-  const filterTransform = new FilterRootFields(
-    (_operation, name) => !rootFieldsToFilter.includes(name)
-  )
-
-  const typesToNotRename = ["BigInt", "ISO8601DateTime"]
-  const patternToNotRename = new RegExp(/(PageCursor|PriceInsight)/)
-
-  const renameTypesTransform = new RenameTypes((name) => {
-    if (name.match(patternToNotRename) || typesToNotRename.includes(name)) {
-      return name
-    } else {
-      return `Analytics${name}`
-    }
-  })
-
-  const rootFieldsToNotRename = ["marketPriceInsights", "priceInsights"]
-
-  const renameRootFieldTransform = new RenameRootFields((_operation, name) => {
-    if (rootFieldsToNotRename.includes(name)) {
-      return name
-    } else {
-      return `analytics${name.charAt(0).toUpperCase() + name.slice(1)}`
-    }
-  })
-
-  const transforms = [
-    ...(removeRootFields ? [filterTransform] : []),
-    renameTypesTransform,
-    renameRootFieldTransform,
-  ]
-
-  return transformSchema(schema, transforms)
+  // Return the new modified schema
+  return transformSchema(schema, [
+    // we don't want pricingContext to be a root query field, it is
+    // accessible through artwork
+    ...(removeRootFields
+      ? [
+          new FilterRootFields(
+            (_operation, name) => !removeRootFieldList.includes(name)
+          ),
+        ]
+      : []),
+    new RenameTypes((name) => {
+      if (
+        name.includes("PriceInsight") ||
+        name.includes("PageCursor") ||
+        ["BigInt", "ISO8601DateTime"].includes(name)
+      ) {
+        return name
+      } else {
+        return `Analytics${name}`
+      }
+    }),
+    new RenameRootFields((_operation, name) => {
+      if (["priceInsights", "marketPriceInsights"].includes(name)) {
+        return name
+      } else {
+        return `analytics${name.charAt(0).toUpperCase() + name.slice(1)}`
+      }
+    }),
+  ])
 }
