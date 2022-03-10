@@ -597,26 +597,6 @@ describe("SaleArtwork type", () => {
         },
       })
     })
-
-    it("returns 'Ended date/time' when the sale has started and the sale's end_at time has passed", async () => {
-      saleArtwork.ended_at = null
-      saleArtwork.end_at = null
-
-      const context = {
-        saleLoader: () => {
-          return Promise.resolve({
-            start_at: "2019-02-17T11:00:00+00:00",
-            end_at: "2020-02-17T11:00:00+00:00",
-          })
-        },
-      }
-
-      expect(await execute(query, saleArtwork, context)).toEqual({
-        node: {
-          formattedStartDateTime: "Ended Feb 17, 2020",
-        },
-      })
-    })
   })
 
   it("formats dates correctly", async () => {
