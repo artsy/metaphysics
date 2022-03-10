@@ -545,14 +545,20 @@ describe("SaleArtwork type", () => {
 
     const context = {
       saleLoader: () => {
-        return Promise.resolve({ start_at: "2019-02-17T11:00:00+00:00" })
+        return Promise.resolve({
+          start_at: "2019-02-17T11:00:00+00:00",
+          cascading_end_time_interval: 120,
+        })
       },
     }
 
     it("returns 'Starts date/time' when the sale's start time is in the future", async () => {
       const context = {
         saleLoader: () => {
-          return Promise.resolve({ start_at: "2029-02-17T11:00:00+00:00" })
+          return Promise.resolve({
+            start_at: "2029-02-17T11:00:00+00:00",
+            cascading_end_time_interval: 120,
+          })
         },
       }
       saleArtwork.ended_at = null
@@ -594,6 +600,22 @@ describe("SaleArtwork type", () => {
       expect(await execute(query, saleArtwork, context)).toEqual({
         node: {
           formattedStartDateTime: "Ended Feb 17, 2019",
+        },
+      })
+    })
+
+    it("returns null if cascading_end_time_interval is not present on the sale", async () => {
+      const context = {
+        saleLoader: () => {
+          return Promise.resolve({
+            start_at: "2020-02-17T11:00:00+00:00",
+          })
+        },
+      }
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedStartDateTime: null,
         },
       })
     })
