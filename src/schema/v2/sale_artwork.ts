@@ -27,7 +27,7 @@ import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 import { NodeInterface } from "schema/v2/object_identification"
 import { CausalityLotState } from "./lot"
-import { DEFAULT_TZ, formattedStartDateTime } from "lib/date"
+import { formattedStartDateTime } from "lib/date"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -150,27 +150,15 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "A formatted description of when the lot starts or ends or if it has ended",
-        resolve: (saleArtwork, _options, { defaultTimezone, saleLoader }) => {
-          if (!!saleArtwork.sale) {
+        resolve: (saleArtwork, _options, { defaultTimezone, saleLoader }) =>
+          saleLoader(saleArtwork.sale_id).then((sale) => {
             return formattedStartDateTime(
-              saleArtwork.sale.start_at,
-              saleArtwork.endedAt ||
-                saleArtwork.endAt ||
-                saleArtwork.sale.end_at,
+              sale.start_at,
+              saleArtwork.ended_at || saleArtwork.end_at || sale.end_at,
               null,
-              defaultTimezone || DEFAULT_TZ
+              defaultTimezone
             )
-          } else {
-            return saleLoader(saleArtwork.sale_id).then((sale) => {
-              return formattedStartDateTime(
-                sale.start_at,
-                saleArtwork.ended_at || saleArtwork.end_at || sale.end_at,
-                null,
-                defaultTimezone || DEFAULT_TZ
-              )
-            })
-          }
-        },
+          }),
       },
       highEstimate: money({
         name: "SaleArtworkHighEstimate",

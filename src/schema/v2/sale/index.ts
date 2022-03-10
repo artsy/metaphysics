@@ -189,7 +189,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           return displayTimelyAt({
             sale,
             meBiddersLoader,
-            timeZone: defaultTimezone || DEFAULT_TZ,
+            timeZone: defaultTimezone,
           })
         },
       },
@@ -221,14 +221,14 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               start_at,
               end_at,
               ended_at,
-              defaultTimezone || DEFAULT_TZ
+              defaultTimezone
             )
           } else {
             return formattedStartDateTime(
               start_at,
               ended_at || end_at,
               live_start_at,
-              defaultTimezone || DEFAULT_TZ
+              defaultTimezone
             )
           }
         },
