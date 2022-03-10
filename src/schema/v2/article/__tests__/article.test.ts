@@ -61,4 +61,28 @@ describe("Article", () => {
       authors: [],
     })
   })
+
+  it("first fallsback to the author when there are no author_ids", async () => {
+    const query = gql`
+      {
+        article(id: "example") {
+          byline
+          authors {
+            name
+          }
+        }
+      }
+    `
+
+    const articleLoader = jest.fn(() =>
+      Promise.resolve({ author_ids: [], author: { name: "John Smith" } })
+    )
+
+    const { article } = await runQuery(query, { articleLoader })
+
+    expect(article).toEqual({
+      byline: "John Smith",
+      authors: [],
+    })
+  })
 })

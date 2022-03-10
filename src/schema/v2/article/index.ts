@@ -52,8 +52,11 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description:
         'The byline for the article. Defaults to "Artsy Editors" if no authors are present.',
-      resolve: async ({ author_ids }, _args, { authorsLoader }) => {
-        if (!author_ids || author_ids.length === 0) return "Artsy Editors"
+      resolve: async ({ author_ids, author }, _args, { authorsLoader }) => {
+        if (!author_ids || author_ids.length === 0) {
+          // Attempt to fallback to the `author`. Classic layout articles, for instance, use this.
+          return author?.name || "Artsy Editors"
+        }
 
         const { results } = await authorsLoader({ ids: author_ids })
 
