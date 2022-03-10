@@ -12,6 +12,7 @@ import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import {
   formattedStartDateTime,
   cascadingFormattedStartDateTime,
+  DEFAULT_TZ,
 } from "lib/date"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import {
@@ -189,7 +190,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           return displayTimelyAt({
             sale,
             meBiddersLoader,
-            timeZone: defaultTimezone,
+            timeZone: defaultTimezone || DEFAULT_TZ,
           })
         },
       },

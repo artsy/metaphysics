@@ -746,7 +746,6 @@ describe("Sale type", () => {
             },
             {
               meBiddersLoader: () => Promise.resolve(bidders),
-              defaultTimezone: "UTC",
             }
           )
         })

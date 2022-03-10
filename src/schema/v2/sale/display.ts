@@ -1,6 +1,5 @@
 import moment from "moment-timezone"
 import { defineCustomLocale } from "lib/helpers"
-import { DEFAULT_TZ } from "lib/date"
 
 const LocaleEnAuctionRelative = "en-auction-relative"
 defineCustomLocale(LocaleEnAuctionRelative, {
@@ -58,7 +57,7 @@ export async function displayTimelyAt({ sale, meBiddersLoader, timeZone }) {
       const diff = moment().diff(moment(registration_ends_at), "hours")
       const format = diff > -24 ? "ha" : "MMM D, ha"
       const label = `register by\n${moment(registration_ends_at)
-        .tz(timeZone || DEFAULT_TZ)
+        .tz(timeZone)
         .locale(LocaleEnAuctionRelative)
         .format(format)}`
       return label
