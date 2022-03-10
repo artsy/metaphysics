@@ -12,6 +12,7 @@ import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import {
   formattedStartDateTime,
   cascadingFormattedStartDateTime,
+  DEFAULT_TZ,
 } from "lib/date"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import {
@@ -44,8 +45,6 @@ import { allViaLoader } from "lib/all"
 import { markdown } from "../fields/markdown"
 
 const { PREDICTION_ENDPOINT } = config
-
-const DEFAULT_TZ = "UTC"
 
 const BidIncrement = new GraphQLObjectType<any, ResolverContext>({
   name: "BidIncrement",
@@ -188,8 +187,6 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       displayTimelyAt: {
         type: GraphQLString,
         resolve: (sale, _options, { meBiddersLoader, defaultTimezone }) => {
-          const DEFAULT_TZ = "UTC"
-
           return displayTimelyAt({
             sale,
             meBiddersLoader,
@@ -225,14 +222,14 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               start_at,
               end_at,
               ended_at,
-              defaultTimezone || DEFAULT_TZ
+              defaultTimezone
             )
           } else {
             return formattedStartDateTime(
               start_at,
               ended_at || end_at,
               live_start_at,
-              defaultTimezone || DEFAULT_TZ
+              defaultTimezone
             )
           }
         },

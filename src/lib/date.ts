@@ -1,5 +1,7 @@
 import moment from "moment-timezone"
 
+export const DEFAULT_TZ = "UTC"
+
 /**
  * Returns true if dates are on same day, timezone must be the same for both timestamps
  */
@@ -265,22 +267,23 @@ export function cascadingFormattedStartDateTime(
  * Ended Apr 3 2017
  */
 export function formattedStartDateTime(startAt, endAt, liveStartAt, timezone) {
-  const thisMoment = moment.tz(moment(), timezone)
-  const startMoment = moment.tz(startAt, timezone)
-  const endMoment = moment.tz(endAt, timezone)
-  const liveStartMoment = moment.tz(liveStartAt, timezone)
+  const tz = timezone || DEFAULT_TZ
+  const thisMoment = moment.tz(moment(), tz)
+  const startMoment = moment.tz(startAt, tz)
+  const endMoment = moment.tz(endAt, tz)
+  const liveStartMoment = moment.tz(liveStartAt, tz)
 
   if (thisMoment.isBefore(startMoment)) {
-    return `Starts ${singleDateTime(startAt, timezone)}`
+    return `Starts ${singleDateTime(startAt, tz)}`
   }
 
   if (thisMoment.isAfter(endMoment)) {
-    return `Ended ${singleDate(endAt, timezone)}`
+    return `Ended ${singleDate(endAt, tz)}`
   }
 
   if (liveStartAt) {
     if (thisMoment.isBefore(liveStartMoment)) {
-      return `Live ${singleDateTime(liveStartAt, timezone)}`
+      return `Live ${singleDateTime(liveStartAt, tz)}`
     } else if (
       thisMoment.isAfter(liveStartMoment) &&
       (thisMoment.isBefore(endMoment) || !endAt)
@@ -288,7 +291,7 @@ export function formattedStartDateTime(startAt, endAt, liveStartAt, timezone) {
       return `In progress`
     }
   } else if (thisMoment.isBefore(endMoment)) {
-    return `Ends ${singleDateTime(endAt, timezone)}`
+    return `Ends ${singleDateTime(endAt, tz)}`
   } else {
     return null
   }
