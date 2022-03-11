@@ -506,6 +506,7 @@ input CreateSubmissionMutationInput {
   provenance: String
   sessionID: String
   signature: Boolean
+  source: SubmissionSource
 
   """
   If this artwork exists in Gravity, its ID
@@ -1331,6 +1332,8 @@ type Submission {
   primaryImage: Asset
   provenance: String
   publishedAt: ISO8601DateTime
+  rejectionReason: String
+  saleState: String
   signature: Boolean
 
   """
@@ -1921,6 +1924,16 @@ enum SubmissionSort {
   SOURCE_ARTWORK_ID_DESC
 
   """
+  sort by source in ascending order
+  """
+  SOURCE_ASC
+
+  """
+  sort by source in descending order
+  """
+  SOURCE_DESC
+
+  """
   sort by state in ascending order
   """
   STATE_ASC
@@ -2059,6 +2072,14 @@ enum SubmissionSort {
   sort by year in descending order
   """
   YEAR_DESC
+}
+
+enum SubmissionSource {
+  ADMIN
+  APP_INBOUND
+  MY_COLLECTION
+  PARTNER
+  WEB_INBOUND
 }
 
 """

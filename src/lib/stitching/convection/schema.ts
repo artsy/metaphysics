@@ -32,6 +32,7 @@ export const executableConvectionSchema = () => {
     Submission: "ConsignmentSubmission",
     SubmissionConnection: "ConsignmentSubmissionConnection",
     SubmissionSort: "ConsignmentSubmissionSort",
+    SubmissionSource: "ConsignmentSubmissionSource",
   }
 
   // Return the new modified schema
