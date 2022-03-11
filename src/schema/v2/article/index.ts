@@ -158,6 +158,14 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
           url: { type: GraphQLString },
         },
       }),
+      resolve: ({ media }) => {
+        if (!media) return null
+
+        // Positron returns an object with null properties rather than an early null
+        if (Object.values(media).filter(Boolean).length === 0) return null
+
+        return media
+      },
     },
     newsSource: {
       type: new GraphQLObjectType({
