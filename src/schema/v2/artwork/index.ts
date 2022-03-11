@@ -704,6 +704,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ arta_enabled }) => arta_enabled,
       },
+      artsyShippingInternational: {
+        type: GraphQLBoolean,
+        resolve: ({ artsy_shipping_international }) =>
+          artsy_shipping_international,
+      },
       processWithArtaShipping: {
         type: GraphQLBoolean,
         resolve: ({ process_with_arta_shipping }) => process_with_arta_shipping,
