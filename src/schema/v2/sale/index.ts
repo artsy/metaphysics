@@ -12,6 +12,8 @@ import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import {
   formattedStartDateTime,
   cascadingFormattedStartDateTime,
+  auctionsDetailFormattedStartDateTime,
+  auctionsDetailFormattedStartEndSignal,
   DEFAULT_TZ,
 } from "lib/date"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
@@ -232,6 +234,35 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               defaultTimezone
             )
           }
+        },
+      },
+      auctionsDetailFormattedStartDateTime: {
+        type: GraphQLString,
+        description:
+          "A more granular formatted description of when the auction starts or ends or if it has ended",
+        resolve: ({ start_at, end_at, ended_at }, _options) => {
+          return auctionsDetailFormattedStartDateTime(
+            start_at,
+            end_at,
+            ended_at
+          )
+        },
+      },
+      auctionsDetailFormattedStartEndSignal: {
+        type: GraphQLString,
+        description:
+          "A multicolored signal to users indicating how much time until sale opens/closes",
+        resolve: (
+          { start_at, end_at, ended_at },
+          _options,
+          { defaultTimezone }
+        ) => {
+          return auctionsDetailFormattedStartEndSignal(
+            start_at,
+            end_at,
+            ended_at,
+            defaultTimezone
+          )
         },
       },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
