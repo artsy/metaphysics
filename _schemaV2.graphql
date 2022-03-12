@@ -12200,6 +12200,12 @@ type Sale implements Node {
     last: Int
   ): ArtworkConnection
   associatedSale: Sale
+
+  # A more granular formatted description of when the auction starts or ends or if it has ended
+  auctionsDetailFormattedStartDateTime: String
+
+  # A multicolored signal to users indicating how much time until sale opens/closes
+  auctionsDetailFormattedStartEndSignal: String
   bidder: Bidder
 
   # A bid increment policy that explains minimum bids in ranges.

@@ -203,6 +203,46 @@ function relativeDays(prefix, today, other, max) {
   return null
 }
 
+function relativeDaysUntil(suffix, today, other, max) {
+  const delta = other.diff(today, "days")
+  if (delta >= 0) {
+    if (delta === 0) {
+      return `${suffix} today`
+    } else if (delta === 1) {
+      return `${suffix} tomorrow`
+    } else if (delta <= max) {
+      return `${delta} days until ${suffix}`
+    }
+  }
+  return null
+}
+
+function relativeHoursUntil(suffix, today, other) {
+  /** To do  */
+}
+
+function relativeMinutesUntil(suffix, today, other) {
+  /** To do  */
+}
+
+function relativeTimeUntil(suffix, today, other) {
+  const relativeTimeUnit = relativeTimeGranularity(today, other)
+  if (relativeTimeUnit === "days")
+    return relativeDaysUntil(suffix, today, other, 100)
+  else if (relativeTimeUnit === "hours")
+    return relativeHoursUntil(suffix, today, other)
+  else return relativeMinutesUntil(suffix, today, other)
+}
+
+function relativeTimeGranularity(today, other) {
+  const minutesDiff = other.diff(today, "minutes")
+  const minutesInDay = 1440
+  const minutesInHour = 60
+  if (minutesDiff >= minutesInDay) return "days"
+  else if (minutesDiff >= minutesInHour) return "hours"
+  else return "minutes"
+}
+
 /**
  * Opening today
  * Closing tomorrow
@@ -259,6 +299,47 @@ export function cascadingFormattedStartDateTime(
   if (thisMoment.isAfter(lotsClosingMoment)) return "Closing soon"
 
   return dateRange(startAt, endAt, timezone, "long")
+}
+
+export function auctionsDetailFormattedStartDateTime(startAt, endAt, endedAt) {
+  const thisMoment = moment.tz(moment(), "GMT")
+  const saleStartMoment = moment.tz(startAt, "GMT")
+  const lotsClosingMoment = moment.tz(endAt, "GMT")
+  const saleEndMoment = moment.tz(endedAt, "GMT")
+
+  if (!!endedAt)
+    return `Closed ${saleEndMoment.format(
+      "MMM D, YYYY"
+    )} • ${saleEndMoment.format("h:mma z")}`
+
+  if (thisMoment.isBefore(saleStartMoment))
+    return `${saleStartMoment.format("MMM D, YYYY")} • ${saleStartMoment.format(
+      "h:mma z"
+    )}`
+  return `${lotsClosingMoment.format(
+    "MMM D, YYYY"
+  )} • ${lotsClosingMoment.format("h:mma z")}`
+}
+
+export function auctionsDetailFormattedStartEndSignal(
+  startAt,
+  endAt,
+  endedAt,
+  timezone
+) {
+  const thisMoment = moment.tz(moment(), timezone)
+  const saleStartMoment = moment.tz(startAt, timezone)
+  const lotsClosingMoment = moment.tz(endAt, timezone)
+  const saleEndMoment = moment.tz(endedAt, timezone)
+
+  if (!!endedAt) return ""
+
+  if (thisMoment.isBefore(saleStartMoment))
+    return relativeDaysUntil("Bidding Starts", thisMoment, saleStartMoment, 100)
+
+  if (thisMoment.isAfter(lotsClosingMoment)) return "Lots are closing"
+
+  return relativeTimeUntil("Lots Begin Closing", thisMoment, lotsClosingMoment)
 }
 
 /**
