@@ -722,6 +722,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ arta_enabled }) => arta_enabled,
       },
+      artsyShippingInternational: {
+        type: GraphQLBoolean,
+        resolve: ({ artsy_shipping_international }) =>
+          artsy_shipping_international,
+      },
       processWithArtaShipping: {
         type: GraphQLBoolean,
         resolve: ({ process_with_arta_shipping }) => process_with_arta_shipping,
@@ -780,7 +785,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "The string that describes domestic and international shipping.",
         resolve: (artwork) => {
-          if (artwork.process_with_arta_shipping) {
+          if (
+            artwork.process_with_arta_shipping ||
+            artwork.artsy_shipping_international
+          ) {
             return "Shipping: Calculated in checkout"
           }
 
