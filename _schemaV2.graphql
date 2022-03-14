@@ -12201,11 +12201,11 @@ type Sale implements Node {
   ): ArtworkConnection
   associatedSale: Sale
 
+  # A label indicating the interval in minutes in which lots close
+  auctionsDetailCascadingIntervalLabel: String
+
   # A more granular formatted description of when the auction starts or ends or if it has ended
   auctionsDetailFormattedStartDateTime: String
-
-  # A multicolored signal to users indicating how much time until sale opens/closes
-  auctionsDetailFormattedStartEndSignal: String
   bidder: Bidder
 
   # A bid increment policy that explains minimum bids in ranges.
@@ -12224,6 +12224,14 @@ type Sale implements Node {
   displayTimelyAt: String
   eligibleSaleArtworksCount: Int
   endAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  endedAt(
     format: String
 
     # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
