@@ -12,8 +12,10 @@ import {
   connectionFromArraySlice,
   cursorForObjectInConnection,
 } from "graphql-relay"
+import gql from "lib/gql"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
+import { compact } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
@@ -104,9 +106,9 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (
     { id: userId },
     options,
-    { collectionArtworksLoader, submissionsLoader }
+    { collectionArtworksLoader, convectionGraphQLLoader }
   ) => {
-    if (!collectionArtworksLoader || !submissionsLoader) {
+    if (!collectionArtworksLoader || !convectionGraphQLLoader) {
       return null
     }
 
@@ -129,6 +131,9 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         "my-collection",
         gravityOptions
       )
+
+      const response = await loadSubmissions(artworks, convectionGraphQLLoader)
+      enrichArtworks(artworks, extractNodes(response.submissions))
 
       return connectionFromArraySlice(artworks, options, {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
@@ -226,3 +231,46 @@ export const MyCollectionArtworkMutationType = new GraphQLUnionType({
     MyCollectionArtworkMutationFailureType,
   ],
 })
+
+const loadSubmissions = async (artworks: any, convectionGraphQLLoader: any) => {
+  const submissionIds = compact([...artworks.map((c) => c.submission_id)])
+
+  if (submissionIds.length) {
+    return await convectionGraphQLLoader({
+      query: gql`
+        query ConversationEventConnection($ids: [ID!]) {
+          submissions(ids: $ids) {
+            edges {
+              node {
+                id
+                state
+                saleState
+                rejectionReason
+              }
+            }
+          }
+        }
+      `,
+      variables: {
+        ids: submissionIds,
+      },
+    })
+  }
+}
+
+const enrichArtworks = async (
+  artworks: Array<any>,
+  submissions?: Array<any>
+) => {
+  if (submissions?.length) {
+    submissions.forEach((submission: any) => {
+      const artwork = artworks.find(
+        (artwork) => artwork.submission_id == submission.id
+      )
+
+      if (artwork) {
+        artwork.consignmentSubmission = submission
+      }
+    })
+  }
+}
