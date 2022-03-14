@@ -543,6 +543,30 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#artsyShippingInternational", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          artsyShippingInternational
+        }
+      }
+    `
+
+    it("passes true from gravity", () => {
+      artwork.artsy_shipping_international = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            artsyShippingInternational: true,
+          },
+        })
+      })
+    })
+  })
+
   describe("#artaShippingEnabled", () => {
     const query = `
       {
@@ -2165,6 +2189,18 @@ describe("Artwork type", () => {
 
     it("is set to calculated at checkout when artwork will be processed with Arta shipping", () => {
       artwork.process_with_arta_shipping = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Shipping: Calculated in checkout",
+          },
+        })
+      })
+    })
+
+    it("is set to calculated at checkout when artwork will be processed with international Artsy shipping", () => {
+      artwork.artsy_shipping_international = true
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
