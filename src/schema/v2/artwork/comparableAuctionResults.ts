@@ -23,7 +23,7 @@ export const ComparableAuctionResults: GraphQLFieldConfig<
 
     const comparableAuctionResultsParams = {
       artist_id: artwork.artist._id,
-      date: artwork.date,
+      date: artwork.date === "" ? undefined : artwork.date,
       height_cm: artwork.height_cm,
       width_cm: artwork.width_cm,
       depth_cm: artwork.depth_cm,
