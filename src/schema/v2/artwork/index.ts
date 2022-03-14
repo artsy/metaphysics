@@ -767,7 +767,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "The string that describes domestic and international shipping.",
         resolve: (artwork) => {
-          if (artwork.process_with_arta_shipping) {
+          if (
+            artwork.process_with_arta_shipping ||
+            artwork.artsy_shipping_international
+          ) {
             return "Shipping: Calculated in checkout"
           }
 

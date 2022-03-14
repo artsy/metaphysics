@@ -2199,6 +2199,18 @@ describe("Artwork type", () => {
       })
     })
 
+    it("is set to calculated at checkout when artwork will be processed with international Artsy shipping", () => {
+      artwork.artsy_shipping_international = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Shipping: Calculated in checkout",
+          },
+        })
+      })
+    })
+
     describe("for artworks that is located within continental EU", () => {
       beforeEach(() => {
         artwork.eu_shipping_origin = true
