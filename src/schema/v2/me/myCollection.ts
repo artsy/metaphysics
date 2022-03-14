@@ -12,6 +12,7 @@ import {
   connectionFromArraySlice,
   cursorForObjectInConnection,
 } from "graphql-relay"
+import gql from "lib/gql"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
@@ -104,9 +105,9 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (
     { id: userId },
     options,
-    { collectionArtworksLoader, submissionsLoader }
+    { collectionArtworksLoader, vortexGraphqlLoader }
   ) => {
-    if (!collectionArtworksLoader || !submissionsLoader) {
+    if (!collectionArtworksLoader || !vortexGraphqlLoader) {
       return null
     }
 
@@ -129,6 +130,39 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         "my-collection",
         gravityOptions
       )
+
+      const artistIDMediumTuples = artworks.map((artwork) => ({
+        artistID: artwork.artist.id,
+        medium: artwork.medium,
+      }))
+
+      const marketInsights = await vortexGraphqlLoader({
+        query: gql`
+        query artistRecommendationsQuery {
+          marketInsightBatches(tuples: ${artistIDMediumTuples}, first: ${50}) {
+            totalCount
+            edges {
+              node {
+                ....
+              }
+            }
+          }
+        }
+      `,
+      })()
+
+      // ==> {
+      //   "artist-id": {
+      //     "medium-1": { }
+      //     "medium-2": { }
+      //   }
+      // }
+
+      const enrichedArtworks = artworks.map((artwork) => {
+        const insights = marketInsights[artwork.artist.id][artwork.medium]
+
+        artwork.artistInsights = insights
+      })
 
       return connectionFromArraySlice(artworks, options, {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
