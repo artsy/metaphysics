@@ -881,6 +881,76 @@ describe("Sale type", () => {
     })
   })
 
+  describe("auctionsDetailFormattedStartDateTime", () => {
+    beforeEach(() => {
+      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
+    })
+    const query = `
+      {
+        sale(id: "foo-foo") {
+          auctionsDetailFormattedStartDateTime
+        }
+      }
+    `
+
+    it("returns a string including the correctly formatted start time when we the auction has not started", async () => {
+      const response = await execute(query, {
+        start_at: moment().add(3, "days"),
+      })
+      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+        "Mar 11, 2022 • 12:33pm GMT"
+      )
+    })
+
+    it("returns a string including the correctly formatted end time after the auction has ended", async () => {
+      const response = await execute(query, {
+        ended_at: moment().subtract(1, "days"),
+      })
+      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+        "Closed Mar 7, 2022 • 12:33pm GMT"
+      )
+    })
+
+    it("returns a string including the correctly formatted end when the auction has started", async () => {
+      const response = await execute(query, {
+        end_at: moment().subtract(1, "days"),
+      })
+      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+        "Mar 7, 2022 • 12:33pm GMT"
+      )
+    })
+  })
+
+  describe("auctionsDetailCascadingIntervalLabel", () => {
+    beforeEach(() => {
+      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
+    })
+    const query = `
+      {
+        sale(id: "foo-foo") {
+          auctionsDetailCascadingIntervalLabel
+        }
+      }
+    `
+
+    it("returns the correct string when cascading end time interval is set", async () => {
+      const response = await execute(query, {
+        cascading_end_time_interval: 120,
+      })
+      expect(response.sale.auctionsDetailCascadingIntervalLabel).toEqual(
+        "Lots close in 2 minute intervals"
+      )
+    })
+
+    it("returns an empty string when the auction has ended", async () => {
+      const response = await execute(query, {
+        ended_at: moment().subtract(30, "minutes"),
+        cascading_end_time_interval: 120,
+      })
+      expect(response.sale.auctionsDetailCascadingIntervalLabel).toEqual(null)
+    })
+  })
+
   describe("registration status", () => {
     it("returns null if not registered for this sale", async () => {
       const query = gql`

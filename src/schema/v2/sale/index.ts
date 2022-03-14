@@ -13,7 +13,6 @@ import {
   formattedStartDateTime,
   cascadingFormattedStartDateTime,
   auctionsDetailFormattedStartDateTime,
-  auctionsDetailFormattedStartEndSignal,
   DEFAULT_TZ,
 } from "lib/date"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
@@ -202,6 +201,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           eligible_sale_artworks_count,
       },
       endAt: date,
+      endedAt: date,
       eventStartAt: date,
       eventEndAt: date,
       formattedStartDateTime: {
@@ -248,21 +248,19 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      auctionsDetailFormattedStartEndSignal: {
+      auctionsDetailCascadingIntervalLabel: {
         type: GraphQLString,
         description:
-          "A multicolored signal to users indicating how much time until sale opens/closes",
-        resolve: (
-          { start_at, end_at, ended_at },
-          _options,
-          { defaultTimezone }
-        ) => {
-          return auctionsDetailFormattedStartEndSignal(
-            start_at,
-            end_at,
-            ended_at,
-            defaultTimezone
-          )
+          "A label indicating the interval in minutes in which lots close",
+        resolve: ({ ended_at, cascading_end_time_interval }, _options) => {
+          if (cascading_end_time_interval === null) return null
+          if (ended_at) {
+            return null
+          } else {
+            return `Lots close in ${
+              cascading_end_time_interval / 60
+            } minute intervals`
+          }
         },
       },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
