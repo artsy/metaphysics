@@ -259,7 +259,6 @@ describe("me.myCollection", () => {
         }),
       collectionArtworksLoader: () =>
         Promise.reject(new Error("Collection Not Found")),
-      submissionsLoader: () => Promise.resolve([]),
     }
 
     const data = await runAuthenticatedQuery(query, context)
@@ -289,7 +288,6 @@ describe("me.myCollection", () => {
         }),
       collectionArtworksLoader: () =>
         Promise.reject(new Error("Some other error")),
-      submissionsLoader: () => Promise.resolve([]),
     }
 
     expect.assertions(1)

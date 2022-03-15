@@ -51,12 +51,8 @@ describe("Artwork type", () => {
       unlisted: true,
       category: "Painting",
       arta_enabled: false,
-      consignmentSubmission: {
-        id: 1,
-        state: "SUBMITTED",
-        saleState: null,
-      },
     }
+
     context = {
       artworkLoader: sinon
         .stub()
@@ -1007,6 +1003,10 @@ describe("Artwork type", () => {
   })
 
   describe("#consignmentSubmission", () => {
+    const submission = {
+      id: "1",
+      state: "submitted",
+    }
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
@@ -1020,6 +1020,12 @@ describe("Artwork type", () => {
     `
 
     it("returns artwork's submission", () => {
+      artwork.consignmentSubmission = {
+        id: "1",
+        state: "SUBMITTED",
+        saleState: null,
+      }
+
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
@@ -1034,13 +1040,45 @@ describe("Artwork type", () => {
     })
 
     it("returns null if submission not found", () => {
-      artwork.consignmentSubmission = undefined
+      artwork.submission_id = "1"
+      context.convectionGraphQLLoader = () =>
+        Promise.resolve({
+          submissions: {
+            edges: [],
+          },
+        })
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
             slug: "richard-prince-untitled-portrait",
             consignmentSubmission: null,
+          },
+        })
+      })
+    })
+
+    it("returns artwork's submission by submission_id", () => {
+      artwork.submission_id = "1"
+      context.convectionGraphQLLoader = () =>
+        Promise.resolve({
+          submissions: {
+            edges: [
+              {
+                node: submission,
+              },
+            ],
+          },
+        })
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            consignmentSubmission: {
+              displayText: "Submission in progress",
+              inProgress: true,
+            },
           },
         })
       })
