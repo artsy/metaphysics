@@ -1967,6 +1967,7 @@ interface ArtworkConnectionInterface {
 type ArtworkConsignmentSubmission {
   displayText: String
   inProgress: Boolean
+  isSold: Boolean
 }
 
 union ArtworkContext = Fair | Sale | Show

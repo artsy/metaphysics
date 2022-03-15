@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString, GraphQLBoolean } from "graphql"
+import { GraphQLBoolean, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
@@ -32,21 +32,30 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
           return statusDisplayTexts[state]
         },
       },
+      isSold: {
+        type: GraphQLBoolean,
+        resolve: (consignmentSubmission) => {
+          const state =
+            consignmentSubmission.consignment_state ||
+            consignmentSubmission.state
+
+          return ["sold", "bought in"].includes(state)
+        },
+      },
       inProgress: {
         type: GraphQLBoolean,
         resolve: (consignmentSubmission) => {
           const state =
             consignmentSubmission.consignment_state ||
             consignmentSubmission.state
-          const inProgressSubmissionStates = [
+
+          return [
             "submitted",
             "published",
             "approved",
             "hold",
             "open",
-          ]
-
-          return inProgressSubmissionStates.includes(state)
+          ].includes(state)
         },
       },
     }
