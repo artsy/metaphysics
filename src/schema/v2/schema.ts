@@ -119,6 +119,7 @@ import { authenticationStatus } from "./authenticationStatus"
 import { deleteUserAccountMutation } from "./me/delete_account_mutation"
 import { SearchCriteriaLabel } from "./searchCriteriaLabel"
 import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerficationEmailMutation"
+import { PreviewSavedSearchField } from "./previewSavedSearch"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -188,6 +189,7 @@ const rootFields = {
   partnersConnection: PartnersConnection,
   phoneNumber: PhoneNumber,
   // profile: Profile,
+  previewSavedSearch: PreviewSavedSearchField,
   requestLocation: RequestLocationField,
   sale: Sale,
   saleArtwork: SaleArtwork,
