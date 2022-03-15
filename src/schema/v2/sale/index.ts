@@ -12,6 +12,7 @@ import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import {
   formattedStartDateTime,
   cascadingFormattedStartDateTime,
+  auctionsDetailFormattedStartDateTime,
   DEFAULT_TZ,
 } from "lib/date"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
@@ -200,6 +201,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           eligible_sale_artworks_count,
       },
       endAt: date,
+      endedAt: date,
       eventStartAt: date,
       eventEndAt: date,
       formattedStartDateTime: {
@@ -231,6 +233,33 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               live_start_at,
               defaultTimezone
             )
+          }
+        },
+      },
+      auctionsDetailFormattedStartDateTime: {
+        type: GraphQLString,
+        description:
+          "A more granular formatted description of when the auction starts or ends or if it has ended",
+        resolve: ({ start_at, end_at, ended_at }, _options) => {
+          return auctionsDetailFormattedStartDateTime(
+            start_at,
+            end_at,
+            ended_at
+          )
+        },
+      },
+      auctionsDetailCascadingIntervalLabel: {
+        type: GraphQLString,
+        description:
+          "A label indicating the interval in minutes in which lots close",
+        resolve: ({ ended_at, cascading_end_time_interval }, _options) => {
+          if (cascading_end_time_interval === null) return null
+          if (ended_at) {
+            return null
+          } else {
+            return `Lots close in ${
+              cascading_end_time_interval / 60
+            } minute intervals`
           }
         },
       },

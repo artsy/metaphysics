@@ -261,6 +261,26 @@ export function cascadingFormattedStartDateTime(
   return dateRange(startAt, endAt, timezone, "long")
 }
 
+export function auctionsDetailFormattedStartDateTime(startAt, endAt, endedAt) {
+  const thisMoment = moment.tz(moment(), "GMT")
+  const saleStartMoment = moment.tz(startAt, "GMT")
+  const lotsClosingMoment = moment.tz(endAt, "GMT")
+  const saleEndMoment = moment.tz(endedAt, "GMT")
+
+  if (!!endedAt)
+    return `Closed ${saleEndMoment.format(
+      "MMM D, YYYY"
+    )} • ${saleEndMoment.format("h:mma z")}`
+
+  if (thisMoment.isBefore(saleStartMoment))
+    return `${saleStartMoment.format("MMM D, YYYY")} • ${saleStartMoment.format(
+      "h:mma z"
+    )}`
+  return `${lotsClosingMoment.format(
+    "MMM D, YYYY"
+  )} • ${lotsClosingMoment.format("h:mma z")}`
+}
+
 /**
  * Starts Mar 29 at 4:00pm
  * Ends Apr 3 at 12:30pm
