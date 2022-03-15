@@ -51,6 +51,11 @@ describe("Artwork type", () => {
       unlisted: true,
       category: "Painting",
       arta_enabled: false,
+      consignmentSubmission: {
+        id: 1,
+        state: "SUBMITTED",
+        saleState: null,
+      },
     }
     context = {
       artworkLoader: sinon
@@ -1015,16 +1020,6 @@ describe("Artwork type", () => {
     `
 
     it("returns artwork's submission", () => {
-      const submissions = [
-        {
-          state: "submitted",
-          my_collection_artwork_id: "richard-prince-untitled-portrait",
-        },
-      ]
-      context.submissionsLoader = sinon
-        .stub()
-        .returns(Promise.resolve(submissions))
-
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
@@ -1033,6 +1028,19 @@ describe("Artwork type", () => {
               displayText: "Submission in progress",
               inProgress: true,
             },
+          },
+        })
+      })
+    })
+
+    it("returns null if submission not found", () => {
+      artwork.consignmentSubmission = undefined
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            consignmentSubmission: null,
           },
         })
       })

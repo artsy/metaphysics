@@ -133,7 +133,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       )
 
       const response = await loadSubmissions(artworks, convectionGraphQLLoader)
-      enrichArtworks(artworks, extractNodes(response.submissions))
+      enrichArtworks(artworks, extractNodes(response?.submissions))
 
       return connectionFromArraySlice(artworks, options, {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),

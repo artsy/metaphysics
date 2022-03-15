@@ -35,10 +35,9 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
         type: GraphQLBoolean,
         resolve: (consignmentSubmission) => {
           const state =
-            consignmentSubmission.consignment_state ||
-            consignmentSubmission.state
+            consignmentSubmission.saleState || consignmentSubmission.state
 
-          return ["sold", "bought in"].includes(state)
+          return ["sold", "bought in"].includes(state?.toLowerCase())
         },
       },
       inProgress: {
