@@ -52,6 +52,7 @@ describe("Artwork type", () => {
       category: "Painting",
       arta_enabled: false,
     }
+
     context = {
       artworkLoader: sinon
         .stub()
@@ -1002,6 +1003,10 @@ describe("Artwork type", () => {
   })
 
   describe("#consignmentSubmission", () => {
+    const submission = {
+      id: "1",
+      state: "submitted",
+    }
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
@@ -1015,15 +1020,56 @@ describe("Artwork type", () => {
     `
 
     it("returns artwork's submission", () => {
-      const submissions = [
-        {
-          state: "submitted",
-          my_collection_artwork_id: "richard-prince-untitled-portrait",
-        },
-      ]
-      context.submissionsLoader = sinon
-        .stub()
-        .returns(Promise.resolve(submissions))
+      artwork.consignmentSubmission = {
+        id: "1",
+        state: "SUBMITTED",
+        saleState: null,
+      }
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            consignmentSubmission: {
+              displayText: "Submission in progress",
+              inProgress: true,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns null if submission not found", () => {
+      artwork.submission_id = "1"
+      context.convectionGraphQLLoader = () =>
+        Promise.resolve({
+          submissions: {
+            edges: [],
+          },
+        })
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            consignmentSubmission: null,
+          },
+        })
+      })
+    })
+
+    it("returns artwork's submission by submission_id", () => {
+      artwork.submission_id = "1"
+      context.convectionGraphQLLoader = () =>
+        Promise.resolve({
+          submissions: {
+            edges: [
+              {
+                node: submission,
+              },
+            ],
+          },
+        })
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({

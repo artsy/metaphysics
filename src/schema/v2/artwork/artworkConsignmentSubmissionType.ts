@@ -12,8 +12,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
         type: GraphQLString,
         resolve: (consignmentSubmission) => {
           const state =
-            consignmentSubmission.consignment_state ||
-            consignmentSubmission.state
+            consignmentSubmission.saleState || consignmentSubmission.state
           const statusDisplayTexts = {
             submitted: "Submission in progress",
             approved: "Submission in progress",
@@ -29,25 +28,23 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
             "withdrawn - post-launch": "Submission evaluated",
           }
 
-          return statusDisplayTexts[state]
+          return statusDisplayTexts[state?.toLowerCase()]
         },
       },
       isSold: {
         type: GraphQLBoolean,
         resolve: (consignmentSubmission) => {
           const state =
-            consignmentSubmission.consignment_state ||
-            consignmentSubmission.state
+            consignmentSubmission.saleState || consignmentSubmission.state
 
-          return ["sold", "bought in"].includes(state)
+          return ["sold", "bought in"].includes(state?.toLowerCase())
         },
       },
       inProgress: {
         type: GraphQLBoolean,
         resolve: (consignmentSubmission) => {
           const state =
-            consignmentSubmission.consignment_state ||
-            consignmentSubmission.state
+            consignmentSubmission.saleState || consignmentSubmission.state
 
           return [
             "submitted",
@@ -55,7 +52,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
             "approved",
             "hold",
             "open",
-          ].includes(state)
+          ].includes(state?.toLowerCase())
         },
       },
     }
