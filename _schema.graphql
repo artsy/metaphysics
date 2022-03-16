@@ -7362,6 +7362,7 @@ input CreateSubmissionMutationInput {
   locationState: String
   medium: String
   minimumPriceDollars: Int
+  myCollectionArtworkID: String
   provenance: String
   sessionID: String
   signature: Boolean
