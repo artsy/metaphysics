@@ -119,6 +119,7 @@ import { authenticationStatus } from "./authenticationStatus"
 import { deleteUserAccountMutation } from "./me/delete_account_mutation"
 import { SearchCriteriaLabel } from "./searchCriteriaLabel"
 import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerficationEmailMutation"
+import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -260,6 +261,7 @@ export default new GraphQLSchema({
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateNotificationPreferences: updateNotificationPreferencesMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
+      requestPriceEstimate: requestPriceEstimateMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
