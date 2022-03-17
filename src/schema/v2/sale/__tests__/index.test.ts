@@ -919,6 +919,24 @@ describe("Sale type", () => {
         "Mar 7, 2022 • 12:33pm GMT"
       )
     })
+
+    it("returns a string including the correctly formatted date when the live start at has yet to start and is a LAI", async () => {
+      const response = await execute(query, {
+        live_start_at: moment().add(1, "days"),
+      })
+      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+        "Live Mar 9, 2022 • 12:33pm GMT"
+      )
+    })
+
+    it("returns a in progress when the auction has started and is a LAI", async () => {
+      const response = await execute(query, {
+        live_start_at: moment().subtract(1, "days"),
+      })
+      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+        "In progress"
+      )
+    })
   })
 
   describe("auctionsDetailCascadingIntervalLabel", () => {
@@ -938,7 +956,7 @@ describe("Sale type", () => {
         cascading_end_time_interval: 120,
       })
       expect(response.sale.auctionsDetailCascadingIntervalLabel).toEqual(
-        "Lots close in 2 minute intervals"
+        "Lots close at 2-minute intervals"
       )
     })
 

@@ -240,11 +240,12 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "A more granular formatted description of when the auction starts or ends or if it has ended",
-        resolve: ({ start_at, end_at, ended_at }, _options) => {
+        resolve: ({ start_at, end_at, ended_at, live_start_at }, _options) => {
           return auctionsDetailFormattedStartDateTime(
             start_at,
             end_at,
-            ended_at
+            ended_at,
+            live_start_at
           )
         },
       },
@@ -257,9 +258,9 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           if (ended_at) {
             return null
           } else {
-            return `Lots close in ${
+            return `Lots close at ${
               cascading_end_time_interval / 60
-            } minute intervals`
+            }-minute intervals`
           }
         },
       },
