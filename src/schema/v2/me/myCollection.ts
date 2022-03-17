@@ -14,10 +14,12 @@ import {
 } from "graphql-relay"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { compact } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
 import { connectionWithCursorInfo } from "../fields/pagination"
+import { loadSubmissions } from "./loadSubmissions"
 
 const myCollectionFields = {
   description: {
@@ -104,9 +106,9 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (
     { id: userId },
     options,
-    { collectionArtworksLoader, submissionsLoader }
+    { collectionArtworksLoader, convectionGraphQLLoader }
   ) => {
-    if (!collectionArtworksLoader || !submissionsLoader) {
+    if (!collectionArtworksLoader || !convectionGraphQLLoader) {
       return null
     }
 
@@ -129,6 +131,13 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         "my-collection",
         gravityOptions
       )
+
+      const submissionIds = compact([...artworks.map((c) => c.submission_id)])
+      const submissions = await loadSubmissions(
+        submissionIds,
+        convectionGraphQLLoader
+      )
+      enrichArtworks(artworks, submissions)
 
       return connectionFromArraySlice(artworks, options, {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
@@ -226,3 +235,20 @@ export const MyCollectionArtworkMutationType = new GraphQLUnionType({
     MyCollectionArtworkMutationFailureType,
   ],
 })
+
+const enrichArtworks = async (
+  artworks: Array<any>,
+  submissions?: Array<any>
+) => {
+  if (submissions?.length) {
+    submissions.forEach((submission: any) => {
+      const artwork = artworks.find(
+        (artwork) => artwork.submission_id == submission.id
+      )
+
+      if (artwork) {
+        artwork.consignmentSubmission = submission
+      }
+    })
+  }
+}
