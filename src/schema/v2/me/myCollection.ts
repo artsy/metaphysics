@@ -135,18 +135,22 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       )
 
       const artistIDMediumTuples = artworks.map((artwork) => ({
-        artistID: artwork.artist.id,
+        artistId: artwork.artist.id,
         medium: artwork.medium,
       }))
 
-      const marketInsights = await vortexGraphqlLoader({
+      uniqWith(artistIDMediumTuples, isEqual)
+
+      const vortexResult = await vortexGraphqlLoader({
         query: gql`
-        query artistRecommendationsQuery {
-          marketInsightBatches(tuples: ${artistIDMediumTuples}, first: ${50}) {
+        query marketPriceInsightsBatchQuery {
+          marketInsightBatches(input: ${artistIDMediumTuples}, first: ${MAX_MARKET_PRICE_INSIGHTS}) {
             totalCount
             edges {
               node {
-                ....
+                artistId
+                medium
+                demandRank
               }
             }
           }
@@ -154,20 +158,24 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       `,
       })()
 
-      // ==> {
-      //   "artist-id": {
-      //     "medium-1": { }
-      //     "medium-2": { }
-      //   }
-      // }
+      const marketInsights = {}
 
-      const enrichedArtworks = artworks.map((artwork) => {
+      extractNodes(vortexResult.data?.marketInsightBatches).map(
+        (insight: any) => {
+          marketInsights[insight.artistId] = {
+            ...(insight.artistId || {}),
+            [insight.medium]: insight,
+          }
+        }
+      )
+
+      const enrichedArtworks = artworks.map((artwork: any) => {
         const insights = marketInsights[artwork.artist.id][artwork.medium]
 
         artwork.artistInsights = insights
       })
 
-      return connectionFromArraySlice(artworks, options, {
+      return connectionFromArraySlice(enrichedArtworks, options, {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
         sliceStart: gravityOptions.offset,
       })
