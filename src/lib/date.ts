@@ -281,6 +281,13 @@ export function auctionsDetailFormattedStartDateTime(startAt, endAt, endedAt) {
   )} • ${lotsClosingMoment.format("h:mma z")}`
 }
 
+export function formattedEndDateTime(endAt) {
+  const lotEndMoment = moment.tz(endAt, "GMT")
+  return `Closes, ${lotEndMoment.format("MMM D")} • ${lotEndMoment.format(
+    "h:mma z"
+  )}`
+}
+
 /**
  * Starts Mar 29 at 4:00pm
  * Ends Apr 3 at 12:30pm

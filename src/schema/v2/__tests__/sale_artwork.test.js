@@ -532,6 +532,78 @@ describe("SaleArtwork type", () => {
     })
   })
 
+  describe("formattedEndDateTime", () => {
+    const query = gql`
+      {
+        node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+          ... on SaleArtwork {
+            formattedEndDateTime
+          }
+        }
+      }
+    `
+
+    const context = {
+      saleLoader: () => {
+        return Promise.resolve({
+          cascading_end_time_interval: 120,
+        })
+      },
+    }
+
+    it("returns a string with formatted end date and time when cascading end time is enabled and the lot has not yet closed", async () => {
+      saleArtwork.ended_at = null
+      saleArtwork.end_at = "2029-02-19T11:00:00+00:00"
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedEndDateTime: "Closes, Feb 19 • 11:00am GMT",
+        },
+      })
+    })
+
+    it("returns null if cascading end time is turned off", async () => {
+      saleArtwork.ended_at = null
+      saleArtwork.end_at = "2029-02-19T11:00:00+00:00"
+
+      const context = {
+        saleLoader: () => {
+          return Promise.resolve({
+            cascading_end_time_interval: null,
+          })
+        },
+      }
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedEndDateTime: null,
+        },
+      })
+    })
+
+    it("returns null if the lot has closed", async () => {
+      saleArtwork.ended_at = "2022-02-19T11:00:00+00:00"
+      saleArtwork.end_at = "2029-02-19T11:00:00+00:00"
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedEndDateTime: null,
+        },
+      })
+    })
+
+    it("returns null if the there is no end_at", async () => {
+      saleArtwork.ended_at = null
+      saleArtwork.end_at = null
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedEndDateTime: null,
+        },
+      })
+    })
+  })
+
   describe("formattedStartDateTime", () => {
     const query = gql`
       {
