@@ -291,6 +291,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    requestPriceEstimateLoader: gravityLoader(
+      "me/request_price_estimate",
+      {},
+      { method: "POST" }
+    ),
     saleArtworksAllLoader: gravityLoader(
       "sale_artworks",
       {},

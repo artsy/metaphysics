@@ -15,11 +15,12 @@ import {
 import gql from "lib/gql"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
-import { isEqual, uniqWith } from "lodash"
+import { compact, isEqual, uniqWith } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
 import { connectionWithCursorInfo } from "../fields/pagination"
+import { loadSubmissions } from "./loadSubmissions"
 
 const MAX_MARKET_PRICE_INSIGHTS = 50
 
@@ -108,9 +109,13 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (
     { id: userId },
     options,
-    { collectionArtworksLoader, vortexGraphqlLoader }
+    { collectionArtworksLoader, convectionGraphQLLoader, vortexGraphqlLoader }
   ) => {
-    if (!collectionArtworksLoader || !vortexGraphqlLoader) {
+    if (
+      !collectionArtworksLoader ||
+      !convectionGraphQLLoader ||
+      !vortexGraphqlLoader
+    ) {
       return null
     }
 
@@ -134,12 +139,19 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         gravityOptions
       )
 
-      const artistIDMediumTuples = artworks.map((artwork) => ({
+      const submissionIds = compact([...artworks.map((c) => c.submission_id)])
+      const submissions = await loadSubmissions(
+        submissionIds,
+        convectionGraphQLLoader
+      )
+
+      let artistIDMediumTuples = artworks.map((artwork: any) => ({
         artistId: artwork.artist.id,
         medium: artwork.medium,
       }))
 
-      uniqWith(artistIDMediumTuples, isEqual)
+      // remove duplicates
+      artistIDMediumTuples = uniqWith(artistIDMediumTuples, isEqual)
 
       const vortexResult = await vortexGraphqlLoader({
         query: gql`
@@ -169,13 +181,16 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         }
       )
 
-      const enrichedArtworks = artworks.map((artwork: any) => {
-        const insights = marketInsights[artwork.artist.id][artwork.medium]
+      enrichArtworks(artworks, submissions)
+
+      const artworksWithInsights = artworks.map((artwork: any) => {
+        const insights =
+          marketInsights?.[artwork.artist.id]?.[artwork.medium] ?? null
 
         artwork.artistInsights = insights
       })
 
-      return connectionFromArraySlice(enrichedArtworks, options, {
+      return connectionFromArraySlice(artworksWithInsights, options, {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
         sliceStart: gravityOptions.offset,
       })
@@ -273,3 +288,20 @@ export const MyCollectionArtworkMutationType = new GraphQLUnionType({
     MyCollectionArtworkMutationFailureType,
   ],
 })
+
+const enrichArtworks = async (
+  artworks: Array<any>,
+  submissions?: Array<any>
+) => {
+  if (submissions?.length) {
+    submissions.forEach((submission: any) => {
+      const artwork = artworks.find(
+        (artwork) => artwork.submission_id == submission.id
+      )
+
+      if (artwork) {
+        artwork.consignmentSubmission = submission
+      }
+    })
+  }
+}

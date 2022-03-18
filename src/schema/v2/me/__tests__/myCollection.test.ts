@@ -51,6 +51,7 @@ describe("me.myCollection", () => {
         Promise.resolve({
           id: "some-user-id",
         }),
+
       collectionArtworksLoader: () =>
         Promise.resolve({
           body: [
@@ -63,7 +64,6 @@ describe("me.myCollection", () => {
             "x-total-count": "10",
           },
         }),
-      submissionsLoader: () => Promise.resolve([]),
     }
 
     const data = await runAuthenticatedQuery(query, context)
@@ -103,33 +103,39 @@ describe("me.myCollection", () => {
               _id: "artwork_id_with_submission",
               id: "artwork_id_with_submission",
               title: "some title",
+              submission_id: "1",
             },
             {
               _id: "artwork_id_without_submission",
               id: "artwork_id_without_submission",
               title: "some title 2",
+              submission_id: null,
             },
             {
               _id: "artwork_id_with_draft_submission",
               id: "artwork_id_with_draft_submission",
               title: "some title 3",
+              submission_id: null,
             },
           ],
           headers: {
             "x-total-count": "10",
           },
         }),
-      submissionsLoader: () =>
-        Promise.resolve([
-          {
-            my_collection_artwork_id: "artwork_id_with_submission",
-            state: "submitted",
-          },
-          {
-            my_collection_artwork_id: "artwork_id_with_draft_submission",
-            state: "draft",
-          },
-        ]),
+      convectionGraphQLLoader: () =>
+        Promise.resolve({
+          submissions: {
+            edges: [
+              {
+                node: {
+                  id: "1",
+                  my_collection_artwork_id: "artwork_id_with_submission",
+                  state: "submitted",
+                },
+              },
+            ],
+          } as any,
+        }),
     }
 
     const data = await runAuthenticatedQuery(query, context)
@@ -152,6 +158,79 @@ describe("me.myCollection", () => {
     expect(data.me.myCollectionConnection.edges[2].node.title).toBe(
       "some title 3"
     )
+    expect(
+      data.me.myCollectionConnection.edges[2].node.consignmentSubmission
+    ).toBeFalsy()
+  })
+
+  it("returns artworks without submission information if submissions not found", async () => {
+    const query = gql`
+      {
+        me {
+          myCollectionConnection(first: 10) {
+            edges {
+              node {
+                internalID
+                title
+                consignmentSubmission {
+                  displayText
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context: Partial<ResolverContext> = {
+      meLoader: () =>
+        Promise.resolve({
+          id: "some-user-id",
+        }),
+      collectionArtworksLoader: () =>
+        Promise.resolve({
+          body: [
+            {
+              _id: "artwork_id_with_submission",
+              id: "artwork_id_with_submission",
+              title: "some title",
+              submission_id: "1",
+            },
+            {
+              _id: "artwork_id_without_submission",
+              id: "artwork_id_without_submission",
+              title: "some title 2",
+              submission_id: null,
+            },
+            {
+              _id: "artwork_id_with_draft_submission",
+              id: "artwork_id_with_draft_submission",
+              title: "some title 3",
+              submission_id: null,
+            },
+          ],
+          headers: {
+            "x-total-count": "10",
+          },
+        }),
+      convectionGraphQLLoader: () =>
+        Promise.resolve({
+          submissions: {
+            edges: [],
+          } as any,
+        }),
+    }
+
+    const data = await runAuthenticatedQuery(query, context)
+
+    expect(
+      data.me.myCollectionConnection.edges[0].node.consignmentSubmission
+    ).toBeFalsy()
+
+    expect(
+      data.me.myCollectionConnection.edges[1].node.consignmentSubmission
+    ).toBeFalsy()
+
     expect(
       data.me.myCollectionConnection.edges[2].node.consignmentSubmission
     ).toBeFalsy()
@@ -180,7 +259,6 @@ describe("me.myCollection", () => {
         }),
       collectionArtworksLoader: () =>
         Promise.reject(new Error("Collection Not Found")),
-      submissionsLoader: () => Promise.resolve([]),
     }
 
     const data = await runAuthenticatedQuery(query, context)
@@ -210,7 +288,6 @@ describe("me.myCollection", () => {
         }),
       collectionArtworksLoader: () =>
         Promise.reject(new Error("Some other error")),
-      submissionsLoader: () => Promise.resolve([]),
     }
 
     expect.assertions(1)

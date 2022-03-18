@@ -5710,6 +5710,9 @@ type CommerceShipArta {
 type CommerceShipment {
   bookedAt: String
   carrierName: String
+  contactEmail: String
+  contactName: String
+  contactPhone: String
   createdAt(
     format: String
 
@@ -7359,6 +7362,7 @@ input CreateSubmissionMutationInput {
   locationState: String
   medium: String
   minimumPriceDollars: Int
+  myCollectionArtworkID: String
   provenance: String
   sessionID: String
   signature: Boolean

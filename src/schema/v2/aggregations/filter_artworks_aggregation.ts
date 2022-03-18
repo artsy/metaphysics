@@ -57,6 +57,9 @@ export const ArtworksAggregation = new GraphQLEnumType({
     PRICE_RANGE: {
       value: "price_range",
     },
+    SIMPLE_PRICE_HISTOGRAM: {
+      value: "simple_price_histogram",
+    },
     TOTAL: {
       value: "total",
     },

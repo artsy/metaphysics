@@ -27,7 +27,7 @@ import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 import { NodeInterface } from "schema/v2/object_identification"
 import { CausalityLotState } from "./lot"
-import { formattedStartDateTime } from "lib/date"
+import { formattedEndDateTime, formattedStartDateTime } from "lib/date"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -161,6 +161,22 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
                 null,
                 defaultTimezone
               )
+            }
+          }),
+      },
+      formattedEndDateTime: {
+        type: GraphQLString,
+        description: "A formatted description of the lot end date and time",
+        resolve: (saleArtwork, _options, { saleLoader }) =>
+          saleLoader(saleArtwork.sale_id).then((sale) => {
+            if (
+              !sale.cascading_end_time_interval ||
+              saleArtwork.ended_at ||
+              !saleArtwork.end_at
+            ) {
+              return null
+            } else {
+              return formattedEndDateTime(saleArtwork.end_at)
             }
           }),
       },
