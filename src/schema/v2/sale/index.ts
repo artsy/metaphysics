@@ -236,32 +236,52 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
-      auctionsDetailFormattedStartDateTime: {
-        type: GraphQLString,
-        description:
-          "A more granular formatted description of when the auction starts or ends or if it has ended",
-        resolve: ({ start_at, end_at, ended_at, live_start_at }, _options) => {
-          return auctionsDetailFormattedStartDateTime(
-            start_at,
-            end_at,
-            ended_at,
-            live_start_at
-          )
-        },
-      },
-      auctionsDetailCascadingIntervalLabel: {
-        type: GraphQLString,
-        description:
-          "A label indicating the interval in minutes in which lots close",
-        resolve: ({ ended_at, cascading_end_time_interval }, _options) => {
-          if (cascading_end_time_interval === null) return null
-          if (ended_at) {
-            return null
-          } else {
-            return `Lots close at ${
-              cascading_end_time_interval / 60
-            }-minute intervals`
-          }
+      cascadingEndTime: {
+        type: new GraphQLObjectType({
+          name: "CascadingEndTime",
+          fields: {
+            formattedStartDateTime: {
+              type: GraphQLString,
+              // description:
+              //   "A more granular formatted description of when the auction starts or ends or if it has ended",
+              resolve: (
+                // { start_at, end_at, ended_at, live_start_at },
+                _options
+              ) => {
+                // return auctionsDetailFormattedStartDateTime(
+                //   start_at,
+                //   end_at,
+                //   ended_at,
+                //   live_start_at
+                // )
+                return "hello"
+              },
+            },
+            // intervalLabel: {
+            //   type: GraphQLString,
+            //   description:
+            //     "A label indicating the interval in minutes in which lots close",
+            //   resolve: (
+            //     { ended_at, cascading_end_time_interval },
+            //     _options
+            //   ) => {
+            //     if (cascading_end_time_interval === null) return null
+            //     if (ended_at) {
+            //       return null
+            //     } else {
+            //       return `Lots close at ${
+            //         cascading_end_time_interval / 60
+            //       }-minute intervals`
+            //     }
+            //   },
+            // },
+          },
+        }),
+        resolve: (sale, { cascading_end_time }) => {
+          console.log("TEST", sale, cascading_end_time)
+          if (!sale) return null
+
+          return cascading_end_time
         },
       },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },

@@ -273,10 +273,6 @@ export function auctionsDetailFormattedStartDateTime(
   const saleEndMoment = moment.tz(endedAt, "GMT")
   const liveStartMoment = moment.tz(liveStartAt, "GMT")
 
-  // return `${saleStartMoment.format("MMM D, YYYY")} • ${saleStartMoment.format(
-  //   "h:mma z"
-  // )}`
-
   if (!!endedAt)
     return `Closed ${saleEndMoment.format(
       "MMM D, YYYY"

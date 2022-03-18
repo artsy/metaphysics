@@ -881,23 +881,26 @@ describe("Sale type", () => {
     })
   })
 
-  describe("auctionsDetailFormattedStartDateTime", () => {
+  describe("cascadingEndTimeFormattedStartDateTime", () => {
     beforeEach(() => {
       Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
     })
     const query = `
       {
         sale(id: "foo-foo") {
-          auctionsDetailFormattedStartDateTime
+          cascadingEndTime {
+            formattedStartDateTime
+          }
         }
       }
     `
 
-    it("returns a string including the correctly formatted start time when we the auction has not started", async () => {
+    it.only("returns a string including the correctly formatted start time when we the auction has not started", async () => {
       const response = await execute(query, {
         start_at: moment().add(3, "days"),
       })
-      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+      console.log(response.sale)
+      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
         "Mar 11, 2022 • 12:33pm GMT"
       )
     })
@@ -939,14 +942,16 @@ describe("Sale type", () => {
     })
   })
 
-  describe("auctionsDetailCascadingIntervalLabel", () => {
+  describe("cascadingIntervalLabel", () => {
     beforeEach(() => {
       Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
     })
     const query = `
       {
         sale(id: "foo-foo") {
-          auctionsDetailCascadingIntervalLabel
+          cascadingEndTime {
+            intervalLabel
+          }
         }
       }
     `
