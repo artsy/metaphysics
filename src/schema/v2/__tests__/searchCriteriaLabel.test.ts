@@ -20,12 +20,14 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Artist",
-        value: "Foo Bar",
+        label: "Foo Bar",
+        value: "foo-bar",
         field: "artistIDs",
       },
       {
         name: "Artist",
-        value: "Baz Qux",
+        label: "Baz Qux",
+        value: "baz-qux",
         field: "artistIDs",
       },
     ])
@@ -46,22 +48,26 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Rarity",
-        value: "Unique",
+        label: "Unique",
+        value: "unique",
         field: "attributionClass",
       },
       {
         name: "Rarity",
-        value: "Limited edition",
+        label: "Limited edition",
+        value: "limited edition",
         field: "attributionClass",
       },
       {
         name: "Rarity",
-        value: "Open edition",
+        label: "Open edition",
+        value: "open edition",
         field: "attributionClass",
       },
       {
         name: "Rarity",
-        value: "Unknown edition",
+        label: "Unknown edition",
+        value: "unknown edition",
         field: "attributionClass",
       },
     ])
@@ -92,72 +98,86 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Medium",
-        value: "Painting",
+        label: "Painting",
+        value: "painting",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Photography",
+        label: "Photography",
+        value: "photography",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Sculpture",
+        label: "Sculpture",
+        value: "sculpture",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Prints",
+        label: "Prints",
+        value: "prints",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Work on Paper",
+        label: "Work on Paper",
+        value: "work-on-paper",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "NFT",
+        label: "NFT",
+        value: "nft",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Design",
+        label: "Design",
+        value: "design",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Drawing",
+        label: "Drawing",
+        value: "drawing",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Installation",
+        label: "Installation",
+        value: "installation",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Film/Video",
+        label: "Film/Video",
+        value: "film-slash-video",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Jewelry",
+        label: "Jewelry",
+        value: "jewelry",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Performance Art",
+        label: "Performance Art",
+        value: "performance-art",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Reproduction",
+        label: "Reproduction",
+        value: "reproduction",
         field: "additionalGeneIDs",
       },
       {
         name: "Medium",
-        value: "Ephemera or Merchandise",
+        label: "Ephemera or Merchandise",
+        value: "ephemera-or-merchandise",
         field: "additionalGeneIDs",
       },
     ])
@@ -174,7 +194,8 @@ describe("resolveSearchCriteriaLabels", () => {
         expect(labels).toIncludeAllMembers([
           {
             name: "Price",
-            value: "$42–$420",
+            label: "$42–$420",
+            value: "42-420",
             field: "priceRange",
           },
         ])
@@ -191,7 +212,8 @@ describe("resolveSearchCriteriaLabels", () => {
         expect(labels).toIncludeAllMembers([
           {
             name: "Price",
-            value: "$42+",
+            label: "$42+",
+            value: "42-*",
             field: "priceRange",
           },
         ])
@@ -208,7 +230,8 @@ describe("resolveSearchCriteriaLabels", () => {
         expect(labels).toIncludeAllMembers([
           {
             name: "Price",
-            value: "$0–$420",
+            label: "$0–$420",
+            value: "*-420",
             field: "priceRange",
           },
         ])
@@ -226,17 +249,20 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Size",
-        value: "Large (over 100cm)",
+        label: "Large (over 100cm)",
+        value: "LARGE",
         field: "sizes",
       },
       {
         name: "Size",
-        value: "Medium (40 – 100cm)",
+        label: "Medium (40 – 100cm)",
+        value: "MEDIUM",
         field: "sizes",
       },
       {
         name: "Size",
-        value: "Small (under 40cm)",
+        label: "Small (under 40cm)",
+        value: "SMALL",
         field: "sizes",
       },
     ])
@@ -253,7 +279,8 @@ describe("resolveSearchCriteriaLabels", () => {
       expect(labels).toIncludeAllMembers([
         {
           name: "Size",
-          value: "h: from 1 cm",
+          label: "h: from 1 cm",
+          value: "0.39370078740157477-*",
           field: "height",
         },
       ])
@@ -268,7 +295,8 @@ describe("resolveSearchCriteriaLabels", () => {
       expect(labels).toIncludeAllMembers([
         {
           name: "Size",
-          value: "h: to 10 cm",
+          label: "h: to 10 cm",
+          value: "*-3.937007874015748",
           field: "height",
         },
       ])
@@ -283,7 +311,8 @@ describe("resolveSearchCriteriaLabels", () => {
       expect(labels).toIncludeAllMembers([
         {
           name: "Size",
-          value: "h: 1–10 cm",
+          label: "h: 1–10 cm",
+          value: "0.39370078740157477-3.937007874015748",
           field: "height",
         },
       ])
@@ -298,7 +327,8 @@ describe("resolveSearchCriteriaLabels", () => {
       expect(labels).toIncludeAllMembers([
         {
           name: "Size",
-          value: "w: from 1 cm",
+          label: "w: from 1 cm",
+          value: "0.39370078740157477-*",
           field: "width",
         },
       ])
@@ -313,7 +343,8 @@ describe("resolveSearchCriteriaLabels", () => {
       expect(labels).toIncludeAllMembers([
         {
           name: "Size",
-          value: "w: to 10 cm",
+          label: "w: to 10 cm",
+          value: "*-3.937007874015748",
           field: "width",
         },
       ])
@@ -328,7 +359,8 @@ describe("resolveSearchCriteriaLabels", () => {
       expect(labels).toIncludeAllMembers([
         {
           name: "Size",
-          value: "w: 1–10 cm",
+          label: "w: 1–10 cm",
+          value: "0.39370078740157477-3.937007874015748",
           field: "width",
         },
       ])
@@ -344,12 +376,14 @@ describe("resolveSearchCriteriaLabels", () => {
       expect(labels).toIncludeAllMembers([
         {
           name: "Size",
-          value: "w: to 51 cm",
+          label: "w: to 51 cm",
+          value: "*-20",
           field: "width",
         },
         {
           name: "Size",
-          value: "h: 1–10 cm",
+          label: "h: 1–10 cm",
+          value: "0.39370078740157477-3.937007874015748",
           field: "height",
         },
       ])
@@ -369,22 +403,26 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Ways to Buy",
-        value: "Buy Now",
+        label: "Buy Now",
+        value: "acquireable",
         field: "acquireable",
       },
       {
         name: "Ways to Buy",
-        value: "Bid",
+        label: "Bid",
+        value: "atAuction",
         field: "atAuction",
       },
       {
         name: "Ways to Buy",
-        value: "Inquire",
+        label: "Inquire",
+        value: "inquireableOnly",
         field: "inquireableOnly",
       },
       {
         name: "Ways to Buy",
-        value: "Make Offer",
+        label: "Make Offer",
+        value: "offerable",
         field: "offerable",
       },
     ])
@@ -400,12 +438,14 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Material",
-        value: "Acrylic",
+        label: "Acrylic",
+        value: "acrylic",
         field: "materialsTerms",
       },
       {
         name: "Material",
-        value: "C-Print",
+        label: "C-Print",
+        value: "c-print",
         field: "materialsTerms",
       },
     ])
@@ -421,11 +461,13 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Artwork Location",
+        label: "Durham, PA, USA",
         value: "Durham, PA, USA",
         field: "locationCities",
       },
       {
         name: "Artwork Location",
+        label: "New York, NY, USA",
         value: "New York, NY, USA",
         field: "locationCities",
       },
@@ -442,11 +484,13 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Time Period",
-        value: "1990–1999",
+        label: "1990–1999",
+        value: "1990",
         field: "majorPeriods",
       },
       {
         name: "Time Period",
+        label: "Early 19th Century",
         value: "Early 19th Century",
         field: "majorPeriods",
       },
@@ -463,12 +507,14 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Color",
-        value: "Blue",
+        label: "Blue",
+        value: "blue",
         field: "colors",
       },
       {
         name: "Color",
-        value: "Yellow",
+        label: "Yellow",
+        value: "yellow",
         field: "colors",
       },
     ])
@@ -491,12 +537,14 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Galleries and Institutions",
-        value: "Foo Bar Gallery",
+        label: "Foo Bar Gallery",
+        value: "foo-bar-gallery",
         field: "partnerIDs",
       },
       {
         name: "Galleries and Institutions",
-        value: "Baz Qux Gallery",
+        label: "Baz Qux Gallery",
+        value: "baz-qux-gallery",
         field: "partnerIDs",
       },
     ])
