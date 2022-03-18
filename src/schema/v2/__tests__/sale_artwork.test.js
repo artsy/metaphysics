@@ -591,6 +591,17 @@ describe("SaleArtwork type", () => {
         },
       })
     })
+
+    it("returns null if the there is no end_at", async () => {
+      saleArtwork.ended_at = null
+      saleArtwork.end_at = null
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedEndDateTime: null,
+        },
+      })
+    })
   })
 
   describe("formattedStartDateTime", () => {
