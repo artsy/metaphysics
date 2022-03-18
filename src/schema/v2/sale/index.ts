@@ -238,50 +238,52 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       cascadingEndTime: {
         type: new GraphQLObjectType({
-          name: "CascadingEndTime",
+          name: "SaleCascadingEndTime",
           fields: {
             formattedStartDateTime: {
               type: GraphQLString,
-              // description:
-              //   "A more granular formatted description of when the auction starts or ends or if it has ended",
+              description:
+                "A more granular formatted description of when the auction starts or ends if it has ended",
               resolve: (
-                // { start_at, end_at, ended_at, live_start_at },
+                { start_at, end_at, ended_at, live_start_at },
                 _options
               ) => {
-                // return auctionsDetailFormattedStartDateTime(
-                //   start_at,
-                //   end_at,
-                //   ended_at,
-                //   live_start_at
-                // )
-                return "hello"
+                return auctionsDetailFormattedStartDateTime(
+                  start_at,
+                  end_at,
+                  ended_at,
+                  live_start_at
+                )
               },
             },
-            // intervalLabel: {
-            //   type: GraphQLString,
-            //   description:
-            //     "A label indicating the interval in minutes in which lots close",
-            //   resolve: (
-            //     { ended_at, cascading_end_time_interval },
-            //     _options
-            //   ) => {
-            //     if (cascading_end_time_interval === null) return null
-            //     if (ended_at) {
-            //       return null
-            //     } else {
-            //       return `Lots close at ${
-            //         cascading_end_time_interval / 60
-            //       }-minute intervals`
-            //     }
-            //   },
-            // },
+            intervalLabel: {
+              type: GraphQLString,
+              description:
+                "A label indicating the interval in minutes in which lots close",
+              resolve: (
+                { ended_at, cascading_end_time_interval },
+                _options
+              ) => {
+                if (!cascading_end_time_interval) return null
+                if (ended_at) {
+                  return null
+                } else {
+                  return `Lots close at ${
+                    cascading_end_time_interval / 60
+                  }-minute intervals`
+                }
+              },
+            },
           },
         }),
-        resolve: (sale, { cascading_end_time }) => {
-          console.log("TEST", sale, cascading_end_time)
-          if (!sale) return null
-
-          return cascading_end_time
+        resolve: (sale) => {
+          return {
+            start_at: sale.start_at,
+            end_at: sale.end_at,
+            ended_at: sale.ended_at,
+            live_start_at: sale.live_start_at,
+            cascading_end_time_interval: sale.cascading_end_time_interval,
+          }
         },
       },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },

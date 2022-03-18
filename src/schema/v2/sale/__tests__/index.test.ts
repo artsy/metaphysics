@@ -895,11 +895,10 @@ describe("Sale type", () => {
       }
     `
 
-    it.only("returns a string including the correctly formatted start time when we the auction has not started", async () => {
+    it("returns a string including the correctly formatted start time when we the auction has not started", async () => {
       const response = await execute(query, {
         start_at: moment().add(3, "days"),
       })
-      console.log(response.sale)
       expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
         "Mar 11, 2022 • 12:33pm GMT"
       )
@@ -909,7 +908,7 @@ describe("Sale type", () => {
       const response = await execute(query, {
         ended_at: moment().subtract(1, "days"),
       })
-      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
         "Closed Mar 7, 2022 • 12:33pm GMT"
       )
     })
@@ -918,7 +917,7 @@ describe("Sale type", () => {
       const response = await execute(query, {
         end_at: moment().subtract(1, "days"),
       })
-      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
         "Mar 7, 2022 • 12:33pm GMT"
       )
     })
@@ -927,7 +926,7 @@ describe("Sale type", () => {
       const response = await execute(query, {
         live_start_at: moment().add(1, "days"),
       })
-      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
         "Live Mar 9, 2022 • 12:33pm GMT"
       )
     })
@@ -936,7 +935,7 @@ describe("Sale type", () => {
       const response = await execute(query, {
         live_start_at: moment().subtract(1, "days"),
       })
-      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
         "In progress"
       )
     })
@@ -960,7 +959,7 @@ describe("Sale type", () => {
       const response = await execute(query, {
         cascading_end_time_interval: 120,
       })
-      expect(response.sale.auctionsDetailCascadingIntervalLabel).toEqual(
+      expect(response.sale.cascadingEndTime.intervalLabel).toEqual(
         "Lots close at 2-minute intervals"
       )
     })
@@ -970,7 +969,7 @@ describe("Sale type", () => {
         ended_at: moment().subtract(30, "minutes"),
         cascading_end_time_interval: 120,
       })
-      expect(response.sale.auctionsDetailCascadingIntervalLabel).toEqual(null)
+      expect(response.sale.cascadingEndTime.intervalLabel).toEqual(null)
     })
   })
 
