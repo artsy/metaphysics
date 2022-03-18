@@ -881,14 +881,16 @@ describe("Sale type", () => {
     })
   })
 
-  describe("auctionsDetailFormattedStartDateTime", () => {
+  describe("cascadingEndTimeFormattedStartDateTime", () => {
     beforeEach(() => {
       Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
     })
     const query = `
       {
         sale(id: "foo-foo") {
-          auctionsDetailFormattedStartDateTime
+          cascadingEndTime {
+            formattedStartDateTime
+          }
         }
       }
     `
@@ -897,7 +899,7 @@ describe("Sale type", () => {
       const response = await execute(query, {
         start_at: moment().add(3, "days"),
       })
-      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
         "Mar 11, 2022 • 12:33pm GMT"
       )
     })
@@ -906,7 +908,7 @@ describe("Sale type", () => {
       const response = await execute(query, {
         ended_at: moment().subtract(1, "days"),
       })
-      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
         "Closed Mar 7, 2022 • 12:33pm GMT"
       )
     })
@@ -915,20 +917,40 @@ describe("Sale type", () => {
       const response = await execute(query, {
         end_at: moment().subtract(1, "days"),
       })
-      expect(response.sale.auctionsDetailFormattedStartDateTime).toEqual(
+      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
         "Mar 7, 2022 • 12:33pm GMT"
+      )
+    })
+
+    it("returns a string including the correctly formatted date when the live start at has yet to start and is a LAI", async () => {
+      const response = await execute(query, {
+        live_start_at: moment().add(1, "days"),
+      })
+      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
+        "Live Mar 9, 2022 • 12:33pm GMT"
+      )
+    })
+
+    it("returns a in progress when the auction has started and is a LAI", async () => {
+      const response = await execute(query, {
+        live_start_at: moment().subtract(1, "days"),
+      })
+      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
+        "In progress"
       )
     })
   })
 
-  describe("auctionsDetailCascadingIntervalLabel", () => {
+  describe("cascadingIntervalLabel", () => {
     beforeEach(() => {
       Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
     })
     const query = `
       {
         sale(id: "foo-foo") {
-          auctionsDetailCascadingIntervalLabel
+          cascadingEndTime {
+            intervalLabel
+          }
         }
       }
     `
@@ -937,8 +959,8 @@ describe("Sale type", () => {
       const response = await execute(query, {
         cascading_end_time_interval: 120,
       })
-      expect(response.sale.auctionsDetailCascadingIntervalLabel).toEqual(
-        "Lots close in 2 minute intervals"
+      expect(response.sale.cascadingEndTime.intervalLabel).toEqual(
+        "Lots close at 2-minute intervals"
       )
     })
 
@@ -947,7 +969,7 @@ describe("Sale type", () => {
         ended_at: moment().subtract(30, "minutes"),
         cascading_end_time_interval: 120,
       })
-      expect(response.sale.auctionsDetailCascadingIntervalLabel).toEqual(null)
+      expect(response.sale.cascadingEndTime.intervalLabel).toEqual(null)
     })
   })
 

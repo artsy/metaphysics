@@ -261,11 +261,17 @@ export function cascadingFormattedStartDateTime(
   return dateRange(startAt, endAt, timezone, "long")
 }
 
-export function auctionsDetailFormattedStartDateTime(startAt, endAt, endedAt) {
+export function auctionsDetailFormattedStartDateTime(
+  startAt,
+  endAt,
+  endedAt,
+  liveStartAt
+) {
   const thisMoment = moment.tz(moment(), "GMT")
   const saleStartMoment = moment.tz(startAt, "GMT")
   const lotsClosingMoment = moment.tz(endAt, "GMT")
   const saleEndMoment = moment.tz(endedAt, "GMT")
+  const liveStartMoment = moment.tz(liveStartAt, "GMT")
 
   if (!!endedAt)
     return `Closed ${saleEndMoment.format(
@@ -276,6 +282,18 @@ export function auctionsDetailFormattedStartDateTime(startAt, endAt, endedAt) {
     return `${saleStartMoment.format("MMM D, YYYY")} • ${saleStartMoment.format(
       "h:mma z"
     )}`
+  if (liveStartAt) {
+    if (thisMoment.isBefore(liveStartMoment)) {
+      return `Live ${liveStartMoment.format(
+        "MMM D, YYYY"
+      )} • ${liveStartMoment.format("h:mma z")}`
+    } else if (
+      thisMoment.isAfter(liveStartMoment) &&
+      (thisMoment.isBefore(lotsClosingMoment) || !endAt)
+    ) {
+      return `In progress`
+    }
+  }
   return `${lotsClosingMoment.format(
     "MMM D, YYYY"
   )} • ${lotsClosingMoment.format("h:mma z")}`
