@@ -1,14 +1,14 @@
 import {
-  GraphQLString,
+  GraphQLBoolean,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLInt,
-  GraphQLBoolean,
+  GraphQLString,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
-import { formatGravityError } from "lib/gravityErrorHandler"
 import {
   ArtworkAttributionClassEnum,
   computeImageSources,
@@ -17,6 +17,7 @@ import {
 interface MyCollectionArtworkUpdateMutationInput {
   artworkId: string
   artistIds?: [string]
+  attributionClass?: string
   category?: string
   costCurrencyCode?: string
   costMinor?: number
@@ -29,7 +30,7 @@ interface MyCollectionArtworkUpdateMutationInput {
   artworkLocation?: string
   pricePaidCents?: number
   pricePaidCurrency?: string
-  attributionClass?: string
+  submissionId?: string
 }
 
 export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
@@ -43,11 +44,11 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     artworkId: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    title: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
     artistIds: {
       type: new GraphQLList(GraphQLString),
+    },
+    attributionClass: {
+      type: ArtworkAttributionClassEnum,
     },
     category: {
       type: GraphQLString,
@@ -97,11 +98,14 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     provenance: {
       type: GraphQLString,
     },
-    width: {
+    submissionId: {
       type: GraphQLString,
     },
-    attributionClass: {
-      type: ArtworkAttributionClassEnum,
+    title: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    width: {
+      type: GraphQLString,
     },
   },
   outputFields: {
@@ -123,6 +127,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       artworkLocation,
       pricePaidCents,
       pricePaidCurrency,
+      submissionId,
       attributionClass,
       ...rest
     },
@@ -153,6 +158,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         price_paid_cents: pricePaidCents,
         price_paid_currency: pricePaidCurrency,
         attribution_class: attributionClass,
+        submission_id: submissionId,
         ...rest,
       })
 

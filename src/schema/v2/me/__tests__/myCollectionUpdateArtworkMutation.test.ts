@@ -1,5 +1,5 @@
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 const updatedArtwork = { id: "some-artwork-id" }
 const updateArtworkLoader = jest.fn().mockResolvedValue(updatedArtwork)
@@ -34,6 +34,7 @@ const defaultArtworkDetails = ({
   title: "hey now",
   width: "20",
   attribution_class: "open edition",
+  submissionId: "submission-id",
 })
 
 const artworkLoader = jest.fn().mockResolvedValue(defaultArtworkDetails())
@@ -73,6 +74,7 @@ const computeMutationInput = ({
           provenance: "Pat Hearn Gallery"
           title: "hey now"
           width: "20"
+          submissionId: "submission-id"
         }
       ) {
         artworkOrError {
