@@ -19,7 +19,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
     name: {
       description: "The given name of the user.",
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ name, email }) => name || email,
+      resolve: ({ name, email }) => name || email || "",
     },
     email: {
       description: "The given email of the user.",

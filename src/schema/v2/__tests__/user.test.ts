@@ -84,6 +84,33 @@ describe("User", () => {
     expect(user.name).toEqual("foo@bar.org")
   })
 
+  it("falls back to empty string for name if name and e-mail are blank", async () => {
+    // This is what returned from Gravity when a non-admin user hits /v1/user/:id
+    const foundUser = {
+      id: "123456",
+      _id: "000012345",
+      name: null,
+    }
+
+    const userByEmailLoader = (data) => {
+      if (data) {
+        return Promise.resolve(foundUser)
+      }
+      throw new Error("Unexpected invocation")
+    }
+
+    const query = gql`
+      {
+        user(email: "foo@bar.com") {
+          name
+        }
+      }
+    `
+
+    const { user } = await runAuthenticatedQuery(query, { userByEmailLoader })
+    expect(user.name).toEqual("")
+  })
+
   it("returns push notification settings for a user", async () => {
     const foundUser = {
       id: "123456",
