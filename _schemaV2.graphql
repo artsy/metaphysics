@@ -2009,6 +2009,7 @@ union ArtworkHighlight = Article | Show
 
 enum ArtworkImportSource {
   CONVECTION
+  MY_COLLECTION
   UNKNOWN
 }
 

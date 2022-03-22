@@ -74,6 +74,8 @@ const has_multiple_editions = (edition_sets) => {
 
 const IMPORT_SOURCES = {
   CONVECTION: { value: "convection" },
+  MY_COLLECTION: { value: "my collection" },
+
   UNKNOWN: { value: "unknown" },
 } as const
 
