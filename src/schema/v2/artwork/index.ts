@@ -77,7 +77,7 @@ const IMPORT_SOURCES = {
   UNKNOWN: { value: "unknown" },
 } as const
 
-const ArtworkImportSourceEnum = new GraphQLEnumType({
+export const ArtworkImportSourceEnum = new GraphQLEnumType({
   name: "ArtworkImportSource",
   values: IMPORT_SOURCES,
 })

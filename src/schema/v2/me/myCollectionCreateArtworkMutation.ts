@@ -9,6 +9,7 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { ArtworkImportSourceEnum } from "../artwork"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 
 const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
@@ -45,15 +46,6 @@ export const ArtworkAttributionClassEnum = new GraphQLEnumType({
     },
     UNKNOWN_EDITION: {
       value: "unknown edition",
-    },
-  },
-})
-
-export const ArtworkImportSourceEnum = new GraphQLEnumType({
-  name: "ArtworkImportSourceType",
-  values: {
-    CONVECTION: {
-      value: "convection",
     },
   },
 })

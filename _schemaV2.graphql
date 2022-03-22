@@ -2012,10 +2012,6 @@ enum ArtworkImportSource {
   UNKNOWN
 }
 
-enum ArtworkImportSourceType {
-  CONVECTION
-}
-
 type ArtworkInfoRow {
   # Additional details about given attribute
   details: String
@@ -9988,7 +9984,7 @@ input MyCollectionCreateArtworkInput {
   editionSize: String
   externalImageUrls: [String]
   height: String
-  importSource: ArtworkImportSourceType
+  importSource: ArtworkImportSource
   isEdition: Boolean
   medium: String
   metric: String
