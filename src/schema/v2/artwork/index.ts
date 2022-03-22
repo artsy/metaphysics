@@ -1,6 +1,7 @@
 import config from "config"
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLFloat,
   GraphQLInt,
@@ -71,6 +72,16 @@ const has_multiple_editions = (edition_sets) => {
   return edition_sets && edition_sets.length > 1
 }
 
+const IMPORT_SOURCES = {
+  CONVECTION: { value: "convection" },
+  MY_COLLECTION: { value: "my collection" },
+} as const
+
+export const ArtworkImportSourceEnum = new GraphQLEnumType({
+  name: "ArtworkImportSource",
+  values: IMPORT_SOURCES,
+})
+
 export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "Artwork",
   interfaces: [NodeInterface, Searchable, Sellable],
@@ -133,6 +144,19 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ attribution_class }) => {
           if (attribution_class) {
             return attributionClasses[attribution_class]
+          }
+        },
+      },
+      importSource: {
+        type: ArtworkImportSourceEnum,
+        description: "Represents the import source of the artwork",
+        resolve: ({ import_source }) => {
+          const knownImportSources = [
+            ...Object.values(IMPORT_SOURCES).map(({ value }) => value),
+          ]
+
+          if (knownImportSources.includes(import_source)) {
+            return import_source
           }
         },
       },

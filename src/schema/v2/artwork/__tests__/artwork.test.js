@@ -1,10 +1,9 @@
 /* eslint-disable promise/always-return */
+import gql from "lib/gql"
 import { assign } from "lodash"
 import moment from "moment"
-
-import { runQuery } from "schema/v2/test/utils"
-import gql from "lib/gql"
 import { getMicrofunnelDataByArtworkInternalID } from "schema/v2/artist/targetSupply/utils/getMicrofunnelData"
+import { runQuery } from "schema/v2/test/utils"
 
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
 
@@ -59,6 +58,72 @@ describe("Artwork type", () => {
         .withArgs(artwork.id)
         .returns(Promise.resolve(artwork)),
     }
+  })
+
+  describe("#importSource", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          importSource
+        }
+      }
+    `
+
+    it("returns properly import source", async () => {
+      artwork = {
+        ...artwork,
+        import_source: "convection",
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          importSource: "CONVECTION",
+        },
+      })
+    })
+
+    it("returns null if source is unknown", async () => {
+      artwork = {
+        ...artwork,
+        import_source: "something-else",
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          importSource: null,
+        },
+      })
+    })
+
+    it("returns null if source is empty", async () => {
+      artwork = {
+        ...artwork,
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          importSource: null,
+        },
+      })
+    })
   })
 
   describe("#formattedMetadata", () => {
