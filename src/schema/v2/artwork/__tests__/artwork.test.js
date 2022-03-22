@@ -88,7 +88,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns UNKNOWN if source is unknown", async () => {
+    it("returns null if source is unknown", async () => {
       artwork = {
         ...artwork,
         import_source: "something-else",
@@ -102,7 +102,7 @@ describe("Artwork type", () => {
 
       expect(data).toEqual({
         artwork: {
-          importSource: "UNKNOWN",
+          importSource: null,
         },
       })
     })

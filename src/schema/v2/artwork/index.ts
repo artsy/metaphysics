@@ -75,8 +75,6 @@ const has_multiple_editions = (edition_sets) => {
 const IMPORT_SOURCES = {
   CONVECTION: { value: "convection" },
   MY_COLLECTION: { value: "my collection" },
-
-  UNKNOWN: { value: "unknown" },
 } as const
 
 export const ArtworkImportSourceEnum = new GraphQLEnumType({
@@ -155,14 +153,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ import_source }) => {
           const knownImportSources = [
             ...Object.values(IMPORT_SOURCES).map(({ value }) => value),
-            undefined,
           ]
 
-          if (!knownImportSources.includes(import_source)) {
-            return IMPORT_SOURCES.UNKNOWN.value
+          if (knownImportSources.includes(import_source)) {
+            return import_source
           }
-
-          return import_source
         },
       },
       artworkLocation: {
