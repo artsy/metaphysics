@@ -49,6 +49,15 @@ export const ArtworkAttributionClassEnum = new GraphQLEnumType({
   },
 })
 
+export const ArtworkImportSourceEnum = new GraphQLEnumType({
+  name: "ArtworkImportSourceType",
+  values: {
+    CONVECTION: {
+      value: "convection",
+    },
+  },
+})
+
 export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   any,
   any,
@@ -66,7 +75,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
 
     // Optional
     importSource: {
-      type: GraphQLString,
+      type: ArtworkImportSourceEnum,
     },
     submissionId: {
       type: GraphQLString,
