@@ -50,7 +50,7 @@ const computeMutationInput = ({
           provenance: "Pat Hearn Gallery"
           title: "hey now"
           width: "20"
-          importSource: "convection"
+          importSource: CONVECTION
         }
       ) {
         artworkOrError {
