@@ -1,15 +1,15 @@
 import {
-  GraphQLString,
-  GraphQLList,
-  GraphQLInt,
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLString,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
-import { GraphQLNonNull } from "graphql"
-import { MyCollectionArtworkMutationType } from "./myCollection"
 import { formatGravityError } from "lib/gravityErrorHandler"
+import { ResolverContext } from "types/graphql"
+import { MyCollectionArtworkMutationType } from "./myCollection"
 
 const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
@@ -65,6 +65,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
 
     // Optional
+    importSource: {
+      type: GraphQLString,
+    },
     submissionId: {
       type: GraphQLString,
     },
@@ -143,6 +146,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       pricePaidCents,
       pricePaidCurrency,
       attributionClass,
+      importSource,
       ...rest
     },
     {
@@ -170,6 +174,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         price_paid_currency: pricePaidCurrency,
         artwork_location: artworkLocation,
         attribution_class: attributionClass,
+        import_source: importSource,
         ...rest,
       })
 
