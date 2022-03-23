@@ -1288,9 +1288,15 @@ type RemoveAssetFromConsignmentSubmissionPayload {
   clientMutationId: String
 }
 
+"""
+Enum with all available submission states
+"""
 enum State {
   APPROVED
+  CLOSED
   DRAFT
+  HOLD
+  PUBLISHED
   REJECTED
   SUBMITTED
 }
