@@ -17,12 +17,12 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
             submitted: "Submission in progress",
             approved: "Submission in progress",
             published: "Submission in progress",
-            rejected: "Submission in progress",
+            rejected: "Submission evaluated",
             hold: "Submission in progress",
             closed: "Submission evaluated",
             open: "Submission in progress",
             sold: "Sold",
-            "bought in": "Sold",
+            "bought in": "Submission evaluated",
             canceled: "Submission evaluated",
             "withdrawn - pre-launch": "Submission evaluated",
             "withdrawn - post-launch": "Submission evaluated",
@@ -37,7 +37,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
           const state =
             consignmentSubmission.saleState || consignmentSubmission.state
 
-          return ["sold", "bought in"].includes(state?.toLowerCase())
+          return ["sold"].includes(state?.toLowerCase())
         },
       },
       inProgress: {
