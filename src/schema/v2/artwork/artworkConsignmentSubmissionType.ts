@@ -15,8 +15,8 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
             consignmentSubmission.saleState || consignmentSubmission.state
           const statusDisplayTexts = {
             submitted: "Submission in progress",
-            approved: "Submission in progress",
-            published: "Submission in progress",
+            approved: "Submission evaluated",
+            published: "Submission evaluated",
             rejected: "Submission evaluated",
             hold: "Submission in progress",
             closed: "Submission evaluated",
@@ -28,7 +28,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
             "withdrawn - post-launch": "Submission evaluated",
           }
 
-          return statusDisplayTexts[state?.toLowerCase()]
+          return statusDisplayTexts[state?.toLowerCase()] || "Unrecognized"
         },
       },
       isSold: {
@@ -46,13 +46,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
           const state =
             consignmentSubmission.saleState || consignmentSubmission.state
 
-          return [
-            "submitted",
-            "published",
-            "approved",
-            "hold",
-            "open",
-          ].includes(state?.toLowerCase())
+          return ["submitted", "hold", "open"].includes(state?.toLowerCase())
         },
       },
     }

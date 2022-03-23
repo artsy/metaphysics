@@ -42,13 +42,13 @@ describe("ArtworkConsignmentSubmissionType", () => {
       artwork.consignmentSubmission.state = "approved"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.displayText).toEqual(
-        "Submission in progress"
+        "Submission evaluated"
       )
 
       artwork.consignmentSubmission.state = "published"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.displayText).toEqual(
-        "Submission in progress"
+        "Submission evaluated"
       )
 
       artwork.consignmentSubmission.state = "rejected"
@@ -124,11 +124,11 @@ describe("ArtworkConsignmentSubmissionType", () => {
 
       artwork.consignmentSubmission.state = "approved"
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.inProgress).toBeTrue()
+      expect(data.artwork.consignmentSubmission.inProgress).toBeFalse()
 
       artwork.consignmentSubmission.state = "published"
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.inProgress).toBeTrue()
+      expect(data.artwork.consignmentSubmission.inProgress).toBeFalse()
 
       artwork.consignmentSubmission.state = "rejected"
       data = await runQuery(query, context)
