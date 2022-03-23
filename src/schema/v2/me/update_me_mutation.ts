@@ -236,7 +236,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
           await updateCollectorProfileIconLoader(payload)
         }
       }
-      return updateMeLoader(user)
+      return await updateMeLoader(user)
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
