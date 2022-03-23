@@ -103,6 +103,14 @@ describe("ArtworkConsignmentSubmissionType", () => {
         "Submission evaluated"
       )
     })
+
+    it("returns unrecognized", async () => {
+      artwork.consignmentSubmission.state = "New state"
+      const data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.displayText).toEqual(
+        "Unrecognized"
+      )
+    })
   })
 
   describe("#inProgress", () => {
@@ -166,6 +174,12 @@ describe("ArtworkConsignmentSubmissionType", () => {
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.inProgress).toBeFalse()
     })
+
+    it("returns undefined if state unknown", async () => {
+      artwork.consignmentSubmission.state = "New state"
+      const data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.inProgress).toBeFalse()
+    })
   })
 
   describe("#isSold", () => {
@@ -227,6 +241,12 @@ describe("ArtworkConsignmentSubmissionType", () => {
 
       artwork.consignmentSubmission.state = "withdrawn - post-launch"
       data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.isSold).toBeFalse()
+    })
+
+    it("returns undefined if state unknown", async () => {
+      artwork.consignmentSubmission.state = "New state"
+      const data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.isSold).toBeFalse()
     })
   })
