@@ -37,7 +37,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
           const state =
             consignmentSubmission.saleState || consignmentSubmission.state
 
-          return ["sold"].includes(state?.toLowerCase())
+          return "sold" === state?.toLowerCase()
         },
       },
       inProgress: {
