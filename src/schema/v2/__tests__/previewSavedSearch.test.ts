@@ -8,7 +8,7 @@ describe("previewSavedSearch", () => {
         labels {
           field
           name
-          label
+          displayValue
           value
         }
       }
@@ -22,7 +22,7 @@ describe("previewSavedSearch", () => {
       {
         field: "acquireable",
         name: "Ways to Buy",
-        label: "Buy Now",
+        displayValue: "Buy Now",
         value: "acquireable",
       },
     ])

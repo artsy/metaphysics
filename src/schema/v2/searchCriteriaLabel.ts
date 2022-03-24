@@ -21,11 +21,11 @@ type SearchCriteriaLabel = {
   /** The human-friendly name of the filter facet */
   name: string
 
-  /** The human-friendly label of the filter facet */
-  label: string
-
   /** The human-friendly value of the filter facet */
   value: string
+
+  /** The human-friendly label of the filter facet */
+  displayValue: string
 }
 
 /**
@@ -49,13 +49,13 @@ export const SearchCriteriaLabel = new GraphQLObjectType<
       type: GraphQLNonNull(GraphQLString),
       description: "The human-friendly name of the filter facet",
     },
-    label: {
-      type: GraphQLNonNull(GraphQLString),
-      description: "The human-friendly label of the filter facet",
-    },
     value: {
       type: GraphQLNonNull(GraphQLString),
       description: "The human-friendly value of the filter facet",
+    },
+    displayValue: {
+      type: GraphQLNonNull(GraphQLString),
+      description: "The human-friendly label of the filter facet",
     },
   },
 })
@@ -124,7 +124,7 @@ async function getArtistLabels(artistIDs: string[], artistLoader) {
       const artist = await artistLoader(id)
       return {
         name: "Artist",
-        label: artist.name,
+        displayValue: artist.name,
         value: id,
         field: "artistIDs",
       }
@@ -137,7 +137,7 @@ function getRarityLabels(attributionClasses: string[]) {
 
   return attributionClasses.map((attributionClass) => ({
     name: "Rarity",
-    label: allAttributionClasses[attributionClass].name,
+    displayValue: allAttributionClasses[attributionClass].name,
     value: attributionClass,
     field: "attributionClass",
   }))
@@ -171,7 +171,7 @@ function getMediumLabels(additionalGeneIDs: string[]) {
 
   return additionalGeneIDs.map((geneID) => ({
     name: "Medium",
-    label: MEDIUM_GENES[geneID],
+    displayValue: MEDIUM_GENES[geneID],
     value: geneID,
     field: "additionalGeneIDs",
   }))
@@ -196,7 +196,7 @@ function getPriceLabel(priceRange: string): SearchCriteriaLabel | undefined {
 
   return {
     name: "Price",
-    label,
+    displayValue: label,
     value: priceRange,
     field: "priceRange",
   }
@@ -207,7 +207,7 @@ function getSizeLabels(sizes: string[]) {
 
   return sizes.map((size) => ({
     name: "Size",
-    label: SIZES[`${size}`],
+    displayValue: SIZES[`${size}`],
     value: size,
     field: "sizes",
   }))
@@ -251,7 +251,7 @@ function getCustomSizeLabels({
   if (width) {
     labels.push({
       name: "Size",
-      label: extractSizeLabel("w", width),
+      displayValue: extractSizeLabel("w", width),
       value: width,
       field: "width",
     })
@@ -260,7 +260,7 @@ function getCustomSizeLabels({
   if (height) {
     labels.push({
       name: "Size",
-      label: extractSizeLabel("h", height),
+      displayValue: extractSizeLabel("h", height),
       value: height,
       field: "height",
     })
@@ -281,7 +281,7 @@ function getWaysToBuyLabels(waysToBuy: {
   if (acquireable)
     labels.push({
       name: "Ways to Buy",
-      label: "Buy Now",
+      displayValue: "Buy Now",
       value: "acquireable",
       field: "acquireable",
     })
@@ -289,7 +289,7 @@ function getWaysToBuyLabels(waysToBuy: {
   if (atAuction)
     labels.push({
       name: "Ways to Buy",
-      label: "Bid",
+      displayValue: "Bid",
       value: "atAuction",
       field: "atAuction",
     })
@@ -297,7 +297,7 @@ function getWaysToBuyLabels(waysToBuy: {
   if (inquireableOnly)
     labels.push({
       name: "Ways to Buy",
-      label: "Inquire",
+      displayValue: "Inquire",
       value: "inquireableOnly",
       field: "inquireableOnly",
     })
@@ -305,7 +305,7 @@ function getWaysToBuyLabels(waysToBuy: {
   if (offerable)
     labels.push({
       name: "Ways to Buy",
-      label: "Make Offer",
+      displayValue: "Make Offer",
       value: "offerable",
       field: "offerable",
     })
@@ -319,7 +319,7 @@ function getMaterialLabels(materialsTerms: string[]) {
   return materialsTerms.map((term) => {
     return {
       name: "Material",
-      label: toTitleCase(term),
+      displayValue: toTitleCase(term),
       value: term,
       field: "materialsTerms",
     }
@@ -331,7 +331,7 @@ function getLocationLabels(locationCities: string[]): SearchCriteriaLabel[] {
 
   return locationCities.map((city) => ({
     name: "Artwork Location",
-    label: city,
+    displayValue: city,
     value: city,
     field: "locationCities",
   }))
@@ -359,7 +359,7 @@ function getPeriodLabels(majorPeriods: string[]) {
   return majorPeriods.map((period) => {
     return {
       name: "Time Period",
-      label: DISPLAY_TEXT[period] ?? period,
+      displayValue: DISPLAY_TEXT[period] ?? period,
       value: period,
       field: "majorPeriods",
     }
@@ -375,7 +375,7 @@ function getColorLabels(colors: string[]) {
 
     return {
       name: "Color",
-      label: color.name,
+      displayValue: color.name,
       value: color.value,
       field: "colors",
     }
@@ -390,7 +390,7 @@ async function getPartnerLabels(partnerIDs: string[], partnerLoader) {
       const partner = await partnerLoader(id)
       return {
         name: "Galleries and Institutions",
-        label: partner.name,
+        displayValue: partner.name,
         value: id,
         field: "partnerIDs",
       }

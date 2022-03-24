@@ -12922,11 +12922,11 @@ type SearchCriteriaEdge {
 
 # Human-friendly representation of a single SearchCriteria filter
 type SearchCriteriaLabel {
+  # The human-friendly label of the filter facet
+  displayValue: String!
+
   # The GraphQL field name of the filter facet
   field: String!
-
-  # The human-friendly label of the filter facet
-  label: String!
 
   # The human-friendly name of the filter facet
   name: String!
