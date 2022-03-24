@@ -23,7 +23,7 @@ describe("previewSavedSearch", () => {
         field: "acquireable",
         name: "Ways to Buy",
         displayValue: "Buy Now",
-        value: "acquireable",
+        value: "true",
       },
     ])
   })

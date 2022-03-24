@@ -404,25 +404,25 @@ describe("resolveSearchCriteriaLabels", () => {
       {
         name: "Ways to Buy",
         displayValue: "Buy Now",
-        value: "acquireable",
+        value: "true",
         field: "acquireable",
       },
       {
         name: "Ways to Buy",
         displayValue: "Bid",
-        value: "atAuction",
+        value: "true",
         field: "atAuction",
       },
       {
         name: "Ways to Buy",
         displayValue: "Inquire",
-        value: "inquireableOnly",
+        value: "true",
         field: "inquireableOnly",
       },
       {
         name: "Ways to Buy",
         displayValue: "Make Offer",
-        value: "offerable",
+        value: "true",
         field: "offerable",
       },
     ])

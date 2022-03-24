@@ -282,7 +282,7 @@ function getWaysToBuyLabels(waysToBuy: {
     labels.push({
       name: "Ways to Buy",
       displayValue: "Buy Now",
-      value: "acquireable",
+      value: "true",
       field: "acquireable",
     })
 
@@ -290,7 +290,7 @@ function getWaysToBuyLabels(waysToBuy: {
     labels.push({
       name: "Ways to Buy",
       displayValue: "Bid",
-      value: "atAuction",
+      value: "true",
       field: "atAuction",
     })
 
@@ -298,7 +298,7 @@ function getWaysToBuyLabels(waysToBuy: {
     labels.push({
       name: "Ways to Buy",
       displayValue: "Inquire",
-      value: "inquireableOnly",
+      value: "true",
       field: "inquireableOnly",
     })
 
@@ -306,7 +306,7 @@ function getWaysToBuyLabels(waysToBuy: {
     labels.push({
       name: "Ways to Buy",
       displayValue: "Make Offer",
-      value: "offerable",
+      value: "true",
       field: "offerable",
     })
 
