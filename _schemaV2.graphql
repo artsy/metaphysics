@@ -12931,7 +12931,7 @@ type SearchCriteriaLabel {
   # The human-friendly name of the filter facet
   name: String!
 
-  # The human-friendly value of the filter facet
+  # The value of the filter facet
   value: String!
 }
 

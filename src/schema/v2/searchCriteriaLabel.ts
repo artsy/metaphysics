@@ -21,7 +21,7 @@ type SearchCriteriaLabel = {
   /** The human-friendly name of the filter facet */
   name: string
 
-  /** The human-friendly value of the filter facet */
+  /** The value of the filter facet */
   value: string
 
   /** The human-friendly label of the filter facet */
@@ -51,7 +51,7 @@ export const SearchCriteriaLabel = new GraphQLObjectType<
     },
     value: {
       type: GraphQLNonNull(GraphQLString),
-      description: "The human-friendly value of the filter facet",
+      description: "The value of the filter facet",
     },
     displayValue: {
       type: GraphQLNonNull(GraphQLString),
