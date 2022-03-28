@@ -1,15 +1,16 @@
 import {
+  convertConnectionArgsToGravityArgs,
   exclude,
   isExisty,
+  isPositiveInteger,
   markdownToText,
-  removeNulls,
   removeEmptyValues,
+  removeNulls,
   resolveBlueGreen,
   stripTags,
   toKey,
   toQueryString,
   unescapeEntities,
-  convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
 
 describe("exclude", () => {
@@ -272,5 +273,17 @@ describe("convertConnectionArgsToGravityArgs", () => {
       offset: 60,
       size: 30,
     })
+  })
+})
+
+describe("isPositiveInteger", () => {
+  it("only returns true if the input is a positive integer", () => {
+    expect(isPositiveInteger("0")).toEqual(false)
+    expect(isPositiveInteger("1")).toEqual(true)
+    expect(isPositiveInteger("-1")).toEqual(false)
+    expect(isPositiveInteger("1.5")).toEqual(false)
+    expect(isPositiveInteger("test")).toEqual(false)
+    expect(isPositiveInteger("")).toEqual(false)
+    expect(isPositiveInteger("   ")).toEqual(false)
   })
 })
