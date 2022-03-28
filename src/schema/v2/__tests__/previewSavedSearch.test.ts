@@ -8,6 +8,7 @@ describe("previewSavedSearch", () => {
         labels {
           field
           name
+          displayValue
           value
         }
       }
@@ -18,7 +19,12 @@ describe("previewSavedSearch", () => {
     const { previewSavedSearch } = await runQuery(query)
 
     expect(previewSavedSearch.labels).toEqual([
-      { field: "acquireable", name: "Ways to Buy", value: "Buy Now" },
+      {
+        field: "acquireable",
+        name: "Ways to Buy",
+        displayValue: "Buy Now",
+        value: "true",
+      },
     ])
   })
 })
