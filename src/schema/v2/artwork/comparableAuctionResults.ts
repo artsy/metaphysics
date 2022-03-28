@@ -1,6 +1,9 @@
 import { GraphQLFieldConfig } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import {
+  convertConnectionArgsToGravityArgs,
+  isPositiveInteger,
+} from "lib/helpers"
 import { isNull, merge, omitBy } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
@@ -23,7 +26,7 @@ export const ComparableAuctionResults: GraphQLFieldConfig<
 
     const comparableAuctionResultsParams = {
       artist_id: artwork.artist._id,
-      date: artwork.date === "" ? undefined : artwork.date,
+      date: isPositiveInteger(artwork.date) ? artwork.date : undefined,
       height_cm: artwork.height_cm,
       width_cm: artwork.width_cm,
       depth_cm: artwork.depth_cm,

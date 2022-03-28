@@ -82,7 +82,7 @@ describe("ComparableAuctionResults", () => {
 const mockArtwork = {
   id: "joan-miro-miro-milano-2",
   artist: { _id: "an-artist-id", id: "artist-id" },
-  date: "date",
+  date: "2019",
   height_cm: "height_cm",
   width_cm: "width_cm",
   depth_cm: "depth_cm",
