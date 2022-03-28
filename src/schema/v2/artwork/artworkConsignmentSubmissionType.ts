@@ -8,6 +8,10 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
   name: "ArtworkConsignmentSubmission",
   fields: () => {
     return {
+      internalID: {
+        type: GraphQLString,
+        resolver: ({ id }) => id,
+      },
       displayText: {
         type: GraphQLString,
         resolve: (consignmentSubmission) => {
