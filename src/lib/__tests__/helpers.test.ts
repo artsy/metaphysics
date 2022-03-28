@@ -2,7 +2,7 @@ import {
   convertConnectionArgsToGravityArgs,
   exclude,
   isExisty,
-  isPositiveInteger,
+  isInteger,
   markdownToText,
   removeEmptyValues,
   removeNulls,
@@ -276,14 +276,14 @@ describe("convertConnectionArgsToGravityArgs", () => {
   })
 })
 
-describe("isPositiveInteger", () => {
-  it("only returns true if the input is a positive integer", () => {
-    expect(isPositiveInteger("0")).toEqual(false)
-    expect(isPositiveInteger("1")).toEqual(true)
-    expect(isPositiveInteger("-1")).toEqual(false)
-    expect(isPositiveInteger("1.5")).toEqual(false)
-    expect(isPositiveInteger("test")).toEqual(false)
-    expect(isPositiveInteger("")).toEqual(false)
-    expect(isPositiveInteger("   ")).toEqual(false)
+describe("isInteger", () => {
+  it("only returns true if the input string is a valid integer", () => {
+    expect(isInteger("0")).toEqual(true)
+    expect(isInteger("1")).toEqual(true)
+    expect(isInteger("-1")).toEqual(true)
+    expect(isInteger("1.5")).toEqual(false)
+    expect(isInteger("test")).toEqual(false)
+    expect(isInteger("")).toEqual(false)
+    expect(isInteger("   ")).toEqual(false)
   })
 })
