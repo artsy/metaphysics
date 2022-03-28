@@ -40,5 +40,49 @@ describe("Image", () => {
         srcSet: `${url1x} 1x, ${url2x} 2x`,
       })
     })
+
+    it("accepts a quality argument", () => {
+      const url1x =
+        "https://gemini.cloudfront.test?resize_to=fill&width=500&height=500&quality=90&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg"
+      const url2x =
+        "https://gemini.cloudfront.test?resize_to=fill&width=1000&height=1000&quality=25&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg"
+      const bareImageUrl = normalize("https://xxx.cloudfront.net/xxx/cat.jpg")
+
+      expect(
+        croppedImageUrl(bareImageUrl, {
+          width: 500,
+          height: 500,
+          quality: [90, 25],
+        })
+      ).toEqual({
+        width: 500,
+        height: 500,
+        url: url1x,
+        src: url1x,
+        srcSet: `${url1x} 1x, ${url2x} 2x`,
+      })
+    })
+
+    it("accepts a single 1x quality argument", () => {
+      const url1x =
+        "https://gemini.cloudfront.test?resize_to=fill&width=500&height=500&quality=50&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg"
+      const url2x =
+        "https://gemini.cloudfront.test?resize_to=fill&width=1000&height=1000&quality=50&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg"
+      const bareImageUrl = normalize("https://xxx.cloudfront.net/xxx/cat.jpg")
+
+      expect(
+        croppedImageUrl(bareImageUrl, {
+          width: 500,
+          height: 500,
+          quality: [50],
+        })
+      ).toEqual({
+        width: 500,
+        height: 500,
+        url: url1x,
+        src: url1x,
+        srcSet: `${url1x} 1x, ${url2x} 2x`,
+      })
+    })
   })
 })
