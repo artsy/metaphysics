@@ -40,7 +40,7 @@ describe("ComparableAuctionResults", () => {
     expect(artworkLoader).toHaveBeenCalledWith(mockArtwork.id, {})
     expect(comparableAuctionResultsLoader).toHaveBeenCalledWith({
       artist_id: mockArtwork.artist._id,
-      date: mockArtwork.date,
+      date: "notadate",
       height_cm: mockArtwork.height_cm,
       width_cm: mockArtwork.width_cm,
       depth_cm: mockArtwork.depth_cm,
