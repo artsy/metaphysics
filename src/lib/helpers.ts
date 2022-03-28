@@ -226,10 +226,12 @@ export const extractNodes = <Node extends object, T = Node>(
   )
 }
 
-export const isPositiveInteger = (str: string) => {
+export const isInteger = (str: string) => {
+  return Number.isInteger(parseFloat(str))
+
   const num = Number(str)
 
-  if (Number.isInteger(num) && num > 0) {
+  if (Number.isInteger(num)) {
     return true
   }
 
