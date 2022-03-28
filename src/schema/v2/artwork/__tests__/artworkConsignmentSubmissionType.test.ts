@@ -6,7 +6,7 @@ describe("ArtworkConsignmentSubmissionType", () => {
     id: "richard-prince-untitled-portrait",
     consignmentSubmission: {
       state: "draft",
-      id: "someID",
+      internalID: "someID",
     },
   }
 
@@ -27,14 +27,14 @@ describe("ArtworkConsignmentSubmissionType", () => {
         artwork(id: "richard-prince-untitled-portrait") {
           slug
           consignmentSubmission {
-            id
+            internalID
           }
         }
       }
     `
     it("returns internalID if present", async () => {
-      let data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.displayText).toEqual("someID")
+      const data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.internalID).toEqual("someID")
     })
   })
 
