@@ -6,6 +6,7 @@ describe("ArtworkConsignmentSubmissionType", () => {
     id: "richard-prince-untitled-portrait",
     consignmentSubmission: {
       state: "draft",
+      internalID: "someID",
     },
   }
 
@@ -18,6 +19,23 @@ describe("ArtworkConsignmentSubmissionType", () => {
         .withArgs(artwork.id)
         .returns(Promise.resolve(artwork)),
     }
+  })
+
+  describe("#internalID", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          consignmentSubmission {
+            internalID
+          }
+        }
+      }
+    `
+    it("returns internalID if present", async () => {
+      const data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.internalID).toEqual("someID")
+    })
   })
 
   describe("#displayText", () => {

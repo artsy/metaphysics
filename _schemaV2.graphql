@@ -1971,6 +1971,7 @@ interface ArtworkConnectionInterface {
 type ArtworkConsignmentSubmission {
   displayText: String
   inProgress: Boolean
+  internalID: String
   isSold: Boolean
 }
 
