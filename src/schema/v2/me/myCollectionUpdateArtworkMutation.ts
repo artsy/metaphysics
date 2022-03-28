@@ -102,7 +102,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
     },
     title: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
     width: {
       type: GraphQLString,
