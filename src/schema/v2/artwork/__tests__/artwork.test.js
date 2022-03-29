@@ -3219,4 +3219,26 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("submissionID", () => {
+    it(`returns submission id for an artwork`, () => {
+      artwork.submission_id = "submission-id"
+
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            submissionId
+          }
+        }
+      `
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            submissionId: "submission-id",
+          },
+        })
+      })
+    })
+  })
 })
