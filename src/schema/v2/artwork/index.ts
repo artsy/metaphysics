@@ -861,6 +861,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return artwork.shipping_origin && artwork.shipping_origin.join(", ")
         },
       },
+      submissionId: {
+        type: GraphQLString,
+        resolve: async ({
+          submission_id: submissionId,
+          consignmentSubmission,
+        }) => {
+          return submissionId || consignmentSubmission?.id || null
+        },
+      },
       euShippingOrigin: {
         type: GraphQLBoolean,
         description:
