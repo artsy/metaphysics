@@ -1896,7 +1896,14 @@ type SavedSearchUserAlertSettings {
 }
 
 enum SavedSearchesSortEnum {
+  """
+  Sort by created date in descending order
+  """
   CREATED_AT_DESC
+
+  """
+  Sort by name in ascending order
+  """
   NAME_ASC
 }
 
