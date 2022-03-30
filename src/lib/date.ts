@@ -250,28 +250,31 @@ export function cascadingFormattedStartDateTime(
   endedAt,
   timezone
 ) {
-  const thisMoment = moment.tz(moment(), timezone)
-  const lotsClosingMoment = moment.tz(endAt, timezone)
-  const saleEndMoment = moment.tz(endedAt, timezone) // only used for formatting
+  const tz = timezone || DEFAULT_TZ
+  const thisMoment = moment.tz(moment(), tz)
+  const lotsClosingMoment = moment.tz(endAt, tz)
+  const saleEndMoment = moment.tz(endedAt, tz) // only used for formatting
 
   if (!!endedAt) return `Closed ${saleEndMoment.format("MMM D, YYYY")}`
 
   if (thisMoment.isAfter(lotsClosingMoment)) return "Closing soon"
 
-  return dateRange(startAt, endAt, timezone, "long")
+  return dateRange(startAt, endAt, tz, "long")
 }
 
 export function auctionsDetailFormattedStartDateTime(
   startAt,
   endAt,
   endedAt,
-  liveStartAt
+  liveStartAt,
+  timezone
 ) {
-  const thisMoment = moment.tz(moment(), "GMT")
-  const saleStartMoment = moment.tz(startAt, "GMT")
-  const lotsClosingMoment = moment.tz(endAt, "GMT")
-  const saleEndMoment = moment.tz(endedAt, "GMT")
-  const liveStartMoment = moment.tz(liveStartAt, "GMT")
+  const tz = timezone || DEFAULT_TZ
+  const thisMoment = moment.tz(moment(), tz)
+  const saleStartMoment = moment.tz(startAt, tz)
+  const lotsClosingMoment = moment.tz(endAt, tz)
+  const saleEndMoment = moment.tz(endedAt, tz)
+  const liveStartMoment = moment.tz(liveStartAt, tz)
 
   if (!!endedAt)
     return `Closed ${saleEndMoment.format(
@@ -299,8 +302,9 @@ export function auctionsDetailFormattedStartDateTime(
   )} • ${lotsClosingMoment.format("h:mma z")}`
 }
 
-export function formattedEndDateTime(endAt) {
-  const lotEndMoment = moment.tz(endAt, "GMT")
+export function formattedEndDateTime(endAt, timezone) {
+  const tz = timezone || DEFAULT_TZ
+  const lotEndMoment = moment.tz(endAt, tz)
   return `Closes, ${lotEndMoment.format("MMM D")} • ${lotEndMoment.format(
     "h:mma z"
   )}`
