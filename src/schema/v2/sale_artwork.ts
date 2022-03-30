@@ -167,7 +167,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
       formattedEndDateTime: {
         type: GraphQLString,
         description: "A formatted description of the lot end date and time",
-        resolve: (saleArtwork, _options, { saleLoader }) =>
+        resolve: (saleArtwork, _options, { defaultTimezone, saleLoader }) =>
           saleLoader(saleArtwork.sale_id).then((sale) => {
             if (
               !sale.cascading_end_time_interval ||
@@ -176,7 +176,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
             ) {
               return null
             } else {
-              return formattedEndDateTime(saleArtwork.end_at)
+              return formattedEndDateTime(saleArtwork.end_at, defaultTimezone)
             }
           }),
       },

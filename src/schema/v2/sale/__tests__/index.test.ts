@@ -900,7 +900,7 @@ describe("Sale type", () => {
         start_at: moment().add(3, "days"),
       })
       expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
-        "Mar 11, 2022 • 12:33pm GMT"
+        "Mar 11, 2022 • 12:33pm UTC"
       )
     })
 
@@ -909,7 +909,7 @@ describe("Sale type", () => {
         ended_at: moment().subtract(1, "days"),
       })
       expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
-        "Closed Mar 7, 2022 • 12:33pm GMT"
+        "Closed Mar 7, 2022 • 12:33pm UTC"
       )
     })
 
@@ -918,7 +918,7 @@ describe("Sale type", () => {
         end_at: moment().subtract(1, "days"),
       })
       expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
-        "Mar 7, 2022 • 12:33pm GMT"
+        "Mar 7, 2022 • 12:33pm UTC"
       )
     })
 
@@ -927,7 +927,7 @@ describe("Sale type", () => {
         live_start_at: moment().add(1, "days"),
       })
       expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
-        "Live Mar 9, 2022 • 12:33pm GMT"
+        "Live Mar 9, 2022 • 12:33pm UTC"
       )
     })
 
