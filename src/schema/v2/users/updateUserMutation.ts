@@ -1,20 +1,22 @@
-import { GraphQLNonNull, GraphQLString } from "graphql"
+import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { snakeCase } from "lodash"
 
 interface Input {
   id: string
+  dataTransferOptOut?: boolean
   email: string
   name: string
-  phone: string
+  phone?: string
 }
 
 interface GravityInput {
   id: string
+  data_transfer_opt_out?: boolean
   email: string
   name: string
-  phone: string
+  phone?: string
 }
 
 interface GravityError {
@@ -31,9 +33,10 @@ export const updateUserMutation = mutationWithClientMutationId<
   description: "Update the user",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
+    dataTransferOptOut: { type: GraphQLBoolean },
     email: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
-    phone: { type: new GraphQLNonNull(GraphQLString) },
+    phone: { type: GraphQLString },
   },
   outputFields: {},
   mutateAndGetPayload: async (args, { updateUserLoader }) => {

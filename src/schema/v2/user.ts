@@ -42,6 +42,11 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       description: "Pin for bidding at an auction",
       type: GraphQLString,
     },
+    dataTransferOptOut: {
+      description: "Has the user opted out of data transfer.",
+      type: GraphQLBoolean,
+      resolve: ({ data_transfer_opt_out }) => data_transfer_opt_out,
+    },
     paddleNumber: {
       description: "The paddle number of the user",
       type: GraphQLString,
