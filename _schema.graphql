@@ -5756,6 +5756,7 @@ type CommerceShipment {
   estimatedDeliveryWindow: String
   estimatedPickupWindow: String
   id: ID!
+  labelUrl: String
   pickupEnd(
     format: String
 

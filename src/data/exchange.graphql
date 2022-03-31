@@ -1838,6 +1838,7 @@ type Shipment {
   estimatedDeliveryWindow: String
   estimatedPickupWindow: String
   id: ID!
+  labelUrl: String
   pickupEnd: DateTime
   pickupStart: DateTime
   pickupWindowModifier: String
