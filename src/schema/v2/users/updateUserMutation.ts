@@ -6,11 +6,15 @@ import { snakeCase } from "lodash"
 interface Input {
   id: string
   email: string
+  name: string
+  phone: string
 }
 
 interface GravityInput {
   id: string
   email: string
+  name: string
+  phone: string
 }
 
 interface GravityError {
@@ -28,6 +32,8 @@ export const updateUserMutation = mutationWithClientMutationId<
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    phone: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {},
   mutateAndGetPayload: async (args, { updateUserLoader }) => {
