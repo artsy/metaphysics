@@ -9437,6 +9437,9 @@ type Me implements Node {
   # This user should receive new works notifications
   receiveNewWorksNotification: Boolean
 
+  # This user should receive order notifications
+  receiveOrderNotification: Boolean
+
   # This user should receive outbid notifications
   receiveOutbidNotification: Boolean
 
@@ -13992,6 +13995,9 @@ input UpdateMyProfileInput {
   # This user should receive new works notifications
   receiveNewWorksNotification: Boolean
 
+  # This user should receive order notifications
+  receiveOrderNotification: Boolean
+
   # This user should receive outbid notifications
   receiveOutbidNotification: Boolean
 
@@ -14261,6 +14267,9 @@ type User {
 
   # This user should receive new works notifications
   receiveNewWorksNotification: Boolean
+
+  # This user should receive order notifications
+  receiveOrderNotification: Boolean
 
   # This user should receive outbid notifications
   receiveOutbidNotification: Boolean
