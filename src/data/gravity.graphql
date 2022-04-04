@@ -1519,6 +1519,11 @@ type Query {
     Returns the last _n_ elements from the list.
     """
     last: Int
+
+    """
+    Returns saved searches sorted by input (default: by created date in descending order)
+    """
+    sort: SavedSearchesSortEnum
   ): SearchCriteriaConnection
 
   """
@@ -1888,6 +1893,18 @@ type SavedSearchUserAlertSettings {
   email: Boolean!
   name: String
   push: Boolean!
+}
+
+enum SavedSearchesSortEnum {
+  """
+  Sort by created date in descending order
+  """
+  CREATED_AT_DESC
+
+  """
+  Sort by name in ascending order
+  """
+  NAME_ASC
 }
 
 """
