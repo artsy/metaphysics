@@ -205,12 +205,16 @@ function getPriceLabel(priceRange: string): SearchCriteriaLabel | undefined {
 function getSizeLabels(sizes: string[]) {
   if (!sizes?.length) return []
 
-  return sizes.map((size) => ({
-    name: "Size",
-    displayValue: SIZES[`${size}`],
-    value: size,
-    field: "sizes",
-  }))
+  return sizes.map((size) => {
+    const sizeInUppercase = size.toUpperCase()
+
+    return {
+      name: "Size",
+      displayValue: SIZES[sizeInUppercase],
+      value: sizeInUppercase,
+      field: "sizes",
+    }
+  })
 }
 
 const convertToCentimeters = (element: number) => {
