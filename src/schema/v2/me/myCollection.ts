@@ -12,17 +12,15 @@ import {
   connectionFromArraySlice,
   cursorForObjectInConnection,
 } from "graphql-relay"
-import gql from "lib/gql"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { compact } from "lodash"
+import { compact, isEqual, uniqWith } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
 import { connectionWithCursorInfo } from "../fields/pagination"
+import { loadBatchPriceInsights } from "./loadBatchPriceInsights"
 import { loadSubmissions } from "./loadSubmissions"
-
-const MAX_MARKET_PRICE_INSIGHTS = 50
 
 const myCollectionFields = {
   description: {
@@ -109,9 +107,17 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (
     { id: userId },
     options,
-    { collectionArtworksLoader, convectionGraphQLLoader }
+    {
+      collectionArtworksLoader,
+      convectionGraphQLLoader,
+      vortexGraphqlLoaderWithVariables,
+    }
   ) => {
-    if (!collectionArtworksLoader || !convectionGraphQLLoader) {
+    if (
+      !collectionArtworksLoader ||
+      !convectionGraphQLLoader ||
+      !vortexGraphqlLoaderWithVariables
+    ) {
       return null
     }
 
@@ -140,9 +146,31 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         submissionIds,
         convectionGraphQLLoader
       )
+
+      let artistIDMediumTuples = artworks.map((artwork: any) => ({
+        artistId: artwork.artist._id,
+        medium: artwork.medium,
+      }))
+
+      // remove duplicates
+      artistIDMediumTuples = uniqWith(artistIDMediumTuples, isEqual)
+
+      const marketPriceInsights = await loadBatchPriceInsights(
+        artistIDMediumTuples,
+        vortexGraphqlLoaderWithVariables
+      )
+
       enrichArtworks(artworks, submissions)
 
-      return connectionFromArraySlice(artworks, options, {
+      const artworksWithInsights = artworks.map((artwork: any) => {
+        const insights =
+          marketPriceInsights[artwork.artist._id]?.[artwork.medium] ?? null
+
+        artwork.artistInsights = insights
+        return artwork
+      })
+
+      return connectionFromArraySlice(artworksWithInsights, options, {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
         sliceStart: gravityOptions.offset,
       })
