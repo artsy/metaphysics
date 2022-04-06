@@ -5,6 +5,7 @@ interface BiddingMessage {
     | "OUTBID"
     | "RESERVE_NOT_MET"
     | "SALE_CLOSED"
+    | "LOT_CLOSED"
     | "LIVE_BIDDING_STARTED"
     | "BIDDER_NOT_QUALIFIED"
     | "ERROR"
@@ -31,6 +32,13 @@ export const bidderPositionMessages: BiddingMessage[] = [
   {
     status: "SALE_CLOSED",
     message: "Sale Closed to Bids",
+    header: "Lot closed",
+    getDescription: () =>
+      "Sorry, your bid wasn’t received before the lot closed.",
+  },
+  {
+    status: "LOT_CLOSED",
+    message: "Lot Closed to Bids",
     header: "Lot closed",
     getDescription: () =>
       "Sorry, your bid wasn’t received before the lot closed.",

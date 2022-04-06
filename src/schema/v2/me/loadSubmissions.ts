@@ -8,7 +8,7 @@ export const loadSubmissions = async (
   if (submissionIds.length) {
     const response = await convectionGraphQLLoader({
       query: gql`
-        query ConversationEventConnection($ids: [ID!]) {
+        query LoadSubmissions($ids: [ID!]) {
           submissions(ids: $ids) {
             edges {
               node {

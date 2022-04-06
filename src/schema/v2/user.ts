@@ -19,7 +19,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
     name: {
       description: "The given name of the user.",
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ name, email }) => name || email,
+      resolve: ({ name, email }) => name || email || "",
     },
     email: {
       description: "The given email of the user.",
@@ -41,6 +41,11 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
     pin: {
       description: "Pin for bidding at an auction",
       type: GraphQLString,
+    },
+    dataTransferOptOut: {
+      description: "Has the user opted out of data transfer.",
+      type: GraphQLBoolean,
+      resolve: ({ data_transfer_opt_out }) => data_transfer_opt_out,
     },
     paddleNumber: {
       description: "The paddle number of the user",

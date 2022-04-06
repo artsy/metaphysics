@@ -1,15 +1,16 @@
 import {
+  convertConnectionArgsToGravityArgs,
   exclude,
   isExisty,
+  isInteger,
   markdownToText,
-  removeNulls,
   removeEmptyValues,
+  removeNulls,
   resolveBlueGreen,
   stripTags,
   toKey,
   toQueryString,
   unescapeEntities,
-  convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
 
 describe("exclude", () => {
@@ -272,5 +273,17 @@ describe("convertConnectionArgsToGravityArgs", () => {
       offset: 60,
       size: 30,
     })
+  })
+})
+
+describe("isInteger", () => {
+  it("only returns true if the input string is a valid integer", () => {
+    expect(isInteger("0")).toEqual(true)
+    expect(isInteger("1")).toEqual(true)
+    expect(isInteger("-1")).toEqual(true)
+    expect(isInteger("1.5")).toEqual(false)
+    expect(isInteger("test")).toEqual(false)
+    expect(isInteger("")).toEqual(false)
+    expect(isInteger("   ")).toEqual(false)
   })
 })

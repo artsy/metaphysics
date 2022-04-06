@@ -1,5 +1,5 @@
-import proxy from "./proxies"
-import { setVersion } from "./normalize"
+import { DEFAULT_SRCSET_QUALITY, gemini } from "./services"
+import { normalizeQuality, setVersion } from "./normalize"
 import {
   GraphQLObjectType,
   GraphQLInt,
@@ -15,6 +15,7 @@ type CroppedImageArguments = {
   version?: string[]
   width: number
   height: number
+  quality?: number[]
 }
 
 type CroppedImageUrl = {
@@ -27,12 +28,32 @@ type CroppedImageUrl = {
 
 export const croppedImageUrl = (
   image: OriginalImage,
-  { version = ["large"], width, height }: CroppedImageArguments
+  {
+    version = ["large"],
+    width,
+    height,
+    quality = DEFAULT_SRCSET_QUALITY,
+  }: CroppedImageArguments
 ): CroppedImageUrl => {
   const src = setVersion(image as any, version)
 
-  const url1x = proxy(src, "crop", width, height)
-  const url2x = proxy(src, "crop", width * 2, height * 2, 50)
+  const [quality1x, quality2x] = normalizeQuality(quality)
+
+  const url1x = gemini({
+    src,
+    mode: "crop",
+    width,
+    height,
+    quality: quality1x,
+  })
+
+  const url2x = gemini({
+    src,
+    mode: "crop",
+    width: width * 2,
+    height: height * 2,
+    quality: quality2x,
+  })
 
   return {
     width,
@@ -80,7 +101,12 @@ const Cropped: GraphQLFieldConfig<
       type: new GraphQLNonNull(GraphQLInt),
     },
     version: {
+      description: "Version to utilize in order of preference",
       type: new GraphQLList(GraphQLString),
+    },
+    quality: {
+      description: "Value from 0-100; [1x, 2x]",
+      type: new GraphQLList(new GraphQLNonNull(GraphQLInt)),
     },
   },
   type: CroppedImageUrlType,

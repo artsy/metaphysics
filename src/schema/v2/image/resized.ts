@@ -1,6 +1,6 @@
 import { MaxDimensions, scale } from "proportional-scale"
-import proxy from "./proxies"
-import { setVersion } from "./normalize"
+import { DEFAULT_SRCSET_QUALITY, gemini } from "./services"
+import { normalizeQuality, setVersion } from "./normalize"
 import {
   GraphQLObjectType,
   GraphQLFloat,
@@ -17,6 +17,7 @@ type ResizedImageArguments = {
   version?: string[]
   width?: number
   height?: number
+  quality?: number[]
 }
 
 type ResizedImageUrl = {
@@ -34,6 +35,7 @@ export const resizedImageUrl = (
     version = ["large"],
     width: targetWidth,
     height: targetHeight,
+    quality = DEFAULT_SRCSET_QUALITY,
   }: ResizedImageArguments = {}
 ): ResizedImageUrl => {
   const src = setVersion(image as any, version)
@@ -77,15 +79,23 @@ export const resizedImageUrl = (
 
   const proxiedWidth = scaled.width || targetWidth
   const proxiedHeight = scaled.height || targetHeight
+  const [quality1x, quality2x] = normalizeQuality(quality)
 
-  const url1x = proxy(src, "resize", proxiedWidth, proxiedHeight)
-  const url2x = proxy(
+  const url1x = gemini({
     src,
-    "resize",
-    (proxiedWidth || 0) * 2 || undefined,
-    (proxiedHeight || 0) * 2 || undefined,
-    50
-  )
+    mode: "resize",
+    width: proxiedWidth,
+    height: proxiedHeight,
+    quality: quality1x,
+  })
+
+  const url2x = gemini({
+    src,
+    mode: "resize",
+    width: (proxiedWidth || 0) * 2 || undefined,
+    height: (proxiedHeight || 0) * 2 || undefined,
+    quality: quality2x,
+  })
 
   return {
     factor: scaled.scale,
@@ -137,7 +147,12 @@ const Resized: GraphQLFieldConfig<
       type: GraphQLInt,
     },
     version: {
+      description: "Version to utilize in order of preference",
       type: new GraphQLList(GraphQLString),
+    },
+    quality: {
+      description: "Value from 0-100; [1x, 2x]",
+      type: new GraphQLList(new GraphQLNonNull(GraphQLInt)),
     },
   },
   type: ResizedImageUrlType,

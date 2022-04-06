@@ -55,6 +55,28 @@ describe("BidderPosition", () => {
             processed_at: "2018-04-26T14:15:52+00:00",
             active: false,
             errors: ["Lot must be open"],
+            bidder: {
+              sale: {
+                auction_state: "closed",
+              },
+            },
+            sale_artwork: {
+              reserve_status: "reserve_met",
+            },
+          },
+        })
+      )
+      .mockReturnValueOnce(
+        Promise.resolve({
+          body: {
+            processed_at: "2018-04-26T14:15:52+00:00",
+            active: false,
+            errors: ["Lot must be open"],
+            bidder: {
+              sale: {
+                auction_state: "open",
+              },
+            },
             sale_artwork: {
               reserve_status: "reserve_met",
             },
@@ -137,6 +159,20 @@ describe("BidderPosition", () => {
       expect(me).toEqual({
         bidderPosition: {
           status: "SALE_CLOSED",
+          messageHeader: "Lot closed",
+          messageDescriptionMD: `Sorry, your bid wasn’t received before the lot closed.`,
+          position: {
+            processedAt: "2018-04-26T14:15:52+00:00",
+          },
+        },
+      })
+    })
+  })
+  it("returns lot closed when the lot is closed and sale is still open", () => {
+    return runAuthenticatedQuery(query, context).then(({ me }) => {
+      expect(me).toEqual({
+        bidderPosition: {
+          status: "LOT_CLOSED",
           messageHeader: "Lot closed",
           messageDescriptionMD: `Sorry, your bid wasn’t received before the lot closed.`,
           position: {

@@ -158,6 +158,42 @@ describe("Image", () => {
           srcSet: `${url1x} 1x, ${url2x} 2x`,
         })
       })
+
+      it("accepts a quality argument", () => {
+        const url1x =
+          "https://gemini.cloudfront.test?resize_to=fit&width=499&height=750&quality=90&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
+        const url2x =
+          "https://gemini.cloudfront.test?resize_to=fit&width=998&height=1500&quality=25&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
+
+        expect(
+          resizedImageUrl(PORTRAIT_IMAGE, { width: 500, quality: [90, 25] })
+        ).toEqual({
+          factor: 0.2143163309044149,
+          height: 750,
+          width: 499,
+          url: url1x,
+          src: url1x,
+          srcSet: `${url1x} 1x, ${url2x} 2x`,
+        })
+      })
+
+      it("accepts a single 1x quality argument", () => {
+        const url1x =
+          "https://gemini.cloudfront.test?resize_to=fit&width=499&height=750&quality=75&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
+        const url2x =
+          "https://gemini.cloudfront.test?resize_to=fit&width=998&height=1500&quality=75&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
+
+        expect(
+          resizedImageUrl(PORTRAIT_IMAGE, { width: 500, quality: [75] })
+        ).toEqual({
+          factor: 0.2143163309044149,
+          height: 750,
+          width: 499,
+          url: url1x,
+          src: url1x,
+          srcSet: `${url1x} 1x, ${url2x} 2x`,
+        })
+      })
     })
 
     it("returns a resized image URL when existing image dimensions are lacking", () => {

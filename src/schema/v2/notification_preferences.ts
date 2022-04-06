@@ -21,7 +21,7 @@ export const convertSubGroups = (subGroups) => {
   return params
 }
 
-const subGroupfields = {
+const subGroupFields = {
   id: {
     type: new GraphQLNonNull(GraphQLString),
   },
@@ -44,14 +44,31 @@ const subGroupfields = {
   },
 }
 
+const subGroupInputFields = {
+  name: {
+    type: new GraphQLNonNull(GraphQLString),
+  },
+  status: {
+    type: new GraphQLNonNull(
+      new GraphQLEnumType({
+        name: "SubGroupInputStatus",
+        values: {
+          SUBSCRIBED: { value: "Subscribed" },
+          UNSUBSCRIBED: { value: "Unsubscribed" },
+        },
+      })
+    ),
+  },
+}
+
 const NotificationPreferenceType = new GraphQLObjectType({
   name: "NotificationPreference",
-  fields: subGroupfields,
+  fields: subGroupFields,
 })
 
 const NotificationPreferenceInputType = new GraphQLInputObjectType({
   name: "NotificationPreferenceInput",
-  fields: subGroupfields,
+  fields: subGroupInputFields,
 })
 
 export const notificationPreferences: GraphQLFieldConfig<

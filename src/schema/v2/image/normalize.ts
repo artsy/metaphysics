@@ -12,6 +12,7 @@ import {
   find,
   curry,
 } from "lodash"
+import { DEFAULT_SRCSET_QUALITY } from "./services"
 
 export const grab: any = flow(pick, values, first)
 
@@ -77,3 +78,12 @@ export function normalize(response: ImageData | ImageData[]) {
 }
 
 export default normalize
+
+export const normalizeQuality = (quality?: number[]): [number, number] => {
+  const [quality1x, quality2x] = quality || DEFAULT_SRCSET_QUALITY
+
+  return [
+    Math.max(Math.min(quality1x, 100), 0),
+    Math.max(Math.min(quality2x ?? quality1x, 100), 0),
+  ]
+}

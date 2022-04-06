@@ -382,7 +382,12 @@ export default (accessToken, userID, opts) => {
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
     updateMyPasswordLoader: gravityLoader("me/password", {}, { method: "PUT" }),
-    usersLoader: gravityLoader("users"),
+    updateUserLoader: gravityLoader(
+      (id) => `user/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    usersLoader: gravityLoader("users", {}, { headers: true }),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
     userInterestsLoader: gravityLoader("me/user_interests"),

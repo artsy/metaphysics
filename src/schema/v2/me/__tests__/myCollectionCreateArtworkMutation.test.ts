@@ -1,6 +1,6 @@
-import { computeImageSources } from "../myCollectionCreateArtworkMutation"
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { computeImageSources } from "../myCollectionCreateArtworkMutation"
 
 const newArtwork = { id: "some-artwork-id" }
 const createArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
@@ -50,6 +50,7 @@ const computeMutationInput = ({
           provenance: "Pat Hearn Gallery"
           title: "hey now"
           width: "20"
+          importSource: CONVECTION
         }
       ) {
         artworkOrError {

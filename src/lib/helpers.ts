@@ -16,7 +16,7 @@ import {
 import moment, { LocaleSpecification } from "moment"
 import { performance } from "perf_hooks"
 import { stringify } from "qs"
-import { getPagingParameters, CursorPageable } from "relay-cursor-paging"
+import { CursorPageable, getPagingParameters } from "relay-cursor-paging"
 import { formatMarkdownValue } from "schema/v1/fields/markdown"
 
 const loadNs = performance.now()
@@ -224,4 +224,8 @@ export const extractNodes = <Node extends object, T = Node>(
       ?.map((edge) => (mapper ? (mapper(edge?.node!) as any) : edge?.node!))
       .filter((x) => x != null) ?? []
   )
+}
+
+export const isInteger = (str: string) => {
+  return Number.isInteger(parseFloat(str))
 }

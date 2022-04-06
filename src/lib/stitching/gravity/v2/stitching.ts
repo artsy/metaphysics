@@ -72,6 +72,7 @@ export const gravityStitchingEnvironment = (
           last: Int
           after: String
           before: String
+          sort: SavedSearchesSortEnum
         ): SearchCriteriaConnection
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
         addressConnection(
