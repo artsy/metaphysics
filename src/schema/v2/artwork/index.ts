@@ -63,6 +63,7 @@ import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import Meta, { artistNames } from "./meta"
 import { embed, isEmbeddedVideo, isTooBig, isTwoDimensional } from "./utilities"
+import { videoUrls } from "./videoUrls"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -1245,6 +1246,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "size bucket assigned to an artwork based on its dimensions",
         type: GraphQLString,
         resolve: ({ size_bucket }) => size_bucket,
+      },
+      videoUrl: {
+        description: "returns href for the video",
+        type: GraphQLString,
+        resolve: ({ id }) => {
+          return videoUrls[id] || null
+        },
       },
     }
   },
