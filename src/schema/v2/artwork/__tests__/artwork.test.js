@@ -3195,12 +3195,18 @@ describe("Artwork type", () => {
 
   describe("mediumType", () => {
     it(`returns proper medium type for artwork`, () => {
+      context.geneLoader = () =>
+        Promise.resolve({ name: "Painting", id: "painting" })
       const query = `
         {
           artwork(id: "richard-prince-untitled-portrait") {
             mediumType {
               name
               longDescription
+              filterGene {
+                slug
+                name
+              }
             }
           }
         }
@@ -3213,6 +3219,10 @@ describe("Artwork type", () => {
               name: "Painting",
               longDescription:
                 "Includes gouache; fresco; ink and wash; oil painting; screen painting; scroll painting; tempera; watercolor.",
+              filterGene: {
+                slug: "painting",
+                name: "Painting",
+              },
             },
           },
         })
