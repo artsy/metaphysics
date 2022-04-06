@@ -9763,6 +9763,9 @@ type Mutation {
   createBackupSecondFactors(
     input: CreateBackupSecondFactorsInput!
   ): CreateBackupSecondFactorsPayload
+  createBankDebitSetup(
+    input: CreateBankDebitSetupInput!
+  ): CreateBankDebitSetupPayload
 
   # Create a bidder
   createBidder(input: CreateBidderInput!): CreateBidderPayload
@@ -11187,6 +11190,15 @@ type Query {
 
   # Find a marketing collection by ID or slug
   _unused_gravity_marketingCollection(id: ID!): MarketingCollection
+
+  # An array of marketing collections. Defaults to returning all available collections if no args are passed
+  _unused_gravity_marketingCollections(
+    artistID: ID
+    category: String
+    isFeaturedArtistContent: Boolean
+    size: Int
+    slugs: [String!]
+  ): [MarketingCollection!]
 
   # Autocomplete resolvers.
   _unused_gravity_match_partners(
