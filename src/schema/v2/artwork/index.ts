@@ -774,7 +774,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       processWithArtaShipping: {
         type: GraphQLBoolean,
         description:
-          "Returns true if this work is eligible automatically opted into Artsy Domestic Shipping",
+          "Returns true if this work is eligible to be automatically opted into Artsy Domestic Shipping",
         deprecationReason: deprecate({
           inVersion: 2,
           preferUsageOf: "processWithArtsyShippingDomestic",
