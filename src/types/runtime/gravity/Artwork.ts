@@ -13,6 +13,7 @@ import { EditionSet } from "./EditionSet"
 import { Image } from "./Image"
 import { CulturalMaker } from "./CulturalMaker"
 import { Partner } from "./Partner"
+import { VideoType } from "./Video"
 
 export const Artwork = Record({
   _id: String,
@@ -97,6 +98,7 @@ export const Artwork = Record({
   tags: Array(String),
   title: String.Or(Null),
   unique: Boolean,
+  video: VideoType.Or(Null),
   website: String,
   width_cm: Number.Or(Null),
   width: String.Or(Null),
