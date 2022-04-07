@@ -3,6 +3,11 @@ import config from "config"
 
 const { VORTEX_APP_ID } = config
 
+interface LoaderArgs {
+  query: string
+  variables?: any
+}
+
 export default (accessToken, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
 
@@ -31,7 +36,7 @@ export default (accessToken, opts) => {
 
   return {
     vortexTokenLoader,
-    vortexGraphqlLoader: ({ query, variables }) =>
+    vortexGraphqlLoader: ({ query, variables }: LoaderArgs) =>
       vortexLoader(
         "/graphql",
         { query, variables: JSON.stringify(variables) },
