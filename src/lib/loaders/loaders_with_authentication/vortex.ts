@@ -3,6 +3,11 @@ import config from "config"
 
 const { VORTEX_APP_ID } = config
 
+interface LoaderArgs {
+  query: string
+  variables?: any
+}
+
 export default (accessToken, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
 
@@ -11,8 +16,15 @@ export default (accessToken, opts) => {
     vortexLoaderWithAuthenticationFactory,
   } = factories(opts)
 
+  const vortexAccessTokenLoader = () =>
+    vortexTokenLoader().then((data) => data.token)
+
   const gravityLoader = gravityLoaderWithAuthenticationFactory(
     gravityAccessTokenLoader
+  )
+
+  const vortexLoader = vortexLoaderWithAuthenticationFactory(
+    vortexAccessTokenLoader
   )
 
   // This generates a token with a lifetime of 1 minute, which should be plenty of time to fulfill a full query.
@@ -22,18 +34,15 @@ export default (accessToken, opts) => {
     { method: "POST" }
   )
 
-  const vortexAccessTokenLoader = () =>
-    vortexTokenLoader().then((data) => data.token)
-
-  const vortexLoader = vortexLoaderWithAuthenticationFactory(
-    vortexAccessTokenLoader
-  )
-
   return {
     vortexTokenLoader,
-    vortexGraphqlLoader: (body) =>
-      vortexLoader("/graphql", body, {
-        method: "POST",
-      }),
+    vortexGraphqlLoader: ({ query, variables }: LoaderArgs) =>
+      vortexLoader(
+        "/graphql",
+        { query, variables: JSON.stringify(variables) },
+        {
+          method: "POST",
+        }
+      ),
   }
 }
