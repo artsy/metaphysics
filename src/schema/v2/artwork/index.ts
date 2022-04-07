@@ -50,7 +50,6 @@ import { Sellable } from "schema/v2/sellable"
 import Show from "schema/v2/show"
 import ShowSorts from "schema/v2/sorts/show_sorts"
 import { ResolverContext } from "types/graphql"
-import { VideoType } from "../../../types/runtime/gravity/Video"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { InquiryQuestionType } from "../inquiry_question"
 import { loadSubmissions } from "../me/loadSubmissions"
@@ -64,7 +63,8 @@ import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import Meta, { artistNames } from "./meta"
 import { embed, isEmbeddedVideo, isTooBig, isTwoDimensional } from "./utilities"
-import { videoList } from "./videoUrls"
+import { videoList } from "./artworkVideos"
+import { VideoType } from "../../../types/runtime/gravity/Video"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
