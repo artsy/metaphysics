@@ -764,7 +764,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         description:
           "Returns true if this work is eligible to be automatically opted into Artsy Domestic Shipping",
-        // adds fallback for gravity change
         resolve: (artwork) => {
           return Boolean(
             artwork.process_with_artsy_shipping_domestic ||
@@ -837,7 +836,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "The string that describes domestic and international shipping.",
         resolve: (artwork) => {
           if (
-            // # Naming to update
+            artwork.process_with_artsy_shipping_domestic ||
             artwork.process_with_arta_shipping ||
             artwork.artsy_shipping_international
           ) {
