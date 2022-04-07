@@ -7,34 +7,41 @@ export const loadBatchPriceInsights = async (
   artistIDMediumTuples: any[],
   vortexGraphQLLoader: any
 ) => {
-  const vortexResult = await vortexGraphQLLoader({
-    query: gql`
-  query marketPriceInsightsBatchQuery($artistIDMediumTuples: [ArtistIdMediumTupleType!]!) {
-    marketPriceInsightsBatch(input: $artistIDMediumTuples, first: ${MAX_MARKET_PRICE_INSIGHTS}) {
-      totalCount
-      edges {
-        node {
-          artistId
-          medium
-          demandRank
+  try {
+    const vortexResult = await vortexGraphQLLoader({
+      query: gql`
+        query marketPriceInsightsBatchQuery($artistIDMediumTuples: [ArtistIdMediumTupleType!]!) {
+          marketPriceInsightsBatch(input: $artistIDMediumTuples, first: ${MAX_MARKET_PRICE_INSIGHTS}) {
+            totalCount
+            edges {
+              node {
+                artistId
+                medium
+                demandRank
+              }
+            }
+          }
+        }
+      `,
+      variables: { artistIDMediumTuples },
+    })()
+
+    const marketPriceInsights = {}
+
+    extractNodes(vortexResult.data?.marketPriceInsightsBatch).forEach(
+      (insight: any) => {
+        marketPriceInsights[insight.artistId] = {
+          ...(marketPriceInsights?.[insight.artistId] || {}),
+          [insight.medium]: insight,
         }
       }
-    }
+    )
+
+    return marketPriceInsights
+  } catch (e) {
+    console.error(e)
+
+    // to continue with the query in case the price insights are not available
+    return {}
   }
-`,
-    variables: { artistIDMediumTuples },
-  })
-
-  const marketPriceInsights = {}
-
-  extractNodes(vortexResult?.marketPriceInsightsBatch).forEach(
-    (insight: any) => {
-      marketPriceInsights[insight.artistId] = {
-        ...(marketPriceInsights?.[insight.artistId] || {}),
-        [insight.medium]: insight,
-      }
-    }
-  )
-
-  return marketPriceInsights
 }

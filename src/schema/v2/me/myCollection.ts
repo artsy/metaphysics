@@ -117,16 +117,12 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (
     { id: userId },
     options,
-    {
-      collectionArtworksLoader,
-      convectionGraphQLLoader,
-      vortexGraphqlLoaderWithVariables,
-    }
+    { collectionArtworksLoader, convectionGraphQLLoader, vortexGraphqlLoader }
   ) => {
     if (
       !collectionArtworksLoader ||
       !convectionGraphQLLoader ||
-      !vortexGraphqlLoaderWithVariables
+      !vortexGraphqlLoader
     ) {
       return null
     }
@@ -167,7 +163,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
 
       const marketPriceInsights = await loadBatchPriceInsights(
         artistIDMediumTuples,
-        vortexGraphqlLoaderWithVariables
+        vortexGraphqlLoader
       )
 
       enrichArtworksWithSubmissions(artworks, submissions)
