@@ -22,15 +22,13 @@ import { connectionWithCursorInfo } from "../fields/pagination"
 import { loadBatchPriceInsights } from "lib/loadBatchPriceInsights"
 import { loadSubmissions } from "./loadSubmissions"
 
-type MarketPriceInsightsObjectType = {
-  [key: string]: {
-    [key: string]: {
-      demandRank: number
-      artistId: string
-      medium: string
-    }
-  }
+type PriceInsight = {
+  artistId: string
+  demandRank: number
+  medium: string
 }
+
+type MarketPriceInsightsType = Record<string, Record<string, PriceInsight>>
 
 const myCollectionFields = {
   description: {
@@ -289,7 +287,7 @@ const enrichArtworksWithSubmissions = async (
 
 const enrichArtworksWithPriceInsights = (
   artworks: Array<any>,
-  marketPriceInsights: MarketPriceInsightsObjectType
+  marketPriceInsights: MarketPriceInsightsType
 ) => {
   return artworks.map((artwork: any) => {
     const insights =
