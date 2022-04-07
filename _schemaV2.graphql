@@ -1840,7 +1840,7 @@ type Artwork implements Node & Searchable & Sellable {
   # Represents partner's location
   location: Location
   manufacturer(format: Format): String
-  marketPriceInsights: MarketPriceInsights
+  marketPriceInsights: PriceInsights
 
   # Represents the **materials** used in this work, such as _oil and acrylic on
   # canvas_. (This should not be confused with the artwork attribute called
@@ -10959,6 +10959,12 @@ type PriceInsightEdge {
 
   # The item at the end of the edge.
   node: MarketPriceInsights
+}
+
+type PriceInsights {
+  artistId: String
+  demandRank: Float
+  medium: String
 }
 
 enum PriceInsightSort {
