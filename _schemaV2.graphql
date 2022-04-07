@@ -1928,8 +1928,8 @@ type Artwork implements Node & Searchable & Sellable {
   # Based on artwork location verify that VAT info for the partner is complete.
   vatRequirementComplete: Boolean
 
-  # returns href for the video
-  videoUrl: String
+  # returns a Video object for the associated artwork
+  video: Video
 
   # If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS
   website: String
@@ -14446,6 +14446,18 @@ enum UserInterestInterestType {
 }
 
 union VanityURLEntityType = Fair | Partner
+
+# An object containing video metadata
+type Video {
+  # The height of the video
+  height: Int
+
+  # The url of the video
+  src: String
+
+  # The width of the video
+  width: Int
+}
 
 # A wildcard used to support complex root queries in Relay
 type Viewer {

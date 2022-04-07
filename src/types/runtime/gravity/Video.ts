@@ -1,4 +1,5 @@
 import { GraphQLInt, GraphQLObjectType, GraphQLString } from "graphql"
+import { Number, Record, String } from "runtypes"
 import { ResolverContext } from "../../graphql"
 
 export const VideoType = new GraphQLObjectType<any, ResolverContext>({
@@ -21,4 +22,10 @@ export const VideoType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ width }) => width,
     },
   },
+})
+
+export const Video = Record({
+  src: String,
+  height: Number,
+  width: Number,
 })
