@@ -40,6 +40,9 @@ describe("me.myCollection", () => {
               node {
                 internalID
                 title
+                artist {
+                  internalID
+                }
               }
             }
           }
@@ -58,11 +61,18 @@ describe("me.myCollection", () => {
             {
               _id: "58e3e54aa09a6708282022f6",
               title: "some title",
+              artist: {
+                _id: "artist-id",
+              },
             },
           ],
           headers: {
             "x-total-count": "10",
           },
+        }),
+      artistLoader: () =>
+        Promise.resolve({
+          _id: "artist-id",
         }),
     }
 
@@ -81,6 +91,9 @@ describe("me.myCollection", () => {
               node {
                 internalID
                 title
+                artist {
+                  internalID
+                }
                 consignmentSubmission {
                   displayText
                 }
@@ -103,18 +116,27 @@ describe("me.myCollection", () => {
               _id: "artwork_id_with_submission",
               id: "artwork_id_with_submission",
               title: "some title",
+              artist: {
+                _id: "artist-id",
+              },
               submission_id: "1",
             },
             {
               _id: "artwork_id_without_submission",
               id: "artwork_id_without_submission",
               title: "some title 2",
+              artist: {
+                _id: "artist-id",
+              },
               submission_id: null,
             },
             {
               _id: "artwork_id_with_draft_submission",
               id: "artwork_id_with_draft_submission",
               title: "some title 3",
+              artist: {
+                _id: "artist-id",
+              },
               submission_id: null,
             },
           ],
@@ -135,6 +157,10 @@ describe("me.myCollection", () => {
               },
             ],
           } as any,
+        }),
+      artistLoader: () =>
+        Promise.resolve({
+          _id: "artist-id",
         }),
     }
 
@@ -172,6 +198,9 @@ describe("me.myCollection", () => {
               node {
                 internalID
                 title
+                artist {
+                  internalID
+                }
                 consignmentSubmission {
                   displayText
                 }
@@ -194,18 +223,27 @@ describe("me.myCollection", () => {
               _id: "artwork_id_with_submission",
               id: "artwork_id_with_submission",
               title: "some title",
+              artist: {
+                _id: "artist-id",
+              },
               submission_id: "1",
             },
             {
               _id: "artwork_id_without_submission",
               id: "artwork_id_without_submission",
               title: "some title 2",
+              artist: {
+                _id: "artist-id",
+              },
               submission_id: null,
             },
             {
               _id: "artwork_id_with_draft_submission",
               id: "artwork_id_with_draft_submission",
               title: "some title 3",
+              artist: {
+                _id: "artist-id",
+              },
               submission_id: null,
             },
           ],
@@ -218,6 +256,10 @@ describe("me.myCollection", () => {
           submissions: {
             edges: [],
           } as any,
+        }),
+      artistLoader: () =>
+        Promise.resolve({
+          _id: "artist-id",
         }),
     }
 
@@ -234,6 +276,72 @@ describe("me.myCollection", () => {
     expect(
       data.me.myCollectionConnection.edges[2].node.consignmentSubmission
     ).toBeFalsy()
+  })
+
+  it("enriches artwork with market price insights data", async () => {
+    const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
+
+    const query = gql`
+      {
+        me {
+          myCollectionConnection(first: 10) {
+            edges {
+              node {
+                internalID
+                title
+                medium
+                artist {
+                  internalID
+                }
+                marketPriceInsights {
+                  demandRank
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context: Partial<ResolverContext> = {
+      meLoader: () =>
+        Promise.resolve({
+          id: "some-user-id",
+        }),
+      collectionArtworksLoader: () =>
+        Promise.resolve({
+          body: [
+            {
+              _id: "artwork_id_with_market_price_insights",
+              id: "artwork_id_with_market_price_insights",
+              title: "some title",
+              medium: "Painting",
+              artist: {
+                _id: "artist-id",
+              },
+            },
+          ],
+          headers: {
+            "x-total-count": "10",
+          },
+        }),
+      artistLoader: () =>
+        Promise.resolve({
+          _id: "artist-id",
+        }),
+      vortexGraphqlLoader,
+    }
+
+    const data = await runAuthenticatedQuery(query, context)
+
+    expect(data.me.myCollectionConnection.edges[0].node.title).toBe(
+      "some title"
+    )
+
+    expect(
+      data.me.myCollectionConnection.edges[0].node.marketPriceInsights
+        .demandRank
+    ).toBe(0.64)
   })
 
   it("ignores collection not found errors and returns an empty array", async () => {
@@ -297,3 +405,20 @@ describe("me.myCollection", () => {
     )
   })
 })
+
+const mockVortexResponse = {
+  data: {
+    marketPriceInsightsBatch: {
+      totalCount: 1,
+      edges: [
+        {
+          node: {
+            artistId: "artist-id",
+            demandRank: 0.64,
+            medium: "Painting",
+          },
+        },
+      ],
+    },
+  },
+}
