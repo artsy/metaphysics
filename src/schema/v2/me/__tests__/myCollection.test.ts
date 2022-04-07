@@ -291,7 +291,7 @@ describe("me.myCollection", () => {
                 artist {
                   internalID
                 }
-                artistInsights {
+                insights {
                   demandRank
                 }
               }
@@ -351,7 +351,7 @@ describe("me.myCollection", () => {
     )
 
     expect(
-      data.me.myCollectionConnection.edges[0].node.artistInsights.demandRank
+      data.me.myCollectionConnection.edges[0].node.insights.demandRank
     ).toBe(0.64)
   })
 

@@ -22,19 +22,19 @@ export const loadBatchPriceInsights = async (
     }
   }
 `,
-    variables: {
-      artistIDMediumTuples: artistIDMediumTuples.reverse(),
-    },
+    variables: { artistIDMediumTuples },
   })
 
   const marketPriceInsights = {}
 
-  extractNodes(vortexResult?.marketPriceInsightsBatch).map((insight: any) => {
-    marketPriceInsights[insight.artistId] = {
-      ...(marketPriceInsights?.[insight.artistId] || {}),
-      [insight.medium]: insight,
+  extractNodes(vortexResult?.marketPriceInsightsBatch).forEach(
+    (insight: any) => {
+      marketPriceInsights[insight.artistId] = {
+        ...(marketPriceInsights?.[insight.artistId] || {}),
+        [insight.medium]: insight,
+      }
     }
-  })
+  )
 
   return marketPriceInsights
 }

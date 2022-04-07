@@ -22,6 +22,16 @@ import { connectionWithCursorInfo } from "../fields/pagination"
 import { loadBatchPriceInsights } from "./loadBatchPriceInsights"
 import { loadSubmissions } from "./loadSubmissions"
 
+type MarketPriceInsightsObjectType = {
+  [key: string]: {
+    [key: string]: {
+      demandRank: number
+      artistId: string
+      medium: string
+    }
+  }
+}
+
 const myCollectionFields = {
   description: {
     type: new GraphQLNonNull(GraphQLString),
@@ -160,22 +170,17 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         vortexGraphqlLoaderWithVariables
       )
 
-      enrichArtworks(artworks, submissions)
+      enrichArtworksWithSubmissions(artworks, submissions)
 
-      const artworksWithInsights = artworks.map((artwork: any) => {
-        const insights =
-          marketPriceInsights[artwork.artist._id]?.[artwork.medium] ?? null
-
-        artwork.artistInsights = insights
-        return artwork
-      })
+      const artworksWithInsights = enrichArtworksWithPriceInsights(
+        artworks,
+        marketPriceInsights
+      )
 
       return connectionFromArraySlice(artworksWithInsights, options, {
         arrayLength: parseInt(headers["x-total-count"] || "0", 10),
         sliceStart: gravityOptions.offset,
       })
-
-      // TODO: update tests
     } catch (error) {
       console.error("[schema/v2/me/my_collection] Error:", error)
 
@@ -269,7 +274,7 @@ export const MyCollectionArtworkMutationType = new GraphQLUnionType({
   ],
 })
 
-const enrichArtworks = async (
+const enrichArtworksWithSubmissions = async (
   artworks: Array<any>,
   submissions?: Array<any>
 ) => {
@@ -284,4 +289,17 @@ const enrichArtworks = async (
       }
     })
   }
+}
+
+const enrichArtworksWithPriceInsights = (
+  artworks: Array<any>,
+  marketPriceInsights: MarketPriceInsightsObjectType
+) => {
+  return artworks.map((artwork: any) => {
+    const insights =
+      marketPriceInsights[artwork.artist._id]?.[artwork.medium] ?? null
+
+    artwork.insights = insights
+    return artwork
+  })
 }
