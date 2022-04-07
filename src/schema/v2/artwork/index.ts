@@ -122,7 +122,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return artistLoader(artist.id).catch(() => null)
         },
       },
-      insights: {
+      marketPriceInsights: {
         type: MarketPriceInsightsType,
       },
       artists: {

@@ -279,6 +279,8 @@ describe("me.myCollection", () => {
   })
 
   it("enriches artwork with market price insights data", async () => {
+    const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
+
     const query = gql`
       {
         me {
@@ -291,7 +293,7 @@ describe("me.myCollection", () => {
                 artist {
                   internalID
                 }
-                insights {
+                marketPriceInsights {
                   demandRank
                 }
               }
@@ -327,21 +329,7 @@ describe("me.myCollection", () => {
         Promise.resolve({
           _id: "artist-id",
         }),
-      vortexGraphqlLoaderWithVariables: () =>
-        Promise.resolve({
-          marketPriceInsightsBatch: {
-            totalCount: 1,
-            edges: [
-              {
-                node: {
-                  artistId: "artist-id",
-                  demandRank: 0.64,
-                  medium: "Painting",
-                },
-              },
-            ],
-          } as any,
-        }),
+      vortexGraphqlLoader,
     }
 
     const data = await runAuthenticatedQuery(query, context)
@@ -351,7 +339,8 @@ describe("me.myCollection", () => {
     )
 
     expect(
-      data.me.myCollectionConnection.edges[0].node.insights.demandRank
+      data.me.myCollectionConnection.edges[0].node.marketPriceInsights
+        .demandRank
     ).toBe(0.64)
   })
 
@@ -416,3 +405,20 @@ describe("me.myCollection", () => {
     )
   })
 })
+
+const mockVortexResponse = {
+  data: {
+    marketPriceInsightsBatch: {
+      totalCount: 1,
+      edges: [
+        {
+          node: {
+            artistId: "artist-id",
+            demandRank: 0.64,
+            medium: "Painting",
+          },
+        },
+      ],
+    },
+  },
+}

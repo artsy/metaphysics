@@ -19,7 +19,7 @@ import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
 import { connectionWithCursorInfo } from "../fields/pagination"
-import { loadBatchPriceInsights } from "./loadBatchPriceInsights"
+import { loadBatchPriceInsights } from "lib/loadBatchPriceInsights"
 import { loadSubmissions } from "./loadSubmissions"
 
 type MarketPriceInsightsObjectType = {
@@ -295,7 +295,7 @@ const enrichArtworksWithPriceInsights = (
     const insights =
       marketPriceInsights[artwork.artist._id]?.[artwork.medium] ?? null
 
-    artwork.insights = insights
+    artwork.marketPriceInsights = insights
     return artwork
   })
 }
