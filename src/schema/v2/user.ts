@@ -11,6 +11,40 @@ import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "./fields/pagination"
 
+export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
+  name: "UserSaleProfile",
+  fields: () => ({
+    ...InternalIDFields,
+    addressLine1: {
+      description: "The given phone number of the user.",
+      type: GraphQLString,
+      resolve: ({ address_1 }) => address_1,
+    },
+  }),
+})
+
+export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
+  description: "The sale profile of the user.",
+  type: UserSaleProfileType,
+  resolve: ({ sale_profile_id }, {}, { userSaleProfileLoader }) => {
+    if (!userSaleProfileLoader) {
+      throw new Error(
+        "You need to be signed in as an admin to perform this action"
+      )
+    }
+
+    return userSaleProfileLoader(sale_profile_id)
+      .then((result) => {
+        return result
+      })
+      .catch((err) => {
+        if (err.statusCode === 404) {
+          return false
+        }
+      })
+  },
+}
+
 export const UserType = new GraphQLObjectType<any, ResolverContext>({
   name: "User",
   fields: () => ({
@@ -29,6 +63,12 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       description: "The given phone number of the user.",
       type: GraphQLString,
     },
+    saleProfileId: {
+      description: "The id of the user's sale profile.",
+      type: GraphQLString,
+      resolve: ({ sale_profile_id }) => sale_profile_id,
+    },
+    saleProfile: UserSaleProfileField,
     location: {
       description: "The given location of the user as structured data",
       type: LocationType,
