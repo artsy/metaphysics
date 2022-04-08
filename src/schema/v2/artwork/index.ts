@@ -82,6 +82,21 @@ export const ArtworkImportSourceEnum = new GraphQLEnumType({
   values: IMPORT_SOURCES,
 })
 
+const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ArtworkPriceInsights",
+  fields: {
+    artistId: {
+      type: GraphQLString,
+    },
+    demandRank: {
+      type: GraphQLFloat,
+    },
+    medium: {
+      type: GraphQLString,
+    },
+  },
+})
+
 export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "Artwork",
   interfaces: [NodeInterface, Searchable, Sellable],
@@ -106,6 +121,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           if (shallow) return artist
           return artistLoader(artist.id).catch(() => null)
         },
+      },
+      marketPriceInsights: {
+        type: ArtworkPriceInsightsType,
       },
       artists: {
         type: new GraphQLList(Artist.type),
