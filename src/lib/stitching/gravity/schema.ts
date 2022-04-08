@@ -24,6 +24,7 @@ export const executableGravitySchema = () => {
 
   if (ENABLE_GRAVITY_MARKETING_COLLECTIONS) {
     allowList.push("marketingCollection")
+    allowList.push("marketingCollections")
   }
 
   const gravityLink = createGravityLink()

@@ -10,6 +10,8 @@ import { toGlobalId } from "graphql-relay"
 import { printType } from "lib/stitching/lib/printType"
 import { dateRange } from "lib/date"
 import { resolveSearchCriteriaLabels } from "schema/v2/searchCriteriaLabel"
+import config from "config"
+import { merge } from "lodash"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -58,13 +60,182 @@ function argsToSDL(args: GraphQLFieldConfigArgumentMap) {
   return result
 }
 
+const gravityMarketingCollectionsExtensions = gql`
+  extend type Artist {
+    marketingCollections(
+      slugs: [String!]
+      category: String
+      size: Int
+      isFeaturedArtistContent: Boolean
+    ): [MarketingCollection]
+  }
+  extend type Fair {
+    marketingCollections(size: Int): [MarketingCollection]!
+  }
+  extend type Viewer {
+    marketingCollections(
+      slugs: [String!]
+      category: String
+      size: Int
+      isFeaturedArtistContent: Boolean
+      artistID: String
+    ): [MarketingCollection]
+  }
+  type HomePageMarketingCollectionsModule {
+    results: [MarketingCollection]!
+  }
+  extend type HomePage {
+    marketingCollectionsModule: HomePageMarketingCollectionsModule
+  }
+`
+
+const gravityMarketingCollectionsResolvers = (gravitySchema) => {
+  return {
+    Artist: {
+      marketingCollections: {
+        fragment: `
+          ... on Artist {
+            internalID
+          }
+        `,
+        resolve: ({ internalID: artistID }, args, context, info) => {
+          return info.mergeInfo.delegateToSchema({
+            schema: gravitySchema,
+            operation: "query",
+            fieldName: "marketingCollections",
+            args: {
+              artistID,
+              ...args,
+            },
+            context,
+            info,
+          })
+        },
+      },
+    },
+    HomePage: {
+      marketingCollectionsModule: {
+        fragment: gql`
+            ... on HomePage {
+              __typename
+            }
+          `,
+        resolve: () => {
+          return {}
+        },
+      },
+    },
+    HomePageMarketingCollectionsModule: {
+      results: {
+        fragment: gql`
+          ... on HomePageMarketingCollectionsModule {
+            __typename
+          }
+        `,
+        resolve: async (_parent, _args, context, info) => {
+          try {
+            // We hard-code the collections slugs here in MP so that the app
+            // can display different collections based only on an MP change
+            // (and not an app deploy).
+            return await info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "marketingCollections",
+              args: {
+                slugs: [
+                  "highlights-this-month",
+                  "new-from-emerging-artists",
+                  "new-from-established-artists",
+                  "limited-edition-prints-trending-artists",
+                  "auction-highlights",
+                ],
+              },
+              context,
+              info,
+            })
+          } catch (error) {
+            // The schema guarantees a present array for results, so fall back
+            // to an empty one if the request fails. Note that we
+            // still bubble-up any errors in the GraphQL response.
+            return []
+          }
+        },
+      },
+    },
+    Fair: {
+      marketingCollections: {
+        fragment: `
+        ... on Fair {
+          kawsCollectionSlugs
+        }
+      `,
+        resolve: ({ kawsCollectionSlugs: slugs }, args, context, info) => {
+          if (slugs.length === 0) return []
+          return info.mergeInfo.delegateToSchema({
+            schema: gravitySchema,
+            operation: "query",
+            fieldName: "marketingCollections",
+
+            args: {
+              slugs,
+              ...args,
+            },
+            context,
+            info,
+          })
+        },
+      },
+    },
+    Viewer: {
+      marketingCollections: {
+        fragment: gql`
+          ...on Viewer {
+            __typename
+          }
+        `,
+        resolve: async (_parent, args, context, info) => {
+          return await info.mergeInfo.delegateToSchema({
+            schema: gravitySchema,
+            operation: "query",
+            fieldName: "marketingCollections",
+            args,
+            context,
+            info,
+          })
+        },
+      },
+    },
+  }
+}
+
+const mergeGravityMarketingCollectionsResolvers = (
+  gravitySchema,
+  resolvers
+) => {
+  const { ENABLE_GRAVITY_MARKETING_COLLECTIONS } = config
+
+  if (ENABLE_GRAVITY_MARKETING_COLLECTIONS) {
+    return merge(gravityMarketingCollectionsResolvers(gravitySchema), resolvers)
+  } else {
+    return resolvers
+  }
+}
+
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
   gravitySchema: GraphQLSchema & { transforms: any }
 ) => {
+  const { ENABLE_GRAVITY_MARKETING_COLLECTIONS } = config
+
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
+      ${
+        ENABLE_GRAVITY_MARKETING_COLLECTIONS
+          ? gravityMarketingCollectionsExtensions
+          : ""
+      }
+
       extend type Me {
         savedSearch(id: ID, criteria: SearchCriteriaAttributes): SearchCriteria
         savedSearchesConnection(
@@ -176,7 +347,7 @@ export const gravityStitchingEnvironment = (
         me : Me
       }
     `,
-    resolvers: {
+    resolvers: mergeGravityMarketingCollectionsResolvers(gravitySchema, {
       Me: {
         savedSearch: {
           resolve: (_parent, args, context, info) => {
@@ -807,6 +978,6 @@ export const gravityStitchingEnvironment = (
             "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
         },
       },
-    },
+    }),
   }
 }
