@@ -84,8 +84,8 @@ export const ArtworkImportSourceEnum = new GraphQLEnumType({
   values: IMPORT_SOURCES,
 })
 
-const MarketPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
-  name: "MarketPriceInsights",
+const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ArtworkPriceInsights",
   fields: {
     artistId: {
       type: GraphQLString,
@@ -125,7 +125,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       marketPriceInsights: {
-        type: MarketPriceInsightsType,
+        type: ArtworkPriceInsightsType,
       },
       artists: {
         type: new GraphQLList(Artist.type),
