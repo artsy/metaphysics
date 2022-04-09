@@ -79,7 +79,7 @@
     "longjohn": "0.2.12",
     "marked": "0.3.18",
     "memcached": "2.2.2",
-    "moment": "2.26.0",
+    "moment": "2.29.2",
     "moment-timezone": "0.5.31",
     "node-fetch": "2.6.1",
     "numeral": "1.5.6",
