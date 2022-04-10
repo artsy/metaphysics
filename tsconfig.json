@@ -4,7 +4,7 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",
     "checkJs": false,
-    "lib": ["es2019"],
+    "lib": ["es2017"],
     "module": "commonjs",
     "noEmit": true,
     "noImplicitAny": false,
