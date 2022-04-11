@@ -1,7 +1,6 @@
 import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { snakeCase } from "lodash"
 
 interface Input {
   id: string
@@ -52,18 +51,15 @@ export const updateUserSaleProfileMutation = mutationWithClientMutationId<
       )
     }
 
-    const initialValue = {} as GravityInput
-    const gravityOptions = Object.keys(args)
-      .filter((key) => key !== "id")
-      .reduce((acc, key) => {
-        if (key === "addressLine1") {
-          return { ...acc, address_1: args[key] }
-        } else if (key === "addressLine2") {
-          return { ...acc, address_2: args[key] }
-        } else {
-          return { ...acc, [snakeCase(key)]: args[key] }
-        }
-      }, initialValue)
+    const gravityOptions: GravityInput = {
+      address_1: args.addressLine1,
+      address_2: args.addressLine2,
+      city: args.city,
+      country: args.country,
+      id: args.id,
+      state: args.state,
+      zip: args.zip,
+    }
 
     try {
       return await updateUserSaleProfileLoader?.(args.id, gravityOptions)
