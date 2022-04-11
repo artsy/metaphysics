@@ -80,11 +80,6 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       description: "The given phone number of the user.",
       type: GraphQLString,
     },
-    saleProfileId: {
-      description: "The id of the user's sale profile.",
-      type: GraphQLString,
-      resolve: ({ sale_profile_id }) => sale_profile_id,
-    },
     saleProfile: UserSaleProfileField,
     location: {
       description: "The given location of the user as structured data",

@@ -14405,9 +14405,6 @@ type User {
   # The sale profile of the user.
   saleProfile: UserSaleProfile
 
-  # The id of the user's sale profile.
-  saleProfileId: String
-
   # Check whether a user exists by email address before creating an account.
   userAlreadyExists: Boolean
 }
