@@ -14284,8 +14284,13 @@ type UpdateUserMutationPayload {
 
 input UpdateUserSaleProfileMutationInput {
   addressLine1: String
+  addressLine2: String
+  city: String
   clientMutationId: String
+  country: String
   id: String!
+  state: String
+  zip: String
 }
 
 type UpdateUserSaleProfileMutationPayload {
@@ -14572,14 +14577,29 @@ enum UserInterestInterestType {
 }
 
 type UserSaleProfile {
-  # The given phone number of the user.
+  # The first line of address for this user.
   addressLine1: String
+
+  # The second line of address for this user.
+  addressLine2: String
+
+  # The city for this user.
+  city: String
+
+  # The country for this user.
+  country: String
 
   # A globally unique ID.
   id: ID!
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
+
+  # The state for this user.
+  state: String
+
+  # The zip for this user.
+  zip: String
 }
 
 union VanityURLEntityType = Fair | Partner

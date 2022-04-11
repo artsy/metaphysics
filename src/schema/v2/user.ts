@@ -16,9 +16,30 @@ export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     ...InternalIDFields,
     addressLine1: {
-      description: "The given phone number of the user.",
+      description: "The first line of address for this user.",
       type: GraphQLString,
       resolve: ({ address_1 }) => address_1,
+    },
+    addressLine2: {
+      description: "The second line of address for this user.",
+      type: GraphQLString,
+      resolve: ({ address_2 }) => address_2,
+    },
+    city: {
+      description: "The city for this user.",
+      type: GraphQLString,
+    },
+    state: {
+      description: "The state for this user.",
+      type: GraphQLString,
+    },
+    zip: {
+      description: "The zip for this user.",
+      type: GraphQLString,
+    },
+    country: {
+      description: "The country for this user.",
+      type: GraphQLString,
     },
   }),
 })

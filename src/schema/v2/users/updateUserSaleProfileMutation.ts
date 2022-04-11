@@ -6,11 +6,21 @@ import { snakeCase } from "lodash"
 interface Input {
   id: string
   addressLine1?: string
+  addressLine2?: string
+  city?: string
+  state?: string
+  zip?: string
+  country?: string
 }
 
 interface GravityInput {
   id: string
   address_1?: string
+  address_2?: string
+  city?: string
+  state?: string
+  zip?: string
+  country?: string
 }
 
 interface GravityError {
@@ -28,6 +38,11 @@ export const updateUserSaleProfileMutation = mutationWithClientMutationId<
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
     addressLine1: { type: GraphQLString },
+    addressLine2: { type: GraphQLString },
+    city: { type: GraphQLString },
+    state: { type: GraphQLString },
+    zip: { type: GraphQLString },
+    country: { type: GraphQLString },
   },
   outputFields: {},
   mutateAndGetPayload: async (args, { updateUserSaleProfileLoader }) => {
@@ -43,6 +58,8 @@ export const updateUserSaleProfileMutation = mutationWithClientMutationId<
       .reduce((acc, key) => {
         if (key === "addressLine1") {
           return { ...acc, address_1: args[key] }
+        } else if (key === "addressLine2") {
+          return { ...acc, address_2: args[key] }
         } else {
           return { ...acc, [snakeCase(key)]: args[key] }
         }
