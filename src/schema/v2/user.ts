@@ -11,6 +11,57 @@ import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "./fields/pagination"
 
+export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
+  name: "UserSaleProfile",
+  fields: () => ({
+    ...InternalIDFields,
+    addressLine1: {
+      description: "The first line of address for this user.",
+      type: GraphQLString,
+      resolve: ({ address_1 }) => address_1,
+    },
+    addressLine2: {
+      description: "The second line of address for this user.",
+      type: GraphQLString,
+      resolve: ({ address_2 }) => address_2,
+    },
+    city: {
+      description: "The city for this user.",
+      type: GraphQLString,
+    },
+    state: {
+      description: "The state for this user.",
+      type: GraphQLString,
+    },
+    zip: {
+      description: "The zip for this user.",
+      type: GraphQLString,
+    },
+    country: {
+      description: "The country for this user.",
+      type: GraphQLString,
+    },
+  }),
+})
+
+export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
+  description: "The sale profile of the user.",
+  type: UserSaleProfileType,
+  resolve: ({ sale_profile_id }, {}, { userSaleProfileLoader }) => {
+    if (!userSaleProfileLoader) {
+      throw new Error(
+        "You need to be signed in as an admin to perform this action"
+      )
+    }
+
+    return userSaleProfileLoader(sale_profile_id).catch((err) => {
+      if (err.statusCode === 404) {
+        return null
+      }
+    })
+  },
+}
+
 export const UserType = new GraphQLObjectType<any, ResolverContext>({
   name: "User",
   fields: () => ({
@@ -29,6 +80,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       description: "The given phone number of the user.",
       type: GraphQLString,
     },
+    saleProfile: UserSaleProfileField,
     location: {
       description: "The given location of the user as structured data",
       type: LocationType,

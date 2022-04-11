@@ -388,6 +388,12 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     usersLoader: gravityLoader("users", {}, { headers: true }),
+    userSaleProfileLoader: gravityLoader((id) => `user_sale_profile/${id}`),
+    updateUserSaleProfileLoader: gravityLoader(
+      (id) => `user_sale_profile/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
     userInterestsLoader: gravityLoader("me/user_interests"),

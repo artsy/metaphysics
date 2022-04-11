@@ -76,6 +76,7 @@ import UpdateCollectorProfile from "./me/update_collector_profile"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import { updateMyPasswordMutation } from "./me/updateMyPasswordMutation"
 import { updateUserMutation } from "./users/updateUserMutation"
+import { updateUserSaleProfileMutation } from "./users/updateUserSaleProfileMutation"
 import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileIconMutation"
 import ObjectIdentification from "./object_identification"
 import { OrderedSet } from "./OrderedSet"
@@ -262,6 +263,7 @@ export default new GraphQLSchema({
       updateConversation: UpdateConversationMutation,
       updateMyPassword: updateMyPasswordMutation,
       updateUser: updateUserMutation,
+      updateUserSaleProfile: updateUserSaleProfileMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateNotificationPreferences: updateNotificationPreferencesMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
