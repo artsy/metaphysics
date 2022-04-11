@@ -54,15 +54,11 @@ export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
       )
     }
 
-    return userSaleProfileLoader(sale_profile_id)
-      .then((result) => {
-        return result
-      })
-      .catch((err) => {
-        if (err.statusCode === 404) {
-          return false
-        }
-      })
+    return userSaleProfileLoader(sale_profile_id).catch((err) => {
+      if (err.statusCode === 404) {
+        return null
+      }
+    })
   },
 }
 
