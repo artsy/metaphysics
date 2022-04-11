@@ -749,6 +749,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       artaShippingEnabled: {
         type: GraphQLBoolean,
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "processWithArtsyShippingDomestic",
+        }),
         resolve: ({ arta_enabled }) => arta_enabled,
       },
       artsyShippingInternational: {
@@ -756,8 +760,25 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ artsy_shipping_international }) =>
           artsy_shipping_international,
       },
+      processWithArtsyShippingDomestic: {
+        type: GraphQLBoolean,
+        description:
+          "Returns true if this work is eligible to be automatically opted into Artsy Domestic Shipping",
+        resolve: (artwork) => {
+          return Boolean(
+            artwork.process_with_artsy_shipping_domestic ||
+              artwork.process_with_arta_shipping
+          )
+        },
+      },
       processWithArtaShipping: {
         type: GraphQLBoolean,
+        description:
+          "Returns true if this work is eligible to be automatically opted into Artsy Domestic Shipping",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "processWithArtsyShippingDomestic",
+        }),
         resolve: ({ process_with_arta_shipping }) => process_with_arta_shipping,
       },
       shipsToContinentalUSOnly: {
@@ -815,6 +836,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "The string that describes domestic and international shipping.",
         resolve: (artwork) => {
           if (
+            artwork.process_with_artsy_shipping_domestic ||
             artwork.process_with_arta_shipping ||
             artwork.artsy_shipping_international
           ) {
