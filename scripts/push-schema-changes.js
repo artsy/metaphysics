@@ -66,8 +66,7 @@ async function main() {
 
     await updateSchemaFile({
       repo: "eigen",
-      body:
-        "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process. #nochangelog",
+      body: `${defaultBody} #nochangelog`,
     })
     await updateSchemaFile({ repo: "force" })
     await updateSchemaFile({
