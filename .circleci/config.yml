@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hokusai: artsy/hokusai@0.10.0
+  hokusai: artsy/hokusai@0.11.0
   horizon: artsy/release@0.0.1
   node: circleci/node@4.9.0
   yarn: artsy/yarn@6.1.0
