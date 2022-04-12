@@ -643,60 +643,15 @@ describe("Artwork type", () => {
       }
     `
 
-    describe("when process_with_artsy_shipping is null", () => {
-      beforeEach(() => {
-        artwork.process_with_artsy_shipping_domestic = null
-      })
+    it("returns the correct value", () => {
+      artwork.process_with_artsy_shipping_domestic = true
 
-      describe("when fallback is null", () => {
-        beforeEach(() => {
-          artwork.process_with_arta_shipping = null
-        })
-
-        it("returns false", () => {
-          return runQuery(query, context).then((data) => {
-            expect(data).toEqual({
-              artwork: {
-                slug: "richard-prince-untitled-portrait",
-                processWithArtsyShippingDomestic: false,
-              },
-            })
-          })
-        })
-
-        describe("when fallback is true", () => {
-          beforeEach(() => {
-            artwork.process_with_arta_shipping = true
-          })
-
-          it("returns the fallback value for process_with_arta_shipping", () => {
-            return runQuery(query, context).then((data) => {
-              expect(data).toEqual({
-                artwork: {
-                  slug: "richard-prince-untitled-portrait",
-                  processWithArtsyShippingDomestic: true,
-                },
-              })
-            })
-          })
-        })
-      })
-    })
-
-    describe("when process_with_artsy_shipping is true", () => {
-      beforeEach(() => {
-        artwork.process_with_artsy_shipping_domestic = true
-        artwork.process_with_arta_shipping = null
-      })
-
-      it("returns the correct value", () => {
-        return runQuery(query, context).then((data) => {
-          expect(data).toEqual({
-            artwork: {
-              slug: "richard-prince-untitled-portrait",
-              processWithArtsyShippingDomestic: true,
-            },
-          })
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            processWithArtsyShippingDomestic: true,
+          },
         })
       })
     })
@@ -2367,8 +2322,8 @@ describe("Artwork type", () => {
       })
     })
 
-    it("is set to calculated at checkout when artwork will be processed with Arta shipping", () => {
-      artwork.process_with_arta_shipping = true
+    it("is set to calculated at checkout when artwork will be processed with Artsy domestic shipping", () => {
+      artwork.process_with_artsy_shipping_domestic = true
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
