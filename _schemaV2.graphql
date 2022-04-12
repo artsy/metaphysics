@@ -1198,6 +1198,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
 
     # When true, will only return `marketable` works (not nude or provocative).
     marketable: Boolean
+    marketingCollectionID: String
     materialsTerms: [String]
 
     # A string from the list of allocations, or * to denote all mediums
@@ -1559,6 +1560,7 @@ type ArtistSeries {
     locationCities: [String]
     majorPeriods: [String]
     marketable: Boolean
+    marketingCollectionID: String
     materialsTerms: [String]
     medium: String
     offerable: Boolean
@@ -7027,6 +7029,7 @@ interface EntityWithFilterArtworksConnectionInterface {
 
     # When true, will only return `marketable` works (not nude or provocative).
     marketable: Boolean
+    marketingCollectionID: String
     materialsTerms: [String]
 
     # A string from the list of allocations, or * to denote all mediums
@@ -7269,6 +7272,7 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
 
     # When true, will only return `marketable` works (not nude or provocative).
     marketable: Boolean
+    marketingCollectionID: String
     materialsTerms: [String]
 
     # A string from the list of allocations, or * to denote all mediums
@@ -7651,6 +7655,7 @@ input FilterArtworksInput {
 
   # When true, will only return `marketable` works (not nude or provocative).
   marketable: Boolean
+  marketingCollectionID: String
   materialsTerms: [String]
 
   # A string from the list of allocations, or * to denote all mediums
@@ -8103,6 +8108,7 @@ type Gene implements Node & Searchable {
 
     # When true, will only return `marketable` works (not nude or provocative).
     marketable: Boolean
+    marketingCollectionID: String
     materialsTerms: [String]
 
     # A string from the list of allocations, or * to denote all mediums
@@ -8996,6 +9002,7 @@ type MarketingCollection {
     locationCities: [String]
     majorPeriods: [String]
     marketable: Boolean
+    marketingCollectionID: String
     materialsTerms: [String]
     medium: String
     offerable: Boolean
@@ -10395,6 +10402,7 @@ type Partner implements Node {
 
     # When true, will only return `marketable` works (not nude or provocative).
     marketable: Boolean
+    marketingCollectionID: String
     materialsTerms: [String]
 
     # A string from the list of allocations, or * to denote all mediums
@@ -11427,6 +11435,7 @@ type Query {
 
     # When true, will only return `marketable` works (not nude or provocative).
     marketable: Boolean
+    marketingCollectionID: String
     materialsTerms: [String]
 
     # A string from the list of allocations, or * to denote all mediums
@@ -13207,6 +13216,7 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
 
     # When true, will only return `marketable` works (not nude or provocative).
     marketable: Boolean
+    marketingCollectionID: String
     materialsTerms: [String]
 
     # A string from the list of allocations, or * to denote all mediums
@@ -13672,6 +13682,7 @@ type Tag implements Node {
 
     # When true, will only return `marketable` works (not nude or provocative).
     marketable: Boolean
+    marketingCollectionID: String
     materialsTerms: [String]
 
     # A string from the list of allocations, or * to denote all mediums
@@ -14650,6 +14661,7 @@ type Viewer {
 
     # When true, will only return `marketable` works (not nude or provocative).
     marketable: Boolean
+    marketingCollectionID: String
     materialsTerms: [String]
 
     # A string from the list of allocations, or * to denote all mediums
