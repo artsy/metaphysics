@@ -1046,7 +1046,6 @@ type Artist implements Node & Searchable {
   is_public: Boolean
   is_shareable: Boolean
   location: String
-  marketingCollections(size: Int): [MarketingCollection]
   meta: ArtistMeta
   name: String
   nationality: String
@@ -10088,105 +10087,27 @@ type LotStanding {
   sale_artwork: SaleArtwork
 }
 
-# Object representing a collection page
 type MarketingCollection {
-  artworks(
-    acquireable: Boolean
-    aggregation_partner_cities: [String]
-    aggregations: [ArtworkAggregation]
-    artist_id: String
-    artist_ids: [String]
-    at_auction: Boolean
-    attribution_class: [String]
-    color: String
-    dimension_range: String
-    extra_aggregation_gene_ids: [String]
-    for_sale: Boolean
-    gene_id: String
-    gene_ids: [String]
-    height: String
-    include_artworks_by_followed_artists: Boolean
-    include_medium_filter_in_aggregation: Boolean
-    inquireable_only: Boolean
-    keyword: String
-    keyword_match_exact: Boolean
-    major_periods: [String]
-    marketable: Boolean
-    medium: String
-    offerable: Boolean
-    page: Int
-    partner_cities: [String]
-    partner_id: ID
-    period: String
-    periods: [String]
-    price_range: String
-    sale_id: ID
-    size: Int
-    sort: String
-    tag_id: String
-    width: String
-  ): FilterArtworks
-
-  # Category of the collection
   category: String!
-  createdAt: MarketingDateTime!
-
-  # Image credit for the header image
+  createdAt: ISO8601DateTime!
   credit: String
-
-  # Description of the collection which can include links to other collections
   description: String
-
-  # Markdown alternate of description field contents.
   descriptionMarkdown: String
-
-  # IDs of artists that should be excluded from Featured Artists for this collection
-  featuredArtistExclusionIds: [String!]
-
-  # Background image for the header of the collection page
+  featuredArtistExclusionIds: [String!]!
   headerImage: String
+
+  # Unique ID for this marketing collection
   id: ID!
+
+  # Unique ID for this marketing collection
   internalID: ID!
-
-  # Collection has prioritized connection to artist
-  is_featured_artist_content: Boolean!
-    @deprecated(reason: "Prefer isFeaturedArtistContent")
-  isDepartment: Boolean!
-
-  # Collection has prioritized connection to artist
   isFeaturedArtistContent: Boolean!
-
-  # Set of keywords used for SEO purposes
-  keywords: String!
-
-  # CollectionGroups of this collection
-  linkedCollections: [MarketingCollectionGroup!]!
-
-  # Suggested average price for included works
-  price_guidance: Float @deprecated(reason: "Prefer priceGuidance")
-
-  # Suggested average price for included works
   priceGuidance: Float
-
-  # Structured object used to build filtered artworks query
   query: MarketingCollectionQuery!
-  relatedCollections(size: Int = 10): [MarketingCollection!]!
-
-  # Collection can be surfaced on editorial pages
-  show_on_editorial: Boolean! @deprecated(reason: "Prefer showOnEditorial")
-
-  # Collection can be surfaced on editorial pages
-  showOnEditorial: Boolean!
-
-  # slug version of title, used for pretty URLs (e.g. `kaws-prints` for Kaws Prints
   slug: String!
-
-  # URL for Thumbnail image to be used when this collection is displayed.
   thumbnail: String
-
-  # Name of the collection
   title: String!
-  updatedAt: MarketingDateTime!
+  updatedAt: ISO8601DateTime!
 }
 
 type MarketingCollectionCategory {
@@ -10194,74 +10115,11 @@ type MarketingCollectionCategory {
   name: String!
 }
 
-type MarketingCollectionGroup {
-  groupType: MarketingGroupTypes!
-  internalID: ID
-  members: [MarketingCollection!]!
-  name: String!
-}
-
 type MarketingCollectionQuery {
-  acquireable: Boolean
-  aggregations: [String!]
-  artist_id: String @deprecated(reason: "Prefer artistID")
-  artist_ids: [String!] @deprecated(reason: "Prefer artistIDs")
-  artistID: String
   artistIDs: [String!]
-  at_auction: Boolean @deprecated(reason: "Prefer atAuction")
-  atAuction: Boolean
-  color: String
-  dimension_range: String @deprecated(reason: "Prefer dimensionRange")
-  dimensionRange: String
-  extra_aggregation_gene_ids: [String!]
-    @deprecated(reason: "prefer extraAggregationGeneIDs")
-  extraAggregationGeneIDs: [String!]
-  for_sale: Boolean @deprecated(reason: "Prefer forSale")
-  forSale: Boolean
-  gene_id: String @deprecated(reason: "Prefer geneID")
-  gene_ids: [String!] @deprecated(reason: "Prefer geneIDs")
-  geneID: String
   geneIDs: [String!]
-  height: String
-  id: ID
-  include_artworks_by_followed_artists: Boolean
-    @deprecated(reason: "Prefer includeArtworksByFollowedArtists")
-  include_medium_filter_in_aggregation: Boolean
-    @deprecated(reason: "Prefer includeMediumFilterInAggregation")
-  includeArtworksByFollowedArtists: Boolean
-  includeMediumFilterInAggregation: Boolean
-  inquireable_only: Boolean @deprecated(reason: "Prefer inquireableOnly")
-  inquireableOnly: Boolean
-  internalID: ID
   keyword: String
-  major_periods: [String!] @deprecated(reason: "Prefer majorPeriods")
-  majorPeriods: [String!]
-  medium: String
-  page: Int
-  partner_cities: [String!] @deprecated(reason: "Prefer partnerCities")
-  partner_id: ID @deprecated(reason: "Prefer partnerID")
-  partnerCities: [String!]
-  partnerID: ID
-  period: String
-  periods: [String!]
-  price_range: String @deprecated(reason: "Prefer priceRange")
-  priceRange: String
-  sale_id: ID @deprecated(reason: "Prefer saleID")
-  saleID: ID
-  size: Int
-  sort: String
-  tag_id: String @deprecated(reason: "Prefer tagID")
   tagID: String
-  width: String
-}
-
-scalar MarketingDateTime
-
-# Available types of CollectionGroup
-enum MarketingGroupTypes {
-  ArtistSeries
-  FeaturedCollections
-  OtherCollections
 }
 
 # Market Price Insights
@@ -12760,18 +12618,6 @@ type Query {
   _unused_gravity_categories: [MarketingCollectionCategory!]!
   _unused_gravity_devices(userId: ID!): [Device!]!
 
-  # Find a marketing collection by ID or slug
-  _unused_gravity_marketingCollection(id: ID!): MarketingCollection
-
-  # An array of marketing collections. Defaults to returning all available collections if no args are passed
-  _unused_gravity_marketingCollections(
-    artistID: ID
-    category: String
-    isFeaturedArtistContent: Boolean
-    size: Int
-    slugs: [String!]
-  ): [MarketingCollection!]
-
   # Autocomplete resolvers.
   _unused_gravity_match_partners(
     match_type: String
@@ -13282,18 +13128,18 @@ type Query {
 
   # Home screen content
   home_page: HomePage
-  marketingCategories: [MarketingCollectionCategory!]!
-  marketingCollection(slug: String!): MarketingCollection
+
+  # Find a marketing collection by ID or slug
+  marketingCollection(id: ID!): MarketingCollection
+
+  # An array of marketing collections. Defaults to returning all available collections if no args are passed
   marketingCollections(
-    artistID: String
+    artistID: ID
     category: String
     isFeaturedArtistContent: Boolean
-    randomizationSeed: String
-    showOnEditorial: Boolean
     size: Int
     slugs: [String!]
-  ): [MarketingCollection!]!
-  marketingHubCollections: [MarketingCollection!]!
+  ): [MarketingCollection!]
 
   # Get price insights for a market.
   marketPriceInsights(artistId: ID!, medium: String!): MarketPriceInsights
