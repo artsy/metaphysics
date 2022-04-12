@@ -67,6 +67,7 @@ async function main() {
     const updateOptionses = [
       { repo: "eigen", body: `${defaultBody} #nochangelog` },
       { repo: "force" },
+      { repo: "forque" },
       { repo: "pulse", dest: "vendor/graphql/schema/metaphysics.json" },
       { repo: "volt", dest: "vendor/graphql/schema/metaphysics.json" },
     ]
