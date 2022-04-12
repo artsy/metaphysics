@@ -1000,7 +1000,7 @@ describe("gravity/stitching", () => {
         const mergeInfo = { delegateToSchema: jest.fn() }
 
         await marketingCollectionsResolver(
-          { kawsCollectionSlugs: ["catty-collection"] },
+          { marketingCollectionSlugs: ["catty-collection"] },
           {},
           {},
           { mergeInfo }
@@ -1014,7 +1014,7 @@ describe("gravity/stitching", () => {
         )
       })
 
-      it("returns an empty list when there are no kawsCollectionSlugs", async () => {
+      it("returns an empty list when there are no marketingCollectionSlugs", async () => {
         config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
 
         const { resolvers } = await getGravityStitchedSchema()
@@ -1023,7 +1023,7 @@ describe("gravity/stitching", () => {
         const mergeInfo = { delegateToSchema: jest.fn() }
 
         const result = await marketingCollectionsResolver(
-          { kawsCollectionSlugs: [] },
+          { marketingCollectionSlugs: [] },
           {},
           {},
           { mergeInfo }

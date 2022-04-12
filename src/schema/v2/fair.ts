@@ -192,7 +192,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           return now.isAfter(activeStart)
         },
       },
-      kawsCollectionSlugs: {
+      marketingCollectionSlugs: {
         type: new GraphQLNonNull(GraphQLList(GraphQLString)),
         resolve: ({ kaws_collection_slugs }) => kaws_collection_slugs,
       },

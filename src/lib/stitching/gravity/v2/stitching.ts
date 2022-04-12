@@ -113,6 +113,30 @@ const gravityMarketingCollectionsResolvers = (gravitySchema) => {
         },
       },
     },
+    Fair: {
+      marketingCollections: {
+        fragment: `
+        ... on Fair {
+          marketingCollectionSlugs
+        }
+      `,
+        resolve: ({ marketingCollectionSlugs: slugs }, args, context, info) => {
+          if (slugs.length === 0) return []
+          return info.mergeInfo.delegateToSchema({
+            schema: gravitySchema,
+            operation: "query",
+            fieldName: "marketingCollections",
+
+            args: {
+              slugs,
+              ...args,
+            },
+            context,
+            info,
+          })
+        },
+      },
+    },
     HomePage: {
       marketingCollectionsModule: {
         fragment: gql`
@@ -159,30 +183,6 @@ const gravityMarketingCollectionsResolvers = (gravitySchema) => {
             // still bubble-up any errors in the GraphQL response.
             return []
           }
-        },
-      },
-    },
-    Fair: {
-      marketingCollections: {
-        fragment: `
-        ... on Fair {
-          kawsCollectionSlugs
-        }
-      `,
-        resolve: ({ kawsCollectionSlugs: slugs }, args, context, info) => {
-          if (slugs.length === 0) return []
-          return info.mergeInfo.delegateToSchema({
-            schema: gravitySchema,
-            operation: "query",
-            fieldName: "marketingCollections",
-
-            args: {
-              slugs,
-              ...args,
-            },
-            context,
-            info,
-          })
         },
       },
     },
