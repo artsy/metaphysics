@@ -747,14 +747,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return price_includes_tax ? "VAT included in price" : null
         },
       },
-      artaShippingEnabled: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "processWithArtsyShippingDomestic",
-        }),
-        resolve: ({ arta_enabled }) => arta_enabled,
-      },
       artsyShippingInternational: {
         type: GraphQLBoolean,
         resolve: ({ artsy_shipping_international }) =>
@@ -766,16 +758,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "Returns true if this work is eligible to be automatically opted into Artsy Domestic Shipping",
         resolve: ({ process_with_artsy_shipping_domestic }) =>
           process_with_artsy_shipping_domestic,
-      },
-      processWithArtaShipping: {
-        type: GraphQLBoolean,
-        description:
-          "Returns true if this work is eligible to be automatically opted into Artsy Domestic Shipping",
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "processWithArtsyShippingDomestic",
-        }),
-        resolve: ({ process_with_arta_shipping }) => process_with_arta_shipping,
       },
       shipsToContinentalUSOnly: {
         type: GraphQLBoolean,

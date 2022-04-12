@@ -49,7 +49,7 @@ describe("Artwork type", () => {
       metric: "in",
       unlisted: true,
       category: "Painting",
-      arta_enabled: false,
+      process_with_artsy_shipping_domestic: false,
     }
 
     context = {
@@ -651,54 +651,6 @@ describe("Artwork type", () => {
           artwork: {
             slug: "richard-prince-untitled-portrait",
             processWithArtsyShippingDomestic: true,
-          },
-        })
-      })
-    })
-  })
-
-  describe("#artaShippingEnabled", () => {
-    const query = `
-      {
-        artwork(id: "richard-prince-untitled-portrait") {
-          slug
-          artaShippingEnabled
-        }
-      }
-    `
-
-    it("passes true from gravity", () => {
-      artwork.arta_enabled = true
-
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            slug: "richard-prince-untitled-portrait",
-            artaShippingEnabled: true,
-          },
-        })
-      })
-    })
-  })
-
-  describe("#processWithArtaShipping", () => {
-    const query = `
-      {
-        artwork(id: "richard-prince-untitled-portrait") {
-          slug
-          processWithArtaShipping
-        }
-      }
-    `
-
-    it("passes true from gravity", () => {
-      artwork.process_with_arta_shipping = true
-
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            slug: "richard-prince-untitled-portrait",
-            processWithArtaShipping: true,
           },
         })
       })
