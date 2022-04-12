@@ -64,19 +64,18 @@ async function main() {
 
     execSync("yarn dump:staging")
 
-    await updateSchemaFile({
-      repo: "eigen",
-      body: `${defaultBody} #nochangelog`,
-    })
-    await updateSchemaFile({ repo: "force" })
-    await updateSchemaFile({
-      repo: "volt",
-      dest: "vendor/graphql/schema/metaphysics.json",
-    })
-    await updateSchemaFile({
-      repo: "pulse",
-      dest: "vendor/graphql/schema/metaphysics.json",
-    })
+    const updateOptionses = [
+      { repo: "eigen", body: `${defaultBody} #nochangelog` },
+      { repo: "force" },
+      { repo: "pulse", dest: "vendor/graphql/schema/metaphysics.json" },
+      { repo: "volt", dest: "vendor/graphql/schema/metaphysics.json" },
+    ]
+
+    const updatePromises = updateOptionses.map((updateOptions) =>
+      updateSchemaFile(updateOptions)
+    )
+
+    await Promise.all(updatePromises)
   } catch (error) {
     console.error(error)
     process.exit(1)
