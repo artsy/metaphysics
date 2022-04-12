@@ -6,6 +6,9 @@ const path = require("path")
 const { buildSchema, introspectionQuery, graphqlSync } = require("graphql")
 const { readFileSync, writeFileSync } = require("fs")
 
+const defaultBody =
+  "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process."
+
 /**
  * updates the schema file on repo
  * @param {Object} input
@@ -17,7 +20,7 @@ const { readFileSync, writeFileSync } = require("fs")
 async function updateSchemaFile({
   repo,
   dest = "data/schema.graphql",
-  body = "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process.",
+  body = defaultBody,
   targetBranch = "main",
 }) {
   await updateRepo({
