@@ -62,7 +62,7 @@ async function main() {
 
     execSync("yarn dump:staging")
 
-    const updateOptionses = [
+    const reposToUpdate = [
       { repo: "eigen", body: `${defaultBody} #nochangelog` },
       { repo: "force" },
       { repo: "forque" },
@@ -70,9 +70,7 @@ async function main() {
       { repo: "volt", dest: "vendor/graphql/schema/metaphysics.json" },
     ]
 
-    const updatePromises = updateOptionses.map((updateOptions) =>
-      updateSchemaFile(updateOptions)
-    )
+    const updatePromises = reposToUpdate.map((repo) => updateSchemaFile(repo))
 
     await Promise.all(updatePromises)
   } catch (error) {
