@@ -6,19 +6,20 @@ const path = require("path")
 const { buildSchema, introspectionQuery, graphqlSync } = require("graphql")
 const { readFileSync, writeFileSync } = require("fs")
 
+const defaultBody =
+  "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process."
+
 /**
  * updates the schema file on repo
  * @param {Object} input
  * @param {string} input.repo - repo: name of the artsy repo to update
  * @param {string} [input.body] - body: The PR body descrption
  * @param {string} [input.dest] - dest: Path to schema file in target repo
- * @param {string} [input.targetBranch] - targetBranch: default branch of the target repo
  */
 async function updateSchemaFile({
   repo,
   dest = "data/schema.graphql",
-  body = "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process.",
-  targetBranch = "main",
+  body = defaultBody,
 }) {
   await updateRepo({
     repo: {
@@ -27,7 +28,7 @@ async function updateSchemaFile({
     },
     branch: "update-schema",
     title: "Update metaphysics schema",
-    targetBranch,
+    targetBranch: "main",
     commitMessage: "Update metaphysics schema",
     body,
     assignees: ["artsyit"],
@@ -61,20 +62,17 @@ async function main() {
 
     execSync("yarn dump:staging")
 
-    await updateSchemaFile({
-      repo: "eigen",
-      body:
-        "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process. #nochangelog",
-    })
-    await updateSchemaFile({ repo: "force" })
-    await updateSchemaFile({
-      repo: "volt",
-      dest: "vendor/graphql/schema/metaphysics.json",
-    })
-    await updateSchemaFile({
-      repo: "pulse",
-      dest: "vendor/graphql/schema/metaphysics.json",
-    })
+    const reposToUpdate = [
+      { repo: "eigen", body: `${defaultBody} #nochangelog` },
+      { repo: "force" },
+      { repo: "forque" },
+      { repo: "pulse", dest: "vendor/graphql/schema/metaphysics.json" },
+      { repo: "volt", dest: "vendor/graphql/schema/metaphysics.json" },
+    ]
+
+    const updatePromises = reposToUpdate.map((repo) => updateSchemaFile(repo))
+
+    await Promise.all(updatePromises)
   } catch (error) {
     console.error(error)
     process.exit(1)
