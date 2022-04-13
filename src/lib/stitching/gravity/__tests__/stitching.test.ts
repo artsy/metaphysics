@@ -1033,4 +1033,46 @@ describe("gravity/stitching", () => {
       })
     })
   })
+
+  describe("MarketingCollection", () => {
+    describe("artworksConnection", () => {
+      it("extends the MarketingCollection type with an artworksConnection field for the V2 schema", async () => {
+        config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
+
+        const mergedSchema = await getGravityMergedSchema()
+        const marketingCollectionFields = await getFieldsForTypeFromSchema(
+          "MarketingCollection",
+          mergedSchema
+        )
+        expect(marketingCollectionFields).toContain("artworksConnection")
+      })
+
+      it("resolves the artworksConnection field on MarketingCollection for the V2 schema", async () => {
+        config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
+
+        const { resolvers } = await getGravityStitchedSchema()
+        const { artworksConnection } = resolvers.MarketingCollection
+        const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+        artworksConnection.resolve(
+          { internalID: "abc123" },
+          { first: 2 },
+          { currentArtworkID: "catty-artwork" },
+          info
+        )
+
+        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+          args: {
+            marketingCollectionID: "abc123",
+            first: 2,
+          },
+          operation: "query",
+          fieldName: "artworksConnection",
+          schema: expect.anything(),
+          context: expect.anything(),
+          info: expect.anything(),
+        })
+      })
+    })
+  })
 })

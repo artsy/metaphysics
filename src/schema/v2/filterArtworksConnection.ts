@@ -230,6 +230,9 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   locationCities: {
     type: new GraphQLList(GraphQLString),
   },
+  marketingCollectionID: {
+    type: GraphQLString,
+  },
 }
 
 const pageableFilterArtworksArgs = pageable(filterArtworksArgs)
@@ -416,6 +419,7 @@ const convertFilterArgs = ({
   geneID,
   geneIDs,
   majorPeriods,
+  marketingCollectionID,
   materialsTerms,
   partnerID,
   partnerIDs,
@@ -447,6 +451,7 @@ const convertFilterArgs = ({
     gene_id: geneID,
     gene_ids: geneIDs,
     major_periods: majorPeriods,
+    marketing_collection_id: marketingCollectionID,
     materials_terms: materialsTerms,
     partner_id: partnerID,
     partner_ids: partnerIDs,
