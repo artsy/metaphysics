@@ -767,6 +767,7 @@ describe("Sale type", () => {
       {
         sale(id: "foo-foo") {
           formattedStartDateTime
+          cascadingEndTimeIntervalMinutes
         }
       }
     `
@@ -850,6 +851,7 @@ describe("Sale type", () => {
       })
 
       expect(response.sale.formattedStartDateTime).toEqual("March 9 – 12, 2022")
+      expect(response.sale.cascadingEndTimeIntervalMinutes).toEqual(2)
     })
 
     it("returns date range when cascading interval is true while the sale is running", async () => {
@@ -878,6 +880,16 @@ describe("Sale type", () => {
         cascading_end_time_interval: 120,
       })
       expect(response.sale.formattedStartDateTime).toEqual("Closed Mar 8, 2022")
+    })
+
+    it("properly handles null cascading_end_time_interval", async () => {
+      const response = await execute(query, {
+        start_at: "2022-03-07 09+07:00",
+        end_at: "2022-03-08 09+07:00",
+        ended_at: "2022-03-08 10+07:00",
+      })
+      expect(response.sale.formattedStartDateTime).toEqual("Ended Mar 8")
+      expect(response.sale.cascadingEndTimeIntervalMinutes).toEqual(null)
     })
   })
 
