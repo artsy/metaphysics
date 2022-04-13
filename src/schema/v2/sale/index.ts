@@ -178,6 +178,12 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ cascading_end_time_interval }) =>
           cascading_end_time_interval,
       },
+      cascadingcascadingEndTimeIntervalMinutesEndTimeInterval: {
+        type: GraphQLInt,
+        description: "Amount of minutes in between each lot closing.",
+        resolve: ({ cascading_end_time_interval }) =>
+          cascading_end_time_interval / 60,
+      },
       collectPayments: {
         type: new GraphQLNonNull(GraphQLBoolean),
         resolve: ({ collect_payments }) => !!collect_payments,

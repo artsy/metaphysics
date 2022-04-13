@@ -847,6 +847,7 @@ describe("Sale type", () => {
         start_at: "2022-03-09 09+07:00",
         end_at: "2022-03-12 09+07:00",
         cascading_end_time_interval: 120,
+        cascading_end_time_interval_minutes: 2,
       })
 
       expect(response.sale.formattedStartDateTime).toEqual("March 9 – 12, 2022")
