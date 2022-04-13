@@ -1065,7 +1065,6 @@ describe("gravity/stitching", () => {
           args: {
             marketingCollectionID: "abc123",
             first: 2,
-            excludeArtworkIDs: ["catty-artwork"],
           },
           operation: "query",
           fieldName: "artworksConnection",

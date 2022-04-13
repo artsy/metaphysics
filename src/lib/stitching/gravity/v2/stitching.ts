@@ -229,9 +229,6 @@ const gravityMarketingCollectionsResolvers = (gravitySchema, localSchema) => {
             fieldName: "artworksConnection",
             args: {
               marketingCollectionID,
-              ...(!!context.currentArtworkID && {
-                excludeArtworkIDs: [context.currentArtworkID],
-              }),
               ...args,
             },
             context,

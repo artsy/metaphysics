@@ -656,12 +656,7 @@ describe("artworksConnection", () => {
       const query = gql`
         {
           artworksConnection(
-            input: {
-              marketingCollectionID: "kaws-toys"
-              first: 1
-              after: ""
-              aggregations: [TOTAL]
-            }
+            input: { marketingCollectionID: "kaws-toys", first: 1, after: "" }
           ) {
             edges {
               node {
