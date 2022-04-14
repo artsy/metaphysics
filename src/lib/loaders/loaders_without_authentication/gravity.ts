@@ -231,6 +231,7 @@ export default (opts) => {
     ),
     setLoader: gravityLoader((id) => `set/${id}`),
     setsLoader: gravityLoader("sets", {}, { headers: true }),
+    shortcutLoader: gravityLoader((id) => `shortcut/${id}`),
     showLoader: gravityLoader((id) => `show/${id}`),
     showsLoader: gravityLoader("shows"),
     showsWithHeadersLoader: gravityLoader("shows", {}, { headers: true }),

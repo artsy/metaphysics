@@ -123,6 +123,7 @@ import { SearchCriteriaLabel } from "./searchCriteriaLabel"
 import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerficationEmailMutation"
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { PreviewSavedSearchField } from "./previewSavedSearch"
+import { shortcut } from "./shortcut"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -200,6 +201,7 @@ const rootFields = {
   salesConnection: SalesConnectionField,
   searchConnection: Search,
   show: Show,
+  shortcut,
   showsConnection: Shows,
   staticContent: StaticContent,
   // status: Status,
