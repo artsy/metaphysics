@@ -124,6 +124,7 @@ import { sendIdentityVerificationEmailMutation } from "./me/sendIdentityVerficat
 import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { PreviewSavedSearchField } from "./previewSavedSearch"
 import { shortcut } from "./shortcut"
+import { channel } from "./article/channel"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -150,6 +151,7 @@ const rootFields = {
   artists: Artists,
   artistsConnection,
   authenticationStatus,
+  channel,
   city: City,
   cities,
   notificationPreferences,
