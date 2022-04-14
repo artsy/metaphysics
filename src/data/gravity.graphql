@@ -1115,6 +1115,7 @@ type MarketingCollection {
   """
   internalID: ID!
   isFeaturedArtistContent: Boolean!
+  linkedCollections: [MarketingCollectionGroup!]!
   priceGuidance: Float
   query: MarketingCollectionQuery!
   slug: String!
@@ -1126,6 +1127,22 @@ type MarketingCollection {
 type MarketingCollectionCategory {
   collections: [MarketingCollection!]!
   name: String!
+}
+
+type MarketingCollectionGroup {
+  groupType: MarketingCollectionGroupTypeEnum!
+  internalID: ID!
+  members: [MarketingCollection!]!
+  name: String!
+}
+
+enum MarketingCollectionGroupTypeEnum {
+  """
+  Artist-focused collections, not to be confused with actual ArtistSeries
+  """
+  ArtistSeries
+  FeaturedCollections
+  OtherCollections
 }
 
 type MarketingCollectionQuery {
