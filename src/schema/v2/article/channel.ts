@@ -8,9 +8,13 @@ import {
   GraphQLList,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { ArticleType } from "./index"
+import { articleConnection } from "./index"
 import { ImageType } from "../image"
 import { IDFields } from "../object_identification"
+import { pageable } from "relay-cursor-paging"
+import { paginationResolver } from "../fields/pagination"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import ArticleSorts from "../sorts/article_sorts"
 
 enum ChannelType {
   Editorial = "editorial",
@@ -65,18 +69,33 @@ export const channelType = new GraphQLObjectType<Channel, ResolverContext>({
       },
     },
     name: { type: GraphQLNonNull(GraphQLString) },
-    pinnedArticles: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(ArticleType))
-      ),
-      resolve: async ({ pinned_articles }, _args, { articlesLoader }) => {
-        const { results } = await articlesLoader({
-          ids: pinned_articles.map((article) => article.id),
+    articlesConnection: {
+      description: "A connection of articles related to a partner.",
+      type: articleConnection.connectionType,
+      args: pageable({ sort: ArticleSorts }),
+      resolve: async ({ id }, args, { articlesLoader }) => {
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        const { results: body, count: totalCount } = await articlesLoader({
+          channel_id: id,
+          count: true,
+          limit: size,
+          offset,
+          published: true,
+          sort: args.sort,
         })
 
-        return results
+        return paginationResolver({
+          args,
+          body,
+          offset,
+          page,
+          size,
+          totalCount,
+        })
       },
     },
+
     slug: { type: GraphQLString },
     tagline: { type: GraphQLString },
     type: {
