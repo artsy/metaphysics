@@ -67,10 +67,15 @@ export const kawsStitchingEnvironmentV2 = (
         marketingCollections: {
           fragment: `
           ... on Fair {
-            kawsCollectionSlugs
+            marketingCollectionSlugs
           }
         `,
-          resolve: ({ kawsCollectionSlugs: slugs }, args, context, info) => {
+          resolve: (
+            { marketingCollectionSlugs: slugs },
+            args,
+            context,
+            info
+          ) => {
             if (slugs.length === 0) return []
             return info.mergeInfo.delegateToSchema({
               schema: kawsSchema,

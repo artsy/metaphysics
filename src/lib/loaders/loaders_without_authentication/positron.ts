@@ -9,5 +9,6 @@ export default (opts) => {
     articleLoader: positronLoader((id) => `articles/${id}`),
     authorsLoader: positronLoader("authors"),
     authorLoader: positronLoader((id) => `authors/${id}`),
+    channelLoader: positronLoader((id) => `channels/${id}`),
   }
 }

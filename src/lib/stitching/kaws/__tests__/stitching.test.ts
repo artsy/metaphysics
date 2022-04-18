@@ -85,7 +85,7 @@ describe("KAWS Stitching", () => {
       const mergeInfo = { delegateToSchema: jest.fn() }
 
       await marketingCollectionsResolver(
-        { kawsCollectionSlugs: ["catty-collection"] },
+        { marketingCollectionSlugs: ["catty-collection"] },
         {},
         {},
         { mergeInfo }
@@ -99,14 +99,14 @@ describe("KAWS Stitching", () => {
       )
     })
 
-    it("returns an empty list when there are no kawsCollectionSlugs", async () => {
+    it("returns an empty list when there are no marketingCollectionSlugs", async () => {
       const { resolvers } = await getKawsStitchedSchema()
       const marketingCollectionsResolver =
         resolvers.Fair.marketingCollections.resolve
       const mergeInfo = { delegateToSchema: jest.fn() }
 
       const result = await marketingCollectionsResolver(
-        { kawsCollectionSlugs: [] },
+        { marketingCollectionSlugs: [] },
         {},
         {},
         { mergeInfo }

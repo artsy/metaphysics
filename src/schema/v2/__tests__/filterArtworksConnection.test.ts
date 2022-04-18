@@ -2,6 +2,7 @@ import { runQuery } from "schema/v2/test/utils"
 import { toGlobalId } from "graphql-relay"
 import gql from "lib/gql"
 import sinon from "sinon"
+import config from "config"
 
 describe("artworksConnection", () => {
   let context
@@ -616,6 +617,60 @@ describe("artworksConnection", () => {
 
       expect(artworksConnection.edges).toEqual([
         { node: { slug: "oseberg-norway-queens-ship" } },
+      ])
+    })
+  })
+
+  describe("filter by marketing_collection_id", () => {
+    beforeEach(() => {
+      const filterArtworksLoader = jest.fn((args) => {
+        if (args.marketing_collection_id === "kaws-toys") {
+          return Promise.resolve({
+            hits: [
+              {
+                id: "kaws-toys",
+              },
+            ],
+            aggregations: {
+              total: {
+                value: 1,
+              },
+            },
+          })
+        }
+
+        return Promise.reject("unexpected marketing_collection_id")
+      })
+
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: filterArtworksLoader,
+        },
+      }
+    })
+
+    it("returns correct artwork", async () => {
+      config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
+
+      const query = gql`
+        {
+          artworksConnection(
+            input: { marketingCollectionID: "kaws-toys", first: 1, after: "" }
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "kaws-toys" } },
       ])
     })
   })

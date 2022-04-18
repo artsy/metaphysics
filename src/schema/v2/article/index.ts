@@ -24,6 +24,7 @@ import { ArticleSectionImageSet } from "./sections/ArticleSectionImageSet"
 import { ArticleSectionSocialEmbed } from "./sections/ArticleSectionSocialEmbed"
 import { take } from "lodash"
 import { ArticleHero, ArticleLayoutEnum } from "./models"
+import { channelType } from "./channel"
 
 export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Article",
@@ -92,8 +93,16 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     channelID: {
+      deprecationReason: "Use `channel` instead",
       type: GraphQLString,
       resolve: ({ channel_id }) => channel_id,
+    },
+    channel: {
+      type: channelType,
+      resolve: ({ channel_id }, _args, { channelLoader }) => {
+        if (!channel_id) return null
+        return channelLoader(channel_id)
+      },
     },
     contributingAuthors: {
       deprecationReason: "Use `byline` or `authors` instead",
