@@ -10,6 +10,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import { PageInfoType } from "graphql-relay"
 // Mapping of category ids to MediumType values
@@ -23,6 +24,7 @@ import _ from "lodash"
 import Article from "schema/v2/article"
 import Artist from "schema/v2/artist"
 import ArtworkMedium from "schema/v2/artwork/artworkMedium"
+import { VIDEOS } from "schema/v2/artwork/artworkVideos"
 import AttributionClass from "schema/v2/artwork/attributionClass"
 import Dimensions from "schema/v2/dimensions"
 import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
@@ -35,7 +37,11 @@ import {
   connectionWithCursorInfo,
   PageCursorsType,
 } from "schema/v2/fields/pagination"
-import Image, { getDefault, normalizeImageData } from "schema/v2/image"
+import Image, {
+  getDefault,
+  ImageType,
+  normalizeImageData,
+} from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
 import { LocationType } from "schema/v2/location"
 import {
@@ -50,6 +56,7 @@ import { Sellable } from "schema/v2/sellable"
 import Show from "schema/v2/show"
 import ShowSorts from "schema/v2/sorts/show_sorts"
 import { ResolverContext } from "types/graphql"
+import { VideoType } from "schema/v2/types/Video"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { InquiryQuestionType } from "../inquiry_question"
 import { loadSubmissions } from "../me/loadSubmissions"
@@ -1285,6 +1292,36 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "size bucket assigned to an artwork based on its dimensions",
         type: GraphQLString,
         resolve: ({ size_bucket }) => size_bucket,
+      },
+      figures: {
+        description: "A list of images and videos for the artwork",
+        type: new GraphQLNonNull(
+          new GraphQLList(
+            new GraphQLNonNull(
+              new GraphQLUnionType({
+                name: "ArtworkFigures",
+                types: [VideoType, ImageType],
+                resolveType: ({ type }) => {
+                  if (type === "Image") {
+                    return ImageType
+                  } else if (type === "Video") {
+                    return VideoType
+                  }
+                },
+              })
+            )
+          )
+        ),
+        resolve: ({ images, id }) => {
+          const typedImages = images.map((image) => ({
+            ...image,
+            type: "Image",
+          }))
+          const typedVideos = VIDEOS[id]
+            ? [{ ...VIDEOS[id], type: "Video" }]
+            : []
+          return [...typedImages, ...typedVideos]
+        },
       },
     }
   },
