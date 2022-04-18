@@ -212,6 +212,19 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       endedAt: date,
       eventStartAt: date,
       eventEndAt: date,
+      extendedBiddingIntervalMinutes: {
+        type: GraphQLInt,
+        description: "Amount of time added when a late bid comes in.",
+        resolve: ({ extended_bidding_interval_minutes }) =>
+          extended_bidding_interval_minutes,
+      },
+      extendedBiddingPeriodMinutes: {
+        type: GraphQLInt,
+        description:
+          "Duration before lot closes that a late bid would extend the end time.",
+        resolve: ({ extended_bidding_period_minutes }) =>
+          extended_bidding_period_minutes,
+      },
       formattedStartDateTime: {
         type: GraphQLString,
         description:
