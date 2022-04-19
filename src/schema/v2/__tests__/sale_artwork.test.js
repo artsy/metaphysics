@@ -546,7 +546,7 @@ describe("SaleArtwork type", () => {
     const context = {
       saleLoader: () => {
         return Promise.resolve({
-          cascading_end_time_interval: 120,
+          cascading_end_time_interval_minutes: 2,
         })
       },
     }
@@ -569,7 +569,7 @@ describe("SaleArtwork type", () => {
       const context = {
         saleLoader: () => {
           return Promise.resolve({
-            cascading_end_time_interval: null,
+            cascading_end_time_interval_minutes: null,
           })
         },
       }
@@ -619,7 +619,7 @@ describe("SaleArtwork type", () => {
       saleLoader: () => {
         return Promise.resolve({
           start_at: "2019-02-17T11:00:00+00:00",
-          cascading_end_time_interval: 120,
+          cascading_end_time_interval_minutes: 2,
         })
       },
     }
@@ -629,7 +629,7 @@ describe("SaleArtwork type", () => {
         saleLoader: () => {
           return Promise.resolve({
             start_at: "2029-02-17T11:00:00+00:00",
-            cascading_end_time_interval: 120,
+            cascading_end_time_interval_minutes: 2,
           })
         },
       }
@@ -676,7 +676,7 @@ describe("SaleArtwork type", () => {
       })
     })
 
-    it("returns null if cascading_end_time_interval is not present on the sale", async () => {
+    it("returns null if cascading_end_time_interval_minutes is not present on the sale", async () => {
       const context = {
         saleLoader: () => {
           return Promise.resolve({
