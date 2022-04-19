@@ -8,7 +8,7 @@ describe("APIs", () => {
     it("makes a correct request to Gravity", async () => {
       await galaxy("foo/bar", null, { userAgent: "catty browser" })
 
-      const url = "https://galaxy-staging-herokuapp.com/foo/bar"
+      const url = "https://galaxy.stg.artsy.systems/foo/bar"
       const requestConfig = {
         headers: {
           Accept: "application/vnd.galaxy-public+json",
