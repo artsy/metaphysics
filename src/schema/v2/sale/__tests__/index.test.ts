@@ -14,7 +14,7 @@ describe("Sale type", () => {
   const sale: any = {
     id: "foo-foo",
     _id: "123",
-    cascading_end_time_interval: 120,
+    cascading_end_time_interval_minutes: 2,
     collect_payments: true,
     currency: "USD",
     is_artsy_licensed: false,
@@ -847,7 +847,7 @@ describe("Sale type", () => {
       const response = await execute(query, {
         start_at: "2022-03-09 09+07:00",
         end_at: "2022-03-12 09+07:00",
-        cascading_end_time_interval: 120,
+        cascading_end_time_interval_minutes: 2,
       })
 
       expect(response.sale.formattedStartDateTime).toEqual("March 9 – 12, 2022")
@@ -858,7 +858,7 @@ describe("Sale type", () => {
       const response = await execute(query, {
         start_at: "2022-03-07 09+07:00",
         end_at: "2022-03-12 09+07:00",
-        cascading_end_time_interval: 120,
+        cascading_end_time_interval_minutes: 2,
       })
       expect(response.sale.formattedStartDateTime).toEqual("March 7 – 12, 2022")
     })
@@ -867,7 +867,7 @@ describe("Sale type", () => {
       const response = await execute(query, {
         start_at: moment().subtract(2, "hours"),
         end_at: moment().subtract(1, "hours"),
-        cascading_end_time_interval: 120,
+        cascading_end_time_interval_minutes: 2,
       })
       expect(response.sale.formattedStartDateTime).toEqual("Closing soon")
     })
@@ -877,7 +877,7 @@ describe("Sale type", () => {
         start_at: "2022-03-07 09+07:00",
         end_at: "2022-03-08 09+07:00",
         ended_at: "2022-03-08 10+07:00",
-        cascading_end_time_interval: 120,
+        cascading_end_time_interval_minutes: 2,
       })
       expect(response.sale.formattedStartDateTime).toEqual("Closed Mar 8, 2022")
     })
@@ -969,7 +969,7 @@ describe("Sale type", () => {
 
     it("returns the correct string when cascading end time interval is set", async () => {
       const response = await execute(query, {
-        cascading_end_time_interval: 120,
+        cascading_end_time_interval_minutes: 2,
       })
       expect(response.sale.cascadingEndTime.intervalLabel).toEqual(
         "Lots close at 2-minute intervals"
@@ -979,7 +979,7 @@ describe("Sale type", () => {
     it("returns an empty string when the auction has ended", async () => {
       const response = await execute(query, {
         ended_at: moment().subtract(30, "minutes"),
-        cascading_end_time_interval: 120,
+        cascading_end_time_interval_minutes: 2,
       })
       expect(response.sale.cascadingEndTime.intervalLabel).toEqual(null)
     })

@@ -172,19 +172,11 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           }))
         },
       },
-      cascadingEndTimeInterval: {
-        type: GraphQLInt,
-        description: "Amount of seconds in between each lot closing.",
-        resolve: ({ cascading_end_time_interval }) =>
-          cascading_end_time_interval,
-      },
       cascadingEndTimeIntervalMinutes: {
         type: GraphQLInt,
         description: "Amount of minutes in between each lot closing.",
-        resolve: ({ cascading_end_time_interval }) =>
-          !!cascading_end_time_interval
-            ? cascading_end_time_interval / 60
-            : null,
+        resolve: ({ cascading_end_time_interval_minutes }) =>
+          cascading_end_time_interval_minutes,
       },
       collectPayments: {
         type: new GraphQLNonNull(GraphQLBoolean),
@@ -235,12 +227,12 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             end_at,
             ended_at,
             live_start_at,
-            cascading_end_time_interval,
+            cascading_end_time_interval_minutes,
           },
           _options,
           { defaultTimezone }
         ) => {
-          if (cascading_end_time_interval) {
+          if (cascading_end_time_interval_minutes) {
             return cascadingFormattedStartDateTime(
               start_at,
               end_at,
@@ -284,16 +276,14 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               description:
                 "A label indicating the interval in minutes in which lots close",
               resolve: (
-                { ended_at, cascading_end_time_interval },
+                { ended_at, cascading_end_time_interval_minutes },
                 _options
               ) => {
-                if (!cascading_end_time_interval) return null
+                if (!cascading_end_time_interval_minutes) return null
                 if (ended_at) {
                   return null
                 } else {
-                  return `Lots close at ${
-                    cascading_end_time_interval / 60
-                  }-minute intervals`
+                  return `Lots close at ${cascading_end_time_interval_minutes}-minute intervals`
                 }
               },
             },
@@ -305,7 +295,8 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             end_at: sale.end_at,
             ended_at: sale.ended_at,
             live_start_at: sale.live_start_at,
-            cascading_end_time_interval: sale.cascading_end_time_interval,
+            cascading_end_time_interval_minutes:
+              sale.cascading_end_time_interval_minutes,
           }
         },
       },

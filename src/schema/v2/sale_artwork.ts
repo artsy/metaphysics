@@ -155,7 +155,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "A formatted description of when the lot starts or ends or if it has ended",
         resolve: (saleArtwork, _options, { defaultTimezone, saleLoader }) =>
           saleLoader(saleArtwork.sale_id).then((sale) => {
-            if (!sale.cascading_end_time_interval) {
+            if (!sale.cascading_end_time_interval_minutes) {
               return null
             } else {
               return formattedStartDateTime(
@@ -173,7 +173,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (saleArtwork, _options, { defaultTimezone, saleLoader }) =>
           saleLoader(saleArtwork.sale_id).then((sale) => {
             if (
-              !sale.cascading_end_time_interval ||
+              !sale.cascading_end_time_interval_minutes ||
               saleArtwork.ended_at ||
               !saleArtwork.end_at
             ) {
