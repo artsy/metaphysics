@@ -3,6 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLString,
+  GraphQLScalarType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { GraphQLUpload } from "graphql-upload"
@@ -35,7 +36,9 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
   args: {
     image: {
       description: "Image file",
-      type: GraphQLUpload,
+      // TODO: Remove `as unknown` when "graphql" is updated to version 16.x.x
+      // Wrong TS declaration for GraphQLScalarType in node_modules/graphql/type/definition.d.ts
+      type: (GraphQLUpload as unknown) as GraphQLScalarType,
     },
   },
   resolve: async (_root, args, { meLoader }) => {
