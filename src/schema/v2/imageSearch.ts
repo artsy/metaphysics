@@ -38,7 +38,7 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
       description: "Image file",
       // TODO: Remove `as unknown` when "graphql" is updated to version 16.x.x
       // Wrong TS declaration for GraphQLScalarType in node_modules/graphql/type/definition.d.ts
-      type: (GraphQLUpload as unknown) as GraphQLScalarType,
+      type: new GraphQLNonNull((GraphQLUpload as unknown) as GraphQLScalarType),
     },
   },
   resolve: async (_root, args, { meLoader }) => {

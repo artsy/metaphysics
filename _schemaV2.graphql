@@ -11834,7 +11834,7 @@ type Query {
   # Get an image info
   doNotUseImageSearch(
     # Image file
-    image: Upload
+    image: Upload!
   ): ImageSearch
 
   # A namespace external partners (provided by Galaxy)
@@ -14997,7 +14997,7 @@ type Viewer {
   # Get an image info
   doNotUseImageSearch(
     # Image file
-    image: Upload
+    image: Upload!
   ): ImageSearch
 
   # A namespace external partners (provided by Galaxy)
