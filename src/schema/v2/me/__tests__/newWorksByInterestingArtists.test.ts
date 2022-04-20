@@ -296,6 +296,6 @@ const mockArtworksResponse = [
     current_version_id: null,
     unlisted: false,
     featured_slot: null,
-    arta_enabled: false,
+    artsy_shipping_domestic: false,
   },
 ]
