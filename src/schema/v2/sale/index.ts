@@ -259,7 +259,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           { defaultTimezone }
         ) => {
           const { format } = args
-          if (format === "range" || cascading_end_time_interval_minutes) {
+          if (format === "daterange" || cascading_end_time_interval_minutes) {
             return cascadingFormattedStartDateTime(
               start_at,
               end_at,
@@ -267,7 +267,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               defaultTimezone
             )
           } else if (format === "datetime") {
-            auctionsDetailFormattedStartDateTime(
+            return auctionsDetailFormattedStartDateTime(
               start_at,
               end_at,
               ended_at,

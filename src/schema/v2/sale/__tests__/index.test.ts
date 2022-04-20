@@ -863,6 +863,22 @@ describe("Sale type", () => {
       expect(response.sale.formattedStartDateTime).toEqual("March 7 – 12, 2022")
     })
 
+    it("returns date range when range is passed in as argument", async () => {
+      const query = `
+      {
+        sale(id: "foo-foo") {
+          formattedStartDateTime(format: DateRange)
+        }
+      }
+    `
+      const response = await execute(query, {
+        start_at: "2022-03-07 09+07:00",
+        end_at: "2022-03-12 09+07:00",
+        cascading_end_time_interval_minutes: null,
+      })
+      expect(response.sale.formattedStartDateTime).toEqual("March 7 – 12, 2022")
+    })
+
     it("returns the words closing soon when cascading interval is true while the sale is closing soon", async () => {
       const response = await execute(query, {
         start_at: moment().subtract(2, "hours"),
@@ -891,65 +907,61 @@ describe("Sale type", () => {
       expect(response.sale.formattedStartDateTime).toEqual("Ended Mar 8")
       expect(response.sale.cascadingEndTimeIntervalMinutes).toEqual(null)
     })
-  })
 
-  describe("cascadingEndTimeFormattedStartDateTime", () => {
-    beforeEach(() => {
-      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
-    })
-    const query = `
-      {
-        sale(id: "foo-foo") {
-          cascadingEndTime {
-            formattedStartDateTime
+    describe("when the argument is datetime", () => {
+      beforeEach(() => {
+        Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
+      })
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            formattedStartDateTime(format: DateTime)
           }
         }
-      }
-    `
+      `
 
-    it("returns a string including the correctly formatted start time when we the auction has not started", async () => {
-      const response = await execute(query, {
-        start_at: moment().add(3, "days"),
+      it("returns a string including the correctly formatted start time when we the auction has not started", async () => {
+        const response = await execute(query, {
+          start_at: moment().add(3, "days"),
+        })
+        expect(response.sale.formattedStartDateTime).toEqual(
+          "Mar 11, 2022 • 12:33pm UTC"
+        )
       })
-      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
-        "Mar 11, 2022 • 12:33pm UTC"
-      )
-    })
 
-    it("returns a string including the correctly formatted end time after the auction has ended", async () => {
-      const response = await execute(query, {
-        ended_at: moment().subtract(1, "days"),
+      it("returns a string including the correctly formatted end time after the auction has ended", async () => {
+        const response = await execute(query, {
+          ended_at: moment().subtract(1, "days"),
+        })
+        expect(response.sale.formattedStartDateTime).toEqual(
+          "Closed Mar 7, 2022 • 12:33pm UTC"
+        )
       })
-      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
-        "Closed Mar 7, 2022 • 12:33pm UTC"
-      )
-    })
 
-    it("returns a string including the correctly formatted end when the auction has started", async () => {
-      const response = await execute(query, {
-        end_at: moment().subtract(1, "days"),
+      it("returns a string including the correctly formatted end when the auction has started", async () => {
+        const response = await execute(query, {
+          end_at: moment().subtract(1, "days"),
+        })
+        expect(response.sale.formattedStartDateTime).toEqual(
+          "Mar 7, 2022 • 12:33pm UTC"
+        )
       })
-      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
-        "Mar 7, 2022 • 12:33pm UTC"
-      )
-    })
 
-    it("returns a string including the correctly formatted date when the live start at has yet to start and is a LAI", async () => {
-      const response = await execute(query, {
-        live_start_at: moment().add(1, "days"),
+      it("returns a string including the correctly formatted date when the live start at has yet to start and is a LAI", async () => {
+        const response = await execute(query, {
+          live_start_at: moment().add(1, "days"),
+        })
+        expect(response.sale.formattedStartDateTime).toEqual(
+          "Live Mar 9, 2022 • 12:33pm UTC"
+        )
       })
-      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
-        "Live Mar 9, 2022 • 12:33pm UTC"
-      )
-    })
 
-    it("returns a in progress when the auction has started and is a LAI", async () => {
-      const response = await execute(query, {
-        live_start_at: moment().subtract(1, "days"),
+      it("returns a in progress when the auction has started and is a LAI", async () => {
+        const response = await execute(query, {
+          live_start_at: moment().subtract(1, "days"),
+        })
+        expect(response.sale.formattedStartDateTime).toEqual("In progress")
       })
-      expect(response.sale.cascadingEndTime.formattedStartDateTime).toEqual(
-        "In progress"
-      )
     })
   })
 
