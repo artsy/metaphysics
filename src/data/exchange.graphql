@@ -133,6 +133,7 @@ type BuyOrder implements Order {
   requestedFulfillment: RequestedFulfillmentUnion
   seller: OrderPartyUnion!
   sellerTotalCents: Int
+  shippingRadius: String
   shippingTotalCents: Int
   source: OrderSourceEnum!
   state: OrderStateEnum!
@@ -1073,6 +1074,7 @@ type OfferOrder implements Order {
   requestedFulfillment: RequestedFulfillmentUnion
   seller: OrderPartyUnion!
   sellerTotalCents: Int
+  shippingRadius: String
   shippingTotalCents: Int
   source: OrderSourceEnum!
   state: OrderStateEnum!
@@ -1148,6 +1150,7 @@ interface Order {
   requestedFulfillment: RequestedFulfillmentUnion
   seller: OrderPartyUnion!
   sellerTotalCents: Int
+  shippingRadius: String
   shippingTotalCents: Int
   source: OrderSourceEnum!
   state: OrderStateEnum!
