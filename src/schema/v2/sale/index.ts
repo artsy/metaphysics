@@ -38,6 +38,7 @@ import {
   GraphQLFloat,
   GraphQLFieldConfig,
   GraphQLID,
+  GraphQLEnumType,
 } from "graphql"
 
 import config from "config"
@@ -79,6 +80,24 @@ const BuyersPremium = new GraphQLObjectType<any, ResolverContext>({
 const saleArtworkConnection = connectionDefinitions({
   nodeType: SaleArtworkType,
 }).connectionType
+
+const FormattedDateEnum = new GraphQLEnumType({
+  name: "FormattedStartDateTimeEnum",
+  values: {
+    DateTime: {
+      value: "datetime",
+      description: "Formatted date including time",
+    },
+    DateRange: {
+      value: "daterange",
+      description: "Formatted date range",
+    },
+    Date: {
+      value: "date",
+      description: "Formatted date",
+    },
+  },
+})
 
 export const SaleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Sale",
@@ -221,6 +240,13 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "A formatted description of when the auction starts or ends or if it has ended",
+        args: {
+          format: {
+            type: FormattedDateEnum,
+            description: "Formatting option to apply to the start date",
+            defaultValue: FormattedDateEnum.getValue("DATE"),
+          },
+        },
         resolve: (
           {
             start_at,
@@ -229,14 +255,23 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             live_start_at,
             cascading_end_time_interval_minutes,
           },
-          _options,
+          args,
           { defaultTimezone }
         ) => {
-          if (cascading_end_time_interval_minutes) {
+          const { format } = args
+          if (format === "range" || cascading_end_time_interval_minutes) {
             return cascadingFormattedStartDateTime(
               start_at,
               end_at,
               ended_at,
+              defaultTimezone
+            )
+          } else if (format === "datetime") {
+            auctionsDetailFormattedStartDateTime(
+              start_at,
+              end_at,
+              ended_at,
+              live_start_at,
               defaultTimezone
             )
           } else {
@@ -249,6 +284,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      /**
+       * @deprecated Please use formattedStartTime instead from the top-level and intervalLabel
+       * should be done on the client
+       */
       cascadingEndTime: {
         type: new GraphQLObjectType({
           name: "SaleCascadingEndTime",
