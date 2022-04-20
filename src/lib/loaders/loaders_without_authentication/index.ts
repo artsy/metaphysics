@@ -5,6 +5,7 @@ import geminiLoaders from "./gemini"
 import geodataLoaders from "./geodata"
 import gravityLoaders from "./gravity"
 import positronLoaders from "./positron"
+import greenhouseLoaders from "./greenhouse"
 
 export const createLoadersWithoutAuthentication = (opts) => ({
   ...deltaLoaders(opts),
@@ -14,6 +15,7 @@ export const createLoadersWithoutAuthentication = (opts) => ({
   ...gravityLoaders(opts),
   ...positronLoaders(opts),
   ...geodataLoaders(opts),
+  ...greenhouseLoaders(opts),
 })
 
 export type LoadersWithoutAuthentication = ReturnType<

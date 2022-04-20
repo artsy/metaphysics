@@ -125,6 +125,7 @@ import { requestPriceEstimateMutation } from "./me/requestPriceEstimate"
 import { PreviewSavedSearchField } from "./previewSavedSearch"
 import { shortcut } from "./shortcut"
 import { channel } from "./article/channel"
+import { departments, job, jobs } from "./jobs"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -161,6 +162,7 @@ const rootFields = {
     description: "Do not use (only used internally for stitching)",
   },
   creditCard: CreditCard,
+  departments,
   // externalPartner: ExternalPartner,
   fair: Fair,
   fairOrganizer: FairOrganizer,
@@ -176,6 +178,8 @@ const rootFields = {
   geneFamiliesConnection: GeneFamilies,
   highlights: HighlightsField,
   homePage: HomePage,
+  job,
+  jobs,
   _do_not_use_image: {
     type: Image.type,
     resolve: Image.resolve,
