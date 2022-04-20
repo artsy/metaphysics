@@ -67,7 +67,6 @@ input AddUserToSubmissionMutationInput {
   """
   clientMutationId: String
   id: ID!
-  userEmail: String!
 }
 
 """
