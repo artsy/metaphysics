@@ -36,6 +36,8 @@ import { principalFieldDirectiveValidation } from "validations/principalFieldDir
 import { NoSchemaIntrospectionCustomRule } from "validations/noSchemaIntrospectionCustomRule"
 import * as Sentry from "@sentry/node"
 
+import { graphqlUploadExpress } from "graphql-upload"
+
 const {
   ENABLE_REQUEST_LOGGING,
   LOG_QUERY_DETAILS_THRESHOLD,
@@ -207,8 +209,13 @@ function startApp(appSchema, path: string) {
     }
   })
 
+  const graphqlUpload = graphqlUploadExpress({
+    maxFileSize: 2 * 1000 * 1000, // 2 MB
+    maxFiles: 1,
+  })
+
   app.use("/batch", bodyParser.json(), graphqlBatchHTTPWrapper(graphqlServer))
-  app.use(graphqlServer)
+  app.use(graphqlUpload, graphqlServer)
 
   if (enableSentry) {
     app.use(Sentry.Handlers.errorHandler())
