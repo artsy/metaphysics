@@ -8167,17 +8167,6 @@ type FormattedDaySchedules {
 # a formatted String. It does not try to coerce the type.
 scalar FormattedNumber
 
-enum FormattedStartDateTimeEnum {
-  # Formatted date
-  Date
-
-  # Formatted date range
-  DateRange
-
-  # Formatted date including time
-  DateTime
-}
-
 # An entry from gemini
 type GeminiEntry {
   # The token that represents the gemini entry.
@@ -12586,8 +12575,9 @@ type Sale implements Node {
 
   # A formatted description of when the auction starts or ends or if it has ended
   formattedStartDateTime(
-    # Formatting option to apply to the start date
-    format: FormattedStartDateTimeEnum
+    # Formatted date that shows if a date range if a sale is open, Closed {date}
+    # if the sale is closed, and Lots are closing if the sale is ending
+    summary: Boolean = false
   ): String
   href: String
 

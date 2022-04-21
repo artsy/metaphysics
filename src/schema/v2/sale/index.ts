@@ -12,7 +12,6 @@ import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import {
   formattedStartDateTime,
   cascadingFormattedStartDateTime,
-  auctionsDetailFormattedStartDateTime,
   DEFAULT_TZ,
 } from "lib/date"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
@@ -80,24 +79,6 @@ const BuyersPremium = new GraphQLObjectType<any, ResolverContext>({
 const saleArtworkConnection = connectionDefinitions({
   nodeType: SaleArtworkType,
 }).connectionType
-
-const FormattedDateEnum = new GraphQLEnumType({
-  name: "FormattedStartDateTimeEnum",
-  values: {
-    DateTime: {
-      value: "datetime",
-      description: "Formatted date including time",
-    },
-    DateRange: {
-      value: "daterange",
-      description: "Formatted date range",
-    },
-    Date: {
-      value: "date",
-      description: "Formatted date",
-    },
-  },
-})
 
 export const SaleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Sale",
@@ -241,10 +222,11 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "A formatted description of when the auction starts or ends or if it has ended",
         args: {
-          format: {
-            type: FormattedDateEnum,
-            description: "Formatting option to apply to the start date",
-            defaultValue: FormattedDateEnum.getValue("DATE"),
+          summary: {
+            type: GraphQLBoolean,
+            description:
+              "Formatted date that shows if a date range if a sale is open, Closed {date} if the sale is closed, and Lots are closing if the sale is ending",
+            defaultValue: false,
           },
         },
         resolve: (
@@ -258,28 +240,22 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           args,
           { defaultTimezone }
         ) => {
-          const { format } = args
-          if (format === "daterange" || cascading_end_time_interval_minutes) {
+          const { summary } = args
+          if (summary || cascading_end_time_interval_minutes) {
             return cascadingFormattedStartDateTime(
               start_at,
               end_at,
               ended_at,
               defaultTimezone
             )
-          } else if (format === "datetime") {
-            return auctionsDetailFormattedStartDateTime(
+          } else {
+            return formattedStartDateTime(
               start_at,
               end_at,
               ended_at,
               live_start_at,
-              defaultTimezone
-            )
-          } else {
-            return formattedStartDateTime(
-              start_at,
-              ended_at || end_at,
-              live_start_at,
-              defaultTimezone
+              defaultTimezone,
+              cascading_end_time_interval_minutes
             )
           }
         },

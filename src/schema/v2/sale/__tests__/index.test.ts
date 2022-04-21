@@ -772,19 +772,23 @@ describe("Sale type", () => {
       }
     `
 
-    it("returns Start time when start_at is in the future", async () => {
+    it("returns start time when start_at is in the future", async () => {
       const response = await execute(query, {
         start_at: moment().add(1, "hours"),
       })
-      expect(response.sale.formattedStartDateTime).toContain("Start")
+      expect(response.sale.formattedStartDateTime).toEqual(
+        "Mar 8, 2022 • 1:33pm UTC"
+      )
     })
 
-    it("returns End time when end_at is in the past", async () => {
+    it("returns Closed time when end_at is in the past", async () => {
       const response = await execute(query, {
         start_at: moment().subtract(2, "hours"),
         end_at: moment().subtract(1, "hours"),
       })
-      expect(response.sale.formattedStartDateTime).toContain("Ended")
+      expect(response.sale.formattedStartDateTime).toEqual(
+        "Closed Mar 8, 2022 • 11:33am UTC"
+      )
     })
 
     it("returns End time when end_at is in the past (2)", async () => {
@@ -793,7 +797,7 @@ describe("Sale type", () => {
         end_at: null,
         ended_at: moment().subtract(1, "hours"),
       })
-      expect(response.sale.formattedStartDateTime).toContain("Ended")
+      expect(response.sale.formattedStartDateTime).toContain("Closed")
     })
 
     it("returns End time when ended_at is in the past but end_at is in the future", async () => {
@@ -802,7 +806,7 @@ describe("Sale type", () => {
         end_at: moment().add(1, "hours"),
         ended_at: moment().subtract(1, "hours"),
       })
-      expect(response.sale.formattedStartDateTime).toContain("Ended")
+      expect(response.sale.formattedStartDateTime).toContain("Closed")
     })
 
     it("returns Live start time if live_start_at is in the future", async () => {
@@ -840,7 +844,9 @@ describe("Sale type", () => {
         end_at: moment().add(1, "hours"),
         ended_at: null,
       })
-      expect(response.sale.formattedStartDateTime).toContain("Ends")
+      expect(response.sale.formattedStartDateTime).toEqual(
+        "Mar 8, 2022 • 1:33pm UTC"
+      )
     })
 
     it("returns date range when cascading end time interval is true and the sale has not opened", async () => {
@@ -859,22 +865,6 @@ describe("Sale type", () => {
         start_at: "2022-03-07 09+07:00",
         end_at: "2022-03-12 09+07:00",
         cascading_end_time_interval_minutes: 2,
-      })
-      expect(response.sale.formattedStartDateTime).toEqual("March 7 – 12, 2022")
-    })
-
-    it("returns date range when range is passed in as argument", async () => {
-      const query = `
-      {
-        sale(id: "foo-foo") {
-          formattedStartDateTime(format: DateRange)
-        }
-      }
-    `
-      const response = await execute(query, {
-        start_at: "2022-03-07 09+07:00",
-        end_at: "2022-03-12 09+07:00",
-        cascading_end_time_interval_minutes: null,
       })
       expect(response.sale.formattedStartDateTime).toEqual("March 7 – 12, 2022")
     })
@@ -898,24 +888,79 @@ describe("Sale type", () => {
       expect(response.sale.formattedStartDateTime).toEqual("Closed Mar 8, 2022")
     })
 
-    it("properly handles null cascading_end_time_interval", async () => {
+    it("shows Closed {Date} when the sale is not cascade end times", async () => {
       const response = await execute(query, {
         start_at: "2022-03-07 09+07:00",
         end_at: "2022-03-08 09+07:00",
         ended_at: "2022-03-08 10+07:00",
       })
-      expect(response.sale.formattedStartDateTime).toEqual("Ended Mar 8")
+      expect(response.sale.formattedStartDateTime).toEqual(
+        "Closed Mar 8, 2022 • 3:00am UTC"
+      )
       expect(response.sale.cascadingEndTimeIntervalMinutes).toEqual(null)
     })
 
-    describe("when the argument is datetime", () => {
+    describe("when the argument for summary is true", () => {
       beforeEach(() => {
         Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
       })
       const query = `
         {
           sale(id: "foo-foo") {
-            formattedStartDateTime(format: DateTime)
+            formattedStartDateTime(summary: true)
+          }
+        }
+      `
+
+      it("returns date range when cascading end time interval is true and the sale has not opened", async () => {
+        const response = await execute(query, {
+          start_at: "2022-03-09 09+07:00",
+          end_at: "2022-03-12 09+07:00",
+        })
+
+        expect(response.sale.formattedStartDateTime).toEqual(
+          "March 9 – 12, 2022"
+        )
+      })
+
+      it("returns date range when cascading interval is true while the sale is running", async () => {
+        const response = await execute(query, {
+          start_at: "2022-03-07 09+07:00",
+          end_at: "2022-03-12 09+07:00",
+        })
+        expect(response.sale.formattedStartDateTime).toEqual(
+          "March 7 – 12, 2022"
+        )
+      })
+
+      it("returns the words closing soon when cascading interval is true while the sale is closing soon", async () => {
+        const response = await execute(query, {
+          start_at: moment().subtract(2, "hours"),
+          end_at: moment().subtract(1, "hours"),
+        })
+        expect(response.sale.formattedStartDateTime).toEqual("Closing soon")
+      })
+
+      it("returns date and word closed when cascading interval is true while the sale is closing soon", async () => {
+        const response = await execute(query, {
+          start_at: "2022-03-07 09+07:00",
+          end_at: "2022-03-08 09+07:00",
+          ended_at: "2022-03-08 10+07:00",
+        })
+        expect(response.sale.formattedStartDateTime).toEqual(
+          "Closed Mar 8, 2022"
+        )
+      })
+    })
+
+    describe("when the argument for summary is absent and the sale is not cascading end times", () => {
+      beforeEach(() => {
+        Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
+      })
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            formattedStartDateTime
           }
         }
       `
@@ -929,7 +974,7 @@ describe("Sale type", () => {
         )
       })
 
-      it("returns a string including the correctly formatted end time after the auction has ended", async () => {
+      it("returns a string including the correctly formatted end time if the ended at has passed", async () => {
         const response = await execute(query, {
           ended_at: moment().subtract(1, "days"),
         })
@@ -938,12 +983,22 @@ describe("Sale type", () => {
         )
       })
 
-      it("returns a string including the correctly formatted end when the auction has started", async () => {
+      it("returns a string including the correctly formatted end time if the end at has passed", async () => {
         const response = await execute(query, {
           end_at: moment().subtract(1, "days"),
         })
         expect(response.sale.formattedStartDateTime).toEqual(
-          "Mar 7, 2022 • 12:33pm UTC"
+          "Closed Mar 7, 2022 • 12:33pm UTC"
+        )
+      })
+
+      it("returns a string including the correctly formatted end when the auction has started", async () => {
+        const response = await execute(query, {
+          start_at: moment().subtract(1, "days"),
+          end_at: moment().add(2, "days"),
+        })
+        expect(response.sale.formattedStartDateTime).toEqual(
+          "Mar 10, 2022 • 12:33pm UTC"
         )
       })
 

@@ -259,24 +259,45 @@ export function cascadingFormattedStartDateTime(
 
   if (thisMoment.isAfter(lotsClosingMoment)) return "Closing soon"
 
+  console.log(dateRange(startAt, endAt, tz, "long"))
   return dateRange(startAt, endAt, tz, "long")
 }
 
-export function auctionsDetailFormattedStartDateTime(
+export function formattedStartDateTime(
   startAt,
   endAt,
   endedAt,
   liveStartAt,
-  timezone
+  timezone,
+  cascading_end_time_interval_minutes
 ) {
   const tz = timezone || DEFAULT_TZ
   const thisMoment = moment.tz(moment(), tz)
   const saleStartMoment = moment.tz(startAt, tz)
-  const lotsClosingMoment = moment.tz(endAt, tz)
-  const saleEndMoment = moment.tz(endedAt, tz)
+  // saleEndMoment is when the lots start closing for sales with cascading end times
+  const saleEndMoment = moment.tz(endAt, tz)
+  const saleEndedMoment = moment.tz(endedAt, tz)
   const liveStartMoment = moment.tz(liveStartAt, tz)
 
+  if (liveStartAt || thisMoment.isBefore(saleEndedMoment)) {
+    if (thisMoment.isBefore(liveStartMoment)) {
+      return `Live ${liveStartMoment.format(
+        "MMM D, YYYY"
+      )} • ${liveStartMoment.format("h:mma z")}`
+    } else if (
+      thisMoment.isAfter(liveStartMoment) &&
+      (thisMoment.isBefore(saleEndMoment) || !endAt)
+    ) {
+      return `In progress`
+    }
+  }
+
   if (!!endedAt)
+    return `Closed ${saleEndedMoment.format(
+      "MMM D, YYYY"
+    )} • ${saleEndedMoment.format("h:mma z")}`
+
+  if (!cascading_end_time_interval_minutes && thisMoment.isAfter(saleEndMoment))
     return `Closed ${saleEndMoment.format(
       "MMM D, YYYY"
     )} • ${saleEndMoment.format("h:mma z")}`
@@ -285,21 +306,10 @@ export function auctionsDetailFormattedStartDateTime(
     return `${saleStartMoment.format("MMM D, YYYY")} • ${saleStartMoment.format(
       "h:mma z"
     )}`
-  if (liveStartAt) {
-    if (thisMoment.isBefore(liveStartMoment)) {
-      return `Live ${liveStartMoment.format(
-        "MMM D, YYYY"
-      )} • ${liveStartMoment.format("h:mma z")}`
-    } else if (
-      thisMoment.isAfter(liveStartMoment) &&
-      (thisMoment.isBefore(lotsClosingMoment) || !endAt)
-    ) {
-      return `In progress`
-    }
-  }
-  return `${lotsClosingMoment.format(
-    "MMM D, YYYY"
-  )} • ${lotsClosingMoment.format("h:mma z")}`
+
+  return `${saleEndMoment.format("MMM D, YYYY")} • ${saleEndMoment.format(
+    "h:mma z"
+  )}`
 }
 
 export function formattedEndDateTime(endAt, timezone) {
@@ -308,40 +318,4 @@ export function formattedEndDateTime(endAt, timezone) {
   return `Closes, ${lotEndMoment.format("MMM D")} • ${lotEndMoment.format(
     "h:mma z"
   )}`
-}
-
-/**
- * Starts Mar 29 at 4:00pm
- * Ends Apr 3 at 12:30pm
- * Ended Apr 3 2017
- */
-export function formattedStartDateTime(startAt, endAt, liveStartAt, timezone) {
-  const tz = timezone || DEFAULT_TZ
-  const thisMoment = moment.tz(moment(), tz)
-  const startMoment = moment.tz(startAt, tz)
-  const endMoment = moment.tz(endAt, tz)
-  const liveStartMoment = moment.tz(liveStartAt, tz)
-
-  if (thisMoment.isBefore(startMoment)) {
-    return `Starts ${singleDateTime(startAt, tz)}`
-  }
-
-  if (thisMoment.isAfter(endMoment)) {
-    return `Ended ${singleDate(endAt, tz)}`
-  }
-
-  if (liveStartAt) {
-    if (thisMoment.isBefore(liveStartMoment)) {
-      return `Live ${singleDateTime(liveStartAt, tz)}`
-    } else if (
-      thisMoment.isAfter(liveStartMoment) &&
-      (thisMoment.isBefore(endMoment) || !endAt)
-    ) {
-      return `In progress`
-    }
-  } else if (thisMoment.isBefore(endMoment)) {
-    return `Ends ${singleDateTime(endAt, tz)}`
-  } else {
-    return null
-  }
 }
