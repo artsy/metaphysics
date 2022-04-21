@@ -223,6 +223,21 @@ function startApp(appSchema, path: string) {
     app.use(Sentry.Handlers.errorHandler())
   }
 
+  // Global error handler
+  app.use((error, _req, res, next) => {
+    if (res.headersSent) {
+      return next(error)
+    }
+
+    const status = error?.status ?? 500
+    const message = error?.message ?? "Something went wrong"
+
+    return res.status(status).json({
+      message,
+      stack: !PRODUCTION_ENV ? error.stack.split("\n") : null,
+    })
+  })
+
   return app
 }
 
