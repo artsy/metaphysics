@@ -53,9 +53,11 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
     const { filename, mimetype, encoding, createReadStream } = await image
     const stream = createReadStream()
 
-    await streamToPromise(stream)
-
-    console.log("[debug] responsed")
+    try {
+      await readDataFromStream(stream)
+    } finally {
+      stream.destroy()
+    }
 
     return {
       filename,
@@ -67,30 +69,14 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
 
 /**
  * WARNING: Not for production
- * It is more needed for testing `maxFileSize` option for `graphql-upload`
+ * It's needed for testing `maxFileSize` option for `graphql-upload`
  */
-const streamToPromise = (stream) => {
+const readDataFromStream = async (stream) => {
   let content = ""
 
-  return new Promise((resolve, reject) => {
-    stream.on("error", (error) => {
-      console.log("[debug] error")
-      reject(error)
-    })
+  for await (const chunk of stream) {
+    content += chunk
+  }
 
-    stream.on("data", (chunk) => {
-      content += chunk
-      console.log("[debug] chunk", chunk.length)
-    })
-
-    stream.on("end", () => {
-      console.log("[debug] end")
-      resolve(content)
-    })
-
-    stream.on("close", () => {
-      console.log("[debug] close")
-      stream.destroy()
-    })
-  })
+  return content
 }
