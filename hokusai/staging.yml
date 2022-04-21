@@ -7,6 +7,7 @@ metadata:
     app: metaphysics
     layer: application
     component: web
+    app.kubernetes.io/version: staging
 spec:
   strategy:
     rollingUpdate:
@@ -24,65 +25,72 @@ spec:
         app: metaphysics
         layer: application
         component: web
+        app.kubernetes.io/version: staging
       name: metaphysics-web
     spec:
       containers:
-        - name: metaphysics-web
-          env:
-            - name: PORT
-              value: "3000"
-            - name: DD_TRACER_HOSTNAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-            - name: STATSD_HOST
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-            - name: NODE_OPTIONS
-              value: "--max_old_space_size=768"
-          envFrom:
-            - configMapRef:
-                name: metaphysics-environment
-          image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:staging
-          imagePullPolicy: Always
-          ports:
-            - name: mp-http
-              containerPort: 3000
-          resources:
-            requests:
-              cpu: 200m
-              memory: 512Mi
-            limits:
-              memory: 1Gi
-          readinessProbe:
-            httpGet:
-              port: mp-http
-              path: /health
-              httpHeaders:
-                - name: X-FORWARDED-PROTO
-                  value: https
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          lifecycle:
-            preStop:
-              exec:
-                command: ["sh", "-c", "sleep 10"]
+      - name: metaphysics-web
+        env:
+        - name: PORT
+          value: '3000'
+        - name: DD_TRACER_HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: STATSD_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: NODE_OPTIONS
+          value: --max_old_space_size=768
+        - name: DD_VERSION
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['app.kubernetes.io/version']
+        envFrom:
+        - configMapRef:
+            name: metaphysics-environment
+        image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:staging
+        imagePullPolicy: Always
+        ports:
+        - name: mp-http
+          containerPort: 3000
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            memory: 1Gi
+        readinessProbe:
+          httpGet:
+            port: mp-http
+            path: /health
+            httpHeaders:
+            - name: X-FORWARDED-PROTO
+              value: https
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - sh
+              - -c
+              - sleep 10
       dnsPolicy: ClusterFirst
       dnsConfig:
         options:
-          - name: ndots
-            value: "1"
+        - name: ndots
+          value: '1'
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-              - matchExpressions:
-                  - key: tier
-                    operator: In
-                    values:
-                      - foreground
-
+            - matchExpressions:
+              - key: tier
+                operator: In
+                values:
+                - foreground
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
@@ -97,7 +105,6 @@ spec:
   minReplicas: 2
   maxReplicas: 3
   targetCPUUtilizationPercentage: 80
-
 ---
 apiVersion: v1
 kind: Service
@@ -110,31 +117,30 @@ metadata:
   namespace: default
 spec:
   ports:
-    - port: 3000
-      protocol: TCP
-      name: mp-http
-      targetPort: mp-http
+  - port: 3000
+    protocol: TCP
+    name: mp-http
+    targetPort: mp-http
   selector:
     app: metaphysics
     layer: application
     component: web
   type: ClusterIP
-
 ---
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: metaphysics
   annotations:
-    nginx.ingress.kubernetes.io/whitelist-source-range: "{{ (cloudflareIpSourceRanges + kubernetesNetworkCIDR)|join(',') }}"
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ externalIngressAllowSourceIP|join(',') }}
 spec:
   ingressClassName: nginx
   rules:
-    - host: metaphysics-staging.artsy.net
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              serviceName: metaphysics-web-internal
-              servicePort: mp-http
+  - host: metaphysics-staging.artsy.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          serviceName: metaphysics-web-internal
+          servicePort: mp-http
