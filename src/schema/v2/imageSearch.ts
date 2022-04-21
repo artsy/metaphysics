@@ -41,7 +41,7 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull((GraphQLUpload as unknown) as GraphQLScalarType),
     },
   },
-  resolve: async (_root, args, { meLoader }) => {
+  resolve: async (_root, { image }, { meLoader }) => {
     if (PRODUCTION_ENV) {
       throw new Error("You cannot use this query for production")
     }
@@ -50,12 +50,47 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
       return null
     }
 
-    const imageFile = await args.image
+    const { filename, mimetype, encoding, createReadStream } = await image
+    const stream = createReadStream()
+
+    await streamToPromise(stream)
+
+    console.log("[debug] responsed")
 
     return {
-      filename: imageFile.filename,
-      mimetype: imageFile.mimetype,
-      encoding: imageFile.encoding,
+      filename,
+      mimetype,
+      encoding,
     }
   },
+}
+
+/**
+ * WARNING: Not for production
+ * It is more needed for testing `maxFileSize` option for `graphql-upload`
+ */
+const streamToPromise = (stream) => {
+  let content = ""
+
+  return new Promise((resolve, reject) => {
+    stream.on("error", (error) => {
+      console.log("[debug] error")
+      reject(error)
+    })
+
+    stream.on("data", (chunk) => {
+      content += chunk
+      console.log("[debug] chunk", chunk.length)
+    })
+
+    stream.on("end", () => {
+      console.log("[debug] end")
+      resolve(content)
+    })
+
+    stream.on("close", () => {
+      console.log("[debug] close")
+      stream.destroy()
+    })
+  })
 }
