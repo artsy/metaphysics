@@ -791,22 +791,26 @@ describe("Sale type", () => {
       )
     })
 
-    it("returns End time when end_at is in the past (2)", async () => {
+    it("returns Closed time when end_at is in the past (2)", async () => {
       const response = await execute(query, {
         start_at: moment().subtract(2, "hours"),
         end_at: null,
         ended_at: moment().subtract(1, "hours"),
       })
-      expect(response.sale.formattedStartDateTime).toContain("Closed")
+      expect(response.sale.formattedStartDateTime).toEqual(
+        "Closed Mar 8, 2022 • 11:33am UTC"
+      )
     })
 
-    it("returns End time when ended_at is in the past but end_at is in the future", async () => {
+    it("returns Closed time when ended_at is in the past but end_at is in the future", async () => {
       const response = await execute(query, {
         start_at: moment().subtract(2, "hours"),
         end_at: moment().add(1, "hours"),
         ended_at: moment().subtract(1, "hours"),
       })
-      expect(response.sale.formattedStartDateTime).toContain("Closed")
+      expect(response.sale.formattedStartDateTime).toEqual(
+        "Closed Mar 8, 2022 • 11:33am UTC"
+      )
     })
 
     it("returns Live start time if live_start_at is in the future", async () => {
@@ -814,7 +818,9 @@ describe("Sale type", () => {
         start_at: moment().subtract(2, "hours"),
         live_start_at: moment().add(2, "hours"),
       })
-      expect(response.sale.formattedStartDateTime).toContain("Live")
+      expect(response.sale.formattedStartDateTime).toEqual(
+        "Live Mar 8, 2022 • 2:33pm UTC"
+      )
     })
 
     it("returns In Progress when its live and end_at is in the future", async () => {
@@ -824,7 +830,7 @@ describe("Sale type", () => {
         end_at: moment().add(2, "hours"),
         ended_at: null,
       })
-      expect(response.sale.formattedStartDateTime).toContain("In progress")
+      expect(response.sale.formattedStartDateTime).toEqual("In progress")
     })
 
     it("returns In Progress when its live and ended_at is in the future", async () => {
@@ -834,7 +840,7 @@ describe("Sale type", () => {
         ended_at: moment().add(2, "hours"),
         end_at: null,
       })
-      expect(response.sale.formattedStartDateTime).toContain("In progress")
+      expect(response.sale.formattedStartDateTime).toEqual("In progress")
     })
 
     it("returns End time", async () => {

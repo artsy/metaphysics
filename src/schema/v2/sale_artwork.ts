@@ -158,6 +158,8 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
             if (!sale.cascading_end_time_interval_minutes) {
               return null
             } else {
+              // Do not pass cascading_end_time_interval_minutes in for the last argument here
+              // because the method is already using the sale artwork's end time instead of the sale's
               return formattedStartDateTime(
                 sale.start_at,
                 saleArtwork.end_at,
