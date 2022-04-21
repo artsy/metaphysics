@@ -40,6 +40,8 @@ import { graphqlUploadExpress } from "graphql-upload"
 
 const {
   ENABLE_REQUEST_LOGGING,
+  GRAPHQL_UPLOAD_MAX_FILE_SIZE_IN_BYTES,
+  GRAPHQL_UPLOAD_MAX_FILES,
   LOG_QUERY_DETAILS_THRESHOLD,
   PRODUCTION_ENV,
   QUERY_DEPTH_LIMIT,
@@ -210,8 +212,8 @@ function startApp(appSchema, path: string) {
   })
 
   const graphqlUpload = graphqlUploadExpress({
-    maxFileSize: 2 * 1000 * 1000, // 2 MB
-    maxFiles: 1,
+    maxFileSize: GRAPHQL_UPLOAD_MAX_FILE_SIZE_IN_BYTES,
+    maxFiles: GRAPHQL_UPLOAD_MAX_FILES,
   })
 
   app.use("/batch", bodyParser.json(), graphqlBatchHTTPWrapper(graphqlServer))
