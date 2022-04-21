@@ -123,6 +123,10 @@ export const Related = {
             description:
               "Exclude these ids from results, may result in all artists being excluded.",
           },
+          includeFallbackArtists: {
+            type: GraphQLBoolean,
+            description: "Include featured artists if no results are found",
+          },
         }),
         description:
           "A list of the current user’s suggested artists, based on a single artist",
@@ -133,6 +137,7 @@ export const Related = {
             excludeArtistsWithoutArtworks,
             excludeFollowedArtists,
             excludeArtistIDs,
+            includeFallbackArtists,
             ..._args
           },
           { suggestedArtistsLoader }
@@ -144,6 +149,7 @@ export const Related = {
             exclude_artists_without_artworks: excludeArtistsWithoutArtworks,
             exclude_followed_artists: excludeFollowedArtists,
             exclude_artist_ids: excludeArtistIDs,
+            include_fallback_artists: includeFallbackArtists,
             ..._args,
           } as any
 
