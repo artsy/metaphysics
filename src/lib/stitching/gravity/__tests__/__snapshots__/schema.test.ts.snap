@@ -592,10 +592,16 @@ type MarketingCollection {
 
   # Unique ID for this marketing collection
   internalID: ID!
+
+  # Returns true if this collection has linked collections with members
+  isDepartment: Boolean!
   isFeaturedArtistContent: Boolean!
   linkedCollections: [MarketingCollectionGroup!]!
   priceGuidance: Float
   query: MarketingCollectionQuery!
+
+  # Returns collections by the same artist if more than 4 exist, otherwise returns collections from the same category
+  relatedCollections(size: Int = 10): [MarketingCollection!]!
   slug: String!
   thumbnail: String
   title: String!
@@ -624,6 +630,12 @@ enum MarketingCollectionGroupTypeEnum {
 type MarketingCollectionQuery {
   artistIDs: [String!]
   geneIDs: [String!]
+
+  # Is always null, will be eliminated later
+  id: ID
+
+  # Is always null, will be eliminated later
+  internalID: ID
   keyword: String
   tagID: String
 }
@@ -778,11 +790,11 @@ type Query {
     # Returns the last _n_ elements from the list.
     last: Int
   ): ArtistSeriesConnection
-  _unused_gravity_categories: [MarketingCollectionCategory!]!
   _unused_gravity_devices(userId: ID!): [Device!]!
+  _unused_gravity_marketingCategories: [MarketingCollectionCategory!]!
 
   # Find a marketing collection by ID or slug
-  _unused_gravity_marketingCollection(id: ID!): MarketingCollection
+  _unused_gravity_marketingCollection(slug: String!): MarketingCollection
 
   # An array of marketing collections. Defaults to returning all available collections if no args are passed
   _unused_gravity_marketingCollections(artistID: ID, category: String, isFeaturedArtistContent: Boolean, size: Int, slugs: [String!]): [MarketingCollection!]
