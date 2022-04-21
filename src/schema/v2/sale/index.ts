@@ -37,7 +37,6 @@ import {
   GraphQLFloat,
   GraphQLFieldConfig,
   GraphQLID,
-  GraphQLEnumType,
 } from "graphql"
 
 import config from "config"

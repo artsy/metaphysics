@@ -91,59 +91,87 @@ describe("date formatting", () => {
       Date.now = realNow
     })
 
-    it("includes 'Starts' when event starts in the future", () => {
+    it("includes start date when event starts in the future", () => {
       const period = formattedStartDateTime(
         "2045-12-05T20:00:00+00:00",
         "2050-12-30T17:00:00+00:00",
         null,
-        "UTC"
+        null,
+        null,
+        "UTC",
+        null
       )
-      expect(period).toBe("Starts Dec 5, 2045 at 8:00pm UTC")
+      expect(period).toBe("Dec 5, 2045 • 8:00pm UTC")
     })
 
-    it("includes 'Ends' when event is running and terminates in the future", () => {
+    it("includes end date when event is running and terminates in the future", () => {
       const period = formattedStartDateTime(
         "2017-12-05T20:00:00+00:00",
         "2045-12-30T17:00:00+00:00",
         null,
-        "UTC"
+        null,
+        null,
+        "UTC",
+        null
       )
-      expect(period).toBe("Ends Dec 30, 2045 at 5:00pm UTC")
+      expect(period).toBe("Dec 30, 2045 • 5:00pm UTC")
     })
 
-    it("includes 'Ended on date' when event ended in the past and is now closed", () => {
+    it("includes 'Closed date' when event ended in the past and is now closed", () => {
       const period = formattedStartDateTime(
         "2016-12-05T20:00:00+00:00",
         "2016-12-30T17:00:00+00:00",
         null,
-        "UTC"
+        null,
+        null,
+        "UTC",
+        null
       )
-      expect(period).toBe("Ended Dec 30, 2016")
+      expect(period).toBe("Closed Dec 30, 2016 • 5:00pm UTC")
     })
 
-    it("includes 'Starts' when event starts in the future (2)", () => {
+    it("includes start date when event starts in the future (2)", () => {
       const period = formattedStartDateTime(
         "2045-12-05T20:00:00+00:00",
         "2050-12-30T17:00:00+00:00",
         null,
-        "UTC"
+        null,
+        null,
+        "UTC",
+        null
       )
-      expect(period).toBe("Starts Dec 5, 2045 at 8:00pm UTC")
+      expect(period).toBe("Dec 5, 2045 • 8:00pm UTC")
     })
 
     it("includes 'Live' string when auction has started but live sale has not", () => {
       const startAt = "2012-12-05T20:00:00+00:00"
       const liveStartAt = "2045-12-05T20:00:00+00:00"
       const endAt = "2045-12-05T20:00:00+00:00"
-      const date = formattedStartDateTime(startAt, endAt, liveStartAt, "UTC")
-      expect(date).toEqual("Live Dec 5, 2045 at 8:00pm UTC")
+      const date = formattedStartDateTime(
+        startAt,
+        endAt,
+        null,
+        null,
+        liveStartAt,
+        "UTC",
+        null
+      )
+      expect(date).toEqual("Live Dec 5, 2045 • 8:00pm UTC")
     })
 
     it("includes 'In progress' string when auction is live", () => {
       const startAt = "2012-12-05T20:00:00+00:00"
       const liveStartAt = "2012-12-05T20:00:00+00:00"
       const endAt = "2045-12-05T20:00:00+00:00"
-      const date = formattedStartDateTime(startAt, endAt, liveStartAt, "UTC")
+      const date = formattedStartDateTime(
+        startAt,
+        endAt,
+        null,
+        null,
+        liveStartAt,
+        "UTC",
+        null
+      )
       expect(date).toEqual("In progress")
     })
   })
