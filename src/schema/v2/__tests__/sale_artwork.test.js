@@ -644,7 +644,7 @@ describe("SaleArtwork type", () => {
       },
     }
 
-    it("returns 'Starts date/time' when the sale's start time is in the future", async () => {
+    it("returns sale start time when the sale's start time is in the future", async () => {
       const context = {
         saleLoader: () => {
           return Promise.resolve({
@@ -658,29 +658,29 @@ describe("SaleArtwork type", () => {
 
       expect(await execute(query, saleArtwork, context)).toEqual({
         node: {
-          formattedStartDateTime: "Starts Feb 17, 2029 at 11:00am UTC",
+          formattedStartDateTime: "Feb 17, 2029 • 11:00am UTC",
         },
       })
     })
 
-    it("returns 'Ends date/time' when the sale has started and the lot's close time is in the future", async () => {
+    it("returns sale end time when the sale has started and the lot's close time is in the future", async () => {
       saleArtwork.ended_at = null
       saleArtwork.end_at = "2029-02-17T11:00:00+00:00"
 
       expect(await execute(query, saleArtwork, context)).toEqual({
         node: {
-          formattedStartDateTime: "Ends Feb 17, 2029 at 11:00am UTC",
+          formattedStartDateTime: "Feb 17, 2029 • 11:00am UTC",
         },
       })
     })
 
-    it("returns 'Ended date/time' when the sale has started and the lot's end_at time has passed", async () => {
+    it("returns 'Closed date/time' when the sale has started and the lot's end_at time has passed", async () => {
       saleArtwork.ended_at = null
       saleArtwork.end_at = "2020-02-17T11:00:00+00:00"
 
       expect(await execute(query, saleArtwork, context)).toEqual({
         node: {
-          formattedStartDateTime: "Ended Feb 17, 2020",
+          formattedStartDateTime: "Closed Feb 17, 2020 • 11:00am UTC",
         },
       })
     })
@@ -692,18 +692,18 @@ describe("SaleArtwork type", () => {
 
       expect(await execute(query, saleArtwork, context)).toEqual({
         node: {
-          formattedStartDateTime: "Ends Feb 17, 2029 at 12:00pm UTC",
+          formattedStartDateTime: "Closed Feb 17, 2029 at 12:00pm UTC",
         },
       })
     })
 
-    it("returns 'Ended date/time' when the sale has started and the lot's ended_at time has passed", async () => {
+    it("returns 'Closed date/time' when the sale has started and the lot's ended_at time has passed", async () => {
       saleArtwork.ended_at = "2019-02-17T11:00:00+00:00"
       saleArtwork.end_at = "2020-02-17T11:00:00+00:00"
 
       expect(await execute(query, saleArtwork, context)).toEqual({
         node: {
-          formattedStartDateTime: "Ended Feb 17, 2019",
+          formattedStartDateTime: "Closed Feb 17, 2019 • 11:00am UTC",
         },
       })
     })
