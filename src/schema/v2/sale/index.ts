@@ -13,6 +13,7 @@ import {
   formattedStartDateTime,
   cascadingFormattedStartDateTime,
   DEFAULT_TZ,
+  auctionsDetailFormattedStartDateTime,
 } from "lib/date"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import {

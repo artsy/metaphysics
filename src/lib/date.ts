@@ -328,3 +328,43 @@ export function formattedEndDateTime(endAt, timezone) {
     "h:mma z"
   )}`
 }
+
+export function auctionsDetailFormattedStartDateTime(
+  startAt,
+  endAt,
+  endedAt,
+  liveStartAt,
+  timezone
+) {
+  const tz = timezone || DEFAULT_TZ
+  const thisMoment = moment.tz(moment(), tz)
+  const saleStartMoment = moment.tz(startAt, tz)
+  const lotsClosingMoment = moment.tz(endAt, tz)
+  const saleEndMoment = moment.tz(endedAt, tz)
+  const liveStartMoment = moment.tz(liveStartAt, tz)
+
+  if (!!endedAt)
+    return `Closed ${saleEndMoment.format(
+      "MMM D, YYYY"
+    )} • ${saleEndMoment.format("h:mma z")}`
+
+  if (thisMoment.isBefore(saleStartMoment))
+    return `${saleStartMoment.format("MMM D, YYYY")} • ${saleStartMoment.format(
+      "h:mma z"
+    )}`
+  if (liveStartAt) {
+    if (thisMoment.isBefore(liveStartMoment)) {
+      return `Live ${liveStartMoment.format(
+        "MMM D, YYYY"
+      )} • ${liveStartMoment.format("h:mma z")}`
+    } else if (
+      thisMoment.isAfter(liveStartMoment) &&
+      (thisMoment.isBefore(lotsClosingMoment) || !endAt)
+    ) {
+      return `In progress`
+    }
+  }
+  return `${lotsClosingMoment.format(
+    "MMM D, YYYY"
+  )} • ${lotsClosingMoment.format("h:mma z")}`
+}
