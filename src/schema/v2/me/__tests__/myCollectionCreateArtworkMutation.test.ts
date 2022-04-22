@@ -9,7 +9,8 @@ const artworkDetails = {
   medium: "Painting",
   price_paid_cents: 10000,
   price_paid_currency: "USD",
-  artwork_location: "Berlin",
+  artwork_location: "Berlin, Germany",
+  collector_location: { country: "Germany", city: "Berlin" },
   attribution_class: "open edition",
 }
 const artworkLoader = jest.fn().mockResolvedValue(artworkDetails)
@@ -42,7 +43,8 @@ const computeMutationInput = ({
           editionSize: ${JSON.stringify(editionSize)}
           externalImageUrls: ${JSON.stringify(externalImageUrls)}
           height: "20"
-          artworkLocation: "Berlin"
+          artworkLocation: "Berlin, Germany"
+          collectorLocation: {country: "Germany", city: "Berlin"}
           medium: "Painting"
           metric: "in"
           pricePaidCents: 10000
@@ -58,6 +60,10 @@ const computeMutationInput = ({
             artwork {
               medium
               artworkLocation
+              collectorLocation {
+                city
+                country
+              }
               pricePaid {
                 display
               }
@@ -133,7 +139,11 @@ describe("myCollectionCreateArtworkMutation", () => {
           pricePaid: {
             display: "$100",
           },
-          artworkLocation: "Berlin",
+          artworkLocation: "Berlin, Germany",
+          collectorLocation: {
+            city: "Berlin",
+            country: "Germany",
+          },
         },
         artworkEdge: {
           node: {

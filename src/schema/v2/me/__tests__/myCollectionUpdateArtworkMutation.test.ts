@@ -29,7 +29,8 @@ const defaultArtworkDetails = ({
   metric: "in",
   price_paid_cents: 10000,
   price_paid_currency: "USD",
-  artwork_location: "Berlin",
+  artwork_location: "Berlin, Germany",
+  collector_location: { city: "Berlin", country: "Germany" },
   provenance: "Pat Hearn Gallery",
   title: "hey now",
   width: "20",
@@ -68,7 +69,8 @@ const computeMutationInput = ({
           height: "20"
           medium: "Updated"
           metric: "in"
-          artworkLocation: "Berlin"
+          artworkLocation: "Berlin, Germany"
+          collectorLocation: {country: "Germany", city: "Berlin"}
           pricePaidCents: 10000
           pricePaidCurrency: "USD"
           provenance: "Pat Hearn Gallery"
@@ -89,6 +91,10 @@ const computeMutationInput = ({
               height
               medium
               artworkLocation
+              collectorLocation {
+                city
+                country
+              }
               metric
               provenance
               title
@@ -181,7 +187,11 @@ describe("myCollectionUpdateArtworkMutation", () => {
           pricePaid: {
             display: "$100",
           },
-          artworkLocation: "Berlin",
+          artworkLocation: "Berlin, Germany",
+          collectorLocation: {
+            city: "Berlin",
+            country: "Germany",
+          },
           provenance: "Pat Hearn Gallery",
           title: "hey now",
           width: "20",
