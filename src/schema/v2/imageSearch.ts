@@ -7,9 +7,6 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { GraphQLUpload } from "graphql-upload"
-import config from "../../config"
-
-const { PRODUCTION_ENV } = config
 
 export const ImageSearchType = new GraphQLObjectType({
   name: "ImageSearch",
@@ -41,15 +38,7 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull((GraphQLUpload as unknown) as GraphQLScalarType),
     },
   },
-  resolve: async (_root, { image }, { meLoader }) => {
-    if (PRODUCTION_ENV) {
-      throw new Error("You cannot use this query for production")
-    }
-
-    if (!meLoader) {
-      return null
-    }
-
+  resolve: async (_root, { image }) => {
     const { filename, mimetype, encoding, createReadStream } = await image
     const stream = createReadStream()
 

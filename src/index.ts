@@ -35,13 +35,10 @@ import { principalFieldDirectiveExtension } from "./extensions/principalFieldDir
 import { principalFieldDirectiveValidation } from "validations/principalFieldDirectiveValidation"
 import { NoSchemaIntrospectionCustomRule } from "validations/noSchemaIntrospectionCustomRule"
 import * as Sentry from "@sentry/node"
-
-import { graphqlUploadExpress } from "graphql-upload"
+import { graphqlUploadMiddleware } from "./lib/graphqlUpload"
 
 const {
   ENABLE_REQUEST_LOGGING,
-  GRAPHQL_UPLOAD_MAX_FILE_SIZE_IN_BYTES,
-  GRAPHQL_UPLOAD_MAX_FILES,
   LOG_QUERY_DETAILS_THRESHOLD,
   PRODUCTION_ENV,
   QUERY_DEPTH_LIMIT,
@@ -211,13 +208,8 @@ function startApp(appSchema, path: string) {
     }
   })
 
-  const graphqlUpload = graphqlUploadExpress({
-    maxFileSize: GRAPHQL_UPLOAD_MAX_FILE_SIZE_IN_BYTES,
-    maxFiles: GRAPHQL_UPLOAD_MAX_FILES,
-  })
-
   app.use("/batch", bodyParser.json(), graphqlBatchHTTPWrapper(graphqlServer))
-  app.use(graphqlUpload, graphqlServer)
+  app.use(graphqlUploadMiddleware, graphqlServer)
 
   if (enableSentry) {
     app.use(Sentry.Handlers.errorHandler())
