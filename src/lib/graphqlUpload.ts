@@ -1,4 +1,5 @@
 import { graphqlUploadExpress } from "graphql-upload"
+import { RequestHandler } from "express"
 import config from "../config"
 
 const {
@@ -7,7 +8,7 @@ const {
   GRAPHQL_UPLOAD_MAX_FILE_SIZE_IN_BYTES,
 } = config
 
-export const graphqlUploadMiddleware = (req, res, next) => {
+export const graphqlUploadMiddleware: RequestHandler = (req, res, next) => {
   const accessToken = req.headers["x-access-token"] as string | undefined
 
   if (PRODUCTION_ENV && req.is("multipart/form-data")) {
