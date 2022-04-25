@@ -127,6 +127,7 @@ import { PreviewSavedSearchField } from "./previewSavedSearch"
 import { shortcut } from "./shortcut"
 import { channel } from "./article/channel"
 import { departments, job, jobs } from "./jobs"
+import { RecentlySoldArtworks } from "./recentlySoldArtworks"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -217,6 +218,7 @@ const rootFields = {
 
   tag: TagField,
   targetSupply: TargetSupply,
+  recentlySoldArtworks: RecentlySoldArtworks,
   // trendingArtists: TrendingArtists,
   user: UserField,
   usersConnection: Users,
