@@ -38,7 +38,18 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull((GraphQLUpload as unknown) as GraphQLScalarType),
     },
   },
-  resolve: async (_root, { image }) => {
+  resolve: async (_root, { image }, { meLoader }) => {
+    if (!meLoader) {
+      throw new Error("You need to be signed in to perform this action")
+    }
+
+    // Verifying that the token is still valid
+    try {
+      await meLoader()
+    } catch (err) {
+      throw new Error("You need to be signed in to perform this action")
+    }
+
     const { filename, mimetype, encoding, createReadStream } = await image
     const stream = createReadStream()
 
