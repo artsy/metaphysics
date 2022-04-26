@@ -224,6 +224,7 @@ export default (accessToken, userID, opts) => {
     ),
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
+    createArtistLoader: gravityLoader("artists", {}, { method: "POST" }),
     createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
     createArtworkImageLoader: gravityLoader(
       (id) => `artwork/${id}/image`,

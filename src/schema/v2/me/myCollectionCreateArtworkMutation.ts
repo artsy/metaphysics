@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -8,6 +9,7 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { formatGravityError } from "lib/gravityErrorHandler"
+import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { ResolverContext } from "types/graphql"
 import { ArtworkImportSourceEnum } from "../artwork"
 import { MyCollectionArtworkMutationType } from "./myCollection"
@@ -50,6 +52,16 @@ export const ArtworkAttributionClassEnum = new GraphQLEnumType({
   },
 })
 
+const MyCollectionArtistInputType = new GraphQLInputObjectType({
+  name: "MyCollectionArtistInput",
+  fields: {
+    name: {
+      type: GraphQLString,
+      description: "The artist's name.",
+    },
+  },
+})
+
 export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   any,
   any,
@@ -59,7 +71,10 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   description: "Create an artwork in my collection",
   inputFields: {
     artistIds: {
-      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+      type: new GraphQLList(GraphQLString),
+    },
+    artists: {
+      type: new GraphQLList(MyCollectionArtistInputType),
     },
     title: {
       type: new GraphQLNonNull(GraphQLString),
@@ -136,6 +151,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   mutateAndGetPayload: async (
     {
       artistIds,
+      artists,
       submissionId,
       costCurrencyCode,
       costMinor,
@@ -154,14 +170,26 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       createArtworkLoader,
       createArtworkImageLoader,
       createArtworkEditionSetLoader,
+      createArtistLoader,
     }
   ) => {
     if (
       !createArtworkLoader ||
       !createArtworkImageLoader ||
-      !createArtworkEditionSetLoader
+      !createArtworkEditionSetLoader ||
+      !createArtistLoader
     ) {
       return new Error("You need to be signed in to perform this action")
+    }
+
+    if (!artistIds?.length && !artists?.length) {
+      return new Error("You need to provide either artist IDs or artists")
+    }
+
+    if (artists?.length) {
+      const newArtistIDs = await createArtists(artists, createArtistLoader)
+
+      artistIds = [...(artistIds || []), ...newArtistIDs]
     }
 
     try {
@@ -213,3 +241,16 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     }
   },
 })
+
+const createArtists = async (
+  artists: { name: string }[],
+  createArtistLoader: StaticPathLoader<any>
+) => {
+  const responses = await Promise.all(
+    artists.map((artist) => createArtistLoader(artist))
+  )
+
+  const artistIDs = responses.map(({ id }) => id)
+
+  return artistIDs
+}
