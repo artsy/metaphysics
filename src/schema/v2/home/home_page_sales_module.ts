@@ -16,7 +16,7 @@ export const HomePageSalesModuleType = new GraphQLObjectType<
           live: true,
           is_auction: true,
           size: 10,
-          sort: "timely_at,name",
+          sort: "-is_artsy_licensed,timely_at,name",
         }
         return salesLoader(gravityOptions)
       },
