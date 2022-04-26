@@ -55,9 +55,9 @@ export const ArtworkAttributionClassEnum = new GraphQLEnumType({
 const MyCollectionArtistInputType = new GraphQLInputObjectType({
   name: "MyCollectionArtistInput",
   fields: {
-    name: {
+    displayName: {
       type: GraphQLString,
-      description: "The artist's name.",
+      description: "The artist's display name.",
     },
   },
 })

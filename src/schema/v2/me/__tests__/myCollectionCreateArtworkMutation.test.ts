@@ -38,7 +38,9 @@ const computeMutationInput = ({
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
           artists: [${
             artists
-              ? artists.map((artist) => `{ name: "${artist.name}" }`)
+              ? artists.map(
+                  (artist) => `{ displayName: "${artist.displayName}" }`
+                )
               : null
           }],
           category: "some strange category"
@@ -162,10 +164,10 @@ describe("myCollectionCreateArtworkMutation", () => {
       const mutation = computeMutationInput({
         artists: [
           {
-            name: "Artist 1",
+            displayName: "Artist 1",
           },
           {
-            name: "Artist 2",
+            displayName: "Artist 2",
           },
         ],
       })
@@ -174,10 +176,10 @@ describe("myCollectionCreateArtworkMutation", () => {
       const { artworkOrError } = data.myCollectionCreateArtwork
 
       expect(createArtistLoader).toBeCalledWith({
-        name: "Artist 1",
+        displayName: "Artist 1",
       })
       expect(createArtistLoader).toBeCalledWith({
-        name: "Artist 2",
+        displayName: "Artist 2",
       })
 
       expect(createArtworkLoader).toBeCalledWith({
