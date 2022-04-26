@@ -797,7 +797,7 @@ type Query {
   _unused_gravity_marketingCollection(slug: String!): MarketingCollection
 
   # An array of marketing collections. Defaults to returning all available collections if no args are passed
-  _unused_gravity_marketingCollections(artistID: ID, category: String, isFeaturedArtistContent: Boolean, size: Int, slugs: [String!]): [MarketingCollection!]
+  _unused_gravity_marketingCollections(artistID: String, category: String, isFeaturedArtistContent: Boolean, size: Int, slugs: [String!]): [MarketingCollection!]
 
   # Autocomplete resolvers.
   _unused_gravity_matchPartners(matchType: String, page: Int = 1, size: Int = 5, term: String!): [DoNotUseThisPartner!]
