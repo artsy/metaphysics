@@ -3,17 +3,17 @@ import { RequestHandler } from "express"
 import config from "../config"
 
 const {
-  PRODUCTION_ENV,
+  ENABLE_GRAPHQL_UPLOAD,
   GRAPHQL_UPLOAD_MAX_FILES,
   GRAPHQL_UPLOAD_MAX_FILE_SIZE_IN_BYTES,
 } = config
 
 export const graphqlUploadMiddleware: RequestHandler = (req, res, next) => {
-  if (PRODUCTION_ENV && req.is("multipart/form-data")) {
-    throw new Error("You cannot upload file for production")
+  if (!ENABLE_GRAPHQL_UPLOAD && req.is("multipart/form-data")) {
+    throw new Error("You cannot perform this action")
   }
 
-  if (!PRODUCTION_ENV) {
+  if (ENABLE_GRAPHQL_UPLOAD) {
     const graphqlUpload = graphqlUploadExpress({
       maxFileSize: GRAPHQL_UPLOAD_MAX_FILE_SIZE_IN_BYTES,
       maxFiles: GRAPHQL_UPLOAD_MAX_FILES,
