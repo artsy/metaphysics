@@ -16,24 +16,6 @@ import { MyCollectionArtworkMutationType } from "./myCollection"
 
 const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
-export const computeImageSources = (externalImageUrls) => {
-  const imageSources = externalImageUrls.map((url) => {
-    const match = url.match(externalUrlRegex)
-
-    if (!match) return
-
-    const { sourceBucket, sourceKey } = match.groups
-
-    return {
-      source_bucket: sourceBucket,
-      source_key: sourceKey,
-    }
-  })
-
-  const filteredImageSources = imageSources.filter(Boolean)
-  return filteredImageSources
-}
-
 export const ArtworkAttributionClassEnum = new GraphQLEnumType({
   name: "ArtworkAttributionClassType",
   values: {
@@ -243,14 +225,34 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
 })
 
 const createArtists = async (
-  artists: { name: string }[],
+  artists: { displayName: string }[],
   createArtistLoader: StaticPathLoader<any>
 ) => {
   const responses = await Promise.all(
-    artists.map((artist) => createArtistLoader(artist))
+    artists.map((artist) =>
+      createArtistLoader({ ...artist, my_collection_artist: true })
+    )
   )
 
-  const artistIDs = responses.map(({ id }) => id)
+  const artistIDs: string[] = responses.map(({ id }) => id)
 
   return artistIDs
+}
+
+export const computeImageSources = (externalImageUrls) => {
+  const imageSources = externalImageUrls.map((url) => {
+    const match = url.match(externalUrlRegex)
+
+    if (!match) return
+
+    const { sourceBucket, sourceKey } = match.groups
+
+    return {
+      source_bucket: sourceBucket,
+      source_key: sourceKey,
+    }
+  })
+
+  const filteredImageSources = imageSources.filter(Boolean)
+  return filteredImageSources
 }
