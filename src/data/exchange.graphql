@@ -1925,6 +1925,7 @@ type ShippingQuote {
   priceCents: Int!
   priceCurrency: String!
   tier: String!
+  typeName: String!
   updatedAt: DateTime!
 }
 

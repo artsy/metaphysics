@@ -5848,6 +5848,7 @@ type CommerceShippingQuote {
   priceCents: Int!
   priceCurrency: String!
   tier: String!
+  typeName: String!
   updatedAt(
     format: String
 
