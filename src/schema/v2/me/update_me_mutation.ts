@@ -198,6 +198,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
         "This user should receive sale opening/closing notifications",
       type: GraphQLBoolean,
     },
+    receiveOrderNotification: {
+      description: "This user should receive order notifications",
+      type: GraphQLBoolean,
+    },
     shareFollows: {
       description:
         "Shares FollowArtists, FollowGenes, and FollowProfiles with partners.",

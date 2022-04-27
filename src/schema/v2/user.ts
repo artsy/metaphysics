@@ -145,6 +145,11 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ receive_promotion_notification }) =>
         receive_promotion_notification,
     },
+    receiveOrderNotification: {
+      description: "This user should receive order notifications",
+      type: GraphQLBoolean,
+      resolve: ({ receive_order_notification }) => receive_order_notification,
+    },
     userAlreadyExists: {
       description:
         "Check whether a user exists by email address before creating an account.",
