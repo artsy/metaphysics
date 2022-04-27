@@ -177,9 +177,11 @@ describe("myCollectionCreateArtworkMutation", () => {
 
       expect(createArtistLoader).toBeCalledWith({
         displayName: "Artist 1",
+        my_collection_artist: true,
       })
       expect(createArtistLoader).toBeCalledWith({
         displayName: "Artist 2",
+        my_collection_artist: true,
       })
 
       expect(createArtworkLoader).toBeCalledWith({
