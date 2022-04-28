@@ -50,6 +50,7 @@ import GeneFamilies from "./gene_families"
 import { HighlightsField } from "./Highlights"
 import HomePage from "./home"
 import Image from "./image"
+import { ImageSearchField } from "./imageSearch"
 import Me from "./me"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
 // import MatchGene from "./match/gene"
@@ -180,6 +181,7 @@ const rootFields = {
   homePage: HomePage,
   job,
   jobs,
+  doNotUseImageSearch: ImageSearchField,
   _do_not_use_image: {
     type: Image.type,
     resolve: Image.resolve,
