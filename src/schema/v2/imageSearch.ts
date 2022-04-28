@@ -8,6 +8,37 @@ import {
 import { ResolverContext } from "types/graphql"
 import { GraphQLUpload } from "graphql-upload"
 
+export const resolveImageSearch = async (_root, args, context) => {
+  const { image } = args
+  const { meLoader } = context
+
+  if (!meLoader) {
+    throw new Error("You need to be signed in to perform this action")
+  }
+
+  // Verifying that the token is still valid
+  try {
+    await meLoader()
+  } catch (err) {
+    throw new Error("You need to be signed in to perform this action")
+  }
+
+  const { filename, mimetype, encoding, createReadStream } = await image
+  const stream = createReadStream()
+
+  try {
+    await readDataFromStream(stream)
+  } finally {
+    stream.destroy()
+  }
+
+  return {
+    filename,
+    mimetype,
+    encoding,
+  }
+}
+
 export const ImageSearchType = new GraphQLObjectType({
   name: "ImageSearch",
   fields: () => ({
@@ -38,33 +69,7 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull((GraphQLUpload as unknown) as GraphQLScalarType),
     },
   },
-  resolve: async (_root, { image }, { meLoader }) => {
-    if (!meLoader) {
-      throw new Error("You need to be signed in to perform this action")
-    }
-
-    // Verifying that the token is still valid
-    try {
-      await meLoader()
-    } catch (err) {
-      throw new Error("You need to be signed in to perform this action")
-    }
-
-    const { filename, mimetype, encoding, createReadStream } = await image
-    const stream = createReadStream()
-
-    try {
-      await readDataFromStream(stream)
-    } finally {
-      stream.destroy()
-    }
-
-    return {
-      filename,
-      mimetype,
-      encoding,
-    }
-  },
+  resolve: resolveImageSearch,
 }
 
 /**
