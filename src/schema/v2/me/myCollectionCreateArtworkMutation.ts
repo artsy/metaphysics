@@ -168,6 +168,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       return new Error("You need to provide either artist IDs or artists")
     }
 
+    // Create artists if `artist` is provided in the input fields
     if (artists?.length) {
       const newArtistIDs = await createArtists(artists, createArtistLoader)
 
