@@ -1,5 +1,6 @@
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { runQuery } from "schema/v2/test/utils"
+import { recentlySoldArtworks } from "../recentlySoldArtworks"
 
 describe("RecentlySoldArtworks", () => {
   const artworksLoader: StaticPathLoader<any> = (params) => {
@@ -20,9 +21,6 @@ describe("RecentlySoldArtworks", () => {
               artwork {
                 internalID
               }
-              lowEstimateUSD
-              highEstimateUSD
-              priceRealized
             }
           }
         }
@@ -34,9 +32,9 @@ describe("RecentlySoldArtworks", () => {
     }
 
     const response = await runQuery(query, context)
-    const recentlySoldArtworks = response.recentlySoldArtworks
+    const artworks = response.recentlySoldArtworks
 
-    expect(recentlySoldArtworks.edges).toHaveLength(20)
+    expect(artworks.edges).toHaveLength(recentlySoldArtworks.length)
   })
 
   it("returns correct artwork", async () => {
@@ -48,9 +46,15 @@ describe("RecentlySoldArtworks", () => {
               artwork {
                 internalID
               }
-              lowEstimateUSD
-              highEstimateUSD
-              priceRealized
+              lowEstimate {
+                display
+              }
+              highEstimate {
+                display
+              }
+              priceRealized {
+                display
+              }
             }
           }
         }
@@ -69,9 +73,15 @@ describe("RecentlySoldArtworks", () => {
       artwork: {
         internalID: "622bdb23c6df37000d516d7b",
       },
-      lowEstimateUSD: "150,000",
-      highEstimateUSD: "200,000",
-      priceRealized: "350,000",
+      lowEstimate: {
+        display: "US$150,000",
+      },
+      highEstimate: {
+        display: "US$200,000",
+      },
+      priceRealized: {
+        display: "US$350,000",
+      },
     })
   })
 })

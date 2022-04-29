@@ -12137,6 +12137,8 @@ type Query {
     # Return price insights sorted this way
     sort: PriceInsightSort
   ): PriceInsightConnection
+
+  # Static set of recently sold artworks for the SWA landing page
   recentlySoldArtworks(
     after: String
     before: String
@@ -12357,9 +12359,9 @@ type Query {
 
 type RecentlySoldArtworkType {
   artwork: Artwork
-  highEstimateUSD: String
-  lowEstimateUSD: String
-  priceRealized: String
+  highEstimate: Money
+  lowEstimate: Money
+  priceRealized: Money
 }
 
 # A connection to a list of items.
@@ -15281,6 +15283,8 @@ type Viewer {
   previewSavedSearch(
     attributes: PreviewSavedSearchAttributes
   ): PreviewSavedSearch
+
+  # Static set of recently sold artworks for the SWA landing page
   recentlySoldArtworks(
     after: String
     before: String
