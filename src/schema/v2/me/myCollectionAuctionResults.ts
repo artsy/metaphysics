@@ -114,18 +114,8 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
       )
 
       return merge(
-        {
-          pageCursors: createPageCursors(
-            {
-              page,
-              size,
-            },
-            total_count
-          ),
-        },
-        {
-          totalCount: total_count,
-        },
+        { pageCursors: createPageCursors({ page, size }, total_count) },
+        { totalCount: total_count },
         connectionFromArraySlice(enrichedAuctionResults, options, {
           arrayLength: total_count,
           sliceStart: offset,
