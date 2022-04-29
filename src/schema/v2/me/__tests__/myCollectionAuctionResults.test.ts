@@ -68,12 +68,12 @@ describe("Me", () => {
         headers: { "x-total-count": 2 },
         body: [
           {
-            id: "followartist-1",
+            id: "an-artist-1",
             _id: "artist-1",
             name: "Artist 1",
           },
           {
-            id: "followartist-2",
+            id: "an-artist-2",
             _id: "artist-2",
             name: "Artist 2",
           },

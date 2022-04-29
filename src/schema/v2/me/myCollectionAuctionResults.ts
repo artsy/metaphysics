@@ -61,6 +61,7 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
 
       const { body: artists } = await collectionArtistsLoader("my-collection", {
         user_id: userId,
+        size: 100,
       })
 
       const artistIds = artists.map(({ id }) => id)
@@ -91,53 +92,52 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
         sort: options.sort,
       }
 
-      return auctionLotsLoader(diffusionArgs).then(
-        ({ total_count, _embedded }) => {
-          const totalPages = Math.ceil(total_count / size)
+      const { total_count, _embedded } = await auctionLotsLoader(diffusionArgs)
 
-          // filter items without artist id
-          const filteredAuctionResults = _embedded.items.filter(
-            (auctionResult) => auctionResult.artist_id
+      const totalPages = Math.ceil(total_count / size)
+
+      // filter items without artist id
+      const filteredAuctionResults = _embedded.items.filter(
+        (auctionResult) => auctionResult.artist_id
+      )
+
+      // enrich result with artist data
+      const enrichedAuctionResults = filteredAuctionResults.map(
+        (auctionResult) => {
+          const artist = artists.find(
+            ({ _id }) => _id == auctionResult.artist_id
           )
 
-          // enrich result with artist data
-          const enrichedAuctionResults = filteredAuctionResults.map(
-            (auctionResult) => {
-              const artist = artistIds.find(
-                (id) => id == auctionResult.artist_id
-              )
-              auctionResult.artist = artist?.artist
-              return auctionResult
-            }
-          )
+          auctionResult.artist = artist
+          return auctionResult
+        }
+      )
 
-          return merge(
+      return merge(
+        {
+          pageCursors: createPageCursors(
             {
-              pageCursors: createPageCursors(
-                {
-                  page,
-                  size,
-                },
-                total_count
-              ),
+              page,
+              size,
             },
-            {
-              totalCount: total_count,
-            },
-            connectionFromArraySlice(enrichedAuctionResults, options, {
-              arrayLength: total_count,
-              sliceStart: offset,
-            }),
-            {
-              pageInfo: {
-                hasPreviousPage: page > 1,
-                hasNextPage: page < totalPages,
-              },
-            },
-            {
-              artist_ids: artistIds,
-            }
-          )
+            total_count
+          ),
+        },
+        {
+          totalCount: total_count,
+        },
+        connectionFromArraySlice(enrichedAuctionResults, options, {
+          arrayLength: total_count,
+          sliceStart: offset,
+        }),
+        {
+          pageInfo: {
+            hasPreviousPage: page > 1,
+            hasNextPage: page < totalPages,
+          },
+        },
+        {
+          artist_ids: artistIds,
         }
       )
     } catch (error) {
