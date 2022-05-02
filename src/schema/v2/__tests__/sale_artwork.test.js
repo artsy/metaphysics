@@ -604,6 +604,26 @@ describe("SaleArtwork type", () => {
     })
   })
 
+  it("includes lot id", async () => {
+    saleArtwork.lot_id = "catty-lot-id"
+
+    const query = gql`
+      {
+        node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+          ... on SaleArtwork {
+            lotID
+          }
+        }
+      }
+    `
+
+    expect(await execute(query, saleArtwork)).toEqual({
+      node: {
+        lotID: "catty-lot-id",
+      },
+    })
+  })
+
   describe("formattedStartDateTime", () => {
     const query = gql`
       {
@@ -661,6 +681,18 @@ describe("SaleArtwork type", () => {
       expect(await execute(query, saleArtwork, context)).toEqual({
         node: {
           formattedStartDateTime: "Ended Feb 17, 2020",
+        },
+      })
+    })
+
+    it("returns 'Ends date/time' when the sale has started, end_at has passed but bidding was extended", async () => {
+      saleArtwork.ended_at = null
+      saleArtwork.end_at = "2029-02-17T11:00:00+00:00"
+      saleArtwork.extended_bidding_end_at = "2029-02-17T12:00:00+00:00"
+
+      expect(await execute(query, saleArtwork, context)).toEqual({
+        node: {
+          formattedStartDateTime: "Ends Feb 17, 2029 at 12:00pm UTC",
         },
       })
     })
