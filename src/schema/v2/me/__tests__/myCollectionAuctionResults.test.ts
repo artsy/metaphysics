@@ -45,6 +45,22 @@ describe("Me", () => {
         ],
       }
 
+      const collectionArtistsLoader = jest.fn(async () => ({
+        headers: { "x-total-count": 2 },
+        body: [
+          {
+            id: "an-artist-1",
+            _id: "artist-1",
+            name: "Artist 1",
+          },
+          {
+            id: "an-artist-2",
+            _id: "artist-2",
+            name: "Artist 2",
+          },
+        ],
+      }))
+
       const auctionLotsLoader = jest.fn(async () => ({
         total_count: 2,
         _embedded: {
@@ -62,22 +78,6 @@ describe("Me", () => {
             },
           ],
         },
-      }))
-
-      const collectionArtistsLoader = jest.fn(async () => ({
-        headers: { "x-total-count": 2 },
-        body: [
-          {
-            id: "an-artist-1",
-            _id: "artist-1",
-            name: "Artist 1",
-          },
-          {
-            id: "an-artist-2",
-            _id: "artist-2",
-            name: "Artist 2",
-          },
-        ],
       }))
 
       const context = {
