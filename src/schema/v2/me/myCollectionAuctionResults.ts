@@ -64,7 +64,7 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
         size: 100,
       })
 
-      const artistIds = artists.map(({ id }) => id)
+      const artistIds = artists.map(({ _id }) => _id)
 
       if (!artistIds || artistIds.length === 0) {
         return null
