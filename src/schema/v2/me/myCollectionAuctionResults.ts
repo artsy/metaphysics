@@ -16,6 +16,7 @@ import { auctionResultConnection, AuctionResultSorts } from "../auction_result"
 
 const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
   type: auctionResultConnection.connectionType,
+  description: "A list of auction results from artists in My Collection",
   args: pageable({
     sort: AuctionResultSorts,
     organizations: {
@@ -50,7 +51,6 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
         "Filter auction results by empty artwork created date values",
     },
   }),
-  description: "A list of the auction results by followed artists",
   resolve: async (
     { id: userId },
     options,
@@ -79,7 +79,7 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
         categories,
       } = convertConnectionArgsToGravityArgs(options)
 
-      const diffusionArgs = {
+      const auctionLotsLoaderArgs = {
         page,
         size,
         artist_ids: artistIds,
@@ -92,7 +92,9 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
         sort: options.sort,
       }
 
-      const { total_count, _embedded } = await auctionLotsLoader(diffusionArgs)
+      const { total_count, _embedded } = await auctionLotsLoader(
+        auctionLotsLoaderArgs
+      )
 
       const totalPages = Math.ceil(total_count / size)
 

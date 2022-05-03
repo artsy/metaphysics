@@ -9537,7 +9537,7 @@ type Me implements Node {
   ): [LotStanding]
   myBids: MyBids
 
-  # A list of the auction results by followed artists
+  # A list of auction results from artists in My Collection
   myCollectionAuctionResults(
     after: String
 
