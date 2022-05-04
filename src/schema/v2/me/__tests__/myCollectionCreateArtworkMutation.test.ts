@@ -176,11 +176,11 @@ describe("myCollectionCreateArtworkMutation", () => {
       const { artworkOrError } = data.myCollectionCreateArtwork
 
       expect(createArtistLoader).toBeCalledWith({
-        displayName: "Artist 1",
+        display_name: "Artist 1",
         is_personal_artist: true,
       })
       expect(createArtistLoader).toBeCalledWith({
-        displayName: "Artist 2",
+        display_name: "Artist 2",
         is_personal_artist: true,
       })
 
