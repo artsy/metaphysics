@@ -100,6 +100,7 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     filterArtworksLoader: gravityLoader("filter/artworks"),
+    authenticatedArtistLoader: gravityLoader((id) => `artist/${id}`),
     followArtistLoader: gravityLoader(
       "me/follow/artist",
       {},
@@ -224,6 +225,7 @@ export default (accessToken, userID, opts) => {
     ),
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
+    createArtistLoader: gravityLoader("artist", {}, { method: "POST" }),
     createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
     createArtworkImageLoader: gravityLoader(
       (id) => `artwork/${id}/image`,

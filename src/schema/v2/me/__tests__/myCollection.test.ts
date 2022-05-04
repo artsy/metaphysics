@@ -70,7 +70,7 @@ describe("me.myCollection", () => {
             "x-total-count": "10",
           },
         }),
-      artistLoader: () =>
+      authenticatedArtistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
         }),
@@ -158,7 +158,7 @@ describe("me.myCollection", () => {
             ],
           } as any,
         }),
-      artistLoader: () =>
+      authenticatedArtistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
         }),
@@ -257,7 +257,7 @@ describe("me.myCollection", () => {
             edges: [],
           } as any,
         }),
-      artistLoader: () =>
+      authenticatedArtistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
         }),
@@ -325,7 +325,7 @@ describe("me.myCollection", () => {
             "x-total-count": "10",
           },
         }),
-      artistLoader: () =>
+      authenticatedArtistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
         }),
