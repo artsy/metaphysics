@@ -7,6 +7,13 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { GraphQLUpload } from "graphql-upload"
+import config from "../../config"
+import { ReadStream } from "fs-capacitor"
+
+import FormData from "form-data"
+import fetch from "node-fetch"
+
+const { TINEYE_API_PASSWORD, TINEYE_API_USERNAME } = config
 
 export const ImageSearchType = new GraphQLObjectType({
   name: "ImageSearch",
@@ -51,13 +58,22 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
     }
 
     const { filename, mimetype, encoding, createReadStream } = await image
-    const stream = createReadStream()
+    const stream: ReadStream = createReadStream()
+    const form = new FormData()
 
-    try {
-      await readDataFromStream(stream)
-    } finally {
-      stream.destroy()
-    }
+    form.append("image", stream, {
+      filename,
+      contentType: mimetype,
+    })
+
+    const url = `https://${TINEYE_API_USERNAME}:${TINEYE_API_PASSWORD}@mobileengine.tineye.com/artsy/rest/search/`
+    const response = await fetch(url, {
+      method: "POST",
+      body: form,
+    })
+    const json = await response.json()
+
+    console.log("[debug] json", json)
 
     return {
       filename,
@@ -65,18 +81,4 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
       encoding,
     }
   },
-}
-
-/**
- * WARNING: Not for production
- * It's needed for testing `maxFileSize` option for `graphql-upload`
- */
-const readDataFromStream = async (stream) => {
-  let content = ""
-
-  for await (const chunk of stream) {
-    content += chunk
-  }
-
-  return content
 }
