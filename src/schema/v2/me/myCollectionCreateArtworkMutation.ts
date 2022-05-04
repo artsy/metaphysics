@@ -231,7 +231,7 @@ const createArtists = async (
 ) => {
   const responses = await Promise.all(
     artists.map((artist) =>
-      createArtistLoader({ ...artist, my_collection_artist: true })
+      createArtistLoader({ ...artist, is_personal_artist: true })
     )
   )
 

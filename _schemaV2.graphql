@@ -10206,8 +10206,8 @@ type MyBids {
 }
 
 input MyCollectionArtistInput {
-  # The artist's name.
-  name: String
+  # The artist's display name.
+  displayName: String
 }
 
 type MyCollectionArtworkMutationDeleteSuccess {
