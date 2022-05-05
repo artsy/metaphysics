@@ -20,6 +20,7 @@ import { PartnerArtworkGridType } from "./artwork/artworkContextGrids/PartnerArt
 import { RelatedArtworkGridType } from "./artwork/artworkContextGrids/RelatedArtworkGrid"
 import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGrid"
 import ArtworkAttributionClasses from "./artworkAttributionClasses"
+import { ArtworkImageSearch } from "./artworkImageSearch"
 import ArtworkMediums from "./artworkMediums"
 import Artworks from "./artworks"
 import { ArtworkVersionType } from "./artwork_version"
@@ -143,6 +144,7 @@ const OptionalFieldDirective = new GraphQLDirective({
 const rootFields = {
   artworksForUser,
   artworkAttributionClasses: ArtworkAttributionClasses,
+  artworkImageSearch: ArtworkImageSearch,
   artworkMediums: ArtworkMediums,
   auctionResult: AuctionResult,
   article: Article,

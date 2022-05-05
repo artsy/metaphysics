@@ -2039,6 +2039,15 @@ union ArtworkFilterFacet = Gene | Tag
 
 union ArtworkHighlight = Article | Show
 
+type ArtworkImageSearchMatchgRect {
+  bottom: Float!
+  left: Float!
+  right: Float!
+  top: Float!
+}
+
+union ArtworkImageSearchType = ReverseImageSearchResults
+
 enum ArtworkImportSource {
   CONVECTION
   MY_COLLECTION
@@ -11604,6 +11613,12 @@ type Query {
   # List of all artwork attribution classes
   artworkAttributionClasses: [AttributionClass]
 
+  # Search for matching artworks by image
+  artworkImageSearch(
+    # Image file
+    image: Upload!
+  ): ArtworkImageSearchType
+
   # List of all artwork mediums
   artworkMediums: [ArtworkMedium]
 
@@ -12488,6 +12503,33 @@ type ResizedImageUrl {
   srcSet: String!
   url: String!
   width: Int
+}
+
+type ReverseImageSearchResult {
+  # The matching collection image’s file path
+  filepath: String!
+
+  # How much of the query image’s fingerprint overlaps the collection image’s fingerprint, as a percentage
+  matchPercent: Float!
+
+  # Location of the matching area in the first image
+  queryMatchRect: ArtworkImageSearchMatchgRect!
+
+  # How much of the query image overlaps the collection image, as a percentage
+  queryOverlapPercent: Float!
+
+  # How closely the query image matches the collection image
+  score: Float!
+
+  # Location of the matching area in the second image
+  targetMatchRect: ArtworkImageSearchMatchgRect!
+
+  # How much of the collection image overlaps the query image, as a percentage
+  targetOverlapPercent: Float!
+}
+
+type ReverseImageSearchResults {
+  results: [ReverseImageSearchResult]
 }
 
 enum Role {
@@ -14930,6 +14972,12 @@ type Viewer {
 
   # List of all artwork attribution classes
   artworkAttributionClasses: [AttributionClass]
+
+  # Search for matching artworks by image
+  artworkImageSearch(
+    # Image file
+    image: Upload!
+  ): ArtworkImageSearchType
 
   # List of all artwork mediums
   artworkMediums: [ArtworkMedium]
