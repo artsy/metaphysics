@@ -10,8 +10,6 @@ import { GraphQLUpload } from "graphql-upload"
 import { ReadStream } from "fs-capacitor"
 import tineye from "../../lib/apis/tineye"
 
-import FormData from "form-data"
-
 export const ImageSearchType = new GraphQLObjectType({
   name: "ImageSearch",
   fields: () => ({
@@ -56,20 +54,24 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
 
     const { filename, mimetype, encoding, createReadStream } = await image
     const stream: ReadStream = createReadStream()
-    const form = new FormData()
 
-    form.append("image", stream, {
-      filename,
-      contentType: mimetype,
-    })
+    // @ts-ignore
+    stream.path = stream?._writeStream?._path
 
     const response = await tineye("/search", {
       method: "POST",
-      body: form,
+      formData: {
+        image: {
+          value: stream,
+          options: {
+            filename,
+            contentType: mimetype,
+          },
+        },
+      },
     })
-    const json = await response.json()
 
-    console.log("[debug] json", json)
+    console.log("[debug]", response.body)
 
     return {
       filename,
