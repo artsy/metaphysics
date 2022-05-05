@@ -7,13 +7,10 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { GraphQLUpload } from "graphql-upload"
-import config from "../../config"
 import { ReadStream } from "fs-capacitor"
+import tineye from "../../lib/apis/tineye"
 
 import FormData from "form-data"
-import fetch from "node-fetch"
-
-const { TINEYE_API_PASSWORD, TINEYE_API_USERNAME } = config
 
 export const ImageSearchType = new GraphQLObjectType({
   name: "ImageSearch",
@@ -66,8 +63,7 @@ export const ImageSearchField: GraphQLFieldConfig<void, ResolverContext> = {
       contentType: mimetype,
     })
 
-    const url = `https://${TINEYE_API_USERNAME}:${TINEYE_API_PASSWORD}@mobileengine.tineye.com/artsy/rest/search/`
-    const response = await fetch(url, {
+    const response = await tineye("/search", {
       method: "POST",
       body: form,
     })
