@@ -791,13 +791,13 @@ type Query {
     last: Int
   ): ArtistSeriesConnection
   _unused_gravity_devices(userId: ID!): [Device!]!
-  _unused_gravity_marketingCategories: [MarketingCollectionCategory!]!
+  marketingCategories: [MarketingCollectionCategory!]!
 
   # Find a marketing collection by ID or slug
-  _unused_gravity_marketingCollection(slug: String!): MarketingCollection
+  marketingCollection(slug: String!): MarketingCollection
 
   # An array of marketing collections. Defaults to returning all available collections if no args are passed
-  _unused_gravity_marketingCollections(artistID: String, category: String, isFeaturedArtistContent: Boolean, size: Int, slugs: [String!]): [MarketingCollection!]
+  marketingCollections(artistID: String, category: String, isFeaturedArtistContent: Boolean, size: Int, slugs: [String!]): [MarketingCollection!]
 
   # Autocomplete resolvers.
   _unused_gravity_matchPartners(matchType: String, page: Int = 1, size: Int = 5, term: String!): [DoNotUseThisPartner!]
