@@ -2046,7 +2046,7 @@ type ArtworkImageSearchMatchgRect {
   top: Float!
 }
 
-union ArtworkImageSearchType = ReverseImageSearchResults
+union ArtworkImageSearchType = Errors | ReverseImageSearchResults
 
 enum ArtworkImportSource {
   CONVECTION

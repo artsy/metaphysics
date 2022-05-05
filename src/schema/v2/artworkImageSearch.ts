@@ -81,15 +81,42 @@ export const ReverseImageSearchResults = new GraphQLObjectType({
   },
 })
 
+const ErrorType = new GraphQLObjectType({
+  name: "Error",
+  fields: {
+    code: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    data: {
+      type: GraphQLString,
+    },
+    message: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    path: {
+      type: new GraphQLList(GraphQLString),
+    },
+  },
+})
+
+export const Errors = new GraphQLObjectType({
+  name: "Errors",
+  fields: {
+    errors: {
+      type: new GraphQLList(ErrorType),
+    },
+  },
+})
+
 const ArtworkImageSearchType = new GraphQLUnionType({
   name: "ArtworkImageSearchType",
-  types: [ReverseImageSearchResults],
+  types: [ReverseImageSearchResults, Errors],
   resolveType: ({ __typename }) => {
     if (__typename === "ReverseImageSearchResults") {
       return ReverseImageSearchResults
     }
 
-    return null
+    return Errors
   },
 })
 
@@ -104,7 +131,12 @@ export const ArtworkImageSearch: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull((GraphQLUpload as unknown) as GraphQLScalarType),
     },
   },
-  resolve: async (_root, { image }, { meLoader, searchByImageLoader }) => {
+  resolve: async (
+    _root,
+    { image },
+    { meLoader, searchByImageLoader },
+    info
+  ) => {
     if (!meLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
@@ -128,11 +160,25 @@ export const ArtworkImageSearch: GraphQLFieldConfig<void, ResolverContext> = {
       contentType: mimetype,
     })
 
-    console.log("[debug] response", response)
+    if (response.status === "ok") {
+      return {
+        __typename: "ReverseImageSearchResults",
+        results: response.result,
+      }
+    }
 
+    /**
+     * TODO: Maybe just throw error in this case?
+     *
+     * Something like this:
+     * throw new Error(response.error.join("\n"))
+     */
     return {
-      __typename: "ReverseImageSearchResults",
-      results: response.result,
+      errors: response.error.map((error) => ({
+        message: error,
+        code: "invalid",
+        path: [info.fieldName],
+      })),
     }
   },
 }
