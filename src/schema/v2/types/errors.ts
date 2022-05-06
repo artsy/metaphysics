@@ -4,6 +4,7 @@ import {
   GraphQLString,
   GraphQLList,
 } from "graphql"
+import GraphQLJSON from "graphql-type-json"
 
 const ErrorType = new GraphQLObjectType({
   name: "Error",
@@ -12,7 +13,7 @@ const ErrorType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
     },
     data: {
-      type: GraphQLString,
+      type: GraphQLJSON,
     },
     message: {
       type: new GraphQLNonNull(GraphQLString),
