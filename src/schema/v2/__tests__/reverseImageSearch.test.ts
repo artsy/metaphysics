@@ -32,7 +32,7 @@ describe("reverseImageSearchResolver", () => {
     }
     const context = {
       meLoader: jest.fn().mockResolvedValue({}),
-      searchArtworkByImageLoader: jest.fn().mockResolvedValue({
+      tineyeSearchLoader: jest.fn().mockResolvedValue({
         status: "ok",
         count: "1",
         count_total: "1",
@@ -105,7 +105,7 @@ describe("reverseImageSearchResolver", () => {
     }
     const context = {
       meLoader: jest.fn().mockResolvedValue({}),
-      searchArtworkByImageLoader: jest.fn().mockResolvedValue({
+      tineyeSearchLoader: jest.fn().mockResolvedValue({
         status: "fail",
         error: ["Error message"],
         method: "search",

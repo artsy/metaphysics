@@ -1,18 +1,18 @@
 import { ReadStream } from "fs"
 import tineye from "lib/apis/tineye"
 
-type SearchArtworkByImageLoaderOptions = {
+type TineyeSearchLoaderOptions = {
   image: ReadStream
   filename: string
   contentType: string
 }
 
 export default (_opts) => {
-  const searchArtworkByImageLoader = async ({
+  const tineyeSearchLoader = async ({
     image,
     filename,
     contentType,
-  }: SearchArtworkByImageLoaderOptions) => {
+  }: TineyeSearchLoaderOptions) => {
     const response = await tineye("/search", {
       method: "POST",
       formData: {
@@ -30,6 +30,6 @@ export default (_opts) => {
   }
 
   return {
-    searchArtworkByImageLoader,
+    tineyeSearchLoader,
   }
 }

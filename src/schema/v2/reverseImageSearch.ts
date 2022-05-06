@@ -82,7 +82,7 @@ export const ReverseImageSearchResults = new GraphQLObjectType({
 
 export const reverseImageSearchResolver = async (_root, args, context) => {
   const { image } = args
-  const { meLoader, searchArtworkByImageLoader } = context
+  const { meLoader, tineyeSearchLoader } = context
 
   if (!meLoader) {
     throw new Error("You need to be signed in to perform this action")
@@ -102,7 +102,7 @@ export const reverseImageSearchResolver = async (_root, args, context) => {
   // @ts-ignore
   stream.path = stream?._writeStream?._path
 
-  const response = await searchArtworkByImageLoader({
+  const response = await tineyeSearchLoader({
     image: stream,
     filename,
     contentType: mimetype,
