@@ -151,6 +151,7 @@ export const ArtworkImageSearch: GraphQLFieldConfig<void, ResolverContext> = {
     const { filename, mimetype, createReadStream } = await image
     const stream: ReadStream = createReadStream()
 
+    // Without this hack, we will get an error that we are sending an unsupported file format
     // @ts-ignore
     stream.path = stream?._writeStream?._path
 
