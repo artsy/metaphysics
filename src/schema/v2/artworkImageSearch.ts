@@ -142,12 +142,6 @@ export const ArtworkImageSearch: GraphQLFieldConfig<void, ResolverContext> = {
       }
     }
 
-    /**
-     * TODO: Maybe just throw error in this case?
-     *
-     * Something like this:
-     * throw new Error(response.error.join("\n"))
-     */
     return {
       errors: response.error.map((error) => ({
         message: error,
