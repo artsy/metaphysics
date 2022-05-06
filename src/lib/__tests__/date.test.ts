@@ -91,16 +91,6 @@ describe("date formatting", () => {
       Date.now = realNow
     })
 
-    it("includes start date when event starts in the future", () => {
-      const period = formattedStartDateTime({
-        startAt: "2045-12-05T20:00:00+00:00",
-        endAt: "2050-12-30T17:00:00+00:00",
-        endedAt: null,
-        timezone: "UTC",
-      })
-      expect(period).toBe("Dec 5, 2045 • 8:00pm UTC")
-    })
-
     it("includes end date when event is running and terminates in the future", () => {
       const period = formattedStartDateTime({
         startAt: "2017-12-05T20:00:00+00:00",
@@ -121,9 +111,20 @@ describe("date formatting", () => {
       expect(period).toBe("Closed Dec 30, 2016 • 5:00pm UTC")
     })
 
-    it("includes start date when event starts in the future (2)", () => {
+    it("includes start date when event starts in the future", () => {
       const period = formattedStartDateTime({
         startAt: "2045-12-05T20:00:00+00:00",
+        endAt: "2050-12-30T17:00:00+00:00",
+        endedAt: null,
+        timezone: "UTC",
+      })
+      expect(period).toBe("Dec 5, 2045 • 8:00pm UTC")
+    })
+
+    it("includes start date when event starts in the future and live start date is in the future", () => {
+      const period = formattedStartDateTime({
+        startAt: "2045-12-05T20:00:00+00:00",
+        liveStartAt: "2045-12-10T20:00:00+00:00",
         endAt: "2050-12-30T17:00:00+00:00",
         endedAt: null,
         timezone: "UTC",
