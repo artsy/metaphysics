@@ -11,6 +11,7 @@ import {
 } from "graphql"
 import { GraphQLUpload } from "graphql-upload"
 import { ResolverContext } from "types/graphql"
+import { ErrorsType } from "./types/errors"
 
 export const ArtworkImageSearchMatchgRect = new GraphQLObjectType({
   name: "ArtworkImageSearchMatchgRect",
@@ -81,42 +82,15 @@ export const ReverseImageSearchResults = new GraphQLObjectType({
   },
 })
 
-const ErrorType = new GraphQLObjectType({
-  name: "Error",
-  fields: {
-    code: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    data: {
-      type: GraphQLString,
-    },
-    message: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    path: {
-      type: new GraphQLList(GraphQLString),
-    },
-  },
-})
-
-export const Errors = new GraphQLObjectType({
-  name: "Errors",
-  fields: {
-    errors: {
-      type: new GraphQLList(ErrorType),
-    },
-  },
-})
-
 const ArtworkImageSearchType = new GraphQLUnionType({
   name: "ArtworkImageSearchType",
-  types: [ReverseImageSearchResults, Errors],
+  types: [ReverseImageSearchResults, ErrorsType],
   resolveType: ({ __typename }) => {
     if (__typename === "ReverseImageSearchResults") {
       return ReverseImageSearchResults
     }
 
-    return Errors
+    return ErrorsType
   },
 })
 
