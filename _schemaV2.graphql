@@ -2039,7 +2039,7 @@ union ArtworkFilterFacet = Gene | Tag
 
 union ArtworkHighlight = Article | Show
 
-type ArtworkImageSearchMatchgRect {
+type ArtworkImageSearchMatchRect {
   bottom: Float!
   left: Float!
   right: Float!
@@ -12513,7 +12513,7 @@ type ReverseImageSearchResult {
   matchPercent: Float!
 
   # Location of the matching area in the first image
-  queryMatchRect: ArtworkImageSearchMatchgRect!
+  queryMatchRect: ArtworkImageSearchMatchRect!
 
   # How much of the query image overlaps the collection image, as a percentage
   queryOverlapPercent: Float!
@@ -12522,7 +12522,7 @@ type ReverseImageSearchResult {
   score: Float!
 
   # Location of the matching area in the second image
-  targetMatchRect: ArtworkImageSearchMatchgRect!
+  targetMatchRect: ArtworkImageSearchMatchRect!
 
   # How much of the collection image overlaps the query image, as a percentage
   targetOverlapPercent: Float!

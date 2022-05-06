@@ -13,8 +13,8 @@ import { GraphQLUpload } from "graphql-upload"
 import { ResolverContext } from "types/graphql"
 import { ErrorsType } from "./types/errors"
 
-export const ArtworkImageSearchMatchgRect = new GraphQLObjectType({
-  name: "ArtworkImageSearchMatchgRect",
+export const ArtworkImageSearchMatchRect = new GraphQLObjectType({
+  name: "ArtworkImageSearchMatchRect",
   fields: () => ({
     left: {
       type: new GraphQLNonNull(GraphQLFloat),
@@ -62,12 +62,12 @@ export const ReverseImageSearchResult = new GraphQLObjectType({
     },
     targetMatchRect: {
       description: "Location of the matching area in the second image",
-      type: new GraphQLNonNull(ArtworkImageSearchMatchgRect),
+      type: new GraphQLNonNull(ArtworkImageSearchMatchRect),
       resolve: ({ target_match_rect }) => target_match_rect,
     },
     queryMatchRect: {
       description: "Location of the matching area in the first image",
-      type: new GraphQLNonNull(ArtworkImageSearchMatchgRect),
+      type: new GraphQLNonNull(ArtworkImageSearchMatchRect),
       resolve: ({ query_match_rect }) => query_match_rect,
     },
   }),
