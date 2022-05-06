@@ -2,13 +2,10 @@ import { artworkImageSearchResolver } from "../artworkImageSearch"
 import { Readable } from "stream"
 
 const _ = {}
-const info = {
-  fieldName: "artworkImageSearch",
-}
 
 describe("artworkImageSearchResolver", () => {
   it("should throw error if user is not logged in", async () => {
-    await expect(artworkImageSearchResolver(_, _, _, _)).rejects.toThrow(
+    await expect(artworkImageSearchResolver(_, _, _)).rejects.toThrow(
       "You need to be signed in to perform this action"
     )
   })
@@ -18,7 +15,7 @@ describe("artworkImageSearchResolver", () => {
       meLoader: jest.fn().mockRejectedValue(new Error("Error Message")),
     }
 
-    await expect(artworkImageSearchResolver(_, _, context, _)).rejects.toThrow(
+    await expect(artworkImageSearchResolver(_, _, context)).rejects.toThrow(
       "You need to be signed in to perform this action"
     )
   })
@@ -66,7 +63,7 @@ describe("artworkImageSearchResolver", () => {
       }),
     }
 
-    const result = await artworkImageSearchResolver(_, args, context, _)
+    const result = await artworkImageSearchResolver(_, args, context)
 
     expect(result).toMatchInlineSnapshot(`
       Object {
@@ -116,20 +113,8 @@ describe("artworkImageSearchResolver", () => {
       }),
     }
 
-    const result = await artworkImageSearchResolver(_, args, context, info)
-
-    expect(result).toMatchInlineSnapshot(`
-      Object {
-        "errors": Array [
-          Object {
-            "code": "invalid",
-            "message": "Error message",
-            "path": Array [
-              "artworkImageSearch",
-            ],
-          },
-        ],
-      }
-    `)
+    await expect(artworkImageSearchResolver(_, args, context)).rejects.toThrow(
+      "Error message"
+    )
   })
 })

@@ -6,12 +6,10 @@ import {
   GraphQLObjectType,
   GraphQLScalarType,
   GraphQLString,
-  GraphQLUnionType,
   GraphQLList,
 } from "graphql"
 import { GraphQLUpload } from "graphql-upload"
 import { ResolverContext } from "types/graphql"
-import { ErrorsType } from "./types/errors"
 
 export const ArtworkImageSearchMatchRect = new GraphQLObjectType({
   name: "ArtworkImageSearchMatchRect",
@@ -82,24 +80,7 @@ export const ReverseImageSearchResults = new GraphQLObjectType({
   },
 })
 
-const ArtworkImageSearchType = new GraphQLUnionType({
-  name: "ArtworkImageSearchType",
-  types: [ReverseImageSearchResults, ErrorsType],
-  resolveType: ({ __typename }) => {
-    if (__typename === "ReverseImageSearchResults") {
-      return ReverseImageSearchResults
-    }
-
-    return ErrorsType
-  },
-})
-
-export const artworkImageSearchResolver = async (
-  _root,
-  args,
-  context,
-  info
-) => {
+export const artworkImageSearchResolver = async (_root, args, context) => {
   const { image } = args
   const { meLoader, searchArtworkByImageLoader } = context
 
@@ -134,17 +115,11 @@ export const artworkImageSearchResolver = async (
     }
   }
 
-  return {
-    errors: response.error.map((error) => ({
-      message: error,
-      code: "invalid",
-      path: [info.fieldName],
-    })),
-  }
+  throw new Error(response.error.join("\n"))
 }
 
 export const ArtworkImageSearch: GraphQLFieldConfig<void, ResolverContext> = {
-  type: ArtworkImageSearchType,
+  type: ReverseImageSearchResults,
   description: "Search for matching artworks by image",
   args: {
     image: {

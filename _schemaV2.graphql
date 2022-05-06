@@ -2046,8 +2046,6 @@ type ArtworkImageSearchMatchRect {
   top: Float!
 }
 
-union ArtworkImageSearchType = Errors | ReverseImageSearchResults
-
 enum ArtworkImportSource {
   CONVECTION
   MY_COLLECTION
@@ -11617,7 +11615,7 @@ type Query {
   artworkImageSearch(
     # Image file
     image: Upload!
-  ): ArtworkImageSearchType
+  ): ReverseImageSearchResults
 
   # List of all artwork mediums
   artworkMediums: [ArtworkMedium]
@@ -14977,7 +14975,7 @@ type Viewer {
   artworkImageSearch(
     # Image file
     image: Upload!
-  ): ArtworkImageSearchType
+  ): ReverseImageSearchResults
 
   # List of all artwork mediums
   artworkMediums: [ArtworkMedium]
