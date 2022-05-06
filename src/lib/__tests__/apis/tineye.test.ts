@@ -1,9 +1,8 @@
 import tineye from "lib/apis/tineye"
 import config from "config"
+import fetch from "lib/apis/fetch"
 
 jest.mock("lib/apis/fetch", () => jest.fn())
-
-import fetch from "lib/apis/fetch"
 
 describe("TinEye", () => {
   config.TINEYE_API_USERNAME = "username"
