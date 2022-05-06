@@ -94,6 +94,55 @@ const ArtworkImageSearchType = new GraphQLUnionType({
   },
 })
 
+export const artworkImageSearchResolver = async (
+  _root,
+  args,
+  context,
+  info
+) => {
+  const { image } = args
+  const { meLoader, searchByImageLoader } = context
+
+  if (!meLoader) {
+    throw new Error("You need to be signed in to perform this action")
+  }
+
+  // Verifying that the token is still valid
+  try {
+    await meLoader()
+  } catch (err) {
+    throw new Error("You need to be signed in to perform this action")
+  }
+
+  const { filename, mimetype, createReadStream } = await image
+  const stream: ReadStream = createReadStream()
+
+  // Without this hack, we will get an error that we are sending an unsupported file format
+  // @ts-ignore
+  stream.path = stream?._writeStream?._path
+
+  const response = await searchByImageLoader({
+    image: stream,
+    filename,
+    contentType: mimetype,
+  })
+
+  if (response.status === "ok") {
+    return {
+      __typename: "ReverseImageSearchResults",
+      results: response.result,
+    }
+  }
+
+  return {
+    errors: response.error.map((error) => ({
+      message: error,
+      code: "invalid",
+      path: [info.fieldName],
+    })),
+  }
+}
+
 export const ArtworkImageSearch: GraphQLFieldConfig<void, ResolverContext> = {
   type: ArtworkImageSearchType,
   description: "Search for matching artworks by image",
@@ -105,49 +154,5 @@ export const ArtworkImageSearch: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull((GraphQLUpload as unknown) as GraphQLScalarType),
     },
   },
-  resolve: async (
-    _root,
-    { image },
-    { meLoader, searchByImageLoader },
-    info
-  ) => {
-    if (!meLoader) {
-      throw new Error("You need to be signed in to perform this action")
-    }
-
-    // Verifying that the token is still valid
-    try {
-      await meLoader()
-    } catch (err) {
-      throw new Error("You need to be signed in to perform this action")
-    }
-
-    const { filename, mimetype, createReadStream } = await image
-    const stream: ReadStream = createReadStream()
-
-    // Without this hack, we will get an error that we are sending an unsupported file format
-    // @ts-ignore
-    stream.path = stream?._writeStream?._path
-
-    const response = await searchByImageLoader({
-      image: stream,
-      filename,
-      contentType: mimetype,
-    })
-
-    if (response.status === "ok") {
-      return {
-        __typename: "ReverseImageSearchResults",
-        results: response.result,
-      }
-    }
-
-    return {
-      errors: response.error.map((error) => ({
-        message: error,
-        code: "invalid",
-        path: [info.fieldName],
-      })),
-    }
-  },
+  resolve: artworkImageSearchResolver,
 }
