@@ -217,15 +217,13 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           _options,
           { defaultTimezone }
         ) =>
-          formattedStartDateTime(
-            start_at,
-            end_at,
-            ended_at,
-            null,
-            live_start_at,
-            defaultTimezone || DEFAULT_TZ,
-            null
-          ),
+          formattedStartDateTime({
+            startAt: start_at,
+            endAt: end_at,
+            endedAt: ended_at,
+            liveStartAt: live_start_at,
+            timezone: defaultTimezone || DEFAULT_TZ,
+          }),
       },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
       name: { type: GraphQLString },

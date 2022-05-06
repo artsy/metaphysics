@@ -160,15 +160,13 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
             } else {
               // Do not pass cascading_end_time_interval_minutes in for the last argument here
               // because the method is already using the sale artwork's end time instead of the sale's
-              return formattedStartDateTime(
-                sale.start_at,
-                saleArtwork.end_at,
-                saleArtwork.ended_at,
-                saleArtwork.extended_bidding_end_at,
-                null,
-                defaultTimezone,
-                null
-              )
+              return formattedStartDateTime({
+                startAt: sale.start_at,
+                endAt: saleArtwork.end_at,
+                endedAt: saleArtwork.ended_at,
+                extendedBiddingEndAt: saleArtwork.extended_bidding_end_at,
+                timezone: defaultTimezone,
+              })
             }
           }),
       },

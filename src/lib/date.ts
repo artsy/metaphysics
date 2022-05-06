@@ -262,15 +262,24 @@ export function summaryFormattedStartDateTime(
   return dateRange(startAt, endAt, tz, "long")
 }
 
-export function formattedStartDateTime(
-  startAt,
-  endAt,
-  endedAt,
-  extendedBiddingEndAt,
-  liveStartAt,
-  timezone,
-  cascading_end_time_interval_minutes
-) {
+export function formattedStartDateTime(params: {
+  startAt
+  endAt
+  endedAt
+  extendedBiddingEndAt?
+  liveStartAt?
+  timezone
+  cascading_end_time_interval_minutes?
+}) {
+  const {
+    startAt,
+    endAt,
+    endedAt,
+    extendedBiddingEndAt,
+    liveStartAt,
+    timezone,
+    cascading_end_time_interval_minutes,
+  } = params
   const tz = timezone || DEFAULT_TZ
   const thisMoment = moment.tz(moment(), tz)
   const saleStartMoment = moment.tz(startAt, tz)

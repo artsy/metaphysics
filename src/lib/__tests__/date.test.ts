@@ -92,54 +92,42 @@ describe("date formatting", () => {
     })
 
     it("includes start date when event starts in the future", () => {
-      const period = formattedStartDateTime(
-        "2045-12-05T20:00:00+00:00",
-        "2050-12-30T17:00:00+00:00",
-        null,
-        null,
-        null,
-        "UTC",
-        null
-      )
+      const period = formattedStartDateTime({
+        startAt: "2045-12-05T20:00:00+00:00",
+        endAt: "2050-12-30T17:00:00+00:00",
+        endedAt: null,
+        timezone: "UTC",
+      })
       expect(period).toBe("Dec 5, 2045 • 8:00pm UTC")
     })
 
     it("includes end date when event is running and terminates in the future", () => {
-      const period = formattedStartDateTime(
-        "2017-12-05T20:00:00+00:00",
-        "2045-12-30T17:00:00+00:00",
-        null,
-        null,
-        null,
-        "UTC",
-        null
-      )
+      const period = formattedStartDateTime({
+        startAt: "2017-12-05T20:00:00+00:00",
+        endAt: "2045-12-30T17:00:00+00:00",
+        endedAt: null,
+        timezone: "UTC",
+      })
       expect(period).toBe("Dec 30, 2045 • 5:00pm UTC")
     })
 
     it("includes 'Closed date' when event ended in the past and is now closed", () => {
-      const period = formattedStartDateTime(
-        "2016-12-05T20:00:00+00:00",
-        "2016-12-30T17:00:00+00:00",
-        null,
-        null,
-        null,
-        "UTC",
-        null
-      )
+      const period = formattedStartDateTime({
+        startAt: "2016-12-05T20:00:00+00:00",
+        endAt: "2016-12-30T17:00:00+00:00",
+        endedAt: null,
+        timezone: "UTC",
+      })
       expect(period).toBe("Closed Dec 30, 2016 • 5:00pm UTC")
     })
 
     it("includes start date when event starts in the future (2)", () => {
-      const period = formattedStartDateTime(
-        "2045-12-05T20:00:00+00:00",
-        "2050-12-30T17:00:00+00:00",
-        null,
-        null,
-        null,
-        "UTC",
-        null
-      )
+      const period = formattedStartDateTime({
+        startAt: "2045-12-05T20:00:00+00:00",
+        endAt: "2050-12-30T17:00:00+00:00",
+        endedAt: null,
+        timezone: "UTC",
+      })
       expect(period).toBe("Dec 5, 2045 • 8:00pm UTC")
     })
 
@@ -147,15 +135,13 @@ describe("date formatting", () => {
       const startAt = "2012-12-05T20:00:00+00:00"
       const liveStartAt = "2045-12-05T20:00:00+00:00"
       const endAt = "2045-12-05T20:00:00+00:00"
-      const date = formattedStartDateTime(
+      const date = formattedStartDateTime({
         startAt,
         endAt,
-        null,
-        null,
+        endedAt: null,
         liveStartAt,
-        "UTC",
-        null
-      )
+        timezone: "UTC",
+      })
       expect(date).toEqual("Live Dec 5, 2045 • 8:00pm UTC")
     })
 
@@ -163,15 +149,13 @@ describe("date formatting", () => {
       const startAt = "2012-12-05T20:00:00+00:00"
       const liveStartAt = "2012-12-05T20:00:00+00:00"
       const endAt = "2045-12-05T20:00:00+00:00"
-      const date = formattedStartDateTime(
+      const date = formattedStartDateTime({
         startAt,
         endAt,
-        null,
-        null,
+        endedAt: null,
         liveStartAt,
-        "UTC",
-        null
-      )
+        timezone: "UTC",
+      })
       expect(date).toEqual("In progress")
     })
   })

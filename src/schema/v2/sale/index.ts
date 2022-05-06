@@ -249,15 +249,13 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               defaultTimezone
             )
           } else {
-            return formattedStartDateTime(
-              start_at,
-              end_at,
-              ended_at,
-              null,
-              live_start_at,
-              defaultTimezone,
-              null
-            )
+            return formattedStartDateTime({
+              startAt: start_at,
+              endAt: end_at,
+              endedAt: ended_at,
+              liveStartAt: live_start_at,
+              timezone: defaultTimezone,
+            })
           }
         },
       },
