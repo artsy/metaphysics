@@ -256,6 +256,10 @@ export const exchangeStitchingEnvironment = ({
     }
 
     extend type Mutation {
+      # Creates an order and links the conversation to it
+      createInquiryOrder(
+        input: CommerceCreateInquiryOrderWithArtworkInput!
+      ): CommerceCreateInquiryOrderWithArtworkPayload
       createInquiryOfferOrder(
         input: CommerceCreateInquiryOfferOrderWithArtworkInput!
       ): CommerceCreateInquiryOfferOrderWithArtworkPayload
@@ -472,6 +476,84 @@ export const exchangeStitchingEnvironment = ({
         },
       },
       Mutation: {
+        createInquiryOrder: {
+          resolve: async (_source, args, context, info) => {
+            const {
+              conversationLoader,
+              conversationCreateConversationOrderLoader,
+            } = context
+            const {
+              input: { impulseConversationId },
+            } = args
+
+            try {
+              await conversationLoader(impulseConversationId)
+            } catch (e) {
+              console.log("error", e)
+              throw new GraphQLError(
+                `[metaphysics @ exchange/v2/stitching] Conversation not found`
+              )
+            }
+
+            const orderResult = await info.mergeInfo.delegateToSchema({
+              schema: exchangeSchema,
+              operation: "mutation",
+              fieldName: "commerceCreateInquiryOrderWithArtwork",
+              args,
+              context,
+              info,
+              transforms: [
+                // add orderOrError.order.internalID to the Order selectionSet
+                new WrapQuery(
+                  [
+                    "commerceCreateInquiryOrderWithArtwork",
+                    "orderOrError",
+                    "order",
+                  ],
+                  (selectionSet: SelectionSetNode) => {
+                    const newSelections = [
+                      ...selectionSet.selections,
+                      {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "internalID",
+                        },
+                      },
+                    ]
+                    return { ...selectionSet, selections: newSelections }
+                  },
+                  (result) => {
+                    return result
+                  }
+                ),
+              ],
+            })
+
+            const { orderOrError } = orderResult
+
+            if (orderOrError.error) {
+              return orderResult
+            } else if (orderOrError.order) {
+              const {
+                order: { internalID: orderId },
+              } = orderOrError
+
+              try {
+                await conversationCreateConversationOrderLoader({
+                  conversation_id: impulseConversationId,
+                  exchange_order_id: orderId,
+                })
+              } catch (e) {
+                throw new GraphQLError(
+                  "[metaphysics @ exchange/v2/stitching] Impulse: request to associate order with conversation failed"
+                )
+              }
+            }
+
+            return orderResult
+          },
+        },
         createInquiryOfferOrder: {
           resolve: async (_source, args, context, info) => {
             const {

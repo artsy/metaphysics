@@ -195,6 +195,116 @@ it("doesn't delegate to the local schema for an Order's creditCard if creditCard
   })
 })
 
+describe("createInquiryOrder", () => {
+  const context = {
+    conversationLoader: jest.fn(),
+    conversationCreateConversationOrderLoader: jest.fn(),
+  }
+  const mergeInfo = { delegateToSchema: jest.fn() }
+
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+
+  it("calls impulse after creating the order", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.createInquiryOrder.resolve
+
+    const args = {
+      input: {
+        artworkId: "artwork-id",
+        impulseConversationId: "conversation-id",
+      },
+    }
+    const orderResult = { orderOrError: { order: { internalID: "order-id" } } }
+    context.conversationLoader.mockResolvedValue({})
+    mergeInfo.delegateToSchema.mockResolvedValue(orderResult)
+    context.conversationCreateConversationOrderLoader.mockResolvedValue({
+      conversation_id: "it worked",
+    })
+
+    const result = await resolver({}, args, context, { mergeInfo })
+
+    expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+      args,
+      fieldName: "commerceCreateInquiryOrderWithArtwork",
+      operation: "mutation",
+      schema: expect.anything(),
+      context: expect.anything(),
+      info: expect.anything(),
+      transforms: [expect.anything()],
+    })
+    expect(result).toEqual(orderResult)
+    expect(context.conversationLoader).toHaveBeenCalledWith("conversation-id")
+    expect(
+      context.conversationCreateConversationOrderLoader
+    ).toHaveBeenCalledWith({
+      conversation_id: "conversation-id",
+      exchange_order_id: "order-id",
+    })
+  })
+
+  it("returns an error from exchange", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.createInquiryOrder.resolve
+    const args = {
+      input: {
+        artworkId: "artwork-id",
+        impulseConversationId: "conversation-id",
+      },
+    }
+    const orderResult = { orderOrError: { error: { message: "who cares" } } }
+
+    context.conversationLoader.mockResolvedValue({})
+    mergeInfo.delegateToSchema.mockResolvedValue(orderResult)
+    const result = await resolver({}, args, context, { mergeInfo })
+
+    expect(result).toEqual(orderResult)
+    expect(
+      context.conversationCreateConversationOrderLoader
+    ).not.toHaveBeenCalled()
+  })
+
+  it("returns an error if the conversationLoader does not return a conversation", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.createInquiryOrder.resolve
+    const args = {
+      input: {
+        artworkId: "artwork-id",
+        impulseConversationId: "conversation-id",
+      },
+    }
+
+    context.conversationLoader.mockRejectedValue({})
+
+    await expect(resolver({}, args, context, { mergeInfo })).rejects.toThrow(
+      "[metaphysics @ exchange/v2/stitching] Conversation not found"
+    )
+  })
+
+  it("returns an error if the conversationCreateConversationOrderLoader fails", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.createInquiryOrder.resolve
+    const args = {
+      input: {
+        artworkId: "artwork-id",
+        impulseConversationId: "conversation-id",
+      },
+    }
+    const orderResult = { orderOrError: { order: { internalID: "order-id" } } }
+
+    context.conversationLoader.mockResolvedValue({})
+    mergeInfo.delegateToSchema.mockResolvedValue(orderResult)
+    context.conversationCreateConversationOrderLoader.mockRejectedValue({
+      message: "bad stuff",
+    })
+
+    await expect(resolver({}, args, context, { mergeInfo })).rejects.toThrow(
+      "Impulse: request to associate order with conversation failed"
+    )
+  })
+})
+
 describe("createInquiryOfferOrder", () => {
   const context = {
     conversationLoader: jest.fn(),
