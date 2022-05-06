@@ -244,7 +244,7 @@ export function formattedOpeningHours(startAt, endAt, timezone) {
   }
 }
 
-export function cascadingFormattedStartDateTime(
+export function summaryFormattedStartDateTime(
   startAt,
   endAt,
   endedAt,
@@ -259,7 +259,6 @@ export function cascadingFormattedStartDateTime(
 
   if (thisMoment.isAfter(lotsClosingMoment)) return "Closing soon"
 
-  console.log(dateRange(startAt, endAt, tz, "long"))
   return dateRange(startAt, endAt, tz, "long")
 }
 
@@ -278,7 +277,9 @@ export function formattedStartDateTime(
   // saleEndMoment is when the lots start closing for sales with cascading end times
   const saleEndMoment = moment.tz(endAt, tz)
   const saleEndedMoment = moment.tz(endedAt, tz)
-  const extendedBiddingEndAtMoment = moment.tz(extendedBiddingEndAt, tz)
+  const extendedBiddingEndAtMoment = extendedBiddingEndAt
+    ? moment.tz(extendedBiddingEndAt, tz)
+    : null
   const liveStartMoment = moment.tz(liveStartAt, tz)
 
   if (liveStartAt || thisMoment.isBefore(saleEndedMoment)) {
@@ -299,24 +300,31 @@ export function formattedStartDateTime(
       "MMM D, YYYY"
     )} • ${saleEndedMoment.format("h:mma z")}`
 
+  // When the sale has popcorn bidding and the end date has passed, mark closed
+  if (
+    extendedBiddingEndAtMoment &&
+    thisMoment.isAfter(extendedBiddingEndAtMoment)
+  )
+    return `Closed ${extendedBiddingEndAtMoment.format(
+      "MMM D, YYYY"
+    )} • ${extendedBiddingEndAtMoment.format("h:mma z")}`
+
   // When the sale does not have cascading end times and the end date has passed, mark closed
   if (!cascading_end_time_interval_minutes && thisMoment.isAfter(saleEndMoment))
     return `Closed ${saleEndMoment.format(
       "MMM D, YYYY"
     )} • ${saleEndMoment.format("h:mma z")}`
 
-  // When the sale has popcorn bidding and the end date has passed, mark closed
-  if (!extendedBiddingEndAt && thisMoment.isAfter(extendedBiddingEndAtMoment))
-    return `Closed ${extendedBiddingEndAtMoment.format(
-      "MMM D, YYYY"
-    )} • ${extendedBiddingEndAtMoment.format("h:mma z")}`
-
-  if (thisMoment.isBefore(saleStartMoment))
+  if (thisMoment.isBefore(saleStartMoment)) {
     return `${saleStartMoment.format("MMM D, YYYY")} • ${saleStartMoment.format(
       "h:mma z"
     )}`
+  }
 
-  return `${saleEndMoment.format("MMM D, YYYY")} • ${saleEndMoment.format(
+  // When popcorn bidding is on, use the extended date/time
+  const actualEndMoment = extendedBiddingEndAtMoment || saleEndMoment
+
+  return `${actualEndMoment.format("MMM D, YYYY")} • ${actualEndMoment.format(
     "h:mma z"
   )}`
 }

@@ -221,6 +221,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             start_at,
             end_at,
             ended_at,
+            null,
             live_start_at,
             defaultTimezone || DEFAULT_TZ,
             null

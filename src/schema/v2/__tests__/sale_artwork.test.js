@@ -666,6 +666,7 @@ describe("SaleArtwork type", () => {
     it("returns sale end time when the sale has started and the lot's close time is in the future", async () => {
       saleArtwork.ended_at = null
       saleArtwork.end_at = "2029-02-17T11:00:00+00:00"
+      saleArtwork.extended_bidding_end_at = null
 
       expect(await execute(query, saleArtwork, context)).toEqual({
         node: {
@@ -674,7 +675,7 @@ describe("SaleArtwork type", () => {
       })
     })
 
-    it("returns 'Closed date/time' when the sale has started and the lot's end_at time has passed", async () => {
+    it("returns Closed sale end time when the sale has started and the lot's close time has passed", async () => {
       saleArtwork.ended_at = null
       saleArtwork.end_at = "2020-02-17T11:00:00+00:00"
 
@@ -685,14 +686,14 @@ describe("SaleArtwork type", () => {
       })
     })
 
-    it("returns 'Ends date/time' when the sale has started, end_at has passed but bidding was extended", async () => {
+    it("returns 'Closes date/time' when the sale has started, end_at has passed but bidding was extended", async () => {
       saleArtwork.ended_at = null
       saleArtwork.end_at = "2029-02-17T11:00:00+00:00"
       saleArtwork.extended_bidding_end_at = "2029-02-17T12:00:00+00:00"
 
       expect(await execute(query, saleArtwork, context)).toEqual({
         node: {
-          formattedStartDateTime: "Closed Feb 17, 2029 at 12:00pm UTC",
+          formattedStartDateTime: "Feb 17, 2029 • 12:00pm UTC",
         },
       })
     })

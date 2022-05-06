@@ -11,7 +11,7 @@ import moment from "moment"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import {
   formattedStartDateTime,
-  cascadingFormattedStartDateTime,
+  summaryFormattedStartDateTime,
   DEFAULT_TZ,
   auctionsDetailFormattedStartDateTime,
 } from "lib/date"
@@ -242,7 +242,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         ) => {
           const { summary } = args
           if (summary || cascading_end_time_interval_minutes) {
-            return cascadingFormattedStartDateTime(
+            return summaryFormattedStartDateTime(
               start_at,
               end_at,
               ended_at,
@@ -253,9 +253,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               start_at,
               end_at,
               ended_at,
+              null,
               live_start_at,
               defaultTimezone,
-              cascading_end_time_interval_minutes
+              null
             )
           }
         },
