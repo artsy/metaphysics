@@ -101,7 +101,7 @@ export const artworkImageSearchResolver = async (
   info
 ) => {
   const { image } = args
-  const { meLoader, searchByImageLoader } = context
+  const { meLoader, searchArtworkByImageLoader } = context
 
   if (!meLoader) {
     throw new Error("You need to be signed in to perform this action")
@@ -121,7 +121,7 @@ export const artworkImageSearchResolver = async (
   // @ts-ignore
   stream.path = stream?._writeStream?._path
 
-  const response = await searchByImageLoader({
+  const response = await searchArtworkByImageLoader({
     image: stream,
     filename,
     contentType: mimetype,
