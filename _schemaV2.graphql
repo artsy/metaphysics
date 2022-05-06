@@ -2039,13 +2039,6 @@ union ArtworkFilterFacet = Gene | Tag
 
 union ArtworkHighlight = Article | Show
 
-type ArtworkImageSearchMatchRect {
-  bottom: Float!
-  left: Float!
-  right: Float!
-  top: Float!
-}
-
 enum ArtworkImportSource {
   CONVECTION
   MY_COLLECTION
@@ -11611,12 +11604,6 @@ type Query {
   # List of all artwork attribution classes
   artworkAttributionClasses: [AttributionClass]
 
-  # Search for matching artworks by image
-  artworkImageSearch(
-    # Image file
-    image: Upload!
-  ): ReverseImageSearchResults
-
   # List of all artwork mediums
   artworkMediums: [ArtworkMedium]
 
@@ -12147,6 +12134,12 @@ type Query {
   # A requested location
   requestLocation(ip: String!): RequestLocation
 
+  # Search for matching artworks by image
+  reverseImageSearch(
+    # Image file
+    image: Upload!
+  ): ReverseImageSearchResults
+
   # A Sale
   sale(
     # The slug or ID of the Sale
@@ -12511,7 +12504,7 @@ type ReverseImageSearchResult {
   matchPercent: Float!
 
   # Location of the matching area in the first image
-  queryMatchRect: ArtworkImageSearchMatchRect!
+  queryMatchRect: ReverseImageSearchResultMatchRect!
 
   # How much of the query image overlaps the collection image, as a percentage
   queryOverlapPercent: Float!
@@ -12520,10 +12513,17 @@ type ReverseImageSearchResult {
   score: Float!
 
   # Location of the matching area in the second image
-  targetMatchRect: ArtworkImageSearchMatchRect!
+  targetMatchRect: ReverseImageSearchResultMatchRect!
 
   # How much of the collection image overlaps the query image, as a percentage
   targetOverlapPercent: Float!
+}
+
+type ReverseImageSearchResultMatchRect {
+  bottom: Float!
+  left: Float!
+  right: Float!
+  top: Float!
 }
 
 type ReverseImageSearchResults {
@@ -14971,12 +14971,6 @@ type Viewer {
   # List of all artwork attribution classes
   artworkAttributionClasses: [AttributionClass]
 
-  # Search for matching artworks by image
-  artworkImageSearch(
-    # Image file
-    image: Upload!
-  ): ReverseImageSearchResults
-
   # List of all artwork mediums
   artworkMediums: [ArtworkMedium]
 
@@ -15334,6 +15328,12 @@ type Viewer {
 
   # A requested location
   requestLocation(ip: String!): RequestLocation
+
+  # Search for matching artworks by image
+  reverseImageSearch(
+    # Image file
+    image: Upload!
+  ): ReverseImageSearchResults
 
   # A Sale
   sale(

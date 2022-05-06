@@ -20,7 +20,6 @@ import { PartnerArtworkGridType } from "./artwork/artworkContextGrids/PartnerArt
 import { RelatedArtworkGridType } from "./artwork/artworkContextGrids/RelatedArtworkGrid"
 import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGrid"
 import ArtworkAttributionClasses from "./artworkAttributionClasses"
-import { ArtworkImageSearch } from "./artworkImageSearch"
 import ArtworkMediums from "./artworkMediums"
 import Artworks from "./artworks"
 import { ArtworkVersionType } from "./artwork_version"
@@ -89,6 +88,7 @@ import PartnerArtworks from "./partnerArtworks"
 // import Partner from "./partner"
 import { PartnersConnection } from "./partners"
 import { RequestLocationField } from "./requestLocation"
+import { ReverseImageSearch } from "./reverseImageSearch"
 import { endSaleMutation } from "./sale/end_sale_mutation"
 import Sale from "./sale/index"
 import { SalesConnectionField } from "./sales"
@@ -144,7 +144,6 @@ const OptionalFieldDirective = new GraphQLDirective({
 const rootFields = {
   artworksForUser,
   artworkAttributionClasses: ArtworkAttributionClasses,
-  artworkImageSearch: ArtworkImageSearch,
   artworkMediums: ArtworkMediums,
   auctionResult: AuctionResult,
   article: Article,
@@ -208,6 +207,7 @@ const rootFields = {
   // profile: Profile,
   previewSavedSearch: PreviewSavedSearchField,
   requestLocation: RequestLocationField,
+  reverseImageSearch: ReverseImageSearch,
   sale: Sale,
   saleArtwork: SaleArtwork,
   saleArtworksConnection: SaleArtworksConnectionField,

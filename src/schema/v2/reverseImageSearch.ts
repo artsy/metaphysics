@@ -11,8 +11,8 @@ import {
 import { GraphQLUpload } from "graphql-upload"
 import { ResolverContext } from "types/graphql"
 
-export const ArtworkImageSearchMatchRect = new GraphQLObjectType({
-  name: "ArtworkImageSearchMatchRect",
+export const ReverseImageSearchResultMatchRect = new GraphQLObjectType({
+  name: "ReverseImageSearchResultMatchRect",
   fields: () => ({
     left: {
       type: new GraphQLNonNull(GraphQLFloat),
@@ -60,12 +60,12 @@ export const ReverseImageSearchResult = new GraphQLObjectType({
     },
     targetMatchRect: {
       description: "Location of the matching area in the second image",
-      type: new GraphQLNonNull(ArtworkImageSearchMatchRect),
+      type: new GraphQLNonNull(ReverseImageSearchResultMatchRect),
       resolve: ({ target_match_rect }) => target_match_rect,
     },
     queryMatchRect: {
       description: "Location of the matching area in the first image",
-      type: new GraphQLNonNull(ArtworkImageSearchMatchRect),
+      type: new GraphQLNonNull(ReverseImageSearchResultMatchRect),
       resolve: ({ query_match_rect }) => query_match_rect,
     },
   }),
@@ -80,7 +80,7 @@ export const ReverseImageSearchResults = new GraphQLObjectType({
   },
 })
 
-export const artworkImageSearchResolver = async (_root, args, context) => {
+export const reverseImageSearchResolver = async (_root, args, context) => {
   const { image } = args
   const { meLoader, searchArtworkByImageLoader } = context
 
@@ -118,7 +118,7 @@ export const artworkImageSearchResolver = async (_root, args, context) => {
   throw new Error(response.error.join("\n"))
 }
 
-export const ArtworkImageSearch: GraphQLFieldConfig<void, ResolverContext> = {
+export const ReverseImageSearch: GraphQLFieldConfig<void, ResolverContext> = {
   type: ReverseImageSearchResults,
   description: "Search for matching artworks by image",
   args: {
@@ -129,5 +129,5 @@ export const ArtworkImageSearch: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull((GraphQLUpload as unknown) as GraphQLScalarType),
     },
   },
-  resolve: artworkImageSearchResolver,
+  resolve: reverseImageSearchResolver,
 }

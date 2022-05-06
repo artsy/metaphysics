@@ -1,11 +1,11 @@
-import { artworkImageSearchResolver } from "../artworkImageSearch"
+import { reverseImageSearchResolver } from "../reverseImageSearch"
 import { Readable } from "stream"
 
 const _ = {}
 
-describe("artworkImageSearchResolver", () => {
+describe("reverseImageSearchResolver", () => {
   it("should throw error if user is not logged in", async () => {
-    await expect(artworkImageSearchResolver(_, _, _)).rejects.toThrow(
+    await expect(reverseImageSearchResolver(_, _, _)).rejects.toThrow(
       "You need to be signed in to perform this action"
     )
   })
@@ -15,7 +15,7 @@ describe("artworkImageSearchResolver", () => {
       meLoader: jest.fn().mockRejectedValue(new Error("Error Message")),
     }
 
-    await expect(artworkImageSearchResolver(_, _, context)).rejects.toThrow(
+    await expect(reverseImageSearchResolver(_, _, context)).rejects.toThrow(
       "You need to be signed in to perform this action"
     )
   })
@@ -63,7 +63,7 @@ describe("artworkImageSearchResolver", () => {
       }),
     }
 
-    const result = await artworkImageSearchResolver(_, args, context)
+    const result = await reverseImageSearchResolver(_, args, context)
 
     expect(result).toMatchInlineSnapshot(`
       Object {
@@ -113,7 +113,7 @@ describe("artworkImageSearchResolver", () => {
       }),
     }
 
-    await expect(artworkImageSearchResolver(_, args, context)).rejects.toThrow(
+    await expect(reverseImageSearchResolver(_, args, context)).rejects.toThrow(
       "Error message"
     )
   })
