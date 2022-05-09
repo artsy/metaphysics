@@ -128,6 +128,7 @@ import { shortcut } from "./shortcut"
 import { channel } from "./article/channel"
 import { departments, job, jobs } from "./jobs"
 import { RecentlySoldArtworks } from "./recentlySoldArtworks"
+import { artworksForUser } from "./artworksForUser"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -140,6 +141,7 @@ const OptionalFieldDirective = new GraphQLDirective({
 })
 
 const rootFields = {
+  artworksForUser,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkMediums: ArtworkMediums,
   auctionResult: AuctionResult,
