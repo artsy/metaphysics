@@ -13240,7 +13240,7 @@ type Query {
 
   # An array of marketing collections. Defaults to returning all available collections if no args are passed
   marketingCollections(
-    artistID: ID
+    artistID: String
     category: String
     isFeaturedArtistContent: Boolean
     size: Int

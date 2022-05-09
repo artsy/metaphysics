@@ -7034,6 +7034,9 @@ input EditableLocation {
   # The county the location is based in
   country: String
 
+  # The county code of the location is based in
+  countryCode: String
+
   # Postal code for a string
   postalCode: String
 
@@ -10308,6 +10311,7 @@ type MyLocation {
   city: String
   coordinates: LatLng!
   country: String
+  countryCode: String
   display: String
   displayCountry: String
 
@@ -11969,7 +11973,7 @@ type Query {
 
   # An array of marketing collections. Defaults to returning all available collections if no args are passed
   marketingCollections(
-    artistID: ID
+    artistID: String
     category: String
     isFeaturedArtistContent: Boolean
     size: Int

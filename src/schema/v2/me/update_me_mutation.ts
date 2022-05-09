@@ -37,6 +37,10 @@ export const EditableLocationFields = new GraphQLInputObjectType({
       description: "The county the location is based in",
       type: GraphQLString,
     },
+    countryCode: {
+      description: "The county code of the location is based in",
+      type: GraphQLString,
+    },
     summary: {
       description: "An optional display string for the location",
       type: GraphQLString,
