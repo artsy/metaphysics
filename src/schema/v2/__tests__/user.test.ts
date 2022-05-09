@@ -69,6 +69,7 @@ describe("User", () => {
       receive_new_works_notification: true,
       receive_new_sales_notification: false,
       receive_promotion_notification: false,
+      receive_order_notification: true,
     }
 
     const userByEmailLoader = (data) => {
@@ -91,6 +92,7 @@ describe("User", () => {
           receiveNewWorksNotification
           receiveNewSalesNotification
           receivePromotionNotification
+          receiveOrderNotification
         }
       }
     `
@@ -106,5 +108,6 @@ describe("User", () => {
     expect(user.receiveNewWorksNotification).toEqual(true)
     expect(user.receiveNewSalesNotification).toEqual(false)
     expect(user.receivePromotionNotification).toEqual(false)
+    expect(user.receiveOrderNotification).toEqual(true)
   })
 })

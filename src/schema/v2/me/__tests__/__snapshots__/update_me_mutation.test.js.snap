@@ -36,6 +36,7 @@ Object {
       "receiveLotOpeningSoonNotification": false,
       "receiveNewSalesNotification": false,
       "receiveNewWorksNotification": true,
+      "receiveOrderNotification": false,
       "receiveOutbidNotification": false,
       "receivePromotionNotification": false,
       "receivePurchaseNotification": false,

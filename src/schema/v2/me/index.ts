@@ -47,6 +47,7 @@ import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { MyBids } from "./myBids"
 import { MyCollection, MyCollectionInfo } from "./myCollection"
+import MyCollectionAuctionResults from "./myCollectionAuctionResults"
 import { myLocationType } from "./myLocation"
 import { NewWorksByInterestingArtists } from "./newWorksByInterestingArtists"
 import { ManagedPartners } from "./partners"
@@ -248,6 +249,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     partners: ManagedPartners,
     myCollectionConnection: MyCollection,
     myCollectionInfo: MyCollectionInfo,
+    myCollectionAuctionResults: MyCollectionAuctionResults,
     myBids: MyBids,
     name: {
       type: GraphQLString,
@@ -334,6 +336,11 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ receive_promotion_notification }) =>
         receive_promotion_notification,
+    },
+    receiveOrderNotification: {
+      description: "This user should receive order notifications",
+      type: GraphQLBoolean,
+      resolve: ({ receive_order_notification }) => receive_order_notification,
     },
     recentlyViewedArtworkIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),

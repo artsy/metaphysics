@@ -160,7 +160,9 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
             } else {
               return formattedStartDateTime(
                 sale.start_at,
-                saleArtwork.ended_at || saleArtwork.end_at,
+                saleArtwork.ended_at ||
+                  saleArtwork.extended_bidding_end_at ||
+                  saleArtwork.end_at,
                 null,
                 defaultTimezone
               )
@@ -314,6 +316,10 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
       lotLabel: {
         type: GraphQLString,
         resolve: ({ lot_label }) => lot_label,
+      },
+      lotID: {
+        type: GraphQLString,
+        resolve: ({ lot_id }) => lot_id,
       },
       lowEstimate: money({
         name: "SaleArtworkLowEstimate",

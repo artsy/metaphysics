@@ -135,7 +135,7 @@ export const formattedGraphQLError = (
   if (includeStackTrace) {
     // TODO: Is the stack still being included in the response or should this
     //       move to extensions?
-    ;(result as any).stack = topLevelError.stack
+    ;(result as any).stack = topLevelError.stack?.split("\n")
   }
 
   const httpStatusCodes: number[] = []

@@ -50,6 +50,7 @@ import GeneFamilies from "./gene_families"
 import { HighlightsField } from "./Highlights"
 import HomePage from "./home"
 import Image from "./image"
+import { ImageSearchField } from "./imageSearch"
 import Me from "./me"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
 // import MatchGene from "./match/gene"
@@ -126,6 +127,7 @@ import { PreviewSavedSearchField } from "./previewSavedSearch"
 import { shortcut } from "./shortcut"
 import { channel } from "./article/channel"
 import { departments, job, jobs } from "./jobs"
+import { RecentlySoldArtworks } from "./recentlySoldArtworks"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -180,6 +182,7 @@ const rootFields = {
   homePage: HomePage,
   job,
   jobs,
+  doNotUseImageSearch: ImageSearchField,
   _do_not_use_image: {
     type: Image.type,
     resolve: Image.resolve,
@@ -215,6 +218,7 @@ const rootFields = {
 
   tag: TagField,
   targetSupply: TargetSupply,
+  recentlySoldArtworks: RecentlySoldArtworks,
   // trendingArtists: TrendingArtists,
   user: UserField,
   usersConnection: Users,

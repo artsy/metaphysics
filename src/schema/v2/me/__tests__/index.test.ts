@@ -20,6 +20,7 @@ describe("me/index", () => {
         receiveNewWorksNotification
         receiveNewSalesNotification
         receivePromotionNotification
+        receiveOrderNotification
         currencyPreference
         lengthUnitPreference
       }
@@ -74,6 +75,7 @@ describe("me/index", () => {
       receive_new_works_notification: false,
       receive_new_sales_notification: true,
       receive_promotion_notification: false,
+      receive_order_notification: false,
       currency_preference: "USD",
       length_unit_preference: "in",
     }
@@ -98,6 +100,7 @@ describe("me/index", () => {
           receiveNewWorksNotification: false,
           receiveNewSalesNotification: true,
           receivePromotionNotification: false,
+          receiveOrderNotification: false,
           currencyPreference: "USD",
           lengthUnitPreference: "IN",
         },

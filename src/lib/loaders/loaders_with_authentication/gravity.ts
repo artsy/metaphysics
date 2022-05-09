@@ -47,6 +47,11 @@ export default (accessToken, userID, opts) => {
       { user_id: userID },
       { headers: true }
     ),
+    collectionArtistsLoader: gravityLoader(
+      (id) => `collection/${id}/artists`,
+      { user_id: userID },
+      { headers: true }
+    ),
     collectionLoader: gravityLoader((id) => `collection/${id}`, {
       user_id: userID,
     }),
@@ -95,6 +100,7 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     filterArtworksLoader: gravityLoader("filter/artworks"),
+    authenticatedArtistLoader: gravityLoader((id) => `artist/${id}`),
     followArtistLoader: gravityLoader(
       "me/follow/artist",
       {},
@@ -219,6 +225,7 @@ export default (accessToken, userID, opts) => {
     ),
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
+    createArtistLoader: gravityLoader("artist", {}, { method: "POST" }),
     createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
     createArtworkImageLoader: gravityLoader(
       (id) => `artwork/${id}/image`,

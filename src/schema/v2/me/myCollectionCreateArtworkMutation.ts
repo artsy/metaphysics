@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -8,30 +9,14 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { formatGravityError } from "lib/gravityErrorHandler"
+import { StaticPathLoader } from "lib/loaders/api/loader_interface"
+import { mapKeys, snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { ArtworkImportSourceEnum } from "../artwork"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { EditableLocationFields } from "./update_me_mutation"
 
 const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
-
-export const computeImageSources = (externalImageUrls) => {
-  const imageSources = externalImageUrls.map((url) => {
-    const match = url.match(externalUrlRegex)
-
-    if (!match) return
-
-    const { sourceBucket, sourceKey } = match.groups
-
-    return {
-      source_bucket: sourceBucket,
-      source_key: sourceKey,
-    }
-  })
-
-  const filteredImageSources = imageSources.filter(Boolean)
-  return filteredImageSources
-}
 
 export const ArtworkAttributionClassEnum = new GraphQLEnumType({
   name: "ArtworkAttributionClassType",
@@ -51,6 +36,16 @@ export const ArtworkAttributionClassEnum = new GraphQLEnumType({
   },
 })
 
+const MyCollectionArtistInputType = new GraphQLInputObjectType({
+  name: "MyCollectionArtistInput",
+  fields: {
+    displayName: {
+      type: GraphQLString,
+      description: "The artist's display name.",
+    },
+  },
+})
+
 export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   any,
   any,
@@ -60,7 +55,10 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   description: "Create an artwork in my collection",
   inputFields: {
     artistIds: {
-      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+      type: new GraphQLList(GraphQLString),
+    },
+    artists: {
+      type: new GraphQLList(MyCollectionArtistInputType),
     },
     title: {
       type: new GraphQLNonNull(GraphQLString),
@@ -141,6 +139,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   mutateAndGetPayload: async (
     {
       artistIds,
+      artists,
       submissionId,
       costCurrencyCode,
       costMinor,
@@ -160,14 +159,27 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       createArtworkLoader,
       createArtworkImageLoader,
       createArtworkEditionSetLoader,
+      createArtistLoader,
     }
   ) => {
     if (
       !createArtworkLoader ||
       !createArtworkImageLoader ||
-      !createArtworkEditionSetLoader
+      !createArtworkEditionSetLoader ||
+      !createArtistLoader
     ) {
       return new Error("You need to be signed in to perform this action")
+    }
+
+    if (!artistIds?.length && !artists?.length) {
+      return new Error("You need to provide either artist IDs or artists")
+    }
+
+    // Create artists if `artist` is provided in the input fields
+    if (artists?.length) {
+      const newArtistIDs = await createArtists(artists, createArtistLoader)
+
+      artistIds = [...(artistIds || []), ...newArtistIDs]
     }
 
     try {
@@ -220,3 +232,39 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     }
   },
 })
+
+const createArtists = async (
+  artists: { displayName: string }[],
+  createArtistLoader: StaticPathLoader<any>
+) => {
+  const responses = await Promise.all(
+    artists.map((artist) =>
+      createArtistLoader({
+        ...mapKeys(artist, (_v, k) => snakeCase(k)),
+        is_personal_artist: true,
+      })
+    )
+  )
+
+  const artistIDs: string[] = responses.map(({ id }) => id)
+
+  return artistIDs
+}
+
+export const computeImageSources = (externalImageUrls) => {
+  const imageSources = externalImageUrls.map((url) => {
+    const match = url.match(externalUrlRegex)
+
+    if (!match) return
+
+    const { sourceBucket, sourceKey } = match.groups
+
+    return {
+      source_bucket: sourceBucket,
+      source_key: sourceKey,
+    }
+  })
+
+  const filteredImageSources = imageSources.filter(Boolean)
+  return filteredImageSources
+}

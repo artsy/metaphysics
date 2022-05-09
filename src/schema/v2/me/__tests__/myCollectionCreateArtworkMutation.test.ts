@@ -3,7 +3,9 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { computeImageSources } from "../myCollectionCreateArtworkMutation"
 
 const newArtwork = { id: "some-artwork-id" }
+const newArtist = { id: "some-artist-id" }
 const createArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
+const createArtistLoader = jest.fn().mockResolvedValue(newArtist)
 
 const artworkDetails = {
   medium: "Painting",
@@ -22,17 +24,26 @@ const computeMutationInput = ({
   editionSize = null,
   editionNumber = null,
   isEdition = null,
+  artists = null,
 }: {
   externalImageUrls?: string[]
   editionSize?: string | null
   editionNumber?: string | null
   isEdition?: boolean | null
+  artists?: any[] | null
 } = {}): string => {
   const mutation = gql`
     mutation {
       myCollectionCreateArtwork(
         input: {
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
+          artists: [${
+            artists
+              ? artists.map(
+                  (artist) => `{ displayName: "${artist.displayName}" }`
+                )
+              : null
+          }],
           category: "some strange category"
           costCurrencyCode: "USD"
           costMinor: 200
@@ -93,6 +104,7 @@ const computeMutationInput = ({
 const createArtworkEditionSetLoader = jest.fn()
 const defaultContext = {
   createArtworkLoader,
+  createArtistLoader,
   artworkLoader: artworkLoader,
   createArtworkImageLoader: createImageLoader,
   createArtworkEditionSetLoader,
@@ -154,6 +166,60 @@ describe("myCollectionCreateArtworkMutation", () => {
           },
         },
       })
+    })
+  })
+
+  describe("creating additional artists", () => {
+    it("creates additional artists", async () => {
+      const mutation = computeMutationInput({
+        artists: [
+          {
+            displayName: "Artist 1",
+          },
+          {
+            displayName: "Artist 2",
+          },
+        ],
+      })
+
+      const data = await runAuthenticatedQuery(mutation, defaultContext)
+      const { artworkOrError } = data.myCollectionCreateArtwork
+
+      expect(createArtistLoader).toBeCalledWith({
+        display_name: "Artist 1",
+        is_personal_artist: true,
+      })
+      expect(createArtistLoader).toBeCalledWith({
+        display_name: "Artist 2",
+        is_personal_artist: true,
+      })
+
+      expect(createArtworkLoader).toBeCalledWith({
+        artists: [
+          "4d8b92b34eb68a1b2c0003f4",
+          "some-artist-id",
+          "some-artist-id",
+        ],
+        artwork_location: "Berlin",
+        attribution_class: undefined,
+        category: "some strange category",
+        collection_id: "my-collection",
+        cost_currency_code: "USD",
+        cost_minor: 200,
+        date: "1990",
+        depth: "20",
+        height: "20",
+        import_source: "convection",
+        medium: "Painting",
+        metric: "in",
+        price_paid_cents: 10000,
+        price_paid_currency: "USD",
+        provenance: "Pat Hearn Gallery",
+        submission_id: undefined,
+        title: "hey now",
+        width: "20",
+      })
+      expect(artworkOrError).toHaveProperty("artwork")
     })
   })
 
