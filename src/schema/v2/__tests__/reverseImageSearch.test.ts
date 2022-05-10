@@ -68,8 +68,6 @@ describe("reverseImageSearchResolver", () => {
       method: "search",
     })
 
-    tineyeSearch
-
     const result = await reverseImageSearchResolver(_, args, context)
 
     expect(result).toMatchInlineSnapshot(`

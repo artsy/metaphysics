@@ -2,10 +2,10 @@ import config from "../../config"
 import urljoin from "url-join"
 import fetch, { RequestInit } from "node-fetch"
 import FormData from "form-data"
-import { ReadStream } from "fs"
+import { Readable } from "stream"
 
 export type TineyeSearchOptions = {
-  image: ReadStream
+  image: Readable
   filename: string
   contentType: string
 }
@@ -19,7 +19,6 @@ const tineye = (path: string, fetchOptions?: RequestInit) => {
 
 export const tineyeSearch = async (options: TineyeSearchOptions) => {
   const { image, filename, contentType } = options
-
   const form = new FormData()
 
   form.append("image", image, {
