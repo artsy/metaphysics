@@ -11,30 +11,17 @@ const MAX_ARTISTS = 50
 const MAX_ARTWORKS = 100
 const MIN_AFFINITY_SCORE = 0.5
 
-export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
-  description: "A connection of artworks for a user.",
-  type: artworkConnection.connectionType,
-  args: pageable({
-    page: { type: GraphQLInt },
-    userId: { type: GraphQLString },
-  }),
-  resolve: async (
-    _root,
-    args: CursorPageable,
-    {
-      vortexGraphqlLoader,
-      vortexGraphqlLoaderFactory,
-      artworksLoader,
-      appToken,
-    }
-  ) => {
-    if (!artworksLoader) return
+export const getArtistAffinities = async (
+  args: CursorPageable,
+  context: ResolverContext
+): Promise<string[]> => {
+  const { appToken, vortexGraphqlLoader, vortexGraphqlLoaderFactory } = context
 
-    const graphqlLoader =
-      vortexGraphqlLoader || vortexGraphqlLoaderFactory(appToken)
+  const graphqlLoader =
+    vortexGraphqlLoader || vortexGraphqlLoaderFactory(appToken)
 
-    const vortexResult = await graphqlLoader({
-      query: gql`
+  const vortexResult = await graphqlLoader({
+    query: gql`
         query artistAffinitiesQuery {
           artistAffinities(
             first: ${MAX_ARTISTS}
@@ -51,11 +38,28 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
           }
         }
       `,
-    })()
+  })()
 
-    const artistIds = extractNodes(vortexResult.data?.artistAffinities).map(
-      (node: any) => node?.artistId
-    )
+  const artistIds = extractNodes(vortexResult.data?.artistAffinities).map(
+    (node: any) => node?.artistId
+  )
+
+  return artistIds
+}
+
+export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
+  description: "A connection of artworks for a user.",
+  type: artworkConnection.connectionType,
+  args: pageable({
+    page: { type: GraphQLInt },
+    userId: { type: GraphQLString },
+  }),
+  resolve: async (_root, args: CursorPageable, context) => {
+    const { artworksLoader } = context
+
+    if (!artworksLoader) return
+
+    const artistIds = await getArtistAffinities(args, context)
 
     let artworks = []
 
