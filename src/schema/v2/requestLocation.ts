@@ -31,7 +31,7 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, args) => {
-    const url = `https://api.freegeoip.app/json/${args.ip}?apikey=${config.FREEGEOIP_API_KEY}`
+    const url = `https://api.ipbase.com/v2/info?ip=${args.ip}&apikey=${config.IPBASE_API_KEY}`
     return fetch(url)
       .then((response) => {
         if (config.ENABLE_GEOLOCATION_LOGGING) {
@@ -45,11 +45,13 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
 
           console.log("[schema/requestLocation.ts] Headers:", matchingHeaders)
         }
-
         return response.json()
       })
       .then((response) => {
-        return response
+        return {
+          country: response.data.location.country.name,
+          countryCode: response.data.location.alpha2,
+        }
       })
       .catch((error) => {
         console.error("[schema/requestLocation.ts] Error:", error)
