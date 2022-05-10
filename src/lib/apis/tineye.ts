@@ -1,6 +1,7 @@
 import config from "../../config"
 import urljoin from "url-join"
-import fetch from "./fetch"
+import fetch, { RequestInit } from "node-fetch"
+import FormData from "form-data"
 import { ReadStream } from "fs"
 
 export type TineyeSearchOptions = {
@@ -9,7 +10,7 @@ export type TineyeSearchOptions = {
   contentType: string
 }
 
-const tineye = (path: string, fetchOptions) => {
+const tineye = (path: string, fetchOptions?: RequestInit) => {
   const baseApi = `https://${config.TINEYE_API_USERNAME}:${config.TINEYE_API_PASSWORD}@mobileengine.tineye.com/artsy/rest`
   const url = urljoin(baseApi, path)
 
@@ -19,20 +20,20 @@ const tineye = (path: string, fetchOptions) => {
 export const tineyeSearch = async (options: TineyeSearchOptions) => {
   const { image, filename, contentType } = options
 
-  const response = await tineye("/search", {
-    method: "POST",
-    formData: {
-      image: {
-        value: image,
-        options: {
-          filename,
-          contentType,
-        },
-      },
-    },
+  const form = new FormData()
+
+  form.append("image", image, {
+    filename,
+    contentType,
   })
 
-  return response.body
+  const response = await tineye("/search", {
+    method: "POST",
+    body: form,
+  })
+  const json = await response.json()
+
+  return json
 }
 
 export default tineye

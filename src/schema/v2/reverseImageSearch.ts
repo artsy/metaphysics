@@ -99,10 +99,6 @@ export const reverseImageSearchResolver = async (_root, args, context) => {
   const { filename, mimetype, createReadStream } = await image
   const stream: ReadStream = createReadStream()
 
-  // Without this hack, we will get an error that we are sending an unsupported file format
-  // @ts-ignore
-  stream.path = stream?._writeStream?._path
-
   const response = await tineyeSearch({
     image: stream,
     filename,
