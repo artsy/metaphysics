@@ -580,31 +580,39 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: (artwork) => {
           const categories3D = [
-            "installation",
-            "design",
-            "performance",
-            "sound",
-            "fashion",
-            "architecture",
-            "books_and_portfolios",
-            "jewelry",
-            "other",
+            artworkMediums["Architecture"].id,
+            artworkMediums["Books and Portfolios"].id,
+            artworkMediums["Design/Decorative Art"].id,
+            artworkMediums["Fashion Design and Wearable Art"].id,
+            artworkMediums["Installation"].id,
+            artworkMediums["Jewelry"].id,
+            artworkMediums["NFT"].id,
+            artworkMediums["Performance Art"].id,
+            artworkMediums["Video/Film/Animation"].id,
           ]
           const categories2D = [
-            "print",
-            "drawing_collage_other_work_on_paper",
-            "painting",
-            "photography",
-            "posters",
-            "work_on_paper",
+            artworkMediums["Drawing, Collage or other Work on Paper"].id,
+            artworkMediums["Painting"].id,
+            artworkMediums["Photography"].id,
+            artworkMediums["Posters"].id,
+            artworkMediums["Print"].id,
           ]
 
-          const areIncluded = (category) =>
-            _.includes(artwork.category, category)
+          const is3DCategory = categories3D.includes(artwork.category)
+          const is2DCategory = categories2D.includes(artwork.category)
 
-          const is3DCategory = categories3D.some(areIncluded)
-          const is2DCategory = categories2D.some(areIncluded)
+          // If it's in one of the 2D categories and is not humongous, it's
+          // always hangable. If it's in one of the 3D categories, it's never
+          // hangable. But there are some categories that _might_ be hangable:
 
+          //   "Mixed Media"
+          //   "Ephemera or Merchandise"
+          //   "Sculpture"
+          //   "Reproduction"
+          //   "Textile arts"
+          //   "Other"
+
+          // For those categories, we check if it seems two-dimensional.
           return (
             (is2DCategory || (!is3DCategory && isTwoDimensional(artwork))) &&
             !isTooBig(artwork)
