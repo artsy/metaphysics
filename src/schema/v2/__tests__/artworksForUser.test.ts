@@ -1,8 +1,4 @@
-import {
-  getAffinityArtworks,
-  getArtistAffinities,
-  getBackfillArtworks,
-} from "../artworksForUser"
+import { getArtistAffinities } from "../artworksForUser"
 
 const mockLoaderFactory = (affinities) => {
   const edges = affinities.map((affinity) => {
@@ -39,96 +35,5 @@ describe("getArtistAffinities", () => {
     const artistIds = await getArtistAffinities({}, context)
 
     expect(artistIds).toEqual(["warhol"])
-  })
-})
-
-describe("getAffinityArtworks", () => {
-  it("returns an empty array with empty artist ids", async () => {
-    const artistIds = []
-    const gravityArgs = {}
-    const context = {} as any
-
-    const artworks = await getAffinityArtworks(artistIds, gravityArgs, context)
-    expect(artworks).toEqual([])
-  })
-
-  it("returns recently published artworks for those artist ids", async () => {
-    const artistIds = ["banksy"]
-    const gravityArgs = {}
-    const mockArtworksLoader = jest.fn(() => [{}])
-    const context = {
-      artworksLoader: mockArtworksLoader,
-    } as any
-
-    const artworks = await getAffinityArtworks(artistIds, gravityArgs, context)
-    expect(artworks.length).toEqual(1)
-  })
-})
-
-describe("getBackfillArtworks", () => {
-  it("returns an empty array without the backfill flag", async () => {
-    const affinityArtworks = []
-    const args = {}
-    const context = {} as any
-
-    const backfillArtworks = await getBackfillArtworks(
-      affinityArtworks,
-      args,
-      context
-    )
-
-    expect(backfillArtworks).toEqual([])
-  })
-
-  it("returns an empty array with enough affinityArtworks", async () => {
-    const affinityArtworks = [{}]
-    const args = { includeBackfill: true, size: 1 }
-    const context = {} as any
-
-    const backfillArtworks = await getBackfillArtworks(
-      affinityArtworks,
-      args,
-      context
-    )
-
-    expect(backfillArtworks).toEqual([])
-  })
-
-  it("returns backfill when affinityArtworks is empty", async () => {
-    const mockArtworksLoader = jest.fn(() => [{}])
-    const mockSetItemsLoader = jest.fn()
-    const affinityArtworks = []
-    const args = { includeBackfill: true, size: 1 }
-    const context = {
-      artworksLoader: mockArtworksLoader,
-      setItemsLoader: mockSetItemsLoader,
-    } as any
-
-    const backfillArtworks = await getBackfillArtworks(
-      affinityArtworks,
-      args,
-      context
-    )
-
-    expect(backfillArtworks.length).toEqual(1)
-  })
-
-  it("returns backfill to size when affinityArtworks is light", async () => {
-    const mockArtworksLoader = jest.fn(() => [{}, {}])
-    const mockSetItemsLoader = jest.fn()
-    const affinityArtworks = [{}]
-    const args = { includeBackfill: true, size: 2 }
-    const context = {
-      artworksLoader: mockArtworksLoader,
-      setItemsLoader: mockSetItemsLoader,
-    } as any
-
-    const backfillArtworks = await getBackfillArtworks(
-      affinityArtworks,
-      args,
-      context
-    )
-
-    expect(backfillArtworks.length).toEqual(1)
   })
 })
