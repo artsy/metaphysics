@@ -11,14 +11,8 @@ import config from "config"
 export const RequestLocationType = new GraphQLObjectType<any, ResolverContext>({
   name: "RequestLocation",
   fields: () => ({
-    country: {
-      type: GraphQLString,
-      resolve: ({ country_name }) => country_name,
-    },
-    countryCode: {
-      type: GraphQLString,
-      resolve: ({ country_code }) => country_code,
-    },
+    country: { type: GraphQLString },
+    countryCode: { type: GraphQLString },
   }),
 })
 
@@ -48,10 +42,8 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
         return response.json()
       })
       .then((response) => {
-        return {
-          country: response.data.location.country.name,
-          countryCode: response.data.location.alpha2,
-        }
+        const { name, alpha2 } = response.data.location.country
+        return { country: name, countryCode: alpha2 }
       })
       .catch((error) => {
         console.error("[schema/requestLocation.ts] Error:", error)
