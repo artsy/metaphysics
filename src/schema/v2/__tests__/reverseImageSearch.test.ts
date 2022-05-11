@@ -1,7 +1,10 @@
 import { reverseImageSearchResolver } from "../reverseImageSearch"
 import { Readable } from "stream"
+import { tineyeSearch } from "lib/apis/tineye"
 
 const _ = {}
+
+jest.mock("lib/apis/tineye")
 
 describe("reverseImageSearchResolver", () => {
   it("should throw error if user is not logged in", async () => {
@@ -21,6 +24,7 @@ describe("reverseImageSearchResolver", () => {
   })
 
   it("should return results", async () => {
+    const mockTineyeSearch = tineyeSearch as jest.Mock
     const stream = Readable.from(Buffer.from("helloWorld"))
     const args = {
       image: Promise.resolve({
@@ -32,36 +36,39 @@ describe("reverseImageSearchResolver", () => {
     }
     const context = {
       meLoader: jest.fn().mockResolvedValue({}),
-      tineyeSearchLoader: jest.fn().mockResolvedValue({
-        status: "ok",
-        count: "1",
-        count_total: "1",
-        result: [
-          {
-            target_overlap_percent: 99.76,
-            query_overlap_percent: 99.95,
-            filepath: "artwork/artwork-id/image/image-id",
-            target_match_rect: {
-              top: 29.29,
-              bottom: 71.64,
-              right: 84.53,
-              left: 21.25,
-            },
-            score: 72.83,
-            match_percent: 97.26,
-            query_match_rect: {
-              top: 29.17,
-              bottom: 71.43,
-              right: 84.5,
-              left: 21,
-            },
-          },
-        ],
-        error: [],
-        query_image: { filepath: "filename.jpg" },
-        method: "search",
-      }),
     }
+
+    mockTineyeSearch.mockResolvedValue({
+      status: "ok",
+      count: "1",
+      count_total: "1",
+      result: [
+        {
+          target_overlap_percent: 99.76,
+          query_overlap_percent: 99.95,
+          filepath: "artwork/artwork-id/image/image-id",
+          target_match_rect: {
+            top: 29.29,
+            bottom: 71.64,
+            right: 84.53,
+            left: 21.25,
+          },
+          score: 72.83,
+          match_percent: 97.26,
+          query_match_rect: {
+            top: 29.17,
+            bottom: 71.43,
+            right: 84.5,
+            left: 21,
+          },
+        },
+      ],
+      error: [],
+      query_image: { filepath: "filename.jpg" },
+      method: "search",
+    })
+
+    tineyeSearch
 
     const result = await reverseImageSearchResolver(_, args, context)
 
@@ -94,6 +101,7 @@ describe("reverseImageSearchResolver", () => {
   })
 
   it("should return errors when something went wrong", async () => {
+    const mockTineyeSearch = tineyeSearch as jest.Mock
     const stream = Readable.from(Buffer.from("helloWorld"))
     const args = {
       image: Promise.resolve({
@@ -105,13 +113,14 @@ describe("reverseImageSearchResolver", () => {
     }
     const context = {
       meLoader: jest.fn().mockResolvedValue({}),
-      tineyeSearchLoader: jest.fn().mockResolvedValue({
-        status: "fail",
-        error: ["Error message"],
-        method: "search",
-        result: [],
-      }),
     }
+
+    mockTineyeSearch.mockResolvedValue({
+      status: "fail",
+      error: ["Error message"],
+      method: "search",
+      result: [],
+    })
 
     await expect(reverseImageSearchResolver(_, args, context)).rejects.toThrow(
       "Error message"

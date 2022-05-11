@@ -9,6 +9,7 @@ import {
   GraphQLList,
 } from "graphql"
 import { GraphQLUpload } from "graphql-upload"
+import { tineyeSearch } from "lib/apis/tineye"
 import { ResolverContext } from "types/graphql"
 
 export const ReverseImageSearchResultMatchRect = new GraphQLObjectType({
@@ -82,7 +83,7 @@ export const ReverseImageSearchResults = new GraphQLObjectType({
 
 export const reverseImageSearchResolver = async (_root, args, context) => {
   const { image } = args
-  const { meLoader, tineyeSearchLoader } = context
+  const { meLoader } = context
 
   if (!meLoader) {
     throw new Error("You need to be signed in to perform this action")
@@ -102,7 +103,7 @@ export const reverseImageSearchResolver = async (_root, args, context) => {
   // @ts-ignore
   stream.path = stream?._writeStream?._path
 
-  const response = await tineyeSearchLoader({
+  const response = await tineyeSearch({
     image: stream,
     filename,
     contentType: mimetype,
