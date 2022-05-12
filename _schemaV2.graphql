@@ -12527,7 +12527,7 @@ type ReverseImageSearchResultMatchRect {
 }
 
 type ReverseImageSearchResults {
-  results: [ReverseImageSearchResult]
+  results: [ReverseImageSearchResult]!
 }
 
 enum Role {
