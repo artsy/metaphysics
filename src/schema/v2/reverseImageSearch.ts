@@ -72,8 +72,12 @@ export const ReverseImageSearchResult = new GraphQLObjectType({
     },
     artwork: {
       type: ArtworkType,
-      resolve: ({ filepath }, _args, { artworkLoader }) => {
-        if (filepath && artworkLoader) {
+      resolve: (
+        { filepath },
+        _args,
+        { unauthenticatedLoaders: { artworkLoader } }
+      ) => {
+        if (filepath) {
           const parts = filepath.split("/")
           const artworkId = parts[1]
 

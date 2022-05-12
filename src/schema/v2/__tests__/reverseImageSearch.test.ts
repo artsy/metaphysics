@@ -94,10 +94,12 @@ describe("reverseImageSearch", () => {
     `
     const context = {
       meLoader: jest.fn().mockResolvedValue({}),
-      artworkLoader: jest.fn().mockResolvedValue({
-        title: "Artwork Title",
-        _id: "artwork-id",
-      }),
+      unauthenticatedLoaders: {
+        artworkLoader: jest.fn().mockResolvedValue({
+          title: "Artwork Title",
+          _id: "artwork-id",
+        }),
+      },
     }
 
     mockTineyeSearch.mockResolvedValue(TinEyeSuccessResponse)
