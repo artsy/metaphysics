@@ -76,7 +76,7 @@ export const ReverseImageSearchResults = new GraphQLObjectType({
   name: "ReverseImageSearchResults",
   fields: {
     results: {
-      type: new GraphQLList(ReverseImageSearchResult),
+      type: new GraphQLNonNull(new GraphQLList(ReverseImageSearchResult)),
     },
   },
 })
