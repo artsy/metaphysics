@@ -88,6 +88,7 @@ import PartnerArtworks from "./partnerArtworks"
 // import Partner from "./partner"
 import { PartnersConnection } from "./partners"
 import { RequestLocationField } from "./requestLocation"
+import { ReverseImageSearch } from "./reverseImageSearch"
 import { endSaleMutation } from "./sale/end_sale_mutation"
 import Sale from "./sale/index"
 import { SalesConnectionField } from "./sales"
@@ -206,6 +207,7 @@ const rootFields = {
   // profile: Profile,
   previewSavedSearch: PreviewSavedSearchField,
   requestLocation: RequestLocationField,
+  reverseImageSearch: ReverseImageSearch,
   sale: Sale,
   saleArtwork: SaleArtwork,
   saleArtworksConnection: SaleArtworksConnectionField,
