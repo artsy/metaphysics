@@ -28,21 +28,16 @@ export const isTwoDimensional = ({
   }
 }
 
-export const isTooBig = ({ width, height, metric }: Artwork) => {
-  const LIMIT = { in: 600, cm: 1524 } // 50 feet
+export const isTooBig = ({ width_cm, height_cm, diameter_cm }: Artwork) => {
+  const limit_cm = 1524 // 50 feet
 
-  // It's possible for width/height/metric to be null, so we need to typecheck
-  // before we can parse them
-  if (
-    typeof width === "string" &&
-    typeof height === "string" &&
-    typeof metric === "string"
-  ) {
-    return (
-      parseFloat(width) > LIMIT[metric] || parseFloat(height) > LIMIT[metric]
-    )
+  // If we have a diameter, the work is circular and shouldn't have width/height
+  if (typeof diameter_cm === "number") {
+    return diameter_cm > limit_cm
+  } else if (typeof width_cm === "number" && typeof height_cm === "number") {
+    return width_cm > limit_cm || height_cm > limit_cm
   } else {
-    return true // assume works are too big if they don't have dimensions
+    return true // assume works are too big if they don't have diameter or width/height
   }
 }
 

@@ -84,34 +84,29 @@ describe("isTooBig", () => {
   beforeEach(() => {
     artwork = {
       ...artwork,
-      width: null,
-      height: null,
-      metric: null,
+      width_cm: null,
+      height_cm: null,
+      diameter_cm: null,
     }
   })
 
-  describe("artwork has null width", () => {
+  describe("artwork has no width, height, or diameter", () => {
     it("returns true", () => {
-      artwork.height = "1"
-      artwork.metric = "cm"
+      expect(isTooBig(artwork)).toBe(true)
+    })
+  })
+
+  describe("artwork has height and null width", () => {
+    it("returns true", () => {
+      artwork.height_cm = 1
 
       expect(isTooBig(artwork)).toBe(true)
     })
   })
 
-  describe("artwork has null height", () => {
+  describe("artwork has width and null height", () => {
     it("returns true", () => {
-      artwork.width = "1"
-      artwork.metric = "cm"
-
-      expect(isTooBig(artwork)).toBe(true)
-    })
-  })
-
-  describe("artwork has null metric", () => {
-    it("returns true", () => {
-      artwork.height = "1"
-      artwork.width = "1"
+      artwork.width_cm = 1
 
       expect(isTooBig(artwork)).toBe(true)
     })
@@ -119,9 +114,8 @@ describe("isTooBig", () => {
 
   describe("artwork has oversize width", () => {
     it("returns true", () => {
-      artwork.height = "1"
-      artwork.width = "2000"
-      artwork.metric = "cm"
+      artwork.height_cm = 1
+      artwork.width_cm = 2000
 
       expect(isTooBig(artwork)).toBe(true)
     })
@@ -129,19 +123,33 @@ describe("isTooBig", () => {
 
   describe("artwork has oversize height", () => {
     it("returns true", () => {
-      artwork.height = "10000"
-      artwork.width = "2"
-      artwork.metric = "cm"
+      artwork.height_cm = 10000
+      artwork.width_cm = 2
 
       expect(isTooBig(artwork)).toBe(true)
     })
   })
 
-  describe("artwork is a reasonable size", () => {
+  describe("artwork has oversize diamater", () => {
+    it("returns true", () => {
+      artwork.diameter_cm = 10000
+
+      expect(isTooBig(artwork)).toBe(true)
+    })
+  })
+
+  describe("artwork has height and width < 1524 cm", () => {
     it("returns false", () => {
-      artwork.height = "100"
-      artwork.width = "20"
-      artwork.metric = "cm"
+      artwork.height_cm = 100
+      artwork.width_cm = 20
+
+      expect(isTooBig(artwork)).toBe(false)
+    })
+  })
+
+  describe("artwork has diameter < 1524 cm", () => {
+    it("returns false", () => {
+      artwork.diameter_cm = 100
 
       expect(isTooBig(artwork)).toBe(false)
     })

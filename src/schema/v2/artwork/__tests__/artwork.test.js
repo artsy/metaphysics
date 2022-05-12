@@ -1581,7 +1581,7 @@ describe("Artwork type", () => {
       `
 
       describe("if the artwork is able to be used with View in Room", () => {
-        it("is hangable if print artwork has a 2D category and has reasonable dimensions", () => {
+        it("is hangable if artwork has a 2D category and height and width are < 50ft", () => {
           artwork.width = "100"
           artwork.height = "100"
           artwork.depth = "0.1"
@@ -1590,6 +1590,32 @@ describe("Artwork type", () => {
           artwork.height_cm = 100
           artwork.depth_cm = 0.1
           artwork.diameter_cm = null
+          artwork.metric = "cm"
+          artwork.category = "Print"
+          return runQuery(query, context).then((data) => {
+            expect(data.artwork.isHangable).toBe(true)
+          })
+        })
+
+        it("is hangable if artwork has a 2D category and height and width are < 50ft, even if depth is large", () => {
+          artwork.width = "100"
+          artwork.height = "100"
+          artwork.depth = "50"
+          artwork.diameter = null
+          artwork.width_cm = 100
+          artwork.height_cm = 100
+          artwork.depth_cm = 50
+          artwork.diameter_cm = null
+          artwork.metric = "cm"
+          artwork.category = "Print"
+          return runQuery(query, context).then((data) => {
+            expect(data.artwork.isHangable).toBe(true)
+          })
+        })
+
+        it("is hangable if artwork has a 2D category, even if is round", () => {
+          artwork.diameter = "15"
+          artwork.diameter_cm = 15
           artwork.metric = "cm"
           artwork.category = "Print"
           return runQuery(query, context).then((data) => {
