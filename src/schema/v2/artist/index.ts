@@ -344,20 +344,21 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
         ),
         description: "A list of badges",
-        resolve: ({ id }, _args, { artistBadgesLoader }) => {
-          return [
-            {
-              label: "Active Secondary Market",
-              type: "ACTIVE_SECONDARY_MARKET",
-              entities: [],
-            },
-            {
-              label: "High Auction Record",
-              type: "HIGH_AUCTION_RECORD",
-              entities: ["US$4.2m, Sotheby's, 2010"],
-            },
-          ]
-        },
+        // resolve: ({ id }, _args, { artistBadgesLoader }) => {
+        //  TODO: artistBadgesLoader func to pull json file from s3 and massage data
+        //   return [
+        //     {
+        //       label: "Active Secondary Market",
+        //       type: "ACTIVE_SECONDARY_MARKET",
+        //       entities: [],
+        //     },
+        //     {
+        //       label: "High Auction Record",
+        //       type: "HIGH_AUCTION_RECORD",
+        //       entities: ["US$4.2m, Sotheby's, 2010"],
+        //     },
+        //   ]
+        // },
       },
       basedOn: {
         type: ArtistType,
