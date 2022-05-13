@@ -15,7 +15,6 @@ const momentSubtract = (...args) => {
     .subtract(...args)
     .toISOString()
 }
-import config from "config"
 
 describe("gravity/stitching", () => {
   describe("filterArtworksConnection", () => {
@@ -607,8 +606,6 @@ describe("gravity/stitching", () => {
 
     describe("#marketingCollections", () => {
       it("extends the Viewer type with a marketingCollections field", async () => {
-        config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
-
         const mergedSchema = await getGravityMergedSchema()
         const viewerFields = await getFieldsForTypeFromSchema(
           "Viewer",
@@ -711,8 +708,6 @@ describe("gravity/stitching", () => {
 
     describe("#marketingCollections", () => {
       it("extends the Artist type with a marketingCollections field", async () => {
-        config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
-
         const mergedSchema = await getGravityMergedSchema()
         const viewerFields = await getFieldsForTypeFromSchema(
           "Artist",
@@ -723,8 +718,6 @@ describe("gravity/stitching", () => {
       })
 
       it("passes artist internalID to marketingCollections' artistID arg when querying `... on Artist`", async () => {
-        config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
-
         const { resolvers } = await getGravityStitchedSchema()
         const marketingCollectionsResolver =
           resolvers.Artist.marketingCollections.resolve
@@ -951,8 +944,6 @@ describe("gravity/stitching", () => {
 
   describe("HomePageMarketingCollectionsModule", () => {
     it("extends the HomePageMarketingCollectionsModule object", async () => {
-      config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
-
       const mergedSchema = await getGravityMergedSchema()
       const homePageMarketingCollectionsModuleFields = await getFieldsForTypeFromSchema(
         "HomePageMarketingCollectionsModule",
@@ -962,8 +953,6 @@ describe("gravity/stitching", () => {
     })
 
     it("returns an array even if the marketingCollections request fails", async () => {
-      config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
-
       const { resolvers } = await getGravityStitchedSchema()
       const resultsResolver =
         resolvers.HomePageMarketingCollectionsModule.results.resolve
@@ -980,8 +969,6 @@ describe("gravity/stitching", () => {
   describe("Fair", () => {
     describe("#marketingCollections", () => {
       it("extends the Fair type with a marketingCollections field", async () => {
-        config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
-
         const mergedSchema = await getGravityMergedSchema()
         const viewerFields = await getFieldsForTypeFromSchema(
           "Fair",
@@ -992,8 +979,6 @@ describe("gravity/stitching", () => {
       })
 
       it("passes through slugs when stitched under a fair", async () => {
-        config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
-
         const { resolvers } = await getGravityStitchedSchema()
         const marketingCollectionsResolver =
           resolvers.Fair.marketingCollections.resolve
@@ -1015,8 +1000,6 @@ describe("gravity/stitching", () => {
       })
 
       it("returns an empty list when there are no marketingCollectionSlugs", async () => {
-        config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
-
         const { resolvers } = await getGravityStitchedSchema()
         const marketingCollectionsResolver =
           resolvers.Fair.marketingCollections.resolve
@@ -1037,8 +1020,6 @@ describe("gravity/stitching", () => {
   describe("MarketingCollection", () => {
     describe("artworksConnection", () => {
       it("extends the MarketingCollection type with an artworksConnection field for the V2 schema", async () => {
-        config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
-
         const mergedSchema = await getGravityMergedSchema()
         const marketingCollectionFields = await getFieldsForTypeFromSchema(
           "MarketingCollection",
@@ -1048,8 +1029,6 @@ describe("gravity/stitching", () => {
       })
 
       it("resolves the artworksConnection field on MarketingCollection for the V2 schema", async () => {
-        config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
-
         const { resolvers } = await getGravityStitchedSchema()
         const { artworksConnection } = resolvers.MarketingCollection
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }

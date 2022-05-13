@@ -2,7 +2,6 @@ import { runQuery } from "schema/v2/test/utils"
 import { toGlobalId } from "graphql-relay"
 import gql from "lib/gql"
 import sinon from "sinon"
-import config from "config"
 
 describe("artworksConnection", () => {
   let context
@@ -651,8 +650,6 @@ describe("artworksConnection", () => {
     })
 
     it("returns correct artwork", async () => {
-      config.ENABLE_GRAVITY_MARKETING_COLLECTIONS = true
-
       const query = gql`
         {
           artworksConnection(

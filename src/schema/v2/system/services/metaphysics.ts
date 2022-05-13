@@ -20,7 +20,6 @@ const mapEnvBooleans = {
   stitchingConvection: true,
   stitchingExchange: true,
   stitchingGravity: true,
-  stitchingKaws: true,
 }
 
 // These are config strings that are exposed at runtime.
