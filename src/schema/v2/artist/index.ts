@@ -51,6 +51,7 @@ import {
   GraphQLList,
   GraphQLInt,
   GraphQLFieldConfig,
+  GraphQLEnumType,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -307,6 +308,55 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
               )
             }
           )
+        },
+      },
+      badges: {
+        type: new GraphQLNonNull(
+          new GraphQLList(
+            new GraphQLNonNull(
+              new GraphQLObjectType({
+                name: "ArtistBadge",
+                fields: {
+                  label: {
+                    type: new GraphQLNonNull(GraphQLString),
+                  },
+                  type: {
+                    type: new GraphQLEnumType({
+                      name: "ArtistBadgeType",
+                      values: {
+                        ACTIVE_SECONDARY_MARKET: {
+                          value: "ACTIVE_SECONDARY_MARKET",
+                        },
+                        HIGH_AUCTION_RECORD: {
+                          value: "HIGH_AUCTION_RECORD",
+                        },
+                      },
+                    }),
+                  },
+                  entities: {
+                    type: new GraphQLNonNull(
+                      new GraphQLList(new GraphQLNonNull(GraphQLString))
+                    ),
+                  },
+                },
+              })
+            )
+          )
+        ),
+        description: "A list of badges",
+        resolve: ({ id }, _args, { artistBadgesLoader }) => {
+          return [
+            {
+              label: "Active Secondary Market",
+              type: "ACTIVE_SECONDARY_MARKET",
+              entities: [],
+            },
+            {
+              label: "High Auction Record",
+              type: "HIGH_AUCTION_RECORD",
+              entities: ["US$4.2m, Sotheby's, 2010"],
+            },
+          ]
         },
       },
       basedOn: {

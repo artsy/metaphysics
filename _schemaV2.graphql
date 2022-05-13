@@ -1116,6 +1116,9 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     sort: AuctionResultSorts
   ): AuctionResultConnection
 
+  # A list of badges
+  badges: [ArtistBadge!]!
+
   # In applicable contexts, this is what the artist (as a suggestion) is based on.
   basedOn: Artist
   bio: String
@@ -1325,6 +1328,17 @@ type ArtistArtworkGrid implements ArtworkContextGrid {
 enum ArtistArtworksFilters {
   IS_FOR_SALE
   IS_NOT_FOR_SALE
+}
+
+type ArtistBadge {
+  entities: [String!]!
+  label: String!
+  type: ArtistBadgeType
+}
+
+enum ArtistBadgeType {
+  ACTIVE_SECONDARY_MARKET
+  HIGH_AUCTION_RECORD
 }
 
 type ArtistBlurb {
