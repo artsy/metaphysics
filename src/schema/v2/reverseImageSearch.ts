@@ -11,6 +11,7 @@ import {
 import { GraphQLUpload } from "graphql-upload"
 import { tineyeSearch } from "lib/apis/tineye"
 import { ResolverContext } from "types/graphql"
+import { ArtworkType } from "./artwork"
 
 export const ReverseImageSearchResultMatchRect = new GraphQLObjectType({
   name: "ReverseImageSearchResultMatchRect",
@@ -68,6 +69,23 @@ export const ReverseImageSearchResult = new GraphQLObjectType({
       description: "Location of the matching area in the first image",
       type: new GraphQLNonNull(ReverseImageSearchResultMatchRect),
       resolve: ({ query_match_rect }) => query_match_rect,
+    },
+    artwork: {
+      type: ArtworkType,
+      resolve: (
+        { filepath },
+        _args,
+        { unauthenticatedLoaders: { artworkLoader } }
+      ) => {
+        if (filepath) {
+          const parts = filepath.split("/")
+          const artworkId = parts[1]
+
+          return artworkLoader(artworkId)
+        }
+
+        return null
+      },
     },
   }),
 })

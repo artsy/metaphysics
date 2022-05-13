@@ -78,6 +78,49 @@ describe("reverseImageSearch", () => {
       "Error message"
     )
   })
+
+  it("should return info about artwork", async () => {
+    const artworkQuery = gql`
+      query($file: Upload!) {
+        reverseImageSearch(image: $file) {
+          results {
+            filepath
+            artwork {
+              title
+            }
+          }
+        }
+      }
+    `
+    const context = {
+      meLoader: jest.fn().mockResolvedValue({}),
+      unauthenticatedLoaders: {
+        artworkLoader: jest.fn().mockResolvedValue({
+          title: "Artwork Title",
+          _id: "artwork-id",
+        }),
+      },
+    }
+
+    mockTineyeSearch.mockResolvedValue(TinEyeSuccessResponse)
+
+    const result = await runQuery(artworkQuery, context, { file: upload })
+
+    expect(result).toMatchInlineSnapshot(`
+      Object {
+        "reverseImageSearch": Object {
+          "results": Array [
+            Object {
+              "artwork": Object {
+                "title": "Artwork Title",
+              },
+              "filepath": "artwork/artwork-id/image/image-id",
+            },
+          ],
+        },
+      }
+    `)
+  })
 })
 
 const query = gql`
