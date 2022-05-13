@@ -194,6 +194,8 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       },
       marketingCollectionSlugs: {
         type: new GraphQLNonNull(GraphQLList(GraphQLString)),
+        // TODO: We've deprecated the KAWS repository; we should rename this
+        // field in Gravity and then update it here.
         resolve: ({ kaws_collection_slugs }) => kaws_collection_slugs,
       },
       links: markdown(),
