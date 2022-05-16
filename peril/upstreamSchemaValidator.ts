@@ -10,12 +10,6 @@ type EndPoints = {
 }
 
 const serviceMap: EndPoints = {
-  kaws: {
-    production: "https://kaws.artsy.net/graphql",
-    // The http is on purpose here, probably a bug
-    staging: "http://kaws.artsy.net/graphql",
-    localSchemaPath: "src/data/kaws.graphql",
-  },
   exchange: {
     production: "https://exchange.artsy.net/api",
     staging: "https://exchange-staging.artsy.net/api",

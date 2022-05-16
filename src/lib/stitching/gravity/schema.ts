@@ -7,7 +7,6 @@ import {
   RenameRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
-import config from "config"
 
 const allowList = [
   "agreement",
@@ -15,18 +14,13 @@ const allowList = [
   "viewingRooms",
   "artistSeries",
   "artistSeriesConnection",
+  "marketingCollection",
+  "marketingCollections",
+  "marketingCategories",
 ]
 
 export const executableGravitySchema = () => {
   const gravityTypeDefs = readFileSync("src/data/gravity.graphql", "utf8")
-
-  const { ENABLE_GRAVITY_MARKETING_COLLECTIONS } = config
-
-  if (ENABLE_GRAVITY_MARKETING_COLLECTIONS) {
-    allowList.push("marketingCollection")
-    allowList.push("marketingCollections")
-    allowList.push("marketingCategories")
-  }
 
   const gravityLink = createGravityLink()
   const schema = makeRemoteExecutableSchema({
