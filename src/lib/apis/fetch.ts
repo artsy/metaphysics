@@ -17,7 +17,7 @@ interface URLAndRequestBodyParams extends RequestBodyParams {
 export const constructUrlAndParams = (method, url): URLAndRequestBodyParams => {
   const opts: RequestBodyParams = {}
 
-  if (method === "PUT" || method === "POST") {
+  if (method === "PUT" || method === "POST" || method === "DELETE") {
     const [path, queryParams] = url.split("?")
     const parsedParams = parse(queryParams)
 

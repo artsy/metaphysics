@@ -94,11 +94,11 @@ describe("constructUrlAndParams", () => {
     expect(json).toBeUndefined()
   })
 
-  const methods = ["PUT", "POST"]
+  const methods = ["PUT", "POST", "DELETE"]
 
   methods.forEach((method) => {
     describe(`for a ${method} request`, () => {
-      it("removes query params for a POST", () => {
+      it("removes query params", () => {
         const { url, body, json } = constructUrlAndParams(
           method,
           "https://staging.artsy.net/api/v1/me/token?client_application_id=blah"
