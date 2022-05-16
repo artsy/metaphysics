@@ -41,6 +41,7 @@ Object {
       "receivePromotionNotification": false,
       "receivePurchaseNotification": false,
       "receiveSaleOpeningClosingNotification": false,
+      "receiveViewingRoomNotification": true,
     },
     "userOrError": Object {
       "user": Object {

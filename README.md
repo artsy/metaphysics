@@ -88,6 +88,10 @@ You will need to set up headers with both:
 
 _If you're new to GraphQL, you can checkout [Artsy's GraphQL Workshop](https://github.com/artsy/graphql-workshop)._
 
+For `GraphQL Endpoint`, set it to `http://localhost:3000/` if you want to query for something that lives in v1 of the schema, otherwise, set it to `http://localhost:3000/v2`.
+
+**Note that `/v2` is the default** and it is rare to query against `/v1`. 
+
 ### Introspection Setup
 
 Getting docs for the schema on MP in your playground of choice (Postman, Insomnia, Altair, etc) is called introspection.

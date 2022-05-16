@@ -88,6 +88,7 @@ import PartnerArtworks from "./partnerArtworks"
 // import Partner from "./partner"
 import { PartnersConnection } from "./partners"
 import { RequestLocationField } from "./requestLocation"
+import { ReverseImageSearch } from "./reverseImageSearch"
 import { endSaleMutation } from "./sale/end_sale_mutation"
 import Sale from "./sale/index"
 import { SalesConnectionField } from "./sales"
@@ -128,6 +129,7 @@ import { shortcut } from "./shortcut"
 import { channel } from "./article/channel"
 import { departments, job, jobs } from "./jobs"
 import { RecentlySoldArtworks } from "./recentlySoldArtworks"
+import { artworksForUser } from "./artworksForUser"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -140,6 +142,7 @@ const OptionalFieldDirective = new GraphQLDirective({
 })
 
 const rootFields = {
+  artworksForUser,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkMediums: ArtworkMediums,
   auctionResult: AuctionResult,
@@ -204,6 +207,7 @@ const rootFields = {
   // profile: Profile,
   previewSavedSearch: PreviewSavedSearchField,
   requestLocation: RequestLocationField,
+  reverseImageSearch: ReverseImageSearch,
   sale: Sale,
   saleArtwork: SaleArtwork,
   saleArtworksConnection: SaleArtworksConnectionField,
