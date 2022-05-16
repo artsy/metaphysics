@@ -13,6 +13,7 @@ import {
   ArtworkAttributionClassEnum,
   computeImageSources,
 } from "./myCollectionCreateArtworkMutation"
+import { EditableLocationFields } from "./update_me_mutation"
 
 interface MyCollectionArtworkUpdateMutationInput {
   artworkId: string
@@ -28,6 +29,7 @@ interface MyCollectionArtworkUpdateMutationInput {
   editionSize?: string
   externalImageUrls?: [string]
   artworkLocation?: string
+  collectorLocation?: Record<string, string>
   pricePaidCents?: number
   pricePaidCurrency?: string
   submissionId?: string
@@ -83,6 +85,10 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     artworkLocation: {
       type: GraphQLString,
     },
+    collectorLocation: {
+      description: "The given location of the user as structured data",
+      type: EditableLocationFields,
+    },
     medium: {
       type: GraphQLString,
     },
@@ -125,6 +131,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       editionSize,
       externalImageUrls = [],
       artworkLocation,
+      collectorLocation,
       pricePaidCents,
       pricePaidCurrency,
       submissionId,
@@ -155,6 +162,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
         artwork_location: artworkLocation,
+        collector_location: collectorLocation,
         price_paid_cents: pricePaidCents,
         price_paid_currency: pricePaidCurrency,
         attribution_class: attributionClass,

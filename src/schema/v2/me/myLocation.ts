@@ -15,6 +15,7 @@ interface Response {
   state_code: string | null
   postal_code: string | null
   country: string | null
+  country_code: string | null
   coordinates: {
     lng: number | null
     lat: number | null
@@ -46,6 +47,10 @@ export const myLocationType = new GraphQLObjectType<Response, ResolverContext>({
     country: {
       type: GraphQLString,
       resolve: ({ country }) => existyValue(country),
+    },
+    countryCode: {
+      type: GraphQLString,
+      resolve: ({ country_code }) => existyValue(country_code),
     },
     displayCountry: {
       type: GraphQLString,

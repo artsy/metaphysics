@@ -14,6 +14,7 @@ import { mapKeys, snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { ArtworkImportSourceEnum } from "../artwork"
 import { MyCollectionArtworkMutationType } from "./myCollection"
+import { EditableLocationFields } from "./update_me_mutation"
 
 const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
@@ -106,6 +107,10 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     artworkLocation: {
       type: GraphQLString,
     },
+    collectorLocation: {
+      description: "The given location of the user as structured data",
+      type: EditableLocationFields,
+    },
     metric: {
       type: GraphQLString,
     },
@@ -143,6 +148,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       editionNumber,
       externalImageUrls = [],
       artworkLocation,
+      collectorLocation,
       pricePaidCents,
       pricePaidCurrency,
       attributionClass,
@@ -186,6 +192,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         price_paid_cents: pricePaidCents,
         price_paid_currency: pricePaidCurrency,
         artwork_location: artworkLocation,
+        collector_location: collectorLocation,
         attribution_class: attributionClass,
         import_source: importSource,
         ...rest,

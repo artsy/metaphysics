@@ -61,6 +61,7 @@ import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/ut
 import { InquiryQuestionType } from "../inquiry_question"
 import { loadSubmissions } from "../me/loadSubmissions"
 import { LotStandingType } from "../me/lot_standing"
+import { myLocationType } from "../me/myLocation"
 import ArtworkConsignmentSubmissionType from "./artworkConsignmentSubmissionType"
 import { ArtworkContextGrids } from "./artworkContextGrids"
 import { ComparableAuctionResults } from "./comparableAuctionResults"
@@ -203,6 +204,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (artwork) => artwork.artwork_location,
         description:
           'Represents the location of the artwork for "My Collection" artworks',
+        deprecationReason: "Please use `collectorLocation` instead",
+      },
+      collectorLocation: {
+        type: myLocationType,
+        resolve: (artwork) => artwork.collector_location,
+        description: "The location of the artwork in My Collection",
       },
       availability: { type: GraphQLString },
       category: {
