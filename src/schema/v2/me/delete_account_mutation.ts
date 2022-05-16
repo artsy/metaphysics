@@ -57,6 +57,10 @@ export const deleteUserAccountMutation = mutationWithClientMutationId<
       description: "Reason for deleting the account.",
       type: GraphQLString,
     },
+    password: {
+      description: "Password.",
+      type: GraphQLString,
+    },
     url: {
       description: "Referrer location",
       type: GraphQLString,
