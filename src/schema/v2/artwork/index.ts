@@ -203,7 +203,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: (artwork) => artwork.artwork_location,
         description:
-          'Represents the location of the artwork for "My Collection" artworks - to be deprecated',
+          'Represents the location of the artwork for "My Collection" artworks',
+        deprecationReason: "Please use `collectorLocation` instead",
       },
       collectorLocation: {
         type: myLocationType,

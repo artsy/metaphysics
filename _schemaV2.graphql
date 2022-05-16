@@ -1692,8 +1692,9 @@ type Artwork implements Node & Searchable & Sellable {
   artsyShippingDomestic: Boolean
   artsyShippingInternational: Boolean
 
-  # Represents the location of the artwork for "My Collection" artworks - to be deprecated
+  # Represents the location of the artwork for "My Collection" artworks
   artworkLocation: String
+    @deprecated(reason: "Please use `collectorLocation` instead")
 
   # Represents the "**classification**" of an artwork, such as _limited edition_
   attributionClass: AttributionClass
