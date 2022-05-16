@@ -172,7 +172,6 @@ const mockArtworksResponse = [
       website: "",
       has_full_profile: false,
       has_fair_partnership: false,
-      has_limited_fair_partnership: false,
       profile_layout: "gallery_default",
       display_works_section: true,
       profile_banner_display: null,

@@ -15,7 +15,6 @@ export const Partner = Record({
   website: String,
   has_full_profile: Boolean,
   has_fair_partnership: Boolean,
-  has_limited_fair_partnership: Boolean,
   profile_layout: String,
   display_works_section: Boolean,
   profile_banner_display: String.Or(Null),

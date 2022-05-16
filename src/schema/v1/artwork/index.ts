@@ -386,7 +386,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
                 artwork.forsale &&
                 !_.isEmpty(artwork.partner) &&
                 !artwork.acquireable &&
-                !artwork.partner.has_limited_fair_partnership &&
                 !sales.length
               )
             })
