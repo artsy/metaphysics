@@ -2,35 +2,7 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
 
-describe("me.myCollection", () => {
-  it("includes info about my collection", async () => {
-    const query = gql`
-      {
-        me {
-          myCollectionInfo {
-            name
-            includesPurchasedArtworks
-          }
-        }
-      }
-    `
-    const context: Partial<ResolverContext> = {
-      meLoader: () =>
-        Promise.resolve({
-          id: "some-user-id",
-        }),
-      collectionLoader: () =>
-        Promise.resolve({
-          name: "My Collection",
-          includes_purchased_artworks: true,
-        }),
-    }
-
-    const data = await runAuthenticatedQuery(query, context)
-    expect(data.me.myCollectionInfo.name).toBe("My Collection")
-    expect(data.me.myCollectionInfo.includesPurchasedArtworks).toBe(true)
-  })
-
+describe("me.myCollectionConnection", () => {
   it("returns artworks for a collection", async () => {
     const query = gql`
       {
@@ -279,8 +251,6 @@ describe("me.myCollection", () => {
   })
 
   it("enriches artwork with market price insights data", async () => {
-    const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
-
     const query = gql`
       {
         me {
@@ -329,7 +299,7 @@ describe("me.myCollection", () => {
         Promise.resolve({
           _id: "artist-id",
         }),
-      vortexGraphqlLoader,
+      vortexGraphqlLoader: () => async () => mockVortexResponse,
     }
 
     const data = await runAuthenticatedQuery(query, context)
