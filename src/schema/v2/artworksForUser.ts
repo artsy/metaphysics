@@ -47,6 +47,29 @@ export const getArtistAffinities = async (
   return artistIds
 }
 
+export const getAffinityArtworks = async (
+  artistIds: string[],
+  gravityArgs,
+  context: ResolverContext
+): Promise<any[]> => {
+  if (artistIds.length === 0) return []
+
+  const { size, offset } = gravityArgs
+  const { artworksLoader } = context
+
+  const artworkParams = {
+    artist_ids: artistIds,
+    availability: "for sale",
+    offset,
+    size,
+    sort: "-published_at",
+  }
+
+  const body = await artworksLoader(artworkParams)
+
+  return body
+}
+
 export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
   description: "A connection of artworks for a user.",
   type: artworkConnection.connectionType,
@@ -55,25 +78,21 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     userId: { type: GraphQLString },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
-    const { artworksLoader } = context
-
-    if (!artworksLoader) return
+    if (!context.artworksLoader) return
 
     const artistIds = await getArtistAffinities(args, context)
 
-    let artworks = []
+    const gravityArgs = convertConnectionArgsToGravityArgs(args)
+    const { page, size, offset } = gravityArgs
 
-    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+    const affinityArtworks = await getAffinityArtworks(
+      artistIds,
+      gravityArgs,
+      context
+    )
 
-    if (artistIds?.length) {
-      artworks = await artworksLoader({
-        artist_ids: artistIds,
-        sort: "-published_at",
-        availability: "for sale",
-        size,
-        offset,
-      })
-    }
+
+    const artworks = [...affinityArtworks]
 
     // TODO: get count from artworks loader to optimize pagination
     const count = artworks.length === 0 ? 0 : MAX_ARTWORKS
