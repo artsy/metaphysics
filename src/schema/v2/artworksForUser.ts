@@ -1,4 +1,10 @@
-import { GraphQLString, GraphQLFieldConfig, GraphQLInt } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLString,
+} from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { CursorPageable, pageable } from "relay-cursor-paging"
@@ -70,10 +76,33 @@ export const getAffinityArtworks = async (
   return body
 }
 
+export const getBackfillArtworks = async (
+  remainingSize: number,
+  includeBackfill: boolean,
+  context: ResolverContext
+): Promise<any[]> => {
+  if (!includeBackfill || remainingSize < 1) return []
+
+  const { setItemsLoader, setsLoader } = context
+
+  const { body: setsBody } = await setsLoader({
+    key: "artwork-backfill",
+    sort: "internal_name",
+  })
+  const backfillSetId = setsBody.map((set) => set.id)[0]
+
+  if (!backfillSetId) return []
+
+  const { body: itemsBody } = await setItemsLoader(backfillSetId)
+
+  return itemsBody.slice(0, remainingSize)
+}
+
 export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
   description: "A connection of artworks for a user.",
   type: artworkConnection.connectionType,
   args: pageable({
+    includeBackfill: { type: new GraphQLNonNull(GraphQLBoolean) },
     page: { type: GraphQLInt },
     userId: { type: GraphQLString },
   }),
@@ -91,8 +120,14 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       context
     )
 
+    const remainingSize = (gravityArgs.size || 0) - affinityArtworks.length
+    const backfillArtworks = await getBackfillArtworks(
+      remainingSize,
+      args.includeBackfill,
+      context
+    )
 
-    const artworks = [...affinityArtworks]
+    const artworks = [...affinityArtworks, ...backfillArtworks]
 
     // TODO: get count from artworks loader to optimize pagination
     const count = artworks.length === 0 ? 0 : MAX_ARTWORKS
