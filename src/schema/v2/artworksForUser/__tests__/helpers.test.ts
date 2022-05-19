@@ -2,7 +2,7 @@ import {
   getAffinityArtworks,
   getArtistAffinities,
   getBackfillArtworks,
-} from "../artworksForUser"
+} from "../helpers"
 
 const mockLoaderFactory = (affinities) => {
   const edges = affinities.map((affinity) => {
