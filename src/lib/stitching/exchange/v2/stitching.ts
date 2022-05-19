@@ -223,6 +223,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
+      conversation: Conversation
       
       ${orderTotalsSDL.join("\n")}
     }
