@@ -1879,6 +1879,7 @@ input SetPaymentInput {
   clientMutationId: String
   creditCardId: String
   id: ID!
+  setupIntentId: String
 }
 
 """
