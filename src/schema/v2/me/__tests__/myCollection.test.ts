@@ -5,34 +5,6 @@ import { ResolverContext } from "types/graphql"
 describe("me.myCollection", () => {
   const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
 
-  it("includes info about my collection", async () => {
-    const query = gql`
-      {
-        me {
-          myCollectionInfo {
-            name
-            includesPurchasedArtworks
-          }
-        }
-      }
-    `
-    const context: Partial<ResolverContext> = {
-      meLoader: () =>
-        Promise.resolve({
-          id: "some-user-id",
-        }),
-      collectionLoader: () =>
-        Promise.resolve({
-          name: "My Collection",
-          includes_purchased_artworks: true,
-        }),
-    }
-
-    const data = await runAuthenticatedQuery(query, context)
-    expect(data.me.myCollectionInfo.name).toBe("My Collection")
-    expect(data.me.myCollectionInfo.includesPurchasedArtworks).toBe(true)
-  })
-
   it("returns artworks for a collection", async () => {
     const query = gql`
       {

@@ -2,9 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
-  GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
   GraphQLUnionType,
 } from "graphql"
 import {
@@ -30,52 +28,9 @@ type PriceInsight = {
 
 type MarketPriceInsightsType = Record<string, Record<string, PriceInsight>>
 
-const myCollectionFields = {
-  description: {
-    type: new GraphQLNonNull(GraphQLString),
-  },
-  default: {
-    type: new GraphQLNonNull(GraphQLBoolean),
-  },
-  includesPurchasedArtworks: {
-    type: new GraphQLNonNull(GraphQLBoolean),
-    resolve: (myCollection) => myCollection.includes_purchased_artworks,
-  },
-  name: {
-    type: new GraphQLNonNull(GraphQLString),
-  },
-  private: {
-    type: new GraphQLNonNull(GraphQLBoolean),
-  },
-}
-
-// MyCollectionInfo
-const MyCollectionInfoType = new GraphQLObjectType<any, ResolverContext>({
-  name: "MyCollectionInfo",
-  fields: () => myCollectionFields,
-})
-
-export const MyCollectionInfo: GraphQLFieldConfig<any, ResolverContext> = {
-  type: MyCollectionInfoType,
-  description: "Info about the current user's my-collection",
-  resolve: ({ id }, _options, { collectionLoader }) => {
-    if (!collectionLoader) {
-      return null
-    }
-    return collectionLoader("my-collection", {
-      user_id: id,
-      private: true,
-    }).then((myCollectionInfo) => {
-      return myCollectionInfo
-    })
-  },
-}
-
-// ConnectionArtworks
 const MyCollectionConnection = connectionWithCursorInfo({
   name: "MyCollection",
   nodeType: ArtworkType,
-  connectionFields: myCollectionFields,
 })
 
 export const {
