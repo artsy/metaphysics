@@ -19,6 +19,7 @@ import { ArtworkType } from "../artwork"
 import { connectionWithCursorInfo } from "../fields/pagination"
 import { loadBatchPriceInsights } from "lib/loadBatchPriceInsights"
 import { loadSubmissions } from "./loadSubmissions"
+import { myCollectionInfoFields } from "./myCollectionInfo"
 
 type PriceInsight = {
   artistId: string
@@ -31,6 +32,7 @@ type MarketPriceInsightsType = Record<string, Record<string, PriceInsight>>
 const MyCollectionConnection = connectionWithCursorInfo({
   name: "MyCollection",
   nodeType: ArtworkType,
+  connectionFields: myCollectionInfoFields,
 })
 
 export const {
