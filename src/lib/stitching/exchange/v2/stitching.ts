@@ -117,6 +117,65 @@ export const exchangeStitchingEnvironment = ({
     to: "fromDetails",
   })
 
+  const isWireTransferEnabled = (partnerId, context, info) =>
+    info.mergeInfo.delegateToSchema({
+      schema: localSchema,
+      operation: "query",
+      fieldName: "partner",
+      args: { id: partnerId },
+      context,
+      info,
+      transforms: [
+        new WrapQuery(
+          ["partner"],
+          (selectionSet: SelectionSetNode) => ({
+            kind: Kind.FIELD,
+            name: {
+              kind: Kind.NAME,
+              value: "wireTransferEnabled",
+            },
+            selectionSet,
+          }),
+          (result) => {
+            return result.wireTransferEnabled
+          }
+        ),
+      ],
+    })
+
+  const additionalPaymentMethodsResolver = {
+    fragment: gql`
+    ... on CommerceOrder {
+      __typename
+      seller {
+        __typename
+        ... on CommerceUser {
+          __typename
+          id
+        }
+        ... on CommercePartner {
+          __typename
+          id
+        }
+      }
+    }`,
+    resolve: async (parent, _args, context, info) => {
+      const orderType = parent.__typename
+      const sellerType = parent.seller.__typename
+      const additionalPaymentMethods: string[] = []
+
+      if (
+        orderType === "CommerceBuyOrder" &&
+        sellerType === "CommercePartner" &&
+        (await isWireTransferEnabled(parent.seller.id, context, info))
+      ) {
+        additionalPaymentMethods.push("wire_transfer")
+      }
+
+      return additionalPaymentMethods
+    },
+  }
+
   const creditCardResolver = {
     fragment: `fragment CommerceOrderCreditCard on CommerceOrder { creditCardId }`,
     resolve: (parent, _args, context, info) => {
@@ -224,6 +283,7 @@ export const exchangeStitchingEnvironment = ({
       sellerDetails: OrderParty
       creditCard: CreditCard
       conversation: Conversation
+      additionalPaymentMethods: [String]
       
       ${orderTotalsSDL.join("\n")}
     }
@@ -234,6 +294,7 @@ export const exchangeStitchingEnvironment = ({
       creditCard: CreditCard
       isInquiryOrder: Boolean!
       conversation: Conversation
+      additionalPaymentMethods: [String]
 
       ${orderTotalsSDL.join("\n")}
       ${amountSDL("offerTotal")}
@@ -243,6 +304,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
+      additionalPaymentMethods: [String]
 
       ${orderTotalsSDL.join("\n")}
     }
@@ -330,12 +392,14 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        additionalPaymentMethods: additionalPaymentMethodsResolver,
       },
       CommerceOfferOrder: {
         ...totalsResolvers("CommerceOfferOrder", orderTotals),
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        additionalPaymentMethods: additionalPaymentMethodsResolver,
         ...inquiryOrderResolvers,
       },
       CommerceLineItem: {
@@ -454,6 +518,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        additionalPaymentMethods: additionalPaymentMethodsResolver,
       },
       CommerceOffer: {
         ...totalsResolvers("CommerceOffer", offerAmountFields),
