@@ -152,7 +152,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       )
 
       let artistIDMediumTuples = artworks.map((artwork: any) => ({
-        artistId: artwork.artist._id,
+        artistId: artwork.artist?._id,
         medium: artwork.medium,
       }))
 
@@ -291,7 +291,7 @@ const enrichArtworksWithPriceInsights = (
 ) => {
   return artworks.map((artwork: any) => {
     const insights =
-      marketPriceInsights[artwork.artist._id]?.[artwork.medium] ?? null
+      marketPriceInsights[artwork.artist?._id]?.[artwork.medium] ?? null
 
     artwork.marketPriceInsights = insights
     return artwork

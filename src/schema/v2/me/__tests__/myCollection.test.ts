@@ -3,6 +3,8 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
 
 describe("me.myCollection", () => {
+  const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
+
   it("includes info about my collection", async () => {
     const query = gql`
       {
@@ -70,6 +72,7 @@ describe("me.myCollection", () => {
             "x-total-count": "10",
           },
         }),
+      vortexGraphqlLoader,
       authenticatedArtistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
@@ -125,9 +128,7 @@ describe("me.myCollection", () => {
               _id: "artwork_id_without_submission",
               id: "artwork_id_without_submission",
               title: "some title 2",
-              artist: {
-                _id: "artist-id",
-              },
+              artist: null,
               submission_id: null,
             },
             {
@@ -158,6 +159,7 @@ describe("me.myCollection", () => {
             ],
           } as any,
         }),
+      vortexGraphqlLoader,
       authenticatedArtistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
@@ -251,6 +253,7 @@ describe("me.myCollection", () => {
             "x-total-count": "10",
           },
         }),
+      vortexGraphqlLoader,
       convectionGraphQLLoader: () =>
         Promise.resolve({
           submissions: {
@@ -279,8 +282,6 @@ describe("me.myCollection", () => {
   })
 
   it("enriches artwork with market price insights data", async () => {
-    const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
-
     const query = gql`
       {
         me {
@@ -325,11 +326,11 @@ describe("me.myCollection", () => {
             "x-total-count": "10",
           },
         }),
+      vortexGraphqlLoader,
       authenticatedArtistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
         }),
-      vortexGraphqlLoader,
     }
 
     const data = await runAuthenticatedQuery(query, context)
@@ -367,6 +368,7 @@ describe("me.myCollection", () => {
         }),
       collectionArtworksLoader: () =>
         Promise.reject(new Error("Collection Not Found")),
+      vortexGraphqlLoader,
     }
 
     const data = await runAuthenticatedQuery(query, context)
@@ -396,6 +398,7 @@ describe("me.myCollection", () => {
         }),
       collectionArtworksLoader: () =>
         Promise.reject(new Error("Some other error")),
+      vortexGraphqlLoader,
     }
 
     expect.assertions(1)
