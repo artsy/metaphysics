@@ -10760,9 +10760,6 @@ type Partner implements Node {
 
   # The gallery partner's web address
   website: String
-
-  # Indicates the partner supports wire transfer
-  wireTransferEnabled: Boolean!
 }
 
 # A partner agreement

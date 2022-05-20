@@ -749,11 +749,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ verified_seller }) => verified_seller,
       },
-      wireTransferEnabled: {
-        description: "Indicates the partner supports wire transfer",
-        type: GraphQLNonNull(GraphQLBoolean),
-        resolve: ({ wire_transfer_enabled }) => wire_transfer_enabled ?? false,
-      },
       inquiryRequest: {
         type: InquiryRequestType,
         args: {

@@ -117,31 +117,18 @@ export const exchangeStitchingEnvironment = ({
     to: "fromDetails",
   })
 
-  const isWireTransferEnabled = (partnerId, context, info) =>
-    info.mergeInfo.delegateToSchema({
-      schema: localSchema,
-      operation: "query",
-      fieldName: "partner",
-      args: { id: partnerId },
-      context,
-      info,
-      transforms: [
-        new WrapQuery(
-          ["partner"],
-          (selectionSet: SelectionSetNode) => ({
-            kind: Kind.FIELD,
-            name: {
-              kind: Kind.NAME,
-              value: "wireTransferEnabled",
-            },
-            selectionSet,
-          }),
-          (result) => {
-            return result.wireTransferEnabled
-          }
-        ),
-      ],
-    })
+  const isWireTransferEnabled = (partnerId, context) => {
+    const { partnerLoader } = context
+
+    return partnerLoader(partnerId)
+      .then((response) => response.wire_transfer_enabled ?? false)
+      .catch((e) => {
+        console.log("error", e)
+        throw new GraphQLError(
+          `[metaphysics @ exchange/v2/stitching] Partner not found`
+        )
+      })
+  }
 
   const additionalPaymentMethodsResolver = {
     fragment: gql`
@@ -159,7 +146,7 @@ export const exchangeStitchingEnvironment = ({
         }
       }
     }`,
-    resolve: async (parent, _args, context, info) => {
+    resolve: async (parent, _args, context, _info) => {
       const orderType = parent.__typename
       const sellerType = parent.seller.__typename
       const additionalPaymentMethods: string[] = []
@@ -167,7 +154,7 @@ export const exchangeStitchingEnvironment = ({
       if (
         orderType === "CommerceBuyOrder" &&
         sellerType === "CommercePartner" &&
-        (await isWireTransferEnabled(parent.seller.id, context, info))
+        (await isWireTransferEnabled(parent.seller.id, context))
       ) {
         additionalPaymentMethods.push("wire_transfer")
       }
