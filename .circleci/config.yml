@@ -33,16 +33,12 @@ only_development: &only_development
         - release
         - main
 
-jobs:
-  push-schema-changes:
-    executor:
-      name: node/default
-      tag: "14.17"
+commands:
+  setup_hokusai:
     steps:
       - run:
           name: Let hokusai modify /usr/local/bin
           command: sudo chmod -R 777 /usr/local/bin
-      - checkout
       - hokusai/install-aws-iam-authenticator
       - run:
           name: Install hokusai
@@ -53,9 +49,30 @@ jobs:
             pip install awscli --upgrade
             pip install hokusai
       - hokusai/configure-hokusai
+  yarn_install:
+    steps:
       - yarn/load_dependencies
       - yarn/install
       - yarn/save_dependencies
+
+jobs:
+  ensure-schema-update:
+    executor:
+      name: node/default
+      tag: "14.17"
+    steps:
+      - checkout
+      - setup_hokusai
+      - yarn_install
+      - run: scripts/ensure-schema-update.sh
+  push-schema-changes:
+    executor:
+      name: node/default
+      tag: "14.17"
+    steps:
+      - checkout
+      - setup_hokusai
+      - yarn_install
       - run:
           name: push schema changes
           command: node scripts/push-schema-changes.js
@@ -69,6 +86,10 @@ workflows:
 
       - yarn/type-check:
           <<: *not_staging_or_release
+
+      - ensure-schema-update:
+          context: hokusai
+          <<: *only_development
 
       # pre-staging
       - yarn/run:
