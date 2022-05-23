@@ -420,8 +420,10 @@ function formatGravityLotStandingsToMatchCausalityLotStandings(
 
 function getSoldStatus(lotStanding): string | undefined {
   const {
-    bidder: { sale, sale_artwork },
+    bidder: { sale },
+    sale_artwork,
   } = lotStanding
+
   if (sale.auction_state === "open") {
     return "ForSale"
   } else if (sale.auction_state == "closed") {

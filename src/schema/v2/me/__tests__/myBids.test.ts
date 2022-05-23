@@ -190,6 +190,7 @@ describe("myBids", () => {
               isHighestBidder: true,
               lotState: expect.objectContaining({
                 saleId: "sale-2",
+                soldStatus: "Sold",
               }),
               slug:
                 "mario-giacomelli-io-non-ho-mani-che-mi-accarezzino-il-volto-22",
@@ -252,7 +253,7 @@ function getContext(props: { auctionState: "open" | "closed" }) {
       bidder: {
         sale: {
           _id: "sale-2",
-          auction_state: "open",
+          auction_state: "closed",
         },
       },
       sale_artwork: {
