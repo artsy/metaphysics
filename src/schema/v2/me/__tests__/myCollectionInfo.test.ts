@@ -23,8 +23,8 @@ describe("me.myCollectionInfo", () => {
       collectionLoader: async () => ({
         name: "My Collection",
         includes_purchased_artworks: true,
-        artworksCount: 20,
-        artistsCount: 2,
+        artworks_count: 20,
+        artists_count: 2,
       }),
     }
 

@@ -27,9 +27,11 @@ export const myCollectionInfoFields = {
   },
   artworksCount: {
     type: new GraphQLNonNull(GraphQLInt),
+    resolve: ({ artworks_count }) => artworks_count,
   },
   artistsCount: {
     type: new GraphQLNonNull(GraphQLInt),
+    resolve: ({ artists_count }) => artists_count,
   },
 }
 
