@@ -185,6 +185,56 @@ export const exchangeStitchingEnvironment = ({
     },
   }
 
+  const paymentMethodResolver = {
+    fragment: gql`
+      fragment CommerceOrderPaymentMethod on CommerceOrder {
+        creditCardId
+        bankAccountId
+        paymentMethod
+      }
+    `,
+
+    resolve: async (parent, _args, context, info) => {
+      const { creditCardId, bankAccountId, paymentMethod } = parent
+
+      // TODO: maybe this field should be named differently so we can use the existing `paymentMethod` string without requiring an extra delegated query field
+      if (paymentMethod === "credit card") {
+        // assert creditCardId exists?
+        return info.mergeInfo.delegateToSchema({
+          schema: localSchema,
+          operation: "query",
+          fieldName: "creditCard",
+          args: {
+            id: creditCardId,
+          },
+          context,
+          info,
+          transforms: exchangeSchema.transforms,
+        })
+        // note: us_bank_account with underscore *is* the current value from exchange
+      } else if (paymentMethod === "us_bank_account") {
+        // assert bankAccountId exists?
+        return info.mergeInfo.delegateToSchema({
+          schema: localSchema,
+          operation: "query",
+          fieldName: "bankAccount",
+          args: {
+            id: bankAccountId,
+          },
+          context,
+          info,
+          transforms: exchangeSchema.transforms,
+        })
+      } else if (paymentMethod === "wire transfer") {
+        return {
+          // PaymentMethodUnionType relies on this property
+          // not sure if this is the best way to model a manual payment TBH
+          _isManualPayment: true,
+        }
+      }
+    },
+  }
+
   const inquiryOrderResolvers = {
     isInquiryOrder: {
       fragment: gql`
@@ -269,6 +319,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
+      paymentMethod: PaymentMethodUnion
       conversation: Conversation
       additionalPaymentMethods: [String]
       
@@ -279,6 +330,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
+      paymentMethod: PaymentMethodUnion
       isInquiryOrder: Boolean!
       conversation: Conversation
       additionalPaymentMethods: [String]
@@ -291,8 +343,8 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
+      paymentMethod: PaymentMethodUnion
       additionalPaymentMethods: [String]
-
       ${orderTotalsSDL.join("\n")}
     }
 
@@ -379,6 +431,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        paymentMethod: paymentMethodResolver,
         additionalPaymentMethods: additionalPaymentMethodsResolver,
       },
       CommerceOfferOrder: {
@@ -386,6 +439,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        paymentMethod: paymentMethodResolver,
         additionalPaymentMethods: additionalPaymentMethodsResolver,
         ...inquiryOrderResolvers,
       },
@@ -505,6 +559,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
+        paymentMethod: paymentMethodResolver,
         additionalPaymentMethods: additionalPaymentMethodsResolver,
       },
       CommerceOffer: {

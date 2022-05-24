@@ -58,7 +58,7 @@ export const CreditCardMutationType = new GraphQLUnionType({
   types: [CreditCardMutationSuccessType, CreditCardMutationFailureType],
 })
 
-const CreditCardType = new GraphQLObjectType<any, ResolverContext>({
+export const CreditCardType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreditCard",
   fields: () => ({
     ...InternalIDFields,
