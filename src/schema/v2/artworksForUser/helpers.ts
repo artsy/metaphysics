@@ -3,10 +3,7 @@ import { CursorPageable } from "relay-cursor-paging"
 import { extractNodes } from "lib/helpers"
 import gql from "lib/gql"
 
-const MAX_ARTISTS = 50
-const MIN_AFFINITY_SCORE = 0.5
-
-export const getArtistAffinities = async (
+export const getNewForYouRecs = async (
   args: CursorPageable,
   context: ResolverContext
 ): Promise<string[]> => {
@@ -17,17 +14,15 @@ export const getArtistAffinities = async (
 
   const vortexResult = await graphqlLoader({
     query: gql`
-        query artistAffinitiesQuery {
-          artistAffinities(
-            first: ${MAX_ARTISTS}
-            minScore: ${MIN_AFFINITY_SCORE}
+        query newForYouRecommendationsQuery {
+          newForYouRecommendations(
+            first: ${args.first}
             userId: "${args.userId}"
           ) {
             totalCount
             edges {
               node {
-                artistId
-                score
+                artworkId
               }
             }
           }
@@ -35,29 +30,28 @@ export const getArtistAffinities = async (
       `,
   })()
 
-  const artistIds = extractNodes(vortexResult.data?.artistAffinities).map(
-    (node: any) => node?.artistId
-  )
+  const artworkIds = extractNodes(
+    vortexResult.data?.newForYouRecommendations
+  ).map((node: any) => node?.artworkId)
 
-  return artistIds
+  return artworkIds
 }
 
-export const getAffinityArtworks = async (
-  artistIds: string[],
+export const getNewForYouArtworks = async (
+  artworkIds: string[],
   gravityArgs,
   context: ResolverContext
 ): Promise<any[]> => {
-  if (artistIds.length === 0) return []
+  if (artworkIds.length === 0) return []
 
   const { size, offset } = gravityArgs
   const { artworksLoader } = context
 
   const artworkParams = {
-    artist_ids: artistIds,
+    ids: artworkIds,
     availability: "for sale",
     offset,
     size,
-    sort: "-published_at",
   }
 
   const body = await artworksLoader(artworkParams)

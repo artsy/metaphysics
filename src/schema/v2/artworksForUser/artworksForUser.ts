@@ -12,9 +12,9 @@ import { createPageCursors } from "schema/v1/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "schema/v2/artwork"
 import {
-  getArtistAffinities,
-  getAffinityArtworks,
   getBackfillArtworks,
+  getNewForYouArtworks,
+  getNewForYouRecs,
 } from "./helpers"
 
 const MAX_ARTWORKS = 100
@@ -30,25 +30,25 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (_root, args: CursorPageable, context) => {
     if (!context.artworksLoader) return
 
-    const artistIds = await getArtistAffinities(args, context)
+    const newForYouArtworkIds = await getNewForYouRecs(args, context)
 
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = gravityArgs
 
-    const affinityArtworks = await getAffinityArtworks(
-      artistIds,
+    const newForYouArtworks = await getNewForYouArtworks(
+      newForYouArtworkIds,
       gravityArgs,
       context
     )
 
-    const remainingSize = (gravityArgs.size || 0) - affinityArtworks.length
+    const remainingSize = (gravityArgs.size || 0) - newForYouArtworks.length
     const backfillArtworks = await getBackfillArtworks(
       remainingSize,
       args.includeBackfill,
       context
     )
 
-    const artworks = [...affinityArtworks, ...backfillArtworks]
+    const artworks = [...newForYouArtworks, ...backfillArtworks]
 
     // TODO: get count from artworks loader to optimize pagination
     const count = artworks.length === 0 ? 0 : MAX_ARTWORKS

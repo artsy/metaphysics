@@ -1,7 +1,7 @@
 import {
-  getAffinityArtworks,
-  getArtistAffinities,
   getBackfillArtworks,
+  getNewForYouArtworks,
+  getNewForYouRecs,
 } from "../helpers"
 
 const mockLoaderFactory = (affinities) => {
@@ -9,15 +9,15 @@ const mockLoaderFactory = (affinities) => {
     return { node: { ...affinity } }
   })
 
-  const data = { artistAffinities: { edges } }
+  const data = { newForYouRecommendations: { edges } }
   const loader = jest.fn(() => ({ data }))
 
   return loader
 }
 
-describe("getArtistAffinities", () => {
-  const userLoader = mockLoaderFactory([{ artistId: "banksy", score: "7.77" }])
-  const appLoader = mockLoaderFactory([{ artistId: "warhol", score: "9.99" }])
+describe("getNewForYouRecs", () => {
+  const userLoader = mockLoaderFactory([{ artworkId: "banksy" }])
+  const appLoader = mockLoaderFactory([{ artworkId: "warhol" }])
 
   it("prefers the user loader when available", async () => {
     const context = {
@@ -25,9 +25,9 @@ describe("getArtistAffinities", () => {
       vortexGraphqlLoaderFactory: () => () => appLoader,
     } as any
 
-    const artistIds = await getArtistAffinities({}, context)
+    const artworkIds = await getNewForYouRecs({}, context)
 
-    expect(artistIds).toEqual(["banksy"])
+    expect(artworkIds).toEqual(["banksy"])
   })
 
   it("falls back to the app loader when there is no user loader", async () => {
@@ -36,31 +36,39 @@ describe("getArtistAffinities", () => {
       vortexGraphqlLoaderFactory: () => () => appLoader,
     } as any
 
-    const artistIds = await getArtistAffinities({}, context)
+    const artworkIds = await getNewForYouRecs({}, context)
 
-    expect(artistIds).toEqual(["warhol"])
+    expect(artworkIds).toEqual(["warhol"])
   })
 })
 
-describe("getAffinityArtworks", () => {
-  it("returns an empty array with empty artist ids", async () => {
-    const artistIds = []
+describe("getNewForYouArtworks", () => {
+  it("returns an empty array with empty artwork ids", async () => {
+    const artworkIds = []
     const gravityArgs = {}
     const context = {} as any
 
-    const artworks = await getAffinityArtworks(artistIds, gravityArgs, context)
+    const artworks = await getNewForYouArtworks(
+      artworkIds,
+      gravityArgs,
+      context
+    )
     expect(artworks).toEqual([])
   })
 
-  it("returns recently published artworks for those artist ids", async () => {
-    const artistIds = ["banksy"]
+  it("returns artworks for those artwork ids", async () => {
+    const artworkIds = ["banksy"]
     const gravityArgs = {}
     const mockArtworksLoader = jest.fn(() => [{}])
     const context = {
       artworksLoader: mockArtworksLoader,
     } as any
 
-    const artworks = await getAffinityArtworks(artistIds, gravityArgs, context)
+    const artworks = await getNewForYouArtworks(
+      artworkIds,
+      gravityArgs,
+      context
+    )
     expect(artworks.length).toEqual(1)
   })
 })
