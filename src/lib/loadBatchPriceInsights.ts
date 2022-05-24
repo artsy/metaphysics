@@ -5,7 +5,7 @@ import { StaticPathLoader } from "./loaders/api/loader_interface"
 const MAX_MARKET_PRICE_INSIGHTS = 50
 
 export const loadBatchPriceInsights = async (
-  artistIDMediumTuples: { artistID: string; medium: string }[],
+  artistIDMediumTuples: { artistId: string; medium: string }[],
   vortexGraphQLLoader: ({ query, variables }) => StaticPathLoader<any>
 ) => {
   try {

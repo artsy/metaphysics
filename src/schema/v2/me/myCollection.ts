@@ -108,16 +108,16 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         convectionGraphQLLoader
       )
 
-      let artistIDMediumTuples = artworks.map((artwork: any) => ({
+      let artistIdMediumTuples = artworks.map((artwork: any) => ({
         artistId: artwork.artist?._id,
         medium: artwork.medium,
       }))
 
       // remove duplicates
-      artistIDMediumTuples = uniqWith(artistIDMediumTuples, isEqual)
+      artistIdMediumTuples = uniqWith(artistIdMediumTuples, isEqual)
 
       const marketPriceInsights = await loadBatchPriceInsights(
-        artistIDMediumTuples,
+        artistIdMediumTuples,
         vortexGraphqlLoader
       )
 
