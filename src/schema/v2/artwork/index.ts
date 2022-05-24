@@ -71,6 +71,8 @@ import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import Meta, { artistNames } from "./meta"
 import { embed, isEmbeddedVideo, isTooBig, isTwoDimensional } from "./utilities"
+import gql from "lib/gql"
+import { extractNodes } from "../../../lib/helpers"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -134,6 +136,40 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           if (!artist) return null
           if (shallow) return artist
           return loader(artist.id).catch(() => null)
+        },
+      },
+      hasMarketPriceInsights: {
+        type: GraphQLBoolean,
+        resolve: async ({ artist, medium }, _, { vortexGraphqlLoader }) => {
+          if (!vortexGraphqlLoader) return false
+          const vortexResult = await vortexGraphqlLoader({
+            query: gql`
+              query MarketPriceInsightsBatchQuery(
+                $artistIDMediumTuples: [ArtistIdMediumTupleType!]!
+              ) {
+                marketPriceInsightsBatch(
+                  input: $artistIDMediumTuples
+                  first: 1
+                ) {
+                  edges {
+                    node {
+                      demandRank
+                    }
+                  }
+                }
+              }
+            `,
+            variables: {
+              artistIDMediumTuples: [{ artistId: artist._id, medium: medium }],
+            },
+          })()
+
+          const artworkMarketPriceInsights =
+            (extractNodes(vortexResult.data.marketPriceInsightsBatch)[0] as {
+              demandRank: number
+            }) || {}
+
+          return !!artworkMarketPriceInsights.demandRank
         },
       },
       marketPriceInsights: {
