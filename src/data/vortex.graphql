@@ -56,6 +56,14 @@ type ArtistAffinityEdge {
 }
 
 """
+Artist ID and Medium Tuple
+"""
+input ArtistIdMediumTupleType {
+  artistId: String!
+  medium: String!
+}
+
+"""
 Artist Recommendation
 """
 type ArtistRecommendation {
@@ -106,6 +114,56 @@ type ArtistRecommendationEdge {
   The item at the end of the edge.
   """
   node: ArtistRecommendation
+}
+
+"""
+Artist Sparkline
+"""
+type ArtistSparkline {
+  artistId: ID!
+  artistName: String
+  eventDigest: String
+  sparkles: BigInt
+  tier: Float
+  year: String
+}
+
+"""
+The connection type for ArtistSparkline.
+"""
+type ArtistSparklineConnection {
+  """
+  A list of edges.
+  """
+  edges: [ArtistSparklineEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [ArtistSparkline]
+  pageCursors: PageCursors
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+  totalPages: Int
+}
+
+"""
+An edge in a connection.
+"""
+type ArtistSparklineEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: ArtistSparkline
 }
 
 type Artwork {
@@ -323,6 +381,102 @@ type MarketPriceInsights {
   smallLowRangeCents: BigInt
   smallMidRangeCents: BigInt
   updatedAt: ISO8601DateTime
+}
+
+"""
+The connection type for MarketPriceInsights.
+"""
+type MarketPriceInsightsConnection {
+  """
+  A list of edges.
+  """
+  edges: [MarketPriceInsightsEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [MarketPriceInsights]
+  pageCursors: PageCursors
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+  totalPages: Int
+}
+
+"""
+An edge in a connection.
+"""
+type MarketPriceInsightsEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: MarketPriceInsights
+}
+
+"""
+New For You Recommendation
+"""
+type NewForYouRecommendation {
+  """
+  Artwork ID
+  """
+  artworkId: ID!
+
+  """
+  Artwork's published_at
+  """
+  publishedAt: DateTime!
+
+  """
+  Artist affinity score
+  """
+  score: Float!
+}
+
+"""
+The connection type for NewForYouRecommendation.
+"""
+type NewForYouRecommendationConnection {
+  """
+  A list of edges.
+  """
+  edges: [NewForYouRecommendationEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [NewForYouRecommendation]
+  pageCursors: PageCursors
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  totalCount: Int
+  totalPages: Int
+}
+
+"""
+An edge in a connection.
+"""
+type NewForYouRecommendationEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: NewForYouRecommendation
 }
 
 type PageCursor {
@@ -1106,6 +1260,7 @@ type Query {
     """
     last: Int
     minScore: Float
+    userId: String
   ): ArtistAffinityConnection
 
   """
@@ -1132,6 +1287,32 @@ type Query {
     """
     last: Int
   ): ArtistRecommendationConnection
+
+  """
+  Get the year sparklines for the current artist.
+  """
+  artistSparklines(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+    artistId: String!
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+  ): ArtistSparklineConnection
 
   """
   Get all recommended artworks for the current user.
@@ -1168,6 +1349,58 @@ type Query {
   Get price insights for a market.
   """
   marketPriceInsights(artistId: ID!, medium: String!): MarketPriceInsights
+
+  """
+  Get market price insights for tuples of artist id and medium.
+  """
+  marketPriceInsightsBatch(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    input: [ArtistIdMediumTupleType!]!
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+  ): MarketPriceInsightsConnection
+
+  """
+  Get new for you artworks recs for the user.
+  """
+  newForYouRecommendations(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    userId: String
+  ): NewForYouRecommendationConnection
 
   """
   Find PartnerStats
