@@ -23,12 +23,17 @@ const buildQuery = (args: any = {}) => {
 }
 
 const buildContext = (responses: any = {}) => {
-  const { artistAffinities, affinityArtworks, sets, setItems } = responses
-  const mockArtworksLoader = jest.fn(() => Promise.resolve(affinityArtworks))
+  const {
+    newForYouRecommendations,
+    newForYouArtworks,
+    sets,
+    setItems,
+  } = responses
+  const mockArtworksLoader = jest.fn(() => Promise.resolve(newForYouArtworks))
   const mockSetsLoader = jest.fn(() => Promise.resolve({ body: sets }))
   const mockSetItemsLoader = jest.fn(() => Promise.resolve({ body: setItems }))
   const mockVortexGraphqlLoader = jest.fn(() => () =>
-    Promise.resolve({ data: { artistAffinities } })
+    Promise.resolve({ data: { newForYouRecommendations } })
   )
 
   const context = {
@@ -55,7 +60,7 @@ describe("artworksForUser", () => {
     })
   })
 
-  describe("with no artist affinities", () => {
+  describe("with no artwork recommendations", () => {
     it("returns an empty array", async () => {
       const query = buildQuery()
       const affinities = []
@@ -72,9 +77,12 @@ describe("artworksForUser", () => {
   describe("with no affinity artworks", () => {
     it("returns an empty array", async () => {
       const query = buildQuery()
-      const artistAffinities = [{}]
-      const affinityArtworks = []
-      const context = buildContext({ artistAffinities, affinityArtworks })
+      const newForYouRecommendations = [{}]
+      const newForYouArtworks = []
+      const context = buildContext({
+        newForYouRecommendations,
+        newForYouArtworks,
+      })
 
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
@@ -82,12 +90,17 @@ describe("artworksForUser", () => {
     })
   })
 
-  describe("with artist affinities and affinity artworks", () => {
+  describe("with recs and new for you artworks", () => {
     it("returns those artworks", async () => {
       const query = buildQuery()
-      const artistAffinities = { edges: [{ node: { artistId: "valid-id" } }] }
-      const affinityArtworks = [{}]
-      const context = buildContext({ artistAffinities, affinityArtworks })
+      const newForYouRecommendations = {
+        edges: [{ node: { artworkId: "valid-id" } }],
+      }
+      const newForYouArtworks = [{}]
+      const context = buildContext({
+        newForYouRecommendations,
+        newForYouArtworks,
+      })
 
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
@@ -96,11 +109,16 @@ describe("artworksForUser", () => {
   })
 
   describe("with backfill and no flag", () => {
-    it("returns affinity artworks without backfill", async () => {
+    it("returns artworks without backfill", async () => {
       const query = buildQuery({ includeBackfill: false })
-      const artistAffinities = { edges: [{ node: { artistId: "valid-id" } }] }
-      const affinityArtworks = [{}]
-      const context = buildContext({ artistAffinities, affinityArtworks })
+      const newForYouRecommendations = {
+        edges: [{ node: { artworkId: "valid-id" } }],
+      }
+      const newForYouArtworks = [{}]
+      const context = buildContext({
+        newForYouRecommendations,
+        newForYouArtworks,
+      })
 
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
@@ -111,13 +129,15 @@ describe("artworksForUser", () => {
   describe("with backfill and the flag but enough affinity artworks", () => {
     it("returns affinity artworks without backfill", async () => {
       const query = buildQuery({ first: 1, includeBackfill: true })
-      const artistAffinities = { edges: [{ node: { artistId: "valid-id" } }] }
-      const affinityArtworks = [{}]
+      const newForYouRecommendations = {
+        edges: [{ node: { artworkId: "valid-id" } }],
+      }
+      const newForYouArtworks = [{}]
       const sets = [{ id: "valid-id" }]
       const setItems = [{}]
       const context = buildContext({
-        artistAffinities,
-        affinityArtworks,
+        newForYouRecommendations,
+        newForYouArtworks,
         sets,
         setItems,
       })
@@ -131,13 +151,15 @@ describe("artworksForUser", () => {
   describe("with backfill and the flag and not enough affinity artworks", () => {
     it("returns affinity artworks with backfill", async () => {
       const query = buildQuery({ first: 2, includeBackfill: true })
-      const artistAffinities = { edges: [{ node: { artistId: "valid-id" } }] }
-      const affinityArtworks = [{}]
+      const newForYouRecommendations = {
+        edges: [{ node: { artworkId: "valid-id" } }],
+      }
+      const newForYouArtworks = [{}]
       const sets = [{ id: "valid-id" }]
       const setItems = [{}]
       const context = buildContext({
-        artistAffinities,
-        affinityArtworks,
+        newForYouRecommendations,
+        newForYouArtworks,
         sets,
         setItems,
       })
@@ -151,9 +173,14 @@ describe("artworksForUser", () => {
   describe("with no backfill and the flag and not enough affinity artworks", () => {
     it("returns only the affinity artworks", async () => {
       const query = buildQuery({ first: 2, includeBackfill: true })
-      const artistAffinities = { edges: [{ node: { artistId: "valid-id" } }] }
-      const affinityArtworks = [{}]
-      const context = buildContext({ artistAffinities, affinityArtworks })
+      const newForYouRecommendations = {
+        edges: [{ node: { artworkId: "valid-id" } }],
+      }
+      const newForYouArtworks = [{}]
+      const context = buildContext({
+        newForYouRecommendations,
+        newForYouArtworks,
+      })
 
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
