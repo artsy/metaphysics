@@ -5,7 +5,7 @@ import { ResolverContext } from "types/graphql"
 describe("me.myCollection", () => {
   const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
 
-  it("returns artworks for a collection", async () => {
+  it("returns artworks for a collection and pagination fields", async () => {
     const query = gql`
       {
         me {
@@ -17,6 +17,32 @@ describe("me.myCollection", () => {
                 artist {
                   internalID
                 }
+              }
+            }
+            pageInfo {
+              hasNextPage
+              startCursor
+              endCursor
+            }
+            pageCursors {
+              around {
+                cursor
+                page
+                isCurrent
+              }
+              first {
+                cursor
+                page
+                isCurrent
+              }
+              last {
+                cursor
+                page
+                isCurrent
+              }
+              previous {
+                cursor
+                page
               }
             }
           }
