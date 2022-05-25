@@ -39,6 +39,10 @@ describe("Artwork type", () => {
   beforeEach(() => {
     artwork = {
       id: "richard-prince-untitled-portrait",
+      artist: {
+        _id: "artist-id",
+      },
+      medium: "print",
       title: "Untitled (Portrait)",
       forsale: true,
       acquireable: false,
@@ -2065,7 +2069,7 @@ describe("Artwork type", () => {
           artwork: {
             partner: null,
             meta: {
-              description: "A Cat, 2 x 3in.",
+              description: "A Cat, print, 2 x 3in.",
             },
           },
         })
@@ -3300,6 +3304,64 @@ describe("Artwork type", () => {
             submissionId: "submission-id",
           },
         })
+      })
+    })
+  })
+
+  describe("hasMarketPriceInsights", () => {
+    it("returns true when an artwork has market price insights", () => {
+      const query = `
+        {
+          artwork(id: "foo-bar") {
+            hasMarketPriceInsights
+          }
+        }
+      `
+
+      const mockVortexGraphqlLoader = jest.fn(() => () =>
+        Promise.resolve({
+          data: {
+            marketPriceInsightsBatch: { edges: null },
+          },
+        })
+      )
+
+      context.vortexGraphqlLoader = mockVortexGraphqlLoader
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            hasMarketPriceInsights: false,
+          },
+        })
+      })
+    })
+  })
+
+  it("returns false when an artwork has no market price insights", () => {
+    const query = `
+        {
+          artwork(id: "foo-bar") {
+            hasMarketPriceInsights
+          }
+        }
+      `
+
+    const mockVortexGraphqlLoader = jest.fn(() => () =>
+      Promise.resolve({
+        data: {
+          marketPriceInsightsBatch: { edges: [{ node: { demandRank: 0.9 } }] },
+        },
+      })
+    )
+
+    context.vortexGraphqlLoader = mockVortexGraphqlLoader
+
+    return runQuery(query, context).then((data) => {
+      expect(data).toEqual({
+        artwork: {
+          hasMarketPriceInsights: true,
+        },
       })
     })
   })
