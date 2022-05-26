@@ -38,6 +38,7 @@ export const BankAccount: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The ID of the bank account",
     },
   },
-  resolve: (_root, { id }, { bankAccountLoader }) =>
-    bankAccountLoader ? bankAccountLoader(id) : null,
+  resolve: (_root, { id }, { bankAccountLoader }) => {
+    return bankAccountLoader ? bankAccountLoader(id) : null
+  },
 }

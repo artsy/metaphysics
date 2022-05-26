@@ -185,22 +185,21 @@ export const exchangeStitchingEnvironment = ({
     },
   }
 
-  const paymentMethodResolver = {
+  const paymentDeviceResolver = {
     fragment: gql`
       fragment CommerceOrderPaymentMethod on CommerceOrder {
         creditCardId
         bankAccountId
-        paymentMethod
+        paymentMethod #TODO: one of these fields should probably have a different name
       }
     `,
 
     resolve: async (parent, _args, context, info) => {
       const { creditCardId, bankAccountId, paymentMethod } = parent
-
       // TODO: maybe this field should be named differently so we can use the existing `paymentMethod` string without requiring an extra delegated query field
       if (paymentMethod === "credit card") {
         // assert creditCardId exists?
-        return info.mergeInfo.delegateToSchema({
+        const creditCard = await info.mergeInfo.delegateToSchema({
           schema: localSchema,
           operation: "query",
           fieldName: "creditCard",
@@ -209,12 +208,14 @@ export const exchangeStitchingEnvironment = ({
           },
           context,
           info,
-          transforms: exchangeSchema.transforms,
+          // TODO: Not sure why this needs to be changed but the type comes through as CommerceCreditCard otherwise.
+          // transforms: exchangeSchema.transforms,
         })
-        // note: us_bank_account with underscore *is* the current value from exchange
+        return creditCard
+        // TODO: us_bank_account with underscore *is* the current value from exchange, while CC does not have it
       } else if (paymentMethod === "us_bank_account") {
         // assert bankAccountId exists?
-        return info.mergeInfo.delegateToSchema({
+        const bankAccount = await info.mergeInfo.delegateToSchema({
           schema: localSchema,
           operation: "query",
           fieldName: "bankAccount",
@@ -223,13 +224,16 @@ export const exchangeStitchingEnvironment = ({
           },
           context,
           info,
-          transforms: exchangeSchema.transforms,
+          // transforms: exchangeSchema.transforms,
         })
-      } else if (paymentMethod === "wire transfer") {
+        bankAccount.isBankPayment = true
+        return bankAccount
+      } else if (paymentMethod === "wire_transfer") {
         return {
+          __typename: "ManualWirePayment",
           // PaymentMethodUnionType relies on this property
-          // not sure if this is the best way to model a manual payment TBH
-          _isManualPayment: true,
+          // not sure if this is the best way to model a manual payment
+          isManualPayment: true,
         }
       }
     },
@@ -319,7 +323,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-      paymentMethod: PaymentMethodUnion
+      paymentDevice: PaymentMethodUnion
       conversation: Conversation
       additionalPaymentMethods: [String]
       
@@ -330,7 +334,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-      paymentMethod: PaymentMethodUnion
+      paymentDevice: PaymentMethodUnion
       isInquiryOrder: Boolean!
       conversation: Conversation
       additionalPaymentMethods: [String]
@@ -343,7 +347,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-      paymentMethod: PaymentMethodUnion
+      paymentDevice: PaymentMethodUnion
       additionalPaymentMethods: [String]
       ${orderTotalsSDL.join("\n")}
     }
@@ -431,7 +435,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
-        paymentMethod: paymentMethodResolver,
+        paymentDevice: paymentDeviceResolver,
         additionalPaymentMethods: additionalPaymentMethodsResolver,
       },
       CommerceOfferOrder: {
@@ -439,7 +443,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
-        paymentMethod: paymentMethodResolver,
+        paymentDevice: paymentDeviceResolver,
         additionalPaymentMethods: additionalPaymentMethodsResolver,
         ...inquiryOrderResolvers,
       },
@@ -559,7 +563,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
-        paymentMethod: paymentMethodResolver,
+        paymentDevice: paymentDeviceResolver,
         additionalPaymentMethods: additionalPaymentMethodsResolver,
       },
       CommerceOffer: {

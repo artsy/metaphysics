@@ -15,13 +15,17 @@ const ManualWirePaymentType = new GraphQLObjectType({
 export const PaymentMethodUnionType = new GraphQLUnionType({
   name: "PaymentMethodUnion",
   types: [BankAccountType, CreditCardType, ManualWirePaymentType],
-  resolveType: (value: any) => {
-    if (Boolean(value["bank_name"])) {
-      return BankAccountType
-    } else if (value["_isManualPayment"]) {
-      return ManualWirePaymentType
-    } else {
-      return CreditCardType
+  resolveType: ({ __typename }) => {
+    switch (__typename) {
+      // TODO: I don't know why this works with a broken resolver
+      // case "CreditCard":
+      //   return CreditCardType
+      // case "BankAccount":
+      //   return BankAccountType
+      // case "ManualWirePayment":
+      //   return ManualWirePaymentType
+      default:
+        return null
     }
   },
 })
