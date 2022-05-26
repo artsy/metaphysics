@@ -136,6 +136,7 @@ export default (opts) => ({
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
+      requestThrottleMs: config.IPBASE_REQUEST_THROTTLE_MS,
     }
   ),
 
