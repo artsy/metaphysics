@@ -27,6 +27,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    mergeArtistLoader: gravityLoader("artists/merge", {}, { method: "POST" }),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
     notificationPreferencesLoader: gravityLoader("notification_preferences"),
     updateNotificationPreferencesLoader: gravityLoader(

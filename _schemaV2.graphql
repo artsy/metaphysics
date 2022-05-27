@@ -9804,6 +9804,22 @@ type Me implements Node {
   ): LotConnection
 }
 
+input MergeArtistsMutationInput {
+  # The database ID of the "bad" artist record(s), which will be **discarded** after the merge
+  badIds: [String!]!
+  clientMutationId: String
+
+  # The database ID of the "good" artist record, which will be **kept** after the
+  # merge. Relevant fields and associations from the bad records will be merged into this one.
+  goodId: String!
+}
+
+type MergeArtistsMutationPayload {
+  # The "good" artist record, which was kept after the merge. Upon a successful merge this record may have been updated.
+  artist: Artist
+  clientMutationId: String
+}
+
 # A message in a conversation.
 type Message implements Node {
   attachments: [Attachment]
@@ -10135,6 +10151,9 @@ type Mutation {
   linkAuthentication(
     input: LinkAuthenticationMutationInput!
   ): LinkAuthenticationMutationPayload
+
+  # Merge multiple artist records in order to deduplicate artists
+  mergeArtists(input: MergeArtistsMutationInput!): MergeArtistsMutationPayload
 
   # Create an artwork in my collection
   myCollectionCreateArtwork(
