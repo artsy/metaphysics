@@ -55,6 +55,7 @@ export function hybridConnectionFromArraySlice<
   const lastEdge = edges[edges.length - 1]
 
   const result = {
+    totalCount,
     edges,
     pageInfo: {
       startCursor: firstEdge?.cursor ?? null,

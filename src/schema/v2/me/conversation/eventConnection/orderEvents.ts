@@ -24,28 +24,29 @@ export const fetchOrderEventsForPagination = (
   userID: string,
   exchangeGraphQLLoader: any
 ): FetcherForLimitAndOffset<ReturnedNodeShape> => async ({
-  limit,
-  offset,
-  sort,
+  // We don't care about these because we return the entire collection and let
+  // the fetchHybridConnection worry about coalating and handling the result
+  limit: _limit,
+  offset: _offset,
+  sort: _sort,
 }) => {
-  const orderEvents: Array<any> = await fetchOrderEvents(conversationId, {
+  const orderEvents = await fetchOrderEvents(conversationId, {
     exchangeGraphQLLoader,
     userID,
   })
-  const sortedNodes = orderEvents.sort((event) => {
-    const date: number = Date.parse(event.createdAt)
 
-    return sort === "DESC" ? -date : date
-  })
+  if (!orderEvents) {
+    return {
+      totalCount: 0,
+      nodes: [],
+    }
+  }
 
   return {
-    totalCount: sortedNodes.length,
-    nodes: sortedNodes.slice(offset, limit + offset),
+    totalCount: orderEvents.length,
+    nodes: orderEvents,
   }
 }
-
-const fakeEventId = (prefix, index, orderIndex) =>
-  `${prefix}-event-${index}-${orderIndex}`
 
 /**
  * fetch all order events for a conversation from exchange
@@ -59,7 +60,7 @@ const fetchOrderEvents = async (
   }: { exchangeGraphQLLoader: any; userID: string },
   // from args - presence of sellerId overrides buyer mode
   sellerId?: string
-) => {
+): Promise<Array<any> | null> => {
   if (!exchangeGraphQLLoader) return null
   // this id key depends on whether the requester the buyer or seller
   const viewerKey = sellerId
@@ -89,7 +90,7 @@ const fetchOrderEvents = async (
                     definesTotal
                     offerAmountChanged
                     respondsTo {
-                      fromParticipant
+                      id
                     }
                   }
                 }
@@ -102,11 +103,21 @@ const fetchOrderEvents = async (
       conversationId: String(conversationId),
     },
   })
-  const orderEvents = exchangeData.orders.nodes.flatMap((node, orderIndex) =>
-    node.orderHistory.map((event, index) => {
-      return { ...event, id: fakeEventId(conversationId, index, orderIndex) }
-    })
-  )
+  // Extract events and sort them descending from latest
+  const orderEvents: Array<any> =
+    exchangeData.orders.nodes
+      .flatMap((node) => node.orderHistory.map((event) => event))
+      .sort((e1, e2) => Date.parse(e2.createdAt) - Date.parse(e1.createdAt)) ||
+    []
+
+  // apply a synthetic id (for the relay node interface) to each event,
+  // working back to earliest. This is to guarantee the id
+  // will be as stable as possible as new events are added to the collection
+  const count = orderEvents.length
+  orderEvents.forEach((event, index) => {
+    event["id"] = `fake-id-${conversationId}-${count - index}`
+  })
+
   return orderEvents
 }
 
@@ -140,10 +151,6 @@ const ConversationOfferSubmittedEventType = new GraphQLObjectType<
     offerAmountChanged: {
       type: GraphQLBoolean,
       resolve: ({ offer }) => Boolean(offer.offerAmountChanged),
-    },
-    respondsTo: {
-      type: ConversationOfferSubmittedEventType,
-      resolve: ({ offer }) => offer.respondsTo,
     },
   }),
 })
