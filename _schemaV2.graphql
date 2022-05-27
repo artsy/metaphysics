@@ -9804,6 +9804,10 @@ type Me implements Node {
   ): LotConnection
 }
 
+type MergeArtistsMutationFailure {
+  mutationError: GravityMutationError
+}
+
 input MergeArtistsMutationInput {
   # The database ID of the "bad" artist record(s), which will be **discarded** after the merge
   badIds: [String!]!
@@ -9815,10 +9819,23 @@ input MergeArtistsMutationInput {
 }
 
 type MergeArtistsMutationPayload {
-  # The "good" artist record, which was kept after the merge. Upon a successful merge this record may have been updated.
-  artist: Artist
   clientMutationId: String
+
+  #
+  #       Upon success: the "good" artist record, which was kept after the merge, and may have been updated.
+  #
+  #       Upon error: a message from Gravity.
+  #
+  mergedArtistOrError: MergeArtistsMutationType
 }
+
+type MergeArtistsMutationSuccess {
+  artist: Artist
+}
+
+union MergeArtistsMutationType =
+    MergeArtistsMutationFailure
+  | MergeArtistsMutationSuccess
 
 # A message in a conversation.
 type Message implements Node {

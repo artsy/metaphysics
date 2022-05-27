@@ -1,5 +1,15 @@
-import { GraphQLList, GraphQLNonNull, GraphQLString } from "graphql"
+import {
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { ArtistType } from "../artist"
 
@@ -9,8 +19,42 @@ type Input = {
 }
 
 type Output = {
-  artist: any // 🥵
+  artist: any // 🥵🥵🥵
 }
+
+const MergeArtistsMutationSuccessType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "MergeArtistsMutationSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    artist: {
+      type: ArtistType,
+    },
+  }),
+})
+
+const MergeArtistsMutationFailureType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "MergeArtistsMutationFailure",
+  isTypeOf: (data) => {
+    return data._type === "GravityMutationError"
+  },
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const MergeArtistsMutationType = new GraphQLUnionType({
+  name: "MergeArtistsMutationType",
+  types: [MergeArtistsMutationSuccessType, MergeArtistsMutationFailureType],
+})
 
 export const mergeArtistsMutation = mutationWithClientMutationId<
   Input,
@@ -34,10 +78,14 @@ export const mergeArtistsMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    artist: {
-      type: ArtistType,
-      description:
-        'The "good" artist record, which was kept after the merge. Upon a successful merge this record may have been updated.',
+    mergedArtistOrError: {
+      type: MergeArtistsMutationType,
+      resolve: (result) => result,
+      description: `
+      Upon success: the "good" artist record, which was kept after the merge, and may have been updated.
+
+      Upon error: a message from Gravity.
+      `,
     },
   },
   mutateAndGetPayload: async (input, context) => {
@@ -53,13 +101,20 @@ export const mergeArtistsMutation = mutationWithClientMutationId<
         good_id: goodId,
         bad_ids: badIds,
       })
-
-      return {
-        artist: mergedArtist,
-      }
+      return mergedArtist
     } catch (error) {
-      const message = error?.body?.message ?? "Artists could not be merged"
-      throw new Error(message)
+      // const message = error?.body?.message ?? "Artists could not be merged"
+      // throw new Error(message)
+
+      const formattedErr = formatGravityError(error)
+      console.log({ error })
+      console.log({ formattedErr })
+
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
     }
   },
 })
