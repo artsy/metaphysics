@@ -10,6 +10,7 @@ import impulse from "lib/apis/impulse"
 import positron from "lib/apis/positron"
 import { vortex } from "lib/apis/vortex"
 import { greenhouse } from "lib/apis/greenhouse"
+import { ipbase } from "lib/apis/ipbase"
 
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
@@ -121,6 +122,21 @@ export default (opts) => ({
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
+    }
+  ),
+
+  /**
+   * The ipbase loaders produced by this factory _will_ cache all responses to memcache.
+   *
+   * Do **not** use it for authenticated requests!
+   */
+  ipbaseLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    ipbase,
+    "ipbase",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+      requestThrottleMs: config.IPBASE_REQUEST_THROTTLE_MS,
     }
   ),
 
