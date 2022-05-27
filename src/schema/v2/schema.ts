@@ -13,6 +13,7 @@ import Articles from "./articles"
 import ArticlesConnection from "./articlesConnection"
 import Artist from "./artist"
 import Artists, { artistsConnection } from "./artists"
+import { mergeArtistsMutation } from "./artists/mergeArtistsMutation"
 import Artwork from "./artwork"
 import { ArtistArtworkGridType } from "./artwork/artworkContextGrids/ArtistArtworkGrid"
 import { AuctionArtworkGridType } from "./artwork/artworkContextGrids/AuctionArtworkGrid"
@@ -281,6 +282,7 @@ export default new GraphQLSchema({
       followProfile: FollowProfile,
       followShow: FollowShow,
       linkAuthentication: linkAuthenticationMutation,
+      mergeArtists: mergeArtistsMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
