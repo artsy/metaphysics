@@ -2,21 +2,21 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLInt,
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
-import {
-  connectionFromArray,
-  connectionFromArraySlice,
-  cursorForObjectInConnection,
-} from "graphql-relay"
+import { connectionFromArray, cursorForObjectInConnection } from "graphql-relay"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { compact, isEqual, uniqWith } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
-import { connectionWithCursorInfo } from "../fields/pagination"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "../fields/pagination"
 import { loadBatchPriceInsights } from "lib/loadBatchPriceInsights"
 import { loadSubmissions } from "./loadSubmissions"
 import { myCollectionInfoFields } from "./myCollectionInfo"
@@ -43,6 +43,8 @@ export const {
 export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   type: MyCollectionConnection.connectionType,
   args: pageable({
+    page: { type: GraphQLInt },
+    size: { type: GraphQLInt },
     sort: {
       type: new GraphQLEnumType({
         name: "MyCollectionArtworkSorts",
@@ -127,10 +129,16 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         artworks,
         marketPriceInsights
       )
+      const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-      return connectionFromArraySlice(artworksWithInsights, options, {
-        arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-        sliceStart: gravityOptions.offset,
+      return paginationResolver({
+        totalCount,
+        offset,
+        page,
+        size,
+        body: artworksWithInsights,
+        args: options,
       })
     } catch (error) {
       console.error("[schema/v2/me/my_collection] Error:", error)
