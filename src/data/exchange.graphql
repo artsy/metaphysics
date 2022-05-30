@@ -132,6 +132,7 @@ type BuyOrder implements Order {
   ): LineItemConnection
   mode: OrderModeEnum
   orderHistory: [OrderEventUnion!]!
+  paymentMethod: PaymentMethodEnum
   requestedFulfillment: RequestedFulfillmentUnion
   seller: OrderPartyUnion!
   sellerTotalCents: Int
@@ -1152,6 +1153,7 @@ type OfferOrder implements Order {
     last: Int
   ): OfferConnection
   orderHistory: [OrderEventUnion!]!
+  paymentMethod: PaymentMethodEnum
   requestedFulfillment: RequestedFulfillmentUnion
   seller: OrderPartyUnion!
   sellerTotalCents: Int
@@ -1230,6 +1232,7 @@ interface Order {
   ): LineItemConnection
   mode: OrderModeEnum
   orderHistory: [OrderEventUnion!]!
+  paymentMethod: PaymentMethodEnum
   requestedFulfillment: RequestedFulfillmentUnion
   seller: OrderPartyUnion!
   sellerTotalCents: Int
@@ -1574,6 +1577,33 @@ type Partner {
   type: String!
 }
 
+enum PaymentMethodEnum {
+  """
+  ACH Transfer
+  """
+  ACH_TRANSFER
+
+  """
+  Credit Card
+  """
+  CREDIT_CARD
+
+  """
+  Other
+  """
+  OTHER
+
+  """
+  US Bank Account
+  """
+  US_BANK_ACCOUNT
+
+  """
+  Wire Transfer
+  """
+  WIRE_TRANSFER
+}
+
 type Pickup {
   fulfillmentType: String!
   phoneNumber: String
@@ -1879,7 +1909,10 @@ input SetPaymentInput {
   clientMutationId: String
   creditCardId: String
   id: ID!
+  paymentMethod: PaymentMethodEnum
+  paymentMethodId: String
   setupIntentId: String
+  wireTransfer: Boolean
 }
 
 """
