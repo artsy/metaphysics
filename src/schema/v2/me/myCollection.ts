@@ -6,11 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
-import {
-  connectionFromArray,
-  connectionFromArraySlice,
-  cursorForObjectInConnection,
-} from "graphql-relay"
+import { connectionFromArray, cursorForObjectInConnection } from "graphql-relay"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { compact, isEqual, uniqWith } from "lodash"
@@ -143,11 +139,6 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         size,
         body: artworksWithInsights,
         args: options,
-      })
-
-      return connectionFromArraySlice(artworksWithInsights, options, {
-        arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-        sliceStart: gravityOptions.offset,
       })
     } catch (error) {
       console.error("[schema/v2/me/my_collection] Error:", error)
