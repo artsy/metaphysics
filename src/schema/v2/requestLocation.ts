@@ -1,11 +1,14 @@
 import {
   GraphQLFieldConfig,
+  GraphQLID,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import cached from "schema/v2/fields/cached"
 import config from "config"
+import { base64 } from "lib/base64"
 
 const logRateHeaders = (headers) => {
   const headerKeys = [...Object.keys(headers)]
@@ -20,6 +23,8 @@ const logRateHeaders = (headers) => {
 export const RequestLocationType = new GraphQLObjectType<any, ResolverContext>({
   name: "RequestLocation",
   fields: () => ({
+    cached,
+    id: { type: new GraphQLNonNull(GraphQLID) },
     country: { type: GraphQLString },
     countryCode: { type: GraphQLString },
   }),
@@ -34,7 +39,9 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: async (_root, args, { requestLocationLoader }) => {
-    const { body, headers } = await requestLocationLoader({ ip: args.ip })
+    const { body, headers, cached } = await requestLocationLoader({
+      ip: args.ip,
+    })
 
     if (config.ENABLE_GEOLOCATION_LOGGING) {
       logRateHeaders(headers)
@@ -42,6 +49,6 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
 
     const { alpha2: countryCode, name: country } = body.data.location.country
 
-    return { country, countryCode }
+    return { id: base64(args.ip), country, countryCode, cached }
   },
 }

@@ -18,6 +18,7 @@ export type ResponseHeaders = { [header: string]: string }
 export type BodyAndHeaders<B = any, H = ResponseHeaders> = {
   body: B
   headers: H
+  cached?: number
 }
 
 // Remove the `headers` key here so we can use pattern matching below to
