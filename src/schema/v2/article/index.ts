@@ -283,7 +283,21 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
           )
         )
       ),
-      resolve: ({ sections }) => (sections ? sections : []),
+      resolve: ({ sections }) =>
+        sections
+          ? // Filter out any unsupported sections
+            sections.filter((section) => {
+              return [
+                "callout",
+                "embed",
+                "image_collection",
+                "image_set",
+                "social_embed",
+                "text",
+                "video",
+              ].includes(section.type)
+            })
+          : [],
     },
     series: {
       type: new GraphQLObjectType({
