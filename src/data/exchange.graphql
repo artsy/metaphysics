@@ -1912,7 +1912,6 @@ input SetPaymentInput {
   paymentMethod: PaymentMethodEnum
   paymentMethodId: String
   setupIntentId: String
-  wireTransfer: Boolean
 }
 
 """
