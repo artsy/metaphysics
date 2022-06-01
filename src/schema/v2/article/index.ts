@@ -25,6 +25,7 @@ import { ArticleSectionSocialEmbed } from "./sections/ArticleSectionSocialEmbed"
 import { take } from "lodash"
 import { ArticleHero, ArticleLayoutEnum } from "./models"
 import { channelType } from "./channel"
+import { existyValue } from "lib/helpers"
 
 export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Article",
@@ -264,6 +265,16 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
         return take([...relatedArticles, ...articlesFeed], args.size)
       },
     },
+    searchTitle: {
+      type: GraphQLString,
+      description: "Title to favor for document titles",
+      resolve: ({ search_title }) => existyValue(search_title),
+    },
+    searchDescription: {
+      type: GraphQLString,
+      description: "Description to favor for meta description",
+      resolve: ({ search_description }) => existyValue(search_description),
+    },
     sections: {
       type: new GraphQLNonNull(
         new GraphQLList(
@@ -362,6 +373,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
     },
     thumbnailTitle: {
       type: GraphQLString,
+      description: "Title to favor for links to article",
       resolve: ({ thumbnail_title }) => thumbnail_title,
     },
     thumbnailTeaser: {
