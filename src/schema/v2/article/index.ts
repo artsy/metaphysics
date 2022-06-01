@@ -26,6 +26,7 @@ import { take } from "lodash"
 import { ArticleHero, ArticleLayoutEnum } from "./models"
 import { channelType } from "./channel"
 import { existyValue } from "lib/helpers"
+import { PartnerType } from "../partner"
 
 export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Article",
@@ -121,6 +122,11 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ slug }) => `/article/${slug}`,
     },
+    isPromotedContent: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: "Articles with associated partners are promoted content",
+      resolve: ({ partner_ids }) => (partner_ids ?? []).length > 0,
+    },
     layout: {
       type: new GraphQLNonNull(ArticleLayoutEnum),
     },
@@ -192,6 +198,13 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
         if (Object.values(news_source).filter(Boolean).length === 0) return null
 
         return news_source
+      },
+    },
+    partner: {
+      type: PartnerType,
+      resolve: ({ partner_ids }, _args, { partnerLoader }) => {
+        if (!partner_ids || !partner_ids[0]) return null
+        return partnerLoader(partner_ids[0])
       },
     },
     postscript: { type: GraphQLString },

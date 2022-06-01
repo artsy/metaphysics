@@ -898,6 +898,9 @@ type Article implements Node {
 
   # A type-specific ID.
   internalID: ID!
+
+  # Articles with associated partners are promoted content
+  isPromotedContent: Boolean!
   keywords: [String!]!
   layout: ArticleLayout!
 
@@ -905,6 +908,7 @@ type Article implements Node {
   leadParagraph: String
   media: ArticleMedia
   newsSource: ArticleNewsSource
+  partner: Partner
   postscript: String
   publishedAt(
     format: String
