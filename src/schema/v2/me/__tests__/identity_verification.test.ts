@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import { IdentityVerificationGravityResponse } from "../identity_verification"
+import { IdentityVerificationGravityResponse } from "../../identity_verification"
 
 describe("IdentityVerification type", () => {
   it("returns the resolved identity verification", async () => {

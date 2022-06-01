@@ -17,6 +17,21 @@ export default (accessToken, userID, opts) => {
     identityVerificationLoader: gravityLoader(
       (id) => `identity_verification/${id}`
     ),
+    identityVerificationsLoader: gravityLoader(
+      "identity_verifications",
+      {},
+      { headers: true }
+    ),
+    identityVerificationOverridesLoader: gravityLoader(
+      (id) => `identity_verification/${id}/overrides`,
+      {},
+      { headers: true }
+    ),
+    identityVerificationScanReferencesLoader: gravityLoader(
+      (id) => `identity_verification/${id}/scan_references`,
+      {},
+      { headers: true }
+    ),
     sendIdentityVerificationEmailLoader: gravityLoader(
       `identity_verification`,
       {},
