@@ -22,7 +22,7 @@ export type IdentityVerificationGravityResponse = {
   user_id: string
 }
 
-type IdentityVerificationOverrideGravityResponse = {
+export type IdentityVerificationOverrideGravityResponse = {
   id: string
   new_state: string
   old_state: string
@@ -31,7 +31,7 @@ type IdentityVerificationOverrideGravityResponse = {
   created_at: string
 }
 
-type IdentityVerificationScanReferenceGravityResponse = {
+export type IdentityVerificationScanReferenceGravityResponse = {
   id: string
   jumio_id: string
   extracted_first_name: string
