@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString } from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLList } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "schema/v2/object_identification"
 
@@ -21,6 +21,14 @@ const AttributionClass = new GraphQLObjectType<any, ResolverContext>({
         "Short descriptive phrase for attribution class without punctuation",
       resolve: ({ short_description }) => {
         return short_description
+      },
+    },
+    shortArrayDescription: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        "Short descriptive phrase for attribution class without punctuation as array of strings",
+      resolve: ({ short_array_description }) => {
+        return short_array_description
       },
     },
     longDescription: {
