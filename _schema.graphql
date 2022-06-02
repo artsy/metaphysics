@@ -4465,6 +4465,7 @@ type CommerceBuyOrder implements CommerceOrder {
   ): CommerceLineItemConnection
   mode: CommerceOrderModeEnum
   orderHistory: [CommerceOrderEventUnion!]!
+  paymentMethod: CommercePaymentMethodEnum
   requestedFulfillment: CommerceRequestedFulfillmentUnion
   seller: CommerceOrderPartyUnion!
   sellerDetails: OrderParty
@@ -5202,6 +5203,7 @@ type CommerceOfferOrder implements CommerceOrder {
     thousand: String = ","
   ): String
   orderHistory: [CommerceOrderEventUnion!]!
+  paymentMethod: CommercePaymentMethodEnum
   requestedFulfillment: CommerceRequestedFulfillmentUnion
   seller: CommerceOrderPartyUnion!
   sellerDetails: OrderParty
@@ -5390,6 +5392,7 @@ interface CommerceOrder {
   ): CommerceLineItemConnection
   mode: CommerceOrderModeEnum
   orderHistory: [CommerceOrderEventUnion!]!
+  paymentMethod: CommercePaymentMethodEnum
   requestedFulfillment: CommerceRequestedFulfillmentUnion
   seller: CommerceOrderPartyUnion!
   sellerDetails: OrderParty
@@ -5696,6 +5699,23 @@ type CommercePartner {
   type: String!
 }
 
+enum CommercePaymentMethodEnum {
+  # ACH Transfer
+  ACH_TRANSFER
+
+  # Credit Card
+  CREDIT_CARD
+
+  # Other
+  OTHER
+
+  # US Bank Account
+  US_BANK_ACCOUNT
+
+  # Wire Transfer
+  WIRE_TRANSFER
+}
+
 type CommercePickup {
   fulfillmentType: String!
   phoneNumber: String
@@ -5818,6 +5838,8 @@ input CommerceSetPaymentInput {
   clientMutationId: String
   creditCardId: String
   id: ID!
+  paymentMethod: CommercePaymentMethodEnum
+  paymentMethodId: String
   setupIntentId: String
 }
 
