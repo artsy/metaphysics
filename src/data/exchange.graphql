@@ -2037,6 +2037,7 @@ A shipping quote
 """
 type ShippingQuote {
   createdAt: DateTime!
+  currencyCode: String!
   displayName: String!
   id: ID!
   isSelected: Boolean!
