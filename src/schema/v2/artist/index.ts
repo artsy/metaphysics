@@ -624,10 +624,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       initials: initials("name"),
       insights: ArtistInsights,
-      activeSecondaryMarket: {
-        type: GraphQLBoolean,
-        resolve: ({ active_secondary_market }) => active_secondary_market,
-      },
       isConsignable: {
         type: GraphQLBoolean,
         resolve: ({ consignable }) => consignable,

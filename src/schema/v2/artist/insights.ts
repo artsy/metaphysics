@@ -1,11 +1,11 @@
 import { compact } from "lodash"
-
 import {
   GraphQLObjectType,
   GraphQLList,
   GraphQLEnumType,
   GraphQLString,
   GraphQLFieldConfig,
+  GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -27,10 +27,13 @@ export const ArtistInsightType = new GraphQLEnumType({
     BIENNIAL: {
       value: "Included in a major biennial",
     },
+    ACTIVE_SECONDARY_MARKET: {
+      value: "Recent auction results in the Artsy Price Database",
+    },
   },
 })
 
-const ArtistInsightTypeMapping = {
+const ARTIST_INSIGHT_TYPES = {
   solo_show_institutions: { type: ArtistInsightType.getValue("SOLO_SHOW") },
   group_show_institutions: { type: ArtistInsightType.getValue("GROUP_SHOW") },
   collections: {
@@ -39,30 +42,52 @@ const ArtistInsightTypeMapping = {
   },
   review_sources: { type: ArtistInsightType.getValue("REVIEWED") },
   biennials: { type: ArtistInsightType.getValue("BIENNIAL") },
+  active_secondary_market: {
+    type: ArtistInsightType.getValue("ACTIVE_SECONDARY_MARKET"),
+  },
 }
 
 const buildInsights = (artist) => {
-  const splitEntities = (entitiesString: string, delimiter): Array<string> => {
+  const splitEntities = (
+    entitiesString: string,
+    delimiter: string
+  ): Array<string> => {
     return entitiesString.split(delimiter).map((entity) => {
       return entity.trim()
     })
   }
 
-  const buildInsight = (mapping, entitiesString: string) => {
-    return {
-      type: mapping.type.name,
-      entities: splitEntities(entitiesString, mapping.delimiter || "|"),
-      label: mapping.type.value,
-    }
-  }
-
   return compact(
-    // eslint-disable-next-line array-callback-return
-    Object.keys(ArtistInsightTypeMapping).map((key) => {
-      const entitiesString = artist[key] && artist[key].trim()
+    Object.keys(ARTIST_INSIGHT_TYPES).map((key) => {
+      const value = artist[key]
 
-      if (entitiesString) {
-        return buildInsight(ArtistInsightTypeMapping[key], entitiesString)
+      if (!value) {
+        return
+      }
+
+      const mapping = ARTIST_INSIGHT_TYPES[key]
+
+      switch (typeof value) {
+        case "string":
+          const trimmed = value.trim()
+
+          if (!trimmed) return null
+
+          return {
+            entities: splitEntities(trimmed, mapping.delimiter || "|"),
+            label: mapping.type.value,
+            type: mapping.type.name,
+          }
+
+        case "boolean":
+          return {
+            entities: [],
+            label: mapping.type.value,
+            type: mapping.type.name,
+          }
+
+        default:
+          return null
       }
     })
   )
@@ -72,15 +97,15 @@ const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistInsight",
   fields: {
     type: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: "The type of insight.",
     },
     label: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: "Label to use when displaying the insight.",
     },
     entities: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: "List of entities relevant to the insight.",
     },
   },
