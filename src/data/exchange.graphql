@@ -83,9 +83,6 @@ type BuyOrder implements Order {
   """
   Whether Artsy collects taxes (e.g., sales tax or VAT) on this order.
   """
-  # TODO: replace schema when type is added for real
-  paymentMethod: String
-  # TODO: ^^
   artsyCollectsTaxes: Boolean
   artsyRemitsTaxes: Boolean
   artsyTotalCents: Int
@@ -1074,9 +1071,6 @@ type OfferOrder implements Order {
   """
   Whether Artsy collects taxes (e.g., sales tax or VAT) on this order.
   """
-  # TODO: replace schema when type is added for real
-  paymentMethod: String
-  # TODO: ^^
   artsyCollectsTaxes: Boolean
   artsyRemitsTaxes: Boolean
   artsyTotalCents: Int
@@ -1193,9 +1187,6 @@ interface Order {
   """
   Whether Artsy collects taxes (e.g., sales tax or VAT) on this order.
   """
-  # TODO: replace schema when type is added for real
-  paymentMethod: String
-  # TODO: ^^
   artsyCollectsTaxes: Boolean
   artsyRemitsTaxes: Boolean
   artsyTotalCents: Int
