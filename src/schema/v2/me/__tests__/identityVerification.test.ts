@@ -5,7 +5,7 @@ import {
   IdentityVerificationGravityResponse,
   IdentityVerificationOverrideGravityResponse,
   IdentityVerificationScanReferenceGravityResponse,
-} from "../../identity_verification"
+} from "../../identityVerification"
 
 describe("IdentityVerification type", () => {
   it("returns the resolved identity verification", async () => {
@@ -77,7 +77,7 @@ describe("IdentityVerification type", () => {
 
     const query = gql`
       {
-        identityVerifications(userId: "user1", page: 1) {
+        identityVerificationsConnection(userId: "user1", page: 1) {
           edges {
             node {
               state
@@ -93,25 +93,28 @@ describe("IdentityVerification type", () => {
       }
     `
 
-    const { identityVerifications } = await runAuthenticatedQuery(query, {
-      identityVerificationsLoader: () =>
-        Promise.resolve({
-          body: [gravityIdentityVerification],
-          headers: { "x-total-count": "1" },
-        }),
-      identityVerificationScanReferencesLoader: () =>
-        Promise.resolve({
-          body: [gravityScanReference],
-          headers: {},
-        }),
-      identityVerificationOverridesLoader: () =>
-        Promise.resolve({
-          body: [gravityOverride],
-          headers: {},
-        }),
-    })
+    const { identityVerificationsConnection } = await runAuthenticatedQuery(
+      query,
+      {
+        identityVerificationsLoader: () =>
+          Promise.resolve({
+            body: [gravityIdentityVerification],
+            headers: { "x-total-count": "1" },
+          }),
+        identityVerificationScanReferencesLoader: () =>
+          Promise.resolve({
+            body: [gravityScanReference],
+            headers: {},
+          }),
+        identityVerificationOverridesLoader: () =>
+          Promise.resolve({
+            body: [gravityOverride],
+            headers: {},
+          }),
+      }
+    )
 
-    expect(identityVerifications.edges[0].node).toEqual({
+    expect(identityVerificationsConnection.edges[0].node).toEqual({
       state: "pending",
       scanReferences: [{ result: "failed" }],
       overrides: [{ newState: "passed" }],

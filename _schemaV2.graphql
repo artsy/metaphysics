@@ -8716,11 +8716,11 @@ type IdentityVerification {
   state: String!
 
   # User ID of the identity verification's owner
-  userID: String!
+  userID: String
 }
 
 # A connection to a list of items.
-type IdentityVerificationConnection implements IdentityVerificationConnectionInterface {
+type IdentityVerificationConnection {
   # A list of edges.
   edges: [IdentityVerificationEdge]
   pageCursors: PageCursors!
@@ -8730,23 +8730,12 @@ type IdentityVerificationConnection implements IdentityVerificationConnectionInt
   totalCount: Int
 }
 
-interface IdentityVerificationConnectionInterface {
-  edges: [IdentityVerificationEdgeInterface]
-  pageCursors: PageCursors!
-  pageInfo: PageInfo!
-}
-
 # An edge in a connection.
-type IdentityVerificationEdge implements IdentityVerificationEdgeInterface {
+type IdentityVerificationEdge {
   # A cursor for use in pagination
   cursor: String!
 
   # The item at the end of the edge
-  node: IdentityVerification
-}
-
-interface IdentityVerificationEdgeInterface {
-  cursor: String
   node: IdentityVerification
 }
 
@@ -8777,7 +8766,14 @@ union IdentityVerificationEmailMutationType =
   | IdentityVerificationEmailMutationSuccessType
 
 type IdentityVerificationOverride {
-  createdAt: String
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 
   # A globally unique ID.
   id: ID!
@@ -8790,10 +8786,10 @@ type IdentityVerificationOverride {
 
   # Un-overridden state
   oldState: String!
-  reason: String
+  reason: String!
 
   # User ID of the override's creator
-  userID: String!
+  userID: String
 }
 
 type IdentityVerificationScanReference {
@@ -8801,14 +8797,21 @@ type IdentityVerificationScanReference {
   extractedIdFailReason: String
   extractedLastName: String
   extractedSimilarityFailReason: String
-  finishedAt: String
+  finishedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 
   # A globally unique ID.
   id: ID!
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
-  jumioID: String
+  jumioID: String!
   result: String
 }
 
@@ -12173,7 +12176,7 @@ type Query {
   homePage: HomePage
 
   # A connection of identity verifications.
-  identityVerifications(
+  identityVerificationsConnection(
     after: String
     before: String
     email: String
@@ -15448,7 +15451,7 @@ type Viewer {
   homePage: HomePage
 
   # A connection of identity verifications.
-  identityVerifications(
+  identityVerificationsConnection(
     after: String
     before: String
     email: String

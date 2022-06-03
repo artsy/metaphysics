@@ -1,19 +1,20 @@
 import {
   GraphQLFieldConfig,
-  GraphQLInterfaceType,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
   GraphQLNonNull,
+  GraphQLInt,
 } from "graphql"
-import { PageInfoType } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import {
   connectionWithCursorInfo,
-  PageCursorsType,
+  paginationResolver,
 } from "schema/v2/fields/pagination"
 import { InternalIDFields } from "schema/v2/object_identification"
-import dateField, { formatDate } from "./fields/date"
+import dateField, { date, formatDate } from "./fields/date"
+import { CursorPageable, pageable } from "relay-cursor-paging"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 export type IdentityVerificationGravityResponse = {
   id: string
@@ -74,16 +75,13 @@ export const IdentityVerificationOverrideType = new GraphQLObjectType<
       description: "Un-overridden state",
       resolve: ({ old_state }) => old_state,
     },
-    reason: { type: GraphQLString },
+    reason: { type: new GraphQLNonNull(GraphQLString) },
     userID: {
       description: "User ID of the override's creator",
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       resolve: ({ user_id }) => user_id,
     },
-    createdAt: {
-      type: GraphQLString,
-      resolve: ({ created_at }) => created_at,
-    },
+    createdAt: date(({ created_at }) => created_at),
   },
 })
 
@@ -94,7 +92,10 @@ export const IdentityVerificationScanReferenceType = new GraphQLObjectType<
   name: "IdentityVerificationScanReference",
   fields: {
     ...InternalIDFields,
-    jumioID: { type: GraphQLString },
+    jumioID: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ jumio_id }) => jumio_id,
+    },
     extractedFirstName: {
       type: GraphQLString,
       resolve: ({ extracted_first_name }) => extracted_first_name,
@@ -103,10 +104,7 @@ export const IdentityVerificationScanReferenceType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ extracted_last_name }) => extracted_last_name,
     },
-    finishedAt: {
-      type: GraphQLString,
-      resolve: ({ finished_at }) => finished_at,
-    },
+    finishedAt: date(({ finished_at }) => finished_at),
     result: { type: GraphQLString },
     extractedIdFailReason: {
       type: GraphQLString,
@@ -133,7 +131,7 @@ export const IdentityVerificationType = new GraphQLObjectType<
     },
     userID: {
       description: "User ID of the identity verification's owner",
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       resolve: ({ user_id }) => user_id,
     },
     invitationExpiresAt: dateFieldForVerificationExpiresAt,
@@ -195,35 +193,50 @@ export const PendingIdentityVerification: GraphQLFieldConfig<
     const { pending_identity_verification_id } = user
     if (!(identityVerificationLoader && pending_identity_verification_id))
       return null
-    return identityVerificationLoader(user.pending_identity_verification_id)
+    return identityVerificationLoader(pending_identity_verification_id)
   },
 }
 
-export const IdentityVerificationEdgeInterface = new GraphQLInterfaceType({
-  name: "IdentityVerificationEdgeInterface",
-  fields: {
-    node: {
-      type: IdentityVerificationType,
-    },
-    cursor: {
-      type: GraphQLString,
-    },
+export const identityVerificationsConnection: GraphQLFieldConfig<
+  void,
+  ResolverContext
+> = {
+  description: "A connection of identity verifications.",
+  type: connectionWithCursorInfo({ nodeType: IdentityVerificationType })
+    .connectionType,
+  args: pageable({
+    page: { type: GraphQLInt },
+    size: { type: GraphQLInt },
+    userId: { type: GraphQLString },
+    email: { type: GraphQLString },
+  }),
+  resolve: async (
+    _root,
+    args: CursorPageable,
+    { identityVerificationsLoader }
+  ) => {
+    if (!identityVerificationsLoader) return
+
+    const gravityArgs = convertConnectionArgsToGravityArgs(args)
+    const { page, size, offset } = gravityArgs
+
+    const { body, headers } = await identityVerificationsLoader({
+      total_count: true,
+      page,
+      size,
+      user_id: args.userId,
+      email: args.email,
+    })
+
+    const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+    return paginationResolver({
+      args,
+      body,
+      offset,
+      page,
+      size,
+      totalCount,
+    })
   },
-})
-
-export const IdentityVerificationConnectionInterface = new GraphQLInterfaceType(
-  {
-    name: "IdentityVerificationConnectionInterface",
-    fields: {
-      pageCursors: { type: new GraphQLNonNull(PageCursorsType) },
-      pageInfo: { type: new GraphQLNonNull(PageInfoType) },
-      edges: { type: new GraphQLList(IdentityVerificationEdgeInterface) },
-    },
-  }
-)
-
-export const identityVerificationConnection = connectionWithCursorInfo({
-  nodeType: IdentityVerificationType,
-  connectionInterfaces: [IdentityVerificationConnectionInterface],
-  edgeInterfaces: [IdentityVerificationEdgeInterface],
-})
+}
