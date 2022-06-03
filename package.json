@@ -100,7 +100,7 @@
     "uuid": "3.1.0"
   },
   "devDependencies": {
-    "@artsy/express-reloadable": "1.6.0",
+    "@artsy/express-reloadable": "1.7.0",
     "@artsy/update-repo": "0.5.0",
     "@babel/cli": "7.14.8",
     "@babel/core": "7.15.0",
