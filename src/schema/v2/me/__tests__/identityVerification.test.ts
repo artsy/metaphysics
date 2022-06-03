@@ -102,15 +102,9 @@ describe("IdentityVerification type", () => {
             headers: { "x-total-count": "1" },
           }),
         identityVerificationScanReferencesLoader: () =>
-          Promise.resolve({
-            body: [gravityScanReference],
-            headers: {},
-          }),
+          Promise.resolve([gravityScanReference]),
         identityVerificationOverridesLoader: () =>
-          Promise.resolve({
-            body: [gravityOverride],
-            headers: {},
-          }),
+          Promise.resolve([gravityOverride]),
       }
     )
 

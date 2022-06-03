@@ -145,8 +145,7 @@ export const IdentityVerificationType = new GraphQLObjectType<
       ) => {
         if (!identityVerificationOverridesLoader) return
 
-        const { body } = await identityVerificationOverridesLoader(id)
-        return body
+        return identityVerificationOverridesLoader(id)
       },
     },
     scanReferences: {
@@ -160,8 +159,7 @@ export const IdentityVerificationType = new GraphQLObjectType<
       ) => {
         if (!identityVerificationScanReferencesLoader) return
 
-        const { body } = await identityVerificationScanReferencesLoader(id)
-        return body
+        return identityVerificationScanReferencesLoader(id)
       },
     },
   },
