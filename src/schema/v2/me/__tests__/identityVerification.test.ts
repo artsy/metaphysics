@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import {
   IdentityVerificationGravityResponse,
   IdentityVerificationOverrideGravityResponse,
@@ -112,6 +112,33 @@ describe("IdentityVerification type", () => {
       state: "pending",
       scanReferences: [{ result: "failed" }],
       overrides: [{ newState: "passed" }],
+    })
+  })
+
+  it("returns individual verification without authentication", async () => {
+    const gravityIdentityVerification: IdentityVerificationGravityResponse = {
+      id: "123",
+      state: "pending",
+      invitation_expires_at:
+        "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
+      user_id: "user1",
+    }
+
+    const query = gql`
+      {
+        identityVerification(id: "123") {
+          state
+        }
+      }
+    `
+
+    const { identityVerification } = await runQuery(query, {
+      identityVerificationLoader: () =>
+        Promise.resolve(gravityIdentityVerification),
+    })
+
+    expect(identityVerification).toEqual({
+      state: "pending",
     })
   })
 })

@@ -189,8 +189,7 @@ export const PendingIdentityVerification: GraphQLFieldConfig<
     "The user's most current pending identity verification, if it exists",
   resolve: (user, _args, { identityVerificationLoader }) => {
     const { pending_identity_verification_id } = user
-    if (!(identityVerificationLoader && pending_identity_verification_id))
-      return null
+    if (!pending_identity_verification_id) return null
     return identityVerificationLoader(pending_identity_verification_id)
   },
 }
