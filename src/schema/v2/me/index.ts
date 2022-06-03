@@ -42,7 +42,7 @@ import FollowedShows from "./followed_shows"
 import {
   IdentityVerification,
   PendingIdentityVerification,
-} from "./identity_verification"
+} from "../identityVerification"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { MyBids } from "./myBids"

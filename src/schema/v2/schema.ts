@@ -130,6 +130,7 @@ import { channel } from "./article/channel"
 import { departments, job, jobs } from "./jobs"
 import { RecentlySoldArtworks } from "./recentlySoldArtworks"
 import { artworksForUser } from "./artworksForUser"
+import { identityVerificationsConnection } from "./identityVerification"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -183,6 +184,7 @@ const rootFields = {
   geneFamiliesConnection: GeneFamilies,
   highlights: HighlightsField,
   homePage: HomePage,
+  identityVerificationsConnection,
   job,
   jobs,
   doNotUseImageSearch: ImageSearchField,
