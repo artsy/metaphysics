@@ -13704,6 +13704,9 @@ union SendFeedbackMutationType =
 
 input SendIdentityVerificationEmailMutationInput {
   clientMutationId: String
+
+  # the email for the user
+  email: String
   userID: String
 }
 
