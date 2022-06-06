@@ -61,6 +61,7 @@ describe("ArtistInsights type", () => {
     artist.collections = "Museum of Modern Art (MoMA)"
     artist.review_sources = "Artforum International Magazine"
     artist.biennials = "frieze"
+    artist.active_secondary_market = true
 
     const query = `
           {
@@ -102,6 +103,11 @@ describe("ArtistInsights type", () => {
           label: "Included in a major biennial",
           entities: ["frieze"],
         },
+        {
+          type: "ACTIVE_SECONDARY_MARKET",
+          label: "Recent auction results in the Artsy Price Database",
+          entities: [],
+        },
       ])
     })
   })
@@ -130,6 +136,27 @@ describe("ArtistInsights type", () => {
           entities: ["MoMA PS1", "Museum of Modern Art (MoMA)"],
         },
       ])
+    })
+  })
+
+  it("does not build an insight if boolean value is false", () => {
+    artist.active_secondary_market = false
+
+    const query = `
+        {
+          artist(id: "foo-bar") {
+            id
+            insights {
+              type
+              label
+              entities
+            }
+          }
+        }
+      `
+
+    return runQuery(query, context).then((data) => {
+      expect(data!.artist.insights).toEqual([])
     })
   })
 })
