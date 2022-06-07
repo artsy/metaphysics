@@ -39,7 +39,7 @@ describe("paymentDevice", () => {
             bankName
             accountHolderName
           }
-          ... on ManualWirePayment {
+          ... on ManualPayment {
             isManualPayment
           }
         }
@@ -52,7 +52,7 @@ describe("paymentDevice", () => {
       return Promise.resolve(
         new Response(
           JSON.stringify(
-            orderFixture({ paymentMethod: "credit card", creditCardId: "asdf" })
+            orderFixture({ paymentMethod: "CREDIT_CARD", creditCardId: "asdf" })
           )
         )
       )
@@ -70,7 +70,7 @@ describe("paymentDevice", () => {
         new Response(
           JSON.stringify(
             orderFixture({
-              paymentMethod: "us_bank_account",
+              paymentMethod: "US_BANK_ACCOUNT",
               bankAccountId: "1234",
             })
           )
@@ -91,7 +91,7 @@ describe("paymentDevice", () => {
     mockFetch.mockImplementationOnce(() => {
       return Promise.resolve(
         new Response(
-          JSON.stringify(orderFixture({ paymentMethod: "wire_transfer" }))
+          JSON.stringify(orderFixture({ paymentMethod: "WIRE_TRANSFER" }))
         )
       )
     })
@@ -99,87 +99,9 @@ describe("paymentDevice", () => {
 
     expect(result.commerceOrder.paymentDevice.isManualPayment).toBe(true)
     expect(result.commerceOrder.paymentDevice.__typename).toEqual(
-      "ManualWirePayment"
+      "ManualPayment"
     )
   })
-
-  //   it("returns the price when the line item is a single edition set", async () => {
-  //     mockFetch.mockImplementationOnce(() => {
-  //       return Promise.resolve(
-  //         new Response(JSON.stringify(editionSetOrderFixture))
-  //       )
-  //     })
-  //     const result = await runQuery(query, context)
-  //     expect(
-  //       result.commerceOrder.lineItems.edges[0].node.artworkOrEditionSet.price
-  //     ).toEqual("$5,000")
-
-  //     expect(
-  //       result.commerceOrder.lineItems.edges[0].node.artworkOrEditionSet
-  //         .displayPriceRange
-  //     ).toEqual(false)
-  //   })
-
-  //   it("returns the price when the line item is an edition set of multiple", async () => {
-  //     mockFetch.mockImplementationOnce(() => {
-  //       return Promise.resolve(
-  //         new Response(JSON.stringify(editionSetOrderFixture))
-  //       )
-  //     })
-
-  //     artworkLoader.mockResolvedValueOnce({
-  //       price: "$3,000 - 10,000",
-  //       edition_sets: [
-  //         {
-  //           id: "abc123",
-  //           price: "$3,000",
-  //           display_price_range: false,
-  //         },
-  //         {
-  //           id: "hello",
-  //           price: "$10,000",
-  //           display_price_range: false,
-  //         },
-  //       ],
-  //     })
-
-  //     const result = await runQuery(query, context)
-  //     expect(
-  //       result.commerceOrder.lineItems.edges[0].node.artworkOrEditionSet.price
-  //     ).toEqual("$3,000")
-
-  //     expect(
-  //       result.commerceOrder.lineItems.edges[0].node.artworkOrEditionSet
-  //         .displayPriceRange
-  //     ).toEqual(false)
-  //   })
-
-  //   it("doesn't fail if the edition set no longer exists", async () => {
-  //     mockFetch.mockImplementationOnce(() => {
-  //       return Promise.resolve(
-  //         new Response(JSON.stringify(editionSetOrderFixture))
-  //       )
-  //     })
-
-  //     artworkLoader.mockResolvedValueOnce({
-  //       price: "$3,000 - 10,000",
-  //       edition_sets: [
-  //         {
-  //           id: "nomatch1",
-  //           price: "$3,000",
-  //         },
-  //         {
-  //           id: "nomatch2",
-  //           price: "$10,000",
-  //         },
-  //       ],
-  //     })
-
-  //     const result = await runQuery(query, context)
-  //     expect(
-  //       result.commerceOrder.lineItems.edges[0].node.artworkOrEditionSet
-  //     ).toEqual(null)
-  //   })
 })
 
 const orderFixture = (overrides: Record<string, any> = {}) => {
@@ -260,20 +182,3 @@ const orderFixture = (overrides: Record<string, any> = {}) => {
     },
   }
 }
-
-// const editionSetOrderFixture = merge(orderFixture, {
-//   data: {
-//     order: {
-//       lineItems: {
-//         edges: [
-//           {
-//             node: {
-//               ...orderFixture.data.order.lineItems.edges[0].node,
-//               editionSetId: "abc123",
-//             },
-//           },
-//         ],
-//       },
-//     },
-//   },
-// })
