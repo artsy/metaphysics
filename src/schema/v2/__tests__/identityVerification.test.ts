@@ -5,7 +5,7 @@ import {
   IdentityVerificationGravityResponse,
   IdentityVerificationOverrideGravityResponse,
   IdentityVerificationScanReferenceGravityResponse,
-} from "../../identityVerification"
+} from "../identityVerification"
 
 describe("IdentityVerification type", () => {
   it("returns the resolved identity verification", async () => {
