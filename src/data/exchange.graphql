@@ -1463,6 +1463,7 @@ enum OrderSourceEnum {
 
 type OrderStateChangedEvent implements EventInterface {
   createdAt: DateTime!
+  orderUpdateState: String
   state: OrderStateEnum!
   stateReason: String
 }
