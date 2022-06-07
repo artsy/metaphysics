@@ -100,7 +100,7 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
       throw new Error("You need to be signed in to perform this action")
     }
 
-    return sendIdentityVerificationEmailLoader({ userID, email })
+    return sendIdentityVerificationEmailLoader({ user_id: userID, email })
       .then((result) => result)
       .catch((error) => {
         const formattedErr = formatGravityError(error)
