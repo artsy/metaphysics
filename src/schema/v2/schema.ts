@@ -135,7 +135,10 @@ import {
   identityVerificationsConnection,
 } from "./identityVerification"
 import { BankAccount } from "./bank_account"
-import { PaymentMethodUnionType } from "./payment_method_union"
+import {
+  ManualPaymentType,
+  PaymentDeviceUnionType,
+} from "./payment_device_union"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -307,7 +310,8 @@ export default new GraphQLSchema({
   types: [
     ArtworkVersionType,
     OrderPartyUnionType,
-    PaymentMethodUnionType,
+    PaymentDeviceUnionType,
+    ManualPaymentType,
     SearchableItem,
     ArtistArtworkGridType,
     AuctionArtworkGridType,

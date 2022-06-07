@@ -3440,7 +3440,7 @@ type CommerceBuyOrder implements CommerceOrder {
   mode: CommerceOrderModeEnum
   orderHistory: [CommerceOrderEventUnion!]!
   orderUpdateState: String
-  paymentDevice: PaymentMethodUnion
+  paymentDevice: PaymentDeviceUnion
   paymentMethod: CommercePaymentMethodEnum
   requestedFulfillment: CommerceRequestedFulfillmentUnion
   seller: CommerceOrderPartyUnion!
@@ -4195,7 +4195,7 @@ type CommerceOfferOrder implements CommerceOrder {
   ): String
   orderHistory: [CommerceOrderEventUnion!]!
   orderUpdateState: String
-  paymentDevice: PaymentMethodUnion
+  paymentDevice: PaymentDeviceUnion
   paymentMethod: CommercePaymentMethodEnum
   requestedFulfillment: CommerceRequestedFulfillmentUnion
   seller: CommerceOrderPartyUnion!
@@ -4398,7 +4398,7 @@ interface CommerceOrder {
   mode: CommerceOrderModeEnum
   orderHistory: [CommerceOrderEventUnion!]!
   orderUpdateState: String
-  paymentDevice: PaymentMethodUnion
+  paymentDevice: PaymentDeviceUnion
   paymentMethod: CommercePaymentMethodEnum
   requestedFulfillment: CommerceRequestedFulfillmentUnion
   seller: CommerceOrderPartyUnion!
@@ -9354,8 +9354,9 @@ type LotStanding {
   saleArtwork: SaleArtwork
 }
 
-type ManualWirePayment {
-  isManualPayment: Boolean
+type ManualPayment {
+  # present in case the __typename wasnt enough
+  isManualPayment: Boolean!
 }
 
 type MarketingCollection {
@@ -11325,7 +11326,7 @@ enum PartnersSortType {
 
 union PartnerTypes = ExternalPartner | Partner
 
-union PaymentMethodUnion = BankAccount | CreditCard | ManualWirePayment
+union PaymentDeviceUnion = BankAccount | CreditCard | ManualPayment
 
 enum PhoneNumberErrors {
   INVALID_COUNTRY_CODE

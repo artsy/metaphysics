@@ -196,7 +196,11 @@ export const exchangeStitchingEnvironment = ({
 
     resolve: async (parent, _args, context, info) => {
       const { creditCardId, bankAccountId, paymentMethod } = parent
-      // TODO: we are ignoring the ACH_TRANSFER type
+
+      // Testing union type resolvers
+      return { foo: 42 }
+      // return { __typename: "ManualPayment" }
+
       if (paymentMethod === "CREDIT_CARD") {
         // assert creditCardId exists?
         const creditCard = await info.mergeInfo.delegateToSchema({
@@ -208,9 +212,8 @@ export const exchangeStitchingEnvironment = ({
           },
           context,
           info,
-          // TODO: Not sure why this needs to be changed but the type comes through as CommerceCreditCard otherwise.
-          // transforms: exchangeSchema.transforms,
         })
+        console.warn({ creditCard })
         return creditCard
         // TODO: us_bank_account with underscore *is* the current value from exchange, while CC does not have it
       } else if (paymentMethod === "US_BANK_ACCOUNT") {
@@ -224,19 +227,17 @@ export const exchangeStitchingEnvironment = ({
           },
           context,
           info,
-          // transforms: exchangeSchema.transforms,
         })
-        bankAccount.isBankPayment = true
-        console.warn(bankAccount)
-
+        console.warn({ bankAccount })
         return bankAccount
       } else if (paymentMethod === "WIRE_TRANSFER") {
         return {
-          __typename: "ManualWirePayment",
-          // PaymentMethodUnionType relies on this property
+          __typename: "ManualPayment",
+          // PaymentDeviceUnionType relies on this property
           // not sure if this is the best way to model a manual payment
-          isManualPayment: true,
         }
+      } else {
+        return null
       }
     },
   }
@@ -325,7 +326,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-      paymentDevice: PaymentMethodUnion
+      paymentDevice: PaymentDeviceUnion
       conversation: Conversation
       additionalPaymentMethods: [String]
       
@@ -336,7 +337,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-      paymentDevice: PaymentMethodUnion
+      paymentDevice: PaymentDeviceUnion
       isInquiryOrder: Boolean!
       conversation: Conversation
       additionalPaymentMethods: [String]
@@ -349,7 +350,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-      paymentDevice: PaymentMethodUnion
+      paymentDevice: PaymentDeviceUnion
       additionalPaymentMethods: [String]
       ${orderTotalsSDL.join("\n")}
     }
