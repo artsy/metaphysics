@@ -78,10 +78,11 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
   description: "Send a identity verification email",
   inputFields: {
     userID: {
+      description: "The user Id for the user undergoing identity verificaiton",
       type: GraphQLString,
     },
     email: {
-      description: "the email for the user",
+      description: "The email for the user undergoing identity verificaiton",
       type: GraphQLString,
     },
   },
@@ -92,14 +93,14 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
     },
   },
   mutateAndGetPayload: (
-    { userID, email },
+    { userID },
     { sendIdentityVerificationEmailLoader }
   ) => {
     if (!sendIdentityVerificationEmailLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
-    return sendIdentityVerificationEmailLoader(userID, email)
+    return sendIdentityVerificationEmailLoader({ userID })
       .then((result) => result)
       .catch((error) => {
         const formattedErr = formatGravityError(error)
