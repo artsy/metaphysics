@@ -190,14 +190,14 @@ export const exchangeStitchingEnvironment = ({
       fragment CommerceOrderPaymentMethod on CommerceOrder {
         creditCardId
         bankAccountId
-        paymentMethod #TODO: one of these fields should probably have a different name
+        paymentMethod
       }
     `,
 
     resolve: async (parent, _args, context, info) => {
       const { creditCardId, bankAccountId, paymentMethod } = parent
-      // TODO: maybe this field should be named differently so we can use the existing `paymentMethod` string without requiring an extra delegated query field
-      if (paymentMethod === "credit card") {
+      // TODO: we are ignoring the ACH_TRANSFER type
+      if (paymentMethod === "CREDIT_CARD") {
         // assert creditCardId exists?
         const creditCard = await info.mergeInfo.delegateToSchema({
           schema: localSchema,
@@ -213,7 +213,7 @@ export const exchangeStitchingEnvironment = ({
         })
         return creditCard
         // TODO: us_bank_account with underscore *is* the current value from exchange, while CC does not have it
-      } else if (paymentMethod === "us_bank_account") {
+      } else if (paymentMethod === "US_BANK_ACCOUNT") {
         // assert bankAccountId exists?
         const bankAccount = await info.mergeInfo.delegateToSchema({
           schema: localSchema,
@@ -227,8 +227,10 @@ export const exchangeStitchingEnvironment = ({
           // transforms: exchangeSchema.transforms,
         })
         bankAccount.isBankPayment = true
+        console.warn(bankAccount)
+
         return bankAccount
-      } else if (paymentMethod === "wire_transfer") {
+      } else if (paymentMethod === "WIRE_TRANSFER") {
         return {
           __typename: "ManualWirePayment",
           // PaymentMethodUnionType relies on this property
