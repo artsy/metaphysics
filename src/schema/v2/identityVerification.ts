@@ -145,8 +145,7 @@ export const IdentityVerificationType = new GraphQLObjectType<
       ) => {
         if (!identityVerificationOverridesLoader) return
 
-        const { body } = await identityVerificationOverridesLoader(id)
-        return body
+        return identityVerificationOverridesLoader(id)
       },
     },
     scanReferences: {
@@ -160,8 +159,7 @@ export const IdentityVerificationType = new GraphQLObjectType<
       ) => {
         if (!identityVerificationScanReferencesLoader) return
 
-        const { body } = await identityVerificationScanReferencesLoader(id)
-        return body
+        return identityVerificationScanReferencesLoader(id)
       },
     },
   },
@@ -191,8 +189,7 @@ export const PendingIdentityVerification: GraphQLFieldConfig<
     "The user's most current pending identity verification, if it exists",
   resolve: (user, _args, { identityVerificationLoader }) => {
     const { pending_identity_verification_id } = user
-    if (!(identityVerificationLoader && pending_identity_verification_id))
-      return null
+    if (!pending_identity_verification_id) return null
     return identityVerificationLoader(pending_identity_verification_id)
   },
 }

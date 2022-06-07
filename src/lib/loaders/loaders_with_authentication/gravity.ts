@@ -23,14 +23,10 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     identityVerificationOverridesLoader: gravityLoader(
-      (id) => `identity_verification/${id}/overrides`,
-      {},
-      { headers: true }
+      (id) => `identity_verification/${id}/overrides`
     ),
     identityVerificationScanReferencesLoader: gravityLoader(
-      (id) => `identity_verification/${id}/scan_references`,
-      {},
-      { headers: true }
+      (id) => `identity_verification/${id}/scan_references`
     ),
     sendIdentityVerificationEmailLoader: gravityLoader(
       `identity_verification`,

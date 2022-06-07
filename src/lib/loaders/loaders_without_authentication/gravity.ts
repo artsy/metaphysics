@@ -85,6 +85,9 @@ export default (opts) => {
     geneLoader: gravityLoader((id) => `gene/${id}`),
     genesLoader: gravityLoader("genes"),
     heroUnitsLoader: gravityLoader("site_hero_units"),
+    identityVerificationLoader: gravityUncachedLoader(
+      (id) => `identity_verification/${id}`
+    ),
     incrementsLoader: gravityLoader("increments"),
     inquiryRequestQuestionsLoader: gravityLoader(`inquiry_request_questions`),
     matchArtistsLoader: gravityLoader("match/artists"),
