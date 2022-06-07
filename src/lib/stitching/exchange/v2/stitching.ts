@@ -197,12 +197,7 @@ export const exchangeStitchingEnvironment = ({
     resolve: async (parent, _args, context, info) => {
       const { creditCardId, bankAccountId, paymentMethod } = parent
 
-      // Testing union type resolvers
-      return { foo: 42 }
-      // return { __typename: "ManualPayment" }
-
-      if (paymentMethod === "CREDIT_CARD") {
-        // assert creditCardId exists?
+      if (paymentMethod === "CREDIT_CARD" && Boolean(creditCardId)) {
         const creditCard = await info.mergeInfo.delegateToSchema({
           schema: localSchema,
           operation: "query",
@@ -213,11 +208,11 @@ export const exchangeStitchingEnvironment = ({
           context,
           info,
         })
-        console.warn({ creditCard })
         return creditCard
-        // TODO: us_bank_account with underscore *is* the current value from exchange, while CC does not have it
-      } else if (paymentMethod === "US_BANK_ACCOUNT") {
-        // assert bankAccountId exists?
+      } else if (
+        paymentMethod === "US_BANK_ACCOUNT" &&
+        Boolean(bankAccountId)
+      ) {
         const bankAccount = await info.mergeInfo.delegateToSchema({
           schema: localSchema,
           operation: "query",
@@ -228,14 +223,9 @@ export const exchangeStitchingEnvironment = ({
           context,
           info,
         })
-        console.warn({ bankAccount })
         return bankAccount
       } else if (paymentMethod === "WIRE_TRANSFER") {
-        return {
-          __typename: "ManualPayment",
-          // PaymentDeviceUnionType relies on this property
-          // not sure if this is the best way to model a manual payment
-        }
+        return { __typename: "ManualPayment", isManualPayment: true }
       } else {
         return null
       }

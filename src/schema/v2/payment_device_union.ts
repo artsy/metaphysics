@@ -12,13 +12,7 @@ export const ManualPaymentType = new GraphQLObjectType({
   fields: () => ({
     isManualPayment: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: "present in case the __typename wasnt enough",
-      resolve: (_object) => {
-        console.error("im in the resolver!")
-        console.warn(_object)
-        // throw new Error("???")
-        return true
-      },
+      resolve: () => true,
     },
   }),
 })
@@ -26,9 +20,4 @@ export const ManualPaymentType = new GraphQLObjectType({
 export const PaymentDeviceUnionType = new GraphQLUnionType({
   name: "PaymentDeviceUnion",
   types: [BankAccountType, CreditCardType, ManualPaymentType],
-  resolveType: (value) => {
-    if (value.foo === 42) {
-      return ManualPaymentType
-    }
-  },
 })

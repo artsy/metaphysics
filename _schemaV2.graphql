@@ -9355,7 +9355,6 @@ type LotStanding {
 }
 
 type ManualPayment {
-  # present in case the __typename wasnt enough
   isManualPayment: Boolean!
 }
 
