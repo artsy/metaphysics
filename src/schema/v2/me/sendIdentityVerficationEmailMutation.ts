@@ -11,6 +11,7 @@ import {
   formatGravityError,
 } from "lib/gravityErrorHandler"
 import { InternalIDFields } from "../object_identification"
+import { date } from "../fields/date"
 
 const IdentityVerificationEmailType = new GraphQLObjectType<
   any,
@@ -19,13 +20,25 @@ const IdentityVerificationEmailType = new GraphQLObjectType<
   name: "IdentityVerificationEmail",
   fields: () => ({
     ...InternalIDFields,
+    created_at: date(({ created_at }) => created_at),
+    email: {
+      description: "Email of the identity verification's owner",
+      type: GraphQLString,
+      resolve: ({ email }) => email,
+    },
+    name: {
+      description: "Name of the identity verification's owner",
+      type: GraphQLString,
+      resolve: ({ name }) => name,
+    },
     state: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Identity verification lifecycle state",
     },
+    updated_at: date(({ updated_at }) => updated_at),
     userID: {
       description: "User ID of the identity verification's owner",
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       resolve: ({ user_id }) => user_id,
     },
   }),
