@@ -38,6 +38,7 @@ import {
   GraphQLFloat,
   GraphQLFieldConfig,
   GraphQLID,
+  GraphQLEnumType,
 } from "graphql"
 
 import config from "config"
@@ -428,10 +429,23 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             description: "List of sale artwork internal IDs to fetch",
           },
           all: { type: GraphQLBoolean, defaultValue: false },
+          status: {
+            type: new GraphQLEnumType({
+              name: "SaleArtworkStatus",
+              values: {
+                OPEN: {
+                  value: "open",
+                },
+                CLOSED: {
+                  value: "closed",
+                },
+              },
+            }),
+          },
         }),
         resolve: (sale, options, { saleArtworksLoader }) => {
           const { limit: size, offset } = getPagingParameters(options)
-          const { internalIDs: ids } = options
+          const { internalIDs: ids, status } = options
           if (ids !== undefined && isEmpty(ids)) {
             return connectionFromArraySlice([], options, {
               arrayLength: 0,
@@ -444,25 +458,30 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               path: sale.id,
             }).then((body) => connectionFromArray(body, {}))
           } else {
-            return saleArtworksLoader(sale.id, {
+            const gravityArgs = {
               size,
               offset,
               ids,
-            }).then(({ body }) => {
-              let meta
-              if (ids) {
-                meta = {
-                  arrayLength: body && body.length,
-                  sliceStart: 0,
+              ...(status && { status, total_count: true }),
+            }
+            return saleArtworksLoader(sale.id, gravityArgs).then(
+              ({ body, headers }) => {
+                let meta
+                if (ids) {
+                  meta = {
+                    arrayLength: body && body.length,
+                    sliceStart: 0,
+                  }
+                } else {
+                  const count = parseInt(headers["x-total-count"] || "0", 10)
+                  meta = {
+                    arrayLength: count || sale.eligible_sale_artworks_count,
+                    sliceStart: offset,
+                  }
                 }
-              } else {
-                meta = {
-                  arrayLength: sale.eligible_sale_artworks_count,
-                  sliceStart: offset,
-                }
+                return connectionFromArraySlice(body, options, meta)
               }
-              return connectionFromArraySlice(body, options, meta)
-            })
+            )
           }
         },
       },

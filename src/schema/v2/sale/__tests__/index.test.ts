@@ -259,6 +259,7 @@ describe("Sale type", () => {
             body: fill(Array(sale.eligible_sale_artworks_count), {
               id: "some-id",
             }),
+            headers: {},
           })
         ),
       }
