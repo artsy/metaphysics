@@ -6,6 +6,11 @@ import {
   GraphQLFieldConfig,
   GraphQLInt,
 } from "graphql"
+import { connectionFromArraySlice } from "graphql-relay"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { omit } from "lodash"
+import { pageable } from "relay-cursor-paging"
+import { artistConnection } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
 
 export const myCollectionInfoFields = {
@@ -32,6 +37,30 @@ export const myCollectionInfoFields = {
   artistsCount: {
     type: new GraphQLNonNull(GraphQLInt),
     resolve: ({ artists_count }) => artists_count,
+  },
+  collectedArtistsConnection: {
+    description: "A connection for the artists in the users' collection",
+    type: artistConnection.connectionType,
+    args: pageable({}),
+    resolve: (_root, args, context) => {
+      const { collectionArtistsLoader } = context
+
+      if (!collectionArtistsLoader) return
+
+      const gravityArgs = omit(convertConnectionArgsToGravityArgs(args), [
+        "page",
+      ])
+      gravityArgs.total_count = true
+
+      return collectionArtistsLoader("my-collection", gravityArgs).then(
+        ({ body, headers }) => {
+          return connectionFromArraySlice(body, args, {
+            arrayLength: parseInt(headers["x-total-count"], 10),
+            sliceStart: gravityArgs.offset,
+          })
+        }
+      )
+    },
   },
 }
 
