@@ -53,11 +53,16 @@ export const myCollectionInfoFields = {
       gravityArgs.total_count = true
 
       return collectionArtistsLoader("my-collection", gravityArgs).then(
-        ({ body, headers }) => {
-          return connectionFromArraySlice(body, args, {
-            arrayLength: parseInt(headers["x-total-count"], 10),
-            sliceStart: gravityArgs.offset,
-          })
+        ({ body: collectedArtists, headers }) => {
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return {
+            totalCount,
+            ...connectionFromArraySlice(collectedArtists, args, {
+              arrayLength: totalCount,
+              sliceStart: gravityArgs.offset,
+            }),
+          }
         }
       )
     },
