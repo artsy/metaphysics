@@ -55,7 +55,7 @@ export const myCollectionInfoFields = {
         size,
         page,
         total_count: true,
-      }).then(({ body: collectedArtists, headers }) => {
+      }).then(({ body, headers }) => {
         const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
         return paginationResolver({
@@ -63,7 +63,7 @@ export const myCollectionInfoFields = {
           offset,
           size,
           page,
-          body: collectedArtists,
+          body,
           args,
         })
       })
