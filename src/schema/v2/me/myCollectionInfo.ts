@@ -44,29 +44,21 @@ export const myCollectionInfoFields = {
       page: { type: GraphQLInt },
       size: { type: GraphQLInt },
     }),
-    resolve: (_root, args, context) => {
+    resolve: async (_root, args, context) => {
       const { collectionArtistsLoader } = context
 
       if (!collectionArtistsLoader) return
 
       const { page, offset, size } = convertConnectionArgsToGravityArgs(args)
 
-      return collectionArtistsLoader("my-collection", {
+      const { body, headers } = await collectionArtistsLoader("my-collection", {
         size,
         page,
         total_count: true,
-      }).then(({ body, headers }) => {
-        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-        return paginationResolver({
-          totalCount,
-          offset,
-          size,
-          page,
-          body,
-          args,
-        })
       })
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+      return paginationResolver({ totalCount, offset, size, page, body, args })
     },
   },
 }
