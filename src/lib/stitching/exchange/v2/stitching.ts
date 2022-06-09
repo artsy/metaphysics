@@ -185,7 +185,7 @@ export const exchangeStitchingEnvironment = ({
     },
   }
 
-  const paymentDeviceResolver = {
+  const paymentMethodDetailsResolver = {
     fragment: gql`
       fragment CommerceOrderPaymentMethod on CommerceOrder {
         creditCardId
@@ -225,7 +225,7 @@ export const exchangeStitchingEnvironment = ({
         })
         return bankAccount
       } else if (paymentMethod === "WIRE_TRANSFER") {
-        return { __typename: "ManualPayment", isManualPayment: true }
+        return { __typename: "WireTransfer", isManualPayment: true }
       } else {
         return null
       }
@@ -316,7 +316,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-      paymentDevice: PaymentDeviceUnion
+      paymentMethodDetails: PaymentMethodUnion
       conversation: Conversation
       additionalPaymentMethods: [String]
       
@@ -327,7 +327,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-      paymentDevice: PaymentDeviceUnion
+      paymentMethodDetails: PaymentMethodUnion
       isInquiryOrder: Boolean!
       conversation: Conversation
       additionalPaymentMethods: [String]
@@ -340,7 +340,7 @@ export const exchangeStitchingEnvironment = ({
       buyerDetails: OrderParty
       sellerDetails: OrderParty
       creditCard: CreditCard
-      paymentDevice: PaymentDeviceUnion
+      paymentMethodDetails: PaymentMethodUnion
       additionalPaymentMethods: [String]
       ${orderTotalsSDL.join("\n")}
     }
@@ -428,7 +428,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
-        paymentDevice: paymentDeviceResolver,
+        paymentMethodDetails: paymentMethodDetailsResolver,
         additionalPaymentMethods: additionalPaymentMethodsResolver,
       },
       CommerceOfferOrder: {
@@ -436,7 +436,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
-        paymentDevice: paymentDeviceResolver,
+        paymentMethodDetails: paymentMethodDetailsResolver,
         additionalPaymentMethods: additionalPaymentMethodsResolver,
         ...inquiryOrderResolvers,
       },
@@ -556,7 +556,7 @@ export const exchangeStitchingEnvironment = ({
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
-        paymentDevice: paymentDeviceResolver,
+        paymentMethodDetails: paymentMethodDetailsResolver,
         additionalPaymentMethods: additionalPaymentMethodsResolver,
       },
       CommerceOffer: {

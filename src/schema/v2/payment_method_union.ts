@@ -7,17 +7,16 @@ import {
 import { BankAccountType } from "schema/v2/bank_account"
 import { CreditCardType } from "schema/v2/credit_card"
 
-export const ManualPaymentType = new GraphQLObjectType({
-  name: "ManualPayment",
+export const WireTransferType = new GraphQLObjectType({
+  name: "WireTransfer",
   fields: () => ({
     isManualPayment: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: () => true,
     },
   }),
 })
 
-export const PaymentDeviceUnionType = new GraphQLUnionType({
-  name: "PaymentDeviceUnion",
-  types: [BankAccountType, CreditCardType, ManualPaymentType],
+export const PaymentMethodUnion = new GraphQLUnionType({
+  name: "PaymentMethodUnion",
+  types: [BankAccountType, CreditCardType, WireTransferType],
 })

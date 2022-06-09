@@ -6,7 +6,7 @@ import { ResolverContext } from "types/graphql"
 jest.mock("../link")
 const mockFetch = require("../link").mockFetch as jest.Mock<any>
 
-describe("paymentDevice", () => {
+describe("paymentMethodDetails", () => {
   const creditCard = {
     last_digits: "5309",
     brand: "American Express",
@@ -28,7 +28,7 @@ describe("paymentDevice", () => {
   const query = gql`
     query {
       commerceOrder(code: "abc") {
-        paymentDevice {
+        paymentMethodDetails {
           __typename
           ... on CreditCard {
             lastDigits
@@ -39,7 +39,7 @@ describe("paymentDevice", () => {
             bankName
             accountHolderName
           }
-          ... on ManualPayment {
+          ... on WireTransfer {
             isManualPayment
           }
         }
@@ -59,9 +59,13 @@ describe("paymentDevice", () => {
     })
     const result = await runQuery(query, context)
 
-    expect(result.commerceOrder.paymentDevice.brand).toEqual("American Express")
-    expect(result.commerceOrder.paymentDevice.lastDigits).toEqual("5309")
-    expect(result.commerceOrder.paymentDevice.__typename).toEqual("CreditCard")
+    expect(result.commerceOrder.paymentMethodDetails.brand).toEqual(
+      "American Express"
+    )
+    expect(result.commerceOrder.paymentMethodDetails.lastDigits).toEqual("5309")
+    expect(result.commerceOrder.paymentMethodDetails.__typename).toEqual(
+      "CreditCard"
+    )
   })
 
   it("returns the bank account object when the payment method is a us_bank_account", async () => {
@@ -79,12 +83,16 @@ describe("paymentDevice", () => {
     })
     const result = await runQuery(query, context)
 
-    expect(result.commerceOrder.paymentDevice.bankName).toEqual("1st National")
-    expect(result.commerceOrder.paymentDevice.last4).toEqual("4242")
-    expect(result.commerceOrder.paymentDevice.accountHolderName).toEqual(
+    expect(result.commerceOrder.paymentMethodDetails.bankName).toEqual(
+      "1st National"
+    )
+    expect(result.commerceOrder.paymentMethodDetails.last4).toEqual("4242")
+    expect(result.commerceOrder.paymentMethodDetails.accountHolderName).toEqual(
       "Joe Pennies"
     )
-    expect(result.commerceOrder.paymentDevice.__typename).toEqual("BankAccount")
+    expect(result.commerceOrder.paymentMethodDetails.__typename).toEqual(
+      "BankAccount"
+    )
   })
 
   it("returns the generic wire transfer type when the payment method is a wire_transfer", async () => {
@@ -97,9 +105,9 @@ describe("paymentDevice", () => {
     })
     const result = await runQuery(query, context)
 
-    expect(result.commerceOrder.paymentDevice.isManualPayment).toBe(true)
-    expect(result.commerceOrder.paymentDevice.__typename).toEqual(
-      "ManualPayment"
+    expect(result.commerceOrder.paymentMethodDetails.isManualPayment).toBe(true)
+    expect(result.commerceOrder.paymentMethodDetails.__typename).toEqual(
+      "WireTransfer"
     )
   })
 })
