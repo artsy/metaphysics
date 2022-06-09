@@ -10443,6 +10443,8 @@ type MyCollectionConnection {
     before: String
     first: Int
     last: Int
+    page: Int
+    size: Int
   ): ArtistConnection
   default: Boolean!
   description: String!
@@ -10523,6 +10525,8 @@ type MyCollectionInfo {
     before: String
     first: Int
     last: Int
+    page: Int
+    size: Int
   ): ArtistConnection
   default: Boolean!
   description: String!

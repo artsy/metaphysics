@@ -41,7 +41,10 @@ export const myCollectionInfoFields = {
   collectedArtistsConnection: {
     description: "A connection of artists in the users' collection",
     type: artistConnection.connectionType,
-    args: pageable({}),
+    args: pageable({
+      page: { type: GraphQLInt },
+      size: { type: GraphQLInt },
+    }),
     resolve: (_root, args, context) => {
       const { collectionArtistsLoader } = context
 
