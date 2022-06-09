@@ -93,6 +93,11 @@ type AddUserToSubmissionMutationPayload {
   consignmentSubmission: ConsignmentSubmission
 }
 
+type Admin {
+  # A list of feature flags
+  featureFlags: [FeatureFlags]
+}
+
 # One item in an aggregation
 type AggregationCount {
   count: Int!
@@ -7821,6 +7826,31 @@ type FeaturedLink {
 
 union FeaturedLinkEntity = Artist | Gene | Partner
 
+type FeatureFlags {
+  createdAt: String
+  description: String
+  enabled: Boolean
+  impressionData: Boolean
+  lastSeenAt: String
+  name: String
+  project: String
+  stale: Boolean
+  type: FeatureFlagsType
+  variants: [FeatureFlagVariant]
+}
+
+enum FeatureFlagsType {
+  EXPERIMENT
+  RELEASE
+}
+
+type FeatureFlagVariant {
+  name: String
+  stickiness: String
+  weight: Int
+  weightType: String
+}
+
 enum FeatureLayouts {
   DEFAULT
   FULL
@@ -11787,6 +11817,7 @@ type Query {
     # Returns only viewing rooms with these statuses
     statuses: [ViewingRoomStatusEnum!] = [live]
   ): ViewingRoomsConnection
+  admin: Admin
 
   # Find an agreement by ID
   agreement(id: ID!): Agreement
@@ -15262,6 +15293,7 @@ type Viewer {
 
   # Do not use (only used internally for stitching)
   _do_not_use_image: Image
+  admin: Admin
 
   # An Article
   article(

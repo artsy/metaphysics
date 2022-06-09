@@ -136,6 +136,7 @@ import {
 } from "./identityVerification"
 import { BankAccount } from "./bank_account"
 import { WireTransferType, PaymentMethodUnion } from "./payment_method_union"
+import { AdminField } from "./admin"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -148,6 +149,7 @@ const OptionalFieldDirective = new GraphQLDirective({
 })
 
 const rootFields = {
+  admin: AdminField,
   artworksForUser,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkMediums: ArtworkMediums,

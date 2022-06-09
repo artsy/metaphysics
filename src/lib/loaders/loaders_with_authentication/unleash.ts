@@ -1,13 +1,16 @@
 import factories from "../api"
 
-export const unleashLoaders = (_accessToken, opts) => {
+export const unleashLoaders = (accessToken, opts) => {
+  const accessTokenLoader = () => Promise.resolve(accessToken)
   const { unleashLoaderWithAuthenticationFactory } = factories(opts)
-  const unleashLoader = unleashLoaderWithAuthenticationFactory
+  const unleashLoader = unleashLoaderWithAuthenticationFactory(
+    accessTokenLoader
+  )
 
   return {
-    featuresLoader: unleashLoader("features"),
-    featureLoader: unleashLoader((id) => `features/${id}`),
-    projectsLoader: unleashLoader("projects"),
-    projectLoader: unleashLoader((id) => `projects/${id}`),
+    adminFeaturesLoader: unleashLoader("features"),
+    adminFeatureLoader: unleashLoader((id) => `features/${id}`),
+    adminProjectsLoader: unleashLoader("projects"),
+    adminProjectLoader: unleashLoader((id) => `projects/${id}`),
   }
 }
