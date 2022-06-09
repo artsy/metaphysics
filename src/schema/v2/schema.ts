@@ -134,6 +134,8 @@ import {
   IdentityVerification,
   identityVerificationsConnection,
 } from "./identityVerification"
+import { BankAccount } from "./bank_account"
+import { WireTransferType, PaymentMethodUnion } from "./payment_method_union"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -170,6 +172,7 @@ const rootFields = {
     ...Conversation,
     description: "Do not use (only used internally for stitching)",
   },
+  bankAccount: BankAccount,
   creditCard: CreditCard,
   departments,
   // externalPartner: ExternalPartner,
@@ -304,6 +307,8 @@ export default new GraphQLSchema({
   types: [
     ArtworkVersionType,
     OrderPartyUnionType,
+    PaymentMethodUnion,
+    WireTransferType,
     SearchableItem,
     ArtistArtworkGridType,
     AuctionArtworkGridType,

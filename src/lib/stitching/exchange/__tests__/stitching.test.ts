@@ -22,6 +22,7 @@ it("extends the Order objects", async () => {
     expect(orderableFields).toContain("buyerDetails")
     expect(orderableFields).toContain("sellerDetails")
     expect(orderableFields).toContain("creditCard")
+    expect(orderableFields).toContain("paymentMethodDetails")
 
     // Any field inside the CommerceBuyOrder & CommerceOfferOrder which
     // ends in cents should have a version without cents which is a

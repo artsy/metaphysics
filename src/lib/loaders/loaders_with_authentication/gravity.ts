@@ -53,6 +53,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    bankAccountLoader: gravityLoader((id) => `bank_account/${id}`),
     collectionArtworksLoader: gravityLoader(
       (id) => `collection/${id}/artworks`,
       { user_id: userID },
