@@ -77,6 +77,8 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
     { identityVerificationId },
     { startIdentityVerificationLoader }
   ) => {
+    if (!startIdentityVerificationLoader) return null
+
     return startIdentityVerificationLoader(identityVerificationId).catch(
       (error) => {
         const formattedErr = formatGravityError(error)
