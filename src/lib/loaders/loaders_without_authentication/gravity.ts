@@ -244,6 +244,11 @@ export default (opts) => {
       {},
       { headers: true }
     ),
+    startIdentityVerificationLoader: gravityLoader(
+      (id) => `identity_verification/${id}/start`,
+      {},
+      { method: "PUT" }
+    ),
     staticContentLoader: gravityLoader((id) => `page/${id}`),
     systemTimeLoader: gravityUncachedLoader("system/time", null),
     tagLoader: gravityLoader((id) => `tag/${id}`),

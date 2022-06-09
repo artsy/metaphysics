@@ -353,11 +353,6 @@ export default (accessToken, userID, opts) => {
     ),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     showLoader: gravityLoader((id) => `show/${id}`),
-    startIdentityVerificationLoader: gravityLoader(
-      (id) => `identity_verification/${id}/start`,
-      {},
-      { method: "PUT" }
-    ),
     suggestedArtistsLoader: gravityLoader(
       "me/suggested/artists",
       {},

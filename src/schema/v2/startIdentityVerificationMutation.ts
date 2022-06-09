@@ -77,10 +77,6 @@ export const startIdentityVerificationMutation = mutationWithClientMutationId<
     { identityVerificationId },
     { startIdentityVerificationLoader }
   ) => {
-    if (!startIdentityVerificationLoader) {
-      throw new Error("You need to be signed in to perform this action")
-    }
-
     return startIdentityVerificationLoader(identityVerificationId).catch(
       (error) => {
         const formattedErr = formatGravityError(error)
