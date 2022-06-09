@@ -1,5 +1,5 @@
-import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
-import { StartIdentityVerificationGravityOutput } from "lib/loaders/loaders_with_authentication/gravity"
+import { runQuery } from "schema/v2/test/utils"
+import { StartIdentityVerificationGravityOutput } from "lib/loaders/loaders_without_authentication/gravity"
 
 const mutation = `
 mutation {
@@ -22,12 +22,6 @@ mutation {
 `
 
 describe("starting an identity verification", () => {
-  it("requires an access token", async () => {
-    await expect(runQuery(mutation)).rejects.toThrow(
-      "You need to be signed in to perform this action"
-    )
-  })
-
   it("returns the given identity verification ID and flow URL from Gravity", async () => {
     const gravityResponse: StartIdentityVerificationGravityOutput = {
       identity_verification_id: "idv-123",
@@ -38,7 +32,7 @@ describe("starting an identity verification", () => {
       startIdentityVerificationLoader: () => Promise.resolve(gravityResponse),
     }
 
-    const response = await runAuthenticatedQuery(mutation, context)
+    const response = await runQuery(mutation, context)
 
     expect(response).toEqual({
       startIdentityVerification: {
@@ -61,7 +55,7 @@ describe("starting an identity verification", () => {
         ),
     }
 
-    const response = await runAuthenticatedQuery(mutation, errorRootValue)
+    const response = await runQuery(mutation, errorRootValue)
 
     expect(response).toEqual({
       startIdentityVerification: {
@@ -83,8 +77,8 @@ describe("starting an identity verification", () => {
       },
     }
 
-    await expect(
-      runAuthenticatedQuery(mutation, errorRootValue)
-    ).rejects.toThrow("ETIMEOUT service unreachable")
+    await expect(runQuery(mutation, errorRootValue)).rejects.toThrow(
+      "ETIMEOUT service unreachable"
+    )
   })
 })

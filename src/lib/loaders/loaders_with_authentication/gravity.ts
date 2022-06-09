@@ -1,11 +1,6 @@
 import factories from "../api"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
-export type StartIdentityVerificationGravityOutput = {
-  identity_verification_id: string
-  identity_verification_flow_url: string
-}
-
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
   const { gravityLoaderWithAuthenticationFactory } = factories(opts)
