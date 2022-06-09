@@ -7,7 +7,6 @@ import {
   GraphQLInt,
 } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { omit } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { artistConnection } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
@@ -50,28 +49,24 @@ export const myCollectionInfoFields = {
 
       if (!collectionArtistsLoader) return
 
-      const gravityArgs = Object.assign(
-        { total_count: true },
-        omit(convertConnectionArgsToGravityArgs(args), ["page"])
-      )
+      const { page, offset, size } = convertConnectionArgsToGravityArgs(args)
 
-      return collectionArtistsLoader("my-collection", gravityArgs).then(
-        ({ body: collectedArtists, headers }) => {
-          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            args
-          )
+      return collectionArtistsLoader("my-collection", {
+        size,
+        page,
+        total_count: true,
+      }).then(({ body: collectedArtists, headers }) => {
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-          return paginationResolver({
-            totalCount,
-            offset,
-            size,
-            page,
-            body: collectedArtists,
-            args,
-          })
-        }
-      )
+        return paginationResolver({
+          totalCount,
+          offset,
+          size,
+          page,
+          body: collectedArtists,
+          args,
+        })
+      })
     },
   },
 }
