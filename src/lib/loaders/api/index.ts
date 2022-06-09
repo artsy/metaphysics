@@ -11,6 +11,7 @@ import positron from "lib/apis/positron"
 import { vortex } from "lib/apis/vortex"
 import { greenhouse } from "lib/apis/greenhouse"
 import { ipbase } from "lib/apis/ipbase"
+import { unleash } from "lib/apis/unleash"
 
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
@@ -195,6 +196,21 @@ export default (opts) => ({
   impulseLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
     impulse,
     "impulse",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
+  ),
+
+  /**
+   * The Unleash loaders produced by this factory _will_ cache responses for the duration of query execution but do
+   * **not** cache to memcache.
+   *
+   * Use this for authenticated requests.
+   */
+  unleashLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
+    unleash,
+    "unleash",
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
