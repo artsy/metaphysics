@@ -133,6 +133,7 @@ type BuyOrder implements Order {
   ): LineItemConnection
   mode: OrderModeEnum
   orderHistory: [OrderEventUnion!]!
+  orderUpdateState: String
   paymentMethod: PaymentMethodEnum
   requestedFulfillment: RequestedFulfillmentUnion
   seller: OrderPartyUnion!
@@ -1155,6 +1156,7 @@ type OfferOrder implements Order {
     last: Int
   ): OfferConnection
   orderHistory: [OrderEventUnion!]!
+  orderUpdateState: String
   paymentMethod: PaymentMethodEnum
   requestedFulfillment: RequestedFulfillmentUnion
   seller: OrderPartyUnion!
@@ -1235,6 +1237,7 @@ interface Order {
   ): LineItemConnection
   mode: OrderModeEnum
   orderHistory: [OrderEventUnion!]!
+  orderUpdateState: String
   paymentMethod: PaymentMethodEnum
   requestedFulfillment: RequestedFulfillmentUnion
   seller: OrderPartyUnion!
