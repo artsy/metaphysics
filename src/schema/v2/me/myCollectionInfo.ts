@@ -6,12 +6,12 @@ import {
   GraphQLFieldConfig,
   GraphQLInt,
 } from "graphql"
-import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { omit } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { artistConnection } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
+import { paginationResolver } from "../fields/pagination"
 
 export const myCollectionInfoFields = {
   description: {
@@ -39,7 +39,7 @@ export const myCollectionInfoFields = {
     resolve: ({ artists_count }) => artists_count,
   },
   collectedArtistsConnection: {
-    description: "A connection for the artists in the users' collection",
+    description: "A connection of artists in the users' collection",
     type: artistConnection.connectionType,
     args: pageable({}),
     resolve: (_root, args, context) => {
@@ -47,22 +47,26 @@ export const myCollectionInfoFields = {
 
       if (!collectionArtistsLoader) return
 
-      const gravityArgs = omit(convertConnectionArgsToGravityArgs(args), [
-        "page",
-      ])
-      gravityArgs.total_count = true
+      const gravityArgs = Object.assign(
+        { total_count: true },
+        omit(convertConnectionArgsToGravityArgs(args), ["page"])
+      )
 
       return collectionArtistsLoader("my-collection", gravityArgs).then(
         ({ body: collectedArtists, headers }) => {
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
 
-          return {
+          return paginationResolver({
             totalCount,
-            ...connectionFromArraySlice(collectedArtists, args, {
-              arrayLength: totalCount,
-              sliceStart: gravityArgs.offset,
-            }),
-          }
+            offset,
+            size,
+            page,
+            body: collectedArtists,
+            args,
+          })
         }
       )
     },

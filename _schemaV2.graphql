@@ -10437,7 +10437,7 @@ type MyCollectionConnection {
   artistsCount: Int!
   artworksCount: Int!
 
-  # A connection for the artists in the users' collection
+  # A connection of artists in the users' collection
   collectedArtistsConnection(
     after: String
     before: String
@@ -10517,7 +10517,7 @@ type MyCollectionInfo {
   artistsCount: Int!
   artworksCount: Int!
 
-  # A connection for the artists in the users' collection
+  # A connection of artists in the users' collection
   collectedArtistsConnection(
     after: String
     before: String
