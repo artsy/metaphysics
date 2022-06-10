@@ -110,13 +110,19 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               "List of artwork IDs to exclude from the response (irrespective of size)",
           },
           status: { type: SaleArtworkStatus },
+          cached: {
+            description:
+              "When this is true and there is no access token present, allow a loader that caches to be used.",
+            type: GraphQLBoolean,
+            defaultValue: true,
+          },
         }),
         resolve: async (
           { eligible_sale_artworks_count, id },
           options,
-          { saleArtworksLoader }
+          { saleArtworksLoader, uncachedSaleArtworksLoader, accessToken }
         ) => {
-          const { status } = options
+          const { status, cached } = options
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             options
           )
@@ -137,7 +143,13 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             gravityArgs.exclude_ids = flatten([options.exclude])
           }
 
-          const { body, headers } = await saleArtworksLoader(id, gravityArgs)
+          let loader
+          if (accessToken) {
+            loader = saleArtworksLoader
+          } else {
+            loader = cached ? saleArtworksLoader : uncachedSaleArtworksLoader
+          }
+          const { body, headers } = await loader(id, gravityArgs)
           const artworks = map(body, "artwork")
           const totalCount = headers["x-total-count"]
             ? parseInt(headers["x-total-count"], 10)
@@ -348,6 +360,24 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       isClosed: {
         type: GraphQLBoolean,
         resolve: ({ auction_state }) => auction_state === "closed",
+      },
+      isLotsClosing: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description:
+          "True for a cascading-end-time enabled sale where lots have started closing",
+        resolve: ({
+          end_at,
+          ended_at,
+          cascading_end_time_interval_minutes,
+        }) => {
+          if (!cascading_end_time_interval_minutes) return false
+          if (!!ended_at) return false
+
+          const thisMoment = moment.tz(moment(), DEFAULT_TZ)
+          const lotsClosingMoment = moment.tz(end_at, DEFAULT_TZ)
+
+          return thisMoment.isAfter(lotsClosingMoment)
+        },
       },
       isOpen: {
         type: GraphQLBoolean,
