@@ -6,7 +6,11 @@ import {
   GraphQLFieldConfig,
   GraphQLInt,
 } from "graphql"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
+import { artistConnection } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
+import { paginationResolver } from "../fields/pagination"
 
 export const myCollectionInfoFields = {
   description: {
@@ -32,6 +36,30 @@ export const myCollectionInfoFields = {
   artistsCount: {
     type: new GraphQLNonNull(GraphQLInt),
     resolve: ({ artists_count }) => artists_count,
+  },
+  collectedArtistsConnection: {
+    description: "A connection of artists in the users' collection",
+    type: artistConnection.connectionType,
+    args: pageable({
+      page: { type: GraphQLInt },
+      size: { type: GraphQLInt },
+    }),
+    resolve: async (_root, args, context) => {
+      const { collectionArtistsLoader } = context
+
+      if (!collectionArtistsLoader) return
+
+      const { page, offset, size } = convertConnectionArgsToGravityArgs(args)
+
+      const { body, headers } = await collectionArtistsLoader("my-collection", {
+        size,
+        page,
+        total_count: true,
+      })
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+      return paginationResolver({ totalCount, offset, size, page, body, args })
+    },
   },
 }
 
