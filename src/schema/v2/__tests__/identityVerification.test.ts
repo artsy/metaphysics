@@ -15,6 +15,7 @@ describe("IdentityVerification type", () => {
       invitation_expires_at:
         "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
       user_id: "user1",
+      created_at: "",
     }
 
     const query = `
@@ -53,6 +54,7 @@ describe("IdentityVerification type", () => {
       invitation_expires_at:
         "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
       user_id: "user1",
+      created_at: "",
     }
 
     const gravityScanReference: IdentityVerificationScanReferenceGravityResponse = {
@@ -64,6 +66,7 @@ describe("IdentityVerification type", () => {
       finished_at: "",
       extracted_id_fail_reason: "",
       extracted_similarity_fail_reason: "",
+      created_at: "",
     }
 
     const gravityOverride: IdentityVerificationOverrideGravityResponse = {
@@ -122,6 +125,7 @@ describe("IdentityVerification type", () => {
       invitation_expires_at:
         "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
       user_id: "user1",
+      created_at: "",
     }
 
     const query = gql`
