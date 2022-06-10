@@ -207,6 +207,10 @@ export default (opts) => {
       null
     ),
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
+    uncachedSaleArtworksLoader: gravityUncachedLoader(
+      (id) => `sale/${id}/sale_artworks`,
+      { headers: true }
+    ),
     saleArtworksLoader: gravityLoader(
       (id) => `sale/${id}/sale_artworks`,
       {},

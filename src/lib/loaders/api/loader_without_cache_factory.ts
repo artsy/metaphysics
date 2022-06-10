@@ -13,7 +13,7 @@ import { DataLoaderKey } from "./index"
 
 export const uncachedLoaderFactory = (
   api: (route: string, params) => Promise<any>,
-  _apiName: string
+  apiName: string
 ) => {
   const apiLoaderFactory = (path, options: any | null) => {
     // If you use gravity as the api here, then options will get interpreted as
@@ -25,7 +25,13 @@ export const uncachedLoaderFactory = (
             if (apiOptions) {
               throw new Error("A uncachedLoader does not accept API options.")
             }
-            return Promise.resolve(api(key, options).then((r) => r.body))
+
+            const reduceData = ({ body, headers }) =>
+              options && options.headers ? { body, headers } : body
+
+            return Promise.resolve(
+              api(key, apiName === "gravity" ? null : options).then(reduceData)
+            )
           })
         ),
       { cache: false, batch: false }

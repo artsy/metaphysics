@@ -894,6 +894,51 @@ describe("Sale type", () => {
     })
   })
 
+  describe("isLotsClosing", () => {
+    beforeEach(() => {
+      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
+    })
+    const query = `
+      {
+        sale(id: "foo-foo") {
+          isLotsClosing
+        }
+      }
+    `
+
+    it("returns false when end_at is in the future", async () => {
+      const response = await execute(query, {
+        cascading_end_time_interval_minutes: 1,
+        end_at: moment().add(1, "hours"),
+      })
+      expect(response.sale.isLotsClosing).toBe(false)
+    })
+
+    it("returns false if cascading interval minutes is not set", async () => {
+      const response = await execute(query, {
+        end_at: moment().subtract(2, "hours"),
+      })
+      expect(response.sale.isLotsClosing).toBe(false)
+    })
+
+    it("returns false if the sale has ended", async () => {
+      const response = await execute(query, {
+        cascading_end_time_interval_minutes: 1,
+        end_at: moment().subtract(2, "hours"),
+        ended_at: moment().subtract(1, "hours"),
+      })
+      expect(response.sale.isLotsClosing).toBe(false)
+    })
+
+    it("returns true when end_at is in the past and the sale has not ended", async () => {
+      const response = await execute(query, {
+        cascading_end_time_interval_minutes: 1,
+        end_at: moment().subtract(2, "hours"),
+      })
+      expect(response.sale.isLotsClosing).toBe(true)
+    })
+  })
+
   describe("cascadingEndTimeFormattedStartDateTime", () => {
     beforeEach(() => {
       Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
