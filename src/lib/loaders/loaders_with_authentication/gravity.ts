@@ -1,11 +1,6 @@
 import factories from "../api"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
-export type StartIdentityVerificationGravityOutput = {
-  identity_verification_id: string
-  identity_verification_flow_url: string
-}
-
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
   const { gravityLoaderWithAuthenticationFactory } = factories(opts)
@@ -14,9 +9,6 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
-    identityVerificationLoader: gravityLoader(
-      (id) => `identity_verification/${id}`
-    ),
     identityVerificationsLoader: gravityLoader(
       "identity_verifications",
       {},
@@ -354,11 +346,6 @@ export default (accessToken, userID, opts) => {
     ),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     showLoader: gravityLoader((id) => `show/${id}`),
-    startIdentityVerificationLoader: gravityLoader(
-      (id) => `identity_verification/${id}/start`,
-      {},
-      { method: "PUT" }
-    ),
     suggestedArtistsLoader: gravityLoader(
       "me/suggested/artists",
       {},

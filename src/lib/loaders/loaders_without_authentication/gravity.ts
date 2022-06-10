@@ -5,6 +5,11 @@ import gravity from "lib/apis/gravity"
 import { createBatchLoaders } from "../batchLoader"
 import { searchLoader } from "../searchLoader"
 
+export type StartIdentityVerificationGravityOutput = {
+  identity_verification_id: string
+  identity_verification_flow_url: string
+}
+
 export default (opts) => {
   const { gravityLoaderWithoutAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithoutAuthenticationFactory
@@ -243,6 +248,11 @@ export default (opts) => {
       (id) => `gene/${id}/similar`,
       {},
       { headers: true }
+    ),
+    startIdentityVerificationLoader: gravityLoader(
+      (id) => `identity_verification/${id}/start`,
+      {},
+      { method: "PUT" }
     ),
     staticContentLoader: gravityLoader((id) => `page/${id}`),
     systemTimeLoader: gravityUncachedLoader("system/time", null),
