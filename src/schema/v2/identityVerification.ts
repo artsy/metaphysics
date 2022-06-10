@@ -21,6 +21,7 @@ export type IdentityVerificationGravityResponse = {
   state: string
   invitation_expires_at: string
   user_id: string
+  created_at: string
 }
 
 export type IdentityVerificationOverrideGravityResponse = {
@@ -41,6 +42,7 @@ export type IdentityVerificationScanReferenceGravityResponse = {
   result: string
   extracted_id_fail_reason: string
   extracted_similarity_fail_reason: string
+  created_at: string
 }
 
 const dateFieldForVerificationExpiresAt: GraphQLFieldConfig<
@@ -115,6 +117,7 @@ export const IdentityVerificationScanReferenceType = new GraphQLObjectType<
       resolve: ({ extracted_similarity_fail_reason }) =>
         extracted_similarity_fail_reason,
     },
+    createdAt: date(({ created_at }) => created_at),
   },
 })
 
@@ -162,6 +165,7 @@ export const IdentityVerificationType = new GraphQLObjectType<
         return identityVerificationScanReferencesLoader(id)
       },
     },
+    createdAt: date(({ created_at }) => created_at),
   },
 })
 
