@@ -48,6 +48,18 @@ import { markdown } from "../fields/markdown"
 
 const { PREDICTION_ENDPOINT } = config
 
+const SaleArtworkStatus = new GraphQLEnumType({
+  name: "SaleArtworkStatus",
+  values: {
+    OPEN: {
+      value: "open",
+    },
+    CLOSED: {
+      value: "closed",
+    },
+  },
+})
+
 const BidIncrement = new GraphQLObjectType<any, ResolverContext>({
   name: "BidIncrement",
   fields: {
@@ -97,12 +109,14 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             description:
               "List of artwork IDs to exclude from the response (irrespective of size)",
           },
+          status: { type: SaleArtworkStatus },
         }),
-        resolve: (
+        resolve: async (
           { eligible_sale_artworks_count, id },
           options,
           { saleArtworksLoader }
         ) => {
+          const { status } = options
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             options
           )
@@ -110,21 +124,28 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             exclude_ids?: string[]
             page: number
             size: number
+            total_count?: boolean
+            status?: string
           }
-          const gravityArgs: GravityArgs = { page, size }
+          const gravityArgs: GravityArgs = {
+            page,
+            size,
+            ...(status && { status, total_count: true }),
+          }
 
           if (options.exclude) {
             gravityArgs.exclude_ids = flatten([options.exclude])
           }
 
-          return saleArtworksLoader(id, gravityArgs)
-            .then(({ body }) => map(body, "artwork"))
-            .then((body) => {
-              return connectionFromArraySlice(body, options, {
-                arrayLength: eligible_sale_artworks_count,
-                sliceStart: offset,
-              })
-            })
+          const { body, headers } = await saleArtworksLoader(id, gravityArgs)
+          const artworks = map(body, "artwork")
+          const totalCount = headers["x-total-count"]
+            ? parseInt(headers["x-total-count"], 10)
+            : eligible_sale_artworks_count
+          return connectionFromArraySlice(artworks, options, {
+            arrayLength: totalCount,
+            sliceStart: offset,
+          })
         },
       },
       associatedSale: {
@@ -430,17 +451,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           },
           all: { type: GraphQLBoolean, defaultValue: false },
           status: {
-            type: new GraphQLEnumType({
-              name: "SaleArtworkStatus",
-              values: {
-                OPEN: {
-                  value: "open",
-                },
-                CLOSED: {
-                  value: "closed",
-                },
-              },
-            }),
+            type: SaleArtworkStatus,
           },
         }),
         resolve: (sale, options, { saleArtworksLoader }) => {
@@ -473,9 +484,11 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
                     sliceStart: 0,
                   }
                 } else {
-                  const count = parseInt(headers["x-total-count"] || "0", 10)
+                  const totalCount = headers["x-total-count"]
+                    ? parseInt(headers["x-total-count"], 10)
+                    : sale.eligible_sale_artworks_count
                   meta = {
-                    arrayLength: count || sale.eligible_sale_artworks_count,
+                    arrayLength: totalCount,
                     sliceStart: offset,
                   }
                 }

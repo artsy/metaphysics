@@ -1215,6 +1215,7 @@ describe("Sale type", () => {
                 id: "some-id",
               },
             }),
+            headers: {},
           } as any),
       }
 
