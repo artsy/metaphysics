@@ -7,7 +7,9 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { sortBy } from "lodash"
 import { ResolverContext } from "types/graphql"
+import { date } from "../fields/date"
 
 export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeatureFlags",
@@ -54,9 +56,7 @@ export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
         })
       ),
     },
-    createdAt: {
-      type: GraphQLString,
-    },
+    createdAt: date(),
     // strategies: {
     //   type: new GraphQLList(FeatureFlagsVariantType),
     // }
@@ -72,9 +72,7 @@ export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
     impressionData: {
       type: GraphQLBoolean,
     },
-    lastSeenAt: {
-      type: GraphQLString,
-    },
+    lastSeenAt: date(),
     project: {
       type: GraphQLString,
     },
@@ -84,10 +82,28 @@ export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
 export const FeatureFlags: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(FeatureFlagType),
   description: "A list of feature flags",
-  resolve: async (_root, _args, { adminFeatureFlagsLoader }) => {
+  args: {
+    sortBy: {
+      description: "The sort order of the results",
+      defaultValue: "name",
+      type: new GraphQLEnumType({
+        name: "FeatureFlagsSortBy",
+        values: {
+          NAME: {
+            value: "name",
+          },
+          CREATED_AT: {
+            value: "createdAt",
+          },
+        },
+      }),
+    },
+  },
+  resolve: async (_root, args, { adminFeatureFlagsLoader }) => {
     if (!adminFeatureFlagsLoader) return null
 
     const { features } = await adminFeatureFlagsLoader()
-    return features
+    const sorted = sortBy(features, args.sortBy)
+    return sorted
   },
 }

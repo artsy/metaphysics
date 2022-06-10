@@ -95,7 +95,48 @@ type AddUserToSubmissionMutationPayload {
 
 type Admin {
   # A list of feature flags
-  featureFlags: [FeatureFlags]
+  featureFlags(
+    # The sort order of the results
+    sortBy: FeatureFlagsSortBy
+  ): [FeatureFlags]
+}
+
+input AdminCreateFeatureFlagInput {
+  clientMutationId: String
+  description: String = ""
+  impressionData: Boolean = false
+  name: String
+  type: String = "release"
+}
+
+type AdminCreateFeatureFlagPayload {
+  clientMutationId: String
+  featureFlag: FeatureFlags
+}
+
+input AdminDeleteFeatureFlagInput {
+  clientMutationId: String
+  name: String
+}
+
+type AdminDeleteFeatureFlagPayload {
+  clientMutationId: String
+  error: String
+  success: Boolean
+}
+
+input AdminUpdateFeatureFlagInput {
+  clientMutationId: String
+  description: String
+  id: String!
+  impressionData: Boolean = false
+  name: String
+  type: String = "release"
+}
+
+type AdminUpdateFeatureFlagPayload {
+  clientMutationId: String
+  featureFlag: FeatureFlags
 }
 
 # One item in an aggregation
@@ -6546,19 +6587,6 @@ type CreateBidderPayload {
   clientMutationId: String
 }
 
-input CreateFeatureFlagInput {
-  clientMutationId: String
-  description: String = ""
-  impressionData: Boolean = false
-  name: String
-  type: String = "release"
-}
-
-type CreateFeatureFlagPayload {
-  clientMutationId: String
-  featureFlag: FeatureFlags
-}
-
 input CreateGeminiEntryForAssetInput {
   clientMutationId: String
 
@@ -7840,16 +7868,35 @@ type FeaturedLink {
 union FeaturedLinkEntity = Artist | Gene | Partner
 
 type FeatureFlags {
-  createdAt: String
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
   description: String
   enabled: Boolean
   impressionData: Boolean
-  lastSeenAt: String
+  lastSeenAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
   name: String
   project: String
   stale: Boolean
   type: FeatureFlagsType
   variants: [FeatureFlagVariant]
+}
+
+enum FeatureFlagsSortBy {
+  CREATED_AT
+  NAME
 }
 
 enum FeatureFlagsType {
@@ -10147,8 +10194,18 @@ type Mutation {
 
   # Creates a new feature flag
   adminCreateFeatureFlag(
-    input: CreateFeatureFlagInput!
-  ): CreateFeatureFlagPayload
+    input: AdminCreateFeatureFlagInput!
+  ): AdminCreateFeatureFlagPayload
+
+  # Deletes a feature flag
+  adminDeleteFeatureFlag(
+    input: AdminDeleteFeatureFlagInput!
+  ): AdminDeleteFeatureFlagPayload
+
+  # Updates a feature flag
+  adminUpdateFeatureFlag(
+    input: AdminUpdateFeatureFlagInput!
+  ): AdminUpdateFeatureFlagPayload
   captureHold(input: CaptureHoldInput!): CaptureHoldPayload
   commerceAddInitialOfferToOrder(
     # Parameters for AddInitialOfferToOrder

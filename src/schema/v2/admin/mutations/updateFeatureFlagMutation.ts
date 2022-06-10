@@ -1,16 +1,19 @@
-import { GraphQLString, GraphQLBoolean } from "graphql"
+import { GraphQLString, GraphQLBoolean, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { FeatureFlagType } from "../featureFlags"
 
-export const createFeatureFlagMutation = mutationWithClientMutationId<
+export const updateFeatureFlagMutation = mutationWithClientMutationId<
   any,
   any,
   ResolverContext
 >({
-  name: "AdminCreateFeatureFlag",
-  description: "Creates a new feature flag",
+  name: "AdminUpdateFeatureFlag",
+  description: "Updates a feature flag",
   inputFields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
     type: {
       type: GraphQLString,
       defaultValue: "release",
@@ -20,7 +23,6 @@ export const createFeatureFlagMutation = mutationWithClientMutationId<
     },
     description: {
       type: GraphQLString,
-      defaultValue: "",
     },
     impressionData: {
       type: GraphQLBoolean,
@@ -33,13 +35,13 @@ export const createFeatureFlagMutation = mutationWithClientMutationId<
       resolve: (x) => x,
     },
   },
-  mutateAndGetPayload: async (args, { adminCreateFeatureFlag }) => {
-    if (!adminCreateFeatureFlag) {
+  mutateAndGetPayload: async (args, { adminUpdateFeatureFlag }) => {
+    if (!adminUpdateFeatureFlag) {
       return new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const response = await adminCreateFeatureFlag(args)
+      const response = await adminUpdateFeatureFlag(args.name, args)
       return response
     } catch (error) {
       throw new Error(JSON.stringify(error))

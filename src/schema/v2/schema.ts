@@ -138,6 +138,9 @@ import { BankAccount } from "./bank_account"
 import { WireTransferType, PaymentMethodUnion } from "./payment_method_union"
 import { AdminField } from "./admin"
 import { createFeatureFlagMutation } from "./admin/mutations/createFeatureFlagMutation"
+import { deleteFeatureFlagMutation } from "./admin/mutations/deleteFeatureFlagMutation"
+import { updateFeatureFlagMutation } from "./admin/mutations/updateFeatureFlagMutation"
+import { toggleFeatureFlagMutation } from "./admin/mutations/toggleFeatureFlagMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -260,6 +263,9 @@ export default new GraphQLSchema({
     name: "Mutation",
     fields: {
       adminCreateFeatureFlag: createFeatureFlagMutation,
+      adminUpdateFeatureFlag: updateFeatureFlagMutation,
+      adminDeleteFeatureFlag: deleteFeatureFlagMutation,
+      adminToggleFeatureFlag: toggleFeatureFlagMutation,
       createAccountRequest: createAccountRequestMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,

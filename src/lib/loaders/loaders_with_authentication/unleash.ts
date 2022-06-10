@@ -16,6 +16,31 @@ export const unleashLoaders = (accessToken, opts) => {
       {},
       { method: "POST" }
     ),
+    adminUpdateFeatureFlag: unleashLoader(
+      (id) => `projects/default/features/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    adminDeleteFeatureFlag: unleashLoader(
+      (id) => `projects/default/features/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    adminToggleFeatureFlag: unleashLoader(
+      ({
+        id,
+        environment,
+        mode,
+      }: {
+        id: string
+        environment: "staging" | "production"
+        mode: "on" | "off"
+      }) =>
+        `projects/default/features/${id}/environments/${environment}/${mode}`,
+      {},
+      { method: "POST" }
+    ),
+
     adminFeatureFlagsLoader: unleashLoader("features"),
     adminFeatureFlagLoader: unleashLoader((id) => `features/${id}`),
     adminProjectsLoader: unleashLoader("projects"),
