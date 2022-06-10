@@ -9,52 +9,50 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-export const FeatureFlagsTypeEnum = {
-  type: new GraphQLEnumType({
-    name: "FeatureFlagsType",
-    values: {
-      EXPERIMENT: {
-        value: "experiment",
-      },
-      RELEASE: {
-        value: "release",
-      },
-    },
-  }),
-}
-
-const FeatureFlagsVariantType = new GraphQLObjectType<any, ResolverContext>({
-  name: "FeatureFlagVariant",
-  fields: () => ({
-    name: {
-      type: GraphQLString,
-    },
-    stickiness: {
-      type: GraphQLString,
-    },
-    weight: {
-      type: GraphQLInt,
-    },
-    weightType: {
-      type: GraphQLString,
-    },
-    // overrides: new GraphQLList({
-    //   type: new GraphQLObjectType({
-    //     name: "FeatureFlagOverrides",
-    //   })
-    // })
-  }),
-})
-
-const FeatureFlagsType = new GraphQLObjectType<any, ResolverContext>({
+export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeatureFlags",
   fields: {
     description: {
       type: GraphQLString,
     },
-    type: FeatureFlagsTypeEnum,
+    type: {
+      type: new GraphQLEnumType({
+        name: "FeatureFlagsType",
+        values: {
+          EXPERIMENT: {
+            value: "experiment",
+          },
+          RELEASE: {
+            value: "release",
+          },
+        },
+      }),
+    },
     variants: {
-      type: new GraphQLList(FeatureFlagsVariantType),
+      type: new GraphQLList(
+        new GraphQLObjectType<any, ResolverContext>({
+          name: "FeatureFlagVariant",
+          fields: () => ({
+            name: {
+              type: GraphQLString,
+            },
+            stickiness: {
+              type: GraphQLString,
+            },
+            weight: {
+              type: GraphQLInt,
+            },
+            weightType: {
+              type: GraphQLString,
+            },
+            // overrides: new GraphQLList({
+            //   type: new GraphQLObjectType({
+            //     name: "FeatureFlagOverrides",
+            //   })
+            // })
+          }),
+        })
+      ),
     },
     createdAt: {
       type: GraphQLString,
@@ -84,11 +82,12 @@ const FeatureFlagsType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 export const FeatureFlags: GraphQLFieldConfig<void, ResolverContext> = {
-  type: new GraphQLList(FeatureFlagsType),
+  type: new GraphQLList(FeatureFlagType),
   description: "A list of feature flags",
-  resolve: async (_root, _args, { adminFeaturesLoader }) => {
-    if (!adminFeaturesLoader) return null
-    const { features } = await adminFeaturesLoader()
+  resolve: async (_root, _args, { adminFeatureFlagsLoader }) => {
+    if (!adminFeatureFlagsLoader) return null
+
+    const { features } = await adminFeatureFlagsLoader()
     return features
   },
 }

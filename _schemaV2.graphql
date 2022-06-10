@@ -6546,6 +6546,19 @@ type CreateBidderPayload {
   clientMutationId: String
 }
 
+input CreateFeatureFlagInput {
+  clientMutationId: String
+  description: String = ""
+  impressionData: Boolean = false
+  name: String
+  type: String = "release"
+}
+
+type CreateFeatureFlagPayload {
+  clientMutationId: String
+  featureFlag: FeatureFlags
+}
+
 input CreateGeminiEntryForAssetInput {
   clientMutationId: String
 
@@ -10131,6 +10144,11 @@ type Mutation {
     # Parameters for AddUserToSubmissionMutation
     input: AddUserToSubmissionMutationInput!
   ): AddUserToSubmissionMutationPayload
+
+  # Creates a new feature flag
+  adminCreateFeatureFlag(
+    input: CreateFeatureFlagInput!
+  ): CreateFeatureFlagPayload
   captureHold(input: CaptureHoldInput!): CaptureHoldPayload
   commerceAddInitialOfferToOrder(
     # Parameters for AddInitialOfferToOrder
