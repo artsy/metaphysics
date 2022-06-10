@@ -115,6 +115,7 @@ export const IdentityVerificationScanReferenceType = new GraphQLObjectType<
       resolve: ({ extracted_similarity_fail_reason }) =>
         extracted_similarity_fail_reason,
     },
+    createdAt: date(({ created_at }) => created_at),
   },
 })
 
@@ -162,6 +163,7 @@ export const IdentityVerificationType = new GraphQLObjectType<
         return identityVerificationScanReferencesLoader(id)
       },
     },
+    createdAt: date(({ created_at }) => created_at),
   },
 })
 
