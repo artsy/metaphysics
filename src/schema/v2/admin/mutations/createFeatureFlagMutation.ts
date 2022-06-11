@@ -1,7 +1,16 @@
-import { GraphQLString, GraphQLBoolean } from "graphql"
+import {
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLList,
+  GraphQLInputObjectType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { FeatureFlagType } from "../featureFlags"
+import {
+  FeatureFlagStrategyTypeEnum,
+  FeatureFlagType,
+  FeatureFlagVariant,
+} from "../featureFlags"
 
 export const createFeatureFlagMutation = mutationWithClientMutationId<
   any,
@@ -25,6 +34,10 @@ export const createFeatureFlagMutation = mutationWithClientMutationId<
     impressionData: {
       type: GraphQLBoolean,
       defaultValue: false,
+    },
+    strategyType: FeatureFlagStrategyTypeEnum,
+    variants: {
+      type: new GraphQLList(new GraphQLInputObjectType(FeatureFlagVariant)),
     },
   },
   outputFields: {

@@ -26,6 +26,18 @@ export const unleashLoaders = (accessToken, opts) => {
       {},
       { method: "DELETE" }
     ),
+    addFeatureFlagStrategy: unleashLoader(
+      ({
+        id,
+        environment,
+      }: {
+        id: string
+        environment: "staging" | "production"
+      }) =>
+        `projects/default/features/${id}/environments/${environment}/strategies`,
+      {},
+      { method: "POST" }
+    ),
     adminToggleFeatureFlag: unleashLoader(
       ({
         id,

@@ -11,6 +11,23 @@ import { sortBy } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { date } from "../fields/date"
 
+export const FeatureFlagStrategyTypeEnum = {
+  type: new GraphQLEnumType({
+    name: "FeatureFlagStrategyType",
+    values: {
+      DEFAULT: {
+        description: "Simple on/off flag",
+        value: "default",
+      },
+      FLEXIBLE_ROLLOUT: {
+        description:
+          "For A/B tests, where you can specify a percentage of users to be served a variant",
+        value: "flexibleRollout",
+      },
+    },
+  }),
+}
+
 export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeatureFlags",
   fields: {
@@ -57,9 +74,16 @@ export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
       ),
     },
     createdAt: date(),
-    // strategies: {
-    //   type: new GraphQLList(FeatureFlagsVariantType),
-    // }
+    strategies: {
+      type: new GraphQLList(
+        new GraphQLObjectType({
+          name: "FeatureFlagStrategies",
+          fields: {
+            strategy: FeatureFlagStrategyTypeEnum,
+          },
+        })
+      ),
+    },
     enabled: {
       type: GraphQLBoolean,
     },
@@ -78,6 +102,43 @@ export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
     },
   },
 })
+
+// Simple object because used as input type as well
+export const FeatureFlagVariant = {
+  name: "FeatureFlagVariant",
+  fields: {
+    name: {
+      type: new GraphQLEnumType({
+        name: "FeatureFlagVariantName",
+        values: {
+          CONTROL: {
+            value: "control",
+          },
+          EXPERIMENT: {
+            value: "experiment",
+          },
+        },
+      }),
+    },
+    weightType: {
+      type: new GraphQLEnumType({
+        name: "FeatureFlagVariantWeightType",
+        values: {
+          VARIABLE: {
+            value: "variable",
+          },
+        },
+      }),
+    },
+    weight: {
+      type: GraphQLInt,
+    },
+    stickiness: {
+      type: GraphQLString,
+      defaultValue: "sessionId",
+    },
+  },
+}
 
 export const FeatureFlags: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(FeatureFlagType),
