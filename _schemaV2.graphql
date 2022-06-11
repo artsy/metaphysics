@@ -106,7 +106,9 @@ input AdminCreateFeatureFlagInput {
   description: String = ""
   impressionData: Boolean = false
   name: String
-  type: String = "release"
+  strategy: FeatureFlagStrategyInput!
+  type: FeatureFlagToggleType!
+  variants: [FeatureFlagVariantInputName]
 }
 
 type AdminCreateFeatureFlagPayload {
@@ -125,12 +127,29 @@ type AdminDeleteFeatureFlagPayload {
   success: Boolean
 }
 
+enum AdminToggleFeatureFlagEnvironment {
+  DEVELOPMENT
+  PRODUCTION
+}
+
+input AdminToggleFeatureFlagInput {
+  clientMutationId: String
+  enabled: Boolean!
+  environment: AdminToggleFeatureFlagEnvironment!
+  name: String!
+}
+
+type AdminToggleFeatureFlagPayload {
+  clientMutationId: String
+  error: String
+  success: Boolean
+}
+
 input AdminUpdateFeatureFlagInput {
   clientMutationId: String
   description: String
-  id: String!
   impressionData: Boolean = false
-  name: String
+  name: String!
   type: String = "release"
 }
 
@@ -7891,7 +7910,7 @@ type FeatureFlags {
   project: String
   stale: Boolean
   type: FeatureFlagsType
-  variants: [FeatureFlagVariant]
+  variants: [FeatureFlagVariantType]
 }
 
 enum FeatureFlagsSortBy {
@@ -7899,16 +7918,50 @@ enum FeatureFlagsSortBy {
   NAME
 }
 
+input FeatureFlagStrategyInput {
+  rollOut: Int = 100
+  strategyType: FeatureFlagStrategyType
+}
+
+enum FeatureFlagStrategyType {
+  # Simple on/off flag
+  DEFAULT
+
+  # For A/B tests, where you can specify a percentage of users to be served a variant
+  FLEXIBLE_ROLLOUT
+}
+
 enum FeatureFlagsType {
   EXPERIMENT
   RELEASE
 }
 
-type FeatureFlagVariant {
+enum FeatureFlagToggleType {
+  DEFAULT
+  EXPERIMENT
+}
+
+input FeatureFlagVariantInputName {
+  name: FeatureFlagVariantName!
+  stickiness: String = "sessionID"
+  weight: Int!
+  weightType: FeatureFlagVariantWeightType
+}
+
+enum FeatureFlagVariantName {
+  CONTROL
+  EXPERIMENT
+}
+
+type FeatureFlagVariantType {
   name: String
   stickiness: String
   weight: Int
   weightType: String
+}
+
+enum FeatureFlagVariantWeightType {
+  VARIABLE
 }
 
 enum FeatureLayouts {
@@ -10201,6 +10254,11 @@ type Mutation {
   adminDeleteFeatureFlag(
     input: AdminDeleteFeatureFlagInput!
   ): AdminDeleteFeatureFlagPayload
+
+  # Toggles a feature flag on or off for a given environment
+  adminToggleFeatureFlag(
+    input: AdminToggleFeatureFlagInput!
+  ): AdminToggleFeatureFlagPayload
 
   # Updates a feature flag
   adminUpdateFeatureFlag(

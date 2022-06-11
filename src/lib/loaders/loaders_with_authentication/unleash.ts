@@ -32,11 +32,16 @@ export const unleashLoaders = (accessToken, opts) => {
         environment,
       }: {
         id: string
-        environment: "staging" | "production"
+        environment: "development" | "production"
       }) =>
         `projects/default/features/${id}/environments/${environment}/strategies`,
       {},
       { method: "POST" }
+    ),
+    addFeatureFlagVariant: unleashLoader(
+      (id) => `projects/default/features/${id}/variants`,
+      {},
+      { method: "PUT" }
     ),
     adminToggleFeatureFlag: unleashLoader(
       ({
@@ -45,7 +50,7 @@ export const unleashLoaders = (accessToken, opts) => {
         mode,
       }: {
         id: string
-        environment: "staging" | "production"
+        environment: "development" | "production"
         mode: "on" | "off"
       }) =>
         `projects/default/features/${id}/environments/${environment}/${mode}`,

@@ -6,6 +6,7 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
+import { FeatureFlags } from "../featureFlags"
 
 export const toggleFeatureFlagMutation = mutationWithClientMutationId<
   any,
@@ -38,11 +39,9 @@ export const toggleFeatureFlagMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
+    featureFlags: FeatureFlags,
     success: {
       type: GraphQLBoolean,
-    },
-    error: {
-      type: GraphQLString,
     },
   },
   mutateAndGetPayload: async (args, { adminToggleFeatureFlag }) => {
@@ -50,15 +49,15 @@ export const toggleFeatureFlagMutation = mutationWithClientMutationId<
       return new Error("You need to be signed in to perform this action")
     }
 
-    // TODO: Need to update Strategy first
-
     try {
       await adminToggleFeatureFlag({
         id: args.name,
         environment: args.environment,
         mode: args.enabled ? "on" : "off",
       })
-      return { success: true }
+      return {
+        success: true,
+      }
     } catch (error) {
       console.error("Error toggling Feature Flag:", error)
       throw new Error(JSON.stringify(error))

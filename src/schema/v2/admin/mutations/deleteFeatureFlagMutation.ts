@@ -1,6 +1,7 @@
 import { GraphQLBoolean, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
+import { FeatureFlags } from "../featureFlags"
 
 export const deleteFeatureFlagMutation = mutationWithClientMutationId<
   any,
@@ -15,11 +16,9 @@ export const deleteFeatureFlagMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
+    featureFlags: FeatureFlags,
     success: {
       type: GraphQLBoolean,
-    },
-    error: {
-      type: GraphQLString,
     },
   },
   mutateAndGetPayload: async (args, { adminDeleteFeatureFlag }) => {
@@ -29,7 +28,9 @@ export const deleteFeatureFlagMutation = mutationWithClientMutationId<
 
     try {
       await adminDeleteFeatureFlag(args.name)
-      return { success: true }
+      return {
+        success: true,
+      }
     } catch (error) {
       console.error("Error deleting Feature Flag:", error)
       throw new Error(JSON.stringify(error))

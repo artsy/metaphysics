@@ -73,6 +73,7 @@ export const toQueryString = (options = {}) =>
         arrayFormat: "brackets",
         sort: (a, b) => a.localeCompare(b),
       })
+
 export const toKey = (path, options = {}) => `${path}?${toQueryString(options)}`
 
 export const exclude = (values?: any[], property?: any) => (xs) =>

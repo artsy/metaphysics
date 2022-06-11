@@ -2,88 +2,73 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLID,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { sortBy } from "lodash"
+import { merge, sortBy } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { date } from "../fields/date"
-
-export const FeatureFlagStrategyTypeEnum = {
-  type: new GraphQLEnumType({
-    name: "FeatureFlagStrategyType",
-    values: {
-      DEFAULT: {
-        description: "Simple on/off flag",
-        value: "default",
-      },
-      FLEXIBLE_ROLLOUT: {
-        description:
-          "For A/B tests, where you can specify a percentage of users to be served a variant",
-        value: "flexibleRollout",
-      },
-    },
-  }),
-}
+import { base64 } from "lib/base64"
 
 export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
-  name: "FeatureFlags",
+  name: "FeatureFlag",
   fields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      resolve: (data) => {
+        return base64(data.name)
+      },
+    },
     description: {
       type: GraphQLString,
     },
+    environments: {
+      type: new GraphQLList(
+        new GraphQLObjectType({
+          name: "FeatureFlagEnvironments",
+          fields: {
+            name: {
+              type: GraphQLString,
+            },
+            displayName: {
+              type: GraphQLString,
+            },
+            enabled: {
+              type: GraphQLBoolean,
+            },
+          },
+        })
+      ),
+    },
     type: {
-      type: new GraphQLEnumType({
-        name: "FeatureFlagsType",
-        values: {
-          EXPERIMENT: {
-            value: "experiment",
-          },
-          RELEASE: {
-            value: "release",
-          },
-        },
-      }),
+      type: GraphQLString,
     },
     variants: {
       type: new GraphQLList(
         new GraphQLObjectType<any, ResolverContext>({
-          name: "FeatureFlagVariant",
-          fields: () => ({
+          name: "FeatureFlagVariantType",
+          fields: {
             name: {
               type: GraphQLString,
             },
-            stickiness: {
+            weightType: {
               type: GraphQLString,
             },
             weight: {
               type: GraphQLInt,
             },
-            weightType: {
+            stickiness: {
               type: GraphQLString,
             },
-            // overrides: new GraphQLList({
-            //   type: new GraphQLObjectType({
-            //     name: "FeatureFlagOverrides",
-            //   })
-            // })
-          }),
-        })
-      ),
-    },
-    createdAt: date(),
-    strategies: {
-      type: new GraphQLList(
-        new GraphQLObjectType({
-          name: "FeatureFlagStrategies",
-          fields: {
-            strategy: FeatureFlagStrategyTypeEnum,
           },
         })
       ),
     },
+    createdAt: date(),
     enabled: {
       type: GraphQLBoolean,
     },
@@ -102,43 +87,6 @@ export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
     },
   },
 })
-
-// Simple object because used as input type as well
-export const FeatureFlagVariant = {
-  name: "FeatureFlagVariant",
-  fields: {
-    name: {
-      type: new GraphQLEnumType({
-        name: "FeatureFlagVariantName",
-        values: {
-          CONTROL: {
-            value: "control",
-          },
-          EXPERIMENT: {
-            value: "experiment",
-          },
-        },
-      }),
-    },
-    weightType: {
-      type: new GraphQLEnumType({
-        name: "FeatureFlagVariantWeightType",
-        values: {
-          VARIABLE: {
-            value: "variable",
-          },
-        },
-      }),
-    },
-    weight: {
-      type: GraphQLInt,
-    },
-    stickiness: {
-      type: GraphQLString,
-      defaultValue: "sessionId",
-    },
-  },
-}
 
 export const FeatureFlags: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(FeatureFlagType),
@@ -160,11 +108,24 @@ export const FeatureFlags: GraphQLFieldConfig<void, ResolverContext> = {
       }),
     },
   },
-  resolve: async (_root, args, { adminFeatureFlagsLoader }) => {
-    if (!adminFeatureFlagsLoader) return null
+  resolve: async (
+    _root,
+    args,
+    { adminFeatureFlagsLoader, adminProjectLoader }
+  ) => {
+    if (!(adminFeatureFlagsLoader && adminProjectLoader)) {
+      return null
+    }
 
-    const { features } = await adminFeatureFlagsLoader()
-    const sorted = sortBy(features, args.sortBy)
+    // Need to load project data because feature flags endpoint lacks
+    // `environment` field and so we merge the two together.
+    const [featureFlags, project] = await Promise.all([
+      adminFeatureFlagsLoader(),
+      adminProjectLoader("default"),
+    ])
+
+    const sort = (data) => sortBy(data, args.sortBy)
+    const sorted = merge(sort(featureFlags.features), sort(project.features))
     return sorted
   },
 }

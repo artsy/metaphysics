@@ -11,15 +11,12 @@ export const updateFeatureFlagMutation = mutationWithClientMutationId<
   name: "AdminUpdateFeatureFlag",
   description: "Updates a feature flag",
   inputFields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
     type: {
       type: GraphQLString,
       defaultValue: "release",
     },
     name: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     description: {
       type: GraphQLString,
