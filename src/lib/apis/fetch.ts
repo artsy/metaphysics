@@ -20,9 +20,26 @@ export const constructUrlAndParams = (method, url): URLAndRequestBodyParams => {
   if (method === "PUT" || method === "POST" || method === "DELETE") {
     const [path, queryParams] = url.split("?")
     const parsedParams = parse(queryParams)
+    let body
 
     if (isExisty(parsedParams)) {
-      opts.body = parsedParams
+      // If the query params are formatted in a 0, 1, 2 way we know it's an array
+      // disguised as an object. Convert it back to an array.
+      // TODO: Extract this into own PR and write a test
+      const isArray = Object.keys(parsedParams)
+        .map(Number)
+        .every((key) => !Number.isNaN(key) && typeof key === "number")
+
+      if (isArray) {
+        const arrayParams = Object.entries(parsedParams).map(
+          ([_, entry]) => entry
+        )
+        body = arrayParams
+      } else {
+        body = parsedParams
+      }
+
+      opts.body = body
       opts.json = true
 
       return { url: path, ...opts }

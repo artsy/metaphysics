@@ -121,4 +121,13 @@ describe("constructUrlAndParams", () => {
       })
     })
   })
+
+  it("correctly stringifies object-formatted array data", () => {
+    const { body } = constructUrlAndParams(
+      "PUT",
+      "https://staging.artsy.net/api/v1/filter/artworks?0=foo&1=bar"
+    )
+
+    expect(body).toEqual(["foo", "bar"])
+  })
 })
