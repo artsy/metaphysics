@@ -44,12 +44,13 @@ async function updateSchemaFile({
         writeFileSync(repoDest, JSON.stringify(gql, null, 2))
       } else {
         execSync(`cp _schemaV2.graphql '${repoDest}'`)
-        // TODO: Run Relay 14 compiler for Eigen (the old compiler fails).
-        if (repo !== "eigen") {
-          execSync("./node_modules/.bin/relay-compiler", {
-            cwd: repoDir,
-          })
-        }
+
+        // Running the compiler directly for Rails projects
+        const relayCompilerCommand = ["pulse", "volt"].includes(repo)
+          ? "./node_modules/.bin/relay-compiler"
+          : "yarn relay"
+
+        execSync(relayCompilerCommand, { cwd: repoDir })
       }
       execSync(
         `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier --write ${dest}`,
