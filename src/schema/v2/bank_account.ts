@@ -4,6 +4,7 @@ import {
   GraphQLNonNull,
   GraphQLFieldConfig,
 } from "graphql"
+import { connectionDefinitions } from "graphql-relay"
 import { InternalIDFields } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 
@@ -27,6 +28,13 @@ export const BankAccountType = new GraphQLObjectType<any, ResolverContext>({
       description: "Last four characters of the account identifier",
     },
   }),
+})
+
+export const {
+  connectionType: BankAccountConnection,
+  edgeType: BankAccountEdge,
+} = connectionDefinitions({
+  nodeType: BankAccountType,
 })
 
 export const BankAccount: GraphQLFieldConfig<void, ResolverContext> = {
