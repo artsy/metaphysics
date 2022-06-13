@@ -2,7 +2,6 @@ import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import GraphQLJSON from "graphql-type-json"
 import { ResolverContext } from "types/graphql"
-import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 
 export const GeminiEntryType = new GraphQLObjectType<any, ResolverContext>({
   name: "GeminiEntry",
@@ -24,7 +23,7 @@ export default mutationWithClientMutationId<
     sourceBucket: string
     metadata: any
   },
-  StaticPathLoader<any> | null,
+  any,
   ResolverContext
 >({
   name: "CreateGeminiEntryForAsset",
@@ -68,7 +67,7 @@ export default mutationWithClientMutationId<
   outputFields: {
     asset: {
       type: GeminiEntryType,
-      resolve: (credentials) => credentials,
+      resolve: (credentials) => credentials.body,
     },
   },
   mutateAndGetPayload: (
