@@ -2,7 +2,6 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
-  GraphQLID,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -13,16 +12,12 @@ import { merge, sortBy } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { date } from "../fields/date"
 import { base64 } from "lib/base64"
+import { GlobalIDField } from "../object_identification"
 
 export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeatureFlag",
   fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      resolve: (data) => {
-        return base64(data.name)
-      },
-    },
+    id: GlobalIDField,
     description: {
       type: GraphQLString,
     },
@@ -32,58 +27,59 @@ export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
           name: "FeatureFlagEnvironments",
           fields: {
             name: {
-              type: GraphQLString,
-            },
-            displayName: {
-              type: GraphQLString,
+              type: new GraphQLNonNull(GraphQLString),
             },
             enabled: {
-              type: GraphQLBoolean,
+              type: new GraphQLNonNull(GraphQLBoolean),
             },
           },
         })
       ),
     },
     type: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     variants: {
-      type: new GraphQLList(
-        new GraphQLObjectType<any, ResolverContext>({
-          name: "FeatureFlagVariantType",
-          fields: {
-            name: {
-              type: GraphQLString,
-            },
-            weightType: {
-              type: GraphQLString,
-            },
-            weight: {
-              type: GraphQLInt,
-            },
-            stickiness: {
-              type: GraphQLString,
-            },
-          },
-        })
+      type: new GraphQLNonNull(
+        new GraphQLList(
+          new GraphQLNonNull(
+            new GraphQLObjectType<any, ResolverContext>({
+              name: "FeatureFlagVariantType",
+              fields: {
+                name: {
+                  type: new GraphQLNonNull(GraphQLString),
+                },
+                weightType: {
+                  type: GraphQLString,
+                },
+                weight: {
+                  type: new GraphQLNonNull(GraphQLInt),
+                },
+                stickiness: {
+                  type: GraphQLString,
+                },
+              },
+            })
+          )
+        )
       ),
     },
     createdAt: date(),
     enabled: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
     name: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     stale: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
     impressionData: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
     lastSeenAt: date(),
     project: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
 })
@@ -125,7 +121,15 @@ export const FeatureFlags: GraphQLFieldConfig<void, ResolverContext> = {
     ])
 
     const sort = (data) => sortBy(data, args.sortBy)
-    const sorted = merge(sort(featureFlags.features), sort(project.features))
+
+    const sorted = merge(
+      sort(featureFlags.features),
+      sort(project.features)
+    ).map((item: any) => ({
+      ...item,
+      id: base64(item.name), // Add id for relay cache support
+    }))
+
     return sorted
   },
 }
