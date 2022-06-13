@@ -3,18 +3,21 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { FeatureFlagType } from "../featureFlags"
 
+export interface UpdateFeatureFlagInput {
+  name: string
+  description?: string
+  impressionData?: boolean
+  type?: string
+}
+
 export const updateFeatureFlagMutation = mutationWithClientMutationId<
-  any,
+  UpdateFeatureFlagInput,
   any,
   ResolverContext
 >({
   name: "AdminUpdateFeatureFlag",
   description: "Updates a feature flag",
   inputFields: {
-    type: {
-      type: GraphQLString,
-      defaultValue: "release",
-    },
     name: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -24,6 +27,10 @@ export const updateFeatureFlagMutation = mutationWithClientMutationId<
     impressionData: {
       type: GraphQLBoolean,
       defaultValue: false,
+    },
+    type: {
+      type: GraphQLString,
+      defaultValue: "release",
     },
   },
   outputFields: {

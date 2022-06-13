@@ -8,8 +8,14 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { FeatureFlags } from "../featureFlags"
 
+export interface ToggleFeatureFlagInput {
+  name: string
+  enabled: boolean
+  environment: "development" | "production"
+}
+
 export const toggleFeatureFlagMutation = mutationWithClientMutationId<
-  any,
+  ToggleFeatureFlagInput,
   any,
   ResolverContext
 >({

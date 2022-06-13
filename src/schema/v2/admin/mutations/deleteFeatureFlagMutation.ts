@@ -3,8 +3,12 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { FeatureFlags } from "../featureFlags"
 
+export interface DeleteFeatureFlagInput {
+  name: string
+}
+
 export const deleteFeatureFlagMutation = mutationWithClientMutationId<
-  any,
+  DeleteFeatureFlagInput,
   any,
   ResolverContext
 >({

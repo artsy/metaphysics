@@ -99,8 +99,26 @@ export const FeatureFlagInputFields = {
   },
 }
 
+export interface CreateFeatureFlagInput {
+  name: string
+  type: string
+  strategy: Strategy
+  variants: Variant[]
+}
+
+export interface Strategy {
+  strategyType: string
+  rollOut: number
+}
+
+export interface Variant {
+  name: string
+  weight: number
+  weightType: string
+}
+
 export const createFeatureFlagMutation = mutationWithClientMutationId<
-  any,
+  CreateFeatureFlagInput,
   any,
   ResolverContext
 >({
