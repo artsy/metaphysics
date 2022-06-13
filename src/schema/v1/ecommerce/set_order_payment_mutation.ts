@@ -47,7 +47,8 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId<
       mutation setOrderPayment($orderId: ID!, $creditCardId: String!) {
         ecommerceSetPayment(input: {
           id: $orderId,
-          creditCardId: $creditCardId,
+          paymentMethod: CREDIT_CARD,
+          paymentMethodId: $creditCardId,
         }) {
           orderOrError {
             __typename
