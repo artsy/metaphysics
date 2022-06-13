@@ -1,14 +1,26 @@
+import { decodeUnverifiedJWT } from "lib/decodeUnverifiedJWT"
 import factories from "../api"
 
 export const unleashLoaders = (accessToken, opts) => {
-  const accessTokenLoader = () => Promise.resolve(accessToken)
+  const accessTokenLoader = () => {
+    const { roles } = decodeUnverifiedJWT(accessToken) as { roles: string[] }
+
+    // TODO: Update role to be less inclusive via yet-to-be-created
+    // `product_development`.
+    if (!roles.includes("team")) {
+      throw new Error(
+        "User needs `team` role permissions to perform this action"
+      )
+    }
+
+    return Promise.resolve(accessToken)
+  }
+
   const { unleashLoaderWithAuthenticationFactory } = factories(opts)
 
   const unleashLoader = unleashLoaderWithAuthenticationFactory(
     accessTokenLoader
   )
-
-  // TODO: Check for admin role on me before executing loader
 
   return {
     adminCreateFeatureFlag: unleashLoader(
