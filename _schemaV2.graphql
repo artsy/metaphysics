@@ -98,7 +98,10 @@ type Admin {
   featureFlags(
     # The sort order of the results
     sortBy: FeatureFlagsSortBy
-  ): [FeatureFlags]
+  ): [FeatureFlag]
+
+  # A globally unique ID.
+  id: ID!
 }
 
 input AdminCreateFeatureFlagInput {
@@ -113,7 +116,13 @@ input AdminCreateFeatureFlagInput {
 
 type AdminCreateFeatureFlagPayload {
   clientMutationId: String
-  featureFlag: FeatureFlags
+  featureFlag: FeatureFlag
+
+  # A list of feature flags
+  featureFlags(
+    # The sort order of the results
+    sortBy: FeatureFlagsSortBy
+  ): [FeatureFlag]
 }
 
 input AdminDeleteFeatureFlagInput {
@@ -123,7 +132,12 @@ input AdminDeleteFeatureFlagInput {
 
 type AdminDeleteFeatureFlagPayload {
   clientMutationId: String
-  error: String
+
+  # A list of feature flags
+  featureFlags(
+    # The sort order of the results
+    sortBy: FeatureFlagsSortBy
+  ): [FeatureFlag]
   success: Boolean
 }
 
@@ -141,7 +155,12 @@ input AdminToggleFeatureFlagInput {
 
 type AdminToggleFeatureFlagPayload {
   clientMutationId: String
-  error: String
+
+  # A list of feature flags
+  featureFlags(
+    # The sort order of the results
+    sortBy: FeatureFlagsSortBy
+  ): [FeatureFlag]
   success: Boolean
 }
 
@@ -155,7 +174,7 @@ input AdminUpdateFeatureFlagInput {
 
 type AdminUpdateFeatureFlagPayload {
   clientMutationId: String
-  featureFlag: FeatureFlags
+  featureFlag: FeatureFlag
 }
 
 # One item in an aggregation
@@ -7886,7 +7905,7 @@ type FeaturedLink {
 
 union FeaturedLinkEntity = Artist | Gene | Partner
 
-type FeatureFlags {
+type FeatureFlag {
   createdAt(
     format: String
 
@@ -7897,6 +7916,8 @@ type FeatureFlags {
   ): String
   description: String
   enabled: Boolean
+  environments: [FeatureFlagEnvironments]
+  id: ID!
   impressionData: Boolean
   lastSeenAt(
     format: String
@@ -7909,8 +7930,14 @@ type FeatureFlags {
   name: String
   project: String
   stale: Boolean
-  type: FeatureFlagsType
+  type: String
   variants: [FeatureFlagVariantType]
+}
+
+type FeatureFlagEnvironments {
+  displayName: String
+  enabled: Boolean
+  name: String
 }
 
 enum FeatureFlagsSortBy {
@@ -7931,26 +7958,16 @@ enum FeatureFlagStrategyType {
   FLEXIBLE_ROLLOUT
 }
 
-enum FeatureFlagsType {
+enum FeatureFlagToggleType {
   EXPERIMENT
   RELEASE
 }
 
-enum FeatureFlagToggleType {
-  DEFAULT
-  EXPERIMENT
-}
-
 input FeatureFlagVariantInputName {
-  name: FeatureFlagVariantName!
-  stickiness: String = "sessionID"
+  name: String!
+  stickiness: String = "sessionId"
   weight: Int!
   weightType: FeatureFlagVariantWeightType
-}
-
-enum FeatureFlagVariantName {
-  CONTROL
-  EXPERIMENT
 }
 
 type FeatureFlagVariantType {
