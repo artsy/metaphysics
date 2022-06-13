@@ -1,13 +1,23 @@
-import { decodeUnverifiedJWT } from "lib/decodeUnverifiedJWT"
 import factories from "../api"
 
 export const unleashLoaders = (accessToken, opts) => {
-  const accessTokenLoader = () => {
-    const { roles } = decodeUnverifiedJWT(accessToken) as { roles: string[] }
+  const {
+    gravityLoaderWithAuthenticationFactory,
+    unleashLoaderWithAuthenticationFactory,
+  } = factories(opts)
 
-    // TODO: Update role to be less inclusive via yet-to-be-created
-    // `product_development`.
-    if (!roles.includes("team")) {
+  // Set up gravity loading for "me" to verify token
+  const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
+
+  const gravityLoader = gravityLoaderWithAuthenticationFactory(
+    gravityAccessTokenLoader
+  )
+
+  const gravityJWTCheckLoader = gravityLoader("me")
+
+  // Decode token and use `roles` check
+  const accessTokenRoleCheckLoader = (me) => {
+    if (!me.roles.includes("team")) {
       throw new Error(
         "User needs `team` role permissions to perform this action"
       )
@@ -16,10 +26,15 @@ export const unleashLoaders = (accessToken, opts) => {
     return Promise.resolve(accessToken)
   }
 
-  const { unleashLoaderWithAuthenticationFactory } = factories(opts)
+  const unleashAccessTokenLoader = () =>
+    gravityJWTCheckLoader()
+      .then(accessTokenRoleCheckLoader)
+      .catch((error) => {
+        throw new Error(error)
+      })
 
   const unleashLoader = unleashLoaderWithAuthenticationFactory(
-    accessTokenLoader
+    unleashAccessTokenLoader
   )
 
   return {
