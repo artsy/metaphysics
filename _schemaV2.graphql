@@ -10001,6 +10001,9 @@ type Me implements Node {
     page: Int
     size: Int
     sort: MyCollectionArtworkSorts
+
+    # Sort by most recent insight updates.
+    sortedByMostRecentInsightUpdates: Boolean = false
   ): MyCollectionConnection
 
   # Info about the current user's my-collection
