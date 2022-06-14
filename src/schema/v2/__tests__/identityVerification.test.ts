@@ -16,6 +16,8 @@ describe("IdentityVerification type", () => {
         "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
       user_id: "user1",
       created_at: "",
+      name: "",
+      email: "",
     }
 
     const query = `
@@ -55,6 +57,8 @@ describe("IdentityVerification type", () => {
         "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
       user_id: "user1",
       created_at: "",
+      name: "",
+      email: "",
     }
 
     const gravityScanReference: IdentityVerificationScanReferenceGravityResponse = {
@@ -126,6 +130,8 @@ describe("IdentityVerification type", () => {
         "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
       user_id: "user1",
       created_at: "",
+      name: "",
+      email: "",
     }
 
     const query = gql`

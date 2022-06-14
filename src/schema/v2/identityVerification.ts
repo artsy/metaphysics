@@ -22,6 +22,8 @@ export type IdentityVerificationGravityResponse = {
   invitation_expires_at: string
   user_id: string
   created_at: string
+  name: string
+  email: string
 }
 
 export type IdentityVerificationOverrideGravityResponse = {
@@ -136,6 +138,16 @@ export const IdentityVerificationType = new GraphQLObjectType<
       description: "User ID of the identity verification's owner",
       type: GraphQLString,
       resolve: ({ user_id }) => user_id,
+    },
+    name: {
+      description: "Name of the identity verification's owner",
+      type: GraphQLString,
+      resolve: ({ name }) => name,
+    },
+    email: {
+      description: "Email of the identity verification's owner",
+      type: GraphQLString,
+      resolve: ({ email }) => email,
     },
     invitationExpiresAt: dateFieldForVerificationExpiresAt,
     overrides: {
