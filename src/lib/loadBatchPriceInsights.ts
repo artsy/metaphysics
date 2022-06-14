@@ -4,12 +4,23 @@ import { StaticPathLoader } from "./loaders/api/loader_interface"
 
 const MAX_MARKET_PRICE_INSIGHTS = 50
 
+type MarketPriceInsight = {
+  artistId: string
+  medium: string
+  demandRank: number
+  lastAuctionResultDate: string
+  annualLotsSold: number
+  annualValueSold: number
+}
+
 export const loadBatchPriceInsights = async (
   artistIDMediumTuples: { artistId: string; medium: string }[],
   vortexGraphQLLoader: ({ query, variables }) => StaticPathLoader<any>
 ) => {
   try {
-    const vortexResult = await vortexGraphQLLoader({
+    // TODO: Add lastAuctionResultDate
+
+    const vortexResult: any = await vortexGraphQLLoader({
       query: gql`
         query MarketPriceInsightsBatchQuery($artistIDMediumTuples: [ArtistIdMediumTupleType!]!) {
           marketPriceInsightsBatch(input: $artistIDMediumTuples, first: ${MAX_MARKET_PRICE_INSIGHTS}) {
@@ -19,6 +30,8 @@ export const loadBatchPriceInsights = async (
                 artistId
                 medium
                 demandRank
+                annualLotsSold
+                annualValueSoldCents
               }
             }
           }
@@ -27,16 +40,21 @@ export const loadBatchPriceInsights = async (
       variables: { artistIDMediumTuples },
     })()
 
-    const marketPriceInsights = {}
-
-    extractNodes(vortexResult.data?.marketPriceInsightsBatch).forEach(
-      (insight: any) => {
-        marketPriceInsights[insight.artistId] = {
-          ...(marketPriceInsights?.[insight.artistId] || {}),
-          [insight.medium]: insight,
-        }
-      }
+    const priceInsightNodes: MarketPriceInsight[] = extractNodes(
+      vortexResult.data?.marketPriceInsightsBatch
     )
+
+    const marketPriceInsights: Record<
+      string,
+      Record<string, MarketPriceInsight>
+    > = priceInsightNodes.reduce((result: any, insight) => {
+      result[insight.artistId] = {
+        ...(result?.[insight.artistId] || {}),
+        [insight.medium]: insight,
+      }
+
+      return result
+    }, {})
 
     return marketPriceInsights
   } catch (e) {
