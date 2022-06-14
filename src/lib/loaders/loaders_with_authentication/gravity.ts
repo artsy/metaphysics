@@ -17,6 +17,11 @@ export default (accessToken, userID, opts) => {
     identityVerificationOverridesLoader: gravityLoader(
       (id) => `identity_verification/${id}/overrides`
     ),
+    createIdentityVerificationOverrideLoader: gravityLoader(
+      (id) => `identity_verification/${id}/override`,
+      {},
+      { method: "POST" }
+    ),
     identityVerificationScanReferencesLoader: gravityLoader(
       (id) => `identity_verification/${id}/scan_references`
     ),
