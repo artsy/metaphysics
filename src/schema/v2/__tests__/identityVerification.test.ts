@@ -78,6 +78,10 @@ describe("IdentityVerification type", () => {
       created_at: "",
     }
 
+    const gravityUser = {
+      email: "user1@foo.com",
+    }
+
     const query = gql`
       {
         identityVerificationsConnection(userId: "user1", page: 1) {
@@ -89,6 +93,9 @@ describe("IdentityVerification type", () => {
               }
               overrides {
                 newState
+                creator {
+                  email
+                }
               }
             }
           }
@@ -108,13 +115,14 @@ describe("IdentityVerification type", () => {
           Promise.resolve([gravityScanReference]),
         identityVerificationOverridesLoader: () =>
           Promise.resolve([gravityOverride]),
+        userByIDLoader: () => Promise.resolve(gravityUser),
       }
     )
 
     expect(identityVerificationsConnection.edges[0].node).toEqual({
       state: "pending",
       scanReferences: [{ result: "failed" }],
-      overrides: [{ newState: "passed" }],
+      overrides: [{ newState: "passed", creator: { email: "user1@foo.com" } }],
     })
   })
 
