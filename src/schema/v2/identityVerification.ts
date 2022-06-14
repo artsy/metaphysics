@@ -87,7 +87,7 @@ export const IdentityVerificationOverrideType = new GraphQLObjectType<
     createdAt: date(({ created_at }) => created_at),
     creator: {
       type: UserField.type,
-      resolve: async ({ user_id }, _args, { userByIDLoader }) => {
+      resolve: ({ user_id }, _args, { userByIDLoader }) => {
         if (!userByIDLoader) return
         return userByIDLoader(user_id).catch(() => null)
       },
