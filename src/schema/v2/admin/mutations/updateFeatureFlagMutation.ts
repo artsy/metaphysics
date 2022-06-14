@@ -1,7 +1,7 @@
 import { GraphQLString, GraphQLBoolean, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { FeatureFlagType } from "../featureFlags"
+import { FeatureFlags } from "../featureFlags"
 
 export interface UpdateFeatureFlagInput {
   name: string
@@ -34,10 +34,7 @@ export const updateFeatureFlagMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    featureFlag: {
-      type: FeatureFlagType,
-      resolve: (x) => x,
-    },
+    featureFlags: FeatureFlags,
   },
   mutateAndGetPayload: async (args, { adminUpdateFeatureFlag }) => {
     if (!adminUpdateFeatureFlag) {
