@@ -10,7 +10,7 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { omit } from "lodash"
 import { ResolverContext } from "types/graphql"
-import { FeatureFlags, FeatureFlagType } from "../featureFlags"
+import { FeatureFlags } from "../featureFlags"
 
 export const FeatureFlagInputFields = {
   type: {
@@ -127,10 +127,6 @@ export const createFeatureFlagMutation = mutationWithClientMutationId<
   inputFields: FeatureFlagInputFields,
   outputFields: {
     featureFlags: FeatureFlags,
-    featureFlag: {
-      type: FeatureFlagType,
-      resolve: (x) => x,
-    },
   },
   mutateAndGetPayload: async (
     args,
