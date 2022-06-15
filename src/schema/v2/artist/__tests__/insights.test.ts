@@ -105,7 +105,7 @@ describe("ArtistInsights type", () => {
         },
         {
           type: "ACTIVE_SECONDARY_MARKET",
-          label: "Recent auction results in the Artsy Price Database",
+          label: "Active Secondary Market",
           entities: [],
         },
       ])
@@ -139,7 +139,7 @@ describe("ArtistInsights type", () => {
     })
   })
 
-  it("does not build an insight if boolean value is false", () => {
+  it("does not build an insight if active_secondary_market is false", () => {
     artist.active_secondary_market = false
 
     const query = `

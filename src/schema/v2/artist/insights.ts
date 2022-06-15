@@ -9,89 +9,60 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-export const ArtistInsightType = new GraphQLEnumType({
-  name: "ArtistInsightType",
-  values: {
-    SOLO_SHOW: {
-      value: "Solo show at a major institution",
-    },
-    GROUP_SHOW: {
-      value: "Group show at a major institution",
-    },
-    COLLECTED: {
-      value: "Collected by a major institution",
-    },
-    REVIEWED: {
-      value: "Reviewed by a major art publication",
-    },
-    BIENNIAL: {
-      value: "Included in a major biennial",
-    },
-    ACTIVE_SECONDARY_MARKET: {
-      value: "Recent auction results in the Artsy Price Database",
-    },
-  },
-})
+const ARTIST_INSIGHT_KINDS = {
+  SOLO_SHOW: { value: "SOLO_SHOW" },
+  GROUP_SHOW: { value: "GROUP_SHOW" },
+  COLLECTED: { value: "COLLECTED" },
+  REVIEWED: { value: "REVIEWED" },
+  BIENNIAL: { value: "BIENNIAL" },
+  ACTIVE_SECONDARY_MARKET: { value: "ACTIVE_SECONDARY_MARKET" },
+} as const
 
-const ARTIST_INSIGHT_TYPES = {
-  solo_show_institutions: { type: ArtistInsightType.getValue("SOLO_SHOW") },
-  group_show_institutions: { type: ArtistInsightType.getValue("GROUP_SHOW") },
-  collections: {
-    type: ArtistInsightType.getValue("COLLECTED"),
+type ArtistInsightKind = keyof typeof ARTIST_INSIGHT_KINDS
+
+const ARTIST_INSIGHT_MAPPING = {
+  SOLO_SHOW: {
+    label: "Solo show at a major institution",
+    description: null,
+    fieldName: "solo_show_institutions",
+    delimiter: "|",
+  },
+  GROUP_SHOW: {
+    label: "Group show at a major institution",
+    description: null,
+    fieldName: "group_show_institutions",
+    delimiter: "|",
+  },
+  COLLECTED: {
+    label: "Collected by a major institution",
+    description: null,
+    fieldName: "collections",
     delimiter: "\n",
   },
-  review_sources: { type: ArtistInsightType.getValue("REVIEWED") },
-  biennials: { type: ArtistInsightType.getValue("BIENNIAL") },
-  active_secondary_market: {
-    type: ArtistInsightType.getValue("ACTIVE_SECONDARY_MARKET"),
+  REVIEWED: {
+    label: "Reviewed by a major art publication",
+    description: null,
+    fieldName: "review_sources",
+    delimiter: "|",
   },
-}
+  BIENNIAL: {
+    label: "Included in a major biennial",
+    description: null,
+    fieldName: "biennials",
+    delimiter: "|",
+  },
+  ACTIVE_SECONDARY_MARKET: {
+    label: "Active Secondary Market",
+    description: "Recent auction results in the Artsy Price Database",
+    fieldName: "active_secondary_market",
+    delimiter: null,
+  },
+} as const
 
-const buildInsights = (artist) => {
-  const splitEntities = (
-    entitiesString: string,
-    delimiter: string
-  ): Array<string> => {
-    return entitiesString.split(delimiter).map((entity) => {
-      return entity.trim()
-    })
-  }
-
-  return compact(
-    Object.keys(ARTIST_INSIGHT_TYPES).map((key) => {
-      const value = artist[key]
-
-      if (!value) {
-        return
-      }
-
-      const mapping = ARTIST_INSIGHT_TYPES[key]
-
-      switch (typeof value) {
-        case "string":
-          const trimmed = value.trim()
-
-          if (!trimmed) return null
-
-          return {
-            entities: splitEntities(trimmed, mapping.delimiter || "|"),
-            label: mapping.type.value,
-            type: mapping.type.name,
-          }
-
-        case "boolean":
-          return {
-            entities: [],
-            label: mapping.type.value,
-            type: mapping.type.name,
-          }
-
-        default:
-          return null
-      }
-    })
-  )
-}
+const ArtistInsightKind = new GraphQLEnumType({
+  name: "ArtistInsightKind",
+  values: ARTIST_INSIGHT_KINDS,
+})
 
 const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistInsight",
@@ -99,21 +70,81 @@ const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
     type: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The type of insight.",
+      deprecationReason: "Use `kind` instead.",
     },
     label: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Label to use when displaying the insight.",
     },
+    description: {
+      type: GraphQLString,
+    },
     entities: {
       type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: "List of entities relevant to the insight.",
     },
+    kind: {
+      type: ArtistInsightKind,
+      description: "The type of insight.",
+    },
   },
 })
 
+// TODO:
+// return partnerArtistsLoader({ artist_id: artist.id, partner_category: ['blue-chip'], size: 1})
+
 export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
-  type: new GraphQLList(ArtistInsight),
-  resolve: (artist) => {
-    return buildInsights(artist)
+  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ArtistInsight))),
+  args: {
+    kind: {
+      type: new GraphQLList(ArtistInsightKind),
+      description: "The specific insights to return.",
+      defaultValue: Object.keys(ARTIST_INSIGHT_KINDS),
+    },
+  },
+  resolve: (artist, { kind }) => {
+    const insights = compact(
+      (Object.entries(ARTIST_INSIGHT_MAPPING) as [
+        ArtistInsightKind,
+        typeof ARTIST_INSIGHT_MAPPING[ArtistInsightKind]
+      ][]).map(([kind, { label, description, fieldName, delimiter }]) => {
+        const value = artist[fieldName]
+
+        if (!value) {
+          return
+        }
+
+        switch (typeof value) {
+          case "string":
+            const trimmed = value.trim()
+
+            if (!trimmed) return null
+
+            return {
+              entities: trimmed
+                .split(delimiter ?? "|")
+                .map((entity) => entity.trim()),
+              label,
+              type: kind,
+              kind,
+              description,
+            }
+
+          case "boolean":
+            return {
+              entities: [],
+              label,
+              type: kind,
+              kind,
+              description,
+            }
+
+          default:
+            return null
+        }
+      })
+    )
+
+    return insights.filter((insight) => kind.includes(insight.type))
   },
 }
