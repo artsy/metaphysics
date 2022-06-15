@@ -3005,6 +3005,19 @@ type BankAccountEdge {
   node: BankAccount
 }
 
+type BankAccountMutationFailure {
+  mutationError: GravityMutationError
+}
+
+type BankAccountMutationSuccess {
+  bankAccount: BankAccount
+  bankAccountEdge: BankAccountEdge
+}
+
+union BankAccountMutationType =
+    BankAccountMutationFailure
+  | BankAccountMutationSuccess
+
 type Bidder implements Node {
   createdAt(
     format: String
@@ -7111,6 +7124,17 @@ type DeleteArtworkImagePayload {
   clientMutationId: String
 }
 
+input DeleteBankAccountInput {
+  clientMutationId: String
+  id: String!
+}
+
+type DeleteBankAccountPayload {
+  bankAccountOrError: BankAccountMutationType
+  clientMutationId: String
+  me: Me
+}
+
 input DeleteCreditCardInput {
   clientMutationId: String
   id: String!
@@ -10544,6 +10568,9 @@ type Mutation {
 
   # Deletes an image from an artwork in my collection
   deleteArtworkImage(input: DeleteArtworkImageInput!): DeleteArtworkImagePayload
+
+  # Remove a bank account
+  deleteBankAccount(input: DeleteBankAccountInput!): DeleteBankAccountPayload
 
   # Remove a credit card
   deleteCreditCard(input: DeleteCreditCardInput!): DeleteCreditCardPayload

@@ -88,6 +88,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deleteBankAccountLoader: gravityLoader(
+      (id) => `me/bank_account/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     deleteCreditCardLoader: gravityLoader(
       (id) => `me/credit_card/${id}`,
       {},
