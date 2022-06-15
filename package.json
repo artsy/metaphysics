@@ -83,7 +83,7 @@
     "memcached": "2.2.2",
     "moment": "2.29.3",
     "moment-timezone": "0.5.31",
-    "node-fetch": "2.6.1",
+    "node-fetch": "2.6.7",
     "numeral": "1.5.6",
     "opentracing": "0.14.1",
     "patch-package": "6.2.2",
