@@ -99,7 +99,7 @@ export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
     kind: {
       type: new GraphQLList(ArtistInsightKind),
       description: "The specific insights to return.",
-      defaultValue: Object.values(ARTIST_INSIGHT_KINDS),
+      defaultValue: Object.keys(ARTIST_INSIGHT_KINDS),
     },
   },
   resolve: (artist, { kind }) => {

@@ -1411,7 +1411,14 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   initials(length: Int = 3): String
   insights(
     # The specific insights to return.
-    kind: [ArtistInsightKind] = []
+    kind: [ArtistInsightKind] = [
+      SOLO_SHOW
+      GROUP_SHOW
+      COLLECTED
+      REVIEWED
+      BIENNIAL
+      ACTIVE_SECONDARY_MARKET
+    ]
   ): [ArtistInsight!]!
 
   # A type-specific ID likely used as a database ID.
