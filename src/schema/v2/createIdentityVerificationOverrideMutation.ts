@@ -33,7 +33,9 @@ const CreateIdentityVerificationOverrideMutationSuccessType = new GraphQLObjectT
   ResolverContext
 >({
   name: "CreateIdentityVerificationMutationSuccess",
-  isTypeOf: (data) => data.id,
+  isTypeOf: (data) => {
+    return data._type !== "GravityMutationError"
+  },
   fields: () => ({
     identityVerificationOverride: {
       type: IdentityVerificationOverrideType,
@@ -89,7 +91,9 @@ export const createIdentityVerificationOverrideMutation = mutationWithClientMuta
       state,
       reason,
     })
-      .then((result) => result)
+      .then((result) => {
+        return { ...result, _type: "CreateIdentityVerificationMutationSuccess" }
+      })
       .catch((error) => {
         const formattedErr = formatGravityError(error)
         if (formattedErr) {
