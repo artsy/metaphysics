@@ -10006,7 +10006,7 @@ type Me implements Node {
     sort: MyCollectionArtworkSorts
 
     # Sort by most recent price insight updates and filter out artworks without insights.
-    sortByMostRecentPriceInsightUpdates: Boolean = false
+    sortByLastAuctionResultDate: Boolean = false
   ): MyCollectionConnection
 
   # Info about the current user's my-collection

@@ -70,14 +70,14 @@ describe("me.myCollection", () => {
     )
   })
 
-  describe("when passing the argument sortByMostRecentPriceInsightUpdates", () => {
+  describe("when passing the argument sortByLastAuctionResultDate", () => {
     it("sort by most recent price insight updates and filter out artworks without insights.", async () => {
       const query = gql`
         {
           me {
             myCollectionConnection(
               first: 10
-              sortByMostRecentPriceInsightUpdates: true
+              sortByLastAuctionResultDate: true
             ) {
               edges {
                 node {

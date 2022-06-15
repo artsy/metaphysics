@@ -63,7 +63,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       description:
         "Exclude artworks that have been purchased on Artsy and automatically added to the collection.",
     },
-    sortByMostRecentPriceInsightUpdates: {
+    sortByLastAuctionResultDate: {
       type: GraphQLBoolean,
       defaultValue: false,
       description:
@@ -83,7 +83,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       return null
     }
 
-    const paginationArgs = options.sortByMostRecentPriceInsightUpdates
+    const paginationArgs = options.sortByLastAuctionResultDate
       ? { size: 100 }
       : convertConnectionArgsToGravityArgs(options)
 
@@ -126,7 +126,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
 
       // sort by most recent price insight updates and filter out artworks without insights if requested
 
-      if (options.sortByMostRecentPriceInsightUpdates) {
+      if (options.sortByLastAuctionResultDate) {
         enrichedArtworks = reverse(
           sortBy(
             enrichedArtworks.filter((artwork) => artwork.marketPriceInsights),
