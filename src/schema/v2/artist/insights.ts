@@ -59,6 +59,11 @@ const ARTIST_INSIGHT_MAPPING = {
   },
 } as const
 
+const ArtistInsightKind = new GraphQLEnumType({
+  name: "ArtistInsightKind",
+  values: ARTIST_INSIGHT_KINDS,
+})
+
 const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistInsight",
   fields: {
@@ -79,19 +84,26 @@ const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
       description: "List of entities relevant to the insight.",
     },
     kind: {
-      type: new GraphQLEnumType({
-        name: "ArtistInsightKind",
-        values: ARTIST_INSIGHT_KINDS,
-      }),
+      type: ArtistInsightKind,
       description: "The type of insight.",
     },
   },
 })
 
+// TODO:
+// return partnerArtistsLoader({ artist_id: artist.id, partner_category: ['blue-chip'], size: 1})
+
 export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ArtistInsight))),
-  resolve: (artist) => {
-    return compact(
+  args: {
+    kind: {
+      type: new GraphQLList(ArtistInsightKind),
+      description: "The specific insights to return.",
+      defaultValue: Object.values(ARTIST_INSIGHT_KINDS),
+    },
+  },
+  resolve: (artist, { kind }) => {
+    const insights = compact(
       (Object.entries(ARTIST_INSIGHT_MAPPING) as [
         ArtistInsightKind,
         typeof ARTIST_INSIGHT_MAPPING[ArtistInsightKind]
@@ -132,5 +144,7 @@ export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
         }
       })
     )
+
+    return insights.filter((insight) => kind.includes(insight.type))
   },
 }

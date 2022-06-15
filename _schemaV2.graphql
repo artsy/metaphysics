@@ -1409,7 +1409,10 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   image: Image
   imageUrl: String
   initials(length: Int = 3): String
-  insights: [ArtistInsight!]!
+  insights(
+    # The specific insights to return.
+    kind: [ArtistInsightKind] = []
+  ): [ArtistInsight!]!
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
