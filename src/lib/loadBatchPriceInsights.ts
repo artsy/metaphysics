@@ -18,9 +18,7 @@ export const loadBatchPriceInsights = async (
   vortexGraphQLLoader: ({ query, variables }) => StaticPathLoader<any>
 ) => {
   try {
-    // TODO: Add lastAuctionResultDate
-
-    const vortexResult: any = await vortexGraphQLLoader({
+    const vortexResult = await vortexGraphQLLoader({
       query: gql`
         query MarketPriceInsightsBatchQuery($artistIDMediumTuples: [ArtistIdMediumTupleType!]!) {
           marketPriceInsightsBatch(input: $artistIDMediumTuples, first: ${MAX_MARKET_PRICE_INSIGHTS}) {
