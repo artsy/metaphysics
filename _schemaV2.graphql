@@ -6683,13 +6683,13 @@ input CreateIdentityVerificationOverrideMutationInput {
   clientMutationId: String
 
   # The identity verification ID
-  identityVerificationID: String
+  identityVerificationID: String!
 
   # The reason for the identity verification override
-  reason: String
+  reason: String!
 
   # The state of the identity verification override
-  state: String
+  state: String!
 }
 
 type CreateIdentityVerificationOverrideMutationPayload {

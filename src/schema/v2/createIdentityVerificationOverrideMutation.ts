@@ -1,4 +1,9 @@
-import { GraphQLObjectType, GraphQLString, GraphQLUnionType } from "graphql"
+import {
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
   formatGravityError,
@@ -37,15 +42,13 @@ const CreateIdentityVerificationOverrideMutationSuccessType = new GraphQLObjectT
   }),
 })
 
-export const CreateIdentityVerificationOverrideMutationType = new GraphQLUnionType(
-  {
-    name: "CreateIdentityVerificationOverrideMutationType",
-    types: [
-      CreateIdentityVerificationOverrideMutationSuccessType,
-      CreateIdentityVerificationOverrideMutationFailureType,
-    ],
-  }
-)
+const CreateIdentityVerificationOverrideMutationType = new GraphQLUnionType({
+  name: "CreateIdentityVerificationOverrideMutationType",
+  types: [
+    CreateIdentityVerificationOverrideMutationSuccessType,
+    CreateIdentityVerificationOverrideMutationFailureType,
+  ],
+})
 
 export const createIdentityVerificationOverrideMutation = mutationWithClientMutationId<
   { identityVerificationID: string; state: string; reason: string },
@@ -57,15 +60,15 @@ export const createIdentityVerificationOverrideMutation = mutationWithClientMuta
   inputFields: {
     identityVerificationID: {
       description: "The identity verification ID",
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     state: {
       description: "The state of the identity verification override",
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     reason: {
       description: "The reason for the identity verification override",
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
   outputFields: {
