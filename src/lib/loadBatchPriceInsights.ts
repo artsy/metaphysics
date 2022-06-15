@@ -32,6 +32,7 @@ export const loadBatchPriceInsights = async (
                 demandRank
                 annualLotsSold
                 annualValueSoldCents
+                lastAuctionResultDate
               }
             }
           }

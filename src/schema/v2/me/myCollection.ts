@@ -9,7 +9,7 @@ import {
 import { connectionFromArray, cursorForObjectInConnection } from "graphql-relay"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { compact, isEqual, sortBy, uniqWith } from "lodash"
+import { compact, isEqual, reverse, sortBy, uniqWith } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
@@ -124,13 +124,15 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         vortexGraphqlLoader
       )
 
-      // Sort by most recent market price update if requested
+      // sort by most recent price insight updates and filter out artworks without insights if requested
 
       if (options.sortByMostRecentPriceInsightUpdates) {
-        enrichedArtworks = sortBy(
-          enrichedArtworks,
-          (artwork) => -artwork.marketPriceInsights?.lastAuctionResultDate
-        ).filter((artwork) => artwork.marketPriceInsights)
+        enrichedArtworks = reverse(
+          sortBy(
+            enrichedArtworks.filter((artwork) => artwork.marketPriceInsights),
+            (artwork) => artwork.marketPriceInsights?.lastAuctionResultDate
+          )
+        )
       }
 
       // Return connection
