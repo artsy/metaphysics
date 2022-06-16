@@ -40,10 +40,11 @@ describe("Create Identity Verification Override", () => {
   describe("when successful", () => {
     it("returns the identity verification override", async () => {
       const successResponse = {
-        userID: "123",
+        id: "42",
+        user_id: "123",
         reason: "testing",
-        newState: "failed",
-        oldState: "pending",
+        new_state: "failed",
+        old_state: "pending",
       }
 
       const context = {
