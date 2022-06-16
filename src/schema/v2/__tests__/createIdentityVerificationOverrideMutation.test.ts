@@ -10,9 +10,9 @@ const mutation = gql`
         reason: "testing"
       }
     ) {
-      confirmationOrError {
+      createIdentityVerificationOverrideResponseOrError {
         __typename
-        ... on CreateIdentityVerificationMutationSuccess {
+        ... on IdentityVerificationOverrideMutationSuccess {
           identityVerificationOverride {
             userID
             reason
@@ -20,7 +20,7 @@ const mutation = gql`
             oldState
           }
         }
-        ... on CreateIdentityVerificationMutationFailure {
+        ... on IdentityVerificationOverrideMutationFailure {
           mutationError {
             message
           }
@@ -45,20 +45,49 @@ describe("Create Identity Verification Override", () => {
         newState: "failed",
         oldState: "pending",
       }
+
       const context = {
         createIdentityVerificationOverrideLoader: () =>
           Promise.resolve(successResponse),
       }
+
       const data = await runAuthenticatedQuery(mutation, context)
+
       expect(data).toEqual({
         createIdentityVerificationOverride: {
-          confirmationOrError: {
-            __typename: "CreateIdentityVerificationMutationSuccess",
+          createIdentityVerificationOverrideResponseOrError: {
+            __typename: "IdentityVerificationOverrideMutationSuccess",
             identityVerificationOverride: {
               userID: "123",
               reason: "testing",
               newState: "failed",
               oldState: "pending",
+            },
+          },
+        },
+      })
+    })
+  })
+
+  describe("when failure", () => {
+    it("return an error", async () => {
+      const context = {
+        createIdentityVerificationOverrideLoader: () =>
+          Promise.reject(
+            new Error(
+              `https://stagingapi.artsy.net/api/v1/identity_verification/123/override?reason=testing&state=failed - {"type":"error","message":"Not Found"}`
+            )
+          ),
+      }
+
+      const response = await runAuthenticatedQuery(mutation, context)
+
+      expect(response).toEqual({
+        createIdentityVerificationOverride: {
+          createIdentityVerificationOverrideResponseOrError: {
+            __typename: "IdentityVerificationOverrideMutationFailure",
+            mutationError: {
+              message: "Not Found",
             },
           },
         },

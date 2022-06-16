@@ -12,11 +12,19 @@ import {
 import { IdentityVerificationOverrideType } from "./identityVerification"
 import { mutationWithClientMutationId } from "graphql-relay"
 
-const CreateIdentityVerificationOverrideMutationFailureType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "CreateIdentityVerificationMutationFailure",
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "IdentityVerificationOverrideMutationSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    identityVerificationOverride: {
+      type: IdentityVerificationOverrideType,
+      resolve: (identityVerificationOverride) => identityVerificationOverride,
+    },
+  }),
+})
+
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "IdentityVerificationOverrideMutationFailure",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
@@ -28,28 +36,9 @@ const CreateIdentityVerificationOverrideMutationFailureType = new GraphQLObjectT
   }),
 })
 
-const CreateIdentityVerificationOverrideMutationSuccessType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "CreateIdentityVerificationMutationSuccess",
-  isTypeOf: (data) => {
-    return data._type !== "GravityMutationError"
-  },
-  fields: () => ({
-    identityVerificationOverride: {
-      type: IdentityVerificationOverrideType,
-      resolve: (identityVerificationOverride) => identityVerificationOverride,
-    },
-  }),
-})
-
-const CreateIdentityVerificationOverrideMutationType = new GraphQLUnionType({
-  name: "CreateIdentityVerificationOverrideMutationType",
-  types: [
-    CreateIdentityVerificationOverrideMutationSuccessType,
-    CreateIdentityVerificationOverrideMutationFailureType,
-  ],
+const ResponseOrErrorType = new GraphQLUnionType({
+  name: "CreateIdentityVerificationOverrideResponseOrError",
+  types: [SuccessType, FailureType],
 })
 
 export const createIdentityVerificationOverrideMutation = mutationWithClientMutationId<
@@ -74,15 +63,15 @@ export const createIdentityVerificationOverrideMutation = mutationWithClientMuta
     },
   },
   outputFields: {
-    confirmationOrError: {
-      type: CreateIdentityVerificationOverrideMutationType,
+    createIdentityVerificationOverrideResponseOrError: {
+      type: ResponseOrErrorType,
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (
-    { identityVerificationID, state, reason },
-    { createIdentityVerificationOverrideLoader }
-  ) => {
+  mutateAndGetPayload: async (input, context) => {
+    const { identityVerificationID, state, reason } = input
+    const { createIdentityVerificationOverrideLoader } = context
+
     if (!createIdentityVerificationOverrideLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
@@ -91,9 +80,7 @@ export const createIdentityVerificationOverrideMutation = mutationWithClientMuta
       state,
       reason,
     })
-      .then((result) => {
-        return { ...result, _type: "CreateIdentityVerificationMutationSuccess" }
-      })
+      .then((result) => result)
       .catch((error) => {
         const formattedErr = formatGravityError(error)
         if (formattedErr) {
