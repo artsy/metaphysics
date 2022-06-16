@@ -49,27 +49,14 @@ describe("me.myCollection", () => {
         }
       }
     `
+
     const context: Partial<ResolverContext> = {
       meLoader: () =>
         Promise.resolve({
           id: "some-user-id",
         }),
 
-      collectionArtworksLoader: () =>
-        Promise.resolve({
-          body: [
-            {
-              _id: "58e3e54aa09a6708282022f6",
-              title: "some title",
-              artist: {
-                _id: "artist-id",
-              },
-            },
-          ],
-          headers: {
-            "x-total-count": "10",
-          },
-        }),
+      collectionArtworksLoader: async () => mockCollectionArtworksResponse,
       vortexGraphqlLoader,
       authenticatedArtistLoader: () =>
         Promise.resolve({
@@ -81,6 +68,64 @@ describe("me.myCollection", () => {
     expect(data.me.myCollectionConnection.edges[0].node.title).toBe(
       "some title"
     )
+  })
+
+  describe("when passing the argument sortByLastAuctionResultDate", () => {
+    it("sort by most recent price insight updates and filter out artworks without insights.", async () => {
+      const query = gql`
+        {
+          me {
+            myCollectionConnection(
+              first: 10
+              sortByLastAuctionResultDate: true
+            ) {
+              edges {
+                node {
+                  marketPriceInsights {
+                    lastAuctionResultDate
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context: Partial<ResolverContext> = {
+        meLoader: () =>
+          Promise.resolve({
+            id: "some-user-id",
+          }),
+
+        collectionArtworksLoader: async () => mockCollectionArtworksResponse,
+        vortexGraphqlLoader: jest.fn(() => async () => mockVortexResponse),
+        authenticatedArtistLoader: () =>
+          Promise.resolve({
+            _id: "artist-id",
+          }),
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data.me.myCollectionConnection.edges).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "node": Object {
+              "marketPriceInsights": Object {
+                "lastAuctionResultDate": "2023-06-15T00:00:00Z",
+              },
+            },
+          },
+          Object {
+            "node": Object {
+              "marketPriceInsights": Object {
+                "lastAuctionResultDate": "2022-06-15T00:00:00Z",
+              },
+            },
+          },
+        ]
+      `)
+    })
   })
 
   it("enriches artwork with consignment submissions data", async () => {
@@ -407,6 +452,30 @@ describe("me.myCollection", () => {
   })
 })
 
+const mockCollectionArtworksResponse = {
+  body: [
+    {
+      _id: "58e3e54aa09a6708282022f6",
+      title: "some title",
+      medium: "Print",
+      artist: {
+        _id: "artist-id",
+      },
+    },
+    {
+      _id: "58e3e54aa09a6708282022f6",
+      title: "some title",
+      medium: "Painting",
+      artist: {
+        _id: "artist-id",
+      },
+    },
+  ],
+  headers: {
+    "x-total-count": "10",
+  },
+}
+
 const mockVortexResponse = {
   data: {
     marketPriceInsightsBatch: {
@@ -416,7 +485,16 @@ const mockVortexResponse = {
           node: {
             artistId: "artist-id",
             demandRank: 0.64,
+            medium: "Print",
+            lastAuctionResultDate: "2022-06-15T00:00:00Z",
+          },
+        },
+        {
+          node: {
+            artistId: "artist-id",
+            demandRank: 0.64,
             medium: "Painting",
+            lastAuctionResultDate: "2023-06-15T00:00:00Z",
           },
         },
       ],

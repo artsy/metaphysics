@@ -73,6 +73,7 @@ import Meta, { artistNames } from "./meta"
 import { embed, isEmbeddedVideo, isTooBig, isTwoDimensional } from "./utilities"
 import gql from "lib/gql"
 import { extractNodes } from "../../../lib/helpers"
+import FormattedNumber from "../types/formatted_number"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -98,10 +99,19 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
     artistId: {
       type: GraphQLString,
     },
+    medium: {
+      type: GraphQLString,
+    },
     demandRank: {
       type: GraphQLFloat,
     },
-    medium: {
+    annualValueSoldCents: {
+      type: FormattedNumber,
+    },
+    annualLotsSold: {
+      type: GraphQLInt,
+    },
+    lastAuctionResultDate: {
       type: GraphQLString,
     },
   },

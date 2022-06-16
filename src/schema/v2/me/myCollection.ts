@@ -9,7 +9,7 @@ import {
 import { connectionFromArray, cursorForObjectInConnection } from "graphql-relay"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { compact, isEqual, uniqWith } from "lodash"
+import { compact, isEqual, reverse, sortBy, uniqWith } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
@@ -20,14 +20,7 @@ import {
 import { loadBatchPriceInsights } from "lib/loadBatchPriceInsights"
 import { loadSubmissions } from "./loadSubmissions"
 import { myCollectionInfoFields } from "./myCollectionInfo"
-
-type PriceInsight = {
-  artistId: string
-  demandRank: number
-  medium: string
-}
-
-type MarketPriceInsightsType = Record<string, Record<string, PriceInsight>>
+import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 
 const MyCollectionConnection = connectionWithCursorInfo({
   name: "MyCollection",
@@ -70,6 +63,12 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       description:
         "Exclude artworks that have been purchased on Artsy and automatically added to the collection.",
     },
+    sortByLastAuctionResultDate: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+      description:
+        "Sort by most recent price insight updates and filter out artworks without insights.",
+    },
   }),
   resolve: async (
     { id: userId },
@@ -84,25 +83,31 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       return null
     }
 
-    const gravityOptions = Object.assign(
-      {
-        exclude_purchased_artworks: options.excludePurchasedArtworks,
-        private: true,
-        total_count: true,
-        user_id: userId,
-      },
-      convertConnectionArgsToGravityArgs(options)
-    )
+    const paginationArgs = options.sortByLastAuctionResultDate
+      ? { size: 100 }
+      : convertConnectionArgsToGravityArgs(options)
+
+    const gravityOptions = {
+      exclude_purchased_artworks: options.excludePurchasedArtworks,
+      private: true,
+      total_count: true,
+      user_id: userId,
+      ...paginationArgs,
+    }
 
     // This can't also be used with the offset in gravity
     // @ts-expect-error FIXME: Make `page` is an optional param of `gravityOptions`
     delete gravityOptions.page
 
     try {
+      // Fetch artworks from Gravity
+
       const { body: artworks, headers } = await collectionArtworksLoader(
         "my-collection",
         gravityOptions
       )
+
+      // Fetch submission statues for artworks
 
       const submissionIds = compact([...artworks.map((c) => c.submission_id)])
       const submissions = await loadSubmissions(
@@ -110,25 +115,28 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         convectionGraphQLLoader
       )
 
-      let artistIdMediumTuples = artworks.map((artwork: any) => ({
-        artistId: artwork.artist?._id,
-        medium: artwork.medium,
-      }))
+      enrichArtworksWithSubmissions(artworks, submissions)
 
-      // remove duplicates
-      artistIdMediumTuples = uniqWith(artistIdMediumTuples, isEqual)
+      // Fetch market price insights for artworks
 
-      const marketPriceInsights = await loadBatchPriceInsights(
-        artistIdMediumTuples,
+      let enrichedArtworks = await enrichArtworksWithPriceInsights(
+        artworks,
         vortexGraphqlLoader
       )
 
-      enrichArtworksWithSubmissions(artworks, submissions)
+      // sort by most recent price insight updates and filter out artworks without insights if requested
 
-      const artworksWithInsights = enrichArtworksWithPriceInsights(
-        artworks,
-        marketPriceInsights
-      )
+      if (options.sortByLastAuctionResultDate) {
+        enrichedArtworks = reverse(
+          sortBy(
+            enrichedArtworks.filter((artwork) => artwork.marketPriceInsights),
+            (artwork) => artwork.marketPriceInsights?.lastAuctionResultDate
+          )
+        )
+      }
+
+      // Return connection
+
       const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
@@ -137,7 +145,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         offset,
         page,
         size,
-        body: artworksWithInsights,
+        body: enrichedArtworks,
         args: options,
       })
     } catch (error) {
@@ -250,10 +258,23 @@ const enrichArtworksWithSubmissions = async (
   }
 }
 
-const enrichArtworksWithPriceInsights = (
+const enrichArtworksWithPriceInsights = async (
   artworks: Array<any>,
-  marketPriceInsights: MarketPriceInsightsType
+  vortexGraphqlLoader: ({ query, variables }) => StaticPathLoader<any>
 ) => {
+  const artistIdMediumTuples = uniqWith(
+    artworks.map((artwork: any) => ({
+      artistId: artwork.artist?._id,
+      medium: artwork.medium,
+    })),
+    isEqual
+  )
+
+  const marketPriceInsights = await loadBatchPriceInsights(
+    artistIdMediumTuples,
+    vortexGraphqlLoader
+  )
+
   return artworks.map((artwork: any) => {
     const insights =
       marketPriceInsights[artwork.artist?._id]?.[artwork.medium] ?? null
