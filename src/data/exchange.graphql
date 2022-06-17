@@ -79,6 +79,14 @@ type ApproveOrderPayload {
   orderOrError: OrderOrFailureUnion!
 }
 
+"""
+Bank account balance
+"""
+type BankAccountBalance {
+  balanceCents: Int
+  currencyCode: String
+}
+
 type BuyOrder implements Order {
   """
   Whether Artsy collects taxes (e.g., sales tax or VAT) on this order.
@@ -1627,6 +1635,11 @@ type Pickup {
 }
 
 type Query {
+  """
+  Find balance of an account associated with a setup intent
+  """
+  bankAccountBalance(setupIntentId: ID!): BankAccountBalance
+
   """
   Find list of competing orders
   """
