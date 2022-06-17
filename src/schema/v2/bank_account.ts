@@ -3,7 +3,13 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLFieldConfig,
+  GraphQLUnionType,
 } from "graphql"
+import {
+  connectionDefinitions,
+  cursorForObjectInConnection,
+} from "graphql-relay"
+import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { InternalIDFields } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 
@@ -27,6 +33,57 @@ export const BankAccountType = new GraphQLObjectType<any, ResolverContext>({
       description: "Last four characters of the account identifier",
     },
   }),
+})
+
+const BankAccountMutationSuccessType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "BankAccountMutationSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    bankAccount: {
+      type: BankAccount.type,
+      resolve: (bankAccount) => bankAccount,
+    },
+    bankAccountEdge: {
+      type: BankAccountEdge,
+      resolve: (bankAccount) => {
+        return {
+          cursor: cursorForObjectInConnection([bankAccount], bankAccount),
+          node: bankAccount,
+        }
+      },
+    },
+  }),
+})
+
+const BankAccountMutationFailureType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "BankAccountMutationFailure",
+  isTypeOf: (data) => {
+    return data._type === "GravityMutationError"
+  },
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => (typeof err.message === "object" ? err.message : err),
+    },
+  }),
+})
+
+export const BankAccountMutationType = new GraphQLUnionType({
+  name: "BankAccountMutationType",
+  types: [BankAccountMutationSuccessType, BankAccountMutationFailureType],
+})
+
+export const {
+  connectionType: BankAccountConnection,
+  edgeType: BankAccountEdge,
+} = connectionDefinitions({
+  nodeType: BankAccountType,
 })
 
 export const BankAccount: GraphQLFieldConfig<void, ResolverContext> = {

@@ -88,6 +88,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deleteBankAccountLoader: gravityLoader(
+      (id) => `me/bank_account/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     deleteCreditCardLoader: gravityLoader(
       (id) => `me/credit_card/${id}`,
       {},
@@ -216,6 +221,11 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     lotStandingLoader: gravityLoader("me/lot_standings", { size: 100 }),
+    meBankAccountsLoader: gravityLoader(
+      "me/bank_accounts",
+      {},
+      { headers: true }
+    ),
     meBidderPositionLoader: gravityLoader(
       (id) => `me/bidder_position/${id}/`,
       {},

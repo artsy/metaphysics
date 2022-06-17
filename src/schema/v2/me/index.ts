@@ -23,6 +23,7 @@ import { ArtworkRecommendations } from "./artworkRecommendations"
 import ArtworkInquiries from "./artwork_inquiries"
 import AuctionResultsByFollowedArtists from "./auction_results_by_followed_artists"
 import { authentications } from "./authentications"
+import { BankAccounts } from "./bank_accounts"
 import Bidders from "./bidders"
 import { BidderPosition } from "./bidder_position"
 import BidderPositions from "./bidder_positions"
@@ -116,6 +117,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     artworkInquiriesConnection: ArtworkInquiries,
     auctionResultsByFollowedArtists: AuctionResultsByFollowedArtists,
     authentications: authentications,
+    bankAccounts: BankAccounts,
     bidders: Bidders,
     bidderStatus: BidderStatus,
     bidderPositions: BidderPositions,
