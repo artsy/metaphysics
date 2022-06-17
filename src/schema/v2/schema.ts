@@ -136,6 +136,7 @@ import {
   IdentityVerification,
   identityVerificationsConnection,
 } from "./identityVerification"
+import { createIdentityVerificationOverrideMutation } from "./createIdentityVerificationOverrideMutation"
 import { BankAccount } from "./bank_account"
 import { WireTransferType, PaymentMethodUnion } from "./payment_method_union"
 import { AdminField } from "./admin"
@@ -273,6 +274,7 @@ export default new GraphQLSchema({
       createBidderPosition: BidderPositionMutation,
       createCreditCard: createCreditCardMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
+      createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createUserInterest: createUserInterestMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCreditCard: deleteCreditCardMutation,
