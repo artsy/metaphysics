@@ -111,6 +111,27 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
     annualLotsSold: {
       type: GraphQLInt,
     },
+    averageSalePriceDisplayText: {
+      type: GraphQLString,
+      args: {
+        format: {
+          type: GraphQLString,
+          description: "Passes in to numeral, such as `'0.00'`",
+          defaultValue: "",
+        },
+      },
+      resolve: ({ annualLotsSold, annualValueSoldCents }, { format }) => {
+        if (!annualLotsSold || !annualValueSoldCents) {
+          return null
+        }
+
+        return priceDisplayText(
+          Math.floor((annualValueSoldCents as number) / 100 / annualLotsSold),
+          "USD",
+          format
+        )
+      },
+    },
     lastAuctionResultDate: {
       type: GraphQLString,
     },

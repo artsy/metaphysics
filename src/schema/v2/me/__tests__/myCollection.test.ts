@@ -339,6 +339,7 @@ describe("me.myCollection", () => {
                 }
                 marketPriceInsights {
                   demandRank
+                  averageSalePriceDisplayText
                 }
               }
             }
@@ -378,14 +379,30 @@ describe("me.myCollection", () => {
 
     const data = await runAuthenticatedQuery(query, context)
 
-    expect(data.me.myCollectionConnection.edges[0].node.title).toBe(
-      "some title"
-    )
-
-    expect(
-      data.me.myCollectionConnection.edges[0].node.marketPriceInsights
-        .demandRank
-    ).toBe(0.64)
+    expect(data).toMatchInlineSnapshot(`
+      Object {
+        "me": Object {
+          "myCollectionConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "artist": Object {
+                    "internalID": "artist-id",
+                  },
+                  "internalID": "artwork_id_with_market_price_insights",
+                  "marketPriceInsights": Object {
+                    "averageSalePriceDisplayText": "US$21,764",
+                    "demandRank": 0.64,
+                  },
+                  "medium": "Painting",
+                  "title": "some title",
+                },
+              },
+            ],
+          },
+        },
+      }
+    `)
   })
 
   it("ignores collection not found errors and returns an empty array", async () => {
@@ -486,6 +503,8 @@ const mockVortexResponse = {
             artistId: "artist-id",
             demandRank: 0.64,
             medium: "Print",
+            annualLotsSold: 25,
+            annualValueSoldCents: 577662200012,
             lastAuctionResultDate: "2022-06-15T00:00:00Z",
           },
         },
@@ -494,6 +513,8 @@ const mockVortexResponse = {
             artistId: "artist-id",
             demandRank: 0.64,
             medium: "Painting",
+            annualLotsSold: 10,
+            annualValueSoldCents: 2176421231,
             lastAuctionResultDate: "2023-06-15T00:00:00Z",
           },
         },
