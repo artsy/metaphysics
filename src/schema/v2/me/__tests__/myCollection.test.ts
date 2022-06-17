@@ -391,7 +391,7 @@ describe("me.myCollection", () => {
                   },
                   "internalID": "artwork_id_with_market_price_insights",
                   "marketPriceInsights": Object {
-                    "averageSalePriceDisplayText": "US$21,764",
+                    "averageSalePriceDisplayText": "US$2,176,421",
                     "demandRank": 0.64,
                   },
                   "medium": "Painting",
