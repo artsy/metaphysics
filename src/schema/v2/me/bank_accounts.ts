@@ -8,7 +8,7 @@ import { ResolverContext } from "types/graphql"
 export const BankAccounts: GraphQLFieldConfig<void, ResolverContext> = {
   type: BankAccountConnection,
   args: pageable({}),
-  description: "A list of the current user's credit cards",
+  description: "A list of the current user's bank accounts",
   resolve: (_root, options, { meBankAccountsLoader }) => {
     if (!meBankAccountsLoader) return null
     const { page, size, offset } = convertConnectionArgsToGravityArgs(options)

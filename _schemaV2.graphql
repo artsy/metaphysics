@@ -9870,7 +9870,7 @@ type Me implements Node {
   # A list of authenticated external services
   authentications: [AuthenticationType!]!
 
-  # A list of the current user's credit cards
+  # A list of the current user's bank accounts
   bankAccounts(
     after: String
     before: String
