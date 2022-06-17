@@ -126,7 +126,7 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
         }
 
         return priceDisplayText(
-          Math.floor((annualValueSoldCents as number) / 100 / annualLotsSold),
+          Math.floor((annualValueSoldCents as number) / annualLotsSold),
           "USD",
           format
         )
