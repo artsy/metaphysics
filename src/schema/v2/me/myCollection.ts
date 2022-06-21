@@ -67,7 +67,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       type: GraphQLBoolean,
       defaultValue: false,
       description:
-        "Sort by most recent price insight updates and filter out artworks without insights.",
+        "Sort by most recent price insight updates, filter out artworks without insights and return artworks uniq by artist & medium.",
     },
   }),
   resolve: async (
@@ -127,11 +127,18 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       // sort by most recent price insight updates and filter out artworks without insights if requested
 
       if (options.sortByLastAuctionResultDate) {
+        enrichedArtworks = enrichedArtworks.filter(
+          (artwork) => artwork.marketPriceInsights
+        )
         enrichedArtworks = reverse(
           sortBy(
-            enrichedArtworks.filter((artwork) => artwork.marketPriceInsights),
+            enrichedArtworks,
             (artwork) => artwork.marketPriceInsights?.lastAuctionResultDate
           )
+        )
+        enrichedArtworks = uniqWith(
+          enrichedArtworks,
+          (a, b) => a.artist._id === b.artist._id && a.medium === b.medium
         )
       }
 
