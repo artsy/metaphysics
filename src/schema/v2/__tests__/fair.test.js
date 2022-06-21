@@ -770,6 +770,7 @@ describe("Fair", () => {
 
         const mockFair = {
           id: "fair-with-indexed-tineye-artworks",
+          slug: "fair-with-indexed-tineye-artworks",
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
@@ -798,6 +799,7 @@ describe("Fair", () => {
       it("should be false when fair artworks are NOT indexed in tineye", async () => {
         const mockFair = {
           id: "fair-without-indexed-tineye-artworks",
+          slug: "fair-without-indexed-tineye-artworks",
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
