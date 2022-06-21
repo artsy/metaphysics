@@ -770,7 +770,6 @@ describe("Fair", () => {
 
         const mockFair = {
           id: "fair-with-indexed-tineye-artworks",
-          slug: "fair-with-indexed-tineye-artworks",
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
@@ -796,10 +795,40 @@ describe("Fair", () => {
         })
       })
 
+      it("should be true when more than one fair artworks are indexed in tineye", async () => {
+        config.REVERSE_IMAGE_SEARCH_ENABLED_FAIR_SLUGS =
+          "fair-with-indexed-tineye-artworks,second-fair-with-indexed-tineye-artworks"
+
+        const mockFair = {
+          id: "second-fair-with-indexed-tineye-artworks",
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const query = gql`
+          {
+            fair(id: "second-fair-with-indexed-tineye-artworks") {
+              isReverseImageSearchEnabled
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            isReverseImageSearchEnabled: true,
+          },
+        })
+      })
+
       it("should be false when fair artworks are NOT indexed in tineye", async () => {
         const mockFair = {
           id: "fair-without-indexed-tineye-artworks",
-          slug: "fair-without-indexed-tineye-artworks",
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))

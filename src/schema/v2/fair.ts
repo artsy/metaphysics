@@ -196,10 +196,10 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       isReverseImageSearchEnabled: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Have we indexed this fair's artworks to tineye?",
-        resolve: ({ slug }) => {
+        resolve: ({ id }) => {
           const isReverseImageSearchEnabled = !!config.REVERSE_IMAGE_SEARCH_ENABLED_FAIR_SLUGS?.split(
             ","
-          ).includes(slug)
+          ).includes(id)
           return isReverseImageSearchEnabled
         },
       },
