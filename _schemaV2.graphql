@@ -10127,7 +10127,7 @@ type Me implements Node {
     sort: MyCollectionArtworkSorts
 
     # Sort by most recent price insight updates, filter out artworks without
-    # insights and return artworks uniq by medium/artist.
+    # insights and return artworks uniq by artist & medium.
     sortByLastAuctionResultDate: Boolean = false
   ): MyCollectionConnection
 

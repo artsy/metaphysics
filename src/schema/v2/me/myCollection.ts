@@ -67,7 +67,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       type: GraphQLBoolean,
       defaultValue: false,
       description:
-        "Sort by most recent price insight updates, filter out artworks without insights and return artworks uniq by medium/artist.",
+        "Sort by most recent price insight updates, filter out artworks without insights and return artworks uniq by artist & medium.",
     },
   }),
   resolve: async (
