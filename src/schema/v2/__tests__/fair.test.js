@@ -12,6 +12,7 @@ jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import config from "config"
 import moment from "moment"
 
 describe("Fair type", () => {
@@ -757,6 +758,98 @@ describe("Fair", () => {
         expect(data).toEqual({
           fair: {
             isActive: true,
+          },
+        })
+      })
+    })
+
+    describe("isReverseImageSearchEnabled flag", () => {
+      it("should be true when fair artworks are indexed in tineye", async () => {
+        config.REVERSE_IMAGE_SEARCH_ENABLED_FAIR_SLUGS =
+          "fair-with-indexed-tineye-artworks"
+
+        const mockFair = {
+          id: "fair-with-indexed-tineye-artworks",
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const query = gql`
+          {
+            fair(id: "fair-with-indexed-tineye-artworks") {
+              isReverseImageSearchEnabled
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            isReverseImageSearchEnabled: true,
+          },
+        })
+      })
+
+      it("should be true when more than one fair artworks are indexed in tineye", async () => {
+        config.REVERSE_IMAGE_SEARCH_ENABLED_FAIR_SLUGS =
+          "fair-with-indexed-tineye-artworks,second-fair-with-indexed-tineye-artworks"
+
+        const mockFair = {
+          id: "second-fair-with-indexed-tineye-artworks",
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const query = gql`
+          {
+            fair(id: "second-fair-with-indexed-tineye-artworks") {
+              isReverseImageSearchEnabled
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            isReverseImageSearchEnabled: true,
+          },
+        })
+      })
+
+      it("should be false when fair artworks are NOT indexed in tineye", async () => {
+        const mockFair = {
+          id: "fair-without-indexed-tineye-artworks",
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const query = gql`
+          {
+            fair(id: "fair-without-indexed-tineye-artworks") {
+              isReverseImageSearchEnabled
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            isReverseImageSearchEnabled: false,
           },
         })
       })

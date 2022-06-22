@@ -1,6 +1,7 @@
 /* eslint-disable promise/always-return */
 import moment from "moment"
 import gql from "lib/gql"
+import config from "config"
 import { runQuery } from "schema/v2/test/utils"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
@@ -147,12 +148,7 @@ describe("Show type", () => {
         }
       }
     `
-    try {
-      await runQuery(query, context)
-      throw new Error("Did not expect query to not throw an error")
-    } catch (error) {
-      expect(error.message).toEqual("Show Not Found")
-    }
+    await expect(runQuery(query, context)).rejects.toThrow("Show Not Found")
   })
 
   it("returns a fair booth even with displayable set to false", async () => {
@@ -205,6 +201,72 @@ describe("Show type", () => {
       show: {
         isFeatured: true,
       },
+    })
+  })
+
+  describe("isReverseImageSearchEnabled flag", () => {
+    it("should be true when show artworks are indexed in tineye", async () => {
+      config.REVERSE_IMAGE_SEARCH_ENABLED_SHOW_SLUGS =
+        "show-with-indexed-tineye-artworks"
+      showData.id = "show-with-indexed-tineye-artworks"
+
+      const query = gql`
+        {
+          show(id: "show-with-indexed-tineye-artworks") {
+            isReverseImageSearchEnabled
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        show: {
+          isReverseImageSearchEnabled: true,
+        },
+      })
+    })
+
+    it("should be true when more than one show artworks are indexed in tineye", async () => {
+      config.REVERSE_IMAGE_SEARCH_ENABLED_SHOW_SLUGS =
+        "show-with-indexed-tineye-artworks,another-show-with-indexed-tineye-artworks,and-another-show-with-indexed-tineye-artworks"
+      showData.id = "and-another-show-with-indexed-tineye-artworks"
+
+      const query = gql`
+        {
+          show(id: "and-another-show-with-indexed-tineye-artworks") {
+            isReverseImageSearchEnabled
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        show: {
+          isReverseImageSearchEnabled: true,
+        },
+      })
+    })
+
+    it("should be false when show artworks are NOT indexed in tineye", async () => {
+      showData.id = "show-without-indexed-tineye-artworks"
+
+      const query = gql`
+        {
+          show(id: "show-without-indexed-tineye-artworks") {
+            isReverseImageSearchEnabled
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        show: {
+          isReverseImageSearchEnabled: false,
+        },
+      })
     })
   })
 

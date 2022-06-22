@@ -1,3 +1,4 @@
+import config from "config"
 import { omit, map, deburr } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
@@ -190,6 +191,16 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           const activeStart = moment.utc(active_start_at)
           const now = moment.utc()
           return now.isAfter(activeStart)
+        },
+      },
+      isReverseImageSearchEnabled: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: "Have we indexed this fair's artworks to tineye?",
+        resolve: ({ id }) => {
+          const isReverseImageSearchEnabled = !!config.REVERSE_IMAGE_SEARCH_ENABLED_FAIR_SLUGS?.split(
+            ","
+          ).includes(id)
+          return isReverseImageSearchEnabled
         },
       },
       marketingCollectionSlugs: {
