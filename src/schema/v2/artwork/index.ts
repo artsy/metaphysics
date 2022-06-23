@@ -892,9 +892,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         description: "Is this work only available for shipping domestically?",
         resolve: (artwork) => {
+          const domesticShippingSupported =
+            artwork.domestic_shipping_fee_cents != null ||
+            artwork.process_with_artsy_shipping_domestic
+          const internationalShippingSupported =
+            artwork.international_shipping_fee_cents != null ||
+            artwork.artsy_shipping_international
+
           return Boolean(
-            artwork.domestic_shipping_fee_cents &&
-              artwork.international_shipping_fee_cents == null
+            domesticShippingSupported && !internationalShippingSupported
           )
         },
       },
