@@ -2574,50 +2574,204 @@ describe("Artwork type", () => {
         }
       }
     `
-    it("is true when domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
-      artwork.domestic_shipping_fee_cents = 1000
-      artwork.international_shipping_fee_cents = null
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            onlyShipsDomestically: true,
-          },
+    describe("when artsy domestic shipping enabled", () => {
+      beforeEach(() => {
+        artwork.process_with_artsy_shipping_domestic = true
+      })
+
+      describe("when domestic_shipping_fee_cents and international_shipping_fee is null", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = null
+          artwork.international_shipping_fee_cents = null
+        })
+
+        it("returns true", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                onlyShipsDomestically: true,
+              },
+            })
+          })
+        })
+      })
+
+      describe("when domestic_shipping_fee_cents is present", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = 100
+          artwork.international_shipping_fee_cents = null
+        })
+
+        it("returns true", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                onlyShipsDomestically: true,
+              },
+            })
+          })
+        })
+      })
+
+      describe("when only international_shipping_fee_cents is present", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = null
+          artwork.international_shipping_fee_cents = 100
+        })
+
+        it("returns false", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                onlyShipsDomestically: false,
+              },
+            })
+          })
+        })
+
+        describe("when only artsy international shipping is present", () => {
+          beforeEach(() => {
+            artwork.domestic_shipping_fee_cents = null
+            artwork.international_shipping_fee_cents = null
+            artwork.artsy_shipping_international = true
+          })
+
+          it("returns false", () => {
+            return runQuery(query, context).then((data) => {
+              expect(data).toEqual({
+                artwork: {
+                  onlyShipsDomestically: false,
+                },
+              })
+            })
+          })
+        })
+
+        describe("when free shipping worldwide", () => {
+          beforeEach(() => {
+            artwork.domestic_shipping_fee_cents = 0
+            artwork.international_shipping_fee_cents = 0
+          })
+
+          it("returns false", () => {
+            return runQuery(query, context).then((data) => {
+              expect(data).toEqual({
+                artwork: {
+                  onlyShipsDomestically: false,
+                },
+              })
+            })
+          })
         })
       })
     })
 
-    it("is false when work ships free internationally", () => {
-      artwork.domestic_shipping_fee_cents = 1000
-      artwork.international_shipping_fee_cents = 0
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            onlyShipsDomestically: false,
-          },
+    describe("when artsy domestic shipping disabled", () => {
+      beforeEach(() => {
+        artwork.process_with_artsy_shipping_domestic = false
+        artwork.artsy_shipping_international = false
+      })
+
+      describe("when domestic_shipping_fee_cents and international_shipping_fee is null", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = null
+          artwork.international_shipping_fee_cents = null
+        })
+
+        it("returns false", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                onlyShipsDomestically: false,
+              },
+            })
+          })
         })
       })
-    })
 
-    it("is false when work ships free worldwide", () => {
-      artwork.domestic_shipping_fee_cents = 0
-      artwork.international_shipping_fee_cents = 0
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            onlyShipsDomestically: false,
-          },
+      describe("when domestic_shipping_fee_cents is present", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = 100
+          artwork.international_shipping_fee_cents = null
+        })
+
+        it("returns true", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                onlyShipsDomestically: true,
+              },
+            })
+          })
         })
       })
-    })
 
-    it("is false when work ships worldwide", () => {
-      artwork.domestic_shipping_fee_cents = 1000
-      artwork.international_shipping_fee_cents = 1000
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            onlyShipsDomestically: false,
-          },
+      describe("when only international_shipping_fee_cents is present", () => {
+        beforeEach(() => {
+          artwork.domestic_shipping_fee_cents = null
+          artwork.international_shipping_fee_cents = 100
+        })
+
+        it("returns false", () => {
+          return runQuery(query, context).then((data) => {
+            expect(data).toEqual({
+              artwork: {
+                onlyShipsDomestically: false,
+              },
+            })
+          })
+        })
+
+        describe("when only artsy international shipping is present", () => {
+          beforeEach(() => {
+            artwork.domestic_shipping_fee_cents = null
+            artwork.international_shipping_fee_cents = null
+            artwork.artsy_shipping_international = true
+          })
+
+          it("returns false", () => {
+            return runQuery(query, context).then((data) => {
+              expect(data).toEqual({
+                artwork: {
+                  onlyShipsDomestically: false,
+                },
+              })
+            })
+          })
+        })
+
+        describe("when free shipping worldwide", () => {
+          beforeEach(() => {
+            artwork.domestic_shipping_fee_cents = 0
+            artwork.international_shipping_fee_cents = 0
+          })
+
+          it("returns false", () => {
+            return runQuery(query, context).then((data) => {
+              expect(data).toEqual({
+                artwork: {
+                  onlyShipsDomestically: false,
+                },
+              })
+            })
+          })
+        })
+
+        describe("when free domestic shipping", () => {
+          beforeEach(() => {
+            artwork.domestic_shipping_fee_cents = 0
+            artwork.international_shipping_fee_cents = null
+          })
+
+          it("returns true", () => {
+            return runQuery(query, context).then((data) => {
+              expect(data).toEqual({
+                artwork: {
+                  onlyShipsDomestically: true,
+                },
+              })
+            })
+          })
         })
       })
     })
