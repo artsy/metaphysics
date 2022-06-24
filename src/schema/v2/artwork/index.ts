@@ -1407,7 +1407,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             ...image,
             type: "Image",
           }))
-          const sortedTypedImages = _.sortBy(typedImages, "position")
+          const sortedTypedImages = normalizeImageData(
+            _.sortBy(typedImages, "position")
+          )
 
           const typedVideos = VIDEOS[id]
             ? [{ ...VIDEOS[id], type: "Video" }]
