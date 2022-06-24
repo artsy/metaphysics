@@ -15,6 +15,7 @@ describe("Artwork type", () => {
 
   const artworkImages = [
     {
+      position: 2,
       is_default: false,
       id: "56b6311876143f4e82000188",
       image_url: "https://xxx.cloudfront.net/xxx/:version.jpg",
@@ -25,6 +26,7 @@ describe("Artwork type", () => {
       },
     },
     {
+      position: 1,
       is_default: true,
       id: "56b64ed2cd530e670c0000b2",
       image_url: "https://xxx.cloudfront.net/xxx/:version.jpg",
@@ -733,6 +735,39 @@ describe("Artwork type", () => {
             image: {
               internalID: "56b64ed2cd530e670c0000b2",
             },
+          },
+        })
+      })
+    })
+  })
+
+  describe("#figures", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          figures {
+            ...on Image {
+              position
+            }
+          }
+        }
+      }
+    `
+
+    it("returns images sorted by position", () => {
+      artwork.images = artworkImages
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            figures: [
+              {
+                position: 1,
+              },
+              {
+                position: 2,
+              },
+            ],
           },
         })
       })
