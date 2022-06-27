@@ -9165,7 +9165,7 @@ type IdentityVerificationOverrideMutationFailure {
 }
 
 type IdentityVerificationOverrideMutationSuccess {
-  identityVerificationOverride: IdentityVerificationOverride
+  identityVerification: IdentityVerification
 }
 
 type IdentityVerificationScanReference {

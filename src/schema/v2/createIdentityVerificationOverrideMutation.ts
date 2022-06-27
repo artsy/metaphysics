@@ -9,16 +9,24 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { IdentityVerificationOverrideType } from "./identityVerification"
+import { IdentityVerificationType } from "./identityVerification"
 import { mutationWithClientMutationId } from "graphql-relay"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "IdentityVerificationOverrideMutationSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
-    identityVerificationOverride: {
-      type: IdentityVerificationOverrideType,
-      resolve: (identityVerificationOverride) => identityVerificationOverride,
+    identityVerification: {
+      type: IdentityVerificationType,
+      resolve: async (
+        { identityVerificationID },
+        _args,
+        { identityVerificationLoader }
+      ) => {
+        if (!identityVerificationLoader) return
+
+        return identityVerificationLoader(identityVerificationID)
+      },
     },
   }),
 })
@@ -80,7 +88,13 @@ export const createIdentityVerificationOverrideMutation = mutationWithClientMuta
       state,
       reason,
     })
-      .then((result) => result)
+      .then((result) => {
+        // TODO: refactor this to use async/await
+        return {
+          ...result,
+          identityVerificationID,
+        }
+      })
       .catch((error) => {
         const formattedErr = formatGravityError(error)
         if (formattedErr) {
