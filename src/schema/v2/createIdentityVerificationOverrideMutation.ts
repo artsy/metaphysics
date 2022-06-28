@@ -73,6 +73,8 @@ export const createIdentityVerificationOverrideMutation = mutationWithClientMuta
   outputFields: {
     createIdentityVerificationOverrideResponseOrError: {
       type: ResponseOrErrorType,
+      description:
+        "On success: the identity verification with the created override",
       resolve: (result) => result,
     },
   },
@@ -84,24 +86,22 @@ export const createIdentityVerificationOverrideMutation = mutationWithClientMuta
       throw new Error("You need to be signed in to perform this action")
     }
 
-    return createIdentityVerificationOverrideLoader(identityVerificationID, {
-      state,
-      reason,
-    })
-      .then((result) => {
-        // TODO: refactor this to use async/await
-        return {
-          ...result,
-          identityVerificationID,
-        }
-      })
-      .catch((error) => {
-        const formattedErr = formatGravityError(error)
-        if (formattedErr) {
-          return { ...formattedErr, _type: "GravityMutationError" }
-        } else {
-          throw new Error(error)
-        }
-      })
+    try {
+      const result = await createIdentityVerificationOverrideLoader(
+        identityVerificationID,
+        { state, reason }
+      )
+      return {
+        ...result,
+        identityVerificationID,
+      }
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
+    }
   },
 })
