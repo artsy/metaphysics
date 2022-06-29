@@ -355,6 +355,7 @@ export default (accessToken, userID, opts) => {
       user_id: userID,
       private: true,
     }),
+    setUserFlagLoader: gravityLoader("me/user_flags", {}, { method: "PUT" }),
     sendConfirmationEmailLoader: gravityLoader(
       "me/confirmation_emails",
       {},

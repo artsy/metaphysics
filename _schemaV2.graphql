@@ -10269,6 +10269,9 @@ type Me implements Node {
   # A count of unread notifications.
   unreadNotificationsCount: Int!
 
+  # Hash of arbitrary keys/values. Useful for transient or UI-related preferences.
+  userFlags: UserFlagsType
+
   # A list of lots a user is watching.
   watchedLotConnection(
     after: String
@@ -10723,6 +10726,11 @@ type Mutation {
   sendIdentityVerificationEmail(
     input: SendIdentityVerificationEmailMutationInput!
   ): SendIdentityVerificationEmailMutationPayload
+
+  # Set/unset a flag in the current user's user_flags
+  setOrUnsetUserFlag(
+    input: SetOrUnsetUserFlagMutationInput!
+  ): SetOrUnsetUserFlagMutationPayload
 
   # Start an identity verification flow for a pending identity verification
   startIdentityVerification(
@@ -14191,6 +14199,33 @@ type Services {
   metaphysics: MetaphysicsService!
 }
 
+type SetOrUnsetUserFlagMutationFailure {
+  mutationError: GravityMutationError
+}
+
+input SetOrUnsetUserFlagMutationInput {
+  clientMutationId: String
+
+  # The name of the flag to set or unset
+  key: String!
+
+  # The value to set for a flag. Pass null to unset the flag
+  value: String
+}
+
+type SetOrUnsetUserFlagMutationPayload {
+  clientMutationId: String
+  userFlagsOrError: SetOrUnsetUserFlagMutationType
+}
+
+type SetOrUnsetUserFlagMutationSuccess {
+  userFlags: UserFlagsType
+}
+
+union SetOrUnsetUserFlagMutationType =
+    SetOrUnsetUserFlagMutationFailure
+  | SetOrUnsetUserFlagMutationSuccess
+
 type Shortcut {
   # A globally unique ID.
   id: ID!
@@ -15535,6 +15570,9 @@ type UserEdge {
   # The item at the end of the edge
   node: User
 }
+
+# The user's user_flags. Values of keys in user_flags can be anything and keys may not be known beforehand.
+scalar UserFlagsType
 
 type UserIconDeleteFailureType {
   mutationError: GravityMutationError

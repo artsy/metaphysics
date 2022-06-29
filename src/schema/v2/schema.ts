@@ -144,6 +144,7 @@ import { createFeatureFlagMutation } from "./admin/mutations/createFeatureFlagMu
 import { deleteFeatureFlagMutation } from "./admin/mutations/deleteFeatureFlagMutation"
 import { updateFeatureFlagMutation } from "./admin/mutations/updateFeatureFlagMutation"
 import { toggleFeatureFlagMutation } from "./admin/mutations/toggleFeatureFlagMutation"
+import { setOrUnsetUserFlagMutation } from "./me/setOrUnsetUserFlagMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -309,6 +310,7 @@ export default new GraphQLSchema({
       updateNotificationPreferences: updateNotificationPreferencesMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       requestPriceEstimate: requestPriceEstimateMutation,
+      setOrUnsetUserFlag: setOrUnsetUserFlagMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({

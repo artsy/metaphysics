@@ -58,6 +58,7 @@ import { SaleRegistrationConnection } from "./sale_registrations"
 import { SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { WatchedLotConnection } from "./watchedLotConnection"
+import { UserFlags } from "./user_flags"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -390,6 +391,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
+    userFlags: UserFlags,
     watchedLotConnection: WatchedLotConnection,
   },
 })
