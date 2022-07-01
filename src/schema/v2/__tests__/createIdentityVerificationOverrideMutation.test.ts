@@ -72,7 +72,7 @@ describe("Create Identity Verification Override", () => {
           Promise.resolve(identityVerificationOverridesLoaderResponse),
       }
 
-      const data = await runQuery(mutation, context)
+      const data = await runAuthenticatedQuery(mutation, context)
 
       expect(data).toEqual({
         createIdentityVerificationOverride: {

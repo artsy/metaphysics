@@ -72,8 +72,7 @@ export const createIdentityVerificationOverrideMutation = mutationWithClientMuta
   outputFields: {
     createIdentityVerificationOverrideResponseOrError: {
       type: ResponseOrErrorType,
-      description:
-        "On success: the identity verification with the created override",
+      description: "On success: an identity verification with overrides",
       resolve: (result) => result,
     },
   },

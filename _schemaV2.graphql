@@ -6722,7 +6722,7 @@ input CreateIdentityVerificationOverrideMutationInput {
 type CreateIdentityVerificationOverrideMutationPayload {
   clientMutationId: String
 
-  # On success: the identity verification with the created override
+  # On success: an identity verification with overrides
   createIdentityVerificationOverrideResponseOrError: CreateIdentityVerificationOverrideResponseOrError
 }
 
