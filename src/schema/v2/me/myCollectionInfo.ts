@@ -1,16 +1,17 @@
 import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLString,
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { artistConnection } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
 import { paginationResolver } from "../fields/pagination"
+import ArtistSorts from "../sorts/artist_sorts"
 
 export const myCollectionInfoFields = {
   description: {
@@ -41,20 +42,25 @@ export const myCollectionInfoFields = {
     description: "A connection of artists in the users' collection",
     type: artistConnection.connectionType,
     args: pageable({
+      sort: ArtistSorts,
       page: { type: GraphQLInt },
       size: { type: GraphQLInt },
     }),
     resolve: async (_root, args, context) => {
-      const { collectionArtistsLoader } = context
+      const { collectionArtistsLoader, userID } = context
 
       if (!collectionArtistsLoader) return
 
-      const { page, offset, size } = convertConnectionArgsToGravityArgs(args)
+      const { page, offset, size, sort } = convertConnectionArgsToGravityArgs(
+        args
+      )
 
       const { body, headers } = await collectionArtistsLoader("my-collection", {
         size,
         page,
+        sort,
         total_count: true,
+        user_id: userID,
       })
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
@@ -71,11 +77,14 @@ const MyCollectionInfoType = new GraphQLObjectType<any, ResolverContext>({
 export const MyCollectionInfo: GraphQLFieldConfig<any, ResolverContext> = {
   type: MyCollectionInfoType,
   description: "Info about the current user's my-collection",
-  resolve: async ({ id }, _options, { collectionLoader }) => {
-    if (!collectionLoader) {
+  resolve: async ({ id }, _options, context) => {
+    if (!context.collectionLoader) {
       return null
     }
-    const collectionResponse = await collectionLoader("my-collection", {
+
+    context.userID = id
+
+    const collectionResponse = await context.collectionLoader("my-collection", {
       user_id: id,
       private: true,
     })
