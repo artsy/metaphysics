@@ -1,12 +1,13 @@
-import { compact } from "lodash"
 import {
-  GraphQLObjectType,
-  GraphQLList,
   GraphQLEnumType,
-  GraphQLString,
   GraphQLFieldConfig,
+  GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
+import { compact } from "lodash"
 import { ResolverContext } from "types/graphql"
 
 const ARTIST_INSIGHT_KINDS = {
@@ -83,6 +84,10 @@ const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: "List of entities relevant to the insight.",
     },
+    count: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "Number of entities relevant to the insight.",
+    },
     kind: {
       type: ArtistInsightKind,
       description: "The type of insight.",
@@ -120,10 +125,12 @@ export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
 
             if (!trimmed) return null
 
+            const entities = trimmed
+              .split(delimiter ?? "|")
+              .map((entity) => entity.trim())
             return {
-              entities: trimmed
-                .split(delimiter ?? "|")
-                .map((entity) => entity.trim()),
+              entities,
+              count: entities.length,
               label,
               type: kind,
               kind,
@@ -137,10 +144,11 @@ export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
               type: kind,
               kind,
               description,
+              count: value ? 1 : 0,
             }
 
           default:
-            return null
+            return { count: 0 }
         }
       })
     )
