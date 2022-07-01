@@ -1,10 +1,10 @@
 import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLString,
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
@@ -47,7 +47,7 @@ export const myCollectionInfoFields = {
       size: { type: GraphQLInt },
     }),
     resolve: async (_root, args, context) => {
-      const { collectionArtistsLoader } = context
+      const { collectionArtistsLoader, userID } = context
 
       if (!collectionArtistsLoader) return
 
@@ -60,6 +60,7 @@ export const myCollectionInfoFields = {
         page,
         sort,
         total_count: true,
+        user_id: userID,
       })
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
@@ -76,11 +77,14 @@ const MyCollectionInfoType = new GraphQLObjectType<any, ResolverContext>({
 export const MyCollectionInfo: GraphQLFieldConfig<any, ResolverContext> = {
   type: MyCollectionInfoType,
   description: "Info about the current user's my-collection",
-  resolve: async ({ id }, _options, { collectionLoader }) => {
-    if (!collectionLoader) {
+  resolve: async ({ id }, _options, context) => {
+    if (!context.collectionLoader) {
       return null
     }
-    const collectionResponse = await collectionLoader("my-collection", {
+
+    context.userID = id
+
+    const collectionResponse = await context.collectionLoader("my-collection", {
       user_id: id,
       private: true,
     })
