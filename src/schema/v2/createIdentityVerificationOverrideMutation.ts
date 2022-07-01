@@ -24,7 +24,6 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
         { identityVerificationLoader }
       ) => {
         if (!identityVerificationLoader) return
-
         return identityVerificationLoader(identityVerificationID)
       },
     },
@@ -85,7 +84,6 @@ export const createIdentityVerificationOverrideMutation = mutationWithClientMuta
     if (!createIdentityVerificationOverrideLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
-
     try {
       const result = await createIdentityVerificationOverrideLoader(
         identityVerificationID,

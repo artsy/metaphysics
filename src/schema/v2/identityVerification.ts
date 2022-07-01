@@ -167,7 +167,6 @@ export const IdentityVerificationType = new GraphQLObjectType<
         { identityVerificationOverridesLoader }
       ) => {
         if (!identityVerificationOverridesLoader) return
-
         return identityVerificationOverridesLoader(id)
       },
     },
