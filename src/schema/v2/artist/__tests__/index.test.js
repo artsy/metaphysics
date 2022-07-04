@@ -16,8 +16,13 @@ describe("Artist type", () => {
             items: [
               {
                 id: "lot-id",
-                title: "Lot 1",
+                title: "Lot in the past 1",
                 sale_end_date: "2012-07-04T00:00:00.000Z",
+              },
+              {
+                id: "lot-id",
+                title: "Lot in the future 1",
+                sale_end_date: "3012-07-04T00:00:00.000Z",
               },
             ],
           },
