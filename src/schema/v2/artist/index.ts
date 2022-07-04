@@ -285,6 +285,9 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           // TODO: Filter upcoming auction results (sale_end_date > today) in Diffusion.
           const filteredAuctionResults = _embedded.items.filter(
             (auctionResult) => {
+              // Don't filter out auction results with no sale end date.
+              if (!auctionResult.sale_end_date) return true
+
               const now = moment.utc()
 
               return moment.utc(auctionResult.sale_end_date).isBefore(now)

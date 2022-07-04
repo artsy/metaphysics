@@ -21,6 +21,11 @@ describe("Artist type", () => {
               },
               {
                 id: "lot-id",
+                title: "Lot without sale end date",
+                sale_end_date: null,
+              },
+              {
+                id: "lot-id",
                 title: "Lot in the future 1",
                 sale_end_date: "3012-07-04T00:00:00.000Z",
               },
@@ -152,6 +157,11 @@ describe("Artist type", () => {
                 Object {
                   "node": Object {
                     "title": "Lot in the past 1",
+                  },
+                },
+                Object {
+                  "node": Object {
+                    "title": "Lot without sale end date",
                   },
                 },
               ],
