@@ -135,8 +135,7 @@ describe("Artist type", () => {
           auctionResultsConnection(first: 10) {
             edges {
               node {
-                saleDateText
-                saleDate
+                title
               }
             }
           }
@@ -152,8 +151,7 @@ describe("Artist type", () => {
               "edges": Array [
                 Object {
                   "node": Object {
-                    "saleDate": null,
-                    "saleDateText": null,
+                    "title": "Lot in the past 1",
                   },
                 },
               ],
