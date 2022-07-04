@@ -9,7 +9,19 @@ describe("Artist type", () => {
     context = {
       artistLoader: () => artist,
       articlesLoader: () => Promise.resolve({ count: 22 }),
-      auctionLotsLoader: () => Promise.resolve({ total_count: 123 }),
+      auctionLotsLoader: () =>
+        Promise.resolve({
+          total_count: 123,
+          _embedded: {
+            items: [
+              {
+                id: "lot-id",
+                title: "Lot 1",
+                sale_end_date: "2012-07-04T00:00:00.000Z",
+              },
+            ],
+          },
+        }),
       artistGenesLoader: () => Promise.resolve([{ name: "Foo Bar" }]),
       relatedMainArtistsLoader: () =>
         Promise.resolve({ headers: { "x-total-count": 42 } }),
@@ -108,25 +120,45 @@ describe("Artist type", () => {
     })
   })
 
-  it("returns the number of auction results for an artist", () => {
+  it("returns the auction results and number of auction results for an artist", () => {
     const query = `
       {
         artist(id: "foo-bar") {
           counts {
             auctionResults
           }
+          auctionResultsConnection(first: 10) {
+            edges {
+              node {
+                saleDateText
+                saleDate
+              }
+            }
+          }
         }
       }
     `
 
     return runQuery(query, context).then((data) => {
-      expect(data).toEqual({
-        artist: {
-          counts: {
-            auctionResults: 123,
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "artist": Object {
+            "auctionResultsConnection": Object {
+              "edges": Array [
+                Object {
+                  "node": Object {
+                    "saleDate": null,
+                    "saleDateText": null,
+                  },
+                },
+              ],
+            },
+            "counts": Object {
+              "auctionResults": 123,
+            },
           },
-        },
-      })
+        }
+      `)
     })
   })
 

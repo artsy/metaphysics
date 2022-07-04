@@ -1,65 +1,67 @@
-import { pageable, getPagingParameters } from "relay-cursor-paging"
+import {
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
+import { connectionFromArraySlice } from "graphql-relay"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { totalViaLoader } from "lib/total"
 import {
   compact,
   defaults,
   first,
   flatten,
-  omit,
   includes,
   merge,
+  omit,
 } from "lodash"
-import cached from "schema/v2/fields/cached"
-import initials from "schema/v2/fields/initials"
-import { markdown, formatMarkdownValue } from "schema/v2/fields/markdown"
-import numeral from "schema/v2/fields/numeral"
-import Image, { getDefault } from "schema/v2/image"
-import { setVersion } from "schema/v2/image/normalize"
+import moment from "moment"
+import { getPagingParameters, pageable } from "relay-cursor-paging"
 import Article, { articleConnection } from "schema/v2/article"
 import { artworkConnection } from "schema/v2/artwork"
-import PartnerArtist from "schema/v2/partner_artist"
-import Meta from "./meta"
-import { partnersForArtist } from "schema/v2/partner_artist"
-import { GeneType } from "../gene"
-import Show from "schema/v2/show"
-import Sale from "schema/v2/sale/index"
-import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
-import ArticleSorts from "schema/v2/sorts/article_sorts"
-import SaleSorts from "schema/v2/sale/sorts"
-import ArtistCarousel from "./carousel"
-import ArtistStatuses from "./statuses"
-import ArtistHighlights from "./highlights"
-import { ArtistInsights } from "./insights"
-import { CurrentEvent } from "./current"
 import {
   auctionResultConnection,
   AuctionResultSorts,
 } from "schema/v2/auction_result"
-import ArtistArtworksFilters from "./artwork_filters"
-import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
-import { Related } from "./related"
-import { createPageCursors } from "schema/v2/fields/pagination"
+import cached from "schema/v2/fields/cached"
+import { date } from "schema/v2/fields/date"
+import initials from "schema/v2/fields/initials"
+import { formatMarkdownValue, markdown } from "schema/v2/fields/markdown"
+import numeral from "schema/v2/fields/numeral"
 import {
-  showsWithDenyListedPartnersRemoved,
-  ShowsConnectionField,
-} from "./shows"
+  connectionWithCursorInfo,
+  createPageCursors,
+} from "schema/v2/fields/pagination"
+import Image, { getDefault } from "schema/v2/image"
+import { setVersion } from "schema/v2/image/normalize"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
-import {
-  GraphQLObjectType,
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLList,
-  GraphQLInt,
-  GraphQLFieldConfig,
-} from "graphql"
-import { connectionFromArraySlice } from "graphql-relay"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { totalViaLoader } from "lib/total"
+import PartnerArtist, { partnersForArtist } from "schema/v2/partner_artist"
+import Sale from "schema/v2/sale/index"
+import SaleSorts from "schema/v2/sale/sorts"
+import Show from "schema/v2/show"
+import ArticleSorts from "schema/v2/sorts/article_sorts"
+import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
-import { ArtistTargetSupply } from "./targetSupply"
+import { GeneType } from "../gene"
 import { PartnerType } from "../partner"
-import { date } from "schema/v2/fields/date"
+import ArtistArtworksFilters from "./artwork_filters"
+import ArtistCarousel from "./carousel"
+import { CurrentEvent } from "./current"
+import ArtistHighlights from "./highlights"
+import { ArtistInsights } from "./insights"
+import Meta from "./meta"
+import { Related } from "./related"
+import {
+  ShowsConnectionField,
+  showsWithDenyListedPartnersRemoved,
+} from "./shows"
+import ArtistStatuses from "./statuses"
+import { ArtistTargetSupply } from "./targetSupply"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -248,7 +250,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
               "Filter by artwork title or description keyword search",
           },
         }),
-        resolve: ({ _id }, options, { auctionLotsLoader }) => {
+        resolve: async ({ _id }, options, { auctionLotsLoader }) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
             return null
           }
@@ -275,36 +277,43 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             sizes,
             sort: options.sort,
           }
-          return auctionLotsLoader(diffusionArgs).then(
-            ({ total_count, _embedded }) => {
-              const totalPages = Math.ceil(total_count / size)
-              return merge(
+
+          const { total_count, _embedded } = await auctionLotsLoader(
+            diffusionArgs
+          )
+
+          // TODO: Filter upcoming auction results (sale_end_date > today) in Diffusion.
+          const filteredAuctionResults = _embedded.items.filter(
+            (auctionResult) =>
+              !moment(auctionResult.sale_end_date).isAfter(moment())
+          )
+
+          const totalPages = Math.ceil(total_count / size)
+          return merge(
+            {
+              pageCursors: createPageCursors(
                 {
-                  pageCursors: createPageCursors(
-                    {
-                      page,
-                      size,
-                    },
-                    total_count
-                  ),
+                  page,
+                  size,
                 },
-                {
-                  totalCount: total_count,
-                },
-                connectionFromArraySlice(_embedded.items, options, {
-                  arrayLength: total_count,
-                  sliceStart: offset,
-                }),
-                {
-                  pageInfo: {
-                    hasPreviousPage: page > 1,
-                    hasNextPage: page < totalPages,
-                  },
-                },
-                {
-                  artist_id: _id,
-                }
-              )
+                total_count
+              ),
+            },
+            {
+              totalCount: total_count,
+            },
+            connectionFromArraySlice(filteredAuctionResults, options, {
+              arrayLength: total_count,
+              sliceStart: offset,
+            }),
+            {
+              pageInfo: {
+                hasPreviousPage: page > 1,
+                hasNextPage: page < totalPages,
+              },
+            },
+            {
+              artist_id: _id,
             }
           )
         },
