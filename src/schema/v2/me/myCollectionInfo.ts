@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -10,8 +11,15 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { artistConnection } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
+import {
+  ArtistInsight,
+  ArtistInsightKind,
+  getArtistInsights,
+} from "../artist/insights"
 import { paginationResolver } from "../fields/pagination"
 import ArtistSorts from "../sorts/artist_sorts"
+
+export const MAX_ARTISTS = 100
 
 export const myCollectionInfoFields = {
   description: {
@@ -37,6 +45,37 @@ export const myCollectionInfoFields = {
   artistsCount: {
     type: new GraphQLNonNull(GraphQLInt),
     resolve: ({ artists_count }) => artists_count,
+  },
+  artistInsights: {
+    description: "Insights for all collected artists",
+    type: new GraphQLNonNull(
+      new GraphQLList(new GraphQLNonNull(ArtistInsight))
+    ),
+    args: {
+      kind: {
+        type: ArtistInsightKind,
+        description: "The type of insight.",
+      },
+    },
+    resolve: async (_root, args, context) => {
+      const { collectionArtistsLoader, userID } = context
+
+      const { body: artists } = await collectionArtistsLoader("my-collection", {
+        size: MAX_ARTISTS,
+        user_id: userID,
+        all: true,
+      })
+
+      const insights: ReturnType<typeof getArtistInsights> = []
+
+      artists.map((artist) => {
+        getArtistInsights(artist).map((insight) => {
+          if (insight.kind === args.kind || !args.kind) insights.push(insight)
+        })
+      })
+
+      return insights
+    },
   },
   collectedArtistsConnection: {
     description: "A connection of artists in the users' collection",
@@ -64,7 +103,14 @@ export const myCollectionInfoFields = {
       })
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-      return paginationResolver({ totalCount, offset, size, page, body, args })
+      return paginationResolver({
+        totalCount,
+        offset,
+        size,
+        page,
+        body,
+        args,
+      })
     },
   },
 }
