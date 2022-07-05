@@ -63,6 +63,7 @@ export const myCollectionInfoFields = {
       const { body: artists } = await collectionArtistsLoader("my-collection", {
         size: MAX_ARTISTS,
         user_id: userID,
+        all: true,
       })
 
       const insights: ReturnType<typeof getArtistInsights> = []
