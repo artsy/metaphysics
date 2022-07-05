@@ -40,6 +40,70 @@ describe("me.myCollectionInfo", () => {
     `)
   })
 
+  describe("artistInsights", () => {
+    it("returns insights for all collected artist by kind", async () => {
+      const query = gql`
+        {
+          me {
+            myCollectionInfo {
+              artistInsights(kind: COLLECTED) {
+                artist {
+                  name
+                }
+                kind
+                type
+                label
+                entities
+              }
+            }
+          }
+        }
+      `
+
+      const context: Partial<ResolverContext> = {
+        collectionLoader: async () => ({}),
+        meLoader: async () => ({ id: "some-user-id" }),
+        collectionArtistsLoader: async () => ({
+          headers: { "x-total-count": "2" },
+          body: [
+            {
+              name: "Artist 1",
+              collections: "Collected by a major art publication",
+            },
+            {
+              name: "Artist 2",
+              reviewed: "Reviewed by a major art publication",
+            },
+          ],
+        }),
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "myCollectionInfo": Object {
+              "artistInsights": Array [
+                Object {
+                  "artist": Object {
+                    "name": "Artist 1",
+                  },
+                  "entities": Array [
+                    "Collected by a major art publication",
+                  ],
+                  "kind": "COLLECTED",
+                  "label": "Collected by a major institution",
+                  "type": "COLLECTED",
+                },
+              ],
+            },
+          },
+        }
+      `)
+    })
+  })
+
   describe("collectedArtistsConnection", () => {
     it("returns a connection for the artists in the users' collection", async () => {
       const query = gql`
