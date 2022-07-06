@@ -1,12 +1,12 @@
-import { createVortexLink } from "./link"
-import {
-  makeRemoteExecutableSchema,
-  transformSchema,
-  RenameTypes,
-  RenameRootFields,
-  FilterRootFields,
-} from "graphql-tools"
 import { readFileSync } from "fs"
+import {
+  FilterRootFields,
+  makeRemoteExecutableSchema,
+  RenameRootFields,
+  RenameTypes,
+  transformSchema,
+} from "graphql-tools"
+import { createVortexLink } from "./link"
 
 export const executableVortexSchema = ({
   removeRootFields = true,
@@ -24,7 +24,6 @@ export const executableVortexSchema = ({
     "BigInt",
     "artistAffinities",
     "artistRecommendations",
-    "artistSparklines",
     "marketPriceInsightsBatch",
     "newForYouRecommendations",
     "partnerStat",
