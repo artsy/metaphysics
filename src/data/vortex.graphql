@@ -240,6 +240,30 @@ exceed the size of a 32-bit integer, it's encoded as a string.
 scalar BigInt
 
 """
+Market Price Insights Calendar year
+"""
+type CalendarYearMarketPriceInsights {
+  artistId: ID
+  artistName: String
+  averageSalePrice: BigInt
+  createdAt: ISO8601DateTime
+  id: ID!
+  lotsSold: BigInt
+  medium: String
+  updatedAt: ISO8601DateTime
+  valueSold: BigInt
+  year: String!
+}
+
+"""
+Price Insights Calendar year
+"""
+type CalendarYearPriceInsights {
+  calendarYearMarketPriceInsights: [CalendarYearMarketPriceInsights!]
+  medium: String!
+}
+
+"""
 An ISO 8601 datetime
 """
 scalar DateTime
@@ -334,7 +358,11 @@ enum GroupedStatsObjectTypeEnum {
 """
 A grouped stat item: country or device etc.
 """
-union GroupedStatsUnion = VisitorsByCountry | VisitorsByDevice | VisitorsByLandingPage | VisitorsByReferral
+union GroupedStatsUnion =
+    VisitorsByCountry
+  | VisitorsByDevice
+  | VisitorsByLandingPage
+  | VisitorsByReferral
 
 """
 A histogram bin
@@ -367,6 +395,7 @@ type MarketPriceInsights {
   largeHighRangeCents: BigInt
   largeLowRangeCents: BigInt
   largeMidRangeCents: BigInt
+  lastAuctionResultDate: ISO8601DateTime
   liquidityRank: Float
   lowRangeCents: BigInt
   medianSaleOverEstimatePercentage: Int
@@ -630,7 +659,10 @@ type PartnerStats {
   """
   Time series data on number of artworks published
   """
-  artworksPublished(period: QueryPeriodEnum!): ArtworksPublishedStats @deprecated(reason: "Use artworkPublished for refactored time series bucket code")
+  artworksPublished(period: QueryPeriodEnum!): ArtworksPublishedStats
+    @deprecated(
+      reason: "Use artworkPublished for refactored time series bucket code"
+    )
 
   """
   Audience stats
@@ -678,7 +710,8 @@ type PartnerStats {
   """
   Different types of partner pageviews
   """
-  pageviews(period: QueryPeriodEnum!): PageviewStats @deprecated(reason: "Use pageview for refactored time series bucket code")
+  pageviews(period: QueryPeriodEnum!): PageviewStats
+    @deprecated(reason: "Use pageview for refactored time series bucket code")
   partnerId: String!
 
   """
@@ -736,12 +769,14 @@ type PartnerStats {
     Returns the last _n_ elements from the list.
     """
     last: Int
-  ): RankedStatsConnection @deprecated(reason: "Use rankedStats(objectType: ) instead")
+  ): RankedStatsConnection
+    @deprecated(reason: "Use rankedStats(objectType: ) instead")
 
   """
   Number of unique visitors
   """
-  uniqueVisitors(period: QueryPeriodEnum!): Int @deprecated(reason: "Use audience() { uniqueVisitors } instead")
+  uniqueVisitors(period: QueryPeriodEnum!): Int
+    @deprecated(reason: "Use audience() { uniqueVisitors } instead")
 }
 
 """
@@ -755,7 +790,9 @@ type PartnerStatsArtworksPublished {
   """
   Partner artworks published count time series
   """
-  timeSeries(cumulative: Boolean = false): [PartnerStatsArtworksPublishedTimeSeries!]!
+  timeSeries(
+    cumulative: Boolean = false
+  ): [PartnerStatsArtworksPublishedTimeSeries!]!
   totalCount: Int!
 }
 
@@ -981,6 +1018,16 @@ enum PriceInsightSort {
   sort by large_mid_range_cents in descending order
   """
   LARGE_MID_RANGE_CENTS_DESC
+
+  """
+  sort by last_auction_result_date in ascending order
+  """
+  LAST_AUCTION_RESULT_DATE_ASC
+
+  """
+  sort by last_auction_result_date in descending order
+  """
+  LAST_AUCTION_RESULT_DATE_DESC
 
   """
   sort by liquidity_rank in ascending order
@@ -1341,6 +1388,25 @@ type Query {
   ): ArtworkRecommendationConnection
 
   """
+  Get price insights for a market for each calendar year sorted by year asc.
+  """
+  calendarYearMarketPriceInsights(
+    artistId: ID!
+    endYear: String
+    medium: String!
+    startYear: String
+  ): [CalendarYearMarketPriceInsights!]
+
+  """
+  Get list of calendar year price insights for an artist for each market sorted by year asc.
+  """
+  calendarYearPriceInsights(
+    artistId: ID!
+    endYear: String
+    startYear: String
+  ): [CalendarYearPriceInsights!]
+
+  """
   Last updated timestamp
   """
   lastUpdatedAt: DateTime
@@ -1441,7 +1507,11 @@ type Query {
   """
   Pricing Context Histograms
   """
-  pricingContext(artistId: String!, category: PricingContextCategoryEnum!, sizeScore: Int!): PricingContext
+  pricingContext(
+    artistId: String!
+    category: PricingContextCategoryEnum!
+    sizeScore: Int!
+  ): PricingContext
 
   """
   Query UserStats
