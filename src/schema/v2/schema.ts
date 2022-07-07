@@ -144,6 +144,7 @@ import { createFeatureFlagMutation } from "./admin/mutations/createFeatureFlagMu
 import { deleteFeatureFlagMutation } from "./admin/mutations/deleteFeatureFlagMutation"
 import { updateFeatureFlagMutation } from "./admin/mutations/updateFeatureFlagMutation"
 import { toggleFeatureFlagMutation } from "./admin/mutations/toggleFeatureFlagMutation"
+import { MatchConnection } from "./Match"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -211,6 +212,7 @@ const rootFields = {
   },
   // matchArtist: MatchArtist,
   // matchGene: MatchGene,
+  matchConnection: MatchConnection,
   me: Me,
   node: ObjectIdentification.NodeField,
   orderedSet: OrderedSet,
