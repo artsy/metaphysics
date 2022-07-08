@@ -1937,6 +1937,7 @@ input SetPaymentByStripeIntentInput {
   """
   clientMutationId: String
   id: ID!
+  oneTimeUse: Boolean = false
   setupIntentId: String!
 }
 
