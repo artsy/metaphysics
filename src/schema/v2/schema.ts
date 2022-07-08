@@ -86,7 +86,7 @@ import { OrderedSet } from "./OrderedSet"
 import OrderedSets from "./ordered_sets"
 import Partner from "./partner"
 import PartnerArtworks from "./partnerArtworks"
-// import Profile from "./profile"
+import Profile from "./profile"
 // import Partner from "./partner"
 import { PartnersConnection } from "./partners"
 import { RequestLocationField } from "./requestLocation"
@@ -224,7 +224,7 @@ const rootFields = {
   partnerCategory: PartnerCategory,
   partnersConnection: PartnersConnection,
   phoneNumber: PhoneNumber,
-  // profile: Profile,
+  profile: Profile,
   previewSavedSearch: PreviewSavedSearchField,
   requestLocation: RequestLocationField,
   reverseImageSearch: ReverseImageSearch,
