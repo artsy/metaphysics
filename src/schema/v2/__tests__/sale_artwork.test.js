@@ -557,7 +557,7 @@ describe("SaleArtwork type", () => {
 
       expect(await execute(query, saleArtwork, context)).toEqual({
         node: {
-          formattedEndDateTime: "Closes, Feb 19 • 11:00am UTC",
+          formattedEndDateTime: "Closes on Feb 19 • 11:00am UTC",
         },
       })
     })
