@@ -34,7 +34,6 @@ const auctionResultResponse = (item = {}) => {
           price_realized_cents_usd: 100000,
           low_estimate_cents: 200000,
           high_estimate_cents: 500000,
-          sale_end_date: "2012-07-04T00:00:00.000Z",
           ...item,
         },
       ],

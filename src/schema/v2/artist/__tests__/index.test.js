@@ -9,29 +9,7 @@ describe("Artist type", () => {
     context = {
       artistLoader: () => artist,
       articlesLoader: () => Promise.resolve({ count: 22 }),
-      auctionLotsLoader: () =>
-        Promise.resolve({
-          total_count: 123,
-          _embedded: {
-            items: [
-              {
-                id: "lot-id",
-                title: "Lot in the past 1",
-                sale_end_date: "2012-07-04T00:00:00.000Z",
-              },
-              {
-                id: "lot-id",
-                title: "Lot without sale end date",
-                sale_end_date: null,
-              },
-              {
-                id: "lot-id",
-                title: "Lot in the future 1",
-                sale_end_date: "3012-07-04T00:00:00.000Z",
-              },
-            ],
-          },
-        }),
+      auctionLotsLoader: () => Promise.resolve({ total_count: 123 }),
       artistGenesLoader: () => Promise.resolve([{ name: "Foo Bar" }]),
       relatedMainArtistsLoader: () =>
         Promise.resolve({ headers: { "x-total-count": 42 } }),
@@ -130,48 +108,25 @@ describe("Artist type", () => {
     })
   })
 
-  it("returns the auction results and number of auction results for an artist", () => {
+  it("returns the number of auction results for an artist", () => {
     const query = `
       {
         artist(id: "foo-bar") {
           counts {
             auctionResults
           }
-          auctionResultsConnection(first: 10) {
-            edges {
-              node {
-                title
-              }
-            }
-          }
         }
       }
     `
 
     return runQuery(query, context).then((data) => {
-      expect(data).toMatchInlineSnapshot(`
-        Object {
-          "artist": Object {
-            "auctionResultsConnection": Object {
-              "edges": Array [
-                Object {
-                  "node": Object {
-                    "title": "Lot in the past 1",
-                  },
-                },
-                Object {
-                  "node": Object {
-                    "title": "Lot without sale end date",
-                  },
-                },
-              ],
-            },
-            "counts": Object {
-              "auctionResults": 123,
-            },
+      expect(data).toEqual({
+        artist: {
+          counts: {
+            auctionResults: 123,
           },
-        }
-      `)
+        },
+      })
     })
   })
 
