@@ -12,12 +12,16 @@ export const getNewForYouRecs = async (
   const graphqlLoader =
     vortexGraphqlLoader || vortexGraphqlLoaderFactory(appToken)
 
+  const userIdArgument = args.userId ? `userId: "${args.userId}"` : ""
+  const versionArgument = args.version ? `version: "${args.version}"` : ""
+
   const vortexResult = await graphqlLoader({
     query: gql`
         query newForYouRecommendationsQuery {
           newForYouRecommendations(
             first: ${args.first}
-            userId: "${args.userId}"
+            ${userIdArgument}
+            ${versionArgument}
           ) {
             totalCount
             edges {
