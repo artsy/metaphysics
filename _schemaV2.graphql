@@ -11343,6 +11343,19 @@ type Partner implements Node {
     sort: ArticleSorts
   ): ArticleConnection
 
+  # UPDATE_DESCRIPTION
+  artistDocuments(
+    after: String
+
+    # The slug or ID of the Artist
+    artistID: String!
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): PartnerArtistDocumentsConnection
+
   # A connection of artists at a partner.
   artistsConnection(
     after: String
@@ -11609,6 +11622,30 @@ type PartnerArtistCounts {
     format: String
     label: String
   ): FormattedNumber
+}
+
+type PartnerArtistDocuments {
+  message: String
+}
+
+# A connection to a list of items.
+type PartnerArtistDocumentsConnection {
+  # A list of edges.
+  edges: [PartnerArtistDocumentsEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerArtistDocumentsEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: PartnerArtistDocuments
 }
 
 # An edge in a connection.
