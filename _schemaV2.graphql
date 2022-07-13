@@ -1444,6 +1444,19 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     # The number of PartnerArtists to return
     size: Int
   ): [PartnerArtist]
+
+  # Retrieve all partner artist documents
+  partnerDocumentsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+
+    # The slug or ID of the Partner
+    partnerID: String!
+    size: Int
+  ): PartnerArtistDocumentConnection
   partnersConnection(
     after: String
     before: String

@@ -1,8 +1,10 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
+import gql from "lib/gql"
 
 describe("Artist type", () => {
   let artist = null
+  let partnerDocumentsResponse = null
   let context
 
   beforeEach(() => {
@@ -13,6 +15,14 @@ describe("Artist type", () => {
       artistGenesLoader: () => Promise.resolve([{ name: "Foo Bar" }]),
       relatedMainArtistsLoader: () =>
         Promise.resolve({ headers: { "x-total-count": 42 } }),
+      partnerArtistDocumentsLoader: () => {
+        return Promise.resolve({
+          body: partnerDocumentsResponse,
+          headers: {
+            "x-total-count": partnerDocumentsResponse.length,
+          },
+        })
+      },
     }
 
     artist = {
@@ -25,6 +35,21 @@ describe("Artist type", () => {
       partner_shows_count: 42,
       collections: "Catty Art Collections\nMatt's Personal Art Collection",
     }
+
+    partnerDocumentsResponse = [
+      {
+        filename: "filename-one.pdf",
+        title: "File One",
+      },
+      {
+        filename: "filename-two.png",
+        title: "File Two",
+      },
+      {
+        filename: "filename-three.jpg",
+        title: "File Three",
+      },
+    ]
   })
 
   it("returns null for an empty ID string", () => {
@@ -471,7 +496,7 @@ describe("Artist type", () => {
             })
           })
         })
-        it("returns the featured partner bio without an artsy blurb", () => {})
+        it("returns the featured partner bio without an artsy blurb", () => { })
         it("returns the featured partner bio with an artsy blurb", () => {
           artist.blurb = "artsy blurb"
         })
@@ -981,6 +1006,128 @@ describe("Artist type", () => {
           expect(totalCount).toEqual(35)
         }
       )
+    })
+  })
+
+  describe("#partnerDocumentsConnection", () => {
+    it("returns partner documents", async () => {
+      const query = gql`
+        {
+          artist(id: "foo-bar") {
+            partnerDocumentsConnection(partnerID: "partnerId", first: 5) {
+              edges {
+                node {
+                  filename
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artist: {
+          partnerDocumentsConnection: {
+            edges: [
+              {
+                node: {
+                  filename: "filename-one.pdf",
+                  title: "File One",
+                },
+              },
+              {
+                node: {
+                  filename: "filename-two.png",
+                  title: "File Two",
+                },
+              },
+              {
+                node: {
+                  filename: "filename-three.jpg",
+                  title: "File Three",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=true when first is below total", async () => {
+      const query = gql`
+        {
+          artist(id: "foo-bar") {
+            partnerDocumentsConnection(partnerID: "partnerId", first: 1) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artist: {
+          partnerDocumentsConnection: {
+            pageInfo: {
+              hasNextPage: true,
+            },
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=false when first is above total", async () => {
+      const query = gql`
+        {
+          artist(id: "foo-bar") {
+            partnerDocumentsConnection(partnerID: "partnerId", first: 3) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artist: {
+          partnerDocumentsConnection: {
+            pageInfo: {
+              hasNextPage: false,
+            },
+          },
+        },
+      })
+    })
+
+    it("loads the total count", async () => {
+      const query = gql`
+        {
+          artist(id: "foo-bar") {
+            partnerDocumentsConnection(partnerID: "partnerId", first: 3) {
+              totalCount
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artist: {
+          partnerDocumentsConnection: {
+            totalCount: 3,
+          },
+        },
+      })
     })
   })
 })
