@@ -17,11 +17,7 @@ import initials from "./fields/initials"
 import Profile from "./profile"
 import { locationsConnection, LocationType } from "./location"
 import EventStatus from "schema/v2/input_fields/event_status"
-import {
-  InternalIDFields,
-  NodeInterface,
-  SlugAndInternalIDFields,
-} from "./object_identification"
+import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
 import { ShowsConnection, ShowType } from "./show"
@@ -47,6 +43,7 @@ import { truncate } from "lib/helpers"
 import { setVersion } from "./image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquirerCollectorProfile"
+import { PartnerArtistDocumentsConnection } from "./partnerArtistDocumentsConnection"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -73,26 +70,6 @@ const partnerTitleContent = (type) => {
 
   return result
 }
-
-const PartnerArtistDocumentType = new GraphQLObjectType<any, ResolverContext>({
-  name: "PartnerArtistDocument",
-  fields: {
-    ...InternalIDFields,
-    uri: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    filename: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    title: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-  },
-})
-
-const partnerArtistDocumentsConnection = connectionWithCursorInfo({
-  nodeType: PartnerArtistDocumentType,
-})
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   artworkIDs: {
@@ -195,7 +172,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       artistDocumentsConnection: {
         description: "Retrieve all partner artist documents",
-        type: partnerArtistDocumentsConnection.connectionType,
+        type: PartnerArtistDocumentsConnection.connectionType,
         args: pageable({
           artistID: {
             type: new GraphQLNonNull(GraphQLString),
