@@ -17,7 +17,11 @@ import initials from "./fields/initials"
 import Profile from "./profile"
 import { locationsConnection, LocationType } from "./location"
 import EventStatus from "schema/v2/input_fields/event_status"
-import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
+import {
+  InternalIDFields,
+  NodeInterface,
+  SlugAndInternalIDFields,
+} from "./object_identification"
 import { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
 import { ShowsConnection, ShowType } from "./show"
@@ -32,6 +36,7 @@ import { fields as partnerArtistFields } from "./partner_artist"
 import {
   connectionWithCursorInfo,
   createPageCursors,
+  paginationResolver,
 } from "./fields/pagination"
 import { deprecate } from "lib/deprecation"
 import { articleConnection } from "./article"
@@ -68,6 +73,26 @@ const partnerTitleContent = (type) => {
 
   return result
 }
+
+const PartnerArtistDocumentType = new GraphQLObjectType<any, ResolverContext>({
+  name: "PartnerArtistDocument",
+  fields: {
+    ...InternalIDFields,
+    uri: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    filename: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    title: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+})
+
+const partnerArtistDocumentsConnection = connectionWithCursorInfo({
+  nodeType: PartnerArtistDocumentType,
+})
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   artworkIDs: {
@@ -166,6 +191,50 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
               sliceStart: offset,
             }),
           }
+        },
+      },
+      artistDocumentsConnection: {
+        description: "Retrieve all partner artist documents",
+        type: partnerArtistDocumentsConnection.connectionType,
+        args: pageable({
+          artistID: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "The slug or ID of the Artist",
+          },
+          page: {
+            type: GraphQLInt,
+          },
+          size: {
+            type: GraphQLInt,
+          },
+        }),
+        resolve: async ({ id }, args, { partnerArtistDocumentsLoader }) => {
+          if (!partnerArtistDocumentsLoader) {
+            return null
+          }
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+          const gravityOptions = {
+            size,
+            offset,
+            total_count: true,
+          }
+          const { body, headers } = await partnerArtistDocumentsLoader(
+            { partnerId: id, artistId: args.artistID },
+            gravityOptions
+          )
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+          })
         },
       },
       allArtistsConnection: {
