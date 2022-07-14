@@ -1444,19 +1444,6 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     # The number of PartnerArtists to return
     size: Int
   ): [PartnerArtist]
-
-  # Retrieve all partner artist documents
-  partnerDocumentsConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    page: Int
-
-    # The slug or ID of the Partner
-    partnerID: String!
-    size: Int
-  ): PartnerArtistDocumentConnection
   partnersConnection(
     after: String
     before: String
@@ -11356,19 +11343,6 @@ type Partner implements Node {
     sort: ArticleSorts
   ): ArticleConnection
 
-  # Retrieve all partner artist documents
-  artistDocumentsConnection(
-    after: String
-
-    # The slug or ID of the Artist
-    artistID: String!
-    before: String
-    first: Int
-    last: Int
-    page: Int
-    size: Int
-  ): PartnerArtistDocumentConnection
-
   # A connection of artists at a partner.
   artistsConnection(
     after: String
@@ -13004,6 +12978,22 @@ type Query {
     # The slug or ID of the Partner
     id: String!
   ): Partner
+
+  # Retrieve all partner artist documents for a given partner and artist
+  partnerArtistDocumentsConnection(
+    after: String
+
+    # The slug or ID of the Artist
+    artistID: String!
+    before: String
+    first: Int
+    last: Int
+    page: Int
+
+    # The slug or ID of the Partner
+    partnerID: String!
+    size: Int
+  ): PartnerArtistDocumentConnection
 
   # A list of Artworks for a partner
   partnerArtworks(
@@ -16316,6 +16306,22 @@ type Viewer {
     # The slug or ID of the Partner
     id: String!
   ): Partner
+
+  # Retrieve all partner artist documents for a given partner and artist
+  partnerArtistDocumentsConnection(
+    after: String
+
+    # The slug or ID of the Artist
+    artistID: String!
+    before: String
+    first: Int
+    last: Int
+    page: Int
+
+    # The slug or ID of the Partner
+    partnerID: String!
+    size: Int
+  ): PartnerArtistDocumentConnection
 
   # A list of Artworks for a partner
   partnerArtworks(

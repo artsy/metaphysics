@@ -32,7 +32,6 @@ import { fields as partnerArtistFields } from "./partner_artist"
 import {
   connectionWithCursorInfo,
   createPageCursors,
-  paginationResolver,
 } from "./fields/pagination"
 import { deprecate } from "lib/deprecation"
 import { articleConnection } from "./article"
@@ -43,7 +42,6 @@ import { truncate } from "lib/helpers"
 import { setVersion } from "./image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquirerCollectorProfile"
-import { PartnerArtistDocumentsConnection } from "./partnerArtistDocumentsConnection"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -168,50 +166,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
               sliceStart: offset,
             }),
           }
-        },
-      },
-      artistDocumentsConnection: {
-        description: "Retrieve all partner artist documents",
-        type: PartnerArtistDocumentsConnection.connectionType,
-        args: pageable({
-          artistID: {
-            type: new GraphQLNonNull(GraphQLString),
-            description: "The slug or ID of the Artist",
-          },
-          page: {
-            type: GraphQLInt,
-          },
-          size: {
-            type: GraphQLInt,
-          },
-        }),
-        resolve: async ({ id }, args, { partnerArtistDocumentsLoader }) => {
-          if (!partnerArtistDocumentsLoader) {
-            return null
-          }
-
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            args
-          )
-          const gravityOptions = {
-            size,
-            offset,
-            total_count: true,
-          }
-          const { body, headers } = await partnerArtistDocumentsLoader(
-            { partnerId: id, artistId: args.artistID },
-            gravityOptions
-          )
-          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-          return paginationResolver({
-            totalCount,
-            offset,
-            page,
-            size,
-            body,
-            args,
-          })
         },
       },
       allArtistsConnection: {

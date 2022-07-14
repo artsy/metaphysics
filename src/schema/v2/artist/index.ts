@@ -34,7 +34,6 @@ import numeral from "schema/v2/fields/numeral"
 import {
   connectionWithCursorInfo,
   createPageCursors,
-  paginationResolver,
 } from "schema/v2/fields/pagination"
 import Image, { getDefault } from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
@@ -49,7 +48,6 @@ import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
 import { GeneType } from "../gene"
 import { PartnerType } from "../partner"
-import { PartnerArtistDocumentsConnection } from "../partnerArtistDocumentsConnection"
 import ArtistArtworksFilters from "./artwork_filters"
 import ArtistCarousel from "./carousel"
 import { CurrentEvent } from "./current"
@@ -687,50 +685,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
         resolve: ({ id }, options, { partnerArtistsForArtistLoader }) =>
           partnerArtistsForArtistLoader(id, options),
-      },
-      partnerDocumentsConnection: {
-        description: "Retrieve all partner artist documents",
-        type: PartnerArtistDocumentsConnection.connectionType,
-        args: pageable({
-          partnerID: {
-            type: new GraphQLNonNull(GraphQLString),
-            description: "The slug or ID of the Partner",
-          },
-          page: {
-            type: GraphQLInt,
-          },
-          size: {
-            type: GraphQLInt,
-          },
-        }),
-        resolve: async ({ id }, args, { partnerArtistDocumentsLoader }) => {
-          if (!partnerArtistDocumentsLoader) {
-            return null
-          }
-
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            args
-          )
-          const gravityOptions = {
-            size,
-            offset,
-            total_count: true,
-          }
-          const { body, headers } = await partnerArtistDocumentsLoader(
-            { artistId: id, partnerId: args.partnerID },
-            gravityOptions
-          )
-          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-          return paginationResolver({
-            totalCount,
-            offset,
-            page,
-            size,
-            body,
-            args,
-          })
-        },
       },
       duplicates: {
         type: new GraphQLList(Artist.type),
