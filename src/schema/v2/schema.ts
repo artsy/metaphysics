@@ -145,6 +145,7 @@ import { deleteFeatureFlagMutation } from "./admin/mutations/deleteFeatureFlagMu
 import { updateFeatureFlagMutation } from "./admin/mutations/updateFeatureFlagMutation"
 import { toggleFeatureFlagMutation } from "./admin/mutations/toggleFeatureFlagMutation"
 import { MatchConnection } from "./Match"
+import { PartnerArtistDocumentsConnection } from "./partnerArtistDocumentsConnection"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -219,6 +220,7 @@ const rootFields = {
   orderedSets: OrderedSets,
   page,
   partner: Partner,
+  partnerArtistDocumentsConnection: PartnerArtistDocumentsConnection,
   partnerArtworks: PartnerArtworks,
   partnerCategories: PartnerCategories,
   partnerCategory: PartnerCategory,
