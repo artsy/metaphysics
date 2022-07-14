@@ -295,6 +295,15 @@ export default (accessToken, userID, opts) => {
     ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
+    partnerArtistDocumentsLoader: gravityLoader<
+      any,
+      { partnerId: string; artistId: string }
+    >(
+      ({ partnerId, artistId }) =>
+        `partner/${partnerId}/artist/${artistId}/documents`,
+      {},
+      { headers: true }
+    ),
     partnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,
       {},
