@@ -321,6 +321,15 @@ export default (accessToken, userID, opts) => {
       ({ partnerId, inquiryId }) =>
         `partner/${partnerId}/inquiry_request/${inquiryId}/collector_profile`
     ),
+    partnerShowDocumentsLoader: gravityLoader<
+      any,
+      { partnerId: string; showId: string }
+    >(
+      ({ partnerId, showId }) =>
+        `partner/${partnerId}/show/${showId}/documents`,
+      {},
+      { headers: true }
+    ),
     popularArtistsLoader: gravityLoader("artists/popular"),
     recordArtworkViewLoader: gravityLoader(
       "me/recently_viewed_artworks",
