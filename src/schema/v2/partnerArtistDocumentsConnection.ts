@@ -30,6 +30,9 @@ export const PartnerArtistDocumentType = new GraphQLObjectType<
     title: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    size: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
   },
 })
 

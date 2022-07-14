@@ -11619,6 +11619,7 @@ type PartnerArtistDocument {
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
+  size: Int!
   title: String!
   uri: String!
 }
