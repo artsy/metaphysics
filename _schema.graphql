@@ -8525,7 +8525,10 @@ input FixFailedPaymentInput {
   creditCardId: String!
 
   # Offer ID
-  offerId: ID!
+  offerId: ID
+
+  # Order ID
+  orderId: ID!
 }
 
 type FixFailedPaymentPayload {
