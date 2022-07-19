@@ -10,7 +10,7 @@ let context
 describe("FixFailedPayment Mutation", () => {
   const mutation = gql`
     mutation {
-      ecommerceFixFailedPayment(input: { offerId: "111", creditCardId: "card-id" }) {
+      ecommerceFixFailedPayment(input: { offerId: "111", orderId: "1234", creditCardId: "card-id" }) {
         orderOrError {
           ... on OrderWithMutationSuccess {
             order {
