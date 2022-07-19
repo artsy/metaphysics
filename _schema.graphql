@@ -8528,7 +8528,7 @@ input FixFailedPaymentInput {
   offerId: ID
 
   # Order ID
-  orderId: ID!
+  orderId: ID
 }
 
 type FixFailedPaymentPayload {

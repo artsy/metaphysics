@@ -20,7 +20,7 @@ export const FixFailedPaymentInputType = new GraphQLInputObjectType({
       description: "Offer ID",
     },
     orderId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: "Order ID",
     },
     creditCardId: {
@@ -49,7 +49,7 @@ export const FixFailedPaymentMutation = mutationWithClientMutationId<
       return new Error("You need to be signed in to perform this action")
     }
     const mutation = gql`
-      mutation fixFailedPayment($offerId: ID, $orderId: ID!, $creditCardId: String!) {
+      mutation fixFailedPayment($offerId: ID, $orderId: ID, $creditCardId: String!) {
         ecommerceFixFailedPayment(input: { offerId: $offerId, orderId: $orderId, creditCardId: $creditCardId, }) {
           orderOrError {
             __typename
