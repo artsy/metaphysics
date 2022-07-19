@@ -116,7 +116,7 @@ export const myCollectionInfoFields = {
       }
 
       artists.forEach((artist) => {
-        getArtistInsights(artist).map((insight) => {
+        getArtistInsights(artist).forEach((insight) => {
           if (!!insight.kind) countInsights(insight)
         })
       })
