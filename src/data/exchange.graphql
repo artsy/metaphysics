@@ -635,7 +635,8 @@ input FixFailedPaymentInput {
   """
   clientMutationId: String
   creditCardId: String!
-  offerId: ID!
+  offerId: ID
+  orderId: ID!
 }
 
 """
