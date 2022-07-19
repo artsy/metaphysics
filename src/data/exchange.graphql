@@ -636,7 +636,7 @@ input FixFailedPaymentInput {
   clientMutationId: String
   creditCardId: String!
   offerId: ID
-  orderId: ID!
+  orderId: ID
 }
 
 """
@@ -1440,10 +1440,7 @@ enum OrderModeEnum {
 """
 Represents either a resolved Order or a potential failure
 """
-union OrderOrFailureUnion =
-    OrderRequiresAction
-  | OrderWithMutationFailure
-  | OrderWithMutationSuccess
+union OrderOrFailureUnion = OrderRequiresAction | OrderWithMutationFailure | OrderWithMutationSuccess
 
 enum OrderParticipantEnum {
   """
