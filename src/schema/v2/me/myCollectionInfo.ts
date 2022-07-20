@@ -21,6 +21,30 @@ import ArtistSorts from "../sorts/artist_sorts"
 
 export const MAX_ARTISTS = 100
 
+const artistInsightsCountType = new GraphQLObjectType({
+  name: "ArtistInsightsCount",
+  fields: {
+    soloShowCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    groupShowCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    collectedCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    reviewedCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    biennialCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    activeSecondaryMarketCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+  },
+})
+
 export const myCollectionInfoFields = {
   description: {
     type: new GraphQLNonNull(GraphQLString),
@@ -45,6 +69,67 @@ export const myCollectionInfoFields = {
   artistsCount: {
     type: new GraphQLNonNull(GraphQLInt),
     resolve: ({ artists_count }) => artists_count,
+  },
+  artistInsightsCount: {
+    type: artistInsightsCountType,
+    resolve: async (_root, _args, context) => {
+      const { collectionArtistsLoader, userID } = context
+
+      if (!collectionArtistsLoader) return
+
+      const { body: artists } = await collectionArtistsLoader("my-collection", {
+        size: MAX_ARTISTS,
+        user_id: userID,
+        all: true,
+      })
+
+      let soloShowCount = 0
+      let groupShowCount = 0
+      let collectedCount = 0
+      let reviewedCount = 0
+      let biennialCount = 0
+      let activeSecondaryMarketCount = 0
+
+      const countInsights = (
+        insight: ReturnType<typeof getArtistInsights>[0]
+      ) => {
+        switch (insight.kind) {
+          case "SOLO_SHOW":
+            soloShowCount += 1
+            break
+          case "GROUP_SHOW":
+            groupShowCount += 1
+            break
+          case "REVIEWED":
+            reviewedCount += 1
+            break
+          case "COLLECTED":
+            collectedCount += 1
+            break
+          case "BIENNIAL":
+            biennialCount += 1
+            break
+          case "ACTIVE_SECONDARY_MARKET":
+            activeSecondaryMarketCount += 1
+            break
+        }
+      }
+
+      artists.forEach((artist) => {
+        getArtistInsights(artist).forEach((insight) => {
+          if (!!insight.kind) countInsights(insight)
+        })
+      })
+
+      return {
+        soloShowCount,
+        groupShowCount,
+        collectedCount,
+        reviewedCount,
+        biennialCount,
+        activeSecondaryMarketCount,
+      }
+    },
   },
   artistInsights: {
     description: "Insights for all collected artists",
