@@ -19,7 +19,6 @@ import {
   merge,
   omit,
 } from "lodash"
-import moment from "moment"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import Article, { articleConnection } from "schema/v2/article"
 import { artworkConnection } from "schema/v2/artwork"
@@ -278,48 +277,36 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             sort: options.sort,
           }
 
-          const { total_count, _embedded } = await auctionLotsLoader(
-            diffusionArgs
-          )
-
-          // TODO: Filter upcoming auction results (sale_end_date > today) in Diffusion.
-          const filteredAuctionResults = _embedded.items.filter(
-            (auctionResult) => {
-              // Don't filter out auction results with no sale end date.
-              if (!auctionResult.sale_end_date) return true
-
-              const now = moment.utc()
-
-              return moment.utc(auctionResult.sale_end_date).isBefore(now)
-            }
-          )
-
-          const totalPages = Math.ceil(total_count / size)
-          return merge(
-            {
-              pageCursors: createPageCursors(
+          return auctionLotsLoader(diffusionArgs).then(
+            ({ total_count, _embedded }) => {
+              const totalPages = Math.ceil(total_count / size)
+              return merge(
                 {
-                  page,
-                  size,
+                  pageCursors: createPageCursors(
+                    {
+                      page,
+                      size,
+                    },
+                    total_count
+                  ),
                 },
-                total_count
-              ),
-            },
-            {
-              totalCount: total_count,
-            },
-            connectionFromArraySlice(filteredAuctionResults, options, {
-              arrayLength: total_count,
-              sliceStart: offset,
-            }),
-            {
-              pageInfo: {
-                hasPreviousPage: page > 1,
-                hasNextPage: page < totalPages,
-              },
-            },
-            {
-              artist_id: _id,
+                {
+                  totalCount: total_count,
+                },
+                connectionFromArraySlice(_embedded.items, options, {
+                  arrayLength: total_count,
+                  sliceStart: offset,
+                }),
+                {
+                  pageInfo: {
+                    hasPreviousPage: page > 1,
+                    hasNextPage: page < totalPages,
+                  },
+                },
+                {
+                  artist_id: _id,
+                }
+              )
             }
           )
         },

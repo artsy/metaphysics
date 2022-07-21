@@ -107,6 +107,8 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
     },
     position: {
       type: GraphQLInt,
+      description:
+        "Order position of the image, within the images array of the artwork. (1-indexed)",
     },
     resized: ResizedUrl,
     tileBaseURL: {

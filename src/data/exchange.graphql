@@ -635,7 +635,8 @@ input FixFailedPaymentInput {
   """
   clientMutationId: String
   creditCardId: String!
-  offerId: ID!
+  offerId: ID
+  orderId: ID
 }
 
 """
@@ -1609,11 +1610,6 @@ type Partner {
 }
 
 enum PaymentMethodEnum {
-  """
-  ACH Transfer
-  """
-  ACH_TRANSFER
-
   """
   Credit Card
   """
