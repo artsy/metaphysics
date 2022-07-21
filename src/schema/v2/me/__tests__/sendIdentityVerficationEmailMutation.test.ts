@@ -31,6 +31,7 @@ const computeMutationInput = ({
 							... on IdentityVerificationEmailMutationSuccessType{
 								identityVerificationEmail{
 									internalID
+                  verificationURL
 									state
 									userID
 								}

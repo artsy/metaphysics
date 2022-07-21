@@ -41,6 +41,12 @@ const IdentityVerificationEmailType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ user_id }) => user_id,
     },
+    verificationURL: {
+      description:
+        "Verification page URL sent to the identify verification's owner",
+      type: GraphQLString,
+      resolve: ({ verification_url }) => verification_url,
+    },
   }),
 })
 
@@ -91,11 +97,11 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
   description: "Send a identity verification email",
   inputFields: {
     userID: {
-      description: "The user Id for the user undergoing identity verificaiton",
+      description: "The user Id for the user undergoing identity verification",
       type: GraphQLString,
     },
     email: {
-      description: "The email for the user undergoing identity verificaiton",
+      description: "The email for the user undergoing identity verification",
       type: GraphQLString,
     },
     name: {
@@ -107,7 +113,10 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
   outputFields: {
     confirmationOrError: {
       type: IdentityVerificationEmailMutationType,
-      resolve: (result) => result,
+      resolve: (result) => {
+        console.log(result)
+        return result
+      },
     },
   },
   mutateAndGetPayload: (
@@ -119,7 +128,12 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
     }
 
     return sendIdentityVerificationEmailLoader({ user_id: userID, email, name })
-      .then((result) => result)
+      .then((result) => {
+        return {
+          ...result,
+          verification_url: `identity-verification/${result.id}`,
+        }
+      })
       .catch((error) => {
         const formattedErr = formatGravityError(error)
         if (formattedErr) {
