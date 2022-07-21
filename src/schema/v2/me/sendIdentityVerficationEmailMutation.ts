@@ -113,10 +113,7 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
   outputFields: {
     confirmationOrError: {
       type: IdentityVerificationEmailMutationType,
-      resolve: (result) => {
-        console.log(result)
-        return result
-      },
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: (
