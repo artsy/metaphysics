@@ -77,6 +77,8 @@ describe("Send identity verification email mutation", () => {
             internalID: "106",
             state: "pending",
             userID: "id-123",
+            verificationURL:
+              "https://staging.artsy.net/identity-verification/106",
           },
         },
       },
