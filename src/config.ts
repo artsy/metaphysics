@@ -168,6 +168,10 @@ export default {
   ENABLE_QUERY_TRACING,
   ENABLE_REQUEST_LOGGING,
   ENABLE_RESOLVER_BATCHING: ENABLE_RESOLVER_BATCHING === "true",
+  FORCE_URL:
+    NODE_ENV === "production"
+      ? "https://artsy.net"
+      : "https://staging.artsy.net",
   GALAXY_API_BASE,
   GALAXY_TOKEN,
   GEMINI_API_BASE,
