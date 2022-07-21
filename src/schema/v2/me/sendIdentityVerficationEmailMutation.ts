@@ -1,3 +1,4 @@
+import config from "config"
 import {
   GraphQLNonNull,
   GraphQLObjectType,
@@ -128,7 +129,7 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
       .then((result) => {
         return {
           ...result,
-          verification_url: `${process.env["FORCE_URL"]}/identity-verification/${result.id}`,
+          verification_url: `${config.FORCE_URL}/identity-verification/${result.id}`,
         }
       })
       .catch((error) => {
