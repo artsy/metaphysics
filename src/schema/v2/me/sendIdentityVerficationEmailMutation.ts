@@ -126,9 +126,13 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
 
     return sendIdentityVerificationEmailLoader({ user_id: userID, email, name })
       .then((result) => {
+        const forceUrl = process.env["PRODUCTION_ENV"]
+          ? "https://artsy.net"
+          : "https://staging.artsy.net"
+
         return {
           ...result,
-          verification_url: `identity-verification/${result.id}`,
+          verification_url: `${forceUrl}/identity-verification/${result.id}`,
         }
       })
       .catch((error) => {
