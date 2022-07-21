@@ -40,6 +40,94 @@ describe("me.myCollectionInfo", () => {
     `)
   })
 
+  describe("artistInsightsCount", () => {
+    it("returns the correct count", async () => {
+      const query = gql`
+        {
+          me {
+            myCollectionInfo {
+              artistInsightsCount {
+                activeSecondaryMarketCount
+                biennialCount
+                groupShowCount
+                collectedCount
+                soloShowCount
+                reviewedCount
+              }
+            }
+          }
+        }
+      `
+
+      const context: Partial<ResolverContext> = {
+        collectionLoader: async () => ({}),
+        meLoader: async () => ({ id: "some-user-id" }),
+        collectionArtistsLoader: async () => ({
+          headers: {},
+          body: [
+            {
+              name: "Artist 1",
+              collections: "Collected by a major art publication",
+              review_sources: "Reviewed by a major art publication",
+            },
+            {
+              name: "Artist 2",
+              group_show_institutions: "Group show at a major institution",
+              review_sources: "Reviewed by a major art publication",
+              solo_show_institutions: "Solo show at a major institution",
+            },
+            {
+              name: "Artist 3",
+              active_secondary_market: "Active Secondary Market",
+              biennials: "Included in a major biennial",
+              collections: "Collected by a major art publication",
+            },
+            {
+              name: "Artist 4",
+              active_secondary_market: "Active Secondary Market",
+              collections: "Collected by a major art publication",
+            },
+          ],
+        }),
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      const {
+        activeSecondaryMarketCount,
+        biennialCount,
+        collectedCount,
+        groupShowCount,
+        soloShowCount,
+        reviewedCount,
+      } = data.me.myCollectionInfo.artistInsightsCount
+
+      expect(activeSecondaryMarketCount).toBe(2)
+      expect(biennialCount).toBe(1)
+      expect(groupShowCount).toBe(1)
+      expect(collectedCount).toBe(3)
+      expect(reviewedCount).toBe(2)
+      expect(soloShowCount).toBe(1)
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "myCollectionInfo": Object {
+              "artistInsightsCount": Object {
+                "activeSecondaryMarketCount": 2,
+                "biennialCount": 1,
+                "collectedCount": 3,
+                "groupShowCount": 1,
+                "reviewedCount": 2,
+                "soloShowCount": 1,
+              },
+            },
+          },
+        }
+      `)
+    })
+  })
+
   describe("artistInsights", () => {
     it("returns insights for all collected artist by kind", async () => {
       const query = gql`
