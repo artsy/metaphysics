@@ -31,7 +31,7 @@ const computeMutationInput = ({
 							... on IdentityVerificationEmailMutationSuccessType{
 								identityVerificationEmail{
 									internalID
-									verificationURL
+									pageURL
 									state
 									userID
 								}
@@ -77,8 +77,7 @@ describe("Send identity verification email mutation", () => {
             internalID: "106",
             state: "pending",
             userID: "id-123",
-            verificationURL:
-              "https://staging.artsy.net/identity-verification/106",
+            pageURL: "https://staging.artsy.net/identity-verification/106",
           },
         },
       },
