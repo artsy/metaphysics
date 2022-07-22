@@ -9095,6 +9095,9 @@ type IdentityVerification {
   # The overrides associated with an identity verification
   overrides: [IdentityVerificationOverride]
 
+  # Page URL sent to the identify verification's owner
+  pageURL: String
+
   # The scan references (i.e., results) associated with an identity verification
   scanReferences: [IdentityVerificationScanReference]
 
@@ -9160,9 +9163,6 @@ type IdentityVerificationEmail {
 
   # User ID of the identity verification's owner
   userID: String
-
-  # Verification page URL sent to the identify verification's owner
-  verificationURL: String
 }
 
 type IdentityVerificationEmailMutationFailureType {
@@ -9170,7 +9170,9 @@ type IdentityVerificationEmailMutationFailureType {
 }
 
 type IdentityVerificationEmailMutationSuccessType {
+  identityVerification: IdentityVerification
   identityVerificationEmail: IdentityVerificationEmail
+    @deprecated(reason: "use identityVerification instead")
 }
 
 union IdentityVerificationEmailMutationType =

@@ -16,6 +16,7 @@ import { UserField } from "schema/v2/user"
 import dateField, { date, formatDate } from "./fields/date"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import config from "config"
 
 export type IdentityVerificationGravityResponse = {
   id: string
@@ -158,6 +159,13 @@ export const IdentityVerificationType = new GraphQLObjectType<
       resolve: ({ email }) => email,
     },
     invitationExpiresAt: dateFieldForVerificationExpiresAt,
+    pageURL: {
+      description: "Page URL sent to the identify verification's owner",
+      type: GraphQLString,
+      resolve: (res) => {
+        return `${config.FORCE_URL}/identity-verification/${res.id}`
+      },
+    },
     overrides: {
       type: new GraphQLList(IdentityVerificationOverrideType),
       description: "The overrides associated with an identity verification",
