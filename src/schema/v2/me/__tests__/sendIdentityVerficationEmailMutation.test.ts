@@ -29,7 +29,7 @@ const computeMutationInput = ({
       ) {
         confirmationOrError{
 							... on IdentityVerificationEmailMutationSuccessType{
-								identityVerificationEmail{
+								identityVerification{
 									internalID
 									pageURL
 									state
@@ -73,7 +73,7 @@ describe("Send identity verification email mutation", () => {
     expect(response).toEqual({
       sendIdentityVerificationEmail: {
         confirmationOrError: {
-          identityVerificationEmail: {
+          identityVerification: {
             internalID: "106",
             state: "pending",
             userID: "id-123",
