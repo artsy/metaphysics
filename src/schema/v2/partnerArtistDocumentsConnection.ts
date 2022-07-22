@@ -1,3 +1,4 @@
+import config from "config"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -32,6 +33,10 @@ export const PartnerArtistDocumentType = new GraphQLObjectType<
     },
     size: {
       type: new GraphQLNonNull(GraphQLInt),
+    },
+    publicUrl: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ uri }) => `${config.GRAVITY_API_BASE}/${uri}`,
     },
   },
 })
