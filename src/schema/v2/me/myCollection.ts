@@ -9,6 +9,7 @@ import {
 import { connectionFromArray, cursorForObjectInConnection } from "graphql-relay"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { MarketPriceInsight } from "lib/loaders/loaders_with_authentication/vortex"
 import { compact, isEqual, reverse, sortBy, uniqWith } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
@@ -17,10 +18,8 @@ import {
   connectionWithCursorInfo,
   paginationResolver,
 } from "../fields/pagination"
-import { loadBatchPriceInsights } from "lib/loadBatchPriceInsights"
 import { loadSubmissions } from "./loadSubmissions"
 import { myCollectionInfoFields } from "./myCollectionInfo"
-import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 
 const MyCollectionConnection = connectionWithCursorInfo({
   name: "MyCollection",
@@ -73,12 +72,16 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (
     { id: userId },
     options,
-    { collectionArtworksLoader, convectionGraphQLLoader, vortexGraphqlLoader }
+    {
+      collectionArtworksLoader,
+      convectionGraphQLLoader,
+      marketPriceInsightsBatchLoader,
+    }
   ) => {
     if (
       !collectionArtworksLoader ||
       !convectionGraphQLLoader ||
-      !vortexGraphqlLoader
+      !marketPriceInsightsBatchLoader
     ) {
       return null
     }
@@ -121,7 +124,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
 
       let enrichedArtworks = await enrichArtworksWithPriceInsights(
         artworks,
-        vortexGraphqlLoader
+        marketPriceInsightsBatchLoader
       )
 
       // sort by most recent price insight updates and filter out artworks without insights if requested
@@ -267,26 +270,37 @@ const enrichArtworksWithSubmissions = async (
 
 const enrichArtworksWithPriceInsights = async (
   artworks: Array<any>,
-  vortexGraphqlLoader: ({ query, variables }) => StaticPathLoader<any>
+  marketPriceInsightsBatchLoader: (
+    params: {
+      artistId: string
+      medium: string
+      category: string
+    }[]
+  ) => Promise<MarketPriceInsight[]>
 ) => {
-  const artistIdMediumTuples = uniqWith(
+  const marketPriceInsightParams = uniqWith(
     artworks.map((artwork: any) => ({
       artistId: artwork.artist?._id,
       medium: artwork.medium,
+      category: artwork.category,
     })),
     isEqual
   )
 
-  const marketPriceInsights = await loadBatchPriceInsights(
-    artistIdMediumTuples,
-    vortexGraphqlLoader
-  )
+  const priceInsightNodes =
+    (await marketPriceInsightsBatchLoader(marketPriceInsightParams)) || []
 
   return artworks.map((artwork: any) => {
-    const insights =
-      marketPriceInsights[artwork.artist?._id]?.[artwork.medium] ?? null
+    const insights = priceInsightNodes.find(
+      (insight: MarketPriceInsight) =>
+        insight.artistId === artwork.artist?._id &&
+        // TODO: Fix this logic once we only need category to fetch insights
+        (insight.medium === artwork.medium ||
+          insight.medium === artwork.category)
+    )
 
     artwork.marketPriceInsights = insights
+
     return artwork
   })
 }
