@@ -3528,15 +3528,15 @@ describe("Artwork type", () => {
         }
       `
 
-      const mockVortexGraphqlLoader = jest.fn(() => () =>
+      const marketPriceInsightsBatchLoader = jest.fn(() =>
         Promise.resolve({
           data: {
-            marketPriceInsightsBatch: { edges: null },
+            marketPriceInsightsBatch: null,
           },
         })
       )
 
-      context.vortexGraphqlLoader = mockVortexGraphqlLoader
+      context.marketPriceInsightsBatchLoader = marketPriceInsightsBatchLoader
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
