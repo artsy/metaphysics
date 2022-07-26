@@ -147,7 +147,6 @@ import { toggleFeatureFlagMutation } from "./admin/mutations/toggleFeatureFlagMu
 import { MatchConnection } from "./Match"
 import { PartnerArtistDocumentsConnection } from "./partnerArtistDocumentsConnection"
 import { PartnerShowDocumentsConnection } from "./partnerShowDocumentsConnection"
-import { completedOnboardingMutation } from "./me/completedOnboardingMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -283,7 +282,6 @@ export default new GraphQLSchema({
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createUserInterest: createUserInterestMutation,
-      completedOnboarding: completedOnboardingMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCreditCard: deleteCreditCardMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
