@@ -1,12 +1,6 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("SetOrUnsetUserFlagMutation", () => {
-  const completeProfileResult = {
-    bio: "bio",
-    icon: "icon",
-    other_relevant_positions: "dev",
-  }
-
   const user = {
     profession: "dev",
     user_flags: {
@@ -14,15 +8,12 @@ describe("SetOrUnsetUserFlagMutation", () => {
     },
   }
 
-  const loaders = (
-    options: { withCompleteProfile?: boolean; withUnsetFlag?: boolean } = {}
-  ) => ({
+  const loaders = (options: { withUnsetFlag?: boolean } = {}) => ({
     setUserFlagLoader: () =>
       Promise.resolve(
         options.withUnsetFlag ? { ...user, user_flags: {} } : user
       ),
-    collectorProfileLoader: () =>
-      Promise.resolve(options.withCompleteProfile ? completeProfileResult : {}),
+    meLoader: () => Promise.resolve({}),
   })
 
   const setFlagQuery = `
@@ -65,8 +56,7 @@ describe("SetOrUnsetUserFlagMutation", () => {
     }
   `
 
-  it("sets flag and reevaluates other automatically injected flags", async () => {
-    const injectedFlag = "collectorProfileIncompleteAt"
+  it("sets flag", async () => {
     const myFlagKey = "myFlagKey"
     const data = await runAuthenticatedQuery(setFlagQuery, loaders())
     const {
@@ -75,12 +65,10 @@ describe("SetOrUnsetUserFlagMutation", () => {
       },
     } = data
 
-    expect(userFlags[injectedFlag]).not.toBe(undefined)
     expect(userFlags[myFlagKey]).not.toBe(undefined)
   })
 
-  it("unsets flag and reevaluates other automatically injected flags", async () => {
-    const injectedFlag = "collectorProfileIncompleteAt"
+  it("unsets flag", async () => {
     const myFlagKey = "myFlagKey"
     const data = await runAuthenticatedQuery(
       unsetFlagQuery,
@@ -91,8 +79,6 @@ describe("SetOrUnsetUserFlagMutation", () => {
         userFlagsOrError: { userFlags },
       },
     } = data
-
-    expect(userFlags[injectedFlag]).not.toBe(undefined)
     expect(userFlags[myFlagKey]).toBe(undefined)
   })
 })

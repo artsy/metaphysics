@@ -28,41 +28,17 @@ export const UserFlagsType = new GraphQLScalarType({
   },
 })
 
-const deriveAdditionalFlags = async (root, options, loaders) => {
-  const { collectorProfileLoader } = loaders
-  const computedFlags: { [key: string]: any } = {}
-
-  const result = await collectorProfileLoader(options)
-  const { bio, icon, other_relevant_positions } = result
-  const profileIsComplete =
-    root.profession && bio && icon && other_relevant_positions
-
-  if (!profileIsComplete) {
-    computedFlags.collector_profile_incomplete_at = new Date().toISOString()
-  }
-
-  // derive other flags and add them to computedFlags
-
-  return computedFlags
-}
-
-export const userFlagsResolver = async (root, options, loaders) => {
-  const { collectorProfileLoader } = loaders
-  if (!collectorProfileLoader) {
+export const userFlagsResolver = async (root, _options, loaders) => {
+  const { meLoader } = loaders
+  const { user_flags: userFlags } = root
+  if (!meLoader) {
     throw new Error("You need to be signed in to perform this action")
   }
 
-  const computedFlags = await deriveAdditionalFlags(root, options, loaders)
-
-  const mergedResult = {
-    ...root.user_flags,
-    ...computedFlags,
-  }
-
   const res = {}
-  const keys = Object.keys(mergedResult)
+  const keys = Object.keys(userFlags)
   keys.forEach((key) => {
-    res[camelCase(key)] = mergedResult[key]
+    res[camelCase(key)] = userFlags[key]
   })
   return res
 }
