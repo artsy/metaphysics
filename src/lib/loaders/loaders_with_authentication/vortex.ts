@@ -57,9 +57,8 @@ export default (accessToken, opts) => {
         medium: getVortexMedium(artist.medium, artist.category),
       }))
 
-      try {
-        const vortexResult = await vortexGraphqlLoader({
-          query: gql`
+      const vortexResult = await vortexGraphqlLoader({
+        query: gql`
         query MarketPriceInsightsBatchQuery($artistIDMediumTuples: [ArtistIdMediumTupleType!]!) {
           marketPriceInsightsBatch(input: $artistIDMediumTuples, first: ${MAX_MARKET_PRICE_INSIGHTS}) {
             totalCount
@@ -76,20 +75,14 @@ export default (accessToken, opts) => {
           }
         }
       `,
-          variables: { artistIDMediumTuples },
-        })()
+        variables: { artistIDMediumTuples },
+      })()
 
-        const priceInsightNodes: MarketPriceInsight[] = extractNodes(
-          vortexResult.data?.marketPriceInsightsBatch
-        )
+      const priceInsightNodes: MarketPriceInsight[] = extractNodes(
+        vortexResult.data?.marketPriceInsightsBatch
+      )
 
-        return priceInsightNodes
-      } catch (e) {
-        console.error(e)
-
-        // to continue with the query in case the price insights are not available
-        return []
-      }
+      return priceInsightNodes
     },
   }
 }
