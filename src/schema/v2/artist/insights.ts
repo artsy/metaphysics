@@ -1,13 +1,15 @@
-import { compact } from "lodash"
 import {
-  GraphQLObjectType,
-  GraphQLList,
   GraphQLEnumType,
-  GraphQLString,
   GraphQLFieldConfig,
+  GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
+import { compact } from "lodash"
 import { ResolverContext } from "types/graphql"
+import { ArtistType } from "../artist"
 
 const ARTIST_INSIGHT_KINDS = {
   SOLO_SHOW: { value: "SOLO_SHOW" },
@@ -59,14 +61,14 @@ const ARTIST_INSIGHT_MAPPING = {
   },
 } as const
 
-const ArtistInsightKind = new GraphQLEnumType({
+export const ArtistInsightKind = new GraphQLEnumType({
   name: "ArtistInsightKind",
   values: ARTIST_INSIGHT_KINDS,
 })
 
-const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
+export const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistInsight",
-  fields: {
+  fields: () => ({
     type: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The type of insight.",
@@ -83,11 +85,18 @@ const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
       description: "List of entities relevant to the insight.",
     },
+    count: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "Number of entities relevant to the insight.",
+    },
     kind: {
       type: ArtistInsightKind,
       description: "The type of insight.",
     },
-  },
+    artist: {
+      type: ArtistType,
+    },
+  }),
 })
 
 // TODO:
@@ -103,48 +112,56 @@ export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
     },
   },
   resolve: (artist, { kind }) => {
-    const insights = compact(
-      (Object.entries(ARTIST_INSIGHT_MAPPING) as [
-        ArtistInsightKind,
-        typeof ARTIST_INSIGHT_MAPPING[ArtistInsightKind]
-      ][]).map(([kind, { label, description, fieldName, delimiter }]) => {
-        const value = artist[fieldName]
-
-        if (!value) {
-          return
-        }
-
-        switch (typeof value) {
-          case "string":
-            const trimmed = value.trim()
-
-            if (!trimmed) return null
-
-            return {
-              entities: trimmed
-                .split(delimiter ?? "|")
-                .map((entity) => entity.trim()),
-              label,
-              type: kind,
-              kind,
-              description,
-            }
-
-          case "boolean":
-            return {
-              entities: [],
-              label,
-              type: kind,
-              kind,
-              description,
-            }
-
-          default:
-            return null
-        }
-      })
-    )
+    const insights = getArtistInsights(artist)
 
     return insights.filter((insight) => kind.includes(insight.type))
   },
 }
+
+export const getArtistInsights = (artist) =>
+  compact(
+    (Object.entries(ARTIST_INSIGHT_MAPPING) as [
+      ArtistInsightKind,
+      typeof ARTIST_INSIGHT_MAPPING[ArtistInsightKind]
+    ][]).map(([kind, { label, description, fieldName, delimiter }]) => {
+      const value = artist[fieldName]
+
+      if (!value) {
+        return { artist }
+      }
+
+      switch (typeof value) {
+        case "string":
+          const trimmed = value.trim()
+
+          if (!trimmed) return null
+
+          const entities = trimmed
+            .split(delimiter ?? "|")
+            .map((entity) => entity.trim())
+          return {
+            entities,
+            count: entities.length,
+            label,
+            type: kind,
+            kind,
+            description,
+            artist,
+          }
+
+        case "boolean":
+          return {
+            entities: [],
+            label,
+            type: kind,
+            kind,
+            description,
+            count: value ? 1 : 0,
+            artist,
+          }
+
+        default:
+          return { count: 0, artist }
+      }
+    })
+  )

@@ -33,9 +33,10 @@ export const updateUserMutation = mutationWithClientMutationId<
   description: "Update the user",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
+    completedOnboardingAt: { type: GraphQLString },
     dataTransferOptOut: { type: GraphQLBoolean },
-    email: { type: new GraphQLNonNull(GraphQLString) },
-    name: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: GraphQLString },
+    name: { type: GraphQLString },
     phone: { type: GraphQLString },
   },
   outputFields: {},

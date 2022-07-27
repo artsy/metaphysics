@@ -12,6 +12,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { InternalIDFields } from "../object_identification"
 import { date } from "../fields/date"
+import { IdentityVerificationType } from "../identityVerification"
 
 const IdentityVerificationEmailType = new GraphQLObjectType<
   any,
@@ -53,6 +54,11 @@ const IdentityVerificationEmailMutationSuccessType = new GraphQLObjectType<
   fields: () => ({
     identityVerificationEmail: {
       type: IdentityVerificationEmailType,
+      deprecationReason: "use identityVerification instead",
+      resolve: (identityVerification) => identityVerification,
+    },
+    identityVerification: {
+      type: IdentityVerificationType,
       resolve: (identityVerification) => identityVerification,
     },
   }),
@@ -91,11 +97,11 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
   description: "Send a identity verification email",
   inputFields: {
     userID: {
-      description: "The user Id for the user undergoing identity verificaiton",
+      description: "The user Id for the user undergoing identity verification",
       type: GraphQLString,
     },
     email: {
-      description: "The email for the user undergoing identity verificaiton",
+      description: "The email for the user undergoing identity verification",
       type: GraphQLString,
     },
     name: {
@@ -110,7 +116,7 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: (
+  mutateAndGetPayload: async (
     { userID, email, name },
     { sendIdentityVerificationEmailLoader }
   ) => {
@@ -118,15 +124,21 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
       throw new Error("You need to be signed in to perform this action")
     }
 
-    return sendIdentityVerificationEmailLoader({ user_id: userID, email, name })
-      .then((result) => result)
-      .catch((error) => {
-        const formattedErr = formatGravityError(error)
-        if (formattedErr) {
-          return { ...formattedErr, _type: "GravityMutationError" }
-        } else {
-          throw new Error(error)
-        }
+    try {
+      const response = await sendIdentityVerificationEmailLoader({
+        user_id: userID,
+        email,
+        name,
       })
+
+      return response
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
+    }
   },
 })

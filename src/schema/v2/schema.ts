@@ -86,7 +86,7 @@ import { OrderedSet } from "./OrderedSet"
 import OrderedSets from "./ordered_sets"
 import Partner from "./partner"
 import PartnerArtworks from "./partnerArtworks"
-// import Profile from "./profile"
+import Profile from "./profile"
 // import Partner from "./partner"
 import { PartnersConnection } from "./partners"
 import { RequestLocationField } from "./requestLocation"
@@ -145,6 +145,9 @@ import { deleteFeatureFlagMutation } from "./admin/mutations/deleteFeatureFlagMu
 import { updateFeatureFlagMutation } from "./admin/mutations/updateFeatureFlagMutation"
 import { toggleFeatureFlagMutation } from "./admin/mutations/toggleFeatureFlagMutation"
 import { setOrUnsetUserFlagMutation } from "./me/setOrUnsetUserFlagMutation"
+import { MatchConnection } from "./Match"
+import { PartnerArtistDocumentsConnection } from "./partnerArtistDocumentsConnection"
+import { PartnerShowDocumentsConnection } from "./partnerShowDocumentsConnection"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -212,18 +215,21 @@ const rootFields = {
   },
   // matchArtist: MatchArtist,
   // matchGene: MatchGene,
+  matchConnection: MatchConnection,
   me: Me,
   node: ObjectIdentification.NodeField,
   orderedSet: OrderedSet,
   orderedSets: OrderedSets,
   page,
   partner: Partner,
+  partnerArtistDocumentsConnection: PartnerArtistDocumentsConnection,
   partnerArtworks: PartnerArtworks,
   partnerCategories: PartnerCategories,
   partnerCategory: PartnerCategory,
+  partnerShowDocumentsConnection: PartnerShowDocumentsConnection,
   partnersConnection: PartnersConnection,
   phoneNumber: PhoneNumber,
-  // profile: Profile,
+  profile: Profile,
   previewSavedSearch: PreviewSavedSearchField,
   requestLocation: RequestLocationField,
   reverseImageSearch: ReverseImageSearch,

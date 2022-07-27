@@ -16,8 +16,12 @@ export const FixFailedPaymentInputType = new GraphQLInputObjectType({
   name: "FixFailedPaymentInput",
   fields: {
     offerId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: "Offer ID",
+    },
+    orderId: {
+      type: GraphQLID,
+      description: "Order ID",
     },
     creditCardId: {
       type: new GraphQLNonNull(GraphQLString),
@@ -39,14 +43,14 @@ export const FixFailedPaymentMutation = mutationWithClientMutationId<
       type: OrderOrFailureUnionType,
     },
   },
-  mutateAndGetPayload: ({ offerId, creditCardId }, context) => {
+  mutateAndGetPayload: ({ offerId, creditCardId, orderId }, context) => {
     const { accessToken, exchangeSchema } = context
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }
     const mutation = gql`
-      mutation fixFailedPayment($offerId: ID!, $creditCardId: String!) {
-        ecommerceFixFailedPayment(input: { offerId: $offerId, creditCardId: $creditCardId, }) {
+      mutation fixFailedPayment($offerId: ID, $orderId: ID, $creditCardId: String!) {
+        ecommerceFixFailedPayment(input: { offerId: $offerId, orderId: $orderId, creditCardId: $creditCardId, }) {
           orderOrError {
             __typename
             ... on EcommerceOrderWithMutationSuccess {
@@ -68,6 +72,7 @@ export const FixFailedPaymentMutation = mutationWithClientMutationId<
     `
     return graphql(exchangeSchema, mutation, null, context, {
       offerId,
+      orderId,
       creditCardId,
     }).then(extractEcommerceResponse("ecommerceFixFailedPayment"))
   },

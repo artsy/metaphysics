@@ -3,7 +3,13 @@ import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
 
 const mutation = gql`
   mutation {
-    mergeArtists(input: { goodId: "abc123", badIds: ["def456", "ghi789"] }) {
+    mergeArtists(
+      input: {
+        goodId: "abc123"
+        badIds: ["def456", "ghi789"]
+        overrides: { birthday: "def456", deathday: "ghi789" }
+      }
+    ) {
       mergeArtistsResponseOrError {
         __typename
         ... on MergeArtistsSuccess {

@@ -26,6 +26,7 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     includeBackfill: { type: new GraphQLNonNull(GraphQLBoolean) },
     page: { type: GraphQLInt },
     userId: { type: GraphQLString },
+    version: { type: GraphQLString },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
     if (!context.artworksLoader) return

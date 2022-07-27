@@ -295,6 +295,15 @@ export default (accessToken, userID, opts) => {
     ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
+    partnerArtistDocumentsLoader: gravityLoader<
+      any,
+      { partnerId: string; artistId: string }
+    >(
+      ({ partnerId, artistId }) =>
+        `partner/${partnerId}/artist/${artistId}/documents`,
+      {},
+      { headers: true }
+    ),
     partnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,
       {},
@@ -311,6 +320,15 @@ export default (accessToken, userID, opts) => {
     >(
       ({ partnerId, inquiryId }) =>
         `partner/${partnerId}/inquiry_request/${inquiryId}/collector_profile`
+    ),
+    partnerShowDocumentsLoader: gravityLoader<
+      any,
+      { partnerId: string; showId: string }
+    >(
+      ({ partnerId, showId }) =>
+        `partner/${partnerId}/show/${showId}/documents`,
+      {},
+      { headers: true }
     ),
     popularArtistsLoader: gravityLoader("artists/popular"),
     recordArtworkViewLoader: gravityLoader(

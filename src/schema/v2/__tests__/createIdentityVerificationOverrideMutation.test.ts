@@ -13,11 +13,15 @@ const mutation = gql`
       createIdentityVerificationOverrideResponseOrError {
         __typename
         ... on IdentityVerificationOverrideMutationSuccess {
-          identityVerificationOverride {
+          identityVerification {
             userID
-            reason
-            newState
-            oldState
+            email
+            overrides {
+              userID
+              reason
+              newState
+              oldState
+            }
           }
         }
         ... on IdentityVerificationOverrideMutationFailure {
@@ -38,18 +42,34 @@ describe("Create Identity Verification Override", () => {
   })
 
   describe("when successful", () => {
-    it("returns the identity verification override", async () => {
-      const successResponse = {
-        id: "42",
+    it("returns an identity verification with overrides", async () => {
+      const createIdentityVerificationOverrideLoaderResponse = {
+        id: "123",
         user_id: "123",
         reason: "testing",
         new_state: "failed",
         old_state: "pending",
       }
-
+      const identityVerificationLoaderResponse = {
+        id: "123",
+        email: "foo@bar.com",
+        user_id: "123",
+      }
+      const identityVerificationOverridesLoaderResponse = [
+        {
+          user_id: "123",
+          reason: "testing",
+          new_state: "failed",
+          old_state: "pending",
+        },
+      ]
       const context = {
         createIdentityVerificationOverrideLoader: () =>
-          Promise.resolve(successResponse),
+          Promise.resolve(createIdentityVerificationOverrideLoaderResponse),
+        identityVerificationLoader: () =>
+          Promise.resolve(identityVerificationLoaderResponse),
+        identityVerificationOverridesLoader: () =>
+          Promise.resolve(identityVerificationOverridesLoaderResponse),
       }
 
       const data = await runAuthenticatedQuery(mutation, context)
@@ -58,11 +78,17 @@ describe("Create Identity Verification Override", () => {
         createIdentityVerificationOverride: {
           createIdentityVerificationOverrideResponseOrError: {
             __typename: "IdentityVerificationOverrideMutationSuccess",
-            identityVerificationOverride: {
+            identityVerification: {
+              email: "foo@bar.com",
               userID: "123",
-              reason: "testing",
-              newState: "failed",
-              oldState: "pending",
+              overrides: [
+                {
+                  userID: "123",
+                  reason: "testing",
+                  newState: "failed",
+                  oldState: "pending",
+                },
+              ],
             },
           },
         },

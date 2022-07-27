@@ -13,6 +13,7 @@ import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
 import { auctionResultConnection, AuctionResultSorts } from "../auction_result"
+import { MAX_ARTISTS } from "./myCollectionInfo"
 
 const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
   type: auctionResultConnection.connectionType,
@@ -61,7 +62,7 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
 
       const { body: artists } = await collectionArtistsLoader("my-collection", {
         user_id: userId,
-        size: 100,
+        size: MAX_ARTISTS,
       })
 
       const artistIds = artists.map(({ _id }) => _id)

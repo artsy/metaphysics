@@ -1,17 +1,49 @@
 import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLString,
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { artistConnection } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
+import {
+  ArtistInsight,
+  ArtistInsightKind,
+  getArtistInsights,
+} from "../artist/insights"
 import { paginationResolver } from "../fields/pagination"
 import ArtistSorts from "../sorts/artist_sorts"
+
+export const MAX_ARTISTS = 100
+
+const artistInsightsCountType = new GraphQLObjectType({
+  name: "ArtistInsightsCount",
+  fields: {
+    soloShowCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    groupShowCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    collectedCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    reviewedCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    biennialCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    activeSecondaryMarketCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+  },
+})
 
 export const myCollectionInfoFields = {
   description: {
@@ -38,6 +70,98 @@ export const myCollectionInfoFields = {
     type: new GraphQLNonNull(GraphQLInt),
     resolve: ({ artists_count }) => artists_count,
   },
+  artistInsightsCount: {
+    type: artistInsightsCountType,
+    resolve: async (_root, _args, context) => {
+      const { collectionArtistsLoader, userID } = context
+
+      if (!collectionArtistsLoader) return
+
+      const { body: artists } = await collectionArtistsLoader("my-collection", {
+        size: MAX_ARTISTS,
+        user_id: userID,
+        all: true,
+      })
+
+      let soloShowCount = 0
+      let groupShowCount = 0
+      let collectedCount = 0
+      let reviewedCount = 0
+      let biennialCount = 0
+      let activeSecondaryMarketCount = 0
+
+      const countInsights = (
+        insight: ReturnType<typeof getArtistInsights>[0]
+      ) => {
+        switch (insight.kind) {
+          case "SOLO_SHOW":
+            soloShowCount += 1
+            break
+          case "GROUP_SHOW":
+            groupShowCount += 1
+            break
+          case "REVIEWED":
+            reviewedCount += 1
+            break
+          case "COLLECTED":
+            collectedCount += 1
+            break
+          case "BIENNIAL":
+            biennialCount += 1
+            break
+          case "ACTIVE_SECONDARY_MARKET":
+            activeSecondaryMarketCount += 1
+            break
+        }
+      }
+
+      artists.forEach((artist) => {
+        getArtistInsights(artist).forEach((insight) => {
+          if (!!insight.kind) countInsights(insight)
+        })
+      })
+
+      return {
+        soloShowCount,
+        groupShowCount,
+        collectedCount,
+        reviewedCount,
+        biennialCount,
+        activeSecondaryMarketCount,
+      }
+    },
+  },
+  artistInsights: {
+    description: "Insights for all collected artists",
+    type: new GraphQLNonNull(
+      new GraphQLList(new GraphQLNonNull(ArtistInsight))
+    ),
+    args: {
+      kind: {
+        type: ArtistInsightKind,
+        description: "The type of insight.",
+      },
+    },
+    resolve: async (_root, args, context) => {
+      const { collectionArtistsLoader, userID } = context
+
+      const { body: artists } = await collectionArtistsLoader("my-collection", {
+        size: MAX_ARTISTS,
+        user_id: userID,
+        all: true,
+      })
+
+      const insights: ReturnType<typeof getArtistInsights> = []
+
+      artists.map((artist) => {
+        getArtistInsights(artist).map((insight) => {
+          if (insight.kind === args.kind || !args.kind) insights.push(insight)
+        })
+      })
+
+      return insights
+    },
+  },
   collectedArtistsConnection: {
     description: "A connection of artists in the users' collection",
     type: artistConnection.connectionType,
@@ -47,7 +171,7 @@ export const myCollectionInfoFields = {
       size: { type: GraphQLInt },
     }),
     resolve: async (_root, args, context) => {
-      const { collectionArtistsLoader } = context
+      const { collectionArtistsLoader, userID } = context
 
       if (!collectionArtistsLoader) return
 
@@ -60,10 +184,18 @@ export const myCollectionInfoFields = {
         page,
         sort,
         total_count: true,
+        user_id: userID,
       })
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-      return paginationResolver({ totalCount, offset, size, page, body, args })
+      return paginationResolver({
+        totalCount,
+        offset,
+        size,
+        page,
+        body,
+        args,
+      })
     },
   },
 }
@@ -76,11 +208,14 @@ const MyCollectionInfoType = new GraphQLObjectType<any, ResolverContext>({
 export const MyCollectionInfo: GraphQLFieldConfig<any, ResolverContext> = {
   type: MyCollectionInfoType,
   description: "Info about the current user's my-collection",
-  resolve: async ({ id }, _options, { collectionLoader }) => {
-    if (!collectionLoader) {
+  resolve: async ({ id }, _options, context) => {
+    if (!context.collectionLoader) {
       return null
     }
-    const collectionResponse = await collectionLoader("my-collection", {
+
+    context.userID = id
+
+    const collectionResponse = await context.collectionLoader("my-collection", {
       user_id: id,
       private: true,
     })

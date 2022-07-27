@@ -9,16 +9,23 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-import { IdentityVerificationOverrideType } from "./identityVerification"
+import { IdentityVerificationType } from "./identityVerification"
 import { mutationWithClientMutationId } from "graphql-relay"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "IdentityVerificationOverrideMutationSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
-    identityVerificationOverride: {
-      type: IdentityVerificationOverrideType,
-      resolve: (identityVerificationOverride) => identityVerificationOverride,
+    identityVerification: {
+      type: IdentityVerificationType,
+      resolve: async (
+        { identityVerificationID },
+        _args,
+        { identityVerificationLoader }
+      ) => {
+        if (!identityVerificationLoader) return
+        return identityVerificationLoader(identityVerificationID)
+      },
     },
   }),
 })
@@ -65,6 +72,7 @@ export const createIdentityVerificationOverrideMutation = mutationWithClientMuta
   outputFields: {
     createIdentityVerificationOverrideResponseOrError: {
       type: ResponseOrErrorType,
+      description: "On success: an identity verification with overrides",
       resolve: (result) => result,
     },
   },
@@ -75,19 +83,22 @@ export const createIdentityVerificationOverrideMutation = mutationWithClientMuta
     if (!createIdentityVerificationOverrideLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
-
-    return createIdentityVerificationOverrideLoader(identityVerificationID, {
-      state,
-      reason,
-    })
-      .then((result) => result)
-      .catch((error) => {
-        const formattedErr = formatGravityError(error)
-        if (formattedErr) {
-          return { ...formattedErr, _type: "GravityMutationError" }
-        } else {
-          throw new Error(error)
-        }
-      })
+    try {
+      const result = await createIdentityVerificationOverrideLoader(
+        identityVerificationID,
+        { state, reason }
+      )
+      return {
+        ...result,
+        identityVerificationID,
+      }
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
+    }
   },
 })

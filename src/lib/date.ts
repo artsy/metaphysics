@@ -305,7 +305,7 @@ export function auctionsDetailFormattedStartDateTime(
 export function formattedEndDateTime(endAt, timezone) {
   const tz = timezone || DEFAULT_TZ
   const lotEndMoment = moment.tz(endAt, tz)
-  return `Closes, ${lotEndMoment.format("MMM D")} • ${lotEndMoment.format(
+  return `Closes on ${lotEndMoment.format("MMM D")} • ${lotEndMoment.format(
     "h:mma z"
   )}`
 }
