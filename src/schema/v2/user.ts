@@ -67,11 +67,6 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     ...InternalIDFields,
     cached,
-    completedOnboardingAt: {
-      description: "The date and time that the user has completed onboarding.",
-      type: GraphQLString,
-      resolve: ({ completed_onboarding_at }) => completed_onboarding_at,
-    },
     name: {
       description: "The given name of the user.",
       type: new GraphQLNonNull(GraphQLString),
