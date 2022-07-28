@@ -55,13 +55,14 @@ import { Searchable } from "schema/v2/searchable"
 import { Sellable } from "schema/v2/sellable"
 import Show from "schema/v2/show"
 import ShowSorts from "schema/v2/sorts/show_sorts"
-import { ResolverContext } from "types/graphql"
 import { VideoType } from "schema/v2/types/Video"
+import { ResolverContext } from "types/graphql"
 import { getMicrofunnelDataByArtworkInternalID } from "../artist/targetSupply/utils/getMicrofunnelData"
 import { InquiryQuestionType } from "../inquiry_question"
 import { loadSubmissions } from "../me/loadSubmissions"
 import { LotStandingType } from "../me/lot_standing"
 import { myLocationType } from "../me/myLocation"
+import FormattedNumber from "../types/formatted_number"
 import ArtworkConsignmentSubmissionType from "./artworkConsignmentSubmissionType"
 import { ArtworkContextGrids } from "./artworkContextGrids"
 import { ComparableAuctionResults } from "./comparableAuctionResults"
@@ -71,9 +72,6 @@ import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import Meta, { artistNames } from "./meta"
 import { embed, isEmbeddedVideo, isTooBig, isTwoDimensional } from "./utilities"
-import gql from "lib/gql"
-import { extractNodes } from "../../../lib/helpers"
-import FormattedNumber from "../types/formatted_number"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -171,36 +169,24 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       hasMarketPriceInsights: {
         type: GraphQLBoolean,
-        resolve: async ({ artist, medium }, _, { vortexGraphqlLoader }) => {
-          if (!vortexGraphqlLoader) return false
-          const vortexResult = await vortexGraphqlLoader({
-            query: gql`
-              query MarketPriceInsightsBatchQuery(
-                $artistIDMediumTuples: [ArtistIdMediumTupleType!]!
-              ) {
-                marketPriceInsightsBatch(
-                  input: $artistIDMediumTuples
-                  first: 1
-                ) {
-                  edges {
-                    node {
-                      demandRank
-                    }
-                  }
-                }
-              }
-            `,
-            variables: {
-              artistIDMediumTuples: [{ artistId: artist._id, medium: medium }],
+        resolve: async (
+          { artist, medium, category },
+          _,
+          { marketPriceInsightsBatchLoader }
+        ) => {
+          if (!marketPriceInsightsBatchLoader) return false
+
+          const marketPriceInsightNodes = await marketPriceInsightsBatchLoader([
+            {
+              artistId: artist._id,
+              medium,
+              category,
             },
-          })()
+          ])
 
-          const artworkMarketPriceInsights =
-            (extractNodes(vortexResult.data.marketPriceInsightsBatch)[0] as {
-              demandRank: number
-            }) || {}
+          const hasInsights = !!marketPriceInsightNodes[0]
 
-          return !!artworkMarketPriceInsights.demandRank
+          return hasInsights
         },
       },
       marketPriceInsights: {
