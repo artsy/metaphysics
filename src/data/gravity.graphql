@@ -2019,6 +2019,7 @@ Saved Search User Alert Settings
 """
 type SavedSearchUserAlertSettings {
   email: Boolean!
+  frequency: UserSearchCriteriaFrequency!
   name: String
   push: Boolean!
 }
@@ -2642,8 +2643,14 @@ Settings for user saved search
 """
 input UserAlertSettingsInput {
   email: Boolean
+  frequency: UserSearchCriteriaFrequency
   name: String
   push: Boolean
+}
+
+enum UserSearchCriteriaFrequency {
+  daily
+  instant
 }
 
 """
