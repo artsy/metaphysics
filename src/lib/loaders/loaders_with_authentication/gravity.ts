@@ -314,6 +314,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    updatePartnerArtworksLoader: gravityLoader(
+      (id) => `partner/${id}/artworks`,
+      {},
+      { method: "PUT" }
+    ),
     partnerInquirerCollectorProfileLoader: gravityLoader<
       any,
       { partnerId: string; inquiryId: string }
