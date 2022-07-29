@@ -3,7 +3,7 @@ import { graphql } from "graphql"
 import { addMockFunctionsToSchema } from "graphql-tools"
 import { useConvectionStitching } from "./testingUtils"
 import gql from "lib/gql"
-import schema from "schema/v1/schema"
+import schema from "schema/v2/schema"
 
 describe("convection/stitching", () => {
   describe("extending types", () => {
@@ -64,7 +64,7 @@ describe("convection/stitching", () => {
 })
 
 it("resolves an Artist on a Consignment Submission", async () => {
-  const allMergedSchemas = await incrementalMergeSchemas(schema, 1)
+  const allMergedSchemas = await incrementalMergeSchemas(schema)
 
   // This test is that a submission gets the artist by stitching a MP
   // Artist into the ConsignmentSubmission inside the schema

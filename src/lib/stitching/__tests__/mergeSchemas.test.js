@@ -1,10 +1,10 @@
-import { runQueryMerged } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("stitched schema regressions", () => {
   it("union in interface fragment issue", async () => {
     const artworkResponse = {
-      id: "banksy-di-faced-tenner-21",
+      _id: "banksy-di-faced-tenner-21",
       sale_ids: ["foo-foo"],
     }
 
@@ -18,14 +18,14 @@ describe("stitched schema regressions", () => {
       },
     ]
 
-    const result = await runQueryMerged(
+    const result = await runQuery(
       gql`
         {
           artwork(id: "banksy-di-faced-tenner-21") {
-            id
+            internalID
             context {
               ... on Node {
-                __id
+                id
                 __typename
               }
             }
@@ -41,38 +41,38 @@ describe("stitched schema regressions", () => {
     )
     expect(result).toEqual({
       artwork: {
-        id: "banksy-di-faced-tenner-21",
+        internalID: "banksy-di-faced-tenner-21",
         context: {
-          __id: "QXJ0d29ya0NvbnRleHRBdWN0aW9uOmZvby1mb28=",
-          __typename: "ArtworkContextAuction",
+          id: "U2FsZToxMjM=",
+          __typename: "Sale",
         },
       },
     })
   })
 
   it("handles dual root elements issue", async () => {
-    const result = await runQueryMerged(
+    const result = await runQuery(
       gql`
         {
           artwork(id: "banksy-di-faced-tenner-21") {
-            id
+            internalID
           }
           artist(id: "banksy") {
-            id
+            internalID
           }
         }
       `,
       {
-        artworkLoader: async () => ({ id: "banksy-di-faced-tenner-21" }),
-        artistLoader: async () => ({ id: "banksy" }),
+        artworkLoader: async () => ({ _id: "banksy-di-faced-tenner-21" }),
+        artistLoader: async () => ({ _id: "banksy" }),
       }
     )
     expect(result).toEqual({
       artwork: {
-        id: "banksy-di-faced-tenner-21",
+        internalID: "banksy-di-faced-tenner-21",
       },
       artist: {
-        id: "banksy",
+        internalID: "banksy",
       },
     })
   })

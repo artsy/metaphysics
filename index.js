@@ -3,11 +3,11 @@ import xapp from "@artsy/xapp"
 import compression from "compression"
 import bodyParser from "body-parser"
 import { info, error } from "./src/lib/loggers"
-import config from "config"
-import cache from "lib/cache"
-import { init as initTracer } from "lib/tracer"
+import config from "./src/config"
+import cache from "./src/lib/cache"
+import { init as initTracer } from "./src/lib/tracer"
 import { IpFilter as ipfilter } from "express-ipfilter"
-import { errorHandler } from "lib/errorHandler"
+import { errorHandler } from "./src/lib/errorHandler"
 
 const {
   ENABLE_ASYNC_STACK_TRACES,
@@ -18,7 +18,6 @@ const {
   IP_DENYLIST,
   NODE_ENV,
   PORT,
-  PRODUCTION_ENV,
 } = config
 
 const port = PORT
@@ -55,7 +54,7 @@ const app = require("express")()
 
 app.use(compression())
 
-xapp.on("error", err => {
+xapp.on("error", (err) => {
   error(
     "Could not start Metaphysics because it could not set up the xapp token, this is likely due to your `GRAVITY_*` env vars:"
   )
@@ -90,10 +89,7 @@ function bootApp() {
   app.use(bodyParser.json())
 
   app.get("/favicon.ico", (_req, res) => {
-    res
-      .status(200)
-      .set({ "Content-Type": "image/x-icon" })
-      .end()
+    res.status(200).set({ "Content-Type": "image/x-icon" }).end()
   })
 
   app.get("/health", (req, res) => {
@@ -102,15 +98,15 @@ function bootApp() {
     }
     cache
       .isAvailable()
-      .then(stats => {
+      .then((_stats) => {
         return res.status(200).end()
       })
-      .catch(err => {
+      .catch((_err) => {
         return res.status(503).end()
       })
   })
 
-  app.all("/graphql", (_req, res) => res.redirect("/"))
+  app.all("/graphql", (_req, res) => res.redirect("/v2"))
 
   if (isDevelopment) {
     const { createReloadable } = require("@artsy/express-reloadable")
@@ -136,7 +132,7 @@ function gracefulExit() {
   if (isShuttingDown) return
   isShuttingDown = true
   console.log("Received signal SIGTERM, shutting down")
-  server.shutdown(function() {
+  server.shutdown(function () {
     console.log("Closed existing connections.")
     process.exit(0)
   })

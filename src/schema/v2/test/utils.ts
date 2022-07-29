@@ -108,33 +108,3 @@ export const runAuthenticatedQuery = (
     ...context,
   })
 }
-
-let mergedSchema
-
-// TODO: runQueryMerged could be removed now?
-
-/**
- * Same as `runQuery`, but runs against stitched schema
- *
- * @param query   The GraphQL query to run.
- * @param context The request specific data, such as `userID` and data-loaders.
- * @see runQuery
- */
-export const runQueryMerged = async (
-  query,
-  context: Partial<ResolverContext> = {}
-) => {
-  const { incrementalMergeSchemas } = require("lib/stitching/mergeSchemas")
-
-  if (!mergedSchema) {
-    mergedSchema = await incrementalMergeSchemas()
-  }
-  return graphql(mergedSchema, query, null, context).then((result) => {
-    if (result.errors) {
-      const error = result.errors[0]
-      throw error.originalError || error
-    } else {
-      return result.data
-    }
-  })
-}

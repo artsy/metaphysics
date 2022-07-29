@@ -13,7 +13,7 @@ import { NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import gql from "lib/gql"
 import { FetcherForLimitAndOffset } from "../../../fields/hybridConnection/fetchHybridConnection"
-import { amount } from "schema/v1/fields/money"
+import { amount } from "schema/v2/fields/money"
 
 type ReturnedNodeShape = any
 

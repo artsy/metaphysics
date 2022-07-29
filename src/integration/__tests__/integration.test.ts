@@ -14,7 +14,7 @@ describe("integration tests", () => {
   })
 
   it("should bail for an unknown GET request", async () => {
-    const response = await request(app).get("/")
+    const response = await request(app).get("/v2")
     expect(response.statusCode).toBe(400)
   })
 
@@ -25,7 +25,7 @@ describe("integration tests", () => {
     )
 
     const response = await request(app)
-      .post("/")
+      .post("/v2")
       .set("Accept", "application/json")
       .send({
         query: gql`
@@ -45,7 +45,7 @@ describe("integration tests", () => {
     mockFetch.mockResolvedValueOnce(Promise.resolve({ body: {} }))
 
     await request(app)
-      .post("/")
+      .post("/v2")
       .set("Accept", "application/json")
       .set("x-xapp-token", "xapp-token")
       .send({
@@ -70,7 +70,7 @@ describe("integration tests", () => {
     )
 
     const response = await request(app)
-      .post("/")
+      .post("/v2")
       .set("Accept", "application/json")
       .send({
         query: gql`

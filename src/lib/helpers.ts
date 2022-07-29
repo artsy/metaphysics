@@ -17,7 +17,7 @@ import moment, { LocaleSpecification } from "moment"
 import { performance } from "perf_hooks"
 import { stringify } from "qs"
 import { CursorPageable, getPagingParameters } from "relay-cursor-paging"
-import { formatMarkdownValue } from "schema/v1/fields/markdown"
+import { formatMarkdownValue } from "schema/v2/fields/markdown"
 
 const loadNs = performance.now()
 const loadMs = Date.now()
