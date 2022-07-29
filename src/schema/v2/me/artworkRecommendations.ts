@@ -4,7 +4,7 @@ import gql from "lib/gql"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { compact, find } from "lodash"
 import { CursorPageable, pageable } from "relay-cursor-paging"
-import { createPageCursors } from "schema/v1/fields/pagination"
+import { createPageCursors } from "schema/v2/fields/pagination"
 import { artworkConnection } from "schema/v2/artwork"
 import { ResolverContext } from "types/graphql"
 

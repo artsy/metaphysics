@@ -16,7 +16,6 @@ module.exports = {
         "/src/test/utils.js",
         "/src/test/gql.js",
         "/src/test/__mocks__",
-        "/src/schema/v1/",
         "src/schema/v2/__tests__/ecommerce/",
       ],
       transform: {

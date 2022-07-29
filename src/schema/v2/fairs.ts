@@ -13,7 +13,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { createPageCursors } from "schema/v1/fields/pagination"
+import { createPageCursors } from "schema/v2/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 
 const Fairs: GraphQLFieldConfig<void, ResolverContext> = {

@@ -3,7 +3,6 @@ import { graphql } from "graphql"
 import { addMockFunctionsToSchema } from "graphql-tools"
 import { useCausalityStitching } from "./testingUtils"
 import gql from "lib/gql"
-import schema from "schema/v1/schema"
 import v2Schema from "schema/v2/schema"
 import { getFieldsForTypeFromSchema } from "lib/stitching/lib/getTypesFromSchema"
 
@@ -15,7 +14,7 @@ describe("causality/stitching", () => {
     })
 
     it("resolves a SaleArtwork on an AuctionsLotStanding", async () => {
-      const allMergedSchemas = await incrementalMergeSchemas(schema, 1)
+      const allMergedSchemas = await incrementalMergeSchemas(v2Schema)
 
       const query = gql`
         {
@@ -76,7 +75,7 @@ describe("causality/stitching", () => {
 
     describe("auctionsLotStandingConnection", () => {
       it("stitches auctionsLotStandingConnection under Me", async () => {
-        const allMergedSchemas = await incrementalMergeSchemas(schema, 1)
+        const allMergedSchemas = await incrementalMergeSchemas(v2Schema)
 
         const query = gql`
           {
@@ -285,7 +284,7 @@ describe("causality/stitching", () => {
 
   describe("Lot", () => {
     it("extends Lot type with #lot", async () => {
-      const mergedSchema = await incrementalMergeSchemas(v2Schema, 2)
+      const mergedSchema = await incrementalMergeSchemas(v2Schema)
       const lotFields = await getFieldsForTypeFromSchema("Lot", mergedSchema)
       expect(lotFields).toContain("lot")
     })

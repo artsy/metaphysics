@@ -1,4 +1,4 @@
-import { runAuthenticatedQuery, runQuery } from "test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import { createLoaders } from "../../../lib/loaders"
 import gql from "lib/gql"
 import { resolveIPv4 } from "../../../lib/requestIDs"
@@ -33,9 +33,7 @@ describe("requestID (with the real data loaders)", () => {
     const query = gql`
       {
         me {
-          lot_standings {
-            is_highest_bidder
-          }
+          name
         }
       }
     `
@@ -44,7 +42,7 @@ describe("requestID (with the real data loaders)", () => {
     expect.assertions(1)
     await runAuthenticatedQuery(query, context)
 
-    expect(gravity).toBeCalledWith("me/lot_standings?size=100", "secret", {
+    expect(gravity).toBeCalledWith("me?", "secret", {
       requestIDs,
     })
   })

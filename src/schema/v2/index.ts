@@ -16,7 +16,7 @@ if (enableSchemaStitching) {
     if (typeof jest == "undefined") {
       console.warn("[V2] [FEATURE] Enabling Schema Stitching")
     }
-    exportedSchema = incrementalMergeSchemas(exportedSchema, 2)
+    exportedSchema = incrementalMergeSchemas(exportedSchema)
   } catch (err) {
     console.log("[V2] Error merging schemas:", err)
   }

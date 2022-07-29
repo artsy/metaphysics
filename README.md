@@ -88,9 +88,9 @@ You will need to set up headers with both:
 
 _If you're new to GraphQL, you can checkout [Artsy's GraphQL Workshop](https://github.com/artsy/graphql-workshop)._
 
-For `GraphQL Endpoint`, set it to `http://localhost:3000/` if you want to query for something that lives in v1 of the schema, otherwise, set it to `http://localhost:3000/v2`.
+For `GraphQL Endpoint`, set it to `http://localhost:3000/v2`.
 
-**Note that `/v2` is the default** and it is rare to query against `/v1`. 
+**Note that `/v2` is the default** and `/v1` has been fully deprecated and removed..
 
 ### Introspection Setup
 
