@@ -1,5 +1,5 @@
 import { GraphQLSchema, GraphQLObjectType, GraphQLScalarType } from "graphql"
-import { runQueryOrThrow } from "test/utils"
+import { runQueryOrThrow } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import { transformSchema } from "graphql-tools"
 import { ReplaceCommerceDateTimeType } from "../transformers/replaceCommerceDateTimeType"

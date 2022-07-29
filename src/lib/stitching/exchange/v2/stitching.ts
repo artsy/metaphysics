@@ -1,5 +1,5 @@
 import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
-import { amountSDL, amount } from "schema/v1/fields/money"
+import { amountSDL, amount } from "schema/v2/fields/money"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
 import { delegateToSchema } from "@graphql-tools/delegate"

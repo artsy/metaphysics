@@ -17,7 +17,7 @@
     "ci": "yarn test",
     "dev": "DEBUG=info,warn,error babel-node --extensions '.ts,.js' --inspect index.js",
     "dump-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-schema.ts",
-    "dump:local": "yarn dump-schema v1 _schema.graphql & yarn dump-schema v2 _schemaV2.graphql & wait",
+    "dump:local": "yarn dump-schema _schemaV2.graphql & wait",
     "dump:staging": "node scripts/dump-staging-schema.js",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
@@ -27,8 +27,7 @@
     "start": "yarn run dev",
     "sync-env": "aws s3 cp s3://artsy-citadel/dev/.env.metaphysics .env.shared && echo 'ENV sync complete.'",
     "test": "yarn type-check && yarn lint && jest",
-    "test:jest:v1": "yarn jest --config jest.config.v1.js --maxWorkers 3",
-    "test:jest:v2": "yarn jest --config jest.config.v2.js --maxWorkers 3",
+    "test:jest": "yarn jest --config jest.config.js --maxWorkers 3",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "test:validQueries": "babel-node --extensions '.ts,.js' src/integration/__tests__/runStoredQueryTests.ts",
     "type-check": "tsc --noEmit --pretty",
@@ -163,7 +162,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged; yarn dump:staging; git add _schema.graphql _schemaV2.graphql",
+      "pre-commit": "lint-staged; yarn dump:staging; git add _schemaV2.graphql",
       "pre-push": "yarn run type-check"
     }
   }

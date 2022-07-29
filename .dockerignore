@@ -1,13 +1,13 @@
-*
-!__mocks__/
+\*
+!**mocks**/
 !.circleci/
 !patches/
 !peril/
 !scripts/
 !src/
 
-!_schema.graphql
-!_schemaV2.graphql
+!\_schema.graphql
+!\_schemaV2.graphql
 !.env.test
 !.eslintignore
 !.eslintrc.json
@@ -17,7 +17,6 @@
 !global.d.ts
 !index.js
 !jest.config.js
-!jest.config.v1.js
 !jest.config.v2.js
 !package.json
 !renovate.json

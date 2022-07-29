@@ -18,17 +18,6 @@ const MOCK_CITIES: TCity[] = [
   },
 ]
 
-const MOCK_SPONSORED_CONTENT = {
-  cities: {
-    "sacramende-ca-usa": {
-      introText: "Lorem ipsum dolot sit amet",
-      artGuideUrl: "https://www.example.com/",
-      featuredShowIds: ["456", "def"],
-      showIds: ["abc", "123", "def", "456"],
-    },
-  },
-}
-
 const MOCK_CONTEXT = {
   geodataCitiesLoader: () => Promise.resolve(MOCK_CITIES),
 }
@@ -38,7 +27,18 @@ const MOCK_EMPTY_CONTEXT = {
 }
 
 jest.mock("lib/all.ts")
-jest.mock("lib/sponsoredContent/data.json", () => MOCK_SPONSORED_CONTENT)
+jest.mock("lib/sponsoredContent/data.json", () => {
+  return {
+    cities: {
+      "sacramende-ca-usa": {
+        introText: "Lorem ipsum dolot sit amet",
+        artGuideUrl: "https://www.example.com/",
+        featuredShowIds: ["456", "def"],
+        showIds: ["abc", "123", "def", "456"],
+      },
+    },
+  }
+})
 
 const allViaLoader = _allViaLoader as jest.Mock<typeof _allViaLoader>
 

@@ -1,13 +1,13 @@
-const mockSponsoredContent = {
-  fairs: {
-    "the-armory-show-2017": {
-      activationText: "Lorem ipsum dolor sit amet",
-      pressReleaseUrl: "https://www.example.com",
+jest.mock("lib/sponsoredContent/data.json", () => {
+  return {
+    fairs: {
+      "the-armory-show-2017": {
+        activationText: "Lorem ipsum dolor sit amet",
+        pressReleaseUrl: "https://www.example.com",
+      },
     },
-  },
-}
-
-jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
+  }
+})
 
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"

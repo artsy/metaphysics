@@ -1,7 +1,5 @@
 {
-  "editor.rulers": [
-    80
-  ],
+  "editor.rulers": [80],
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
   "[json]": {
@@ -9,18 +7,16 @@
   },
   "javascript.validate.enable": true,
   "search.exclude": {
-    "**/node_modules": true,
-    "src/schema/v1": true
+    "**/node_modules": true
   },
   "files.exclude": {
     "**/.git": true,
-    "**/build": true,
-    "src/schema/v1": false
+    "**/build": true
   },
   "path-intellisense.mappings": {
     "/": "${workspaceRoot}",
     "lib": "${workspaceRoot}/lib",
-    "schema": "${workspaceRoot}/schema/v1",
+    "schema": "${workspaceRoot}/schema/v2",
     "test": "${workspaceRoot}/test"
   },
   "typescript.tsdk": "./node_modules/typescript/lib",
@@ -43,9 +39,7 @@
     "urljoin"
   ],
   "debug.node.autoAttach": "on",
-  "eslint.validate": [
-    "typescript"
-  ],
+  "eslint.validate": ["typescript"],
   "typescript.surveys.enabled": false,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {

@@ -5,7 +5,7 @@ import * as prettier from "prettier"
 import * as jsdiff from "diff"
 
 // Grab the built schema to skip all the babel path faff
-import schema from "./src/schema/v1"
+import { schema } from "./src/schema/v2"
 
 export default async () => {
   // Rule: encourage all new files to be TypeScript
@@ -100,6 +100,9 @@ export default async () => {
   const queryMapDiff = await danger.git.diffForFile(
     "src/data/complete.queryMap.json"
   )
+
+  if (!queryMapDiff) return
+
   // 2 because a normal change has two removed lines (the last query, which gets
   // a comma added to it) and the ending brace bracket.
   if (queryMapDiff.removed.split("\n").length > 2) {
