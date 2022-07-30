@@ -90,7 +90,7 @@ _If you're new to GraphQL, you can checkout [Artsy's GraphQL Workshop](https://g
 
 For `GraphQL Endpoint`, set it to `http://localhost:3000/v2`.
 
-**Note that `/v2` is the default** and `/v1` has been fully deprecated and removed..
+**Note that `/v2` is the default** and `/v1` has been fully deprecated and removed.
 
 ### Introspection Setup
 
