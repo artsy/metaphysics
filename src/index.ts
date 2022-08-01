@@ -214,9 +214,32 @@ if (ENABLE_GRAPHQL_UPLOAD) {
   )
 }
 
-app.use("/v2", (req, res, next) => {
-  if (req.url !== "/") return next()
+// This is mounted at '/v2' and matches all routes that start with '/v2'.
+//
+// We only want to support:
+//   - POSTs -> requests to '/v2'
+//   - GETs:
+//     - requests to '/v2' (loads GraphiQL in non-prod mode)
+//     - requests to '/v2?query=...' (runs a query)
+export const supportedV2RouteHandler = (req, res, next) => {
+  if (req.method === "POST") {
+    if (!["/", "/?"].includes(req.url)) return next()
+  } else if (req.method === "GET") {
+    if (req.url !== "/") {
+      if (!req.url.startsWith("/?")) return next()
+      if (!req.query.query) return next()
+    }
+  } else {
+    return next()
+  }
+
   return graphqlServer(req, res, next)
+}
+
+app.use("/v2", supportedV2RouteHandler)
+
+app.use("*", (_req, res, _next) => {
+  res.status(404).send("Please use /v2 for all queries.")
 })
 
 if (enableSentry) {
