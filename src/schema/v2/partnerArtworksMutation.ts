@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLString,
 } from "graphql"
@@ -20,53 +21,33 @@ interface Input {
   location: string | null
 }
 
-const PartnerArtworksRequestType = new GraphQLObjectType<any, ResolverContext>({
-  name: "PartnerArtworksRequest",
+const PartnerArtworksType = new GraphQLObjectType<any, ResolverContext>({
+  name: "PartnerArtworks",
   fields: () => ({
     ...InternalIDFields,
-    success: {
-      type: GraphQLInt,
-      resolve: (res) => {
-        console.log(res)
-        return res.success
-      },
+    success: { type: GraphQLInt },
+    errors: {
+      type: new GraphQLObjectType({
+        name: "PartnerArtworksError",
+        fields: {
+          count: { type: GraphQLInt },
+          ids: { type: GraphQLList(GraphQLString) },
+        },
+      }),
     },
-    // error: {
-    //   type: new GraphQLObjectType({
-    //     name: "PartnerArtworksRequestError",
-    //     fields: {
-    //       count: { type: GraphQLInt },
-    //       // ids: { type: GraphQLString }, // this is actually wrong, it should be an array of strings
-    //     },
-    //   }),
-    // },
   }),
 })
-
-// "success": 0,
-// "errors": {
-// 	"count": 4,
-// 	"ids": [
-// 		"5c7ecd5ecb5b32002879ff59",
-// 		"5c7ecd5e53241d002c6b30c0",
-// 		"5c7ecd5ef5464e269088ff9f",
-// 		"5ab3ea0b139b211428d47600"
-// 	]
-// }
 
 const UpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
   name: "UpdatePartnerArtworksMutationSuccess",
-  isTypeOf: (data) => data.id,
+  isTypeOf: (data) => data.success || data.errors,
   fields: () => ({
-    partnerArtworksRequest: {
-      type: PartnerArtworksRequestType,
-      resolve: (partnerArtworksRequest) => {
-        console.log(partnerArtworksRequest)
-        return partnerArtworksRequest
-      },
+    partnerArtworks: {
+      type: PartnerArtworksType,
+      resolve: (partnerArtworks) => partnerArtworks,
     },
   }),
 })
@@ -121,8 +102,7 @@ export const updatePartnerArtworksMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    // test again
-    partnerArtworksRequestOrError: {
+    partnerArtworksOrError: {
       type: UpdatePartnerArtworksMutationType,
       resolve: (result) => result,
     },
