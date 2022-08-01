@@ -90,7 +90,7 @@ _If you're new to GraphQL, you can checkout [Artsy's GraphQL Workshop](https://g
 
 For `GraphQL Endpoint`, set it to `http://localhost:3000/` if you want to query for something that lives in v1 of the schema, otherwise, set it to `http://localhost:3000/v2`.
 
-**Note that `/v2` is the default** and it is rare to query against `/v1`. 
+**Note that `/v2` is the default** and it is rare to query against `/v1`.
 
 ### Introspection Setup
 
@@ -138,6 +138,7 @@ If any of these queries fail, it's probable that you misconfigured your
 
 - [Intro to GraphQL](https://github.com/artsy/graphql-workshop)
 - [How we use DataLoaders](docs/dataloaders.md)
+- [(Beginner friendly) Adding a gravity endpoint into Metaphysics](docs/adding_a_new_gravity_endpoint_into_metaphysics.md)
 - [Adding a GraphQL micro-service to Metaphysics](docs/adding_a_new_graphql_microservice.md)
 - [Adding a rest micro-service to Metaphysics](docs/adding_a_new_rest_microservice.md)
 - [Debugging with VS Code](docs/debugging_with_vscode.md)
