@@ -121,7 +121,7 @@ export const updatePartnerArtworksMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await updatePartnerArtworksLoader(id, gravityOptions)
+      return await updatePartnerArtworksLoader?.(id, gravityOptions)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
