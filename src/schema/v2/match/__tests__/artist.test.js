@@ -2,7 +2,7 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe.skip("MatchArtist", () => {
+describe("MatchArtist", () => {
   it("queries match/artist for the term 'ok'", () => {
     const query = gql`
       {
