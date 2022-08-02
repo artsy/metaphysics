@@ -12,8 +12,8 @@ import {
   formatGravityError,
 } from "lib/gravityErrorHandler"
 import { GraphQLObjectType } from "graphql"
-import { InternalIDFields } from "./object_identification"
 import { GraphQLUnionType } from "graphql"
+import { isExisty } from "lib/helpers"
 interface Input {
   id: string
   artsyShippingDomestic: boolean | null
@@ -27,11 +27,10 @@ const UpdatePartnerArtworksMutationSuccessDetails = new GraphQLObjectType<
 >({
   name: "UpdatePartnerArtworksMutationSuccessDetails",
   fields: () => ({
-    ...InternalIDFields,
     success: { type: GraphQLInt },
     errors: {
       type: new GraphQLObjectType({
-        name: "PartnerArtworksError",
+        name: "PartnerArtworksBulkEditErrors",
         fields: {
           count: { type: GraphQLInt },
           ids: { type: GraphQLList(GraphQLString) },
@@ -46,11 +45,11 @@ const UpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "UpdatePartnerArtworksMutationSuccess",
-  isTypeOf: (data) => data.success || data.errors,
+  isTypeOf: (data) => isExisty(data.success),
   fields: () => ({
-    partnerArtworks: {
+    partnerArtworksBulkEdit: {
       type: UpdatePartnerArtworksMutationSuccessDetails,
-      resolve: (partnerArtworks) => partnerArtworks,
+      resolve: (partnerArtworksBulkEdit) => partnerArtworksBulkEdit,
     },
   }),
 })
@@ -105,7 +104,7 @@ export const updatePartnerArtworksMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    partnerArtworksOrError: {
+    partnerArtworksBulkEditOrError: {
       type: UpdatePartnerArtworksMutationType,
       resolve: (result) => result,
     },
@@ -120,8 +119,12 @@ export const updatePartnerArtworksMutation = mutationWithClientMutationId<
       location,
     }
 
+    if (!updatePartnerArtworksLoader) {
+      throw new Error("You need to be signed in to perform this action")
+    }
+
     try {
-      return await updatePartnerArtworksLoader?.(id, gravityOptions)
+      return await updatePartnerArtworksLoader(id, gravityOptions)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
