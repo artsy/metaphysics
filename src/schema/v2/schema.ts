@@ -56,7 +56,7 @@ import Me from "./me"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
 // import MatchGene from "./match/gene"
 // import SaleArtwork from "./sale_artwork"
-// import MatchArtist from "./match/artist"
+import MatchArtist from "./match/artist"
 // import { SaleArtworksConnectionField } from "./sale_artworks"
 import Conversation from "./me/conversation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
@@ -212,7 +212,7 @@ const rootFields = {
     resolve: Image.resolve,
     description: "Do not use (only used internally for stitching)",
   },
-  // matchArtist: MatchArtist,
+  matchArtist: MatchArtist,
   // matchGene: MatchGene,
   matchConnection: MatchConnection,
   me: Me,
