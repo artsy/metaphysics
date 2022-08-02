@@ -11710,17 +11710,6 @@ type PartnerArtworkGrid implements ArtworkContextGrid {
   title: String
 }
 
-type PartnerArtworks {
-  errors: PartnerArtworksError
-
-  # A globally unique ID.
-  id: ID!
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-  success: Int
-}
-
 type PartnerArtworksError {
   count: Int
   ids: [String]
@@ -15496,7 +15485,18 @@ type UpdatePartnerArtworksMutationPayload {
 }
 
 type UpdatePartnerArtworksMutationSuccess {
-  partnerArtworks: PartnerArtworks
+  partnerArtworks: UpdatePartnerArtworksMutationSuccessDetails
+}
+
+type UpdatePartnerArtworksMutationSuccessDetails {
+  errors: PartnerArtworksError
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  success: Int
 }
 
 union UpdatePartnerArtworksMutationType =

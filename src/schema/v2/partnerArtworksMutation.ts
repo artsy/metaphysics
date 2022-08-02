@@ -21,8 +21,11 @@ interface Input {
   location: string | null
 }
 
-const PartnerArtworksType = new GraphQLObjectType<any, ResolverContext>({
-  name: "PartnerArtworks",
+const UpdatePartnerArtworksMutationSuccessDetails = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "UpdatePartnerArtworksMutationSuccessDetails",
   fields: () => ({
     ...InternalIDFields,
     success: { type: GraphQLInt },
@@ -46,7 +49,7 @@ const UpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
   isTypeOf: (data) => data.success || data.errors,
   fields: () => ({
     partnerArtworks: {
-      type: PartnerArtworksType,
+      type: UpdatePartnerArtworksMutationSuccessDetails,
       resolve: (partnerArtworks) => partnerArtworks,
     },
   }),
@@ -78,7 +81,7 @@ const UpdatePartnerArtworksMutationType = new GraphQLUnionType({
 
 export const updatePartnerArtworksMutation = mutationWithClientMutationId<
   Input,
-  any | null,
+  any,
   ResolverContext
 >({
   name: "UpdatePartnerArtworksMutation",
@@ -107,30 +110,25 @@ export const updatePartnerArtworksMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: (
+  mutateAndGetPayload: async (
     { id, artsyShippingDomestic, artsyShippingInternational, location },
     { updatePartnerArtworksLoader }
   ) => {
-    if (!updatePartnerArtworksMutation) {
-      throw new Error(
-        "You need to be signed in as an admin to perform this action"
-      )
-    }
-
     const gravityOptions = {
       artsy_shipping_domestic: artsyShippingDomestic,
       artsy_shipping_international: artsyShippingInternational,
       location,
     }
-    return updatePartnerArtworksLoader?.(id, gravityOptions)
-      .then((result) => result)
-      .catch((error) => {
-        const formattedErr = formatGravityError(error)
-        if (formattedErr) {
-          return { ...formattedErr, _type: "GravityMutationError" }
-        } else {
-          throw new Error(error)
-        }
-      })
+
+    try {
+      return await updatePartnerArtworksLoader?.(id, gravityOptions)
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
+    }
   },
 })
