@@ -615,14 +615,6 @@ describe("Sale type", () => {
       [
         {
           start_at: now().subtract(10, "days").toISOString(),
-          live_start_at: now().add(1, "minutes").toISOString(),
-          registration_ends_at: now().subtract(2, "days").toISOString(),
-        },
-        "live in a minute",
-      ],
-      [
-        {
-          start_at: now().subtract(10, "days").toISOString(),
           live_start_at: now().add(10, "minutes").toISOString(),
           registration_ends_at: now().subtract(2, "days").toISOString(),
         },

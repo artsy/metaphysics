@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
 
 describe("me.myCollection", () => {
-  const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
+  const marketPriceInsightsBatchLoader = jest.fn(async () => mockVortexResponse)
 
   it("returns artworks for a collection and pagination fields", async () => {
     const query = gql`
@@ -57,7 +57,7 @@ describe("me.myCollection", () => {
         }),
 
       collectionArtworksLoader: async () => mockCollectionArtworksResponse,
-      vortexGraphqlLoader,
+      marketPriceInsightsBatchLoader,
       authenticatedArtistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
@@ -98,7 +98,7 @@ describe("me.myCollection", () => {
           }),
 
         collectionArtworksLoader: async () => mockCollectionArtworksResponse,
-        vortexGraphqlLoader: jest.fn(() => async () => mockVortexResponse),
+        marketPriceInsightsBatchLoader: jest.fn(async () => mockVortexResponse),
         authenticatedArtistLoader: () =>
           Promise.resolve({
             _id: "artist-id",
@@ -202,7 +202,7 @@ describe("me.myCollection", () => {
             ],
           } as any,
         }),
-      vortexGraphqlLoader,
+      marketPriceInsightsBatchLoader,
       authenticatedArtistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
@@ -296,7 +296,7 @@ describe("me.myCollection", () => {
             "x-total-count": "10",
           },
         }),
-      vortexGraphqlLoader,
+      marketPriceInsightsBatchLoader,
       convectionGraphQLLoader: () =>
         Promise.resolve({
           submissions: {
@@ -370,7 +370,7 @@ describe("me.myCollection", () => {
             "x-total-count": "10",
           },
         }),
-      vortexGraphqlLoader,
+      marketPriceInsightsBatchLoader,
       authenticatedArtistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
@@ -428,7 +428,7 @@ describe("me.myCollection", () => {
         }),
       collectionArtworksLoader: () =>
         Promise.reject(new Error("Collection Not Found")),
-      vortexGraphqlLoader,
+      marketPriceInsightsBatchLoader,
     }
 
     const data = await runAuthenticatedQuery(query, context)
@@ -458,7 +458,7 @@ describe("me.myCollection", () => {
         }),
       collectionArtworksLoader: () =>
         Promise.reject(new Error("Some other error")),
-      vortexGraphqlLoader,
+      marketPriceInsightsBatchLoader,
     }
 
     expect.assertions(1)
@@ -501,32 +501,21 @@ const mockCollectionArtworksResponse = {
   },
 }
 
-const mockVortexResponse = {
-  data: {
-    marketPriceInsightsBatch: {
-      totalCount: 1,
-      edges: [
-        {
-          node: {
-            artistId: "artist-id",
-            demandRank: 0.64,
-            medium: "Print",
-            annualLotsSold: 25,
-            annualValueSoldCents: 577662200012,
-            lastAuctionResultDate: "2022-06-15T00:00:00Z",
-          },
-        },
-        {
-          node: {
-            artistId: "artist-id",
-            demandRank: 0.64,
-            medium: "Painting",
-            annualLotsSold: 10,
-            annualValueSoldCents: 2176421231,
-            lastAuctionResultDate: "2023-06-15T00:00:00Z",
-          },
-        },
-      ],
-    },
+const mockVortexResponse = [
+  {
+    artistId: "artist-id",
+    demandRank: 0.64,
+    medium: "Print",
+    annualLotsSold: 25,
+    annualValueSoldCents: 577662200012,
+    lastAuctionResultDate: "2022-06-15T00:00:00Z",
   },
-}
+  {
+    artistId: "artist-id",
+    demandRank: 0.64,
+    medium: "Painting",
+    annualLotsSold: 10,
+    annualValueSoldCents: 2176421231,
+    lastAuctionResultDate: "2023-06-15T00:00:00Z",
+  },
+]

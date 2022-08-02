@@ -48,7 +48,7 @@ generate a short-term JWT for your app.
    import fetch from "./fetch"
    const { THREE_BODY_API_BASE } = config
 
-   export default path => fetch(`${THREE_BODY_API_BASE}/${path}`)
+   export default (path) => fetch(`${THREE_BODY_API_BASE}/${path}`)
    ```
 
 1. Create an API loader factory: `lib/loaders/api/index.js`
@@ -78,11 +78,11 @@ generate a short-term JWT for your app.
 
    const { THREE_BODY_APP_ID } = config
 
-   export default accessToken => {
+   export default (accessToken) => {
      let threeBodyTokenLoader
      const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
      const threeBodyAccessTokenLoader = () =>
-       threeBodyTokenLoader().then(data => data.token)
+       threeBodyTokenLoader().then((data) => data.token)
 
      const gravityLoader = gravityLoaderWithAuthenticationFactory(
        gravityAccessTokenLoader
@@ -99,7 +99,7 @@ generate a short-term JWT for your app.
      )
 
      return {
-       groupResultsLoader: threeBodyLoader(id => `/group/${id}`),
+       groupResultsLoader: threeBodyLoader((id) => `/group/${id}`),
      }
    }
    ```
@@ -154,7 +154,7 @@ generate a short-term JWT for your app.
    export default ThreeBody
    ```
 
-   Then add a reference to this in `/schema/v1/services/index.js`.
+   Then add a reference to this in `/schema/v2/services/index.js`.
 
 From here you need to handle the usual work of adding mutations for writing
 data, and updating the schema for reading data. Good luck!

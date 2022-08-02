@@ -9,7 +9,7 @@ import {
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { CursorPageable, pageable } from "relay-cursor-paging"
-import { createPageCursors } from "schema/v1/fields/pagination"
+import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import { articleConnection } from "./article"
 import { ArticleLayout, ArticleLayoutEnum } from "./article/models"

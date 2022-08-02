@@ -3528,20 +3528,18 @@ describe("Artwork type", () => {
         }
       `
 
-      const mockVortexGraphqlLoader = jest.fn(() => () =>
-        Promise.resolve({
-          data: {
-            marketPriceInsightsBatch: { edges: null },
-          },
-        })
-      )
+      const marketPriceInsightsBatchLoader = jest.fn(async () => [
+        {
+          demandRank: 20,
+        },
+      ])
 
-      context.vortexGraphqlLoader = mockVortexGraphqlLoader
+      context.marketPriceInsightsBatchLoader = marketPriceInsightsBatchLoader
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            hasMarketPriceInsights: false,
+            hasMarketPriceInsights: true,
           },
         })
       })
@@ -3557,20 +3555,14 @@ describe("Artwork type", () => {
         }
       `
 
-    const mockVortexGraphqlLoader = jest.fn(() => () =>
-      Promise.resolve({
-        data: {
-          marketPriceInsightsBatch: { edges: [{ node: { demandRank: 0.9 } }] },
-        },
-      })
-    )
+    const marketPriceInsightsBatchLoader = jest.fn(async () => [])
 
-    context.vortexGraphqlLoader = mockVortexGraphqlLoader
+    context.marketPriceInsightsBatchLoader = marketPriceInsightsBatchLoader
 
     return runQuery(query, context).then((data) => {
       expect(data).toEqual({
         artwork: {
-          hasMarketPriceInsights: true,
+          hasMarketPriceInsights: false,
         },
       })
     })

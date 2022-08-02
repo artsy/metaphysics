@@ -6,9 +6,7 @@
 import { validate, parse, Source } from "graphql"
 import fs from "fs"
 import path from "path"
-import knownV1Failures from "./__fixtures__/knownV1Failures.json"
 import knownV2Failures from "./__fixtures__/knownV2Failures.json"
-import knownV1Queries from "./__fixtures__/knownV1Queries.json"
 
 /**
  * This set of queries is known to be valid against v1 _and_ v2. They're contained
@@ -46,26 +44,15 @@ const queryMap: PersistedQueryMap = JSON.parse(
   )
 )
 
-const schemaV1 = require("schema/v1").schema
 const schemaV2 = require("schema/v2").schema
 
 const queryToAst = (query) => parse(new Source(query))
 
-const knownV1Query = (hash: string) => hash in knownV1Queries
-const knownFailingForV1 = (hash: string) => hash in knownV1Failures
 const knownFailingForV2 = (hash: string) => hash in knownV2Failures
 const inBothV1AndV2 = (hash: string) => knownOverlap.includes(hash)
 
 Object.entries(queryMap).forEach(([hash, query]) => {
-  if (!knownFailingForV1(hash) && knownV1Query(hash)) {
-    test(`Ensure persisted query ${hash} is valid against v1 schema`, () => {
-      expect(validate(schemaV1, queryToAst(query))).toEqual([])
-    })
-  }
-  if (
-    !knownFailingForV2(hash) &&
-    (!knownFailingForV1(hash) || inBothV1AndV2(hash))
-  ) {
+  if (!knownFailingForV2(hash) && inBothV1AndV2(hash)) {
     test(`Ensure persisted query ${hash} is valid against v2 schema`, () => {
       const errors = validate(schemaV2, queryToAst(query))
       expect(errors).toEqual([])

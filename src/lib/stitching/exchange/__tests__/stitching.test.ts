@@ -634,7 +634,7 @@ describe("Conversation with orders", () => {
 // eslint-disable-next-line jest/no-disabled-tests
 describe.skip("resolving a stitched conversation", () => {
   it("resolves isInquiryOrder field on CommerceOfferOrder", async () => {
-    const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
+    const allMergedSchemas = await incrementalMergeSchemas(schema)
     const query = gql`
       {
         commerceOrder(id: 4200) {
@@ -670,7 +670,7 @@ describe.skip("resolving a stitched conversation", () => {
   })
 
   it("resolves isInquiryOrder to false field on CommerceOfferOrder", async () => {
-    const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
+    const allMergedSchemas = await incrementalMergeSchemas(schema)
     const query = gql`
       {
         commerceOrder(id: 4200) {
@@ -705,7 +705,7 @@ describe.skip("resolving a stitched conversation", () => {
   })
 
   it("resolves conversation field on CommerceOfferOrder", async () => {
-    const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
+    const allMergedSchemas = await incrementalMergeSchemas(schema)
     const query = gql`
       {
         commerceOrder(id: 4200) {
@@ -773,7 +773,7 @@ describe.skip("resolving a stitched conversation", () => {
   })
 
   it("resolves conversation field on CommerceOfferOrder as null if there is no associated conversation id", async () => {
-    const allMergedSchemas = await incrementalMergeSchemas(schema, 2)
+    const allMergedSchemas = await incrementalMergeSchemas(schema)
     const query = gql`
       {
         commerceOrder(id: 4200) {

@@ -93,22 +93,16 @@ workflows:
 
       # pre-staging
       - yarn/run:
-          name: test-jest-v1
+          name: test-jest
           <<: *not_staging_or_release
-          script: "test:jest:v1"
-
-      - yarn/run:
-          name: test-jest-v2
-          <<: *not_staging_or_release
-          script: "test:jest:v2"
+          script: "test:jest"
 
       # staging
       - hokusai/push:
           name: push-staging-image
           <<: *only_main
           requires:
-            - test-jest-v1
-            - test-jest-v2
+            - test-jest
 
       - hokusai/deploy-staging:
           name: deploy-staging

@@ -9,22 +9,18 @@ require("dotenv").config({
 import fs from "fs"
 import { printSchema } from "graphql/utilities"
 import path from "path"
-import { schema as schemaV1 } from "schema/v1"
-import { schema as schemaV2 } from "schema/v2"
+import { schema } from "../src/schema/v2"
 import prettier from "prettier"
 import { graphql, introspectionQuery } from "graphql"
 
 const message =
-  "Usage: dump-schema.js [v1|v2] /path/to/output/directory or /path/to/filename.graphql or /path/to/schema.json"
+  "Usage: dump-schema.js /path/to/output/directory or /path/to/filename.graphql or /path/to/schema.json"
 
-const schemaVersion = process.argv[2]
-const destination = process.argv[3]
-if (schemaVersion === undefined || destination === undefined) {
+const destination = process.argv[2]
+if (destination === undefined) {
   console.error(message)
   process.exit(1)
 }
-
-const schema = schemaVersion === "v1" ? schemaV1 : schemaV2
 
 // Support both passing a folder or a filename
 const schemaPath =
@@ -35,13 +31,13 @@ const schemaPath =
 if (schemaPath.endsWith("json")) {
   console.log(`Dumping JSON to ${schemaPath}`)
   graphql(schema, introspectionQuery).then(
-    result => {
+    (result) => {
       const prettierResult = prettier.format(JSON.stringify(result), {
         parser: "json",
       })
       fs.writeFileSync(path.join(schemaPath), prettierResult)
     },
-    error => {
+    (error) => {
       console.error(
         "ERROR introspecting schema: ",
         JSON.stringify(error, null, 2)

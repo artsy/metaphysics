@@ -1,7 +1,7 @@
 import { validate, Source, parse } from "graphql"
 import { principalFieldDirectiveValidation } from "../principalFieldDirectiveValidation"
 
-const schema = require("schema/v1").default
+const schema = require("schema/v2/schema").default
 
 const queryToAst = (query) => parse(new Source(query))
 
@@ -10,7 +10,7 @@ describe("principalFieldDirectiveValidation", () => {
     const query = `
       {
         artwork(id: "test") @principalField {
-          id @principalField
+          internalID @principalField
         }
       }
     `
@@ -26,7 +26,7 @@ describe("principalFieldDirectiveValidation", () => {
     const query = `
       {
         artwork(id: "test") @principalField {
-          id
+          internalID
         }
       }
     `
