@@ -21,7 +21,10 @@ interface Input {
   location: string | null
 }
 
-const BulkUpdatePartnerArtworksResponseType = new GraphQLObjectType({
+const BulkUpdatePartnerArtworksResponseType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "BulkUpdatePartnerArtworksResponse",
   fields: {
     count: { type: GraphQLInt },
