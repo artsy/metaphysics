@@ -99,6 +99,9 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
     },
     medium: {
       type: GraphQLString,
+      resolve: ({ medium }) => {
+        return medium || ""
+      },
     },
     demandRank: {
       type: GraphQLFloat,
