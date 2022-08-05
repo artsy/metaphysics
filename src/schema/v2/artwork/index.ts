@@ -99,9 +99,6 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
     },
     medium: {
       type: GraphQLString,
-      resolve: ({ medium }) => {
-        return medium || ""
-      },
     },
     demandRank: {
       type: GraphQLFloat,
@@ -767,6 +764,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           'Represents the **materials** used in this work, such as _oil and acrylic on canvas_. (This should not be confused with the artwork attribute called `category`, which is commonly referred to as "medium" or "medium type")',
+        resolve: ({ medium }) => {
+          return medium || ""
+        },
       },
       mediumType: {
         type: ArtworkMedium,
