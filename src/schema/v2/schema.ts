@@ -147,7 +147,7 @@ import { toggleFeatureFlagMutation } from "./admin/mutations/toggleFeatureFlagMu
 import { MatchConnection } from "./Match"
 import { PartnerArtistDocumentsConnection } from "./partnerArtistDocumentsConnection"
 import { PartnerShowDocumentsConnection } from "./partnerShowDocumentsConnection"
-import { updatePartnerArtworksMutation } from "./partnerArtworksMutation"
+import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -314,7 +314,7 @@ export default new GraphQLSchema({
       updateUserSaleProfile: updateUserSaleProfileMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateNotificationPreferences: updateNotificationPreferencesMutation,
-      updatePartnerArtworks: updatePartnerArtworksMutation,
+      bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       requestPriceEstimate: requestPriceEstimateMutation,
     },

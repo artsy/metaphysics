@@ -13,7 +13,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { GraphQLObjectType } from "graphql"
 import { GraphQLUnionType } from "graphql"
-import { isExisty } from "lib/helpers"
+
 interface Input {
   id: string
   artsyShippingDomestic: boolean | null
@@ -21,44 +21,33 @@ interface Input {
   location: string | null
 }
 
-const UpdatePartnerArtworksMutationSuccessDetails = new GraphQLObjectType<
+const BulkUpdatePartnerArtworksResponseType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "UpdatePartnerArtworksMutationSuccessDetails",
+  name: "BulkUpdatePartnerArtworksResponse",
+  fields: {
+    count: { type: GraphQLInt },
+    ids: { type: GraphQLList(GraphQLString) },
+  },
+})
+
+const BulkUpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "BulkUpdatePartnerArtworksMutationSuccess",
   fields: () => ({
-    success: { type: GraphQLInt },
-    errors: {
-      type: new GraphQLObjectType({
-        name: "PartnerArtworksBulkEditErrors",
-        fields: {
-          count: { type: GraphQLInt },
-          ids: { type: GraphQLList(GraphQLString) },
-        },
-      }),
-    },
+    updatedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
+    skippedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
   }),
 })
 
-const UpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
+const BulkUpdatePartnerArtworksMutationFailureType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "UpdatePartnerArtworksMutationSuccess",
-  isTypeOf: (data) => isExisty(data.success),
-  fields: () => ({
-    partnerArtworksBulkEdit: {
-      type: UpdatePartnerArtworksMutationSuccessDetails,
-      resolve: (partnerArtworksBulkEdit) => partnerArtworksBulkEdit,
-    },
-  }),
-})
-
-const UpdatePartnerArtworksMutationFailureType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "UpdatePartnerArtworksMutationFailure",
+  name: "BulkUpdatePartnerArtworksMutationFailure",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
@@ -70,20 +59,20 @@ const UpdatePartnerArtworksMutationFailureType = new GraphQLObjectType<
   }),
 })
 
-const UpdatePartnerArtworksMutationType = new GraphQLUnionType({
-  name: "UpdatePartnerArtworksMutationType",
+const BulkUpdatePartnerArtworksMutationType = new GraphQLUnionType({
+  name: "BulkUpdatePartnerArtworksMutationType",
   types: [
-    UpdatePartnerArtworksMutationSuccessType,
-    UpdatePartnerArtworksMutationFailureType,
+    BulkUpdatePartnerArtworksMutationSuccessType,
+    BulkUpdatePartnerArtworksMutationFailureType,
   ],
 })
 
-export const updatePartnerArtworksMutation = mutationWithClientMutationId<
+export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
   Input,
   any,
   ResolverContext
 >({
-  name: "UpdatePartnerArtworksMutation",
+  name: "BulkUpdatePartnerArtworksMutation",
   description: "Update all artworks that belong to the partner",
   inputFields: {
     id: {
@@ -104,8 +93,8 @@ export const updatePartnerArtworksMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    partnerArtworksBulkEditOrError: {
-      type: UpdatePartnerArtworksMutationType,
+    bulkUpdatePartnerArtworksOrError: {
+      type: BulkUpdatePartnerArtworksMutationType,
       resolve: (result) => result,
     },
   },
@@ -124,7 +113,22 @@ export const updatePartnerArtworksMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await updatePartnerArtworksLoader(id, gravityOptions)
+      const gravityResponse = await updatePartnerArtworksLoader(
+        id,
+        gravityOptions
+      )
+
+      // In the future it could be helpful to have a list of successfully opted in ids, can add this to gravity at a later date
+
+      const formattedReturn = {
+        updatedPartnerArtworks: { count: gravityResponse.success, ids: [] },
+        skippedPartnerArtworks: {
+          count: gravityResponse.error.count,
+          ids: gravityResponse.error.ids,
+        },
+      }
+
+      return formattedReturn
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
