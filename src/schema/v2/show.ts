@@ -47,7 +47,6 @@ import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
-import config from "config"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -416,11 +415,8 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       isReverseImageSearchEnabled: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Have we indexed this show's artworks to tineye?",
-        resolve: ({ id }) => {
-          const isReverseImageSearchEnabled = !!config.REVERSE_IMAGE_SEARCH_ENABLED_SHOW_SLUGS?.split(
-            ","
-          ).includes(id)
-          return isReverseImageSearchEnabled
+        resolve: ({ reverse_image_search_enabled }) => {
+          return !!reverse_image_search_enabled
         },
       },
       isDisplayable: {

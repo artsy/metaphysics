@@ -206,9 +206,12 @@ describe("Show type", () => {
 
   describe("isReverseImageSearchEnabled flag", () => {
     it("should be true when show artworks are indexed in tineye", async () => {
-      config.REVERSE_IMAGE_SEARCH_ENABLED_SHOW_SLUGS =
-        "show-with-indexed-tineye-artworks"
-      showData.id = "show-with-indexed-tineye-artworks"
+      context.showLoader = sinon.stub().returns(
+        Promise.resolve({
+          ...showData,
+          reverse_image_search_enabled: true,
+        })
+      )
 
       const query = gql`
         {
@@ -227,30 +230,13 @@ describe("Show type", () => {
       })
     })
 
-    it("should be true when more than one show artworks are indexed in tineye", async () => {
-      config.REVERSE_IMAGE_SEARCH_ENABLED_SHOW_SLUGS =
-        "show-with-indexed-tineye-artworks,another-show-with-indexed-tineye-artworks,and-another-show-with-indexed-tineye-artworks"
-      showData.id = "and-another-show-with-indexed-tineye-artworks"
-
-      const query = gql`
-        {
-          show(id: "and-another-show-with-indexed-tineye-artworks") {
-            isReverseImageSearchEnabled
-          }
-        }
-      `
-
-      const data = await runQuery(query, context)
-
-      expect(data).toEqual({
-        show: {
-          isReverseImageSearchEnabled: true,
-        },
-      })
-    })
-
     it("should be false when show artworks are NOT indexed in tineye", async () => {
-      showData.id = "show-without-indexed-tineye-artworks"
+      context.showLoader = sinon.stub().returns(
+        Promise.resolve({
+          ...showData,
+          reverse_image_search_enabled: false,
+        })
+      )
 
       const query = gql`
         {
