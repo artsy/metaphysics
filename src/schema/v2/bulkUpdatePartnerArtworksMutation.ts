@@ -13,7 +13,6 @@ import {
 } from "lib/gravityErrorHandler"
 import { GraphQLObjectType } from "graphql"
 import { GraphQLUnionType } from "graphql"
-import { isExisty } from "lib/helpers"
 
 interface Input {
   id: string
@@ -38,7 +37,6 @@ const BulkUpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "BulkUpdatePartnerArtworksMutationSuccess",
-  isTypeOf: (data) => isExisty(data.success),
   fields: () => ({
     updatedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
     skippedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
@@ -68,6 +66,7 @@ const BulkUpdatePartnerArtworksMutationType = new GraphQLUnionType({
     BulkUpdatePartnerArtworksMutationFailureType,
   ],
   resolveType: (object) => {
+    console.log("OBJECT IN RESOLVE TYPE", object)
     if (object.skippedPartnerArtworks) {
       return BulkUpdatePartnerArtworksMutationSuccessType
     } else return BulkUpdatePartnerArtworksMutationFailureType
@@ -102,7 +101,17 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
   outputFields: {
     bulkUpdatePartnerArtworksOrError: {
       type: BulkUpdatePartnerArtworksMutationType,
-      resolve: (result) => result,
+      resolve: (result) => {
+        // In the future it could be helpful to have a list of successfully opted in ids, can add this to gravity at a later date
+        const formattedReturn = {
+          updatedPartnerArtworks: { count: result.success, ids: [] },
+          skippedPartnerArtworks: {
+            count: result.errors.count,
+            ids: result.errors.ids,
+          },
+        }
+        return formattedReturn
+      },
     },
   },
   mutateAndGetPayload: async (
@@ -125,17 +134,7 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
         gravityOptions
       )
 
-      // In the future it could be helpful to have a list of successfully opted in ids, can add this to gravity at a later date
-
-      const formattedReturn = {
-        updatedPartnerArtworks: { count: gravityResponse.success, ids: [] },
-        skippedPartnerArtworks: {
-          count: gravityResponse.errors.count,
-          ids: gravityResponse.errors.ids,
-        },
-      }
-
-      return formattedReturn
+      return gravityResponse
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
