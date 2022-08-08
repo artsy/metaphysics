@@ -103,14 +103,13 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
       type: BulkUpdatePartnerArtworksMutationType,
       resolve: (result) => {
         // In the future it could be helpful to have a list of successfully opted in ids, can add this to gravity at a later date
-        const formattedReturn = {
+        return {
           updatedPartnerArtworks: { count: result.success, ids: [] },
           skippedPartnerArtworks: {
             count: result.errors.count,
             ids: result.errors.ids,
           },
         }
-        return formattedReturn
       },
     },
   },
@@ -129,12 +128,7 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
     }
 
     try {
-      const gravityResponse = await updatePartnerArtworksLoader(
-        id,
-        gravityOptions
-      )
-
-      return gravityResponse
+      return await updatePartnerArtworksLoader(id, gravityOptions)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
