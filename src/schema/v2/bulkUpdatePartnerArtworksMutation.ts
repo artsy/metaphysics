@@ -123,8 +123,8 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
       const formattedReturn = {
         updatedPartnerArtworks: { count: gravityResponse.success, ids: [] },
         skippedPartnerArtworks: {
-          count: gravityResponse.error.count,
-          ids: gravityResponse.error.ids,
+          count: gravityResponse.errors.count,
+          ids: gravityResponse.errors.ids,
         },
       }
 
