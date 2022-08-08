@@ -67,6 +67,11 @@ const BulkUpdatePartnerArtworksMutationType = new GraphQLUnionType({
     BulkUpdatePartnerArtworksMutationSuccessType,
     BulkUpdatePartnerArtworksMutationFailureType,
   ],
+  resolveType: (object) => {
+    if (object.skippedPartnerArtworks) {
+      return BulkUpdatePartnerArtworksMutationSuccessType
+    } else return BulkUpdatePartnerArtworksMutationFailureType
+  },
 })
 
 export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
