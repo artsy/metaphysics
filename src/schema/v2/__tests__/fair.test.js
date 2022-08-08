@@ -12,7 +12,6 @@ jest.mock("lib/sponsoredContent/data.json", () => {
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
-import config from "config"
 import moment from "moment"
 
 describe("Fair type", () => {
@@ -765,11 +764,9 @@ describe("Fair", () => {
 
     describe("isReverseImageSearchEnabled flag", () => {
       it("should be true when fair artworks are indexed in tineye", async () => {
-        config.REVERSE_IMAGE_SEARCH_ENABLED_FAIR_SLUGS =
-          "fair-with-indexed-tineye-artworks"
-
         const mockFair = {
           id: "fair-with-indexed-tineye-artworks",
+          reverse_image_search_enabled: true,
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
@@ -796,11 +793,9 @@ describe("Fair", () => {
       })
 
       it("should be true when more than one fair artworks are indexed in tineye", async () => {
-        config.REVERSE_IMAGE_SEARCH_ENABLED_FAIR_SLUGS =
-          "fair-with-indexed-tineye-artworks,second-fair-with-indexed-tineye-artworks"
-
         const mockFair = {
           id: "second-fair-with-indexed-tineye-artworks",
+          reverse_image_search_enabled: true,
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
