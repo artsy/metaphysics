@@ -13,6 +13,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { GraphQLObjectType } from "graphql"
 import { GraphQLUnionType } from "graphql"
+import { isExisty } from "lib/helpers"
 
 interface Input {
   id: string
@@ -26,10 +27,10 @@ const BulkUpdatePartnerArtworksResponseType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "BulkUpdatePartnerArtworksResponse",
-  fields: {
+  fields: () => ({
     count: { type: GraphQLInt },
     ids: { type: GraphQLList(GraphQLString) },
-  },
+  }),
 })
 
 const BulkUpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
@@ -37,6 +38,7 @@ const BulkUpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "BulkUpdatePartnerArtworksMutationSuccess",
+  isTypeOf: (data) => isExisty(data.success),
   fields: () => ({
     updatedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
     skippedPartnerArtworks: { type: BulkUpdatePartnerArtworksResponseType },
