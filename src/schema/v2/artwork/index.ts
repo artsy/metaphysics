@@ -130,6 +130,23 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
+    medianSalePriceDisplayText: {
+      type: GraphQLString,
+      args: {
+        format: {
+          type: GraphQLString,
+          description: "Passes in to numeral, such as `'0.00'`",
+          defaultValue: "",
+        },
+      },
+      resolve: ({ medianSalePriceLast36Months }, { format }) => {
+        if (!medianSalePriceLast36Months) {
+          return null
+        }
+
+        return priceDisplayText(medianSalePriceLast36Months, "USD", format)
+      },
+    },
     lastAuctionResultDate: {
       type: GraphQLString,
     },
