@@ -340,6 +340,7 @@ describe("me.myCollection", () => {
                 marketPriceInsights {
                   demandRank
                   averageSalePriceDisplayText
+                  medianSalePriceDisplayText
                 }
               }
             }
@@ -393,6 +394,7 @@ describe("me.myCollection", () => {
                   "marketPriceInsights": Object {
                     "averageSalePriceDisplayText": "US$2,176,421",
                     "demandRank": 0.64,
+                    "medianSalePriceDisplayText": "US$5,776,622,000",
                   },
                   "medium": "Painting",
                   "title": "some title",
@@ -509,6 +511,7 @@ const mockVortexResponse = [
     annualLotsSold: 25,
     annualValueSoldCents: 577662200012,
     lastAuctionResultDate: "2022-06-15T00:00:00Z",
+    medianSalePriceLast36Months: 577662200012,
   },
   {
     artistId: "artist-id",
@@ -517,5 +520,6 @@ const mockVortexResponse = [
     annualLotsSold: 10,
     annualValueSoldCents: 2176421231,
     lastAuctionResultDate: "2023-06-15T00:00:00Z",
+    medianSalePriceLast36Months: 577662200012,
   },
 ]
