@@ -117,6 +117,29 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       description: "The given phone number of the user.",
       type: GraphQLString,
     },
+    createdAt: date(({ created_at }) => created_at),
+    emailConfirmedAt: date(({ email_confirmed_at }) => email_confirmed_at),
+    secondFactorEnabled: {
+      description:
+        "If the user has enabled two-factor authentication on their account",
+      type: GraphQLBoolean,
+      resolve: ({ second_factor_enabled }) => second_factor_enabled,
+    },
+    roles: {
+      description: "The roles of the user",
+      type: new GraphQLList(GraphQLString),
+      resolve: ({ roles }) => roles,
+    },
+    signInCount: {
+      description: "The number of times a user has signed in",
+      type: GraphQLInt,
+      resolve: ({ sign_in_count }) => sign_in_count,
+    },
+    lastSignInAt: {
+      description: "The timestamp of the user's last sign in",
+      type: GraphQLString,
+      resolve: ({ last_sign_in_at }) => last_sign_in_at,
+    },
     saleProfile: UserSaleProfileField,
     location: {
       description: "The given location of the user as structured data",
