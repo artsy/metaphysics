@@ -4,12 +4,15 @@ import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLFieldConfig,
+  GraphQLList,
+  GraphQLInt,
 } from "graphql"
 import cached from "./fields/cached"
 import { InternalIDFields } from "./object_identification"
 import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "./fields/pagination"
+import { date } from "./fields/date"
 
 export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserSaleProfile",
@@ -44,6 +47,18 @@ export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
+export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
+  name: "UserAdminNotes",
+  fields: () => ({
+    ...InternalIDFields,
+    body: {
+      description: "The body of the admin note",
+      type: GraphQLString,
+    },
+    createdAt: date(({ created_at }) => created_at),
+  }),
+})
+
 export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
   description: "The sale profile of the user.",
   type: UserSaleProfileType,
@@ -62,11 +77,34 @@ export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
+export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
+  description: "The admin notes associated with the user",
+  type: new GraphQLList(UserAdminNoteType),
+  resolve: ({ id }, {}, { userAdminNotesLoader }) => {
+    if (!userAdminNotesLoader) {
+      throw new Error(
+        "You need to be signed in as an admin to perform this action"
+      )
+    }
+
+    return userAdminNotesLoader(id)
+      .then((result) => {
+        return result
+      })
+      .catch((err) => {
+        if (err.statusCode === 404) {
+          return null
+        }
+      })
+  },
+}
+
 export const UserType = new GraphQLObjectType<any, ResolverContext>({
   name: "User",
   fields: () => ({
     ...InternalIDFields,
     cached,
+    adminNotes: UserAdminNotesField,
     name: {
       description: "The given name of the user.",
       type: new GraphQLNonNull(GraphQLString),

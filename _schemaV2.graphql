@@ -15800,14 +15800,6 @@ type User {
   adminNotes: [UserAdminNotes]
   analytics: AnalyticsUserStats
   cached: Int
-  createdAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
-    # http://www.iana.org/time-zones,
-    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
 
   # Has the user opted out of data transfer.
   dataTransferOptOut: Boolean
@@ -15815,23 +15807,12 @@ type User {
 
   # The given email of the user.
   email: String!
-  emailConfirmedAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
-    # http://www.iana.org/time-zones,
-    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
 
   # A globally unique ID.
   id: ID!
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
-
-  # The timestamp of the user's last sign in
-  lastSignInAt: String
 
   # The given location of the user as structured data
   location: Location
@@ -15878,17 +15859,8 @@ type User {
   # This user should receive viewing room notifications
   receiveViewingRoomNotification: Boolean
 
-  # The roles of the user
-  roles: [String]
-
   # The sale profile of the user.
   saleProfile: UserSaleProfile
-
-  # The number of times a user has signed in
-  signInCount: Int
-
-  # If the user has enabled two-factor authentication on their account
-  twoFactorAuthentication: Boolean
 
   # Check whether a user exists by email address before creating an account.
   userAlreadyExists: Boolean
