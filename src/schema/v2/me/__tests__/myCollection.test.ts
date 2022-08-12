@@ -477,6 +477,7 @@ const mockCollectionArtworksResponse = {
       _id: "58e3e54aa09a6708282022f6",
       title: "some title",
       medium: "Print",
+      category: "Print",
       artist: {
         _id: "artist-id",
       },
@@ -485,6 +486,7 @@ const mockCollectionArtworksResponse = {
       _id: "58e3e52aa09a6708282022f6",
       title: "another title",
       medium: "Print",
+      category: "Print",
       artist: {
         _id: "artist-id",
       },
@@ -493,6 +495,7 @@ const mockCollectionArtworksResponse = {
       _id: "58e3e54aa09a6708282022f6",
       title: "some title",
       medium: "Painting",
+      category: "Painting",
       artist: {
         _id: "artist-id",
       },

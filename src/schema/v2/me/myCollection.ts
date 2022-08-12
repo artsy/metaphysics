@@ -142,7 +142,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         )
         enrichedArtworks = uniqWith(
           enrichedArtworks,
-          (a, b) => a.artist._id === b.artist._id && a.medium === b.medium
+          (a, b) => a.artist._id === b.artist._id && a.category === b.category
         )
       }
 
