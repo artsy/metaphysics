@@ -128,7 +128,6 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
     roles: {
       description: "The roles of the user",
       type: new GraphQLList(GraphQLString),
-      resolve: ({ roles }) => roles,
     },
     signInCount: {
       description: "The number of times a user has signed in",
