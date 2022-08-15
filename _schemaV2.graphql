@@ -15716,6 +15716,7 @@ type UpdateUserDefaultAddressPayload {
 }
 
 input UpdateUserMutationInput {
+  adminNote: String
   clientMutationId: String
   dataTransferOptOut: Boolean
   email: String

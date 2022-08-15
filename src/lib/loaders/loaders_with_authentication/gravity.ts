@@ -435,6 +435,11 @@ export default (accessToken, userID, opts) => {
     usersLoader: gravityLoader("users", {}, { headers: true }),
     userSaleProfileLoader: gravityLoader((id) => `user_sale_profile/${id}`),
     userAdminNotesLoader: gravityLoader((id) => `user/${id}/admin_notes`),
+    updateAdminNotesLoader: gravityLoader(
+      (id) => `/user/${id}/admin_note`,
+      {},
+      { method: "POST" }
+    ),
     updateUserSaleProfileLoader: gravityLoader(
       (id) => `user_sale_profile/${id}`,
       {},
