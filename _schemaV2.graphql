@@ -15450,6 +15450,8 @@ input UpdateCollectorProfileInput {
   # List of affiliated gallery ids, referencing Galaxy.
   affiliatedGalleryIds: [String]
   clientMutationId: String
+  companyName: String
+  companyWebsite: String
   institutionalAffiliations: String
   intents: [Intents]
   loyaltyApplicant: Boolean

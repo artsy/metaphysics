@@ -5,18 +5,24 @@ describe("UpdateCollectorProfile", () => {
   it("updates and returns a collector profile", async () => {
     const mutation = `
       mutation {
-        updateCollectorProfile(input: { professionalBuyer: true, loyaltyApplicant: true, selfReportedPurchases: "trust me i buy art", intents: [BUY_ART_AND_DESIGN], institutionalAffiliations: "example" }) {
+        updateCollectorProfile(input: { professionalBuyer: true, loyaltyApplicant: true, selfReportedPurchases: "trust me i buy art", intents: [BUY_ART_AND_DESIGN], institutionalAffiliations: "example", companyName: "Cool Art Stuff", companyWebsite: "https://artsy.net" }) {
           internalID
           name
           email
           selfReportedPurchases
           intents
+          companyName
+          companyWebsite
+          professionalBuyerAt
         }
       }
     `
 
     const mockUpdateCollectorProfileLoader = jest.fn().mockReturnValue(
       Promise.resolve({
+        company_name: "Cool Art Stuff",
+        company_website: "https://artsy.net",
+        professional_buyer_at: "2022-08-15T11:14:55+00:00",
         id: "3",
         name: "Percy",
         email: "percy@cat.com",
@@ -30,6 +36,9 @@ describe("UpdateCollectorProfile", () => {
     }
 
     const expectedProfileData = {
+      companyName: "Cool Art Stuff",
+      companyWebsite: "https://artsy.net",
+      professionalBuyerAt: "2022-08-15T11:14:55+00:00",
       internalID: "3",
       name: "Percy",
       email: "percy@cat.com",
@@ -52,6 +61,8 @@ describe("UpdateCollectorProfile", () => {
       professional_buyer: true,
       self_reported_purchases: "trust me i buy art",
       institutional_affiliations: "example",
+      company_name: "Cool Art Stuff",
+      company_website: "https://artsy.net",
     })
   })
 

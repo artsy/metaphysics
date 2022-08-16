@@ -50,6 +50,8 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: new GraphQLList(GraphQLString),
     },
     institutionalAffiliations: { type: GraphQLString },
+    companyName: { type: GraphQLString },
+    companyWebsite: { type: GraphQLString },
     intents: { type: new GraphQLList(IntentsType) },
     loyaltyApplicant: { type: GraphQLBoolean },
     professionalBuyer: { type: GraphQLBoolean },
