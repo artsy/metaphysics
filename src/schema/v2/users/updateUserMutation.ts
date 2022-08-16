@@ -38,14 +38,10 @@ export const updateUserMutation = mutationWithClientMutationId<
     email: { type: GraphQLString },
     name: { type: GraphQLString },
     phone: { type: GraphQLString },
-    adminNote: { type: GraphQLString },
   },
   outputFields: {},
-  mutateAndGetPayload: async (
-    args,
-    { updateUserLoader, updateAdminNotesLoader }
-  ) => {
-    if (!updateUserLoader || !updateAdminNotesLoader) {
+  mutateAndGetPayload: async (args, { updateUserLoader }) => {
+    if (!updateUserLoader) {
       throw new Error(
         "You need to be signed in as an admin to perform this action"
       )
@@ -58,14 +54,7 @@ export const updateUserMutation = mutationWithClientMutationId<
         {} as GravityInput
       )
 
-    const updateAdminNotesLoaderPayload = {
-      body: args.adminNote,
-    }
-
     try {
-      if (args.adminNote) {
-        await updateAdminNotesLoader(args.id, updateAdminNotesLoaderPayload)
-      }
       return await updateUserLoader?.(args.id, updateUserLoaderPayload)
     } catch (err) {
       if ("body" in (err as any)) {

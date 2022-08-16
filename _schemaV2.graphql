@@ -7013,6 +7013,19 @@ type CreateUserAddressPayload {
   userAddressOrErrors: UserAddressOrErrorsUnion!
 }
 
+input createUserAdminNoteMutationInput {
+  body: String!
+  clientMutationId: String
+  id: String!
+}
+
+type createUserAdminNoteMutationPayload {
+  clientMutationId: String
+
+  # On success: an identity verification with overrides
+  userAdminNote: UserAdminNotes
+}
+
 input CreateUserInterestMutationInput {
   anonymousSessionId: String
 
@@ -10803,6 +10816,11 @@ type Mutation {
     input: CreateSmsSecondFactorInput!
   ): CreateSmsSecondFactorPayload
   createUserAddress(input: CreateUserAddressInput!): CreateUserAddressPayload
+
+  # Create a admin note for the user
+  createUserAdminNote(
+    input: createUserAdminNoteMutationInput!
+  ): createUserAdminNoteMutationPayload
 
   # Creates a UserInterest on the logged in User's CollectorProfile.
   createUserInterest(
@@ -15716,7 +15734,6 @@ type UpdateUserDefaultAddressPayload {
 }
 
 input UpdateUserMutationInput {
-  adminNote: String
   clientMutationId: String
   dataTransferOptOut: Boolean
   email: String
@@ -15830,9 +15847,14 @@ type User {
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
+  lastSignInAt(
+    format: String
 
-  # The timestamp of the user's last sign in
-  lastSignInAt: String
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 
   # The given location of the user as structured data
   location: Location
@@ -15997,7 +16019,7 @@ union UserAddressOrErrorsUnion = Errors | UserAddress
 
 type UserAdminNotes {
   # The body of the admin note
-  body: String
+  body: String!
   createdAt(
     format: String
 

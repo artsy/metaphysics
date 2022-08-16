@@ -53,7 +53,7 @@ export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
     ...InternalIDFields,
     body: {
       description: "The body of the admin note",
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     createdAt: date(({ created_at }) => created_at),
   }),
@@ -65,7 +65,7 @@ export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: ({ sale_profile_id }, {}, { userSaleProfileLoader }) => {
     if (!userSaleProfileLoader) {
       throw new Error(
-        "You need to be signed in as an admin to perform this action"
+        "You need to pass an X-Access-Token header to perform this action"
       )
     }
 
@@ -80,22 +80,14 @@ export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
 export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
   description: "The admin notes associated with the user",
   type: new GraphQLList(UserAdminNoteType),
-  resolve: ({ id }, {}, { userAdminNotesLoader }) => {
+  resolve: async ({ id }, {}, { userAdminNotesLoader }) => {
     if (!userAdminNotesLoader) {
       throw new Error(
-        "You need to be signed in as an admin to perform this action"
+        "You need to pass an X-Access-Token header to perform this action"
       )
     }
 
-    return userAdminNotesLoader(id)
-      .then((result) => {
-        return result
-      })
-      .catch((err) => {
-        if (err.statusCode === 404) {
-          return null
-        }
-      })
+    return await userAdminNotesLoader(id)
   },
 }
 
@@ -134,11 +126,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLInt,
       resolve: ({ sign_in_count }) => sign_in_count,
     },
-    lastSignInAt: {
-      description: "The timestamp of the user's last sign in",
-      type: GraphQLString,
-      resolve: ({ last_sign_in_at }) => last_sign_in_at,
-    },
+    lastSignInAt: date(({ last_sign_in_at }) => last_sign_in_at),
     saleProfile: UserSaleProfileField,
     location: {
       description: "The given location of the user as structured data",

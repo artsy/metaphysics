@@ -79,6 +79,7 @@ import UpdateCollectorProfile from "./me/update_collector_profile"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import { updateMyPasswordMutation } from "./me/updateMyPasswordMutation"
 import { updateUserMutation } from "./users/updateUserMutation"
+import { createUserAdminNoteMutation } from "./users/createUserAdminNoteMutation"
 import { updateUserSaleProfileMutation } from "./users/updateUserSaleProfileMutation"
 import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileIconMutation"
 import ObjectIdentification from "./object_identification"
@@ -282,6 +283,7 @@ export default new GraphQLSchema({
       createCreditCard: createCreditCardMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
+      createUserAdminNote: createUserAdminNoteMutation,
       createUserInterest: createUserInterestMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCreditCard: deleteCreditCardMutation,
