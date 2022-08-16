@@ -21,6 +21,14 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
     type: GraphQLInt,
     resolve: ({ collector_level }) => collector_level,
   },
+  companyName: {
+    type: GraphQLString,
+    resolve: ({ company_name }) => company_name,
+  },
+  companyWebsite: {
+    type: GraphQLString,
+    resolve: ({ company_website }) => company_website,
+  },
   confirmedBuyerAt: date,
   email: { type: GraphQLString },
   institutionalAffiliations: {

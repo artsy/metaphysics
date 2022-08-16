@@ -3409,6 +3409,8 @@ type CollectorProfileArtists {
 
 type CollectorProfileType {
   collectorLevel: Int
+  companyName: String
+  companyWebsite: String
   confirmedBuyerAt(
     format: String
 
@@ -9436,6 +9438,8 @@ type InquirerCollectorProfile {
 
   # List of artists the Collector is interested in.
   collectorProfileArtists: [CollectorProfileArtists]
+  companyName: String
+  companyWebsite: String
   confirmedBuyerAt(
     format: String
 
@@ -15458,6 +15462,8 @@ input UpdateCollectorProfileInput {
 type UpdateCollectorProfilePayload {
   clientMutationId: String
   collectorLevel: Int
+  companyName: String
+  companyWebsite: String
   confirmedBuyerAt(
     format: String
 
