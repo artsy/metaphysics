@@ -15875,6 +15875,9 @@ type User {
     timezone: String
   ): String
 
+  # A collector profile.
+  collectorProfile: CollectorProfileType
+
   # Has the user opted out of data transfer.
   dataTransferOptOut: Boolean
   devices: [Device!]!
