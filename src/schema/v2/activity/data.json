@@ -1,0 +1,58 @@
+[
+  {
+    "id": "c527ba27-5bbd-4c7c-ae5b-a4dcebc09147",
+    "title": "Lee Ufan",
+    "body_text": "8 new works by artist you follow",
+    "target_url": "/artist/lee-ufan",
+    "published_at": "2022-08-07T19:44:34+00:00"
+  },
+  {
+    "id": "3d5ae7c6-0776-4919-a52a-3fdd42fb2b91",
+    "title": "George Condo",
+    "body_text": "8 more matches for your alert",
+    "target_url": "/artist/george-condo",
+    "published_at": "2022-08-07T18:44:34+00:00"
+  },
+  {
+    "id": "2ec68f7a-eaaf-4875-a3f1-1afc31f7a82e",
+    "title": "Unit, London",
+    "body_text": "56 works added by gallery you follow",
+    "target_url": "/partner/unit-london/works",
+    "published_at": "2022-08-07T17:44:34+00:00"
+  },
+  {
+    "id": "683002fb-2c97-468c-b61d-479a6114fa5b",
+    "title": "Turbine Art Fair 2022",
+    "body_text": "Fair now open untill 28th August",
+    "target_url": "/fair/turbine-art-fair-2022",
+    "published_at": "2022-08-07T16:44:34+00:00"
+  },
+  {
+    "id": "7cd0f6ae-eb33-4aa6-9336-4619eb71a49c",
+    "title": "The Armory Show 2022",
+    "body_text": "Starting in 1 week",
+    "target_url": "/fair-organizer/the-armory-show",
+    "published_at": "2022-08-07T15:44:34+00:00"
+  },
+  {
+    "id": "7cd0f6ae-eb33-4aa6-9336-4619eb71a49c",
+    "title": "Thierry Noir, Suite reconnu, 2008",
+    "body_text": "You have won this auction lot",
+    "target_url": "/artwork/thierry-noir-on-sest-vu-puis-on-sest-revu-mais-on-sest-tout-de-suite-reconnu",
+    "published_at": "2022-08-07T14:44:34+00:00"
+  },
+  {
+    "id": "ce423eb7-0ef1-448a-a60d-6f74239865d2",
+    "title": "Thierry Noir, Suite reconnu, 2008",
+    "body_text": "Auction ending in 6 hours",
+    "target_url": "/artwork/thierry-noir-on-sest-vu-puis-on-sest-revu-mais-on-sest-tout-de-suite-reconnu",
+    "published_at": "2022-08-07T13:44:34+00:00"
+  },
+  {
+    "id": "d34289b5-4424-4cce-8e50-48081a15c427",
+    "title": "Thierry Noir, Suite reconnu, 2008",
+    "body_text": "You have been outbid on this auction lot",
+    "target_url": "/artwork/thierry-noir-on-sest-vu-puis-on-sest-revu-mais-on-sest-tout-de-suite-reconnu",
+    "published_at": "2022-08-07T12:44:34+00:00"
+  }
+]

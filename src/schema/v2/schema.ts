@@ -148,6 +148,7 @@ import { MatchConnection } from "./Match"
 import { PartnerArtistDocumentsConnection } from "./partnerArtistDocumentsConnection"
 import { PartnerShowDocumentsConnection } from "./partnerShowDocumentsConnection"
 import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
+import { ActivityConnection } from "./activity"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -160,6 +161,7 @@ const OptionalFieldDirective = new GraphQLDirective({
 })
 
 const rootFields = {
+  activityConnection: ActivityConnection,
   admin: AdminField,
   artworksForUser,
   artworkAttributionClasses: ArtworkAttributionClasses,
