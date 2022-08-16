@@ -43,7 +43,7 @@ import Image, {
   normalizeImageData,
 } from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
-import { LocationType } from "schema/v2/location"
+import { LocationType, COUNTRIES } from "schema/v2/location"
 import {
   NodeInterface,
   SlugAndInternalIDFields,
@@ -936,6 +936,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "The string that describes domestic and international shipping.",
         resolve: (artwork) => {
+          const fullCountryName = artwork.shipping_origin
+            ? COUNTRIES[
+                artwork.shipping_origin[artwork.shipping_origin.length - 1]
+              ]
+            : null
+
           if (
             artwork.process_with_artsy_shipping_domestic ||
             artwork.artsy_shipping_international
@@ -945,13 +951,18 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
 
           if (artwork.domestic_shipping_fee_cents == null)
             return "Shipping, tax, and additional fees quoted by seller"
+
+          const domesticShippingOnlyMessage = fullCountryName
+            ? `Free shipping within ${fullCountryName} only`
+            : "Free domestic shipping only"
+
           if (
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents == null
           )
             return artwork.eu_shipping_origin
               ? "Free shipping within European Union only"
-              : "Free domestic shipping only"
+              : domesticShippingOnlyMessage
 
           if (
             artwork.domestic_shipping_fee_cents === 0 &&
@@ -975,9 +986,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             symbol: symbolFromCurrencyCode(artwork.price_currency),
           })
 
+          const domesticShippingRegion = fullCountryName
+            ? `within ${fullCountryName}`
+            : "domestic"
+
           const shippingRegion = artwork.eu_shipping_origin
             ? "within European Union"
-            : "domestic"
+            : domesticShippingRegion
 
           if (
             domesticShipping &&
