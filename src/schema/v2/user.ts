@@ -91,6 +91,44 @@ export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
+export const PartnerAccessField: GraphQLFieldConfig<any, ResolverContext> = {
+  description: "The Parnter or Profile access granted to the user",
+  type: new GraphQLList(GraphQLString),
+  resolve: async ({ id }, {}, { userAccessControlLoader }) => {
+    if (!userAccessControlLoader) {
+      throw new Error(
+        "You need to pass an X-Access-Token header to perform this action"
+      )
+    }
+
+    const access_controls = await userAccessControlLoader({
+      id,
+      access_control_model: "partner",
+    })
+
+    return access_controls.map((partner) => partner.property.name)
+  },
+}
+
+export const ProfileAccessField: GraphQLFieldConfig<any, ResolverContext> = {
+  description: "The Parnter or Profile access granted to the user",
+  type: new GraphQLList(GraphQLString),
+  resolve: async ({ id }, {}, { userAccessControlLoader }) => {
+    if (!userAccessControlLoader) {
+      throw new Error(
+        "You need to pass an X-Access-Token header to perform this action"
+      )
+    }
+
+    const access_controls = await userAccessControlLoader({
+      id,
+      access_control_model: "profile",
+    })
+
+    return access_controls.map((profile) => profile.property.name)
+  },
+}
+
 export const UserType = new GraphQLObjectType<any, ResolverContext>({
   name: "User",
   fields: () => ({
@@ -151,6 +189,8 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ paddle_number }) => paddle_number,
     },
+    partnerAccess: PartnerAccessField,
+    profileAccess: ProfileAccessField,
     receivePurchaseNotification: {
       description: "This user should receive purchase notifications",
       type: GraphQLBoolean,

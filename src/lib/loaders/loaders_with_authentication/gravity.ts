@@ -458,5 +458,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    userAccessControlLoader: gravityLoader<
+      any,
+      { id: string; access_control_model: string }
+    >(
+      ({ id, access_control_model }) =>
+        `user/${id}/access_controls?model=${access_control_model}`,
+      {},
+      { method: "GET" }
+    ),
   }
 }

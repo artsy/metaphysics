@@ -15865,6 +15865,9 @@ type User {
   # The paddle number of the user
   paddleNumber: String
 
+  # The Parnter or Profile access granted to the user
+  partnerAccess: [String]
+
   # The given phone number of the user.
   phone: String
 
@@ -15873,6 +15876,9 @@ type User {
 
   # The price range the collector has selected
   priceRange: String
+
+  # The Parnter or Profile access granted to the user
+  profileAccess: [String]
 
   # This user should receive lot opening notifications
   receiveLotOpeningSoonNotification: Boolean
