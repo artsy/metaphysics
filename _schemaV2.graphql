@@ -11712,6 +11712,11 @@ type PartnerArtistCounts {
     format: String
     label: String
   ): FormattedNumber
+  managedArtworks(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
 }
 
 type PartnerArtistDocument {

@@ -314,6 +314,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    folioPartnerArtistsAllLoader: gravityLoader(
+      (id) => `partner/${id}/partner_artists/all`,
+      {},
+      { headers: true }
+    ),
     folioPartnerArtistArtworksLoader: gravityLoader<
       any,
       { artistID: string; partnerID: string }

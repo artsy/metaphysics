@@ -185,7 +185,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
           },
         },
-        resolve: ({ id }, args, { partnerArtistsForPartnerLoader }) => {
+        resolve: (
+          { id },
+          args,
+          { partnerArtistsForPartnerLoader, folioPartnerArtistsAllLoader }
+        ) => {
           interface GravityArgs {
             sort: string
             represented_by: boolean
@@ -200,7 +204,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             has_published_artworks: args.hasPublishedArtworks,
           }
 
-          return allViaLoader(partnerArtistsForPartnerLoader, {
+          // If we are authenticated / loader exists use the all loader
+          const partnerArtistsLoader =
+            folioPartnerArtistsAllLoader ?? partnerArtistsForPartnerLoader
+
+          return allViaLoader(partnerArtistsLoader, {
             path: id,
             params: gravityArgs,
           })
