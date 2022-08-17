@@ -757,6 +757,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
             description: "If True returns only displayable items",
           },
+          artistID: {
+            type: GraphQLString,
+            description: "If present only return shows including the artist",
+          },
         }),
         resolve: ({ id }, args, { partnerShowsLoader }) => {
           const pageOptions = convertConnectionArgsToGravityArgs(args)
@@ -771,6 +775,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             status: string
             total_count: boolean
             displayable: boolean
+            artist_id: string
           }
 
           const gravityArgs: GravityArgs = {
@@ -782,6 +787,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             status: args.status || undefined,
             day_threshold: args.dayThreshold,
             displayable: args.isDisplayable,
+            artist_id: args.artistID || undefined,
           }
 
           return partnerShowsLoader(id, gravityArgs).then(

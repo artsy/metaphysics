@@ -11604,6 +11604,9 @@ type Partner implements Node {
   showsConnection(
     after: String
 
+    # If present only return shows including the artist
+    artistID: String
+
     # True for only shows that are part of a fair, false for only shows not part of a fair, blank for all shows
     atAFair: Boolean
     before: String
