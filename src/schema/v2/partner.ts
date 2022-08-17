@@ -284,6 +284,99 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      partnerArtistArtworksConnection: {
+        description:
+          "A connection of artworks owned by a Partner for a given artist.",
+        type: artworkConnection.connectionType,
+        args: pageable({
+          artistID: {
+            type: GraphQLString,
+          },
+          ...artworksArgs,
+        }),
+        resolve: ({ id }, args, { folioPartnerArtistArtworksLoader }) => {
+          const {
+            page,
+            size,
+            offset,
+            artistID,
+          } = convertConnectionArgsToGravityArgs(args)
+
+          interface GravityArgs {
+            artwork_id?: string[]
+            exclude_ids?: string[]
+            for_sale: boolean
+            missing_priority_metadata?: boolean
+            page: number
+            published: boolean
+            published_within?: number
+            size: number
+            sort: string
+            total_count: boolean
+          }
+
+          const gravityArgs: GravityArgs = {
+            for_sale: args.forSale,
+            missing_priority_metadata: args.missingPriorityMetadata,
+            page,
+            published: false,
+            published_within: args.publishedWithin,
+            size,
+            sort: args.sort,
+            total_count: true,
+          }
+
+          if (args.exclude) {
+            gravityArgs.exclude_ids = flatten([args.exclude])
+          }
+          if (args.artworkIDs) {
+            gravityArgs.artwork_id = flatten([args.artworkIDs])
+          }
+
+          // Only accept shallow = false argument if requesting user is authorized admin/partner
+          if (args.shallow === false && folioPartnerArtistArtworksLoader) {
+            return folioPartnerArtistArtworksLoader(
+              { artistID, partnerID: id },
+              gravityArgs
+            ).then(({ body, headers }) => {
+              const artworkIds = body.map((artwork) => artwork._id)
+              const gravityArtworkArgs = {
+                artwork_id: artworkIds,
+              }
+
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+              return folioPartnerArtistArtworksLoader(
+                { artistID, partnerID: id },
+                gravityArtworkArgs
+              ).then(({ body }) => {
+                return {
+                  totalCount,
+                  ...connectionFromArraySlice(body, args, {
+                    arrayLength: totalCount,
+                    sliceStart: offset,
+                  }),
+                }
+              })
+            })
+          }
+
+          return folioPartnerArtistArtworksLoader(
+            { artistID, partnerID: id },
+            gravityArgs
+          ).then(({ body, headers }) => {
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+            return {
+              totalCount,
+              ...connectionFromArraySlice(body, args, {
+                arrayLength: totalCount,
+                sliceStart: offset,
+              }),
+            }
+          })
+        },
+      },
       artworksConnection: {
         description: "A connection of artworks from a Partner.",
         type: artworkConnection.connectionType,
