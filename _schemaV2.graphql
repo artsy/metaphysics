@@ -11568,6 +11568,31 @@ type Partner implements Node {
   ): LocationConnection
   meta: PartnerMeta
   name: String
+
+  # A connection of artworks owned by a Partner for a given artist.
+  partnerArtistArtworksConnection(
+    after: String
+    artistID: String
+
+    # Return only artwork(s) included in this list of IDs.
+    artworkIDs: [String]
+    before: String
+    exclude: [String]
+    first: Int
+    forSale: Boolean
+    last: Int
+
+    # Return artworks that are missing priority metadata
+    missingPriorityMetadata: Boolean
+
+    # Return artworks published less than x seconds ago.
+    publishedWithin: Int
+
+    # Only allowed for authorized admin/partner requests. When false fetch :all
+    # properties on an artwork, when true or not present fetch artwork :short properties
+    shallow: Boolean
+    sort: ArtworkSorts
+  ): ArtworkConnection
   partnerPageEligible: Boolean
   partnerType: String
   profile: Profile

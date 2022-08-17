@@ -314,6 +314,15 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    folioPartnerArtistArtworksLoader: gravityLoader<
+      any,
+      { artistID: string; partnerID: string }
+    >(
+      ({ artistID, partnerID }) =>
+        `partner/${partnerID}/artist/${artistID}/artworks/all`,
+      {},
+      { headers: true }
+    ),
     updatePartnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,
       {},
