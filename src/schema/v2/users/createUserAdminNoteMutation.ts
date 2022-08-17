@@ -34,7 +34,7 @@ export const createUserAdminNoteMutation = mutationWithClientMutationId<
   mutateAndGetPayload: async (args, { createUserAdminNoteLoader }) => {
     if (!createUserAdminNoteLoader) {
       throw new Error(
-        "You need to pass an X-Access-Token header to perform this action"
+        "You need to pass a X-Access-Token header to perform this action"
       )
     }
 

@@ -65,7 +65,7 @@ export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: ({ sale_profile_id }, {}, { userSaleProfileLoader }) => {
     if (!userSaleProfileLoader) {
       throw new Error(
-        "You need to pass an X-Access-Token header to perform this action"
+        "You need to pass a X-Access-Token header to perform this action"
       )
     }
 
@@ -83,7 +83,7 @@ export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async ({ id }, {}, { userAdminNotesLoader }) => {
     if (!userAdminNotesLoader) {
       throw new Error(
-        "You need to pass an X-Access-Token header to perform this action"
+        "You need to pass a X-Access-Token header to perform this action"
       )
     }
 
@@ -97,7 +97,7 @@ export const PartnerAccessField: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async ({ id }, {}, { userAccessControlLoader }) => {
     if (!userAccessControlLoader) {
       throw new Error(
-        "You need to pass an X-Access-Token header to perform this action"
+        "You need to pass a X-Access-Token header to perform this action"
       )
     }
 
@@ -116,7 +116,7 @@ export const ProfileAccessField: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async ({ id }, {}, { userAccessControlLoader }) => {
     if (!userAccessControlLoader) {
       throw new Error(
-        "You need to pass an X-Access-Token header to perform this action"
+        "You need to pass a X-Access-Token header to perform this action"
       )
     }
 
