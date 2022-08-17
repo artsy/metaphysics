@@ -66,6 +66,7 @@ import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
 import { deleteBankAccountMutation } from "./me/delete_bank_account_mutation"
 import { deleteCreditCardMutation } from "./me/delete_credit_card_mutation"
+import { deleteUserRoleMutation } from "./users/deleteUserRoleMutation"
 import FollowArtist from "./me/follow_artist"
 import FollowGene from "./me/follow_gene"
 import FollowProfile from "./me/follow_profile"
@@ -79,6 +80,7 @@ import UpdateCollectorProfile from "./me/update_collector_profile"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import { updateMyPasswordMutation } from "./me/updateMyPasswordMutation"
 import { updateUserMutation } from "./users/updateUserMutation"
+import { addUserRoleMutation } from "./users/addUserRoleMutation"
 import { createUserAdminNoteMutation } from "./users/createUserAdminNoteMutation"
 import { updateUserSaleProfileMutation } from "./users/updateUserSaleProfileMutation"
 import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileIconMutation"
@@ -289,6 +291,7 @@ export default new GraphQLSchema({
       deleteCreditCard: deleteCreditCardMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteUserInterest: deleteUserInterestMutation,
+      deleteUserRole: deleteUserRoleMutation,
       endSale: endSaleMutation,
       followArtist: FollowArtist,
       followGene: FollowGene,
@@ -315,6 +318,7 @@ export default new GraphQLSchema({
       updateUser: updateUserMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
+      addUserRole: addUserRoleMutation,
       updateNotificationPreferences: updateNotificationPreferencesMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,

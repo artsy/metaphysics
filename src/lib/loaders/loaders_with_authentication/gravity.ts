@@ -449,12 +449,12 @@ export default (accessToken, userID, opts) => {
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
     userInterestsLoader: gravityLoader("me/user_interests"),
     deleteUserRole: gravityLoader<any, { id: string; role_type: string }>(
-      ({ id, role_type }) => `/api/v1/user/${id}/roles/${role_type}`,
+      ({ id, role_type }) => `user/${id}/roles/${role_type}`,
       {},
       { method: "DELETE" }
     ),
     addUserRole: gravityLoader<any, { id: string; role_type: string }>(
-      ({ id, role_type }) => `/api/v1/user/${id}/roles/${role_type}`,
+      ({ id, role_type }) => `user/${id}/roles/${role_type}`,
       {},
       { method: "POST" }
     ),
