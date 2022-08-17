@@ -295,6 +295,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           ...artworksArgs,
         }),
         resolve: ({ id }, args, { folioPartnerArtistArtworksLoader }) => {
+          if (!folioPartnerArtistArtworksLoader) {
+            // TODO: Handle unauthenticated with an unauthorized error
+            return
+          }
+
           const {
             page,
             size,
@@ -333,47 +338,29 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             gravityArgs.artwork_id = flatten([args.artworkIDs])
           }
 
-          // Only accept shallow = false argument if requesting user is authorized admin/partner
-          if (args.shallow === false && folioPartnerArtistArtworksLoader) {
-            return folioPartnerArtistArtworksLoader(
-              { artistID, partnerID: id },
-              gravityArgs
-            ).then(({ body, headers }) => {
-              const artworkIds = body.map((artwork) => artwork._id)
-              const gravityArtworkArgs = {
-                artwork_id: artworkIds,
-              }
-
-              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-              return folioPartnerArtistArtworksLoader(
-                { artistID, partnerID: id },
-                gravityArtworkArgs
-              ).then(({ body }) => {
-                return {
-                  totalCount,
-                  ...connectionFromArraySlice(body, args, {
-                    arrayLength: totalCount,
-                    sliceStart: offset,
-                  }),
-                }
-              })
-            })
-          }
-
           return folioPartnerArtistArtworksLoader(
             { artistID, partnerID: id },
             gravityArgs
           ).then(({ body, headers }) => {
+            const artworkIds = body.map((artwork) => artwork._id)
+            const gravityArtworkArgs = {
+              artwork_id: artworkIds,
+            }
+
             const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-            return {
-              totalCount,
-              ...connectionFromArraySlice(body, args, {
-                arrayLength: totalCount,
-                sliceStart: offset,
-              }),
-            }
+            return folioPartnerArtistArtworksLoader(
+              { artistID, partnerID: id },
+              gravityArtworkArgs
+            ).then(({ body }) => {
+              return {
+                totalCount,
+                ...connectionFromArraySlice(body, args, {
+                  arrayLength: totalCount,
+                  sliceStart: offset,
+                }),
+              }
+            })
           })
         },
       },
