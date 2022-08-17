@@ -18,7 +18,9 @@ import artworkMediums from "lib/artworkMediums"
 // Mapping of attribution_class ids to AttributionClass values
 import attributionClasses from "lib/attributionClasses"
 import { deprecate } from "lib/deprecation"
+import { formatLargeNumber } from "lib/formatLargeNumber"
 import { capitalizeFirstCharacter, enhance, existyValue } from "lib/helpers"
+import { isFieldRequested } from "lib/ifFieldRequested"
 import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
 import _ from "lodash"
 import Article from "schema/v2/article"
@@ -106,6 +108,13 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
     annualValueSoldCents: {
       type: FormattedNumber,
     },
+    annualValueSoldDisplayText: {
+      type: GraphQLString,
+      description: 'The annual value of the work sold "in USD "',
+      resolve: ({ annualValueSoldCents }) => {
+        return `$${formatLargeNumber(annualValueSoldCents)}`
+      },
+    },
     annualLotsSold: {
       type: GraphQLInt,
     },
@@ -128,6 +137,35 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
           "USD",
           format
         )
+      },
+    },
+    liquidityRankDisplayText: {
+      type: GraphQLString,
+      args: {
+        format: {
+          type: GraphQLString,
+          description:
+            "Return the liquidity rank in a formatted way (Low, medium, high or very high)",
+          defaultValue: "",
+        },
+      },
+      resolve: ({ liquidityRank }) => {
+        if (liquidityRank === null) {
+          return ""
+        }
+
+        switch (true) {
+          case liquidityRank < 0.25:
+            return "Low"
+          case liquidityRank >= 0.25 && liquidityRank < 0.7:
+            return "Medium"
+          case liquidityRank >= 0.7 && liquidityRank < 0.85:
+            return "High"
+          case liquidityRank >= 0.85:
+            return "Very High"
+        }
+
+        return ""
       },
     },
     medianSalePriceDisplayText: {
@@ -1451,13 +1489,51 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
       description: "Include unlisted artwork or not",
     },
   },
-  resolve: (_source, args, { artworkLoader }) => {
+  resolve: async (
+    _source,
+    args,
+    { artworkLoader, marketPriceInsightsBatchLoader },
+    resolveInfo
+  ) => {
     const { id } = args
     const gravityParams = _.mapKeys(
       _.pick(args, ["includeUnlisted"]),
       (_v, k) => _.snakeCase(k)
     )
-    return artworkLoader(id, gravityParams)
+
+    const hasRequestedPriceInsights = isFieldRequested(
+      "marketPriceInsights",
+      resolveInfo
+    )
+
+    const gravityArtworkRes = await artworkLoader(id, gravityParams)
+
+    const enrichedArtwork = {
+      ...gravityArtworkRes,
+    }
+
+    // We don't want to query for the price insights unless the user has requested them
+    if (
+      marketPriceInsightsBatchLoader &&
+      gravityArtworkRes &&
+      hasRequestedPriceInsights
+    ) {
+      const marketPriceInsight = await marketPriceInsightsBatchLoader([
+        {
+          artistId: gravityArtworkRes.artist._id,
+          medium: gravityArtworkRes.medium,
+          category: gravityArtworkRes.category,
+        },
+      ])
+
+      if (marketPriceInsight.length > 0) {
+        enrichedArtwork.marketPriceInsights = marketPriceInsight[0]
+      } else {
+        enrichedArtwork.marketPriceInsights = null
+      }
+    }
+
+    return enrichedArtwork
   },
 }
 
