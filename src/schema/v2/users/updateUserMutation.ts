@@ -43,7 +43,7 @@ export const updateUserMutation = mutationWithClientMutationId<
   mutateAndGetPayload: async (args, { updateUserLoader }) => {
     if (!updateUserLoader) {
       throw new Error(
-        "You need to be signed in as an admin to perform this action"
+        "You need to pass an X-Access-Token header to perform this action"
       )
     }
 

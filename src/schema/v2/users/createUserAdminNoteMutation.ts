@@ -34,13 +34,12 @@ export const createUserAdminNoteMutation = mutationWithClientMutationId<
   mutateAndGetPayload: async (args, { createUserAdminNoteLoader }) => {
     if (!createUserAdminNoteLoader) {
       throw new Error(
-        "You need to be signed in as an admin to perform this action"
+        "You need to pass an X-Access-Token header to perform this action"
       )
     }
 
     try {
-      const a = await createUserAdminNoteLoader?.(args.id, { body: args.body })
-      return a
+      return await createUserAdminNoteLoader?.(args.id, { body: args.body })
     } catch (err) {
       if ("body" in (err as any)) {
         const e = err as GravityError
