@@ -79,7 +79,7 @@ export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
 
 export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
   description: "The admin notes associated with the user",
-  type: new GraphQLList(UserAdminNoteType),
+  type: new GraphQLNonNull(new GraphQLList(UserAdminNoteType)),
   resolve: async ({ id }, {}, { userAdminNotesLoader }) => {
     if (!userAdminNotesLoader) {
       throw new Error(
@@ -93,7 +93,7 @@ export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
 
 export const PartnerAccessField: GraphQLFieldConfig<any, ResolverContext> = {
   description: "The Parnter or Profile access granted to the user",
-  type: new GraphQLList(GraphQLString),
+  type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
   resolve: async ({ id }, {}, { userAccessControlLoader }) => {
     if (!userAccessControlLoader) {
       throw new Error(
@@ -112,7 +112,7 @@ export const PartnerAccessField: GraphQLFieldConfig<any, ResolverContext> = {
 
 export const ProfileAccessField: GraphQLFieldConfig<any, ResolverContext> = {
   description: "The Parnter or Profile access granted to the user",
-  type: new GraphQLList(GraphQLString),
+  type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
   resolve: async ({ id }, {}, { userAccessControlLoader }) => {
     if (!userAccessControlLoader) {
       throw new Error(
@@ -152,16 +152,16 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
     secondFactorEnabled: {
       description:
         "If the user has enabled two-factor authentication on their account",
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ second_factor_enabled }) => second_factor_enabled,
     },
     roles: {
       description: "The roles of the user",
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
     },
     signInCount: {
       description: "The number of times a user has signed in",
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
       resolve: ({ sign_in_count }) => sign_in_count,
     },
     lastSignInAt: date(({ last_sign_in_at }) => last_sign_in_at),

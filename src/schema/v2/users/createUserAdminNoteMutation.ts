@@ -26,7 +26,7 @@ export const createUserAdminNoteMutation = mutationWithClientMutationId<
   },
   outputFields: {
     userAdminNote: {
-      type: UserAdminNoteType,
+      type: new GraphQLNonNull(UserAdminNoteType),
       description: "On success: an identity verification with overrides",
       resolve: (result) => result,
     },

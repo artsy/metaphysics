@@ -25,7 +25,7 @@ export const addUserRoleMutation = mutationWithClientMutationId<
   },
   outputFields: {
     roles: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
       description: "On success: the updated user roles",
       resolve: (result) => result.roles,
     },
