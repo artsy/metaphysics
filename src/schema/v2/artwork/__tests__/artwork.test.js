@@ -17,7 +17,7 @@ describe("Artwork type", () => {
     {
       artistId: "artist-id",
       demandRank: 0.64,
-      medium: "Print",
+      medium: "print",
       annualLotsSold: 25,
       annualValueSoldCents: 577662200012,
       lastAuctionResultDate: "2022-06-15T00:00:00Z",

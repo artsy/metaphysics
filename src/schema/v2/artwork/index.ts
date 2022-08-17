@@ -18,6 +18,7 @@ import artworkMediums from "lib/artworkMediums"
 // Mapping of attribution_class ids to AttributionClass values
 import attributionClasses from "lib/attributionClasses"
 import { deprecate } from "lib/deprecation"
+import { enrichArtworksWithPriceInsights } from "lib/fillers/enrichArtworksWithPriceInsights"
 import { formatLargeNumber } from "lib/formatLargeNumber"
 import { capitalizeFirstCharacter, enhance, existyValue } from "lib/helpers"
 import { isFieldRequested } from "lib/ifFieldRequested"
@@ -1506,34 +1507,23 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
       resolveInfo
     )
 
-    const gravityArtworkRes = await artworkLoader(id, gravityParams)
+    const artwork = await artworkLoader(id, gravityParams)
 
-    const enrichedArtwork = {
-      ...gravityArtworkRes,
-    }
-
-    // We don't want to query for the price insights unless the user has requested them
+    // // We don't want to query for the price insights unless the user has requested them
     if (
       marketPriceInsightsBatchLoader &&
-      gravityArtworkRes &&
+      artwork &&
       hasRequestedPriceInsights
     ) {
-      const marketPriceInsight = await marketPriceInsightsBatchLoader([
-        {
-          artistId: gravityArtworkRes.artist._id,
-          medium: gravityArtworkRes.medium,
-          category: gravityArtworkRes.category,
-        },
-      ])
+      const enrichedArtworks = await enrichArtworksWithPriceInsights(
+        [artwork],
+        marketPriceInsightsBatchLoader
+      )
 
-      if (marketPriceInsight.length > 0) {
-        enrichedArtwork.marketPriceInsights = marketPriceInsight[0]
-      } else {
-        enrichedArtwork.marketPriceInsights = null
-      }
+      return enrichedArtworks && enrichedArtworks[0]
     }
 
-    return enrichedArtwork
+    return artwork
   },
 }
 
