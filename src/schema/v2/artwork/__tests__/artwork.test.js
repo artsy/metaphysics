@@ -2431,6 +2431,19 @@ describe("Artwork type", () => {
       })
     })
 
+    it("shows proper fallback text when no shipping origin present", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = 2000
+      artwork.price_currency = "GBP"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Shipping: £10 domestic, £20 rest of world",
+          },
+        })
+      })
+    })
+
     it("is set to calculated at checkout when artwork will be processed with Arta shipping", () => {
       artwork.process_with_artsy_shipping_domestic = true
       artwork.shipping_origin = ["Oslo", "NO"]
