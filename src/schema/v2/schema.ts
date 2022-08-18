@@ -152,6 +152,7 @@ import { MatchConnection } from "./Match"
 import { PartnerArtistDocumentsConnection } from "./partnerArtistDocumentsConnection"
 import { PartnerShowDocumentsConnection } from "./partnerShowDocumentsConnection"
 import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
+import { NotificationsConnection } from "./notifications"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -222,6 +223,7 @@ const rootFields = {
   matchConnection: MatchConnection,
   me: Me,
   node: ObjectIdentification.NodeField,
+  notificationsConnection: NotificationsConnection,
   orderedSet: OrderedSet,
   orderedSets: OrderedSets,
   page,
