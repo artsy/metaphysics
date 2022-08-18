@@ -4,12 +4,15 @@ import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLFieldConfig,
+  GraphQLList,
+  GraphQLInt,
 } from "graphql"
 import cached from "./fields/cached"
 import { InternalIDFields } from "./object_identification"
 import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "./fields/pagination"
+import { date } from "./fields/date"
 
 export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserSaleProfile",
@@ -44,13 +47,25 @@ export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
+export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
+  name: "UserAdminNotes",
+  fields: () => ({
+    ...InternalIDFields,
+    body: {
+      description: "The body of the admin note",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    createdAt: date(({ created_at }) => created_at),
+  }),
+})
+
 export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
   description: "The sale profile of the user.",
   type: UserSaleProfileType,
   resolve: ({ sale_profile_id }, {}, { userSaleProfileLoader }) => {
     if (!userSaleProfileLoader) {
       throw new Error(
-        "You need to be signed in as an admin to perform this action"
+        "You need to pass a X-Access-Token header to perform this action"
       )
     }
 
@@ -62,11 +77,64 @@ export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
+export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
+  description: "The admin notes associated with the user",
+  type: new GraphQLNonNull(new GraphQLList(UserAdminNoteType)),
+  resolve: async ({ id }, {}, { userAdminNotesLoader }) => {
+    if (!userAdminNotesLoader) {
+      throw new Error(
+        "You need to pass a X-Access-Token header to perform this action"
+      )
+    }
+
+    return await userAdminNotesLoader(id)
+  },
+}
+
+export const PartnerAccessField: GraphQLFieldConfig<any, ResolverContext> = {
+  description: "The Parnter or Profile access granted to the user",
+  type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+  resolve: async ({ id }, {}, { userAccessControlLoader }) => {
+    if (!userAccessControlLoader) {
+      throw new Error(
+        "You need to pass a X-Access-Token header to perform this action"
+      )
+    }
+
+    const access_controls = await userAccessControlLoader({
+      id,
+      access_control_model: "partner",
+    })
+
+    return access_controls.map((partner) => partner.property.name)
+  },
+}
+
+export const ProfileAccessField: GraphQLFieldConfig<any, ResolverContext> = {
+  description: "The Parnter or Profile access granted to the user",
+  type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+  resolve: async ({ id }, {}, { userAccessControlLoader }) => {
+    if (!userAccessControlLoader) {
+      throw new Error(
+        "You need to pass a X-Access-Token header to perform this action"
+      )
+    }
+
+    const access_controls = await userAccessControlLoader({
+      id,
+      access_control_model: "profile",
+    })
+
+    return access_controls.map((profile) => profile.property.name)
+  },
+}
+
 export const UserType = new GraphQLObjectType<any, ResolverContext>({
   name: "User",
   fields: () => ({
     ...InternalIDFields,
     cached,
+    adminNotes: UserAdminNotesField,
     name: {
       description: "The given name of the user.",
       type: new GraphQLNonNull(GraphQLString),
@@ -79,6 +147,24 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       description: "The given phone number of the user.",
       type: GraphQLString,
     },
+    createdAt: date(({ created_at }) => created_at),
+    emailConfirmedAt: date(({ email_confirmed_at }) => email_confirmed_at),
+    secondFactorEnabled: {
+      description:
+        "If the user has enabled two-factor authentication on their account",
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ second_factor_enabled }) => second_factor_enabled,
+    },
+    roles: {
+      description: "The roles of the user",
+      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+    },
+    signInCount: {
+      description: "The number of times a user has signed in",
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ sign_in_count }) => sign_in_count,
+    },
+    lastSignInAt: date(({ last_sign_in_at }) => last_sign_in_at),
     saleProfile: UserSaleProfileField,
     location: {
       description: "The given location of the user as structured data",
@@ -103,6 +189,8 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ paddle_number }) => paddle_number,
     },
+    partnerAccess: PartnerAccessField,
+    profileAccess: ProfileAccessField,
     receivePurchaseNotification: {
       description: "This user should receive purchase notifications",
       type: GraphQLBoolean,
