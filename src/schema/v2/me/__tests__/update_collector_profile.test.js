@@ -32,7 +32,7 @@ describe("UpdateCollectorProfile", () => {
     )
 
     const context = {
-      updateCollectorProfileLoader: mockUpdateCollectorProfileLoader,
+      meUpdateCollectorProfileLoader: mockUpdateCollectorProfileLoader,
     }
 
     const expectedProfileData = {
