@@ -11,7 +11,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import date from "./fields/date"
 import Image, { normalizeImageData } from "./image"
-import { CollectorProfileFields } from "./me/collector_profile"
+import { CollectorProfileFields } from "./CollectorProfile/collectorProfile"
 import { myLocationType } from "./me/myLocation"
 
 export const CollectorProfileArtists = new GraphQLObjectType<
