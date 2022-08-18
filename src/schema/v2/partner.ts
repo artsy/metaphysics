@@ -304,8 +304,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: ({ id }, args, { folioPartnerArtistArtworksLoader }) => {
           if (!folioPartnerArtistArtworksLoader) {
-            // TODO: Handle unauthenticated with an unauthorized error
-            return
+            throw new Error(
+              "You need to be signed in as an admin or partner to perform this action"
+            )
           }
 
           const {

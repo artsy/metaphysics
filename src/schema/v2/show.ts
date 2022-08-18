@@ -123,8 +123,9 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           { folioPartnerShowAllArtworksLoader }
         ) => {
           if (!folioPartnerShowAllArtworksLoader) {
-            // TODO: Handle unauthorized with an error
-            return
+            throw new Error(
+              "You need to be signed in as an admin or partner to perform this action"
+            )
           }
 
           const loaderOptions = {
