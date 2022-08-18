@@ -1520,7 +1520,7 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
         marketPriceInsightsBatchLoader
       )
 
-      return enrichedArtworks && enrichedArtworks[0]
+      return enrichedArtworks?.[0]
     }
 
     return artwork
