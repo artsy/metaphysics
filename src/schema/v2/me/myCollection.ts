@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node"
 import {
   GraphQLBoolean,
   GraphQLEnumType,
@@ -8,10 +7,10 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { connectionFromArray, cursorForObjectInConnection } from "graphql-relay"
+import { enrichArtworksWithPriceInsights } from "lib/fillers/enrichArtworksWithPriceInsights"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { MarketPriceInsight } from "lib/loaders/loaders_with_authentication/vortex"
-import { compact, isEqual, reverse, sortBy, uniqWith } from "lodash"
+import { compact, reverse, sortBy, uniqWith } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
@@ -266,52 +265,5 @@ const enrichArtworksWithSubmissions = async (
         artwork.consignmentSubmission = submission
       }
     })
-  }
-}
-
-const enrichArtworksWithPriceInsights = async (
-  artworks: Array<any>,
-  marketPriceInsightsBatchLoader: (
-    params: {
-      artistId: string
-      medium: string
-      category: string
-    }[]
-  ) => Promise<MarketPriceInsight[]>
-) => {
-  try {
-    const marketPriceInsightParams = uniqWith(
-      artworks.map((artwork: any) => ({
-        artistId: artwork.artist?._id,
-        medium: artwork.medium,
-        category: artwork.category,
-      })),
-      isEqual
-    )
-
-    const priceInsightNodes =
-      (await marketPriceInsightsBatchLoader(marketPriceInsightParams)) || []
-
-    return artworks.map((artwork: any) => {
-      const insights = priceInsightNodes.find(
-        (insight: MarketPriceInsight) =>
-          insight.artistId === artwork.artist?._id &&
-          // TODO: Fix this logic once we only need category to fetch insights
-          (insight.medium === artwork.medium ||
-            insight.medium === artwork.category)
-      )
-
-      artwork.marketPriceInsights = insights
-
-      return artwork
-    })
-  } catch (error) {
-    console.error(error)
-    Sentry.captureException(
-      "Failed to load price insights for My Collection",
-      error
-    )
-
-    return artworks
   }
 }

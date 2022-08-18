@@ -338,8 +338,10 @@ describe("me.myCollection", () => {
                   internalID
                 }
                 marketPriceInsights {
-                  demandRank
+                  annualValueSoldDisplayText
                   averageSalePriceDisplayText
+                  demandRank
+                  liquidityRankDisplayText
                   medianSalePriceDisplayText
                 }
               }
@@ -392,8 +394,10 @@ describe("me.myCollection", () => {
                   },
                   "internalID": "artwork_id_with_market_price_insights",
                   "marketPriceInsights": Object {
+                    "annualValueSoldDisplayText": "$2B",
                     "averageSalePriceDisplayText": "US$2,176,421",
                     "demandRank": 0.64,
+                    "liquidityRankDisplayText": "Medium",
                     "medianSalePriceDisplayText": "US$5,776,622,000",
                   },
                   "medium": "Painting",
@@ -515,6 +519,7 @@ const mockVortexResponse = [
     annualValueSoldCents: 577662200012,
     lastAuctionResultDate: "2022-06-15T00:00:00Z",
     medianSalePriceLast36Months: 577662200012,
+    liquidityRank: 0.9,
   },
   {
     artistId: "artist-id",
@@ -524,5 +529,6 @@ const mockVortexResponse = [
     annualValueSoldCents: 2176421231,
     lastAuctionResultDate: "2023-06-15T00:00:00Z",
     medianSalePriceLast36Months: 577662200012,
+    liquidityRank: 0.5,
   },
 ]
