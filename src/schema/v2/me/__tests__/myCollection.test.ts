@@ -338,8 +338,11 @@ describe("me.myCollection", () => {
                   internalID
                 }
                 marketPriceInsights {
-                  demandRank
+                  annualValueSoldDisplayText
                   averageSalePriceDisplayText
+                  demandRank
+                  liquidityRankDisplayText
+                  medianSalePriceDisplayText
                 }
               }
             }
@@ -391,8 +394,11 @@ describe("me.myCollection", () => {
                   },
                   "internalID": "artwork_id_with_market_price_insights",
                   "marketPriceInsights": Object {
+                    "annualValueSoldDisplayText": "$2B",
                     "averageSalePriceDisplayText": "US$2,176,421",
                     "demandRank": 0.64,
+                    "liquidityRankDisplayText": "Medium",
+                    "medianSalePriceDisplayText": "US$5,776,622,000",
                   },
                   "medium": "Painting",
                   "title": "some title",
@@ -475,6 +481,7 @@ const mockCollectionArtworksResponse = {
       _id: "58e3e54aa09a6708282022f6",
       title: "some title",
       medium: "Print",
+      category: "Print",
       artist: {
         _id: "artist-id",
       },
@@ -483,6 +490,7 @@ const mockCollectionArtworksResponse = {
       _id: "58e3e52aa09a6708282022f6",
       title: "another title",
       medium: "Print",
+      category: "Print",
       artist: {
         _id: "artist-id",
       },
@@ -491,6 +499,7 @@ const mockCollectionArtworksResponse = {
       _id: "58e3e54aa09a6708282022f6",
       title: "some title",
       medium: "Painting",
+      category: "Painting",
       artist: {
         _id: "artist-id",
       },
@@ -509,6 +518,8 @@ const mockVortexResponse = [
     annualLotsSold: 25,
     annualValueSoldCents: 577662200012,
     lastAuctionResultDate: "2022-06-15T00:00:00Z",
+    medianSalePriceLast36Months: 577662200012,
+    liquidityRank: 0.9,
   },
   {
     artistId: "artist-id",
@@ -517,5 +528,7 @@ const mockVortexResponse = [
     annualLotsSold: 10,
     annualValueSoldCents: 2176421231,
     lastAuctionResultDate: "2023-06-15T00:00:00Z",
+    medianSalePriceLast36Months: 577662200012,
+    liquidityRank: 0.5,
   },
 ]

@@ -26,10 +26,10 @@ const BulkUpdatePartnerArtworksResponseType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "BulkUpdatePartnerArtworksResponse",
-  fields: {
+  fields: () => ({
     count: { type: GraphQLInt },
     ids: { type: GraphQLList(GraphQLString) },
-  },
+  }),
 })
 
 const BulkUpdatePartnerArtworksMutationSuccessType = new GraphQLObjectType<
@@ -65,6 +65,12 @@ const BulkUpdatePartnerArtworksMutationType = new GraphQLUnionType({
     BulkUpdatePartnerArtworksMutationSuccessType,
     BulkUpdatePartnerArtworksMutationFailureType,
   ],
+  resolveType: (object) => {
+    if (object.mutationError) {
+      return BulkUpdatePartnerArtworksMutationFailureType
+    }
+    return BulkUpdatePartnerArtworksMutationSuccessType
+  },
 })
 
 export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
@@ -95,7 +101,16 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
   outputFields: {
     bulkUpdatePartnerArtworksOrError: {
       type: BulkUpdatePartnerArtworksMutationType,
-      resolve: (result) => result,
+      resolve: (result) => {
+        // In the future it could be helpful to have a list of successfully opted in ids, can add this to gravity at a later date
+        return {
+          updatedPartnerArtworks: { count: result.success, ids: [] },
+          skippedPartnerArtworks: {
+            count: result.errors.count,
+            ids: result.errors.ids,
+          },
+        }
+      },
     },
   },
   mutateAndGetPayload: async (
@@ -113,22 +128,7 @@ export const bulkUpdatePartnerArtworksMutation = mutationWithClientMutationId<
     }
 
     try {
-      const gravityResponse = await updatePartnerArtworksLoader(
-        id,
-        gravityOptions
-      )
-
-      // In the future it could be helpful to have a list of successfully opted in ids, can add this to gravity at a later date
-
-      const formattedReturn = {
-        updatedPartnerArtworks: { count: gravityResponse.success, ids: [] },
-        skippedPartnerArtworks: {
-          count: gravityResponse.error.count,
-          ids: gravityResponse.error.ids,
-        },
-      }
-
-      return formattedReturn
+      return await updatePartnerArtworksLoader(id, gravityOptions)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

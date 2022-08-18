@@ -472,6 +472,9 @@ type AnalyticsNewForYouRecommendation {
 
   # Artist affinity score
   score: Float!
+
+  # Version of affinity recommendation
+  version: String!
 }
 
 # The connection type for NewForYouRecommendation.
@@ -2351,6 +2354,9 @@ union ArtworkOrEditionSetType = Artwork | EditionSet
 type ArtworkPriceInsights {
   annualLotsSold: Int
   annualValueSoldCents: FormattedNumber
+
+  # The annual value of the work sold "in USD "
+  annualValueSoldDisplayText: String
   artistId: String
   averageSalePriceDisplayText(
     # Passes in to numeral, such as `'0.00'`
@@ -2358,6 +2364,14 @@ type ArtworkPriceInsights {
   ): String
   demandRank: Float
   lastAuctionResultDate: String
+  liquidityRankDisplayText(
+    # Return the liquidity rank in a formatted way (Low, medium, high or very high)
+    format: String = ""
+  ): String
+  medianSalePriceDisplayText(
+    # Passes in to numeral, such as `'0.00'`
+    format: String = ""
+  ): String
   medium: String
 }
 
@@ -3240,6 +3254,7 @@ type CalendarYearMarketPriceInsights {
   createdAt: ISO8601DateTime
   id: ID!
   lotsSold: BigInt
+  medianSalePrice: BigInt
   medium: String
   updatedAt: ISO8601DateTime
   valueSold: BigInt
@@ -9911,8 +9926,18 @@ type MarketPriceInsights {
   largeMidRangeCents: BigInt
   lastAuctionResultDate: ISO8601DateTime
   liquidityRank: Float
+  lotsSoldLast12Months: Int
+  lotsSoldLast24Months: Int
+  lotsSoldLast36Months: Int
+  lotsSoldLast48Months: Int
+  lotsSoldLast60Months: Int
+  lotsSoldLast72Months: Int
+  lotsSoldLast84Months: Int
+  lotsSoldLast96Months: Int
   lowRangeCents: BigInt
   medianSaleOverEstimatePercentage: Int
+  medianSalePriceLast36Months: BigInt
+  medianSalePriceLast96Months: BigInt
   medianSaleToEstimateRatio: Float
   medium: String
   mediumHighRangeCents: BigInt
@@ -12189,11 +12214,71 @@ enum PriceInsightSort {
   # sort by liquidity_rank in descending order
   LIQUIDITY_RANK_DESC
 
+  # sort by lots_sold_last_12_months in ascending order
+  LOTS_SOLD_LAST_12_MONTHS_ASC
+
+  # sort by lots_sold_last_12_months in descending order
+  LOTS_SOLD_LAST_12_MONTHS_DESC
+
+  # sort by lots_sold_last_24_months in ascending order
+  LOTS_SOLD_LAST_24_MONTHS_ASC
+
+  # sort by lots_sold_last_24_months in descending order
+  LOTS_SOLD_LAST_24_MONTHS_DESC
+
+  # sort by lots_sold_last_36_months in ascending order
+  LOTS_SOLD_LAST_36_MONTHS_ASC
+
+  # sort by lots_sold_last_36_months in descending order
+  LOTS_SOLD_LAST_36_MONTHS_DESC
+
+  # sort by lots_sold_last_48_months in ascending order
+  LOTS_SOLD_LAST_48_MONTHS_ASC
+
+  # sort by lots_sold_last_48_months in descending order
+  LOTS_SOLD_LAST_48_MONTHS_DESC
+
+  # sort by lots_sold_last_60_months in ascending order
+  LOTS_SOLD_LAST_60_MONTHS_ASC
+
+  # sort by lots_sold_last_60_months in descending order
+  LOTS_SOLD_LAST_60_MONTHS_DESC
+
+  # sort by lots_sold_last_72_months in ascending order
+  LOTS_SOLD_LAST_72_MONTHS_ASC
+
+  # sort by lots_sold_last_72_months in descending order
+  LOTS_SOLD_LAST_72_MONTHS_DESC
+
+  # sort by lots_sold_last_84_months in ascending order
+  LOTS_SOLD_LAST_84_MONTHS_ASC
+
+  # sort by lots_sold_last_84_months in descending order
+  LOTS_SOLD_LAST_84_MONTHS_DESC
+
+  # sort by lots_sold_last_96_months in ascending order
+  LOTS_SOLD_LAST_96_MONTHS_ASC
+
+  # sort by lots_sold_last_96_months in descending order
+  LOTS_SOLD_LAST_96_MONTHS_DESC
+
   # sort by low_range_cents in ascending order
   LOW_RANGE_CENTS_ASC
 
   # sort by low_range_cents in descending order
   LOW_RANGE_CENTS_DESC
+
+  # sort by median_sale_price_last_36_months in ascending order
+  MEDIAN_SALE_PRICE_LAST_36_MONTHS_ASC
+
+  # sort by median_sale_price_last_36_months in descending order
+  MEDIAN_SALE_PRICE_LAST_36_MONTHS_DESC
+
+  # sort by median_sale_price_last_96_months in ascending order
+  MEDIAN_SALE_PRICE_LAST_96_MONTHS_ASC
+
+  # sort by median_sale_price_last_96_months in descending order
+  MEDIAN_SALE_PRICE_LAST_96_MONTHS_DESC
 
   # sort by median_sale_to_estimate_ratio in ascending order
   MEDIAN_SALE_TO_ESTIMATE_RATIO_ASC

@@ -13,6 +13,19 @@ describe("Artwork type", () => {
   let artwork = null
   let context = null
 
+  const artworkInsights = [
+    {
+      artistId: "artist-id",
+      demandRank: 0.64,
+      medium: "print",
+      annualLotsSold: 25,
+      annualValueSoldCents: 577662200012,
+      lastAuctionResultDate: "2022-06-15T00:00:00Z",
+      medianSalePriceLast36Months: 577662200012,
+      liquidityRank: 0.9,
+    },
+  ]
+
   const artworkImages = [
     {
       position: 2,
@@ -3563,6 +3576,59 @@ describe("Artwork type", () => {
       expect(data).toEqual({
         artwork: {
           hasMarketPriceInsights: false,
+        },
+      })
+    })
+  })
+
+  it("queries for marketPriceInsights when they are requested", () => {
+    const query = `
+        {
+          artwork(id: "foo-bar") {
+            title
+            marketPriceInsights   {
+              liquidityRankDisplayText
+            }
+          }
+        }
+      `
+
+    const marketPriceInsightsBatchLoader = jest.fn(async () => artworkInsights)
+
+    context.marketPriceInsightsBatchLoader = marketPriceInsightsBatchLoader
+
+    return runQuery(query, context).then((data) => {
+      expect(marketPriceInsightsBatchLoader).toHaveBeenCalled()
+
+      expect(data).toEqual({
+        artwork: {
+          title: "Untitled (Portrait)",
+          marketPriceInsights: {
+            liquidityRankDisplayText: "Very High",
+          },
+        },
+      })
+    })
+  })
+
+  it("does not query for marketPriceInsights when they're not requested", () => {
+    const query = `
+        {
+          artwork(id: "foo-bar") {
+            title
+          }
+        }
+      `
+
+    const marketPriceInsightsBatchLoader = jest.fn(async () => artworkInsights)
+
+    context.marketPriceInsightsBatchLoader = marketPriceInsightsBatchLoader
+
+    return runQuery(query, context).then((data) => {
+      expect(marketPriceInsightsBatchLoader).not.toHaveBeenCalled()
+      expect(data).toEqual({
+        artwork: {
+          title: "Untitled (Portrait)",
         },
       })
     })

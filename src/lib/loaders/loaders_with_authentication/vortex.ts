@@ -64,12 +64,13 @@ export default (accessToken, opts) => {
             totalCount
             edges {
               node {
-                artistId
-                medium
-                demandRank
                 annualLotsSold
                 annualValueSoldCents
+                artistId
+                demandRank
                 lastAuctionResultDate
+                medianSalePriceLast36Months
+                medium
               }
             }
           }
