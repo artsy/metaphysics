@@ -1,22 +1,22 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 
-describe("UpdateCollectorProfile", () => {
+describe("UpdateCollectorProfileWithID", () => {
   it("calls the expected loader with correctly formatted params", async () => {
     const mutation = `
-      mutation {
-        updateCollectorProfile(input: { professionalBuyer: true, loyaltyApplicant: true, selfReportedPurchases: "trust me i buy art", intents: [BUY_ART_AND_DESIGN], institutionalAffiliations: "example", companyName: "Cool Art Stuff", companyWebsite: "https://artsy.net" }) {
-          internalID
-          name
-          email
-          selfReportedPurchases
-          intents
-          companyName
-          companyWebsite
-          professionalBuyerAt
-        }
-      }
-    `
+        mutation {
+          updateCollectorProfileWithID(input: { id: "5043b8888b3b8145d7005318", professionalBuyer: true, loyaltyApplicant: true, selfReportedPurchases: "trust me i buy art", intents: [BUY_ART_AND_DESIGN], institutionalAffiliations: "example", companyName: "Cool Art Stuff", companyWebsite: "https://artsy.net" }) {
+            internalID
+            name
+            email
+            selfReportedPurchases
+            intents
+            companyName
+            companyWebsite
+            professionalBuyerAt
+          }
+        } 
+      `
 
     const mockUpdateCollectorProfileLoader = jest.fn().mockReturnValue(
       Promise.resolve({
@@ -32,7 +32,7 @@ describe("UpdateCollectorProfile", () => {
     )
 
     const context = {
-      meUpdateCollectorProfileLoader: mockUpdateCollectorProfileLoader,
+      updateCollectorProfileLoader: mockUpdateCollectorProfileLoader,
     }
 
     const expectedProfileData = {
@@ -48,22 +48,25 @@ describe("UpdateCollectorProfile", () => {
 
     expect.assertions(2)
 
-    const { updateCollectorProfile } = await runAuthenticatedQuery(
+    const { updateCollectorProfileWithID } = await runAuthenticatedQuery(
       mutation,
       context
     )
 
-    expect(updateCollectorProfile).toEqual(expectedProfileData)
+    expect(updateCollectorProfileWithID).toEqual(expectedProfileData)
 
-    expect(mockUpdateCollectorProfileLoader).toBeCalledWith({
-      intents: ["buy art & design"],
-      loyalty_applicant: true,
-      professional_buyer: true,
-      self_reported_purchases: "trust me i buy art",
-      institutional_affiliations: "example",
-      company_name: "Cool Art Stuff",
-      company_website: "https://artsy.net",
-    })
+    expect(mockUpdateCollectorProfileLoader).toBeCalledWith(
+      "5043b8888b3b8145d7005318",
+      {
+        intents: ["buy art & design"],
+        loyalty_applicant: true,
+        professional_buyer: true,
+        self_reported_purchases: "trust me i buy art",
+        institutional_affiliations: "example",
+        company_name: "Cool Art Stuff",
+        company_website: "https://artsy.net",
+      }
+    )
   })
 
   it("throws error when data loader is missing", async () => {
