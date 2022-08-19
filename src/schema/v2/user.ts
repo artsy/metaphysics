@@ -13,7 +13,7 @@ import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { date } from "./fields/date"
-import CollectorProfile from "./me/collector_profile"
+import { CollectorProfile } from "./CollectorProfile/collectorProfile"
 
 export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserSaleProfile",

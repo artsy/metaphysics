@@ -7,6 +7,7 @@ import {
   GraphQLList,
   GraphQLFieldConfigMap,
   GraphQLNonNull,
+  GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { userInterestType } from "../me/userInterests"
@@ -58,3 +59,11 @@ export const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>(
     fields: CollectorProfileFields,
   }
 )
+
+export const CollectorProfile: GraphQLFieldConfig<void, ResolverContext> = {
+  type: CollectorProfileType,
+  description: "A collector profile.",
+  resolve: (_root, _option, { collectorProfileLoader }) => {
+    return collectorProfileLoader?.()
+  },
+}

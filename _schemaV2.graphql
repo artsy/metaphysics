@@ -15956,6 +15956,9 @@ type User {
   adminNotes: [UserAdminNotes]!
   analytics: AnalyticsUserStats
   cached: Int
+
+  # A collector profile.
+  collectorProfile: CollectorProfileType
   createdAt(
     format: String
 
@@ -15964,9 +15967,6 @@ type User {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
-
-  # A collector profile.
-  collectorProfile: CollectorProfileType
 
   # Has the user opted out of data transfer.
   dataTransferOptOut: Boolean
