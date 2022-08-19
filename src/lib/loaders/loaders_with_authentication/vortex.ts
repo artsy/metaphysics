@@ -73,6 +73,7 @@ export default (accessToken, opts) => {
                 medium
                 sellThroughRate
                 medianSaleOverEstimatePercentage
+                liquidityRank
               }
             }
           }
