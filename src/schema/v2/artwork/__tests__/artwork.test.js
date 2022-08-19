@@ -3654,7 +3654,7 @@ describe("Artwork type", () => {
           marketPriceInsights: {
             liquidityRankDisplayText: "Very High",
             sellThroughRate: 0.902,
-            medianSaleOverEstimatePercentage: "123",
+            medianSaleOverEstimatePercentage: 123,
           },
         },
       })
