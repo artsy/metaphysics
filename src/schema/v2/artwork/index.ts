@@ -186,8 +186,14 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
         return priceDisplayText(medianSalePriceLast36Months, "USD", format)
       },
     },
+    medianSaleOverEstimatePercentage: {
+      type: GraphQLFloat,
+    },
     lastAuctionResultDate: {
       type: GraphQLString,
+    },
+    sellThroughRate: {
+      type: GraphQLFloat,
     },
   },
 })

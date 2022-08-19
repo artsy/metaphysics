@@ -23,6 +23,8 @@ describe("Artwork type", () => {
       lastAuctionResultDate: "2022-06-15T00:00:00Z",
       medianSalePriceLast36Months: 577662200012,
       liquidityRank: 0.9,
+      sellThroughRate: 0.902,
+      medianSaleOverEstimatePercentage: 123,
     },
   ]
 
@@ -3632,6 +3634,8 @@ describe("Artwork type", () => {
             title
             marketPriceInsights   {
               liquidityRankDisplayText
+              medianSaleOverEstimatePercentage
+              sellThroughRate
             }
           }
         }
@@ -3649,6 +3653,8 @@ describe("Artwork type", () => {
           title: "Untitled (Portrait)",
           marketPriceInsights: {
             liquidityRankDisplayText: "Very High",
+            sellThroughRate: 0.902,
+            medianSaleOverEstimatePercentage: 123,
           },
         },
       })
