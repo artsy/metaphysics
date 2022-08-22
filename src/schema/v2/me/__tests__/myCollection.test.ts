@@ -341,6 +341,7 @@ describe("me.myCollection", () => {
                   annualValueSoldDisplayText
                   averageSalePriceDisplayText
                   demandRank
+                  demandRankDisplayText
                   liquidityRankDisplayText
                   medianSalePriceDisplayText
                 }
@@ -397,6 +398,7 @@ describe("me.myCollection", () => {
                     "annualValueSoldDisplayText": "$2B",
                     "averageSalePriceDisplayText": "US$2,176,421",
                     "demandRank": 0.64,
+                    "demandRankDisplayText": "Moderate Demand",
                     "liquidityRankDisplayText": "Medium",
                     "medianSalePriceDisplayText": "US$5,776,622,000",
                   },
