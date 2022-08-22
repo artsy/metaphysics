@@ -2025,6 +2025,7 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Structured questions a collector can inquire on about this work
   inquiryQuestions: [InquiryQuestion]
+  internalDisplayPrice: String
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!

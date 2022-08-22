@@ -904,6 +904,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ pickup_available }) => pickup_available,
       },
       listPrice,
+      internalDisplayPrice: {
+        type: GraphQLString,
+        resolve: ({ internal_display_price }) => internal_display_price,
+      },
       price: {
         type: GraphQLString,
       },
