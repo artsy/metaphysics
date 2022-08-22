@@ -90,6 +90,8 @@ const IMPORT_SOURCES = {
   MY_COLLECTION: { value: "my collection" },
 } as const
 
+const ARTIST_IN_HIGH_DEMAND_RANK = 9
+
 export const ArtworkImportSourceEnum = new GraphQLEnumType({
   name: "ArtworkImportSource",
   values: IMPORT_SOURCES,
@@ -100,17 +102,6 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     artistId: {
       type: GraphQLString,
-    },
-    medium: {
-      type: GraphQLString,
-    },
-    demandRank: {
-      type: GraphQLFloat,
-    },
-    demandRankDisplayText: {
-      type: GraphQLString,
-      description: "The demand rank display text of the artist and medium",
-      resolve: ({ demandRank }) => getDemandRankDisplayText(demandRank),
     },
     annualValueSoldCents: {
       type: FormattedNumber,
@@ -146,6 +137,27 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
+    demandRank: {
+      type: GraphQLFloat,
+    },
+    demandRankDisplayText: {
+      type: GraphQLString,
+      description: "The demand rank display text of the artist and medium",
+      resolve: ({ demandRank }) => getDemandRankDisplayText(demandRank),
+    },
+    isHighDemand: {
+      type: GraphQLBoolean,
+      description: "Return weather the artist medium is in high demand",
+      resolve: ({ demandRank }) => {
+        if (demandRank) {
+          return demandRank * 10 >= ARTIST_IN_HIGH_DEMAND_RANK
+        }
+        return null
+      },
+    },
+    lastAuctionResultDate: {
+      type: GraphQLString,
+    },
     liquidityRankDisplayText: {
       type: GraphQLString,
       args: {
@@ -175,6 +187,9 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
         return ""
       },
     },
+    medium: {
+      type: GraphQLString,
+    },
     medianSalePriceDisplayText: {
       type: GraphQLString,
       args: {
@@ -195,9 +210,7 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
     medianSaleOverEstimatePercentage: {
       type: GraphQLFloat,
     },
-    lastAuctionResultDate: {
-      type: GraphQLString,
-    },
+
     sellThroughRate: {
       type: GraphQLFloat,
     },

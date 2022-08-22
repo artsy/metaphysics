@@ -13,20 +13,32 @@ describe("Artwork type", () => {
   let artwork = null
   let context = null
 
-  const artworkInsights = [
-    {
-      artistId: "artist-id",
-      demandRank: 0.64,
-      medium: "print",
-      annualLotsSold: 25,
-      annualValueSoldCents: 577662200012,
-      lastAuctionResultDate: "2022-06-15T00:00:00Z",
-      medianSalePriceLast36Months: 577662200012,
-      liquidityRank: 0.9,
-      sellThroughRate: 0.902,
-      medianSaleOverEstimatePercentage: 123,
-    },
-  ]
+  const artworkInLowDemand = {
+    artistId: "artist-id",
+    demandRank: 0.64,
+    medium: "print",
+    annualLotsSold: 25,
+    annualValueSoldCents: 577662200012,
+    lastAuctionResultDate: "2022-06-15T00:00:00Z",
+    medianSalePriceLast36Months: 577662200012,
+    liquidityRank: 0.9,
+    sellThroughRate: 0.902,
+    medianSaleOverEstimatePercentage: 123,
+  }
+  const artworkInHighDemand = {
+    artistId: "artist-id",
+    demandRank: 0.9,
+    medium: "print",
+    annualLotsSold: 25,
+    annualValueSoldCents: 577662200012,
+    lastAuctionResultDate: "2022-06-15T00:00:00Z",
+    medianSalePriceLast36Months: 577662200012,
+    liquidityRank: 0.9,
+    sellThroughRate: 0.902,
+    medianSaleOverEstimatePercentage: 123,
+  }
+
+  const artworkInsights = [artworkInLowDemand, artworkInHighDemand]
 
   const artworkImages = [
     {
@@ -3680,6 +3692,63 @@ describe("Artwork type", () => {
         artwork: {
           title: "Untitled (Portrait)",
         },
+      })
+    })
+  })
+
+  describe("isHighDemand", () => {
+    it("returns true when an artwork is in high demand", () => {
+      const query = `
+        {
+          artwork(id: "foo-bar") {
+            marketPriceInsights {
+              isHighDemand
+            }
+          }
+        }
+      `
+
+      const marketPriceInsightsBatchLoader = jest.fn(async () => [
+        artworkInHighDemand,
+      ])
+
+      context.marketPriceInsightsBatchLoader = marketPriceInsightsBatchLoader
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            marketPriceInsights: {
+              isHighDemand: true,
+            },
+          },
+        })
+      })
+    })
+    it("returns false when an artwork is not in high demand", () => {
+      const query = `
+        {
+          artwork(id: "foo-bar") {
+            marketPriceInsights {
+              isHighDemand
+            }
+          }
+        }
+      `
+
+      const marketPriceInsightsBatchLoader = jest.fn(async () => [
+        artworkInLowDemand,
+      ])
+
+      context.marketPriceInsightsBatchLoader = marketPriceInsightsBatchLoader
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            marketPriceInsights: {
+              isHighDemand: false,
+            },
+          },
+        })
       })
     })
   })
