@@ -90,6 +90,8 @@ const IMPORT_SOURCES = {
   MY_COLLECTION: { value: "my collection" },
 } as const
 
+const ARTIST_IN_HIGH_DEMAND_RANK = 9
+
 export const ArtworkImportSourceEnum = new GraphQLEnumType({
   name: "ArtworkImportSource",
   values: IMPORT_SOURCES,
@@ -142,6 +144,16 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description: "The demand rank display text of the artist and medium",
       resolve: ({ demandRank }) => getDemandRankDisplayText(demandRank),
+    },
+    isHighDemand: {
+      type: GraphQLBoolean,
+      description: "Return weather the artist medium is in high demand",
+      resolve: ({ demandRank }) => {
+        if (demandRank) {
+          return demandRank * 10 >= ARTIST_IN_HIGH_DEMAND_RANK
+        }
+        return null
+      },
     },
     lastAuctionResultDate: {
       type: GraphQLString,
