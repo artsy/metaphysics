@@ -1946,6 +1946,9 @@ type Artwork implements Node & Searchable & Sellable {
     last: Int
   ): AuctionResultConnection
   conditionDescription: ArtworkInfoRow
+
+  # Notes by a partner on the artwork, requires auth
+  confidentialNotes: String
   consignmentSubmission: ArtworkConsignmentSubmission
   contactLabel: String
 

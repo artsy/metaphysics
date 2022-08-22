@@ -358,6 +358,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           existyValue(collecting_institution),
       },
       comparableAuctionResults: ComparableAuctionResults,
+      confidentialNotes: {
+        type: GraphQLString,
+        resolve: ({ confidential_notes }) => existyValue(confidential_notes),
+        description: "Notes by a partner on the artwork, requires auth",
+      },
       consignmentSubmission: {
         type: ArtworkConsignmentSubmissionType,
         resolve: async (
