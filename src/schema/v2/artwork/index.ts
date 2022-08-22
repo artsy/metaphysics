@@ -20,7 +20,7 @@ import attributionClasses from "lib/attributionClasses"
 import { deprecate } from "lib/deprecation"
 import { enrichArtworksWithPriceInsights } from "lib/fillers/enrichArtworksWithPriceInsights"
 import { formatLargeNumber } from "lib/formatLargeNumber"
-import { getDemandRank } from "lib/getDemandRank"
+import { getDemandRankDisplayText } from "lib/getDemandRank"
 import { capitalizeFirstCharacter, enhance, existyValue } from "lib/helpers"
 import { isFieldRequested } from "lib/ifFieldRequested"
 import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
@@ -109,8 +109,8 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
     },
     demandRankDisplayText: {
       type: GraphQLString,
-      description: "The demand rank  of the artist and medium",
-      resolve: ({ demandRank }) => getDemandRank(demandRank),
+      description: "The demand rank display text of the artist and medium",
+      resolve: ({ demandRank }) => getDemandRankDisplayText(demandRank),
     },
     annualValueSoldCents: {
       type: FormattedNumber,
