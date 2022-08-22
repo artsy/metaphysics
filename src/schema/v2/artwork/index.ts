@@ -101,17 +101,6 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
     artistId: {
       type: GraphQLString,
     },
-    medium: {
-      type: GraphQLString,
-    },
-    demandRank: {
-      type: GraphQLFloat,
-    },
-    demandRankDisplayText: {
-      type: GraphQLString,
-      description: "The demand rank display text of the artist and medium",
-      resolve: ({ demandRank }) => getDemandRankDisplayText(demandRank),
-    },
     annualValueSoldCents: {
       type: FormattedNumber,
     },
@@ -146,6 +135,17 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
+    demandRank: {
+      type: GraphQLFloat,
+    },
+    demandRankDisplayText: {
+      type: GraphQLString,
+      description: "The demand rank display text of the artist and medium",
+      resolve: ({ demandRank }) => getDemandRankDisplayText(demandRank),
+    },
+    lastAuctionResultDate: {
+      type: GraphQLString,
+    },
     liquidityRankDisplayText: {
       type: GraphQLString,
       args: {
@@ -175,6 +175,9 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
         return ""
       },
     },
+    medium: {
+      type: GraphQLString,
+    },
     medianSalePriceDisplayText: {
       type: GraphQLString,
       args: {
@@ -195,9 +198,7 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
     medianSaleOverEstimatePercentage: {
       type: GraphQLFloat,
     },
-    lastAuctionResultDate: {
-      type: GraphQLString,
-    },
+
     sellThroughRate: {
       type: GraphQLFloat,
     },
