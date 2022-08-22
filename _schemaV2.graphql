@@ -1947,7 +1947,7 @@ type Artwork implements Node & Searchable & Sellable {
   ): AuctionResultConnection
   conditionDescription: ArtworkInfoRow
 
-  # Notes by a partner on the artwork, requires auth
+  # Notes by a partner on the artwork, requires partner access
   confidentialNotes: String
   consignmentSubmission: ArtworkConsignmentSubmission
   contactLabel: String
