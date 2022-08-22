@@ -2025,6 +2025,8 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Structured questions a collector can inquire on about this work
   inquiryQuestions: [InquiryQuestion]
+
+  # Price for internal partner display, requires partner access
   internalDisplayPrice: String
 
   # A type-specific ID likely used as a database ID.
@@ -7564,6 +7566,9 @@ type EditionSet implements Sellable {
 
   # A globally unique ID.
   id: ID!
+
+  # Price for internal partner display, requires partner access
+  internalDisplayPrice: String
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
