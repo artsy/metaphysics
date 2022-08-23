@@ -11463,6 +11463,9 @@ type Partner implements Node {
   artworksConnection(
     after: String
 
+    # Return only artworks by this artist.
+    artistID: String
+
     # Return only artwork(s) included in this list of IDs.
     artworkIDs: [String]
     before: String
@@ -11473,6 +11476,9 @@ type Partner implements Node {
 
     # Return artworks that are missing priority metadata
     missingPriorityMetadata: Boolean
+
+    # If false return both published and unpublished artworks, requires auth
+    published: Boolean
 
     # Return artworks published less than x seconds ago.
     publishedWithin: Int
@@ -11600,6 +11606,8 @@ type Partner implements Node {
   # A connection of artworks owned by a Partner for a given artist.
   partnerArtistArtworksConnection(
     after: String
+
+    # Return only artworks by this artist.
     artistID: String
 
     # Return only artwork(s) included in this list of IDs.
@@ -11612,6 +11620,9 @@ type Partner implements Node {
 
     # Return artworks that are missing priority metadata
     missingPriorityMetadata: Boolean
+
+    # If false return both published and unpublished artworks, requires auth
+    published: Boolean
 
     # Return artworks published less than x seconds ago.
     publishedWithin: Int

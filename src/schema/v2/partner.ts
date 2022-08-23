@@ -74,6 +74,10 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     type: new GraphQLList(GraphQLString),
     description: "Return only artwork(s) included in this list of IDs.",
   },
+  artistID: {
+    type: GraphQLString,
+    description: "Return only artworks by this artist.",
+  },
   exclude: {
     type: new GraphQLList(GraphQLString),
   },
@@ -87,6 +91,11 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   publishedWithin: {
     type: GraphQLInt,
     description: "Return artworks published less than x seconds ago.",
+  },
+  published: {
+    type: GraphQLBoolean,
+    description:
+      "If false return both published and unpublished artworks, requires auth",
   },
   sort: ArtworkSorts,
   shallow: {
@@ -394,6 +403,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           interface GravityArgs {
             artwork_id?: string[]
+            artist_id?: string[]
             exclude_ids?: string[]
             for_sale: boolean
             missing_priority_metadata?: boolean
@@ -408,8 +418,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           const gravityArgs: GravityArgs = {
             for_sale: args.forSale,
             missing_priority_metadata: args.missingPriorityMetadata,
+            artist_id: args.artistID || undefined,
             page,
-            published: true,
+            published: args.published ?? true,
             published_within: args.publishedWithin,
             size,
             sort: args.sort,
