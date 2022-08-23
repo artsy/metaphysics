@@ -360,7 +360,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       comparableAuctionResults: ComparableAuctionResults,
       confidentialNotes: {
         type: GraphQLString,
-        resolve: ({ confidential_notes }) => existyValue(confidential_notes),
+        resolve: ({ confidential_notes }) => confidential_notes,
         description:
           "Notes by a partner on the artwork, requires partner access",
       },
