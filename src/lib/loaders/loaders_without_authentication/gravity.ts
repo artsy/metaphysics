@@ -114,7 +114,7 @@ export default (opts) => {
     >(
       ({ artist_id, partner_id }) => `partner/${partner_id}/artist/${artist_id}`
     ),
-    partnerArtistPartnerArtworksLoader: gravityLoader<
+    partnerArtistPartnerArtistArtworksLoader: gravityLoader<
       any,
       { artistID: string; partnerID: string }
     >(

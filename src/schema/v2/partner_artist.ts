@@ -133,7 +133,7 @@ export const fields: Thunk<GraphQLFieldConfigMap<
     resolve: (
       { partner: { id: partnerID }, artist: { id: artistID } },
       args,
-      { partnerArtistPartnerArtworksLoader }
+      { partnerArtistPartnerArtistArtworksLoader }
     ) => {
       const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
@@ -144,7 +144,7 @@ export const fields: Thunk<GraphQLFieldConfigMap<
         size,
       }
 
-      return partnerArtistPartnerArtworksLoader(
+      return partnerArtistPartnerArtistArtworksLoader(
         { partnerID, artistID },
         gravityArgs
       ).then(({ body, headers }) => {
