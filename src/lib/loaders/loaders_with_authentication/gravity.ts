@@ -319,15 +319,6 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerArtistArtworksLoader: gravityLoader<
-      any,
-      { artistID: string; partnerID: string }
-    >(
-      ({ artistID, partnerID }) =>
-        `partner/${partnerID}/artist/${artistID}/artworks/all`,
-      {},
-      { headers: true }
-    ),
     partnerShowArtworksLoader: gravityLoader<
       any,
       { partner_id: string; show_id: string }
