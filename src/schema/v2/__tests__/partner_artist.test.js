@@ -207,7 +207,7 @@ describe("partnerArtist", () => {
         },
       ]
       context = {
-        partnerArtistArtworksLoader: () =>
+        partnerArtistPartnerArtistArtworksLoader: () =>
           Promise.resolve({
             body: partnerArtistArtworksResponse,
             headers: {
