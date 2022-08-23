@@ -2,11 +2,12 @@ import { GraphQLBoolean, GraphQLString, GraphQLList } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { snakeCase } from "lodash"
-import { CollectorProfileFields } from "../CollectorProfile/collectorProfile"
-import { IntentsType } from "../CollectorProfile/types/IntentsType"
+import { CollectorProfileFields } from "../collectorProfile"
+import { IntentsType } from "../types/IntentsType"
+import { omit } from "lodash"
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({
-  name: "UpdateCollectorProfile",
+  name: "UpdateCollectorProfileWithID",
   description: "Updating a collector profile (loyalty applicant status).",
   inputFields: {
     affiliatedAuctionHouseIds: {
@@ -21,9 +22,14 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       description: "List of affiliated gallery ids, referencing Galaxy.",
       type: new GraphQLList(GraphQLString),
     },
-    institutionalAffiliations: { type: GraphQLString },
     companyName: { type: GraphQLString },
     companyWebsite: { type: GraphQLString },
+    confirmedBuyer: { type: GraphQLBoolean },
+    id: {
+      description: "The internal ID of the collector profile to update",
+      type: GraphQLString,
+    },
+    institutionalAffiliations: { type: GraphQLString },
     intents: { type: new GraphQLList(IntentsType) },
     loyaltyApplicant: { type: GraphQLBoolean },
     professionalBuyer: { type: GraphQLBoolean },
@@ -33,19 +39,19 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     },
   },
   outputFields: CollectorProfileFields,
-  mutateAndGetPayload: (args, { meUpdateCollectorProfileLoader }) => {
+  mutateAndGetPayload: (args, { updateCollectorProfileLoader }) => {
     // snake_case keys for Gravity (keys are the same otherwise)
     const options = Object.keys(args).reduce(
       (acc, key) => ({ ...acc, [snakeCase(key)]: args[key] }),
       {}
     )
 
-    if (!meUpdateCollectorProfileLoader) {
+    if (!updateCollectorProfileLoader) {
       throw new Error(
         "Missing Update Collector Profile Loader. Check your access token."
       )
     }
 
-    return meUpdateCollectorProfileLoader(options)
+    return updateCollectorProfileLoader(args.id, omit(options, "id"))
   },
 })

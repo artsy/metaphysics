@@ -5,12 +5,12 @@ import {
   GraphQLString,
   GraphQLInt,
   GraphQLList,
-  GraphQLFieldConfig,
   GraphQLFieldConfigMap,
   GraphQLNonNull,
+  GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { userInterestType } from "./userInterests"
+import { userInterestType } from "../me/userInterests"
 
 export const CollectorProfileFields: GraphQLFieldConfigMap<
   any,
@@ -20,6 +20,14 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   collectorLevel: {
     type: GraphQLInt,
     resolve: ({ collector_level }) => collector_level,
+  },
+  companyName: {
+    type: GraphQLString,
+    resolve: ({ company_name }) => company_name,
+  },
+  companyWebsite: {
+    type: GraphQLString,
+    resolve: ({ company_website }) => company_website,
   },
   confirmedBuyerAt: date,
   email: { type: GraphQLString },
@@ -52,12 +60,10 @@ export const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>(
   }
 )
 
-const CollectorProfile: GraphQLFieldConfig<void, ResolverContext> = {
+export const CollectorProfile: GraphQLFieldConfig<void, ResolverContext> = {
   type: CollectorProfileType,
   description: "A collector profile.",
   resolve: (_root, _option, { collectorProfileLoader }) => {
     return collectorProfileLoader?.()
   },
 }
-
-export default CollectorProfile
