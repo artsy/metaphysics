@@ -14707,19 +14707,6 @@ type Shortcut {
 }
 
 type Show implements EntityWithFilterArtworksConnectionInterface & Node {
-  # The artworks featured in the show, published and unpublished.
-  allArtworksConnection(
-    after: String
-    before: String
-
-    # List of artwork IDs to exclude from the response (irrespective of size)
-    exclude: [String]
-    first: Int
-    forSale: Boolean = false
-    last: Int
-    published: Boolean = true
-  ): ArtworkConnection
-
   # The Artists presenting in this show
   artists: [Artist]
 
@@ -14729,7 +14716,7 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
   # Artists inside the show who do not have artworks present
   artistsWithoutArtworks: [Artist]
 
-  # The artworks featured in the show, only published.
+  # The artworks featured in the show.
   artworksConnection(
     after: String
     before: String

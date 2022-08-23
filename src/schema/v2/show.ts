@@ -112,62 +112,8 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           return artists
         },
       },
-      allArtworksConnection: {
-        description:
-          "The artworks featured in the show, published and unpublished.",
-        type: artworkConnection.connectionType,
-        args: pageable(artworksArgs),
-        resolve: async (show, options, { partnerShowAllArtworksLoader }) => {
-          if (!partnerShowAllArtworksLoader) {
-            throw new Error(
-              "You need to be signed in as an admin or partner to perform this action"
-            )
-          }
-
-          const loaderOptions = {
-            partner_id: show.partner.id,
-            show_id: show.id,
-          }
-
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            options
-          )
-
-          const gravityArgs: {
-            exclude_ids?: string[]
-            page: number
-            size: number
-            total_count: boolean
-            published: boolean
-          } = {
-            page,
-            size,
-            total_count: true,
-            published: false,
-          }
-
-          if (options.exclude) {
-            gravityArgs.exclude_ids = flatten([options.exclude])
-          }
-
-          const { body, headers = {} } = await partnerShowAllArtworksLoader(
-            loaderOptions,
-            gravityArgs
-          )
-
-          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-          return {
-            totalCount,
-            ...connectionFromArraySlice(body, options, {
-              arrayLength: totalCount,
-              sliceStart: offset,
-            }),
-          }
-        },
-      },
       artworksConnection: {
-        description: "The artworks featured in the show, only published.",
+        description: "The artworks featured in the show.",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
         resolve: async (show, options, { partnerShowArtworksLoader }) => {
