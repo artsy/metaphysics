@@ -9,6 +9,7 @@ interface Input {
   email: string
   name: string
   phone?: string
+  adminNote?: string
 }
 
 interface GravityInput {
@@ -42,19 +43,19 @@ export const updateUserMutation = mutationWithClientMutationId<
   mutateAndGetPayload: async (args, { updateUserLoader }) => {
     if (!updateUserLoader) {
       throw new Error(
-        "You need to be signed in as an admin to perform this action"
+        "You need to pass a X-Access-Token header to perform this action"
       )
     }
 
-    const gravityOptions = Object.keys(args)
-      .filter((key) => key !== "id")
+    const updateUserLoaderPayload = Object.keys(args)
+      .filter((key) => key !== "id" && key !== "adminNote")
       .reduce(
         (acc, key) => ({ ...acc, [snakeCase(key)]: args[key] }),
         {} as GravityInput
       )
 
     try {
-      return await updateUserLoader?.(args.id, gravityOptions)
+      return await updateUserLoader?.(args.id, updateUserLoaderPayload)
     } catch (err) {
       if ("body" in (err as any)) {
         const e = err as GravityError

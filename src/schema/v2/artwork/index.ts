@@ -20,6 +20,7 @@ import attributionClasses from "lib/attributionClasses"
 import { deprecate } from "lib/deprecation"
 import { enrichArtworksWithPriceInsights } from "lib/fillers/enrichArtworksWithPriceInsights"
 import { formatLargeNumber } from "lib/formatLargeNumber"
+import { getDemandRankDisplayText } from "lib/getDemandRank"
 import { capitalizeFirstCharacter, enhance, existyValue } from "lib/helpers"
 import { isFieldRequested } from "lib/ifFieldRequested"
 import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
@@ -46,7 +47,7 @@ import Image, {
   normalizeImageData,
 } from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
-import { LocationType } from "schema/v2/location"
+import { LocationType, COUNTRIES } from "schema/v2/location"
 import {
   NodeInterface,
   SlugAndInternalIDFields,
@@ -89,6 +90,8 @@ const IMPORT_SOURCES = {
   MY_COLLECTION: { value: "my collection" },
 } as const
 
+const ARTIST_IN_HIGH_DEMAND_RANK = 9
+
 export const ArtworkImportSourceEnum = new GraphQLEnumType({
   name: "ArtworkImportSource",
   values: IMPORT_SOURCES,
@@ -99,12 +102,6 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     artistId: {
       type: GraphQLString,
-    },
-    medium: {
-      type: GraphQLString,
-    },
-    demandRank: {
-      type: GraphQLFloat,
     },
     annualValueSoldCents: {
       type: FormattedNumber,
@@ -140,6 +137,27 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
+    demandRank: {
+      type: GraphQLFloat,
+    },
+    demandRankDisplayText: {
+      type: GraphQLString,
+      description: "The demand rank display text of the artist and medium",
+      resolve: ({ demandRank }) => getDemandRankDisplayText(demandRank),
+    },
+    isHighDemand: {
+      type: GraphQLBoolean,
+      description: "Return weather the artist medium is in high demand",
+      resolve: ({ demandRank }) => {
+        if (demandRank) {
+          return demandRank * 10 >= ARTIST_IN_HIGH_DEMAND_RANK
+        }
+        return null
+      },
+    },
+    lastAuctionResultDate: {
+      type: GraphQLString,
+    },
     liquidityRankDisplayText: {
       type: GraphQLString,
       args: {
@@ -169,6 +187,9 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
         return ""
       },
     },
+    medium: {
+      type: GraphQLString,
+    },
     medianSalePriceDisplayText: {
       type: GraphQLString,
       args: {
@@ -186,8 +207,12 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
         return priceDisplayText(medianSalePriceLast36Months, "USD", format)
       },
     },
-    lastAuctionResultDate: {
-      type: GraphQLString,
+    medianSaleOverEstimatePercentage: {
+      type: GraphQLFloat,
+    },
+
+    sellThroughRate: {
+      type: GraphQLFloat,
     },
   },
 })
@@ -333,6 +358,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           existyValue(collecting_institution),
       },
       comparableAuctionResults: ComparableAuctionResults,
+      confidentialNotes: {
+        type: GraphQLString,
+        resolve: ({ confidential_notes }) => confidential_notes,
+        description:
+          "Notes by a partner on the artwork, requires partner access",
+      },
       consignmentSubmission: {
         type: ArtworkConsignmentSubmissionType,
         resolve: async (
@@ -874,6 +905,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ pickup_available }) => pickup_available,
       },
       listPrice,
+      internalDisplayPrice: {
+        type: GraphQLString,
+        resolve: ({ internal_display_price }) => internal_display_price,
+        description:
+          "Price for internal partner display, requires partner access",
+      },
       price: {
         type: GraphQLString,
       },
@@ -975,6 +1012,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "The string that describes domestic and international shipping.",
         resolve: (artwork) => {
+          const fullCountryName = artwork.shipping_origin
+            ? COUNTRIES[
+                artwork.shipping_origin[artwork.shipping_origin.length - 1]
+              ]
+            : null
+
           if (
             artwork.process_with_artsy_shipping_domestic ||
             artwork.artsy_shipping_international
@@ -984,13 +1027,18 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
 
           if (artwork.domestic_shipping_fee_cents == null)
             return "Shipping, tax, and additional fees quoted by seller"
+
+          const domesticShippingOnlyMessage = fullCountryName
+            ? `Free shipping within ${fullCountryName} only`
+            : "Free domestic shipping only"
+
           if (
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents == null
           )
             return artwork.eu_shipping_origin
               ? "Free shipping within European Union only"
-              : "Free domestic shipping only"
+              : domesticShippingOnlyMessage
 
           if (
             artwork.domestic_shipping_fee_cents === 0 &&
@@ -1014,9 +1062,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             symbol: symbolFromCurrencyCode(artwork.price_currency),
           })
 
+          const domesticShippingRegion = fullCountryName
+            ? `within ${fullCountryName}`
+            : "domestic"
+
           const shippingRegion = artwork.eu_shipping_origin
             ? "within European Union"
-            : "domestic"
+            : domesticShippingRegion
 
           if (
             domesticShipping &&

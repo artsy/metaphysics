@@ -66,6 +66,7 @@ import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
 import { deleteBankAccountMutation } from "./me/delete_bank_account_mutation"
 import { deleteCreditCardMutation } from "./me/delete_credit_card_mutation"
+import { deleteUserRoleMutation } from "./users/deleteUserRoleMutation"
 import FollowArtist from "./me/follow_artist"
 import FollowGene from "./me/follow_gene"
 import FollowProfile from "./me/follow_profile"
@@ -76,9 +77,12 @@ import { myCollectionUpdateArtworkMutation } from "./me/myCollectionUpdateArtwor
 import saveArtworkMutation from "./me/saveArtworkMutation"
 import { sendConfirmationEmailMutation } from "./me/sendConfirmationEmailMutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
+import UpdateCollectorProfileWithID from "./CollectorProfile/mutations/updateCollectorProfileWithID"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import { updateMyPasswordMutation } from "./me/updateMyPasswordMutation"
 import { updateUserMutation } from "./users/updateUserMutation"
+import { addUserRoleMutation } from "./users/addUserRoleMutation"
+import { createUserAdminNoteMutation } from "./users/createUserAdminNoteMutation"
 import { updateUserSaleProfileMutation } from "./users/updateUserSaleProfileMutation"
 import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileIconMutation"
 import ObjectIdentification from "./object_identification"
@@ -148,6 +152,7 @@ import { MatchConnection } from "./Match"
 import { PartnerArtistDocumentsConnection } from "./partnerArtistDocumentsConnection"
 import { PartnerShowDocumentsConnection } from "./partnerShowDocumentsConnection"
 import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
+import { NotificationsConnection } from "./notifications"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -218,6 +223,7 @@ const rootFields = {
   matchConnection: MatchConnection,
   me: Me,
   node: ObjectIdentification.NodeField,
+  notificationsConnection: NotificationsConnection,
   orderedSet: OrderedSet,
   orderedSets: OrderedSets,
   page,
@@ -282,11 +288,13 @@ export default new GraphQLSchema({
       createCreditCard: createCreditCardMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
+      createUserAdminNote: createUserAdminNoteMutation,
       createUserInterest: createUserInterestMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCreditCard: deleteCreditCardMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteUserInterest: deleteUserInterestMutation,
+      deleteUserRole: deleteUserRoleMutation,
       endSale: endSaleMutation,
       followArtist: FollowArtist,
       followGene: FollowGene,
@@ -308,11 +316,13 @@ export default new GraphQLSchema({
       startIdentityVerification: startIdentityVerificationMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
       updateCollectorProfile: UpdateCollectorProfile,
+      updateCollectorProfileWithID: UpdateCollectorProfileWithID,
       updateConversation: UpdateConversationMutation,
       updateMyPassword: updateMyPasswordMutation,
       updateUser: updateUserMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
+      addUserRole: addUserRoleMutation,
       updateNotificationPreferences: updateNotificationPreferencesMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,

@@ -71,6 +71,9 @@ export default (accessToken, opts) => {
                 lastAuctionResultDate
                 medianSalePriceLast36Months
                 medium
+                sellThroughRate
+                medianSaleOverEstimatePercentage
+                liquidityRank
               }
             }
           }

@@ -13,18 +13,32 @@ describe("Artwork type", () => {
   let artwork = null
   let context = null
 
-  const artworkInsights = [
-    {
-      artistId: "artist-id",
-      demandRank: 0.64,
-      medium: "print",
-      annualLotsSold: 25,
-      annualValueSoldCents: 577662200012,
-      lastAuctionResultDate: "2022-06-15T00:00:00Z",
-      medianSalePriceLast36Months: 577662200012,
-      liquidityRank: 0.9,
-    },
-  ]
+  const artworkInLowDemand = {
+    artistId: "artist-id",
+    demandRank: 0.64,
+    medium: "print",
+    annualLotsSold: 25,
+    annualValueSoldCents: 577662200012,
+    lastAuctionResultDate: "2022-06-15T00:00:00Z",
+    medianSalePriceLast36Months: 577662200012,
+    liquidityRank: 0.9,
+    sellThroughRate: 0.902,
+    medianSaleOverEstimatePercentage: 123,
+  }
+  const artworkInHighDemand = {
+    artistId: "artist-id",
+    demandRank: 0.9,
+    medium: "print",
+    annualLotsSold: 25,
+    annualValueSoldCents: 577662200012,
+    lastAuctionResultDate: "2022-06-15T00:00:00Z",
+    medianSalePriceLast36Months: 577662200012,
+    liquidityRank: 0.9,
+    sellThroughRate: 0.902,
+    medianSaleOverEstimatePercentage: 123,
+  }
+
+  const artworkInsights = [artworkInLowDemand, artworkInHighDemand]
 
   const artworkImages = [
     {
@@ -2329,6 +2343,7 @@ describe("Artwork type", () => {
 
     it("is set to quoted by seller when domestic shipping fee is null", () => {
       artwork.domestic_shipping_fee_cents = null
+      artwork.shipping_origin = ["Oslo", "NO"]
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
@@ -2339,6 +2354,19 @@ describe("Artwork type", () => {
     })
 
     it("is set to free domestic shipping only when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is null", () => {
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = null
+      artwork.shipping_origin = ["Oslo", "NO"]
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Free shipping within Norway only",
+          },
+        })
+      })
+    })
+
+    it("is set to generic domestic message when origin country is not set", () => {
       artwork.domestic_shipping_fee_cents = 0
       artwork.international_shipping_fee_cents = null
       return runQuery(query, context).then((data) => {
@@ -2353,6 +2381,7 @@ describe("Artwork type", () => {
     it("is set to free shipping string when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is 0", () => {
       artwork.domestic_shipping_fee_cents = 0
       artwork.international_shipping_fee_cents = 0
+      artwork.shipping_origin = ["Oslo", "NO"]
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
@@ -2365,10 +2394,11 @@ describe("Artwork type", () => {
     it("is set to domestic shipping only when its domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
       artwork.domestic_shipping_fee_cents = 1000
       artwork.international_shipping_fee_cents = null
+      artwork.shipping_origin = ["Seattle", "WA", "US"]
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: $10 domestic only",
+            shippingInfo: "Shipping: $10 within United States only",
           },
         })
       })
@@ -2377,10 +2407,11 @@ describe("Artwork type", () => {
     it("is set to free international shipping when domestic_shipping_fee_cents is 0 and domestic_shipping_fee_cents is present", () => {
       artwork.domestic_shipping_fee_cents = 1000
       artwork.international_shipping_fee_cents = 0
+      artwork.shipping_origin = ["Oslo", "NO"]
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: $10 domestic, free rest of world",
+            shippingInfo: "Shipping: $10 within Norway, free rest of world",
           },
         })
       })
@@ -2389,10 +2420,11 @@ describe("Artwork type", () => {
     it("is set to free domestic shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
       artwork.domestic_shipping_fee_cents = 0
       artwork.international_shipping_fee_cents = 10000
+      artwork.shipping_origin = ["Oslo", "NO"]
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: Free domestic, $100 rest of world",
+            shippingInfo: "Shipping: Free within Norway, $100 rest of world",
           },
         })
       })
@@ -2401,16 +2433,32 @@ describe("Artwork type", () => {
     it("is set to domestic and intermational shipping when both domestic_shipping_fee_cents and present and international_shipping_fee_cents are set", () => {
       artwork.domestic_shipping_fee_cents = 1000
       artwork.international_shipping_fee_cents = 2000
+      artwork.shipping_origin = ["Oslo", "NO"]
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: $10 domestic, $20 rest of world",
+            shippingInfo: "Shipping: $10 within Norway, $20 rest of world",
           },
         })
       })
     })
 
     it("shows shipping costs in the same currency as list price", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = 2000
+      artwork.price_currency = "GBP"
+      artwork.shipping_origin = ["London", "GB"]
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo:
+              "Shipping: £10 within United Kingdom [U.K.], £20 rest of world",
+          },
+        })
+      })
+    })
+
+    it("shows proper fallback text when no shipping origin present", () => {
       artwork.domestic_shipping_fee_cents = 1000
       artwork.international_shipping_fee_cents = 2000
       artwork.price_currency = "GBP"
@@ -2425,6 +2473,7 @@ describe("Artwork type", () => {
 
     it("is set to calculated at checkout when artwork will be processed with Arta shipping", () => {
       artwork.process_with_artsy_shipping_domestic = true
+      artwork.shipping_origin = ["Oslo", "NO"]
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
@@ -2437,6 +2486,7 @@ describe("Artwork type", () => {
 
     it("is set to calculated at checkout when artwork will be processed with international Artsy shipping", () => {
       artwork.artsy_shipping_international = true
+      artwork.shipping_origin = ["Oslo", "NO"]
 
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
@@ -2447,7 +2497,7 @@ describe("Artwork type", () => {
       })
     })
 
-    describe("for artworks that is located within continental EU", () => {
+    describe("for artworks located within the EU", () => {
       beforeEach(() => {
         artwork.eu_shipping_origin = true
       })
@@ -2455,6 +2505,7 @@ describe("Artwork type", () => {
       it("is set to prompt string when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
         artwork.domestic_shipping_fee_cents = null
         artwork.international_shipping_fee_cents = null
+        artwork.shipping_origin = ["Rome", "IT"]
 
         return runQuery(query, context).then((data) => {
           expect(data).toEqual({
@@ -2469,6 +2520,7 @@ describe("Artwork type", () => {
       it("is set to free euro shipping only when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is null", () => {
         artwork.domestic_shipping_fee_cents = 0
         artwork.international_shipping_fee_cents = null
+        artwork.shipping_origin = ["Rome", "IT"]
         return runQuery(query, context).then((data) => {
           expect(data).toEqual({
             artwork: {
@@ -2481,6 +2533,7 @@ describe("Artwork type", () => {
       it("is set to free shipping string when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is 0", () => {
         artwork.domestic_shipping_fee_cents = 0
         artwork.international_shipping_fee_cents = 0
+        artwork.shipping_origin = ["Rome", "IT"]
         return runQuery(query, context).then((data) => {
           expect(data).toEqual({
             artwork: {
@@ -2493,6 +2546,7 @@ describe("Artwork type", () => {
       it("is set to domestic shipping only when its domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
         artwork.domestic_shipping_fee_cents = 1000
         artwork.international_shipping_fee_cents = null
+        artwork.shipping_origin = ["Rome", "IT"]
         return runQuery(query, context).then((data) => {
           expect(data).toEqual({
             artwork: {
@@ -2505,6 +2559,7 @@ describe("Artwork type", () => {
       it("is set to free international shipping when domestic_shipping_fee_cents is 0 and domestic_shipping_fee_cents is present", () => {
         artwork.domestic_shipping_fee_cents = 1000
         artwork.international_shipping_fee_cents = 0
+        artwork.shipping_origin = ["Rome", "IT"]
         return runQuery(query, context).then((data) => {
           expect(data).toEqual({
             artwork: {
@@ -2518,6 +2573,7 @@ describe("Artwork type", () => {
       it("is set to free domestic shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
         artwork.domestic_shipping_fee_cents = 0
         artwork.international_shipping_fee_cents = 10000
+        artwork.shipping_origin = ["Rome", "IT"]
         return runQuery(query, context).then((data) => {
           expect(data).toEqual({
             artwork: {
@@ -2530,6 +2586,7 @@ describe("Artwork type", () => {
 
       it("is set to domestic and intermational shipping when both domestic_shipping_fee_cents and present and international_shipping_fee_cents are set", () => {
         artwork.domestic_shipping_fee_cents = 1000
+        artwork.shipping_origin = ["Rome", "IT"]
         artwork.international_shipping_fee_cents = 2000
         return runQuery(query, context).then((data) => {
           expect(data).toEqual({
@@ -2545,6 +2602,7 @@ describe("Artwork type", () => {
         artwork.domestic_shipping_fee_cents = 1000
         artwork.international_shipping_fee_cents = 2000
         artwork.price_currency = "EUR"
+        artwork.shipping_origin = ["Rome", "IT"]
         return runQuery(query, context).then((data) => {
           expect(data).toEqual({
             artwork: {
@@ -3588,6 +3646,8 @@ describe("Artwork type", () => {
             title
             marketPriceInsights   {
               liquidityRankDisplayText
+              medianSaleOverEstimatePercentage
+              sellThroughRate
             }
           }
         }
@@ -3605,6 +3665,8 @@ describe("Artwork type", () => {
           title: "Untitled (Portrait)",
           marketPriceInsights: {
             liquidityRankDisplayText: "Very High",
+            sellThroughRate: 0.902,
+            medianSaleOverEstimatePercentage: 123,
           },
         },
       })
@@ -3630,6 +3692,63 @@ describe("Artwork type", () => {
         artwork: {
           title: "Untitled (Portrait)",
         },
+      })
+    })
+  })
+
+  describe("isHighDemand", () => {
+    it("returns true when an artwork is in high demand", () => {
+      const query = `
+        {
+          artwork(id: "foo-bar") {
+            marketPriceInsights {
+              isHighDemand
+            }
+          }
+        }
+      `
+
+      const marketPriceInsightsBatchLoader = jest.fn(async () => [
+        artworkInHighDemand,
+      ])
+
+      context.marketPriceInsightsBatchLoader = marketPriceInsightsBatchLoader
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            marketPriceInsights: {
+              isHighDemand: true,
+            },
+          },
+        })
+      })
+    })
+    it("returns false when an artwork is not in high demand", () => {
+      const query = `
+        {
+          artwork(id: "foo-bar") {
+            marketPriceInsights {
+              isHighDemand
+            }
+          }
+        }
+      `
+
+      const marketPriceInsightsBatchLoader = jest.fn(async () => [
+        artworkInLowDemand,
+      ])
+
+      context.marketPriceInsightsBatchLoader = marketPriceInsightsBatchLoader
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            marketPriceInsights: {
+              isHighDemand: false,
+            },
+          },
+        })
       })
     })
   })

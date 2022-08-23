@@ -1,37 +1,9 @@
-import { CollectorProfileFields } from "./collector_profile"
-import {
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLList,
-  GraphQLEnumType,
-} from "graphql"
+import { GraphQLBoolean, GraphQLString, GraphQLList } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { snakeCase } from "lodash"
-
-export const IntentsType = new GraphQLEnumType({
-  name: "Intents",
-  values: {
-    BUY_ART_AND_DESIGN: {
-      value: "buy art & design",
-    },
-    SELL_ART_AND_DESIGN: {
-      value: "sell art & design",
-    },
-    RESEARCH_ART_PRICES: {
-      value: "research art prices",
-    },
-    LEARN_ABOUT_ART: {
-      value: "learn about art",
-    },
-    FIND_ART_EXHIBITS: {
-      value: "find out about new exhibitions",
-    },
-    READ_ART_MARKET_NEWS: {
-      value: "read art market news",
-    },
-  },
-})
+import { CollectorProfileFields } from "../CollectorProfile/collectorProfile"
+import { IntentsType } from "../CollectorProfile/types/IntentsType"
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "UpdateCollectorProfile",
@@ -50,6 +22,8 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: new GraphQLList(GraphQLString),
     },
     institutionalAffiliations: { type: GraphQLString },
+    companyName: { type: GraphQLString },
+    companyWebsite: { type: GraphQLString },
     intents: { type: new GraphQLList(IntentsType) },
     loyaltyApplicant: { type: GraphQLBoolean },
     professionalBuyer: { type: GraphQLBoolean },
@@ -59,19 +33,19 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     },
   },
   outputFields: CollectorProfileFields,
-  mutateAndGetPayload: (args, { updateCollectorProfileLoader }) => {
+  mutateAndGetPayload: (args, { meUpdateCollectorProfileLoader }) => {
     // snake_case keys for Gravity (keys are the same otherwise)
     const options = Object.keys(args).reduce(
       (acc, key) => ({ ...acc, [snakeCase(key)]: args[key] }),
       {}
     )
 
-    if (!updateCollectorProfileLoader) {
+    if (!meUpdateCollectorProfileLoader) {
       throw new Error(
         "Missing Update Collector Profile Loader. Check your access token."
       )
     }
 
-    return updateCollectorProfileLoader(options)
+    return meUpdateCollectorProfileLoader(options)
   },
 })

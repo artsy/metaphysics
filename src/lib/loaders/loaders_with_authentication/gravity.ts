@@ -419,8 +419,13 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
-    updateCollectorProfileLoader: gravityLoader(
+    meUpdateCollectorProfileLoader: gravityLoader(
       "me/collector_profile",
+      {},
+      { method: "PUT" }
+    ),
+    updateCollectorProfileLoader: gravityLoader(
+      (id) => `collector_profile/${id}`,
       {},
       { method: "PUT" }
     ),
@@ -448,6 +453,12 @@ export default (accessToken, userID, opts) => {
     ),
     usersLoader: gravityLoader("users", {}, { headers: true }),
     userSaleProfileLoader: gravityLoader((id) => `user_sale_profile/${id}`),
+    userAdminNotesLoader: gravityLoader((id) => `user/${id}/admin_notes`),
+    createUserAdminNoteLoader: gravityLoader(
+      (id) => `/user/${id}/admin_note`,
+      {},
+      { method: "POST" }
+    ),
     updateUserSaleProfileLoader: gravityLoader(
       (id) => `user_sale_profile/${id}`,
       {},
@@ -456,5 +467,24 @@ export default (accessToken, userID, opts) => {
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
     userInterestsLoader: gravityLoader("me/user_interests"),
+    deleteUserRole: gravityLoader<any, { id: string; role_type: string }>(
+      ({ id, role_type }) => `user/${id}/roles/${role_type}`,
+      {},
+      { method: "DELETE" }
+    ),
+    addUserRole: gravityLoader<any, { id: string; role_type: string }>(
+      ({ id, role_type }) => `user/${id}/roles/${role_type}`,
+      {},
+      { method: "POST" }
+    ),
+    userAccessControlLoader: gravityLoader<
+      any,
+      { id: string; access_control_model: string }
+    >(
+      ({ id, access_control_model }) =>
+        `user/${id}/access_controls?model=${access_control_model}`,
+      {},
+      { method: "GET" }
+    ),
   }
 }
