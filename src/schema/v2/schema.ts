@@ -77,6 +77,7 @@ import { myCollectionUpdateArtworkMutation } from "./me/myCollectionUpdateArtwor
 import saveArtworkMutation from "./me/saveArtworkMutation"
 import { sendConfirmationEmailMutation } from "./me/sendConfirmationEmailMutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
+import UpdateCollectorProfileWithID from "./CollectorProfile/mutations/updateCollectorProfileWithID"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import { updateMyPasswordMutation } from "./me/updateMyPasswordMutation"
 import { updateUserMutation } from "./users/updateUserMutation"
@@ -151,6 +152,7 @@ import { MatchConnection } from "./Match"
 import { PartnerArtistDocumentsConnection } from "./partnerArtistDocumentsConnection"
 import { PartnerShowDocumentsConnection } from "./partnerShowDocumentsConnection"
 import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
+import { NotificationsConnection } from "./notifications"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -221,6 +223,7 @@ const rootFields = {
   matchConnection: MatchConnection,
   me: Me,
   node: ObjectIdentification.NodeField,
+  notificationsConnection: NotificationsConnection,
   orderedSet: OrderedSet,
   orderedSets: OrderedSets,
   page,
@@ -313,6 +316,7 @@ export default new GraphQLSchema({
       startIdentityVerification: startIdentityVerificationMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
       updateCollectorProfile: UpdateCollectorProfile,
+      updateCollectorProfileWithID: UpdateCollectorProfileWithID,
       updateConversation: UpdateConversationMutation,
       updateMyPassword: updateMyPasswordMutation,
       updateUser: updateUserMutation,

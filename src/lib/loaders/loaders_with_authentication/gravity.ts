@@ -405,8 +405,13 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
-    updateCollectorProfileLoader: gravityLoader(
+    meUpdateCollectorProfileLoader: gravityLoader(
       "me/collector_profile",
+      {},
+      { method: "PUT" }
+    ),
+    updateCollectorProfileLoader: gravityLoader(
+      (id) => `collector_profile/${id}`,
       {},
       { method: "PUT" }
     ),
