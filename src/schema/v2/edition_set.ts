@@ -67,6 +67,12 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ sold }) => sold,
     },
     listPrice,
+    internalDisplayPrice: {
+      type: GraphQLString,
+      resolve: ({ internal_display_price }) => internal_display_price,
+      description:
+        "Price for internal partner display, requires partner access",
+    },
     price: {
       type: GraphQLString,
     },
