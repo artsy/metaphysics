@@ -184,6 +184,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           hasNotRepresentedArtistWithPublishedArtworks: {
             type: GraphQLBoolean,
           },
+          includeAllFields: {
+            type: GraphQLBoolean,
+            description:
+              "Include additional fields on artists, requires authentication",
+          },
         },
         resolve: (
           { id },
@@ -204,9 +209,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             has_published_artworks: args.hasPublishedArtworks,
           }
 
-          // If we are authenticated / loader exists use the all loader
-          const partnerArtistsLoader =
-            folioPartnerArtistsAllLoader ?? partnerArtistsForPartnerLoader
+          // use the all loader to get additional fields if requested
+          const partnerArtistsLoader = args.includeAllFields
+            ? folioPartnerArtistsAllLoader
+            : partnerArtistsForPartnerLoader
 
           return allViaLoader(partnerArtistsLoader, {
             path: id,

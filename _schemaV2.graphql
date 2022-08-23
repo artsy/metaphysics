@@ -11426,6 +11426,9 @@ type Partner implements Node {
     displayOnPartnerProfile: Boolean
     hasNotRepresentedArtistWithPublishedArtworks: Boolean
     hasPublishedArtworks: Boolean
+
+    # Include additional fields on artists, requires authentication
+    includeAllFields: Boolean
     representedBy: Boolean
   ): ArtistPartnerConnection
   analytics: AnalyticsPartnerStats
