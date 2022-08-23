@@ -117,12 +117,8 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           "The artworks featured in the show, published and unpublished.",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
-        resolve: async (
-          show,
-          options,
-          { folioPartnerShowAllArtworksLoader }
-        ) => {
-          if (!folioPartnerShowAllArtworksLoader) {
+        resolve: async (show, options, { partnerShowAllArtworksLoader }) => {
+          if (!partnerShowAllArtworksLoader) {
             throw new Error(
               "You need to be signed in as an admin or partner to perform this action"
             )
@@ -154,10 +150,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             gravityArgs.exclude_ids = flatten([options.exclude])
           }
 
-          const {
-            body,
-            headers = {},
-          } = await folioPartnerShowAllArtworksLoader(
+          const { body, headers = {} } = await partnerShowAllArtworksLoader(
             loaderOptions,
             gravityArgs
           )

@@ -193,7 +193,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (
           { id },
           args,
-          { partnerArtistsForPartnerLoader, folioPartnerArtistsAllLoader }
+          { partnerArtistsForPartnerLoader, partnerArtistsAllLoader }
         ) => {
           interface GravityArgs {
             sort: string
@@ -211,7 +211,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           // use the all loader to get additional fields if requested
           const partnerArtistsLoader = args.includeAllFields
-            ? folioPartnerArtistsAllLoader
+            ? partnerArtistsAllLoader
             : partnerArtistsForPartnerLoader
 
           return allViaLoader(partnerArtistsLoader, {
@@ -308,8 +308,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           },
           ...artworksArgs,
         }),
-        resolve: ({ id }, args, { folioPartnerArtistArtworksLoader }) => {
-          if (!folioPartnerArtistArtworksLoader) {
+        resolve: ({ id }, args, { partnerArtistArtworksLoader }) => {
+          if (!partnerArtistArtworksLoader) {
             throw new Error(
               "You need to be signed in as an admin or partner to perform this action"
             )
@@ -353,7 +353,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             gravityArgs.artwork_id = flatten([args.artworkIDs])
           }
 
-          return folioPartnerArtistArtworksLoader(
+          return partnerArtistArtworksLoader(
             { artistID, partnerID: id },
             gravityArgs
           ).then(({ body, headers }) => {
@@ -364,7 +364,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
             const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-            return folioPartnerArtistArtworksLoader(
+            return partnerArtistArtworksLoader(
               { artistID, partnerID: id },
               gravityArtworkArgs
             ).then(({ body }) => {
