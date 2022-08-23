@@ -1,7 +1,6 @@
 /* eslint-disable promise/always-return */
 import moment from "moment"
 import gql from "lib/gql"
-import config from "config"
 import { runQuery } from "schema/v2/test/utils"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
@@ -1174,111 +1173,6 @@ describe("Show type", () => {
           },
         },
       })
-    })
-  })
-
-  describe("#allArtworksConnection", () => {
-    let artworksResponse
-
-    beforeEach(() => {
-      artworksResponse = [
-        {
-          id: "michelangelo-pistoletto-untitled-12",
-        },
-        {
-          id: "lucio-fontana-concetto-spaziale-attese-139",
-        },
-        {
-          id: "pier-paolo-calzolari-untitled-146",
-        },
-      ]
-      context = {
-        folioPartnerShowAllArtworksLoader: () =>
-          Promise.resolve({
-            body: artworksResponse,
-            headers: {
-              "x-total-count": artworksResponse.length,
-            },
-          }),
-        showLoader: () => Promise.resolve(showData),
-        unauthenticatedLoaders: {
-          showLoader: sinon.stub().returns(Promise.resolve(showData)),
-        },
-        authenticatedLoaders: {
-          showLoader: sinon.stub().returns(Promise.resolve(showData)),
-        },
-      }
-    })
-
-    it("returns artworks", async () => {
-      const query = `
-        {
-          show(id:"cardi-gallery-cardi-gallery-at-art-basel-miami-beach-2018") {
-            allArtworksConnection(first: 3) {
-              edges {
-                node {
-                  slug
-                }
-              }
-            }
-          }
-        }
-      `
-
-      const data = await runQuery(query, context)
-
-      expect(data).toEqual({
-        show: {
-          allArtworksConnection: {
-            edges: [
-              {
-                node: {
-                  slug: "michelangelo-pistoletto-untitled-12",
-                },
-              },
-              {
-                node: {
-                  slug: "lucio-fontana-concetto-spaziale-attese-139",
-                },
-              },
-              {
-                node: {
-                  slug: "pier-paolo-calzolari-untitled-146",
-                },
-              },
-            ],
-          },
-        },
-      })
-    })
-
-    it("throws an error if not authenticated", async () => {
-      context = {
-        showLoader: () => Promise.resolve(showData),
-        unauthenticatedLoaders: {
-          showLoader: sinon.stub().returns(Promise.resolve(showData)),
-        },
-        authenticatedLoaders: {
-          showLoader: sinon.stub().returns(Promise.resolve(showData)),
-        },
-      }
-
-      const query = `
-        {
-          show(id:"cardi-gallery-cardi-gallery-at-art-basel-miami-beach-2018") {
-            allArtworksConnection(first: 3) {
-              edges {
-                node {
-                  slug
-                }
-              }
-            }
-          }
-        }
-      `
-      await expect(runQuery(query, context)).rejects.toThrow(
-        "You need to be signed in as an admin or partner to perform this action"
-      )
     })
   })
 
