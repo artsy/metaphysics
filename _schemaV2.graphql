@@ -16409,7 +16409,7 @@ type UserSaleProfile {
   profession: String
 
   # If this user requires manual approval for auction bidding
-  requireBidderApproval: Boolean
+  requireBidderApproval: Boolean!
 
   # The salary(USD) for this user
   salaryUSD: Int

@@ -2,7 +2,9 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLScalarType,
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
@@ -100,7 +102,7 @@ export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
     },
     requireBidderApproval: {
       description: "If this user requires manual approval for auction bidding",
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ require_bidder_approval }) => require_bidder_approval,
     },
     salaryUSD: {
