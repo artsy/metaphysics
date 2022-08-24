@@ -14,7 +14,7 @@ import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { date } from "./fields/date"
 import { CollectorProfile } from "./CollectorProfile/collectorProfile"
-import { UserSaleProfile } from "./user_sale_profile"
+import { UserSaleProfile } from "./userSaleProfile"
 
 export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserAdminNotes",
