@@ -14,7 +14,7 @@ import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { date } from "./fields/date"
 import { CollectorProfile } from "./CollectorProfile/collectorProfile"
-import { UserSaleProfileField } from "./user_sale_profile"
+import { UserSaleProfile } from "./user_sale_profile"
 
 export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserAdminNotes",
@@ -117,7 +117,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ sign_in_count }) => sign_in_count,
     },
     lastSignInAt: date(({ last_sign_in_at }) => last_sign_in_at),
-    saleProfile: UserSaleProfileField,
+    saleProfile: UserSaleProfile,
     location: {
       description: "The given location of the user as structured data",
       type: LocationType,

@@ -16390,7 +16390,7 @@ type UserSaleProfile {
   # The job title for this user
   job_title: String
 
-  # The marital status for this user
+  # The last name  for this user
   last_name: String
 
   # The marital status for this user
