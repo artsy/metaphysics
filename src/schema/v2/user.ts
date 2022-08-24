@@ -228,7 +228,6 @@ export const UserField: GraphQLFieldConfig<void, ResolverContext> = {
       : userByEmailLoader(option)
     return promise
       .then((result) => {
-        console.log("result")
         return result
       })
       .catch((err) => {
