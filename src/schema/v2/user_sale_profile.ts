@@ -4,7 +4,6 @@ import {
   GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLScalarType,
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
