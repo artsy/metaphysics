@@ -98,7 +98,7 @@ spec:
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
           matchLabels:
-            app: force
+            app: metaphysics
             layer: application
             component: web
 
