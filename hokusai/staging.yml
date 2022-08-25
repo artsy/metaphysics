@@ -101,7 +101,6 @@ spec:
             app: metaphysics
             layer: application
             component: web
-
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
