@@ -14,39 +14,7 @@ import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { date } from "./fields/date"
 import { CollectorProfile } from "./CollectorProfile/collectorProfile"
-
-export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UserSaleProfile",
-  fields: () => ({
-    ...InternalIDFields,
-    addressLine1: {
-      description: "The first line of address for this user.",
-      type: GraphQLString,
-      resolve: ({ address_1 }) => address_1,
-    },
-    addressLine2: {
-      description: "The second line of address for this user.",
-      type: GraphQLString,
-      resolve: ({ address_2 }) => address_2,
-    },
-    city: {
-      description: "The city for this user.",
-      type: GraphQLString,
-    },
-    state: {
-      description: "The state for this user.",
-      type: GraphQLString,
-    },
-    zip: {
-      description: "The zip for this user.",
-      type: GraphQLString,
-    },
-    country: {
-      description: "The country for this user.",
-      type: GraphQLString,
-    },
-  }),
-})
+import { UserSaleProfile } from "./userSaleProfile"
 
 export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserAdminNotes",
@@ -59,24 +27,6 @@ export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
     createdAt: date(({ created_at }) => created_at),
   }),
 })
-
-export const UserSaleProfileField: GraphQLFieldConfig<any, ResolverContext> = {
-  description: "The sale profile of the user.",
-  type: UserSaleProfileType,
-  resolve: ({ sale_profile_id }, {}, { userSaleProfileLoader }) => {
-    if (!userSaleProfileLoader) {
-      throw new Error(
-        "You need to pass a X-Access-Token header to perform this action"
-      )
-    }
-
-    return userSaleProfileLoader(sale_profile_id).catch((err) => {
-      if (err.statusCode === 404) {
-        return null
-      }
-    })
-  },
-}
 
 export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
   description: "The admin notes associated with the user",
@@ -167,7 +117,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ sign_in_count }) => sign_in_count,
     },
     lastSignInAt: date(({ last_sign_in_at }) => last_sign_in_at),
-    saleProfile: UserSaleProfileField,
+    saleProfile: UserSaleProfile,
     location: {
       description: "The given location of the user as structured data",
       type: LocationType,
