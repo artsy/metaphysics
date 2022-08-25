@@ -30,12 +30,12 @@ export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
     },
     birthYear: {
       description: "The birth year for this user",
-      type: GraphQLString,
+      type: GraphQLInt,
       resolve: ({ birth_year }) => birth_year,
     },
     buyerStatus: {
       description: "The buyer status for this user",
-      type: GraphQLString,
+      type: GraphQLInt,
       resolve: ({ buyer_status }) => buyer_status,
     },
     city: {
@@ -54,7 +54,7 @@ export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
       description: "The employer for this user",
       type: GraphQLString,
     },
-    first_name: {
+    firstName: {
       description: "The first name for this user",
       type: GraphQLString,
       resolve: ({ first_name }) => first_name,
@@ -67,12 +67,12 @@ export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
       description: "The indusrty for this user",
       type: GraphQLString,
     },
-    job_title: {
+    jobTitle: {
       description: "The job title for this user",
       type: GraphQLString,
       resolve: ({ marital_status }) => marital_status,
     },
-    last_name: {
+    lastName: {
       description: "The last name  for this user",
       type: GraphQLString,
       resolve: ({ last_name }) => last_name,
