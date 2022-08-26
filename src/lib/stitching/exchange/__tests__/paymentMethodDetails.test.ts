@@ -95,6 +95,33 @@ describe("paymentMethodDetails", () => {
     )
   })
 
+  it("returns the sepa debit object when the payment method is a sepa_debit", async () => {
+    mockFetch.mockImplementationOnce(() => {
+      return Promise.resolve(
+        new Response(
+          JSON.stringify(
+            orderFixture({
+              paymentMethod: "SEPA_DEBIT",
+              bankAccountId: "1234",
+            })
+          )
+        )
+      )
+    })
+    const result = await runQuery(query, context)
+
+    expect(result.commerceOrder.paymentMethodDetails.bankName).toEqual(
+      "1st National"
+    )
+    expect(result.commerceOrder.paymentMethodDetails.last4).toEqual("4242")
+    expect(result.commerceOrder.paymentMethodDetails.accountHolderName).toEqual(
+      "Joe Pennies"
+    )
+    expect(result.commerceOrder.paymentMethodDetails.__typename).toEqual(
+      "BankAccount"
+    )
+  })
+
   it("returns the generic wire transfer type when the payment method is a wire_transfer", async () => {
     mockFetch.mockImplementationOnce(() => {
       return Promise.resolve(
