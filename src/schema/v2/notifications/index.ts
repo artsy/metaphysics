@@ -111,6 +111,7 @@ export const NotificationsConnection: GraphQLFieldConfig<
 
     return {
       counts: { total: body.total, unread: body.total_unread },
+      totalCount: body.total,
       pageCursors: createPageCursors({ page, size }, body.total),
       ...connectionFromArraySlice(
         body.feed,

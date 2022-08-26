@@ -28,6 +28,7 @@ describe("notificationsConnection", () => {
     const query = gql`
       {
         notificationsConnection(first: 10, notificationTypes: [ARTWORK_ALERT]) {
+          totalCount
           counts {
             total
             unread
@@ -56,6 +57,7 @@ describe("notificationsConnection", () => {
 
     expect(data).toEqual({
       notificationsConnection: {
+        totalCount: 100,
         counts: {
           total: 100,
           unread: 10,
