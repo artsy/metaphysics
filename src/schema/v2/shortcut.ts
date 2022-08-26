@@ -27,7 +27,7 @@ export const shortcut: GraphQLFieldConfig<void, ResolverContext> = {
   args: {
     id: { type: new GraphQLNonNull(GraphQLID) },
   },
-  type: new GraphQLNonNull(shortcutType),
+  type: shortcutType,
   resolve: (_source, { id }, { shortcutLoader }) => {
     return shortcutLoader(id)
   },
