@@ -19,8 +19,9 @@ export interface UserInterest {
   category: UserInterestCategory
   created_at: string
   id: number
-  interest: unknown // Artist | Gene
-  owner: unknown // CollectorProfile | UserSaleProfile
+  interest: unknown // object which is one of Artist | Gene
+  owner: unknown // object which is one of CollectorProfile | UserSaleProfile
+  owner_type: string // CollectorProfile | UserSaleProfile
   updated_at: string
 }
 
