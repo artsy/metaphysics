@@ -15,6 +15,10 @@ import { connectionWithCursorInfo } from "./fields/pagination"
 import { date } from "./fields/date"
 import { CollectorProfile } from "./CollectorProfile/collectorProfile"
 import { UserSaleProfile } from "./userSaleProfile"
+import { UserInterestConnection } from "./userInterests"
+import { pageable } from "relay-cursor-paging"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { connectionFromArraySlice } from "graphql-relay"
 
 export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserAdminNotes",
@@ -134,7 +138,36 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
     dataTransferOptOut: {
       description: "Has the user opted out of data transfer.",
       type: GraphQLBoolean,
-      resolve: ({ data_transfer_opt_out }) => data_transfer_opt_out,
+      resolve: async ({ data_transfer_opt_out }) => data_transfer_opt_out,
+    },
+    interestsConnection: {
+      type: UserInterestConnection,
+      args: pageable({}),
+      resolve: async ({ id }, args, { userInterestsLoader }) => {
+        if (!userInterestsLoader) {
+          throw new Error(
+            "Loader not found. You must supply an X-Access-Token header."
+          )
+        }
+
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+        const { body, headers } = await userInterestsLoader(id, {
+          page,
+          size,
+          total_count: true,
+        })
+
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return {
+          totalCount,
+          ...connectionFromArraySlice(body, args, {
+            arrayLength: totalCount,
+            sliceStart: offset,
+            resolveNode: (node) => node.interest,
+          }),
+        }
+      },
     },
     paddleNumber: {
       description: "The paddle number of the user",

@@ -452,7 +452,12 @@ export default (accessToken, userID, opts) => {
     ),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
-    userInterestsLoader: gravityLoader("me/user_interests"),
+    meUserInterestsLoader: gravityLoader("me/user_interests"),
+    userInterestsLoader: gravityLoader(
+      (id) => `user_interests?user_id=${id}`,
+      {},
+      { headers: true }
+    ),
     deleteUserRole: gravityLoader<any, { id: string; role_type: string }>(
       ({ id, role_type }) => `user/${id}/roles/${role_type}`,
       {},
