@@ -1581,6 +1581,7 @@ type Query {
     Returns the last _n_ elements from the list.
     """
     last: Int
+    maxWorksPerArtist: Int = 1
     userId: String
     version: String
   ): NewForYouRecommendationConnection

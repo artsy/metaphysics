@@ -27,6 +27,7 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     page: { type: GraphQLInt },
     userId: { type: GraphQLString },
     version: { type: GraphQLString },
+    maxWorksPerArtist: { type: GraphQLInt },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
     if (!context.artworksLoader) return
