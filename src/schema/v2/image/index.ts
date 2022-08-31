@@ -1,6 +1,6 @@
 import {
-  GraphQLFieldConfig,
   GraphQLBoolean,
+  GraphQLFieldConfig,
   GraphQLFloat,
   GraphQLInt,
   GraphQLList,
@@ -9,13 +9,13 @@ import {
   GraphQLString,
 } from "graphql"
 import { find, first, isArray } from "lodash"
+import { NullableIDField } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import CroppedUrl from "./cropped"
 import DeepZoom, { isZoomable } from "./deep_zoom"
 import { ImageData, normalize } from "./normalize"
 import ResizedUrl from "./resized"
 import VersionedUrl from "./versioned"
-import { NullableIDField } from "schema/v2/object_identification"
 
 export type OriginalImage = {
   original_width?: number
@@ -102,8 +102,13 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description:
         "Value to use when `padding-bottom` for fluid image placeholders",
-      resolve: ({ original_height, original_width }) =>
-        `${(original_height / original_width) * 100}%`,
+      resolve: ({ original_height, original_width }) => {
+        // To avoid returning "NaN%" if original_width and original_height are 0.
+        // The image is a square by default (when there is no image geometry).
+        if (original_width === original_height) return "100%"
+
+        return `${(original_height / original_width) * 100}%`
+      },
     },
     position: {
       type: GraphQLInt,
