@@ -14,8 +14,8 @@ export const getNewForYouRecs = async (
 
   const userIdArgument = args.userId ? `userId: "${args.userId}"` : ""
   const versionArgument = args.version ? `version: "${args.version}"` : ""
-  const maxWorksPerUserArgument = args.maxWorksPerUser
-    ? `maxWorksPerUser: "${args.maxWorksPerUser}"`
+  const maxWorksPerArtistArgument = args.maxWorksPerArtist
+    ? `maxWorksPerArtist: ${args.maxWorksPerArtist}`
     : ""
 
   const vortexResult = await graphqlLoader({
@@ -25,7 +25,7 @@ export const getNewForYouRecs = async (
             first: ${args.first}
             ${userIdArgument}
             ${versionArgument}
-            ${maxWorksPerUserArgument}
+            ${maxWorksPerArtistArgument}
           ) {
             totalCount
             edges {
