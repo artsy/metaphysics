@@ -13,6 +13,7 @@ import {
   GraphQLConnectionDefinitions,
   connectionFromArraySlice,
   ConnectionArguments,
+  connectionFromArray,
 } from "graphql-relay"
 import { warn } from "lib/loggers"
 import { pick } from "lodash"
@@ -215,4 +216,9 @@ export const paginationResolver = <T>({
       }
     ),
   }
+}
+
+export const emptyConnection = {
+  totalCount: 0,
+  ...connectionFromArray([], {}),
 }

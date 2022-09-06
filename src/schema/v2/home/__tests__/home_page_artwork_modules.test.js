@@ -229,10 +229,12 @@ describe("HomePageArtworkModules", () => {
     }
 
     context.savedArtworksLoader = () =>
-      Promise.resolve([
-        { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
-        { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
-      ])
+      Promise.resolve({
+        body: [
+          { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
+          { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
+        ],
+      })
     context.similarArtworksLoader = () =>
       Promise.resolve([
         { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },

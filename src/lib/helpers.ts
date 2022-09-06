@@ -18,6 +18,7 @@ import { performance } from "perf_hooks"
 import { stringify } from "qs"
 import { CursorPageable, getPagingParameters } from "relay-cursor-paging"
 import { formatMarkdownValue } from "schema/v2/fields/markdown"
+import { emptyConnection } from "schema/v2/fields/pagination"
 
 const loadNs = performance.now()
 const loadMs = Date.now()
@@ -229,4 +230,13 @@ export const extractNodes = <Node extends object, T = Node>(
 
 export const isInteger = (str: string) => {
   return Number.isInteger(parseFloat(str))
+}
+
+// For some users with no favourites, Gravity can return a 404 (which reflects the
+// `saved-artwork` collection doesn't exist). In this case we'll return an empty list.
+// Otherwise, re-throw the error.
+export const CatchCollectionNotFoundException = (error) => {
+  if (error.statusCode === 404) return emptyConnection
+
+  throw error
 }
