@@ -57,6 +57,104 @@ describe("User", () => {
     })
   })
 
+  describe("savedArtworksConnection", () => {
+    const query = `
+        {
+          user(id: "blah") {
+            savedArtworksConnection(first: 10) {
+              totalCount
+              edges {
+                node {
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+    const user = {
+      id: "blah",
+    }
+
+    const artworks = [
+      {
+        title: "Black Cat in Repose",
+      },
+      {
+        title: "Sleeping Cat in Sun",
+      },
+    ]
+
+    let context
+
+    beforeEach(() => {
+      context = {
+        userByIDLoader: () => {
+          return Promise.resolve(user)
+        },
+        savedArtworksLoader: () => {
+          return Promise.resolve({
+            body: artworks,
+            headers: { "x-total-count": "2" },
+          })
+        },
+      }
+    })
+
+    it("returns saved artworks for a user", async () => {
+      const {
+        user: {
+          savedArtworksConnection: { totalCount, edges },
+        },
+      } = await runAuthenticatedQuery(query, context)
+
+      expect(totalCount).toEqual(2)
+      expect(edges.length).toEqual(2)
+      expect(edges[0]).toEqual({
+        node: {
+          title: "Black Cat in Repose",
+        },
+      })
+      expect(edges[1]).toEqual({
+        node: {
+          title: "Sleeping Cat in Sun",
+        },
+      })
+    })
+
+    it("returns an empty connection w/ no error if the gravity request 404's", async () => {
+      context.savedArtworksLoader = () => {
+        return Promise.reject(new HTTPError("Not Found", 404))
+      }
+
+      const {
+        user: {
+          savedArtworksConnection: { totalCount, edges },
+        },
+      } = await runAuthenticatedQuery(query, context)
+
+      expect(totalCount).toEqual(0)
+      expect(edges).toEqual([])
+    })
+
+    it("throws an error if the gravity request errors and it's not a 404", async () => {
+      context.savedArtworksLoader = () => {
+        return Promise.reject(new HTTPError("Cats in the server room", 500))
+      }
+
+      expect.assertions(1)
+
+      try {
+        await runAuthenticatedQuery(query, context)
+        throw new Error("An error was not thrown but was expected to throw.")
+      } catch (error) {
+        // eslint-disable-next-line jest/no-conditional-expect, jest/no-try-expect
+        expect(error.message).toEqual("Cats in the server room")
+      }
+    })
+  })
+
   describe("push notification settings", () => {
     it("returns push notification settings for a user", async () => {
       const foundUser = {

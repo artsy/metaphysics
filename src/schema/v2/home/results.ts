@@ -116,23 +116,32 @@ const moduleResults: HomePageArtworkModuleResolvers<any> = {
       size: RESULTS_SIZE,
     }).then(({ hits }) => hits)
   },
-  saved_works: ({ savedArtworksLoader }) => {
-    if (!savedArtworksLoader) return null
-    return savedArtworksLoader({
+  saved_works: async ({ savedArtworksLoader, userID }) => {
+    if (!savedArtworksLoader || !userID) return null
+    const { body } = await savedArtworksLoader({
       size: RESULTS_SIZE,
       sort: "-position",
+      user_id: userID,
+      private: true,
     })
+
+    return body
   },
-  similar_to_saved_works: ({ savedArtworksLoader, similarArtworksLoader }) => {
-    if (!savedArtworksLoader) return null
-    return savedArtworksLoader({
+  similar_to_saved_works: async ({
+    savedArtworksLoader,
+    similarArtworksLoader,
+    userID,
+  }) => {
+    if (!savedArtworksLoader || !userID) return null
+    const { body: works } = await savedArtworksLoader({
       size: RESULTS_SIZE,
       sort: "-position",
-    }).then((works) => {
-      return similarArtworksLoader({
-        artwork_id: map(works, "_id").slice(0, 7),
-        for_sale: true,
-      })
+      user_id: userID,
+      private: true,
+    })
+    return similarArtworksLoader({
+      artwork_id: map(works, "_id").slice(0, 7),
+      for_sale: true,
     })
   },
   similar_to_recently_viewed: ({ meLoader, similarArtworksLoader }) => {

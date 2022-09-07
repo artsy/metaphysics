@@ -11,14 +11,21 @@ import cached from "./fields/cached"
 import { InternalIDFields } from "./object_identification"
 import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
-import { connectionWithCursorInfo } from "./fields/pagination"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "./fields/pagination"
 import { date } from "./fields/date"
 import { CollectorProfile } from "./CollectorProfile/collectorProfile"
 import { UserSaleProfile } from "./userSaleProfile"
 import { UserInterestConnection } from "./userInterests"
 import { pageable } from "relay-cursor-paging"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import {
+  CatchCollectionNotFoundException,
+  convertConnectionArgsToGravityArgs,
+} from "lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
+import { artworkConnection } from "./artwork"
 
 export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserAdminNotes",
@@ -228,6 +235,40 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ receive_viewing_room_notification }) =>
         receive_viewing_room_notification,
+    },
+    savedArtworksConnection: {
+      type: artworkConnection.connectionType,
+      args: pageable({}),
+      resolve: async ({ id }, args, { savedArtworksLoader }) => {
+        if (!savedArtworksLoader) return null
+
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        const gravityOptions = {
+          page,
+          size,
+          user_id: id,
+          private: true,
+          total_count: true,
+          sort: "-position",
+        }
+
+        try {
+          const { body, headers } = await savedArtworksLoader(gravityOptions)
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+          })
+        } catch (error) {
+          return CatchCollectionNotFoundException(error)
+        }
+      },
     },
     userAlreadyExists: {
       description:
