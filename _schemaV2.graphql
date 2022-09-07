@@ -16052,12 +16052,6 @@ type User {
   # The admin notes associated with the user
   adminNotes: [UserAdminNotes]!
   analytics: AnalyticsUserStats
-  artistFollowsConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): ArtistConnection
   cached: Int
 
   # A collector profile.
@@ -16085,12 +16079,7 @@ type User {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
-  geneFollowsConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): GeneConnection
+  follows: UserFollows
 
   # A globally unique ID.
   id: ID!
@@ -16324,6 +16313,21 @@ type UserEdge {
 
   # The item at the end of the edge
   node: User
+}
+
+type UserFollows {
+  artistFollowsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtistConnection
+  geneFollowsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): GeneConnection
 }
 
 type UserIconDeleteFailureType {

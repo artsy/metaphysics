@@ -173,59 +173,71 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
-    artistFollowsConnection: {
-      type: artistConnection.connectionType,
-      args: pageable({}),
-      resolve: async ({ id }, args, { userArtistFollowsLoader }) => {
-        if (!userArtistFollowsLoader) {
-          throw new Error(
-            "Loader not found. You must supply an X-Access-Token header."
-          )
-        }
-        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+    follows: {
+      type: new GraphQLObjectType({
+        name: "UserFollows",
+        fields: {
+          artistFollowsConnection: {
+            type: artistConnection.connectionType,
+            args: pageable({}),
+            resolve: async ({ id }, args, { userArtistFollowsLoader }) => {
+              if (!userArtistFollowsLoader) {
+                throw new Error(
+                  "Loader not found. You must supply an X-Access-Token header."
+                )
+              }
+              const { page, size, offset } = convertConnectionArgsToGravityArgs(
+                args
+              )
 
-        const { body, headers } = await userArtistFollowsLoader(id, {
-          page,
-          size,
-          total_count: true,
-        })
-        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-        return paginationResolver({
-          totalCount,
-          offset,
-          page,
-          size,
-          body,
-          args,
-        })
-      },
-    },
-    geneFollowsConnection: {
-      type: geneConnection,
-      args: pageable({}),
-      resolve: async ({ id }, args, { userGeneFollowsLoader }) => {
-        if (!userGeneFollowsLoader) {
-          throw new Error(
-            "Loader not found. You must supply an X-Access-Token header."
-          )
-        }
-        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+              const { body, headers } = await userArtistFollowsLoader(id, {
+                page,
+                size,
+                total_count: true,
+              })
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+              return paginationResolver({
+                totalCount,
+                offset,
+                page,
+                size,
+                body,
+                args,
+              })
+            },
+          },
+          geneFollowsConnection: {
+            type: geneConnection,
+            args: pageable({}),
+            resolve: async ({ id }, args, { userGeneFollowsLoader }) => {
+              if (!userGeneFollowsLoader) {
+                throw new Error(
+                  "Loader not found. You must supply an X-Access-Token header."
+                )
+              }
+              const { page, size, offset } = convertConnectionArgsToGravityArgs(
+                args
+              )
 
-        const { body, headers } = await userGeneFollowsLoader(id, {
-          page,
-          size,
-          total_count: true,
-        })
-        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-        return paginationResolver({
-          totalCount,
-          offset,
-          page,
-          size,
-          body,
-          args,
-        })
-      },
+              const { body, headers } = await userGeneFollowsLoader(id, {
+                page,
+                size,
+                total_count: true,
+              })
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+              return paginationResolver({
+                totalCount,
+                offset,
+                page,
+                size,
+                body,
+                args,
+              })
+            },
+          },
+        },
+      }),
+      resolve: (result) => result,
     },
     paddleNumber: {
       description: "The paddle number of the user",
