@@ -1,8 +1,57 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import { HTTPError } from "lib/HTTPError"
+import { toGlobalId } from "graphql-relay"
 
 describe("User", () => {
+  it("implements the NodeInterface", async () => {
+    const query = gql`
+      {
+        user(id: "percy-mongo-id") {
+          id
+          internalID
+          name
+        }
+      }
+    `
+
+    const context = {
+      userByIDLoader: (data) => {
+        if (data !== "percy-mongo-id")
+          throw new Error("Unexpected invocation of loader")
+
+        return Promise.resolve({ id: "percy-mongo-id", name: "Percy Z" })
+      },
+    }
+
+    const expectedNodeID = toGlobalId("User", "percy-mongo-id")
+
+    const { user } = await runAuthenticatedQuery(query, context)
+
+    expect(user.id).toEqual(expectedNodeID)
+    expect(user.internalID).toEqual("percy-mongo-id")
+    expect(user.name).toEqual("Percy Z")
+
+    // Now check if can fetch via the `node` field
+    const nodeQuery = gql`
+      {
+        node(id: "${expectedNodeID}") {
+          __typename
+          ... on User {
+            internalID
+            name
+          }
+        }
+      }
+      `
+
+    const { node } = await runAuthenticatedQuery(nodeQuery, context)
+
+    expect(node.name).toEqual("Percy Z")
+    expect(node.internalID).toEqual("percy-mongo-id")
+    expect(node.__typename).toEqual("User")
+  })
+
   describe("userAlreadyExists", () => {
     it("returns true if a user exists", async () => {
       const foundUser = {
