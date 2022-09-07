@@ -209,4 +209,96 @@ describe("User", () => {
       })
     })
   })
+
+  describe("follows", () => {
+    it("returns user follows", async () => {
+      const query = `
+        {
+          user(id: "abc") {
+            follows {
+              artistFollowsConnection(first: 10) {
+                edges {
+                  node {
+                    name
+                  }
+                }
+              }
+              geneFollowsConnection(first: 10) {
+                edges {
+                  node {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      
+      `
+
+      const user = {
+        id: "abc",
+      }
+
+      const artistFollows = [
+        {
+          name: "Frank Stella",
+        },
+        {
+          name: "Ed Ruscha",
+        },
+      ]
+
+      const geneFollows = [
+        {
+          name: "Emerging Art",
+        },
+      ]
+
+      const context = {
+        userByIDLoader: () => {
+          return Promise.resolve(user)
+        },
+        userArtistFollowsLoader: () => {
+          return Promise.resolve({
+            body: artistFollows,
+            headers: { "x-total-count": "2" },
+          })
+        },
+        userGeneFollowsLoader: () => {
+          return Promise.resolve({
+            body: geneFollows,
+            headers: { "x-total-count": "1" },
+          })
+        },
+      }
+
+      const {
+        user: {
+          follows: { artistFollowsConnection, geneFollowsConnection },
+        },
+      } = await runAuthenticatedQuery(query, context)
+
+      expect(artistFollowsConnection.edges.length).toEqual(2)
+      expect(geneFollowsConnection.edges.length).toEqual(1)
+
+      expect(artistFollowsConnection.edges[0]).toEqual({
+        node: {
+          name: "Frank Stella",
+        },
+      })
+
+      expect(artistFollowsConnection.edges[1]).toEqual({
+        node: {
+          name: "Ed Ruscha",
+        },
+      })
+
+      expect(geneFollowsConnection.edges[0]).toEqual({
+        node: {
+          name: "Emerging Art",
+        },
+      })
+    })
+  })
 })
