@@ -177,7 +177,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLObjectType({
         name: "UserFollows",
         fields: {
-          artistFollowsConnection: {
+          artistsConnection: {
             type: artistConnection.connectionType,
             args: pageable({}),
             resolve: async ({ id }, args, { userArtistFollowsLoader }) => {
@@ -206,7 +206,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
               })
             },
           },
-          geneFollowsConnection: {
+          genesConnection: {
             type: geneConnection,
             args: pageable({}),
             resolve: async ({ id }, args, { userGeneFollowsLoader }) => {

@@ -16316,13 +16316,13 @@ type UserEdge {
 }
 
 type UserFollows {
-  artistFollowsConnection(
+  artistsConnection(
     after: String
     before: String
     first: Int
     last: Int
   ): ArtistConnection
-  geneFollowsConnection(
+  genesConnection(
     after: String
     before: String
     first: Int
