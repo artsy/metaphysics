@@ -374,10 +374,12 @@ export default (accessToken, userID, opts) => {
         entityIDKeyPath: "_id",
       }
     ),
-    savedArtworksLoader: gravityLoader("collection/saved-artwork/artworks", {
-      user_id: userID,
-      private: true,
-    }),
+    savedArtworksLoader: gravityLoader(
+      "collection/saved-artwork/artworks",
+      {},
+      { headers: true }
+    ),
+
     sendConfirmationEmailLoader: gravityLoader(
       "me/confirmation_emails",
       {},

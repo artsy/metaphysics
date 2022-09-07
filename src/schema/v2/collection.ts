@@ -1,10 +1,12 @@
 import { pageable } from "relay-cursor-paging"
-import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
-import { warn } from "lib/loggers"
+import { connectionFromArraySlice } from "graphql-relay"
 import cached from "./fields/cached"
 import CollectionSorts from "./sorts/collection_sorts"
 import { artworkConnection } from "./artwork"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import {
+  CatchCollectionNotFoundException,
+  convertConnectionArgsToGravityArgs,
+} from "lib/helpers"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLObjectType,
@@ -58,13 +60,7 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
               sliceStart: gravityOptions.offset,
             })
           })
-          .catch((e) => {
-            warn("Bypassing Gravity error: ", e)
-            // For some users with no favourites, Gravity produces an error of "Collection Not Found".
-            // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
-            // and return an empty list instead.
-            return connectionFromArray([], options)
-          })
+          .catch(CatchCollectionNotFoundException)
       },
     },
     description: {
