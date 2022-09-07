@@ -460,6 +460,16 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    userArtistFollowsLoader: gravityLoader(
+      (id) => `user/${id}/follow/artists`,
+      {},
+      { headers: true }
+    ),
+    userGeneFollowsLoader: gravityLoader(
+      (id) => `user/${id}/follow/genes`,
+      {},
+      { headers: true }
+    ),
     deleteUserRole: gravityLoader<any, { id: string; role_type: string }>(
       ({ id, role_type }) => `user/${id}/roles/${role_type}`,
       {},

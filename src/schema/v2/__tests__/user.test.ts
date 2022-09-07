@@ -239,7 +239,6 @@ describe("User", () => {
             }
           }
         }
-      
       `
 
       const user = {
@@ -303,6 +302,97 @@ describe("User", () => {
         node: {
           __typename: "Gene",
           name: "Catty Gene",
+        },
+      })
+    })
+  })
+
+  describe("follows", () => {
+    it("returns user follows", async () => {
+      const query = `
+        {
+          user(id: "abc") {
+            follows {
+              artistsConnection(first: 10) {
+                edges {
+                  node {
+                    name
+                  }
+                }
+              }
+              genesConnection(first: 10) {
+                edges {
+                  node {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const user = {
+        id: "abc",
+      }
+
+      const artistFollows = [
+        {
+          name: "Frank Stella",
+        },
+        {
+          name: "Ed Ruscha",
+        },
+      ]
+
+      const geneFollows = [
+        {
+          name: "Emerging Art",
+        },
+      ]
+
+      const context = {
+        userByIDLoader: () => {
+          return Promise.resolve(user)
+        },
+        userArtistFollowsLoader: () => {
+          return Promise.resolve({
+            body: artistFollows,
+            headers: { "x-total-count": "2" },
+          })
+        },
+        userGeneFollowsLoader: () => {
+          return Promise.resolve({
+            body: geneFollows,
+            headers: { "x-total-count": "1" },
+          })
+        },
+      }
+
+      const {
+        user: {
+          follows: { artistsConnection, genesConnection },
+        },
+      } = await runAuthenticatedQuery(query, context)
+
+      expect(artistsConnection.edges.length).toEqual(2)
+      expect(genesConnection.edges.length).toEqual(1)
+
+      expect(artistsConnection.edges[0]).toEqual({
+        node: {
+          name: "Frank Stella",
+        },
+      })
+
+      expect(artistsConnection.edges[1]).toEqual({
+        node: {
+          name: "Ed Ruscha",
+        },
+      })
+
+      expect(genesConnection.edges[0]).toEqual({
+        node: {
+          name: "Emerging Art",
         },
       })
     })
