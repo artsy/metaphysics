@@ -8,7 +8,7 @@ import {
   GraphQLInt,
 } from "graphql"
 import cached from "./fields/cached"
-import { InternalIDFields } from "./object_identification"
+import { InternalIDFields, NodeInterface } from "./object_identification"
 import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 import {
@@ -95,6 +95,7 @@ export const ProfileAccessField: GraphQLFieldConfig<any, ResolverContext> = {
 
 export const UserType = new GraphQLObjectType<any, ResolverContext>({
   name: "User",
+  interfaces: [NodeInterface],
   fields: () => ({
     ...InternalIDFields,
     cached,
@@ -380,3 +381,5 @@ export const UserField: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export const UsersConnection = connectionWithCursorInfo({ nodeType: UserType })
+
+export default UserField
