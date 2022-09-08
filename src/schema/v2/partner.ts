@@ -74,9 +74,9 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     type: new GraphQLList(GraphQLString),
     description: "Return only artwork(s) included in this list of IDs.",
   },
-  artistID: {
-    type: GraphQLString,
-    description: "Return only artworks by this artist.",
+  artistIDs: {
+    type: new GraphQLList(GraphQLString),
+    description: "Return only artworks by artists in this list of IDs.",
   },
   exclude: {
     type: new GraphQLList(GraphQLString),
@@ -322,7 +322,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           interface GravityArgs {
             artwork_id?: string[]
-            artist_id?: string[]
+            artist_ids?: string[]
             exclude_ids?: string[]
             for_sale: boolean
             missing_priority_metadata?: boolean
@@ -337,7 +337,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           const gravityArgs: GravityArgs = {
             for_sale: args.forSale,
             missing_priority_metadata: args.missingPriorityMetadata,
-            artist_id: args.artistID || undefined,
             page,
             published: args.published ?? true,
             published_within: args.publishedWithin,
@@ -351,6 +350,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
           if (args.artworkIDs) {
             gravityArgs.artwork_id = flatten([args.artworkIDs])
+          }
+
+          if (args.artistIDs) {
+            gravityArgs.artist_ids = flatten([args.artistIDs])
           }
 
           // Only accept shallow = false argument if requesting user is authorized admin/partner

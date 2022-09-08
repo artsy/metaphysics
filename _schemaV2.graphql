@@ -11609,8 +11609,8 @@ type Partner implements Node {
   artworksConnection(
     after: String
 
-    # Return only artworks by this artist.
-    artistID: String
+    # Return only artworks by artists in this list of IDs.
+    artistIDs: [String]
 
     # Return only artwork(s) included in this list of IDs.
     artworkIDs: [String]
