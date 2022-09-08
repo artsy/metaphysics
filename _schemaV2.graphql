@@ -16430,6 +16430,8 @@ type UserPurchaseEdge {
   # The item at the end of the edge
   node: Artwork
   ownerType: String
+  salePrice: Float
+  source: String
 }
 
 type UserSaleProfile {
