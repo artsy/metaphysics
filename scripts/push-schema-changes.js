@@ -70,6 +70,7 @@ async function main() {
 
     const reposToUpdate = [
       { repo: "eigen", body: `${defaultBody} #nochangelog` },
+      { repo: "energy" },
       { repo: "force" },
       { repo: "forque" },
       { repo: "pulse", dest: "vendor/graphql/schema/metaphysics.json" },

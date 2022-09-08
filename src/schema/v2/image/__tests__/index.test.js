@@ -74,6 +74,24 @@ describe("Image type", () => {
     })
   })
 
+  describe("#placeholder", () => {
+    const query = `{
+      artwork(id: "richard-prince-untitled-portrait") {
+        image {
+          placeholder
+        }
+      }
+    }`
+
+    it("is square by default (when there is no image geometry)", () => {
+      assign(image, { original_width: null, original_height: null })
+
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.placeholder).toBe("100%")
+      })
+    })
+  })
+
   describe("#orientation", () => {
     const query = `{
       artwork(id: "richard-prince-untitled-portrait") {

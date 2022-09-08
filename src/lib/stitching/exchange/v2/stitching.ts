@@ -164,7 +164,8 @@ export const exchangeStitchingEnvironment = ({
         })
         return creditCard
       } else if (
-        paymentMethod === "US_BANK_ACCOUNT" &&
+        (paymentMethod === "US_BANK_ACCOUNT" ||
+          paymentMethod === "SEPA_DEBIT") &&
         Boolean(bankAccountId)
       ) {
         const bankAccount = await info.mergeInfo.delegateToSchema({
@@ -272,7 +273,7 @@ export const exchangeStitchingEnvironment = ({
       creditCard: CreditCard
       paymentMethodDetails: PaymentMethodUnion
       conversation: Conversation
-      
+
       ${orderTotalsSDL.join("\n")}
     }
 

@@ -57,6 +57,7 @@ const SupportedTypes: any = {
     "./sale",
     "./collection",
     "./sale_artwork",
+    "./user",
   ],
 }
 
