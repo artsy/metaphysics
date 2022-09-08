@@ -326,6 +326,11 @@ export default (accessToken, userID, opts) => {
       ({ partnerId, inquiryId }) =>
         `partner/${partnerId}/inquiry_request/${inquiryId}/collector_profile`
     ),
+    collectorProfileByUserIDLoader: gravityLoader<any, { userId: string }>(
+      ({ userId }) => `collector_profiles?user_id=${userId}`,
+      {},
+      { headers: true }
+    ),
     partnerShowDocumentsLoader: gravityLoader<
       any,
       { partnerId: string; showId: string }

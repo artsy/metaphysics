@@ -3633,6 +3633,7 @@ type CommerceBuyOrder implements CommerceOrder {
   ): String
   buyerTotalCents: Int
   code: String!
+  collectorProfile: CollectorProfileType
   commissionFee(
     decimal: String = "."
 
@@ -4358,6 +4359,7 @@ type CommerceOfferOrder implements CommerceOrder {
   ): String
   buyerTotalCents: Int
   code: String!
+  collectorProfile: CollectorProfileType
   commissionFee(
     decimal: String = "."
 
@@ -4589,6 +4591,7 @@ interface CommerceOrder {
   ): String
   buyerTotalCents: Int
   code: String!
+  collectorProfile: CollectorProfileType
   commissionFee(
     decimal: String = "."
 
