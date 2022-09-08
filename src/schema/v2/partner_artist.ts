@@ -47,6 +47,7 @@ const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
       artworks: numeral(
         ({ published_artworks_count }) => published_artworks_count
       ),
+      managedArtworks: numeral(({ artworks_count }) => artworks_count),
       forSaleArtworks: numeral(
         ({ published_for_sale_artworks_count }) =>
           published_for_sale_artworks_count
@@ -132,7 +133,7 @@ export const fields: Thunk<GraphQLFieldConfigMap<
     resolve: (
       { partner: { id: partnerID }, artist: { id: artistID } },
       args,
-      { partnerArtistArtworksLoader }
+      { partnerArtistPartnerArtistArtworksLoader }
     ) => {
       const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
@@ -143,7 +144,7 @@ export const fields: Thunk<GraphQLFieldConfigMap<
         size,
       }
 
-      return partnerArtistArtworksLoader(
+      return partnerArtistPartnerArtistArtworksLoader(
         { partnerID, artistID },
         gravityArgs
       ).then(({ body, headers }) => {

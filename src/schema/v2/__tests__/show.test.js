@@ -1,7 +1,6 @@
 /* eslint-disable promise/always-return */
 import moment from "moment"
 import gql from "lib/gql"
-import config from "config"
 import { runQuery } from "schema/v2/test/utils"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
