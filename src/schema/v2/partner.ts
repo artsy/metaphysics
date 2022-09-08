@@ -74,6 +74,10 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     type: new GraphQLList(GraphQLString),
     description: "Return only artwork(s) included in this list of IDs.",
   },
+  artistID: {
+    type: GraphQLString,
+    description: "Return only artworks by this artist.",
+  },
   exclude: {
     type: new GraphQLList(GraphQLString),
   },
@@ -87,6 +91,11 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   publishedWithin: {
     type: GraphQLInt,
     description: "Return artworks published less than x seconds ago.",
+  },
+  published: {
+    type: GraphQLBoolean,
+    description:
+      "If false return both published and unpublished artworks, requires auth",
   },
   sort: ArtworkSorts,
   shallow: {
@@ -184,8 +193,17 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           hasNotRepresentedArtistWithPublishedArtworks: {
             type: GraphQLBoolean,
           },
+          includeAllFields: {
+            type: GraphQLBoolean,
+            description:
+              "Include additional fields on artists, requires authentication",
+          },
         },
-        resolve: ({ id }, args, { partnerArtistsForPartnerLoader }) => {
+        resolve: (
+          { id },
+          args,
+          { partnerArtistsForPartnerLoader, partnerArtistsAllLoader }
+        ) => {
           interface GravityArgs {
             sort: string
             represented_by: boolean
@@ -200,7 +218,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             has_published_artworks: args.hasPublishedArtworks,
           }
 
-          return allViaLoader(partnerArtistsForPartnerLoader, {
+          // use the all loader to get additional fields if requested
+          const partnerArtistsLoader = args.includeAllFields
+            ? partnerArtistsAllLoader
+            : partnerArtistsForPartnerLoader
+
+          return allViaLoader(partnerArtistsLoader, {
             path: id,
             params: gravityArgs,
           })
@@ -299,6 +322,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           interface GravityArgs {
             artwork_id?: string[]
+            artist_id?: string[]
             exclude_ids?: string[]
             for_sale: boolean
             missing_priority_metadata?: boolean
@@ -313,8 +337,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           const gravityArgs: GravityArgs = {
             for_sale: args.forSale,
             missing_priority_metadata: args.missingPriorityMetadata,
+            artist_id: args.artistID || undefined,
             page,
-            published: true,
+            published: args.published ?? true,
             published_within: args.publishedWithin,
             size,
             sort: args.sort,
@@ -677,6 +702,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
             description: "If True returns only displayable items",
           },
+          artistID: {
+            type: GraphQLString,
+            description: "If present only return shows including the artist",
+          },
         }),
         resolve: ({ id }, args, { partnerShowsLoader }) => {
           const pageOptions = convertConnectionArgsToGravityArgs(args)
@@ -691,6 +720,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             status: string
             total_count: boolean
             displayable: boolean
+            artist_id: string
           }
 
           const gravityArgs: GravityArgs = {
@@ -702,6 +732,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             status: args.status || undefined,
             day_threshold: args.dayThreshold,
             displayable: args.isDisplayable,
+            artist_id: args.artistID || undefined,
           }
 
           return partnerShowsLoader(id, gravityArgs).then(

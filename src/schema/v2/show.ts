@@ -113,7 +113,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       artworksConnection: {
-        description: "The artworks featured in the show",
+        description: "The artworks featured in the show.",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
         resolve: async (show, options, { partnerShowArtworksLoader }) => {
