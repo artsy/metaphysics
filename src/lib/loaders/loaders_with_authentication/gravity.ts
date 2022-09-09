@@ -65,7 +65,11 @@ export default (accessToken, userID, opts) => {
     collectionLoader: gravityLoader((id) => `collection/${id}`, {
       user_id: userID,
     }),
-    collectorProfileLoader: gravityLoader("me/collector_profile"),
+    collectorProfilesLoader: gravityLoader(
+      "collector_profiles",
+      {},
+      { headers: true }
+    ),
     createAccountRequestLoader: gravityLoader(
       "account_requests",
       {},
@@ -238,6 +242,7 @@ export default (accessToken, userID, opts) => {
     ),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     meBiddersLoader: gravityLoader("me/bidders"),
+    meCollectorProfileLoader: gravityLoader("me/collector_profile"),
     meCreditCardsLoader: gravityLoader(
       "me/credit_cards",
       {},

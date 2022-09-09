@@ -38,9 +38,7 @@ describe("Me", () => {
       }
 
       const context = {
-        collectorProfileLoader: sinon
-          .stub()
-          .returns(Promise.resolve(collectorProfile)),
+        meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
       }
 
       return runAuthenticatedQuery(query, context).then(

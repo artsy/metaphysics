@@ -16,7 +16,7 @@ import {
   paginationResolver,
 } from "./fields/pagination"
 import { date } from "./fields/date"
-import { CollectorProfile } from "./CollectorProfile/collectorProfile"
+import { CollectorProfileType } from "./CollectorProfile/collectorProfile"
 import { UserSaleProfile } from "./userSaleProfile"
 import { UserInterestConnection } from "./userInterests"
 import { pageable } from "relay-cursor-paging"
@@ -100,7 +100,22 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
     ...InternalIDFields,
     cached,
     adminNotes: UserAdminNotesField,
-    collectorProfile: CollectorProfile,
+    collectorProfile: {
+      type: CollectorProfileType,
+      resolve: async ({ id: user_id }, {}, { collectorProfilesLoader }) => {
+        if (!collectorProfilesLoader)
+          throw new Error(
+            "Loader not found. You must supply an X-Access-Token header."
+          )
+
+        const { body: profiles } = await collectorProfilesLoader({
+          user_id,
+        })
+
+        // It's ok if `profiles` is an empty array.
+        return profiles[0]
+      },
+    },
     name: {
       description: "The given name of the user.",
       type: new GraphQLNonNull(GraphQLString),

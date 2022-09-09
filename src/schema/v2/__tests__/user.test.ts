@@ -446,4 +446,54 @@ describe("User", () => {
       })
     })
   })
+
+  describe("collectorProfile", () => {
+    it("returns the user's collector profile", async () => {
+      const query = `
+        {
+          user(id: "blah") {
+            collectorProfile {
+              companyName
+              companyWebsite
+            }
+          }
+        }
+      `
+
+      const user = {
+        id: "blah",
+      }
+
+      const collectorProfiles = [
+        {
+          company_name: "Nun'ya Business",
+          company_website: "donotcontact.me",
+        },
+      ]
+
+      const context = {
+        userByIDLoader: () => {
+          return Promise.resolve(user)
+        },
+        collectorProfilesLoader: (data) => {
+          if (data.user_id !== "blah") {
+            throw new Error(
+              "Unexpected user ID passed to collector profile loader"
+            )
+          }
+          return Promise.resolve({
+            body: collectorProfiles,
+            headers: { "x-total-count": "1" },
+          })
+        },
+      }
+
+      const {
+        user: { collectorProfile },
+      } = await runAuthenticatedQuery(query, context)
+
+      expect(collectorProfile.companyName).toEqual("Nun'ya Business")
+      expect(collectorProfile.companyWebsite).toEqual("donotcontact.me")
+    })
+  })
 })

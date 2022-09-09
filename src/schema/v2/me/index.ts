@@ -65,13 +65,15 @@ import { WatchedLotConnection } from "./watchedLotConnection"
 const collectorProfileResolver = (field: string) => async (
   _root,
   options,
-  { collectorProfileLoader }: { collectorProfileLoader?: StaticPathLoader<any> }
+  {
+    meCollectorProfileLoader,
+  }: { meCollectorProfileLoader?: StaticPathLoader<any> }
 ) => {
-  if (!collectorProfileLoader) {
+  if (!meCollectorProfileLoader) {
     throw new Error("You need to be signed in to perform this action")
   }
 
-  const result = await collectorProfileLoader(options)
+  const result = await meCollectorProfileLoader(options)
   return result?.[field]
 }
 
