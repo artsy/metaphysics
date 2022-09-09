@@ -63,7 +63,7 @@ export const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>(
 export const CollectorProfile: GraphQLFieldConfig<void, ResolverContext> = {
   type: CollectorProfileType,
   description: "A collector profile.",
-  resolve: (_root, _option, { collectorProfileLoader }) => {
-    return collectorProfileLoader?.()
+  resolve: (_root, _option, { meCollectorProfileLoader }) => {
+    return meCollectorProfileLoader?.()
   },
 }
