@@ -1,6 +1,6 @@
-import "./lib/loadenv"
-import chalk from "chalk"
 import xapp from "@artsy/xapp"
+import chalk from "chalk"
+import "./lib/loadenv"
 
 const {
   ALGOLIA_APP_ID,
@@ -77,6 +77,7 @@ const {
   SENTRY_PRIVATE_DSN,
   STATSD_HOST,
   STATSD_PORT,
+  SYSTEM_ENVIRONMENT,
   TINEYE_API_PASSWORD,
   TINEYE_API_USERNAME,
   UNLEASH_ADMIN_TOKEN,
@@ -212,6 +213,7 @@ export default {
   EXCHANGE_APP_ID,
   STATSD_HOST: STATSD_HOST || "localhost",
   STATSD_PORT: Number(STATSD_PORT) || 8125,
+  SYSTEM_ENVIRONMENT: SYSTEM_ENVIRONMENT || "development",
   TINEYE_API_PASSWORD,
   TINEYE_API_USERNAME,
   UNLEASH_ADMIN_TOKEN,

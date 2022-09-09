@@ -1,8 +1,8 @@
-import config from "../../config"
-import urljoin from "url-join"
-import fetch, { RequestInit } from "node-fetch"
 import FormData from "form-data"
+import fetch, { RequestInit } from "node-fetch"
 import { Readable } from "stream"
+import urljoin from "url-join"
+import config from "../../config"
 
 export type TineyeSearchOptions = {
   image: Readable
@@ -20,6 +20,8 @@ const tineye = (path: string, fetchOptions?: RequestInit) => {
 export const tineyeSearch = async (options: TineyeSearchOptions) => {
   const { image, filename, contentType } = options
   const form = new FormData()
+
+  form.append("path_filter", `^${config.SYSTEM_ENVIRONMENT?.toLowerCase()}/`)
 
   form.append("image", image, {
     filename,
