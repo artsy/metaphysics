@@ -356,6 +356,141 @@ describe("User", () => {
     })
   })
 
+  describe("purchasedArtworksConnection", () => {
+    it("returns user purchased artworks", async () => {
+      const query = `
+        {
+          user(id: "blah") {
+            purchasedArtworksConnection(first: 10) {
+              edges {
+                ownerType
+                salePrice
+                source
+                node {
+                  __typename
+                  title
+                  slug
+                  artistNames
+                  partner(shallow: true) {
+                    name
+                  }
+                  saleArtwork {
+                    lotLabel
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const user = {
+        id: "blah",
+      }
+
+      const purchases = [
+        {
+          owner_type: "SaleArtwork",
+          sale_price: 1000.9999,
+          source: "auction",
+          artwork: {
+            title: "Monkey Business",
+            id: "percy-monkey-business",
+            artists: [
+              {
+                name: "Percy Z",
+              },
+            ],
+            partner: {
+              name: "123 Auctions",
+            },
+            sale_ids: ["123"],
+          },
+        },
+        {
+          owner_type: "ArtworkInquiryRequest",
+          sale_price: 600.1234,
+          source: "inquiry",
+          artwork: {
+            __typename: "Artwork",
+            title: "Donkey Business",
+            id: "percy-donkey-business",
+            artists: [
+              {
+                name: "Percy Z",
+              },
+            ],
+            partner: {
+              name: "123 Auctions",
+            },
+            sale_ids: ["223"],
+          },
+        },
+      ]
+
+      const context = {
+        userByIDLoader: () => {
+          return Promise.resolve(user)
+        },
+        purchasesLoader: () => {
+          return Promise.resolve({
+            body: purchases,
+            headers: { "x-total-count": "2" },
+          })
+        },
+        saleArtworkLoader: () => {
+          return Promise.resolve({
+            lot_label: "1",
+          })
+        },
+      }
+
+      const {
+        user: {
+          purchasedArtworksConnection: { edges },
+        },
+      } = await runAuthenticatedQuery(query, context)
+
+      expect(edges.length).toEqual(2)
+
+      expect(edges[0]).toEqual({
+        ownerType: "SaleArtwork",
+        salePrice: 1000.9999,
+        source: "auction",
+        node: {
+          __typename: "Artwork",
+          title: "Monkey Business",
+          slug: "percy-monkey-business",
+          artistNames: "Percy Z",
+          partner: {
+            name: "123 Auctions",
+          },
+          saleArtwork: {
+            lotLabel: "1",
+          },
+        },
+      })
+
+      expect(edges[1]).toEqual({
+        ownerType: "ArtworkInquiryRequest",
+        salePrice: 600.1234,
+        source: "inquiry",
+        node: {
+          __typename: "Artwork",
+          title: "Donkey Business",
+          slug: "percy-donkey-business",
+          artistNames: "Percy Z",
+          partner: {
+            name: "123 Auctions",
+          },
+          saleArtwork: {
+            lotLabel: "1",
+          },
+        },
+      })
+    })
+  })
+
   describe("follows", () => {
     it("returns user follows", async () => {
       const query = `

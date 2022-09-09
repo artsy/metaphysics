@@ -489,6 +489,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
     deleteUserRole: gravityLoader<any, { id: string; role_type: string }>(
       ({ id, role_type }) => `user/${id}/roles/${role_type}`,
       {},
