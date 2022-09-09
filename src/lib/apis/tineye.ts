@@ -21,7 +21,7 @@ export const tineyeSearch = async (options: TineyeSearchOptions) => {
   const { image, filename, contentType } = options
   const form = new FormData()
 
-  form.append("path_filter", `^${config.TINEYE_ENVIRONMENT?.toLowerCase()}/`)
+  form.append("path_filter", `^${config.SYSTEM_ENVIRONMENT?.toLowerCase()}/`)
 
   form.append("image", image, {
     filename,

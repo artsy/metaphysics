@@ -9,7 +9,7 @@ jest.mock("node-fetch")
 describe("TinEye", () => {
   config.TINEYE_API_USERNAME = "username"
   config.TINEYE_API_PASSWORD = "password"
-  config.TINEYE_ENVIRONMENT = "ENV123"
+  config.SYSTEM_ENVIRONMENT = "ENV123"
 
   const mockFetch = (fetch as unknown) as jest.Mock<typeof fetch>
 
