@@ -19,8 +19,8 @@ export const edgeFields: Thunk<GraphQLFieldConfigMap<
   source: { type: GraphQLString },
 })
 
-export const UserPurchaseConnection = connectionDefinitions({
-  name: "UserPurchase",
+export const UserPurchasesConnection = connectionDefinitions({
+  name: "UserPurchases",
   nodeType: ArtworkType,
   edgeFields: edgeFields,
-})
+}).connectionType

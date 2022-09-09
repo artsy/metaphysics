@@ -97,7 +97,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
   name: "User",
   interfaces: [NodeInterface],
   fields: () => {
-    const { UserPurchaseConnection } = require("./userPurchases")
+    const { UserPurchasesConnection } = require("./userPurchases")
     return {
       ...InternalIDFields,
       cached,
@@ -259,8 +259,8 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       },
       partnerAccess: PartnerAccessField,
       profileAccess: ProfileAccessField,
-      purchasesConnection: {
-        type: UserPurchaseConnection.connectionType,
+      purchasedArtworksConnection: {
+        type: UserPurchasesConnection,
         args: pageable({}),
         resolve: async ({ id }, args, { purchasesLoader }) => {
           if (!purchasesLoader) {

@@ -16141,12 +16141,12 @@ type User implements Node {
 
   # The Parnter or Profile access granted to the user
   profileAccess: [String]!
-  purchasesConnection(
+  purchasedArtworksConnection(
     after: String
     before: String
     first: Int
     last: Int
-  ): UserPurchaseConnection
+  ): UserPurchasesConnection
 
   # This user should receive lot opening notifications
   receiveLotOpeningSoonNotification: Boolean
@@ -16425,16 +16425,16 @@ enum UserInterestInterestType {
 }
 
 # A connection to a list of items.
-type UserPurchaseConnection {
+type UserPurchasesConnection {
   # A list of edges.
-  edges: [UserPurchaseEdge]
+  edges: [UserPurchasesEdge]
 
   # Information to aid in pagination.
   pageInfo: PageInfo!
 }
 
 # An edge in a connection.
-type UserPurchaseEdge {
+type UserPurchasesEdge {
   # A cursor for use in pagination
   cursor: String!
 

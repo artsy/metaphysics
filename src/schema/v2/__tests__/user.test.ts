@@ -356,12 +356,12 @@ describe("User", () => {
     })
   })
 
-  describe("purchasesConnection", () => {
-    it("returns user purchases", async () => {
+  describe("purchasedArtworksConnection", () => {
+    it("returns user purchased artworks", async () => {
       const query = `
         {
           user(id: "blah") {
-            purchasesConnection(first: 10) {
+            purchasedArtworksConnection(first: 10) {
               edges {
                 ownerType
                 salePrice
@@ -447,13 +447,11 @@ describe("User", () => {
 
       const {
         user: {
-          purchasesConnection: { edges },
+          purchasedArtworksConnection: { edges },
         },
       } = await runAuthenticatedQuery(query, context)
 
       expect(edges.length).toEqual(2)
-
-      console.log("WWWWW", edges[0])
 
       expect(edges[0]).toEqual({
         ownerType: "SaleArtwork",
