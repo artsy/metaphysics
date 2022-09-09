@@ -631,4 +631,87 @@ describe("User", () => {
       expect(collectorProfile.companyWebsite).toEqual("donotcontact.me")
     })
   })
+
+  describe("inquiredArtworksConnection", () => {
+    const query = `
+        {
+          user(id: "blah") {
+            inquiredArtworksConnection(first: 10) {
+              edges {
+                status
+                outcome
+                note
+                createdAt(format: "YYYY-MM-DD")
+                isSentToGallery
+                node {
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+    const user = {
+      id: "blah",
+    }
+
+    const inquiries = [
+      {
+        contact_gallery: true,
+        created_at: "2022-08-13T21:44:09+00:00",
+        inquireable: {
+          title: "Cat Painting",
+        },
+        note: "I love cats",
+        outcome: "Bought painting",
+        statuses: [
+          {
+            title: "Awaiting 1st gallery response",
+            created_at: "2022-08-13T21:44:09+00:00",
+          },
+          {
+            title: "Gallery accepted",
+            created_at: "2022-08-14T21:44:09+00:00",
+          },
+        ],
+      },
+    ]
+
+    let context
+
+    beforeEach(() => {
+      context = {
+        userByIDLoader: () => {
+          return Promise.resolve(user)
+        },
+        userInquiryRequestsLoader: () => {
+          return Promise.resolve({
+            body: inquiries,
+            headers: { "x-total-count": "1" },
+          })
+        },
+      }
+    })
+
+    it("returns inquired-upon artworks for a user", async () => {
+      const {
+        user: {
+          inquiredArtworksConnection: { edges },
+        },
+      } = await runAuthenticatedQuery(query, context)
+
+      expect(edges.length).toEqual(1)
+      expect(edges[0]).toEqual({
+        status: "Gallery accepted",
+        outcome: "Bought painting",
+        note: "I love cats",
+        createdAt: "2022-08-13",
+        isSentToGallery: true,
+        node: {
+          title: "Cat Painting",
+        },
+      })
+    })
+  })
 })

@@ -13,6 +13,7 @@ import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 import {
   connectionWithCursorInfo,
+  createPageCursors,
   paginationResolver,
 } from "./fields/pagination"
 import { date } from "./fields/date"
@@ -98,6 +99,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: () => {
     const { UserPurchasesConnection } = require("./userPurchases")
+    const { UserInquiredArtworksConnection } = require("./userInquiredArtworks")
     return {
       ...InternalIDFields,
       cached,
@@ -166,6 +168,37 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         description: "Has the user opted out of data transfer.",
         type: GraphQLBoolean,
         resolve: async ({ data_transfer_opt_out }) => data_transfer_opt_out,
+      },
+      inquiredArtworksConnection: {
+        type: UserInquiredArtworksConnection,
+        args: pageable({}),
+        resolve: async ({ id }, args, { userInquiryRequestsLoader }) => {
+          if (!userInquiryRequestsLoader) {
+            throw new Error(
+              "Loader not found. You must supply an X-Access-Token header."
+            )
+          }
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+          const { body, headers } = await userInquiryRequestsLoader(id, {
+            page,
+            size,
+            total_count: true,
+          })
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return {
+            totalCount,
+            pageCursors: createPageCursors({ page, size }, totalCount),
+            ...connectionFromArraySlice(body, args, {
+              arrayLength: totalCount,
+              sliceStart: offset,
+              resolveNode: (node) => node.inquireable,
+            }),
+          }
+        },
       },
       interestsConnection: {
         type: UserInterestConnection,
