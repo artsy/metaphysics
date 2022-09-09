@@ -1,6 +1,6 @@
-import "./lib/loadenv"
-import chalk from "chalk"
 import xapp from "@artsy/xapp"
+import chalk from "chalk"
+import "./lib/loadenv"
 
 const {
   ALGOLIA_APP_ID,
@@ -79,6 +79,7 @@ const {
   STATSD_PORT,
   TINEYE_API_PASSWORD,
   TINEYE_API_USERNAME,
+  TINEYE_ENVIRONMENT,
   UNLEASH_ADMIN_TOKEN,
   VORTEX_API_BASE,
   VORTEX_APP_ID,
@@ -214,6 +215,7 @@ export default {
   STATSD_PORT: Number(STATSD_PORT) || 8125,
   TINEYE_API_PASSWORD,
   TINEYE_API_USERNAME,
+  TINEYE_ENVIRONMENT,
   UNLEASH_ADMIN_TOKEN,
   VORTEX_API_BASE,
   VORTEX_APP_ID,
