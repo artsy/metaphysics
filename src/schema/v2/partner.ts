@@ -92,10 +92,10 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLInt,
     description: "Return artworks published less than x seconds ago.",
   },
-  published: {
+  includeUnpublished: {
     type: GraphQLBoolean,
     description:
-      "If false return both published and unpublished artworks, requires auth",
+      "If true return both published and unpublished artworks, requires auth",
   },
   sort: ArtworkSorts,
   shallow: {
@@ -339,7 +339,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             missing_priority_metadata: args.missingPriorityMetadata,
             artist_id: args.artistID || undefined,
             page,
-            published: args.published ?? true,
+            published: args.includeUnpublished ? false : true,
             published_within: args.publishedWithin,
             size,
             sort: args.sort,
