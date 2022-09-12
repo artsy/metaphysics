@@ -58,7 +58,7 @@ describe("reverseImageSearch", () => {
         "reverseImageSearch": Object {
           "results": Array [
             Object {
-              "filepath": "artwork/artwork-id/image/image-id",
+              "filepath": "current-env/artwork/artwork-id/image/image-id",
               "score": 72.83,
             },
           ],
@@ -106,6 +106,10 @@ describe("reverseImageSearch", () => {
 
     const result = await runQuery(artworkQuery, context, { file: upload })
 
+    expect(context.unauthenticatedLoaders.artworkLoader).toHaveBeenCalledWith(
+      "artwork-id"
+    )
+
     expect(result).toMatchInlineSnapshot(`
       Object {
         "reverseImageSearch": Object {
@@ -114,7 +118,7 @@ describe("reverseImageSearch", () => {
               "artwork": Object {
                 "title": "Artwork Title",
               },
-              "filepath": "artwork/artwork-id/image/image-id",
+              "filepath": "current-env/artwork/artwork-id/image/image-id",
             },
           ],
         },
@@ -142,7 +146,7 @@ const TinEyeSuccessResponse = {
     {
       target_overlap_percent: 99.76,
       query_overlap_percent: 99.95,
-      filepath: "artwork/artwork-id/image/image-id",
+      filepath: "current-env/artwork/artwork-id/image/image-id",
       target_match_rect: {
         top: 29.29,
         bottom: 71.64,
