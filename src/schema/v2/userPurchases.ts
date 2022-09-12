@@ -1,4 +1,3 @@
-import { connectionDefinitions } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import {
   GraphQLString,
@@ -8,6 +7,7 @@ import {
 } from "graphql"
 import { IDFields } from "./object_identification"
 import { ArtworkType } from "./artwork"
+import { connectionWithCursorInfo } from "./fields/pagination"
 
 export const edgeFields: Thunk<GraphQLFieldConfigMap<
   any,
@@ -19,7 +19,7 @@ export const edgeFields: Thunk<GraphQLFieldConfigMap<
   source: { type: GraphQLString },
 })
 
-export const UserPurchasesConnection = connectionDefinitions({
+export const UserPurchasesConnection = connectionWithCursorInfo({
   name: "UserPurchases",
   nodeType: ArtworkType,
   edgeFields: edgeFields,

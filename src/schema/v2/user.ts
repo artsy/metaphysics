@@ -13,6 +13,7 @@ import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 import {
   connectionWithCursorInfo,
+  createPageCursors,
   paginationResolver,
 } from "./fields/pagination"
 import { date } from "./fields/date"
@@ -297,6 +298,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
 
           return {
             totalCount,
+            pageCursors: createPageCursors({ page, size }, totalCount),
             ...connectionFromArraySlice(body, args, {
               arrayLength: totalCount,
               sliceStart: offset,
