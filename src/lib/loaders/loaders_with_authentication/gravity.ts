@@ -459,6 +459,11 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     usersLoader: gravityLoader("users", {}, { headers: true }),
+    userInquiryRequestsLoader: gravityLoader(
+      (id) => `user/${id}/artwork_inquiry_requests`,
+      {},
+      { headers: true }
+    ),
     userSaleProfileLoader: gravityLoader((id) => `user_sale_profile/${id}`),
     userAdminNotesLoader: gravityLoader((id) => `user/${id}/admin_notes`),
     createUserAdminNoteLoader: gravityLoader(
