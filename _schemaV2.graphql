@@ -9850,6 +9850,15 @@ type LotStanding {
   saleArtwork: SaleArtwork
 }
 
+input MarkAllNotificationsAsReadInput {
+  clientMutationId: String
+}
+
+type MarkAllNotificationsAsReadPayload {
+  clientMutationId: String
+  success: Boolean
+}
+
 type MarketingCollection {
   artworksConnection(
     acquireable: Boolean
@@ -10941,6 +10950,11 @@ type Mutation {
   linkAuthentication(
     input: LinkAuthenticationMutationInput!
   ): LinkAuthenticationMutationPayload
+
+  # Mark all unread notifications as read
+  markAllNotificationsAsRead(
+    input: MarkAllNotificationsAsReadInput!
+  ): MarkAllNotificationsAsReadPayload
 
   # Merge multiple artist records in order to deduplicate artists
   mergeArtists(input: MergeArtistsMutationInput!): MergeArtistsMutationPayload
