@@ -271,6 +271,13 @@ describe("User", () => {
         {
           user(id: "blah") {
             interestsConnection(first: 10) {
+              totalCount
+              pageCursors {
+                around {
+                  page
+                  isCurrent
+                }
+              }
               edges {
                 body
                 category
@@ -328,12 +335,14 @@ describe("User", () => {
 
       const {
         user: {
-          interestsConnection: { edges },
+          interestsConnection: { edges, totalCount, pageCursors },
         },
       } = await runAuthenticatedQuery(query, context)
 
-      expect(edges.length).toEqual(2)
+      expect(totalCount).toEqual(2)
+      expect(pageCursors.around).toEqual([{ page: 1, isCurrent: true }])
 
+      expect(edges.length).toEqual(2)
       expect(edges[0]).toEqual({
         body: "Told an admin they collected",
         category: "COLLECTED_BEFORE",
@@ -343,7 +352,6 @@ describe("User", () => {
           name: "Catty Artist",
         },
       })
-
       expect(edges[1]).toEqual({
         body: null,
         category: "INTERESTED_IN_COLLECTING",
