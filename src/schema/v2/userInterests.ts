@@ -1,4 +1,3 @@
-import { connectionDefinitions } from "graphql-relay"
 import {
   userInterestInterestUnion,
   UserInterest,
@@ -13,6 +12,7 @@ import {
   GraphQLBoolean,
 } from "graphql"
 import { IDFields } from "./object_identification"
+import { connectionWithCursorInfo } from "./fields/pagination"
 
 export const edgeFields: Thunk<GraphQLFieldConfigMap<
   UserInterest,
@@ -27,7 +27,7 @@ export const edgeFields: Thunk<GraphQLFieldConfigMap<
   },
 })
 
-export const UserInterestConnection = connectionDefinitions({
+export const UserInterestConnection = connectionWithCursorInfo({
   name: "UserInterest",
   nodeType: userInterestInterestUnion,
   edgeFields: edgeFields,

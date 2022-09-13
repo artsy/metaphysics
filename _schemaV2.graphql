@@ -16438,9 +16438,11 @@ enum UserInterestCategory {
 type UserInterestConnection {
   # A list of edges.
   edges: [UserInterestEdge]
+  pageCursors: PageCursors!
 
   # Information to aid in pagination.
   pageInfo: PageInfo!
+  totalCount: Int
 }
 
 # An edge in a connection.
