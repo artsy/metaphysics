@@ -7,19 +7,24 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { pick } from "lodash"
 import { pageable } from "relay-cursor-paging"
+import { date } from "schema/v2/fields/date"
 import {
   connectionWithCursorInfo,
   createPageCursors,
 } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { IDFields, NodeInterface } from "../object_identification"
-import { date } from "schema/v2/fields/date"
 import { artworkConnection } from "../artwork"
-import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import numeral from "../fields/numeral"
-import { pick } from "lodash"
+import { IDFields, NodeInterface } from "../object_identification"
+
+const GRAVITY_NOTIFICATION_TYPE_MAPPING = {
+  artwork_alert: "SavedSearchHitActivity",
+  artwork_published: "ArtworkPublishedActivity",
+}
 
 const NotificationTypesEnum = new GraphQLEnumType({
   name: "NotificationTypesEnum",
@@ -104,7 +109,11 @@ export const NotificationsConnection: GraphQLFieldConfig<
     if (!notificationsFeedLoader) return null
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    const activityTypes = getGravityActivityTypes(args.notificationTypes)
+
     const body = await notificationsFeedLoader({
+      activity_types: activityTypes,
       size,
       page,
     })
@@ -124,3 +133,6 @@ export const NotificationsConnection: GraphQLFieldConfig<
     }
   },
 }
+
+const getGravityActivityTypes = (notificationTypes: [string]) =>
+  notificationTypes?.map((type) => GRAVITY_NOTIFICATION_TYPE_MAPPING[type])
