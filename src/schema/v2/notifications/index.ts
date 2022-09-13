@@ -21,16 +21,11 @@ import { artworkConnection } from "../artwork"
 import numeral from "../fields/numeral"
 import { IDFields, NodeInterface } from "../object_identification"
 
-const GRAVITY_NOTIFICATION_TYPE_MAPPING = {
-  artwork_alert: "SavedSearchHitActivity",
-  artwork_published: "ArtworkPublishedActivity",
-}
-
 const NotificationTypesEnum = new GraphQLEnumType({
   name: "NotificationTypesEnum",
   values: {
-    ARTWORK_ALERT: { value: "artwork_alert" },
-    ARTWORK_PUBLISHED: { value: "artwork_published" },
+    ARTWORK_ALERT: { value: "SavedSearchHitActivity" },
+    ARTWORK_PUBLISHED: { value: "ArtworkPublishedActivity" },
   },
 })
 
@@ -59,7 +54,9 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     notificationType: {
       type: new GraphQLNonNull(NotificationTypesEnum),
       resolve: ({ actors }) =>
-        actors.startsWith("Works by") ? "artwork_alert" : "artwork_published",
+        actors.startsWith("Works by")
+          ? "SavedSearchHitActivity"
+          : "ArtworkPublishedActivity",
     },
     artworksConnection: {
       type: artworkConnection.connectionType,
@@ -110,10 +107,8 @@ export const NotificationsConnection: GraphQLFieldConfig<
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const activityTypes = getGravityActivityTypes(args.notificationTypes)
-
     const body = await notificationsFeedLoader({
-      activity_types: activityTypes,
+      activity_types: args.notificationTypes,
       size,
       page,
     })
@@ -133,6 +128,3 @@ export const NotificationsConnection: GraphQLFieldConfig<
     }
   },
 }
-
-const getGravityActivityTypes = (notificationTypes: [string]) =>
-  notificationTypes?.map((type) => GRAVITY_NOTIFICATION_TYPE_MAPPING[type])
