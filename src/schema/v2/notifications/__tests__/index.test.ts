@@ -27,7 +27,7 @@ describe("notificationsConnection", () => {
   it("returns data", async () => {
     const query = gql`
       {
-        notificationsConnection(first: 10, notificationTypes: [ARTWORK_ALERT]) {
+        notificationsConnection(first: 10) {
           totalCount
           counts {
             total
@@ -48,34 +48,80 @@ describe("notificationsConnection", () => {
       }
     `
 
-    const data = await runAuthenticatedQuery(query, { notificationsFeedLoader })
+    const data = await runAuthenticatedQuery(query, {
+      notificationsFeedLoader,
+    })
 
     expect(notificationsFeedLoader).toHaveBeenCalledWith({
       size: 10,
       page: 1,
     })
 
-    expect(data).toEqual({
-      notificationsConnection: {
-        totalCount: 100,
-        counts: {
-          total: 100,
-          unread: 10,
-        },
-        edges: [
-          {
-            node: {
-              internalID: "6303f205b54941000843419a",
-              isUnread: true,
-              createdAt: "2022",
-              notificationType: "ARTWORK_ALERT",
-              title: "Works by Damien Hirst",
-              message: "8 works added",
-              targetHref: "/artist/damien-hirst/works-for-sale",
-            },
-          },
-        ],
-      },
+    expect(data).toEqual(expectedData)
+  })
+
+  describe("with activity types filter", () => {
+    it("returns data and filters by activity types", async () => {
+      const query = gql`
+        {
+          notificationsConnection(
+            first: 10
+            notificationTypes: [ARTWORK_ALERT, ARTWORK_PUBLISHED]
+          ) {
+            totalCount
+            counts {
+              total
+              unread
+            }
+            edges {
+              node {
+                internalID
+                isUnread
+                createdAt(format: "YYYY")
+                notificationType
+                title
+                message
+                targetHref
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runAuthenticatedQuery(query, {
+        notificationsFeedLoader,
+      })
+
+      expect(notificationsFeedLoader).toHaveBeenCalledWith({
+        activity_types: ["SavedSearchHitActivity", "ArtworkPublishedActivity"],
+        size: 10,
+        page: 1,
+      })
+
+      expect(data).toEqual(expectedData)
     })
   })
 })
+
+const expectedData = {
+  notificationsConnection: {
+    totalCount: 100,
+    counts: {
+      total: 100,
+      unread: 10,
+    },
+    edges: [
+      {
+        node: {
+          internalID: "6303f205b54941000843419a",
+          isUnread: true,
+          createdAt: "2022",
+          notificationType: "ARTWORK_ALERT",
+          title: "Works by Damien Hirst",
+          message: "8 works added",
+          targetHref: "/artist/damien-hirst/works-for-sale",
+        },
+      },
+    ],
+  },
+}

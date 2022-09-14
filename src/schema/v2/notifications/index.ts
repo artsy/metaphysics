@@ -7,25 +7,25 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { pick } from "lodash"
 import { pageable } from "relay-cursor-paging"
+import { date } from "schema/v2/fields/date"
 import {
   connectionWithCursorInfo,
   createPageCursors,
 } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { IDFields, NodeInterface } from "../object_identification"
-import { date } from "schema/v2/fields/date"
 import { artworkConnection } from "../artwork"
-import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import numeral from "../fields/numeral"
-import { pick } from "lodash"
+import { IDFields, NodeInterface } from "../object_identification"
 
 const NotificationTypesEnum = new GraphQLEnumType({
   name: "NotificationTypesEnum",
   values: {
-    ARTWORK_ALERT: { value: "artwork_alert" },
-    ARTWORK_PUBLISHED: { value: "artwork_published" },
+    ARTWORK_ALERT: { value: "SavedSearchHitActivity" },
+    ARTWORK_PUBLISHED: { value: "ArtworkPublishedActivity" },
   },
 })
 
@@ -54,7 +54,9 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     notificationType: {
       type: new GraphQLNonNull(NotificationTypesEnum),
       resolve: ({ actors }) =>
-        actors.startsWith("Works by") ? "artwork_alert" : "artwork_published",
+        actors.startsWith("Works by")
+          ? "SavedSearchHitActivity"
+          : "ArtworkPublishedActivity",
     },
     artworksConnection: {
       type: artworkConnection.connectionType,
@@ -104,7 +106,9 @@ export const NotificationsConnection: GraphQLFieldConfig<
     if (!notificationsFeedLoader) return null
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
     const body = await notificationsFeedLoader({
+      activity_types: args.notificationTypes,
       size,
       page,
     })
