@@ -71,16 +71,16 @@ describe("RecentlySoldArtworks", () => {
     expect(recentlySoldArtworks.edges).toHaveLength(1)
     expect(recentlySoldArtworks.edges[0].node).toEqual({
       artwork: {
-        internalID: "622bdb23c6df37000d516d7b",
+        internalID: "6219368ce4ed3d000dc4a7af",
       },
       lowEstimate: {
-        display: "US$150,000",
+        display: "US$2,000",
       },
       highEstimate: {
-        display: "US$200,000",
+        display: "US$3,000",
       },
       priceRealized: {
-        display: "US$350,000",
+        display: "US$20,160",
       },
     })
   })
