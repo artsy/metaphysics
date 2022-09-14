@@ -90,8 +90,8 @@ spec:
               - key: tier
                 operator: In
                 values:
-                - api
                 - foreground
+                - foreground-spot
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
