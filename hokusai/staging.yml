@@ -97,15 +97,14 @@ spec:
                 values:
                 - foreground
                 - foreground-spot
-      topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: tier
-        whenUnsatisfiable: ScheduleAnyway
-        labelSelector:
-          matchLabels:
-            app: metaphysics
-            layer: application
-            component: web
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: tier
+                    operator: In
+                    values:
+                      - foreground
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
