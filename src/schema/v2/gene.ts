@@ -1,5 +1,5 @@
 import { getPagingParameters, pageable } from "relay-cursor-paging"
-import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
 import cached from "./fields/cached"
 import Artist, { artistConnection } from "./artist"
@@ -24,6 +24,7 @@ import { Searchable } from "./searchable"
 import { setVersion } from "./image/normalize"
 import { getDefault } from "./image"
 import { markdown } from "schema/v2/fields/markdown"
+import { connectionWithCursorInfo } from "./fields/pagination"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -248,6 +249,6 @@ const Gene: GraphQLFieldConfig<void, ResolverContext> = {
 
 export default Gene
 
-export const geneConnection = connectionDefinitions({
+export const geneConnection = connectionWithCursorInfo({
   nodeType: GeneType,
 }).connectionType
