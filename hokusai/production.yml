@@ -90,8 +90,16 @@ spec:
               - key: tier
                 operator: In
                 values:
-                - api
                 - foreground
+                - foreground-spot
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: tier
+                    operator: In
+                    values:
+                      - foreground
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
