@@ -9850,12 +9850,24 @@ type LotStanding {
   saleArtwork: SaleArtwork
 }
 
+type MarkAllNotificationsAsReadFailure {
+  mutationError: GravityMutationError
+}
+
 input MarkAllNotificationsAsReadInput {
   clientMutationId: String
 }
 
 type MarkAllNotificationsAsReadPayload {
   clientMutationId: String
+  responseOrError: MarkAllNotificationsAsReadResponseOrError
+}
+
+union MarkAllNotificationsAsReadResponseOrError =
+    MarkAllNotificationsAsReadFailure
+  | MarkAllNotificationsAsReadSuccess
+
+type MarkAllNotificationsAsReadSuccess {
   success: Boolean
 }
 

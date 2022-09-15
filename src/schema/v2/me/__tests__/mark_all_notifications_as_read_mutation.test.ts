@@ -3,13 +3,23 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 const mutation = `
   mutation {
     markAllNotificationsAsRead(input: {}) {
-      success
+      responseOrError {
+        ... on MarkAllNotificationsAsReadSuccess {
+          success
+        }
+        
+        ... on MarkAllNotificationsAsReadFailure {
+          mutationError {
+            message
+          }
+        }
+      }
     }
   }
 `
 
 describe("markAllNotificationsAsReadMutation", () => {
-  it("should return success = true when all unread notifications are marked as read", async () => {
+  it("should return success response when all unread notifications are marked as read", async () => {
     const context = {
       updateNotificationsLoader: jest.fn().mockResolvedValue(true),
     }
@@ -19,14 +29,17 @@ describe("markAllNotificationsAsReadMutation", () => {
     expect(result).toMatchInlineSnapshot(`
       Object {
         "markAllNotificationsAsRead": Object {
-          "success": true,
+          "responseOrError": Object {
+            "success": true,
+          },
         },
       }
     `)
   })
 
-  it("should return success = false when something went wrong", async () => {
-    const error = new Error("Some Error")
+  it("should return failure response when something went wrong", async () => {
+    const message = `https://stagingapi.artsy.net/api/v1/me/notifications - {"error":"Something went wrong"}`
+    const error = new Error(message)
     const context = {
       updateNotificationsLoader: jest.fn().mockRejectedValue(error),
     }
@@ -36,7 +49,11 @@ describe("markAllNotificationsAsReadMutation", () => {
     expect(result).toMatchInlineSnapshot(`
       Object {
         "markAllNotificationsAsRead": Object {
-          "success": false,
+          "responseOrError": Object {
+            "mutationError": Object {
+              "message": "Something went wrong",
+            },
+          },
         },
       }
     `)
