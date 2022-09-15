@@ -298,6 +298,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    updateNotificationsLoader: gravityLoader(
+      "me/notifications",
+      {},
+      { method: "PUT" }
+    ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
     partnerArtistDocumentsLoader: gravityLoader<
