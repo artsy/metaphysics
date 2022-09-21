@@ -11776,6 +11776,18 @@ type Partner implements Node {
   ): LocationConnection
   meta: PartnerMeta
   name: String
+  partnerMatchConnection(
+    after: String
+    before: String
+
+    # ARTIST_SERIES, CITY, COLLECTION, and VIEWING_ROOM are not yet supported
+    entities: [PartnerSearchEntity!] = [ARTIST, ARTWORK, FAIR, SHOW]
+    first: Int
+    last: Int
+    page: Int = 1
+    size: Int = 10
+    term: String!
+  ): PartnerMatchConnection
   partnerPageEligible: Boolean
   partnerType: String
   profile: Profile
@@ -12136,6 +12148,28 @@ type PartnerLocation {
   state: String
 }
 
+union PartnerMatch = Article
+
+# A connection to a list of items.
+type PartnerMatchConnection {
+  # A list of edges.
+  edges: [PartnerMatchEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerMatchEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: PartnerMatch
+}
+
 type PartnerMeta {
   description: String
   image: String
@@ -12152,6 +12186,13 @@ enum PartnersAggregation {
 type PartnersAggregationResults {
   counts: [AggregationCount]
   slice: PartnersAggregation
+}
+
+enum PartnerSearchEntity {
+  ARTIST
+  ARTWORK
+  FAIR
+  SHOW
 }
 
 type PartnerShowDocument {
