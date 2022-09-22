@@ -12,6 +12,9 @@ describe("notificationsConnection", () => {
           status: "unread",
           date: "2022-08-22T21:15:49.000Z",
           object_ids: ["63036fafbe5cfc000cf358e3", "630392514f13a5000b55ecec"],
+          object: {
+            artist: { id: "damien-hirst", _id: "4d8b926a4eb68a1b2c0000ae" },
+          },
           activity_type: "ArtworkPublishedActivity",
         },
       ],
