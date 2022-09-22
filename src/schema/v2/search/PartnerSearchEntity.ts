@@ -9,11 +9,8 @@ export const PartnerSearchEntity = new GraphQLEnumType({
     ARTWORK: {
       value: "Artwork",
     },
-    FAIR: {
-      value: "Fair",
-    },
     SHOW: {
-      value: "PartnerShow",
+      value: "Show",
     },
   },
 })
