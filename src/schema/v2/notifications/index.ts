@@ -50,13 +50,7 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     createdAt: date(({ date }) => date),
     targetHref: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ object, message }) => {
-        if (message.includes("Viewing Room")) {
-          return `/viewing-room/${object.id}`
-        } else {
-          return `/artist/${object.artist.id}/works-for-sale`
-        }
-      },
+      resolve: ({ target_href }) => target_href,
     },
     notificationType: {
       type: new GraphQLNonNull(NotificationTypesEnum),
