@@ -16,6 +16,7 @@ describe("notificationsConnection", () => {
             artist: { id: "damien-hirst", _id: "4d8b926a4eb68a1b2c0000ae" },
           },
           activity_type: "ArtworkPublishedActivity",
+          target_href: "/artist/damien-hirst/works-for-sale",
         },
       ],
       total: 100,
