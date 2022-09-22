@@ -293,7 +293,6 @@ const mockArtworksResponse = [
     shipping_origin: null,
     eu_shipping_origin: false,
     current_version_id: null,
-    unlisted: false,
     featured_slot: null,
     artsy_shipping_domestic: false,
   },

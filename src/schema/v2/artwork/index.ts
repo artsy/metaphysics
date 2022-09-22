@@ -1340,10 +1340,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Whether this artwork is published or not",
       },
-      unlisted: {
-        type: GraphQLBoolean,
-        description: "Whether this artwork is unlisted or not",
-      },
       website: {
         type: GraphQLString,
         description:
@@ -1537,10 +1533,6 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
       description: "The slug or ID of the Artwork",
     },
-    includeUnlisted: {
-      type: GraphQLBoolean,
-      description: "Include unlisted artwork or not",
-    },
   },
   resolve: async (
     _source,
@@ -1549,17 +1541,13 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
     resolveInfo
   ) => {
     const { id } = args
-    const gravityParams = _.mapKeys(
-      _.pick(args, ["includeUnlisted"]),
-      (_v, k) => _.snakeCase(k)
-    )
 
     const hasRequestedPriceInsights = isFieldRequested(
       "marketPriceInsights",
       resolveInfo
     )
 
-    const artwork = await artworkLoader(id, gravityParams)
+    const artwork = await artworkLoader(id)
 
     // // We don't want to query for the price insights unless the user has requested them
     if (

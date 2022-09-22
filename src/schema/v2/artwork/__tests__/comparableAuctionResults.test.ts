@@ -37,7 +37,7 @@ describe("ComparableAuctionResults", () => {
       artwork: { comparableAuctionResults },
     } = await runQuery(query, context)
 
-    expect(artworkLoader).toHaveBeenCalledWith(mockArtwork.id, {})
+    expect(artworkLoader).toHaveBeenCalledWith(mockArtwork.id)
     expect(comparableAuctionResultsLoader).toHaveBeenCalledWith({
       artist_id: mockArtwork.artist._id,
       date: mockArtwork.date,
