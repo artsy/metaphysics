@@ -60,15 +60,7 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     },
     notificationType: {
       type: new GraphQLNonNull(NotificationTypesEnum),
-      resolve: ({ actors, message }) => {
-        if (actors.startsWith("Works by")) {
-          return "SavedSearchHitActivity"
-        } else if (message.includes("Viewing Room")) {
-          return "ViewingRoomPublishedActivity"
-        } else {
-          return "ArtworkPublishedActivity"
-        }
-      },
+      resolve: ({ activity_type }) => activity_type,
     },
     artworksConnection: {
       type: artworkConnection.connectionType,
