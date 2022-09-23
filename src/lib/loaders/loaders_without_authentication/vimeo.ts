@@ -1,3 +1,7 @@
+/**
+ * Vimeo API Docs: https://developer.vimeo.com/api/reference
+ */
+
 import factories from "../api"
 
 export const vimeoLoaders = (opts) => {

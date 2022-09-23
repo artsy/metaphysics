@@ -1,46 +1,25 @@
+/**
+ * Vimeo API Docs: https://developer.vimeo.com/api/reference
+ */
+
 import factories from "../api"
+import { accessTokenByRoleLoader } from "./utils/accessTokenByRoleLoader"
 
 export const vimeoLoaders = (accessToken, opts) => {
-  const {
-    gravityLoaderWithAuthenticationFactory,
-    vimeoLoaderWithAuthenticationFactory,
-  } = factories(opts)
+  const { vimeoLoaderWithAuthenticationFactory } = factories(opts)
 
-  // Set up gravity loading for "me" to verify token
-  const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
-
-  const gravityLoader = gravityLoaderWithAuthenticationFactory(
-    gravityAccessTokenLoader
+  const { accessTokenLoader } = accessTokenByRoleLoader(
+    // TODO: What role do partners updating artworks have?
+    "team",
+    accessToken,
+    opts
   )
 
-  const gravityJWTCheckLoader = gravityLoader("me")
-
-  // Decode token and use `roles` check
-  const accessTokenRoleCheckLoader = (me) => {
-    // TODO: What is the right role for a partner to access?
-    if (!me.roles.includes("team")) {
-      throw new Error(
-        "User needs `team` role permissions to perform this action"
-      )
-    }
-
-    return Promise.resolve(accessToken)
-  }
-
-  const vimeoAccessTokenLoader = () =>
-    gravityJWTCheckLoader()
-      .then(accessTokenRoleCheckLoader)
-      .catch((error) => {
-        throw new Error(error)
-      })
-
-  const vimeoLoader = vimeoLoaderWithAuthenticationFactory(
-    vimeoAccessTokenLoader
-  )
+  const vimeoLoader = vimeoLoaderWithAuthenticationFactory(accessTokenLoader)
 
   return {
     /**
-     * @docs: https://developer.vimeo.com/api/reference/videos#upload_video
+     * @see: https://developer.vimeo.com/api/reference/videos#upload_video
      */
     uploadVideo: vimeoLoader(`me/videos`, {}, { method: "POST" }),
   }

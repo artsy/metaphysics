@@ -7,7 +7,7 @@ import gravityLoaders from "./gravity"
 import positronLoaders from "./positron"
 import greenhouseLoaders from "./greenhouse"
 import ipbaseLoaders from "./ipbase"
-import vimeoLoaders from "./vimeo"
+import { vimeoLoaders } from "./vimeo"
 import vortexLoaders from "./vortex"
 
 export const createLoadersWithoutAuthentication = (opts) => ({
