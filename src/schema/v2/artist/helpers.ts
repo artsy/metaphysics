@@ -13,32 +13,32 @@ type ArtistInsightKind = keyof typeof ARTIST_INSIGHT_KINDS
 
 export const ARTIST_INSIGHT_MAPPING = {
   SOLO_SHOW: {
-    description: null,
+    getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.solo_show_institutions),
     label: "Solo show at a major institution",
   },
   GROUP_SHOW: {
-    description: null,
+    getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.group_show_institutions),
     label: "Group show at a major institution",
   },
   COLLECTED: {
-    description: null,
+    getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.collections, "\n"),
     label: "Collected by a major institution",
   },
   REVIEWED: {
-    description: null,
+    getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.review_sources),
     label: "Reviewed by a major art publication",
   },
   BIENNIAL: {
-    description: null,
+    getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.biennials),
     label: "Included in a major biennial",
   },
   ACTIVE_SECONDARY_MARKET: {
-    description: "Recent auction results in the Artsy Price Database",
+    getDescription: () => "Recent auction results in the Artsy Price Database",
     getEntities: (artist) => artist.active_secondary_market && [],
     label: "Active Secondary Market",
   },
@@ -62,10 +62,12 @@ export const getArtistInsights = (artist) => {
   ][]
 
   const insights = mappings.map((mapping) => {
-    const [kind, { description, getEntities, label }] = mapping
+    const [kind, { getDescription, getEntities, label }] = mapping
 
     const entities = getEntities(artist)
     if (!entities) return { artist }
+
+    const description = getDescription()
 
     return {
       artist,
