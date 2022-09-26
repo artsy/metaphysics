@@ -98,7 +98,7 @@ describe("getArtistInsights", () => {
     ]
 
     fields.forEach((field) => {
-      it(`returns an empty array of entities but a count of 1 when the ${field.key} value is true`, () => {
+      it(`returns an empty array of entities when the ${field.key} value is true`, () => {
         field.value = true
         const artist = {
           [field.key]: field.value,
@@ -107,7 +107,7 @@ describe("getArtistInsights", () => {
         const insights = getArtistInsights(artist)
         const insight = insights.find((insight) => insight.kind === field.kind)!
 
-        expect(insight.count).toEqual(1)
+        expect(insight.count).toEqual(0)
         expect(insight.entities).toEqual([])
       })
 
