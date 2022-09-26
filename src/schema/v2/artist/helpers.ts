@@ -51,6 +51,8 @@ export const ARTIST_INSIGHT_MAPPING = {
 } as const
 
 const getEntities = (value, delimiter) => {
+  if (typeof value !== "string") return []
+
   const entities = value
     .trim()
     .split(delimiter)
@@ -73,30 +75,16 @@ export const getArtistInsights = (artist) => {
       return { artist }
     }
 
-    switch (typeof value) {
-      case "string":
-        const entities = getEntities(value, delimiter ?? "|")
+    const entities = getEntities(value, delimiter ?? "|")
 
-        return {
-          entities,
-          count: entities.length,
-          label,
-          type: kind,
-          kind,
-          description,
-          artist,
-        }
-
-      case "boolean":
-        return {
-          entities: [],
-          label,
-          type: kind,
-          kind,
-          description,
-          count: 0,
-          artist,
-        }
+    return {
+      artist,
+      count: entities.length,
+      description,
+      entities,
+      kind,
+      label,
+      type: kind,
     }
   })
 
