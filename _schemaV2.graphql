@@ -11776,19 +11776,34 @@ type Partner implements Node {
   ): LocationConnection
   meta: PartnerMeta
   name: String
-  partnerMatchConnection(
+  partnerArtistsMatchConnection(
     after: String
     before: String
-
-    # Entities to retrieve from search
-    entities: [PartnerSearchEntity!] = [ARTIST, ARTWORK, SHOW]
     first: Int
     last: Int
     page: Int = 1
     size: Int = 10
     term: String!
-  ): ShowConnection
+  ): partnerArtistsMatchConnectionConnection
+  partnerArtworksMatchConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int = 1
+    size: Int = 10
+    term: String!
+  ): partnerArtworksMatchConnectionConnection
   partnerPageEligible: Boolean
+  partnerShowsMatchConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int = 1
+    size: Int = 10
+    term: String!
+  ): partnerShowsMatchConnectionConnection
   partnerType: String
   profile: Profile
   profileArtistsLayout: String
@@ -11980,6 +11995,26 @@ type PartnerArtistEdge {
   sortableID: String
 }
 
+# A connection to a list of items.
+type partnerArtistsMatchConnectionConnection {
+  # A list of edges.
+  edges: [partnerArtistsMatchConnectionEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type partnerArtistsMatchConnectionEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Artist
+}
+
 type PartnerArtworkGrid implements ArtworkContextGrid {
   artworksConnection(
     after: String
@@ -11990,6 +12025,26 @@ type PartnerArtworkGrid implements ArtworkContextGrid {
   ctaHref: String
   ctaTitle: String
   title: String
+}
+
+# A connection to a list of items.
+type partnerArtworksMatchConnectionConnection {
+  # A list of edges.
+  edges: [partnerArtworksMatchConnectionEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type partnerArtworksMatchConnectionEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Artwork
 }
 
 type PartnerCategory {
@@ -12166,12 +12221,6 @@ type PartnersAggregationResults {
   slice: PartnersAggregation
 }
 
-enum PartnerSearchEntity {
-  ARTIST
-  ARTWORK
-  SHOW
-}
-
 type PartnerShowDocument {
   filename: String!
 
@@ -12209,6 +12258,26 @@ type PartnerShowDocumentEdge {
 enum PartnerShowPartnerType {
   GALLERY
   MUSEUM
+}
+
+# A connection to a list of items.
+type partnerShowsMatchConnectionConnection {
+  # A list of edges.
+  edges: [partnerShowsMatchConnectionEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type partnerShowsMatchConnectionEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Show
 }
 
 enum PartnersSortType {

@@ -42,7 +42,6 @@ import { truncate } from "lib/helpers"
 import { setVersion } from "./image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquirerCollectorProfile"
-import { PartnerMatchConnection } from "./PartnerMatch"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -118,6 +117,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     }).connectionType
 
     const { filterArtworksConnection } = require("./filterArtworksConnection")
+
+    const {
+      partnerArtistsMatchConnection,
+      partnerArtworksMatchConnection,
+      partnerShowsMatchConnection,
+    } = require("./PartnerMatch")
 
     return {
       ...SlugAndInternalIDFields,
@@ -496,7 +501,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ vat_number }) => vat_number,
       },
-      partnerMatchConnection: PartnerMatchConnection,
+      partnerArtistsMatchConnection: partnerArtistsMatchConnection,
+      partnerArtworksMatchConnection: partnerArtworksMatchConnection,
+      partnerShowsMatchConnection: partnerShowsMatchConnection,
       hasFairPartnership: {
         type: GraphQLBoolean,
         resolve: ({ has_fair_partnership }) => has_fair_partnership,
