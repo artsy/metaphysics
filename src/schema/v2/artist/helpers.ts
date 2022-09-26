@@ -51,47 +51,51 @@ export const ARTIST_INSIGHT_MAPPING = {
 } as const
 
 export const getArtistInsights = (artist) => {
-  const insights = (Object.entries(ARTIST_INSIGHT_MAPPING) as [
+  const mappings = Object.entries(ARTIST_INSIGHT_MAPPING) as [
     ArtistInsightKind,
     typeof ARTIST_INSIGHT_MAPPING[ArtistInsightKind]
-  ][]).map(([kind, { label, description, fieldName, delimiter }]) => {
-    const value = artist[fieldName]
+  ][]
 
-    if (!value) {
-      return { artist }
+  const insights = mappings.map(
+    ([kind, { label, description, fieldName, delimiter }]) => {
+      const value = artist[fieldName]
+
+      if (!value) {
+        return { artist }
+      }
+
+      switch (typeof value) {
+        case "string":
+          const trimmed = value.trim()
+
+          if (!trimmed) return null
+
+          const entities = trimmed
+            .split(delimiter ?? "|")
+            .map((entity) => entity.trim())
+          return {
+            entities,
+            count: entities.length,
+            label,
+            type: kind,
+            kind,
+            description,
+            artist,
+          }
+
+        case "boolean":
+          return {
+            entities: [],
+            label,
+            type: kind,
+            kind,
+            description,
+            count: value ? 1 : 0,
+            artist,
+          }
+      }
     }
-
-    switch (typeof value) {
-      case "string":
-        const trimmed = value.trim()
-
-        if (!trimmed) return null
-
-        const entities = trimmed
-          .split(delimiter ?? "|")
-          .map((entity) => entity.trim())
-        return {
-          entities,
-          count: entities.length,
-          label,
-          type: kind,
-          kind,
-          description,
-          artist,
-        }
-
-      case "boolean":
-        return {
-          entities: [],
-          label,
-          type: kind,
-          kind,
-          description,
-          count: value ? 1 : 0,
-          artist,
-        }
-    }
-  })
+  )
 
   return compact(insights)
 }
