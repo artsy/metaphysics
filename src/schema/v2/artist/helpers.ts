@@ -13,45 +13,39 @@ type ArtistInsightKind = keyof typeof ARTIST_INSIGHT_KINDS
 
 export const ARTIST_INSIGHT_MAPPING = {
   SOLO_SHOW: {
-    label: "Solo show at a major institution",
     description: null,
-    fieldName: "solo_show_institutions",
-    delimiter: "|",
+    getEntities: (artist) => splitEntities(artist.solo_show_institutions),
+    label: "Solo show at a major institution",
   },
   GROUP_SHOW: {
-    label: "Group show at a major institution",
     description: null,
-    fieldName: "group_show_institutions",
-    delimiter: "|",
+    getEntities: (artist) => splitEntities(artist.group_show_institutions),
+    label: "Group show at a major institution",
   },
   COLLECTED: {
-    label: "Collected by a major institution",
     description: null,
-    fieldName: "collections",
-    delimiter: "\n",
+    getEntities: (artist) => splitEntities(artist.collections, "\n"),
+    label: "Collected by a major institution",
   },
   REVIEWED: {
-    label: "Reviewed by a major art publication",
     description: null,
-    fieldName: "review_sources",
-    delimiter: "|",
+    getEntities: (artist) => splitEntities(artist.review_sources),
+    label: "Reviewed by a major art publication",
   },
   BIENNIAL: {
-    label: "Included in a major biennial",
     description: null,
-    fieldName: "biennials",
-    delimiter: "|",
+    getEntities: (artist) => splitEntities(artist.biennials),
+    label: "Included in a major biennial",
   },
   ACTIVE_SECONDARY_MARKET: {
-    label: "Active Secondary Market",
     description: "Recent auction results in the Artsy Price Database",
-    fieldName: "active_secondary_market",
-    delimiter: null,
+    getEntities: (artist) => artist.active_secondary_market && [],
+    label: "Active Secondary Market",
   },
 } as const
 
-const getEntities = (value, delimiter) => {
-  if (typeof value !== "string") return []
+const splitEntities = (value, delimiter = "|") => {
+  if (!value) return null
 
   const entities = value
     .trim()
@@ -68,14 +62,10 @@ export const getArtistInsights = (artist) => {
   ][]
 
   const insights = mappings.map((mapping) => {
-    const [kind, { label, description, fieldName, delimiter }] = mapping
-    const value = artist[fieldName]
+    const [kind, { description, getEntities, label }] = mapping
 
-    if (!value) {
-      return { artist }
-    }
-
-    const entities = getEntities(value, delimiter ?? "|")
+    const entities = getEntities(artist)
+    if (!entities) return { artist }
 
     return {
       artist,
