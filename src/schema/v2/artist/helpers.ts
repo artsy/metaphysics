@@ -56,46 +56,45 @@ export const getArtistInsights = (artist) => {
     typeof ARTIST_INSIGHT_MAPPING[ArtistInsightKind]
   ][]
 
-  const insights = mappings.map(
-    ([kind, { label, description, fieldName, delimiter }]) => {
-      const value = artist[fieldName]
+  const insights = mappings.map((mapping) => {
+    const [kind, { label, description, fieldName, delimiter }] = mapping
+    const value = artist[fieldName]
 
-      if (!value) {
-        return { artist }
-      }
-
-      switch (typeof value) {
-        case "string":
-          const trimmed = value.trim()
-
-          if (!trimmed) return null
-
-          const entities = trimmed
-            .split(delimiter ?? "|")
-            .map((entity) => entity.trim())
-          return {
-            entities,
-            count: entities.length,
-            label,
-            type: kind,
-            kind,
-            description,
-            artist,
-          }
-
-        case "boolean":
-          return {
-            entities: [],
-            label,
-            type: kind,
-            kind,
-            description,
-            count: value ? 1 : 0,
-            artist,
-          }
-      }
+    if (!value) {
+      return { artist }
     }
-  )
+
+    switch (typeof value) {
+      case "string":
+        const trimmed = value.trim()
+
+        if (!trimmed) return null
+
+        const entities = trimmed
+          .split(delimiter ?? "|")
+          .map((entity) => entity.trim())
+        return {
+          entities,
+          count: entities.length,
+          label,
+          type: kind,
+          kind,
+          description,
+          artist,
+        }
+
+      case "boolean":
+        return {
+          entities: [],
+          label,
+          type: kind,
+          kind,
+          description,
+          count: value ? 1 : 0,
+          artist,
+        }
+    }
+  })
 
   return compact(insights)
 }
