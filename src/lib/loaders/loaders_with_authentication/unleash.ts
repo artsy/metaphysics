@@ -1,17 +1,40 @@
 import factories from "../api"
-import { accessTokenByRoleLoader } from "./utils/accessTokenByRoleLoader"
 
 export const unleashLoaders = (accessToken, opts) => {
-  const { unleashLoaderWithAuthenticationFactory } = factories(opts)
+  const {
+    gravityLoaderWithAuthenticationFactory,
+    unleashLoaderWithAuthenticationFactory,
+  } = factories(opts)
 
-  const { accessTokenLoader } = accessTokenByRoleLoader(
-    "team",
-    accessToken,
-    opts
+  // Set up gravity loading for "me" to verify token
+  const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
+
+  const gravityLoader = gravityLoaderWithAuthenticationFactory(
+    gravityAccessTokenLoader
   )
 
+  const gravityJWTCheckLoader = gravityLoader("me")
+
+  // Decode token and use `roles` check
+  const accessTokenRoleCheckLoader = (me) => {
+    if (!me.roles.includes("team")) {
+      throw new Error(
+        "User needs `team` role permissions to perform this action"
+      )
+    }
+
+    return Promise.resolve(accessToken)
+  }
+
+  const unleashAccessTokenLoader = () =>
+    gravityJWTCheckLoader()
+      .then(accessTokenRoleCheckLoader)
+      .catch((error) => {
+        throw new Error(error)
+      })
+
   const unleashLoader = unleashLoaderWithAuthenticationFactory(
-    accessTokenLoader
+    unleashAccessTokenLoader
   )
 
   return {

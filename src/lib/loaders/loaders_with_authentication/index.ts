@@ -6,7 +6,6 @@ import gravityLoaders from "./gravity"
 import { exchangeLoaders } from "./exchange"
 import vortexLoaders from "./vortex"
 import { unleashLoaders } from "./unleash"
-import { vimeoLoaders } from "./vimeo"
 
 export const createLoadersWithAuthentication = (accessToken, userID, opts) => ({
   ...causalityLoaders(accessToken, userID),
@@ -16,7 +15,6 @@ export const createLoadersWithAuthentication = (accessToken, userID, opts) => ({
   ...gravityLoaders(accessToken, userID, opts),
   ...impulseLoaders(accessToken, userID, opts),
   ...unleashLoaders(accessToken, opts),
-  ...vimeoLoaders(accessToken, opts),
   ...vortexLoaders(accessToken, opts),
 })
 
