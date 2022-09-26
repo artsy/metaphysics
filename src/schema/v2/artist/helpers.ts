@@ -91,9 +91,6 @@ export const getArtistInsights = (artist) =>
             count: value ? 1 : 0,
             artist,
           }
-
-        default:
-          return { count: 0, artist }
       }
     })
   )

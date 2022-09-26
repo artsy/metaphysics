@@ -11,13 +11,6 @@ describe("getArtistInsights", () => {
     })
   })
 
-  it("returns a fallback shape when the value isn't a string or boolean", () => {
-    const artist = { solo_show_institutions: 7 }
-    const insights = getArtistInsights(artist)
-    const insight = insights[0]
-    expect(insight).toEqual({ artist, count: 0 })
-  })
-
   describe("pipe delimited insight fields", () => {
     const value =
       "Art Institute of Chicago |Brooklyn Museum |       Hamburger Bahnhof"
