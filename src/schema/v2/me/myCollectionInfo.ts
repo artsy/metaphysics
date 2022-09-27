@@ -11,11 +11,8 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { artistConnection } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
-import {
-  ArtistInsight,
-  ArtistInsightKind,
-  getArtistInsights,
-} from "../artist/insights"
+import { ArtistInsight, ArtistInsightKind } from "../artist/insights"
+import { getArtistInsights } from "../artist/helpers"
 import { paginationResolver } from "../fields/pagination"
 import ArtistSorts from "../sorts/artist_sorts"
 

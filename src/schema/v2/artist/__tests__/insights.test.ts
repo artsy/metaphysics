@@ -15,7 +15,7 @@ describe("ArtistInsights type", () => {
     }
   })
 
-  it("returns an empty list if field values are null", () => {
+  it("returns an empty array when there are no insights", () => {
     const query = `
         {
           artist(id: "foo-bar") {
@@ -34,28 +34,7 @@ describe("ArtistInsights type", () => {
     })
   })
 
-  it("does not build an insight if the field contains an empty string", () => {
-    artist.solo_show_institutions = "  "
-
-    const query = `
-        {
-          artist(id: "foo-bar") {
-            id
-            insights {
-              type
-              label
-              entities
-            }
-          }
-        }
-      `
-
-    return runQuery(query, context).then((data) => {
-      expect(data!.artist.insights).toEqual([])
-    })
-  })
-
-  it("returns artist insights if available", () => {
+  it("returns all insights when they are present", () => {
     artist.solo_show_institutions = "MoMA PS1|Museum of Modern Art (MoMA)"
     artist.group_show_institutions = "Metropolitan Museum of Art"
     artist.collections = "Museum of Modern Art (MoMA)"
@@ -112,14 +91,19 @@ describe("ArtistInsights type", () => {
     })
   })
 
-  it("splits Artist#collections by newline character", () => {
-    artist.collections = "MoMA PS1\nMuseum of Modern Art (MoMA)"
+  it("returns only matching insights when a kind is specified", () => {
+    artist.solo_show_institutions = "MoMA PS1|Museum of Modern Art (MoMA)"
+    artist.group_show_institutions = "Metropolitan Museum of Art"
+    artist.collections = "Museum of Modern Art (MoMA)"
+    artist.review_sources = "Artforum International Magazine"
+    artist.biennials = "frieze"
+    artist.active_secondary_market = true
 
     const query = `
           {
             artist(id: "foo-bar") {
               id
-              insights {
+              insights(kind: [SOLO_SHOW]) {
                 type
                 label
                 entities
@@ -131,29 +115,76 @@ describe("ArtistInsights type", () => {
     return runQuery(query, context).then((data) => {
       expect(data!.artist.insights).toEqual([
         {
-          type: "COLLECTED",
-          label: "Collected by a major institution",
+          type: "SOLO_SHOW",
+          label: "Solo show at a major institution",
           entities: ["MoMA PS1", "Museum of Modern Art (MoMA)"],
         },
       ])
     })
   })
 
-  it("does not build an insight if active_secondary_market is false", () => {
-    artist.active_secondary_market = false
+  it("returns only matching insights when a few kinds are specified", () => {
+    artist.solo_show_institutions = "MoMA PS1|Museum of Modern Art (MoMA)"
+    artist.group_show_institutions = "Metropolitan Museum of Art"
+    artist.collections = "Museum of Modern Art (MoMA)"
+    artist.review_sources = "Artforum International Magazine"
+    artist.biennials = "frieze"
+    artist.active_secondary_market = true
 
     const query = `
-        {
-          artist(id: "foo-bar") {
-            id
-            insights {
-              type
-              label
-              entities
+          {
+            artist(id: "foo-bar") {
+              id
+              insights(kind: [SOLO_SHOW, GROUP_SHOW, REVIEWED]) {
+                type
+                label
+                entities
+              }
             }
           }
-        }
-      `
+        `
+
+    return runQuery(query, context).then((data) => {
+      expect(data!.artist.insights).toEqual([
+        {
+          type: "SOLO_SHOW",
+          label: "Solo show at a major institution",
+          entities: ["MoMA PS1", "Museum of Modern Art (MoMA)"],
+        },
+        {
+          type: "GROUP_SHOW",
+          label: "Group show at a major institution",
+          entities: ["Metropolitan Museum of Art"],
+        },
+        {
+          type: "REVIEWED",
+          label: "Reviewed by a major art publication",
+          entities: ["Artforum International Magazine"],
+        },
+      ])
+    })
+  })
+
+  it("returns an empty array when there are no matching insights and a kind is specified", () => {
+    artist.solo_show_institutions = undefined
+    artist.group_show_institutions = "Metropolitan Museum of Art"
+    artist.collections = "Museum of Modern Art (MoMA)"
+    artist.review_sources = "Artforum International Magazine"
+    artist.biennials = "frieze"
+    artist.active_secondary_market = true
+
+    const query = `
+          {
+            artist(id: "foo-bar") {
+              id
+              insights(kind: [SOLO_SHOW]) {
+                type
+                label
+                entities
+              }
+            }
+          }
+        `
 
     return runQuery(query, context).then((data) => {
       expect(data!.artist.insights).toEqual([])
