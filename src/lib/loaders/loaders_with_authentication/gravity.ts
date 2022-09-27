@@ -1,10 +1,5 @@
 import factories from "../api"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
-import {
-  partnerSearchArtistsLoader,
-  partnerSearchArtworksLoader,
-  partnerSearchShowsLoader,
-} from "../partnerSearchLoaders"
 
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
@@ -309,9 +304,21 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
-    partnerSearchShowsLoader: partnerSearchShowsLoader(gravityLoader),
-    partnerSearchArtistsLoader: partnerSearchArtistsLoader(gravityLoader),
-    partnerSearchArtworksLoader: partnerSearchArtworksLoader(gravityLoader),
+    partnerSearchShowsLoader: gravityLoader(
+      (id) => `/match/partner/${id}/shows`,
+      {},
+      { headers: true }
+    ),
+    partnerSearchArtistsLoader: gravityLoader(
+      (id) => `/match/partner/${id}/artists`,
+      {},
+      { headers: true }
+    ),
+    partnerSearchArtworksLoader: gravityLoader(
+      (id) => `/match/partner/${id}/artworks`,
+      {},
+      { headers: true }
+    ),
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
     partnerArtistDocumentsLoader: gravityLoader<
       any,

@@ -27,14 +27,12 @@ export const partnerShowsMatchConnection: GraphQLFieldConfig<
     size: { type: GraphQLInt, defaultValue: 10 },
     page: { type: GraphQLInt, defaultValue: 1 },
   }),
-  resolve: async (
-    _root,
-    { term, entities, mode, ...args },
-    { partnerSearchShowsLoader }
-  ) => {
+  resolve: async ({ id }, { term, ...args }, { partnerSearchShowsLoader }) => {
+    if (!partnerSearchShowsLoader) return null
+
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const { body, headers } = await partnerSearchShowsLoader({
+    const { body, headers } = await partnerSearchShowsLoader(id, {
       term,
       size,
       offset,
@@ -70,13 +68,15 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
     page: { type: GraphQLInt, defaultValue: 1 },
   }),
   resolve: async (
-    _root,
-    { term, entities, mode, ...args },
+    { id },
+    { term, ...args },
     { partnerSearchArtworksLoader }
   ) => {
+    if (!partnerSearchArtworksLoader) return null
+
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const { body, headers } = await partnerSearchArtworksLoader({
+    const { body, headers } = await partnerSearchArtworksLoader(id, {
       term,
       size,
       offset,
@@ -112,13 +112,15 @@ export const partnerArtistsMatchConnection: GraphQLFieldConfig<
     page: { type: GraphQLInt, defaultValue: 1 },
   }),
   resolve: async (
-    _root,
-    { term, entities, mode, ...args },
+    { id },
+    { term, ...args },
     { partnerSearchArtistsLoader }
   ) => {
+    if (!partnerSearchArtistsLoader) return null
+
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const { body, headers } = await partnerSearchArtistsLoader({
+    const { body, headers } = await partnerSearchArtistsLoader(id, {
       term,
       size,
       offset,
