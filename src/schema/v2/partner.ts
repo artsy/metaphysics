@@ -501,9 +501,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ vat_number }) => vat_number,
       },
-      partnerArtistsMatchConnection: partnerArtistsMatchConnection,
-      partnerArtworksMatchConnection: partnerArtworksMatchConnection,
-      partnerShowsMatchConnection: partnerShowsMatchConnection,
+      partnerArtistsSearchConnection: partnerArtistsMatchConnection,
+      partnerArtworksSearchConnection: partnerArtworksMatchConnection,
+      partnerShowsSearchConnection: partnerShowsMatchConnection,
       hasFairPartnership: {
         type: GraphQLBoolean,
         resolve: ({ has_fair_partnership }) => has_fair_partnership,

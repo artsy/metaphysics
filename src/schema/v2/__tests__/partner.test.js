@@ -1379,7 +1379,7 @@ describe("Partner type", () => {
     })
   })
 
-  describe("#partnerShowsMatchConnection", () => {
+  describe("#partnerShowsSearchConnection", () => {
     let showsResponse
 
     beforeEach(() => {
@@ -1410,7 +1410,7 @@ describe("Partner type", () => {
       const query = gql`
         {
           partner(id: "levy-gorvy") {
-            partnerShowsMatchConnection(term: "levy") {
+            partnerShowsSearchConnection(query: "levy") {
               edges {
                 node {
                   slug
@@ -1424,7 +1424,7 @@ describe("Partner type", () => {
 
       expect(data).toEqual({
         partner: {
-          partnerShowsMatchConnection: {
+          partnerShowsSearchConnection: {
             edges: [
               {
                 node: {
@@ -1449,7 +1449,7 @@ describe("Partner type", () => {
     })
   })
 
-  describe("#partnerArtistsMatchConnection", () => {
+  describe("#partnerArtistsSearchConnection", () => {
     let artistsResponse
 
     beforeEach(() => {
@@ -1480,7 +1480,7 @@ describe("Partner type", () => {
       const query = gql`
         {
           partner(id: "levy-gorvy") {
-            partnerArtistsMatchConnection(term: "some-term") {
+            partnerArtistsSearchConnection(query: "some-query") {
               edges {
                 node {
                   slug
@@ -1494,7 +1494,7 @@ describe("Partner type", () => {
 
       expect(data).toEqual({
         partner: {
-          partnerArtistsMatchConnection: {
+          partnerArtistsSearchConnection: {
             edges: [
               {
                 node: {
@@ -1518,7 +1518,7 @@ describe("Partner type", () => {
     })
   })
 
-  describe("#partnerArtworksMatchConnection", () => {
+  describe("#partnerArtworksSearchConnection", () => {
     let artworksResponse
 
     beforeEach(() => {
@@ -1549,7 +1549,7 @@ describe("Partner type", () => {
       const query = gql`
         {
           partner(id: "levy-gorvy") {
-            partnerArtworksMatchConnection(term: "some-term") {
+            partnerArtworksSearchConnection(query: "some-query") {
               edges {
                 node {
                   slug
@@ -1563,7 +1563,7 @@ describe("Partner type", () => {
 
       expect(data).toEqual({
         partner: {
-          partnerArtworksMatchConnection: {
+          partnerArtworksSearchConnection: {
             edges: [
               {
                 node: {

@@ -18,22 +18,22 @@ export const partnerShowsMatchConnection: GraphQLFieldConfig<
 > = {
   type: connectionWithCursorInfo({
     nodeType: ShowType,
-    name: "partnerShowsMatch",
+    name: "partnerShowsSearch",
   }).connectionType,
   args: pageable({
-    term: {
+    query: {
       type: new GraphQLNonNull(GraphQLString),
     },
     size: { type: GraphQLInt, defaultValue: 10 },
     page: { type: GraphQLInt, defaultValue: 1 },
   }),
-  resolve: async ({ id }, { term, ...args }, { partnerSearchShowsLoader }) => {
+  resolve: async ({ id }, { query, ...args }, { partnerSearchShowsLoader }) => {
     if (!partnerSearchShowsLoader) return null
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     const { body, headers } = await partnerSearchShowsLoader(id, {
-      term,
+      term: query,
       size,
       offset,
       total_count: true,
@@ -58,10 +58,10 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
 > = {
   type: connectionWithCursorInfo({
     nodeType: ArtworkType,
-    name: "partnerArtworksMatch",
+    name: "partnerArtworksSearch",
   }).connectionType,
   args: pageable({
-    term: {
+    query: {
       type: new GraphQLNonNull(GraphQLString),
     },
     size: { type: GraphQLInt, defaultValue: 10 },
@@ -69,7 +69,7 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
   }),
   resolve: async (
     { id },
-    { term, ...args },
+    { query, ...args },
     { partnerSearchArtworksLoader }
   ) => {
     if (!partnerSearchArtworksLoader) return null
@@ -77,7 +77,7 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     const { body, headers } = await partnerSearchArtworksLoader(id, {
-      term,
+      term: query,
       size,
       offset,
       total_count: true,
@@ -102,10 +102,10 @@ export const partnerArtistsMatchConnection: GraphQLFieldConfig<
 > = {
   type: connectionWithCursorInfo({
     nodeType: ArtistType,
-    name: "partnerArtistsMatch",
+    name: "partnerArtistsSearch",
   }).connectionType,
   args: pageable({
-    term: {
+    query: {
       type: new GraphQLNonNull(GraphQLString),
     },
     size: { type: GraphQLInt, defaultValue: 10 },
@@ -113,7 +113,7 @@ export const partnerArtistsMatchConnection: GraphQLFieldConfig<
   }),
   resolve: async (
     { id },
-    { term, ...args },
+    { query, ...args },
     { partnerSearchArtistsLoader }
   ) => {
     if (!partnerSearchArtistsLoader) return null
@@ -121,7 +121,7 @@ export const partnerArtistsMatchConnection: GraphQLFieldConfig<
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     const { body, headers } = await partnerSearchArtistsLoader(id, {
-      term,
+      term: query,
       size,
       offset,
       total_count: true,
