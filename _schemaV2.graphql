@@ -11784,7 +11784,7 @@ type Partner implements Node {
     page: Int = 1
     size: Int = 10
     term: String!
-  ): partnerArtistsMatchConnectionConnection
+  ): partnerArtistsMatchConnection
   partnerArtworksMatchConnection(
     after: String
     before: String
@@ -11793,7 +11793,7 @@ type Partner implements Node {
     page: Int = 1
     size: Int = 10
     term: String!
-  ): partnerArtworksMatchConnectionConnection
+  ): partnerArtworksMatchConnection
   partnerPageEligible: Boolean
   partnerShowsMatchConnection(
     after: String
@@ -11803,7 +11803,7 @@ type Partner implements Node {
     page: Int = 1
     size: Int = 10
     term: String!
-  ): partnerShowsMatchConnectionConnection
+  ): partnerShowsMatchConnection
   partnerType: String
   profile: Profile
   profileArtistsLayout: String
@@ -11996,9 +11996,9 @@ type PartnerArtistEdge {
 }
 
 # A connection to a list of items.
-type partnerArtistsMatchConnectionConnection {
+type partnerArtistsMatchConnection {
   # A list of edges.
-  edges: [partnerArtistsMatchConnectionEdge]
+  edges: [partnerArtistsMatchEdge]
   pageCursors: PageCursors!
 
   # Information to aid in pagination.
@@ -12007,7 +12007,7 @@ type partnerArtistsMatchConnectionConnection {
 }
 
 # An edge in a connection.
-type partnerArtistsMatchConnectionEdge {
+type partnerArtistsMatchEdge {
   # A cursor for use in pagination
   cursor: String!
 
@@ -12028,9 +12028,9 @@ type PartnerArtworkGrid implements ArtworkContextGrid {
 }
 
 # A connection to a list of items.
-type partnerArtworksMatchConnectionConnection {
+type partnerArtworksMatchConnection {
   # A list of edges.
-  edges: [partnerArtworksMatchConnectionEdge]
+  edges: [partnerArtworksMatchEdge]
   pageCursors: PageCursors!
 
   # Information to aid in pagination.
@@ -12039,7 +12039,7 @@ type partnerArtworksMatchConnectionConnection {
 }
 
 # An edge in a connection.
-type partnerArtworksMatchConnectionEdge {
+type partnerArtworksMatchEdge {
   # A cursor for use in pagination
   cursor: String!
 
@@ -12261,9 +12261,9 @@ enum PartnerShowPartnerType {
 }
 
 # A connection to a list of items.
-type partnerShowsMatchConnectionConnection {
+type partnerShowsMatchConnection {
   # A list of edges.
-  edges: [partnerShowsMatchConnectionEdge]
+  edges: [partnerShowsMatchEdge]
   pageCursors: PageCursors!
 
   # Information to aid in pagination.
@@ -12272,7 +12272,7 @@ type partnerShowsMatchConnectionConnection {
 }
 
 # An edge in a connection.
-type partnerShowsMatchConnectionEdge {
+type partnerShowsMatchEdge {
   # A cursor for use in pagination
   cursor: String!
 

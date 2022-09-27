@@ -18,7 +18,7 @@ export const partnerShowsMatchConnection: GraphQLFieldConfig<
 > = {
   type: connectionWithCursorInfo({
     nodeType: ShowType,
-    name: "partnerShowsMatchConnection",
+    name: "partnerShowsMatch",
   }).connectionType,
   args: pageable({
     term: {
@@ -58,7 +58,7 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
 > = {
   type: connectionWithCursorInfo({
     nodeType: ArtworkType,
-    name: "partnerArtworksMatchConnection",
+    name: "partnerArtworksMatch",
   }).connectionType,
   args: pageable({
     term: {
@@ -102,7 +102,7 @@ export const partnerArtistsMatchConnection: GraphQLFieldConfig<
 > = {
   type: connectionWithCursorInfo({
     nodeType: ArtistType,
-    name: "partnerArtistsMatchConnection",
+    name: "partnerArtistsMatch",
   }).connectionType,
   args: pageable({
     term: {
