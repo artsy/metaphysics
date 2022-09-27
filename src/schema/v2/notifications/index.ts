@@ -26,6 +26,7 @@ const NotificationTypesEnum = new GraphQLEnumType({
   values: {
     ARTWORK_ALERT: { value: "SavedSearchHitActivity" },
     ARTWORK_PUBLISHED: { value: "ArtworkPublishedActivity" },
+    VIEWING_ROOM_PUBLISHED: { value: "ViewingRoomPublishedActivity" },
   },
 })
 
@@ -49,14 +50,11 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     createdAt: date(({ date }) => date),
     targetHref: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ object }) => `/artist/${object.artist.id}/works-for-sale`,
+      resolve: ({ target_href }) => target_href,
     },
     notificationType: {
       type: new GraphQLNonNull(NotificationTypesEnum),
-      resolve: ({ actors }) =>
-        actors.startsWith("Works by")
-          ? "SavedSearchHitActivity"
-          : "ArtworkPublishedActivity",
+      resolve: ({ activity_type }) => activity_type,
     },
     artworksConnection: {
       type: artworkConnection.connectionType,

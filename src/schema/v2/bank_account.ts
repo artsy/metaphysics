@@ -12,6 +12,7 @@ import {
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import { InternalIDFields } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
+import { BankAccountTypes } from "./me/bank_accounts"
 
 // fields: https://github.com/artsy/gravity/blob/main/db/schema.rb
 export const BankAccountType = new GraphQLObjectType<any, ResolverContext>({
@@ -31,6 +32,11 @@ export const BankAccountType = new GraphQLObjectType<any, ResolverContext>({
     last4: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Last four characters of the account identifier",
+    },
+    type: {
+      type: new GraphQLNonNull(BankAccountTypes.type),
+      description: "Bank account type",
+      resolve: ({ type }) => type,
     },
   }),
 })

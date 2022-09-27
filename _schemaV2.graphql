@@ -2165,9 +2165,6 @@ type Artwork implements Node & Searchable & Sellable {
   submissionId: String
   title: String
 
-  # Whether this artwork is unlisted or not
-  unlisted: Boolean
-
   # Based on artwork location and status, verify that partner needs VAT exemption approval from Artsy.
   vatExemptApprovalRequired: Boolean
 
@@ -3043,6 +3040,9 @@ type BankAccount {
 
   # Last four characters of the account identifier
   last4: String!
+
+  # Bank account type
+  type: BankAccountTypes!
 }
 
 # A connection to a list of items.
@@ -3075,6 +3075,11 @@ type BankAccountMutationSuccess {
 union BankAccountMutationType =
     BankAccountMutationFailure
   | BankAccountMutationSuccess
+
+enum BankAccountTypes {
+  SEPA_DEBIT
+  US_BANK_ACCOUNT
+}
 
 type Bidder implements Node {
   createdAt(
@@ -10170,6 +10175,7 @@ type Me implements Node {
     before: String
     first: Int
     last: Int
+    type: BankAccountTypes
   ): BankAccountConnection
 
   # Returns a single bidder position
@@ -11415,6 +11421,7 @@ input NotificationPreferenceInput {
 enum NotificationTypesEnum {
   ARTWORK_ALERT
   ARTWORK_PUBLISHED
+  VIEWING_ROOM_PUBLISHED
 }
 
 # Consignment Offer Response
@@ -12948,9 +12955,6 @@ type Query {
   artwork(
     # The slug or ID of the Artwork
     id: String!
-
-    # Include unlisted artwork or not
-    includeUnlisted: Boolean
   ): Artwork
 
   # List of all artwork attribution classes
@@ -16120,6 +16124,7 @@ input UpdateUserSaleProfileMutationInput {
   clientMutationId: String
   country: String
   id: String!
+  requireBidderApproval: Boolean
   state: String
   zip: String
 }
@@ -16821,9 +16826,6 @@ type Viewer {
   artwork(
     # The slug or ID of the Artwork
     id: String!
-
-    # Include unlisted artwork or not
-    includeUnlisted: Boolean
   ): Artwork
 
   # List of all artwork attribution classes

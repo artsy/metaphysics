@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLString } from "graphql"
+import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 
@@ -10,6 +10,7 @@ interface Input {
   state?: string
   zip?: string
   country?: string
+  requireBidderApproval?: boolean
 }
 
 interface GravityInput {
@@ -20,6 +21,7 @@ interface GravityInput {
   state?: string
   zip?: string
   country?: string
+  require_bidder_approval?: boolean
 }
 
 interface GravityError {
@@ -42,6 +44,7 @@ export const updateUserSaleProfileMutation = mutationWithClientMutationId<
     state: { type: GraphQLString },
     zip: { type: GraphQLString },
     country: { type: GraphQLString },
+    requireBidderApproval: { type: GraphQLBoolean },
   },
   outputFields: {},
   mutateAndGetPayload: async (args, { updateUserSaleProfileLoader }) => {
@@ -59,6 +62,7 @@ export const updateUserSaleProfileMutation = mutationWithClientMutationId<
       id: args.id,
       state: args.state,
       zip: args.zip,
+      require_bidder_approval: args.requireBidderApproval,
     }
 
     try {
