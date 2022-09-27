@@ -9,7 +9,11 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { ArtistType } from "../artist"
-import { getArtistInsights, ARTIST_INSIGHT_KINDS } from "./helpers"
+import {
+  ARTIST_INSIGHT_KINDS,
+  getArtistInsights,
+  getAuctionRecord,
+} from "./helpers"
 
 export const ArtistInsightKind = new GraphQLEnumType({
   name: "ArtistInsightKind",
@@ -61,7 +65,15 @@ export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
       defaultValue: Object.keys(ARTIST_INSIGHT_KINDS),
     },
   },
-  resolve: (artist, { kind }) => {
+  resolve: async (artist, { kind }, { auctionLotsLoader }) => {
+    if (kind.includes("HIGH_AUCTION_RECORD")) {
+      const highAuctionRecord = await getAuctionRecord(
+        artist,
+        auctionLotsLoader
+      )
+      artist.highAuctionRecord = highAuctionRecord
+    }
+
     const insights = getArtistInsights(artist)
 
     return insights.filter((insight) => kind.includes(insight.type))

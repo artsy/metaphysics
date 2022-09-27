@@ -1,4 +1,8 @@
 import { compact } from "lodash"
+import { priceDisplayText } from "lib/moneyHelpers"
+
+const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
+  .artists
 
 export const ARTIST_INSIGHT_KINDS = {
   SOLO_SHOW: { value: "SOLO_SHOW" },
@@ -7,6 +11,7 @@ export const ARTIST_INSIGHT_KINDS = {
   REVIEWED: { value: "REVIEWED" },
   BIENNIAL: { value: "BIENNIAL" },
   ACTIVE_SECONDARY_MARKET: { value: "ACTIVE_SECONDARY_MARKET" },
+  HIGH_AUCTION_RECORD: { value: "HIGH_AUCTION_RECORD" },
 } as const
 
 type ArtistInsightKind = keyof typeof ARTIST_INSIGHT_KINDS
@@ -42,6 +47,11 @@ export const ARTIST_INSIGHT_MAPPING = {
     getEntities: (artist) => artist.active_secondary_market && [],
     label: "Active Secondary Market",
   },
+  HIGH_AUCTION_RECORD: {
+    getDescription: (artist) => artist.highAuctionRecord,
+    getEntities: (artist) => artist.highAuctionRecord && [],
+    label: "High Auction Record",
+  },
 } as const
 
 const splitEntities = (value, delimiter = "|") => {
@@ -67,7 +77,7 @@ export const getArtistInsights = (artist) => {
     const entities = getEntities(artist)
     if (!entities) return { artist }
 
-    const description = getDescription()
+    const description = getDescription(artist)
 
     return {
       artist,
@@ -81,4 +91,22 @@ export const getArtistInsights = (artist) => {
   })
 
   return compact(insights)
+}
+
+export const getAuctionRecord = async (artist, auctionLotsLoader) => {
+  if (!auctionRecordsTrusted.includes(artist._id)) return null
+
+  const response = await auctionLotsLoader({
+    artist_id: artist._id,
+    size: 1,
+    sort: "-price_realized_cents_usd,-sale_date",
+  })
+
+  const auctionLot = response._embedded.items[0]
+  const { currency, price_realized_cents } = auctionLot
+  const price = priceDisplayText(price_realized_cents, currency, "0.0a")
+  const year = auctionLot.sale_date.split("-")[0]
+  const highAuctionRecord = [price, auctionLot.organization, year].join(", ")
+
+  return highAuctionRecord
 }

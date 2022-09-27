@@ -123,4 +123,40 @@ describe("getArtistInsights", () => {
       })
     })
   })
+
+  describe("string insight fields", () => {
+    const fields = [
+      {
+        key: "highAuctionRecord",
+        kind: "HIGH_AUCTION_RECORD",
+        value: "£18.6m, Sotheby's, 2021",
+      } as any,
+    ]
+
+    fields.forEach((field) => {
+      it(`returns an empty array of entities when the ${field.key} has a value and sets the description`, () => {
+        const artist = {
+          [field.key]: field.value,
+        }
+
+        const insights = getArtistInsights(artist)
+        const insight = insights.find((insight) => insight.kind === field.kind)!
+
+        expect(insight.count).toEqual(0)
+        expect(insight.entities).toEqual([])
+        expect(insight.description).toEqual(field.value)
+      })
+
+      it(`returns an empty artist object when the ${field.key} has no value`, () => {
+        field.value = null
+        const artist = {
+          [field.key]: field.value,
+        }
+
+        const insights = getArtistInsights(artist)
+        const insight = insights.find((insight) => insight.kind === field.kind)
+        expect(insight).toBeUndefined()
+      })
+    })
+  })
 })
