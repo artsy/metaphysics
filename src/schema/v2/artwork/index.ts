@@ -1446,6 +1446,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      visibilityLevel: {
+        description: "The visibility level of the artwork",
+        type: GraphQLString,
+        resolve: ({ visibility_level }) => visibility_level,
+      },
       width: {
         description: "The width as expressed by the original input metric",
         type: GraphQLString,
