@@ -13,7 +13,7 @@ import {
 import { ShowType } from "./show"
 
 export const partnerShowsMatchConnection: GraphQLFieldConfig<
-  void,
+  { id: string },
   ResolverContext
 > = {
   type: connectionWithCursorInfo({
@@ -53,7 +53,7 @@ export const partnerShowsMatchConnection: GraphQLFieldConfig<
 }
 
 export const partnerArtworksMatchConnection: GraphQLFieldConfig<
-  void,
+  { id: string },
   ResolverContext
 > = {
   type: connectionWithCursorInfo({
@@ -97,7 +97,7 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
 }
 
 export const partnerArtistsMatchConnection: GraphQLFieldConfig<
-  void,
+  { id: string },
   ResolverContext
 > = {
   type: connectionWithCursorInfo({
