@@ -2172,7 +2172,7 @@ type Artwork implements Node & Searchable & Sellable {
   vatRequirementComplete: Boolean
 
   # The visibility level of the artwork
-  visibilityLevel: String
+  visibilityLevel: Visibility
 
   # If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS
   website: String
@@ -17563,6 +17563,12 @@ input ViewingRoomSubsectionInput {
   delete: Boolean = false
   image: ARImageInput
   internalID: ID
+}
+
+enum Visibility {
+  DRAFT
+  LISTED
+  UNLISTED
 }
 
 type WireTransfer {
