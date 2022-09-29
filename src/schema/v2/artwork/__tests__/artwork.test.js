@@ -445,6 +445,53 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("visibility_level", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          visibilityLevel
+        }
+      }
+    `
+
+    it("returns valid visibility level", async () => {
+      artwork = {
+        ...artwork,
+        visibility_level: "draft",
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          visibilityLevel: "DRAFT",
+        },
+      })
+    })
+
+    it("returns null if visibility level is empty", async () => {
+      artwork = {
+        ...artwork,
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          visibilityLevel: null,
+        },
+      })
+    })
+  })
+
   describe("#pricePaid", () => {
     const query = `
     {

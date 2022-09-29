@@ -217,6 +217,15 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
+export const VisibilityEnum = new GraphQLEnumType({
+  name: "Visibility",
+  values: {
+    DRAFT: { value: "draft" },
+    UNLISTED: { value: "unlisted" },
+    LISTED: { value: "listed" },
+  },
+})
+
 export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "Artwork",
   interfaces: [NodeInterface, Searchable, Sellable],
@@ -1445,6 +1454,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             return null
           }
         },
+      },
+      visibilityLevel: {
+        description: "The visibility level of the artwork",
+        type: VisibilityEnum,
+        resolve: ({ visibility_level }) => visibility_level,
       },
       width: {
         description: "The width as expressed by the original input metric",
