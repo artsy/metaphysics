@@ -516,6 +516,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (artist) => artist,
       },
       createdAt: date(),
+      criticallyAcclaimed: {
+        type: GraphQLBoolean,
+        resolve: ({ critically_acclaimed }) => critically_acclaimed,
+      },
       currentEvent: CurrentEvent,
       deathday: { type: GraphQLString },
       disablePriceContext: {
@@ -733,6 +737,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       statuses: ArtistStatuses,
       targetSupply: ArtistTargetSupply,
+      vanguardYear: {
+        type: GraphQLString,
+        resolve: ({ vanguard_year }) => vanguard_year,
+      },
       years: { type: GraphQLString },
     }
   },
