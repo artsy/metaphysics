@@ -155,6 +155,7 @@ import { PartnerShowDocumentsConnection } from "./partnerShowDocumentsConnection
 import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
 import { NotificationsConnection } from "./notifications"
 import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_as_read_mutation"
+import { artQuizConnection } from "schema/v2/artworkQuiz/artworkQuiz"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -168,6 +169,7 @@ const OptionalFieldDirective = new GraphQLDirective({
 
 const rootFields = {
   admin: AdminField,
+  artQuizConnection,
   artworksForUser,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkMediums: ArtworkMediums,

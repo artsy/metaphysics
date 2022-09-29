@@ -374,7 +374,7 @@ const connectionFields = () => {
   return connectionFields
 }
 
-const filterArtworksConnectionType = connectionDefinitions({
+export const filterArtworksConnectionType = connectionDefinitions({
   name: "FilterArtworks",
   nodeType: ArtworkType,
   connectionFields: {
