@@ -12,6 +12,8 @@ export const ARTIST_INSIGHT_KINDS = {
   BIENNIAL: { value: "BIENNIAL" },
   ACTIVE_SECONDARY_MARKET: { value: "ACTIVE_SECONDARY_MARKET" },
   HIGH_AUCTION_RECORD: { value: "HIGH_AUCTION_RECORD" },
+  ARTSY_VANGUARD_YEAR: { value: "ARTSY_VANGUARD_YEAR" },
+  CRITICALLY_ACCLAIMED: { value: "CRITICALLY_ACCLAIMED" },
 } as const
 
 type ArtistInsightKind = keyof typeof ARTIST_INSIGHT_KINDS
@@ -20,37 +22,48 @@ export const ARTIST_INSIGHT_MAPPING = {
   SOLO_SHOW: {
     getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.solo_show_institutions),
-    label: "Solo show at a major institution",
+    getLabel: () => "Solo show at a major institution",
   },
   GROUP_SHOW: {
     getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.group_show_institutions),
-    label: "Group show at a major institution",
+    getLabel: () => "Group show at a major institution",
   },
   COLLECTED: {
     getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.collections, "\n"),
-    label: "Collected by a major institution",
+    getLabel: () => "Collected by a major institution",
   },
   REVIEWED: {
     getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.review_sources),
-    label: "Reviewed by a major art publication",
+    getLabel: () => "Reviewed by a major art publication",
   },
   BIENNIAL: {
     getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.biennials),
-    label: "Included in a major biennial",
+    getLabel: () => "Included in a major biennial",
   },
   ACTIVE_SECONDARY_MARKET: {
     getDescription: () => "Recent auction results in the Artsy Price Database",
     getEntities: (artist) => artist.active_secondary_market && [],
-    label: "Active Secondary Market",
+    getLabel: () => "Active Secondary Market",
   },
   HIGH_AUCTION_RECORD: {
     getDescription: (artist) => artist.highAuctionRecord,
     getEntities: (artist) => artist.highAuctionRecord && [],
-    label: "High Auction Record",
+    getLabel: () => "High Auction Record",
+  },
+  ARTSY_VANGUARD_YEAR: {
+    getDescription: () =>
+      "Featured in Artsy's annual list of the most promising artists working today.",
+    getEntities: (artist) => artist.vanguard_year && [],
+    getLabel: (artist) => `The Artsy Vanguard ${artist.vanguard_year}`,
+  },
+  CRITICALLY_ACCLAIMED: {
+    getDescription: () => "Recognized by major institutions and publications.",
+    getEntities: (artist) => artist.critically_acclaimed && [],
+    getLabel: () => "Critically Acclaimed",
   },
 } as const
 
@@ -72,12 +85,13 @@ export const getArtistInsights = (artist) => {
   ][]
 
   const insights = mappings.map((mapping) => {
-    const [kind, { getDescription, getEntities, label }] = mapping
+    const [kind, { getDescription, getEntities, getLabel }] = mapping
 
     const entities = getEntities(artist)
     if (!entities) return { artist }
 
     const description = getDescription(artist)
+    const label = getLabel(artist)
 
     return {
       artist,
