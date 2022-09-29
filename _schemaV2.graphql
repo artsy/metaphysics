@@ -2194,6 +2194,9 @@ type Artwork implements Node & Searchable & Sellable {
   saleMessage: String
   series(format: Format): String
 
+  # Should the video be used as the cover image
+  setVideoAsCover: Boolean
+
   # The country an artwork will be shipped from.
   shippingCountry: String
 

@@ -28,7 +28,6 @@ import _ from "lodash"
 import Article from "schema/v2/article"
 import Artist from "schema/v2/artist"
 import ArtworkMedium from "schema/v2/artwork/artworkMedium"
-import { VIDEOS } from "schema/v2/artwork/artworkVideos"
 import AttributionClass from "schema/v2/artwork/attributionClass"
 import Dimensions from "schema/v2/dimensions"
 import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
@@ -1328,6 +1327,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       series: markdown(),
+      setVideoAsCover: {
+        type: GraphQLBoolean,
+        description: "Should the video be used as the cover image",
+        resolve: ({ set_video_as_cover }) => set_video_as_cover,
+      },
       show: {
         type: Show.type,
         args: {
@@ -1540,7 +1544,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             )
           )
         ),
-        resolve: ({ images, id }) => {
+        resolve: ({ images, external_video_id, set_video_as_cover }) => {
           const typedImages = images.map((image) => ({
             ...image,
             type: "Image",
@@ -1549,10 +1553,22 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             _.sortBy(typedImages, "position")
           )
 
-          const typedVideos = VIDEOS[id]
-            ? [{ ...VIDEOS[id], type: "Video" }]
+          const typedVideos = external_video_id
+            ? [
+                {
+                  type: "Video",
+                  url: external_video_id,
+                  width: 360,
+                  height: 360,
+                },
+              ]
             : []
-          return [...sortedTypedImages, ...typedVideos]
+
+          if (set_video_as_cover) {
+            return [...typedVideos, ...sortedTypedImages]
+          } else {
+            return [...sortedTypedImages, ...typedVideos]
+          }
         },
       },
     }
