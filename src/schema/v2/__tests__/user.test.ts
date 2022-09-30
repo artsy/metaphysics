@@ -722,4 +722,54 @@ describe("User", () => {
       })
     })
   })
+  describe("adminNotes", () => {
+    it("returns the admin notes associated with a user in descending order", async () => {
+      const query = `
+        {
+          user(id: "abc123") {
+            adminNotes {
+              body
+              createdAt
+            }
+          }
+        }
+      `
+
+      const user = {
+        id: "abc123",
+      }
+
+      const userAdminNotes = [
+        {
+          body: "A Good collector",
+          created_at: "2022-04-24T09:00:00+00:00",
+        },
+        {
+          body: "Now a great collector",
+          created_at: "2022-06-15T10:00:00+00:00",
+        },
+        {
+          body: "The best collector",
+          created_at: "2022-09-30T12:00:00+00:00",
+        },
+      ]
+
+      const context = {
+        userByIDLoader: () => {
+          return Promise.resolve(user)
+        },
+        userAdminNotesLoader: () => {
+          return Promise.resolve(userAdminNotes)
+        },
+      }
+
+      const {
+        user: { adminNotes },
+      } = await runAuthenticatedQuery(query, context)
+
+      expect(adminNotes[0].body).toEqual("The best collector")
+      expect(adminNotes[1].body).toEqual("Now a great collector")
+      expect(adminNotes[2].body).toEqual("A Good collector")
+    })
+  })
 })
