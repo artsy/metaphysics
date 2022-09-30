@@ -1,5 +1,14 @@
-import { GraphQLNonNull, GraphQLString } from "graphql"
+import {
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { UserAdminNoteType } from "../user"
 
@@ -8,10 +17,32 @@ interface Input {
   body: string
 }
 
-interface GravityError {
-  statusCode: number
-  body: { error?: string; text?: string; message?: string }
-}
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "createUserAdminNoteSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    adminNote: {
+      type: UserAdminNoteType,
+      resolve: (result) => result,
+    },
+  }),
+})
+
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "createUserAdminNoteFailure",
+  isTypeOf: (data) => data._type === "GravityMutationError",
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const ResponseOrErrorType = new GraphQLUnionType({
+  name: "createUserAdminNoteResponseOrError",
+  types: [SuccessType, FailureType],
+})
 
 export const createUserAdminNoteMutation = mutationWithClientMutationId<
   Input,
@@ -25,9 +56,9 @@ export const createUserAdminNoteMutation = mutationWithClientMutationId<
     body: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
-    userAdminNote: {
-      type: new GraphQLNonNull(UserAdminNoteType),
-      description: "On success: an identity verification with overrides",
+    adminNoteOrError: {
+      type: ResponseOrErrorType,
+      description: "On success: the admin note created.",
       resolve: (result) => result,
     },
   },
@@ -40,13 +71,13 @@ export const createUserAdminNoteMutation = mutationWithClientMutationId<
 
     try {
       return await createUserAdminNoteLoader?.(args.id, { body: args.body })
-    } catch (err) {
-      if ("body" in (err as any)) {
-        const e = err as GravityError
-        throw new Error(e.body.text ?? e.body.error ?? e.body.message)
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
       }
-
-      throw err
     }
   },
 })

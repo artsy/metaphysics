@@ -52,7 +52,15 @@ export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
       )
     }
 
-    return await userAdminNotesLoader(id)
+    const adminNotes = await userAdminNotesLoader(id)
+
+    const sortedAdminNotes = adminNotes.sort((objA, objB) => {
+      const dateA = new Date(objA.created_at).getTime()
+      const dateB = new Date(objB.created_at).getTime()
+      return dateB - dateA
+    })
+
+    return sortedAdminNotes
   },
 }
 
