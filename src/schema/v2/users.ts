@@ -12,17 +12,36 @@ export const Users: GraphQLFieldConfig<void, ResolverContext> = {
     ids: {
       type: new GraphQLList(GraphQLString),
     },
+    term: {
+      type: GraphQLString,
+      description:
+        "If present, will search by term, cannot be combined with `ids`",
+    },
   }),
-  resolve: async (_root, args, { usersLoader }) => {
-    if (!usersLoader) return null
+  resolve: async (_root, args, { usersLoader, matchUsersLoader }) => {
+    const { ids, term } = args
+
+    if (ids && term) throw new Error("Must provide either `ids` or `term`")
+
+    if (!usersLoader || !matchUsersLoader)
+      throw new Error(
+        "You need to pass a X-Access-Token header to perform this action"
+      )
+
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const { body, headers } = await usersLoader({
-      id: args.ids,
-      total_count: true,
-      page,
-      size,
-    })
+    const loader = term ? matchUsersLoader : usersLoader
+    const gravityArgs: {
+      page: number
+      size: number
+      total_count: boolean
+      term?: string
+      id?: string[]
+    } = { page, size, total_count: true }
+
+    if (term) gravityArgs.term = term
+    if (ids) gravityArgs.id = ids
+    const { body, headers } = await loader(gravityArgs)
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
