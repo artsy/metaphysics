@@ -13707,6 +13707,9 @@ type Query {
     first: Int
     ids: [String]
     last: Int
+
+    # If present, will search by term, cannot be combined with `ids`
+    term: String
   ): UserConnection
 
   # A Partner or Fair
@@ -17367,6 +17370,9 @@ type Viewer {
     first: Int
     ids: [String]
     last: Int
+
+    # If present, will search by term, cannot be combined with `ids`
+    term: String
   ): UserConnection
 
   # A Partner or Fair

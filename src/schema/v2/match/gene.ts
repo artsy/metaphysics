@@ -29,12 +29,12 @@ const GeneMatch: GraphQLFieldConfig<void, ResolverContext> = {
       description: "Exclude these MongoDB ids from results",
     },
   },
-  resolve: (_root, { excludeIDs, ..._options }, { matchGeneLoader }) => {
+  resolve: (_root, { excludeIDs, ..._options }, { matchGenesLoader }) => {
     const options: any = {
       exclude_ids: excludeIDs,
       ..._options,
     }
-    return matchGeneLoader(options)
+    return matchGenesLoader(options)
   },
 }
 
