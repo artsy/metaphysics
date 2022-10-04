@@ -471,6 +471,14 @@ export default (accessToken, userID, opts) => {
     ),
     userSaleProfileLoader: gravityLoader((id) => `user_sale_profile/${id}`),
     userAdminNotesLoader: gravityLoader((id) => `user/${id}/admin_notes`),
+    deleteUserAdminNoteLoader: gravityLoader<
+      any,
+      { id: string; admin_note_id: string }
+    >(
+      ({ id, admin_note_id }) => `user/${id}/admin_note/${admin_note_id}`,
+      {},
+      { method: "DELETE" }
+    ),
     createUserAdminNoteLoader: gravityLoader(
       (id) => `/user/${id}/admin_note`,
       {},
