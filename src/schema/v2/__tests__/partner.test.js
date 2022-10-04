@@ -1378,4 +1378,212 @@ describe("Partner type", () => {
       })
     })
   })
+
+  describe("#partnerShowsSearchConnection", () => {
+    let showsResponse
+
+    beforeEach(() => {
+      showsResponse = [
+        {
+          id: "levy-gorvy-our-lady-of-the-flowers-diane-arbus-carol-rama",
+        },
+        {
+          id: "levy-gorvy-pierre-soulages-a-century",
+        },
+        {
+          id: "levy-gorvy-levy-gorvy-at-fiac-2019",
+        },
+      ]
+      context = {
+        partnerSearchShowsLoader: () =>
+          Promise.resolve({
+            body: showsResponse,
+            headers: {
+              "x-total-count": showsResponse.length,
+            },
+          }),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+    })
+
+    it("returns shows", async () => {
+      const query = gql`
+        {
+          partner(id: "levy-gorvy") {
+            partnerShowsSearchConnection(query: "levy") {
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          partnerShowsSearchConnection: {
+            edges: [
+              {
+                node: {
+                  slug:
+                    "levy-gorvy-our-lady-of-the-flowers-diane-arbus-carol-rama",
+                },
+              },
+              {
+                node: {
+                  slug: "levy-gorvy-pierre-soulages-a-century",
+                },
+              },
+              {
+                node: {
+                  slug: "levy-gorvy-levy-gorvy-at-fiac-2019",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
+
+  describe("#partnerArtistsSearchConnection", () => {
+    let artistsResponse
+
+    beforeEach(() => {
+      artistsResponse = [
+        {
+          id: "pablo-picasso",
+        },
+        {
+          id: "kaws",
+        },
+        {
+          id: "bisa-butler",
+        },
+      ]
+      context = {
+        partnerSearchArtistsLoader: () =>
+          Promise.resolve({
+            body: artistsResponse,
+            headers: {
+              "x-total-count": artistsResponse.length,
+            },
+          }),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+    })
+
+    it("returns artists", async () => {
+      const query = gql`
+        {
+          partner(id: "levy-gorvy") {
+            partnerArtistsSearchConnection(query: "some-query") {
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          partnerArtistsSearchConnection: {
+            edges: [
+              {
+                node: {
+                  slug: "pablo-picasso",
+                },
+              },
+              {
+                node: {
+                  slug: "kaws",
+                },
+              },
+              {
+                node: {
+                  slug: "bisa-butler",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
+
+  describe("#partnerArtworksSearchConnection", () => {
+    let artworksResponse
+
+    beforeEach(() => {
+      artworksResponse = [
+        {
+          id: "pablo-picasso-odd-horse",
+        },
+        {
+          id: "kaws-mickey-or-something",
+        },
+        {
+          id: "bisa-butler-cool-quilt",
+        },
+      ]
+      context = {
+        partnerSearchArtworksLoader: () =>
+          Promise.resolve({
+            body: artworksResponse,
+            headers: {
+              "x-total-count": artworksResponse.length,
+            },
+          }),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+    })
+
+    it("returns artworks", async () => {
+      const query = gql`
+        {
+          partner(id: "levy-gorvy") {
+            partnerArtworksSearchConnection(query: "some-query") {
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          partnerArtworksSearchConnection: {
+            edges: [
+              {
+                node: {
+                  slug: "pablo-picasso-odd-horse",
+                },
+              },
+              {
+                node: {
+                  slug: "kaws-mickey-or-something",
+                },
+              },
+              {
+                node: {
+                  slug: "bisa-butler-cool-quilt",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
 })

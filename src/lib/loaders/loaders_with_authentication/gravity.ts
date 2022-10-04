@@ -304,6 +304,21 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
+    partnerSearchShowsLoader: gravityLoader(
+      (id) => `/match/partner/${id}/shows`,
+      {},
+      { headers: true }
+    ),
+    partnerSearchArtistsLoader: gravityLoader(
+      (id) => `/match/partner/${id}/artists`,
+      {},
+      { headers: true }
+    ),
+    partnerSearchArtworksLoader: gravityLoader(
+      (id) => `/match/partner/${id}/artworks`,
+      {},
+      { headers: true }
+    ),
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
     partnerArtistDocumentsLoader: gravityLoader<
       any,
