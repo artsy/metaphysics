@@ -36,9 +36,9 @@ describe.skip("MatchGene", () => {
       },
     ]
 
-    const matchGeneLoader = () => Promise.resolve(response)
+    const matchGenesLoader = () => Promise.resolve(response)
 
-    return runQuery(query, { matchGeneLoader }).then((data) => {
+    return runQuery(query, { matchGenesLoader }).then((data) => {
       expect(data).toEqual({
         matchGene: [{ slug: "pop-art", name: "Pop Art", internalID: "123456" }],
       })

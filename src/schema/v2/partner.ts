@@ -118,6 +118,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
     const { filterArtworksConnection } = require("./filterArtworksConnection")
 
+    const {
+      partnerArtistsMatchConnection,
+      partnerArtworksMatchConnection,
+      partnerShowsMatchConnection,
+    } = require("./PartnerMatch")
+
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -495,7 +501,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ vat_number }) => vat_number,
       },
-
+      partnerArtistsSearchConnection: partnerArtistsMatchConnection,
+      partnerArtworksSearchConnection: partnerArtworksMatchConnection,
+      partnerShowsSearchConnection: partnerShowsMatchConnection,
       hasFairPartnership: {
         type: GraphQLBoolean,
         resolve: ({ has_fair_partnership }) => has_fair_partnership,

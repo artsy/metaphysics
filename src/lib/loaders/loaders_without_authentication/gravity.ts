@@ -96,7 +96,7 @@ export default (opts) => {
     incrementsLoader: gravityLoader("increments"),
     inquiryRequestQuestionsLoader: gravityLoader(`inquiry_request_questions`),
     matchArtistsLoader: gravityLoader("match/artists"),
-    matchGeneLoader: gravityLoader("match/genes"),
+    matchGenesLoader: gravityLoader("match/genes"),
     anonNotificationPreferencesLoader: gravityLoader(
       (authenticationToken) =>
         `notification_preferences/?authentication_token=${authenticationToken}`
