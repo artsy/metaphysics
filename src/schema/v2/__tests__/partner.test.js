@@ -1379,7 +1379,7 @@ describe("Partner type", () => {
     })
   })
 
-  describe("#partnerShowsSearchConnection", () => {
+  describe("#showsSearchConnection", () => {
     let showsResponse
 
     beforeEach(() => {
@@ -1410,7 +1410,7 @@ describe("Partner type", () => {
       const query = gql`
         {
           partner(id: "levy-gorvy") {
-            partnerShowsSearchConnection(query: "levy") {
+            showsSearchConnection(query: "levy") {
               edges {
                 node {
                   slug
@@ -1424,7 +1424,7 @@ describe("Partner type", () => {
 
       expect(data).toEqual({
         partner: {
-          partnerShowsSearchConnection: {
+          showsSearchConnection: {
             edges: [
               {
                 node: {
@@ -1449,7 +1449,7 @@ describe("Partner type", () => {
     })
   })
 
-  describe("#partnerArtistsSearchConnection", () => {
+  describe("#artistsSearchConnection", () => {
     let artistsResponse
 
     beforeEach(() => {
@@ -1480,7 +1480,7 @@ describe("Partner type", () => {
       const query = gql`
         {
           partner(id: "levy-gorvy") {
-            partnerArtistsSearchConnection(query: "some-query") {
+            artistsSearchConnection(query: "some-query") {
               edges {
                 node {
                   slug
@@ -1494,7 +1494,7 @@ describe("Partner type", () => {
 
       expect(data).toEqual({
         partner: {
-          partnerArtistsSearchConnection: {
+          artistsSearchConnection: {
             edges: [
               {
                 node: {
@@ -1518,7 +1518,7 @@ describe("Partner type", () => {
     })
   })
 
-  describe("#partnerArtworksSearchConnection", () => {
+  describe("#artworksSearchConnection", () => {
     let artworksResponse
 
     beforeEach(() => {
@@ -1549,7 +1549,7 @@ describe("Partner type", () => {
       const query = gql`
         {
           partner(id: "levy-gorvy") {
-            partnerArtworksSearchConnection(query: "some-query") {
+            artworksSearchConnection(query: "some-query") {
               edges {
                 node {
                   slug
@@ -1563,7 +1563,7 @@ describe("Partner type", () => {
 
       expect(data).toEqual({
         partner: {
-          partnerArtworksSearchConnection: {
+          artworksSearchConnection: {
             edges: [
               {
                 node: {

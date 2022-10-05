@@ -1,25 +1,18 @@
 import { GraphQLInt, GraphQLNonNull, GraphQLString } from "graphql"
 import { GraphQLFieldConfig } from "graphql"
-import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
-import { ArtistType } from "./artist"
-import { ArtworkType } from "./artwork"
-import {
-  connectionWithCursorInfo,
-  createPageCursors,
-} from "./fields/pagination"
-import { ShowType } from "./show"
+import { artistConnection } from "./artist"
+import { artworkConnection } from "./artwork"
+import { paginationResolver } from "./fields/pagination"
+import { ShowsConnection } from "./show"
 
 export const partnerShowsMatchConnection: GraphQLFieldConfig<
   { id: string },
   ResolverContext
 > = {
-  type: connectionWithCursorInfo({
-    nodeType: ShowType,
-    name: "partnerShowsSearch",
-  }).connectionType,
+  type: ShowsConnection.connectionType,
   args: pageable({
     query: {
       type: new GraphQLNonNull(GraphQLString),
@@ -41,14 +34,14 @@ export const partnerShowsMatchConnection: GraphQLFieldConfig<
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-    return {
+    return paginationResolver({
+      args,
+      body,
+      offset,
+      page,
+      size,
       totalCount,
-      pageCursors: createPageCursors({ ...args, page, size }, totalCount),
-      ...connectionFromArraySlice(body, args, {
-        arrayLength: totalCount,
-        sliceStart: offset,
-      }),
-    }
+    })
   },
 }
 
@@ -56,10 +49,7 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
   { id: string },
   ResolverContext
 > = {
-  type: connectionWithCursorInfo({
-    nodeType: ArtworkType,
-    name: "partnerArtworksSearch",
-  }).connectionType,
+  type: artworkConnection.connectionType,
   args: pageable({
     query: {
       type: new GraphQLNonNull(GraphQLString),
@@ -85,14 +75,14 @@ export const partnerArtworksMatchConnection: GraphQLFieldConfig<
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-    return {
+    return paginationResolver({
+      args,
+      body,
+      offset,
+      page,
+      size,
       totalCount,
-      pageCursors: createPageCursors({ ...args, page, size }, totalCount),
-      ...connectionFromArraySlice(body, args, {
-        arrayLength: totalCount,
-        sliceStart: offset,
-      }),
-    }
+    })
   },
 }
 
@@ -100,10 +90,7 @@ export const partnerArtistsMatchConnection: GraphQLFieldConfig<
   { id: string },
   ResolverContext
 > = {
-  type: connectionWithCursorInfo({
-    nodeType: ArtistType,
-    name: "partnerArtistsSearch",
-  }).connectionType,
+  type: artistConnection.connectionType,
   args: pageable({
     query: {
       type: new GraphQLNonNull(GraphQLString),
@@ -129,13 +116,13 @@ export const partnerArtistsMatchConnection: GraphQLFieldConfig<
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-    return {
+    return paginationResolver({
+      args,
+      body,
+      offset,
+      page,
+      size,
       totalCount,
-      pageCursors: createPageCursors({ ...args, page, size }, totalCount),
-      ...connectionFromArraySlice(body, args, {
-        arrayLength: totalCount,
-        sliceStart: offset,
-      }),
-    }
+    })
   },
 }
