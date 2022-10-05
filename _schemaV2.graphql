@@ -11887,6 +11887,11 @@ type Partner implements Node {
   website: String
 }
 
+type PartnerAccessPropertyField {
+  id: String!
+  name: String!
+}
+
 # A partner agreement
 type PartnerAgreement {
   # Datetime the agreement was accepted
@@ -16285,8 +16290,8 @@ type User implements Node {
   # The paddle number of the user
   paddleNumber: String
 
-  # The Parnter or Profile access granted to the user
-  partnerAccess: [String]!
+  # The partner access granted to the user
+  partnerAccess: [UserPartnerAccess]!
 
   # The given phone number of the user.
   phone: String
@@ -16297,7 +16302,7 @@ type User implements Node {
   # The price range the collector has selected
   priceRange: String
 
-  # The Parnter or Profile access granted to the user
+  # The profile access granted to the user
   profileAccess: [String]!
   purchasedArtworksConnection(
     after: String
@@ -16623,6 +16628,17 @@ union UserInterestInterest = Artist | Gene
 enum UserInterestInterestType {
   ARTIST
   GENE
+}
+
+type UserPartnerAccess {
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+
+  # The user partner access property field.
+  property: PartnerAccessPropertyField
 }
 
 # A connection to a list of items.

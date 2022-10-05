@@ -64,9 +64,36 @@ export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
-export const PartnerAccessField: GraphQLFieldConfig<any, ResolverContext> = {
-  description: "The Parnter or Profile access granted to the user",
-  type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+export const UserPartnerAccessType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "UserPartnerAccess",
+  fields: () => ({
+    ...InternalIDFields,
+    property: {
+      description: "The user partner access property field.",
+      type: new GraphQLObjectType({
+        name: "PartnerAccessPropertyField",
+        fields: {
+          name: {
+            type: new GraphQLNonNull(GraphQLString),
+          },
+          id: {
+            type: new GraphQLNonNull(GraphQLString),
+          },
+        },
+      }),
+    },
+  }),
+})
+
+export const UserPartnerAccessField: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
+  description: "The partner access granted to the user",
+  type: new GraphQLNonNull(new GraphQLList(UserPartnerAccessType)),
   resolve: async ({ id }, {}, { userAccessControlLoader }) => {
     if (!userAccessControlLoader) {
       throw new Error(
@@ -79,12 +106,15 @@ export const PartnerAccessField: GraphQLFieldConfig<any, ResolverContext> = {
       access_control_model: "partner",
     })
 
-    return access_controls.map((partner) => partner.property.name)
+    return access_controls.map((partner) => partner)
   },
 }
 
-export const ProfileAccessField: GraphQLFieldConfig<any, ResolverContext> = {
-  description: "The Parnter or Profile access granted to the user",
+export const UserProfileAccessField: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
+  description: "The profile access granted to the user",
   type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
   resolve: async ({ id }, {}, { userAccessControlLoader }) => {
     if (!userAccessControlLoader) {
@@ -314,8 +344,8 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ paddle_number }) => paddle_number,
       },
-      partnerAccess: PartnerAccessField,
-      profileAccess: ProfileAccessField,
+      partnerAccess: UserPartnerAccessField,
+      profileAccess: UserProfileAccessField,
       purchasedArtworksConnection: {
         type: UserPurchasesConnection,
         args: pageable({}),
