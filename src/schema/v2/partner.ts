@@ -313,6 +313,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      artistsSearchConnection: partnerArtistsMatchConnection,
       artworksConnection: {
         description: "A connection of artworks from a Partner.",
         type: artworkConnection.connectionType,
@@ -400,6 +401,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      artworksSearchConnection: partnerArtworksMatchConnection,
       categories: {
         type: new GraphQLList(PartnerCategoryType),
         resolve: ({ partner_categories }) => partner_categories,
@@ -501,9 +503,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ vat_number }) => vat_number,
       },
-      partnerArtistsSearchConnection: partnerArtistsMatchConnection,
-      partnerArtworksSearchConnection: partnerArtworksMatchConnection,
-      partnerShowsSearchConnection: partnerShowsMatchConnection,
       hasFairPartnership: {
         type: GraphQLBoolean,
         resolve: ({ has_fair_partnership }) => has_fair_partnership,
@@ -762,6 +761,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      showsSearchConnection: partnerShowsMatchConnection,
       type: {
         type: GraphQLString,
         resolve: ({ name, type }) => {
