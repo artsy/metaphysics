@@ -20,8 +20,18 @@ const artQuizConnectionDefinition = connectionWithCursorInfo({
   connectionInterfaces: [ArtworkConnectionInterface],
 })
 
-// fetch slugs first
-// fetch artworks 3 at a time & cache
+const QUIZ_GENES: string[] = [
+  "trove",
+  "artists-on-the-rise",
+  "top-auction-lots",
+  "finds-under-1000",
+  "street-art-now-1",
+  "trending-this-week",
+  "iconic-prints",
+]
+
+const COLLECTION_ID = "contemporary-now"
+
 export const artQuizConnection: GraphQLFieldConfig<void, ResolverContext> = {
   type: artQuizConnectionDefinition.connectionType,
   args: pageable({
@@ -35,48 +45,76 @@ export const artQuizConnection: GraphQLFieldConfig<void, ResolverContext> = {
     const { filterArtworksLoader } = context
 
     const defaultQuizFilters: Record<string, any> = {
-      marketable: true,
-      sort: "-default_trending_score",
-      for_sale: true,
-      offerable: true,
       at_auction: false,
+      for_sale: true,
+      size: 4,
+      marketable: true,
+      offerable: true,
+      sort: "-default_trending_score",
     }
 
-    const quizGenes: string[] = [
-      "trove",
-      "artists-on-the-rise",
-      "top-auction-lots",
-      "finds-under-1000",
-      "street-art-now-1",
-      "trending-this-week",
-      "iconic-prints",
+    const results = [
+      ...QUIZ_GENES.map(async (slug) =>
+        filterArtworksLoader({
+          ...defaultQuizFilters,
+          gene_id: slug,
+        }).then((response) =>
+          response.hits.map((artwork) => ({
+            ...artwork,
+            quiz_filter_criteria: slug,
+          }))
+        )
+      ),
+      filterArtworksLoader({
+        ...defaultQuizFilters,
+        marketing_collection_id: COLLECTION_ID,
+      }).then((response) =>
+        response.hits.map((artwork) => ({
+          ...artwork,
+          quiz_filter_criteria: COLLECTION_ID,
+        }))
+      ),
     ]
 
-    const geneArtworksResponse = quizGenes.map((slug) => {
-      return filterArtworksLoader({
-        ...defaultQuizFilters,
-        gene_id: slug,
-      }).then((response) => ({ gene: slug, hits: response.hits }))
+    const quizArtworksHits = await Promise.all(results)
+    const quizArtworks = quizArtworksHits.flatMap((artworks) =>
+      artworks.slice(0, 2)
+    )
+
+    const uniqueArtworkIds = new Set()
+    const uniqueArtworks: any[] = []
+
+    quizArtworks.forEach((artwork) => {
+      if (uniqueArtworkIds.has(artwork.id)) {
+        const wtf = quizArtworksHits
+          .flat()
+          .find(
+            (hit) =>
+              hit.art_quiz_critera === artwork.art_quiz_critera &&
+              hit.id !== artwork.id &&
+              !uniqueArtworkIds.has(hit.id)
+          )
+        uniqueArtworkIds.add(wtf.id)
+        uniqueArtworks.push(wtf)
+      } else {
+        uniqueArtworkIds.add(artwork.id)
+        uniqueArtworks.push(artwork)
+      }
     })
-
-    const geneArtworksResults = await Promise.all(geneArtworksResponse)
-    console.log("geneArtworksResponse", geneArtworksResults)
-
-    const geneArtworks = geneArtworksResults.map((gene) => gene.hits)
 
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = gravityArgs
 
-    const collectionArtworks = []
-    const artworks = [...geneArtworks, ...collectionArtworks]
-
-    const count = artworks.length ?? 0
+    const count = uniqueArtworks.length ?? 0
 
     return {
       totalCount: count,
-      pageCursors: createPageCursors({ ...args, page, size }, artworks?.length),
-      ...connectionFromArraySlice(artworks, args, {
-        arrayLength: artworks.length,
+      pageCursors: createPageCursors(
+        { ...args, page, size },
+        uniqueArtworks?.length
+      ),
+      ...connectionFromArraySlice(uniqueArtworks, args, {
+        arrayLength: uniqueArtworks.length,
         sliceStart: offset ?? 0,
       }),
     }
