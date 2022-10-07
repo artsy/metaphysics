@@ -136,12 +136,19 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         description: "The given email of the user.",
         type: new GraphQLNonNull(GraphQLString),
       },
+      unconfirmedEmail: {
+        description: "The unconfirmed email of the user.",
+        type: GraphQLString,
+      },
       phone: {
         description: "The given phone number of the user.",
         type: GraphQLString,
       },
       createdAt: date(({ created_at }) => created_at),
-      emailConfirmedAt: date(({ email_confirmed_at }) => email_confirmed_at),
+      emailConfirmedAt: date(({ confirmed_at }) => confirmed_at),
+      emailConfirmationSentAt: date(
+        ({ confirmation_sent_at }) => confirmation_sent_at
+      ),
       secondFactorEnabled: {
         description:
           "If the user has enabled two-factor authentication on their account",

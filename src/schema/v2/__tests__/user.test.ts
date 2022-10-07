@@ -52,6 +52,40 @@ describe("User", () => {
     expect(node.__typename).toEqual("User")
   })
 
+  it("returns expected email fields", async () => {
+    const query = `
+      {
+        user(id: "percy-z") {
+          name
+          email
+          unconfirmedEmail
+          emailConfirmedAt
+          emailConfirmationSentAt
+        }
+      }
+    `
+    const user = {
+      name: "Percy Z",
+      email: "percy-z@catmail.com",
+      unconfirmedEmail: "percy-z@purr.me",
+      confirmed_at: "2020-01-01T01:00:00.000Z",
+      confirmation_sent_at: "2022-01-01T00:00:00.000Z",
+    }
+
+    const context = {
+      userByIDLoader: () => {
+        return Promise.resolve(user)
+      },
+    }
+
+    const { user: result } = await runAuthenticatedQuery(query, context)
+
+    expect(result.email).toEqual("percy-z@catmail.com")
+    expect(result.unconfirmedEmail).toEqual("percy-z@purr.me")
+    expect(result.emailConfirmedAt).toEqual("2020-01-01T01:00:00.000Z")
+    expect(result.emailConfirmationSentAt).toEqual("2022-01-01T00:00:00.000Z")
+  })
+
   describe("userAlreadyExists", () => {
     it("returns true if a user exists", async () => {
       const foundUser = {
