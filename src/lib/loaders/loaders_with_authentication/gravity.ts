@@ -543,5 +543,10 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "GET" }
     ),
+    userAccessControlLoaderAllProperties: gravityLoader<any, { id: string }>(
+      (id) => `user/${id}/access_controls`,
+      {},
+      { headers: true }
+    ),
   }
 }
