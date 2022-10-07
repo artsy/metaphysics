@@ -6,7 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
-import { ArticleImageSection } from "../models"
+import { ArticleImageSection, ArticleUnpublishedArtwork } from "../models"
 import { ArtworkType } from "schema/v2/artwork"
 
 export const ArticleSectionImageCollection = new GraphQLObjectType<
@@ -36,13 +36,20 @@ export const ArticleSectionImageCollection = new GraphQLObjectType<
           new GraphQLNonNull(
             new GraphQLUnionType({
               name: "ArticleSectionImageCollectionFigure",
-              types: [ArtworkType, ArticleImageSection],
+              types: [
+                ArtworkType,
+                ArticleImageSection,
+                ArticleUnpublishedArtwork,
+              ],
               resolveType: (image) => {
-                if (image.type === "image") {
-                  return ArticleImageSection
+                switch (image.type) {
+                  case "image":
+                    return ArticleImageSection
+                  case "unpublished_artwork":
+                    return ArticleUnpublishedArtwork
+                  default:
+                    return ArtworkType
                 }
-
-                return ArtworkType
               },
             })
           )
@@ -53,7 +60,9 @@ export const ArticleSectionImageCollection = new GraphQLObjectType<
           section.images.map((image) => {
             if (image.type === "artwork") {
               // Articles may have unpublished artworks
-              return artworkLoader(image.slug).catch(() => null)
+              return artworkLoader(image.slug).catch(() => {
+                return { ...image, type: "unpublished_artwork" }
+              })
             }
 
             return Promise.resolve(image)
