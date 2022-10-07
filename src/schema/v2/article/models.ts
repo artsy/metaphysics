@@ -3,6 +3,7 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLID,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -12,6 +13,58 @@ import { ImageType } from "../image"
 import uuid from "uuid/v5"
 import { extractEmbed, isEmbed } from "./lib/extractEmbed"
 import { isMedia } from "./lib/isMedia"
+import { SlugAndInternalIDFields } from "../object_identification"
+
+const ArticleUnpublishedArtworkArtist = new GraphQLObjectType({
+  name: "ArticleUnpublishedArtworkArtist",
+  fields: {
+    name: { type: GraphQLString },
+    slug: { type: GraphQLString },
+  },
+})
+
+export const ArticleUnpublishedArtwork = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ArticleUnpublishedArtwork",
+  fields: {
+    ...SlugAndInternalIDFields,
+    date: { type: GraphQLString },
+    title: { type: GraphQLString },
+    image: {
+      type: ImageType,
+      resolve: ({ image, width, height }) => {
+        if (!image) return null
+
+        // Return a Gravity-like image response
+        return {
+          original_width: width,
+          original_height: height,
+          image_url: image.replace("larger", ":version"),
+          // We assume all these versions are available
+          image_versions: ["normalized", "larger", "large"],
+        }
+      },
+    },
+    partner: {
+      type: new GraphQLObjectType({
+        name: "ArticleUnpublishedArtworkPartner",
+        fields: {
+          name: { type: GraphQLString },
+          slug: { type: GraphQLString },
+        },
+      }),
+    },
+    artists: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ArticleUnpublishedArtworkArtist))
+      ),
+    },
+    artist: { type: ArticleUnpublishedArtworkArtist },
+    credit: { type: GraphQLString },
+  },
+})
 
 export const ArticleImageSection = new GraphQLObjectType<any, ResolverContext>({
   name: "ArticleImageSection",
