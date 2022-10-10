@@ -52,6 +52,40 @@ describe("User", () => {
     expect(node.__typename).toEqual("User")
   })
 
+  it("returns expected email fields", async () => {
+    const query = `
+      {
+        user(id: "percy-z") {
+          name
+          email
+          unconfirmedEmail
+          emailConfirmedAt
+          emailConfirmationSentAt
+        }
+      }
+    `
+    const user = {
+      name: "Percy Z",
+      email: "percy-z@catmail.com",
+      unconfirmedEmail: "percy-z@purr.me",
+      confirmed_at: "2020-01-01T01:00:00.000Z",
+      confirmation_sent_at: "2022-01-01T00:00:00.000Z",
+    }
+
+    const context = {
+      userByIDLoader: () => {
+        return Promise.resolve(user)
+      },
+    }
+
+    const { user: result } = await runAuthenticatedQuery(query, context)
+
+    expect(result.email).toEqual("percy-z@catmail.com")
+    expect(result.unconfirmedEmail).toEqual("percy-z@purr.me")
+    expect(result.emailConfirmedAt).toEqual("2020-01-01T01:00:00.000Z")
+    expect(result.emailConfirmationSentAt).toEqual("2022-01-01T00:00:00.000Z")
+  })
+
   describe("userAlreadyExists", () => {
     it("returns true if a user exists", async () => {
       const foundUser = {
@@ -711,6 +745,48 @@ describe("User", () => {
 
       expect(collectorProfile.companyName).toEqual("Nun'ya Business")
       expect(collectorProfile.companyWebsite).toEqual("donotcontact.me")
+    })
+  })
+
+  describe("saleProfile", () => {
+    it("returns the user's sale profile", async () => {
+      const query = `
+        {
+          user(id: "blah") {
+            saleProfile {
+              requireBidderApproval
+              employer
+              jobTitle
+            }
+          }
+        }
+      `
+
+      const user = {
+        id: "blah",
+      }
+
+      const userSaleProfile = {
+        require_bidder_approval: true,
+        employer: "Cats R Us",
+        job_title: "CCO - Chief Cat Officer",
+      }
+
+      const context = {
+        userByIDLoader: () => {
+          return Promise.resolve(user)
+        },
+        userSaleProfileLoader: () => {
+          return Promise.resolve(userSaleProfile)
+        },
+      }
+
+      const {
+        user: { saleProfile },
+      } = await runAuthenticatedQuery(query, context)
+      expect(saleProfile.requireBidderApproval).toEqual(true)
+      expect(saleProfile.employer).toEqual("Cats R Us")
+      expect(saleProfile.jobTitle).toEqual("CCO - Chief Cat Officer")
     })
   })
 
