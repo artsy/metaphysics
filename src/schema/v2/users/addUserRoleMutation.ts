@@ -1,16 +1,48 @@
-import { GraphQLList, GraphQLNonNull, GraphQLString } from "graphql"
+import {
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { UserType } from "../user"
 
 interface Input {
   id: string
-  role: string
+  role_type: string
 }
 
-interface GravityError {
-  statusCode: number
-  body: { error?: string; text?: string; message?: string }
-}
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "addUserRoleSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    user: {
+      type: UserType,
+      resolve: (result) => result,
+    },
+  }),
+})
+
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "addUserRoleFailure",
+  isTypeOf: (data) => data._type === "GravityMutationError",
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const ResponseOrErrorType = new GraphQLUnionType({
+  name: "addUserRoleResponseOrError",
+  types: [SuccessType, FailureType],
+})
 
 export const addUserRoleMutation = mutationWithClientMutationId<
   Input,
@@ -18,34 +50,37 @@ export const addUserRoleMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "addUserRoleMutation",
-  description: "Add a role to to User",
+  description: "Add a role associated with a user",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
-    role: { type: new GraphQLNonNull(GraphQLString) },
+    role_type: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
-    roles: {
-      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
-      description: "On success: the updated user roles",
-      resolve: (result) => result.roles,
+    userOrError: {
+      type: ResponseOrErrorType,
+      description: "On success: the user",
+      resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (args, { addUserRole }) => {
-    if (!addUserRole) {
+  mutateAndGetPayload: async (args, { addUserRoleLoader }) => {
+    if (!addUserRoleLoader) {
       throw new Error(
-        "You need to be signed in as an admin to perform this action"
+        "You need to pass a X-Access-Token header to perform this action"
       )
     }
 
     try {
-      return await addUserRole?.({ id: args.id, role_type: args.role })
-    } catch (err) {
-      if ("body" in (err as any)) {
-        const e = err as GravityError
-        throw new Error(e.body.text ?? e.body.error ?? e.body.message)
+      return await addUserRoleLoader?.({
+        id: args.id,
+        role_type: args.role_type,
+      })
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
       }
-
-      throw err
     }
   },
 })
