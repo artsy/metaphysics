@@ -110,7 +110,7 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description: 'The annual value of the work sold "in USD "',
       resolve: ({ annualValueSoldCents }) => {
-        return `$${formatLargeNumber(annualValueSoldCents)}`
+        return `$${formatLargeNumber(annualValueSoldCents / 100)}` // dividing by 100 because we don't need the value in cents
       },
     },
     annualLotsSold: {
