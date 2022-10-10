@@ -395,7 +395,7 @@ describe("me.myCollection", () => {
                   },
                   "internalID": "artwork_id_with_market_price_insights",
                   "marketPriceInsights": Object {
-                    "annualValueSoldDisplayText": "$2B",
+                    "annualValueSoldDisplayText": "$22M",
                     "averageSalePriceDisplayText": "US$2,176,421",
                     "demandRank": 0.64,
                     "demandRankDisplayText": "Moderate Demand",
