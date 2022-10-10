@@ -80,22 +80,21 @@ export const artQuizConnection: GraphQLFieldConfig<void, ResolverContext> = {
     const quizArtworks = quizArtworksHits.flatMap((artworks) =>
       artworks.slice(0, 2)
     )
+    const remainingArtworks = quizArtworksHits.flat()
 
     const uniqueArtworkIds = new Set()
     const uniqueArtworks: any[] = []
 
     quizArtworks.forEach((artwork) => {
       if (uniqueArtworkIds.has(artwork.id)) {
-        const wtf = quizArtworksHits
-          .flat()
-          .find(
-            (hit) =>
-              hit.art_quiz_critera === artwork.art_quiz_critera &&
-              hit.id !== artwork.id &&
-              !uniqueArtworkIds.has(hit.id)
-          )
-        uniqueArtworkIds.add(wtf.id)
-        uniqueArtworks.push(wtf)
+        const replacement = remainingArtworks.find(
+          (hit) =>
+            hit.art_quiz_critera === artwork.art_quiz_critera &&
+            hit.id !== artwork.id &&
+            !uniqueArtworkIds.has(hit.id)
+        )
+        uniqueArtworkIds.add(replacement.id)
+        uniqueArtworks.push(replacement)
       } else {
         uniqueArtworkIds.add(artwork.id)
         uniqueArtworks.push(artwork)
