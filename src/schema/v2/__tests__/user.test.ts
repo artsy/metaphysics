@@ -674,6 +674,48 @@ describe("User", () => {
     })
   })
 
+  describe("saleProfile", () => {
+    it("returns the user's sale profile", async () => {
+      const query = `
+        {
+          user(id: "blah") {
+            saleProfile {
+              requireBidderApproval
+              employer
+              jobTitle
+            }
+          }
+        }
+      `
+
+      const user = {
+        id: "blah",
+      }
+
+      const userSaleProfile = {
+        require_bidder_approval: true,
+        employer: "Cats R Us",
+        job_title: "CCO - Chief Cat Officer",
+      }
+
+      const context = {
+        userByIDLoader: () => {
+          return Promise.resolve(user)
+        },
+        userSaleProfileLoader: () => {
+          return Promise.resolve(userSaleProfile)
+        },
+      }
+
+      const {
+        user: { saleProfile },
+      } = await runAuthenticatedQuery(query, context)
+      expect(saleProfile.requireBidderApproval).toEqual(true)
+      expect(saleProfile.employer).toEqual("Cats R Us")
+      expect(saleProfile.jobTitle).toEqual("CCO - Chief Cat Officer")
+    })
+  })
+
   describe("inquiredArtworksConnection", () => {
     const query = `
         {
