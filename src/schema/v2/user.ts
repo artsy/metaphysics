@@ -29,6 +29,10 @@ import { connectionFromArraySlice } from "graphql-relay"
 import { artworkConnection } from "./artwork"
 import { artistConnection } from "./artist"
 import { geneConnection } from "./gene"
+import {
+  UserAccessiblePropertiesConnectionType,
+  UserAccessiblePropertiesModelInputType,
+} from "./userAccessibleProperties"
 
 export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserAdminNotes",
@@ -111,6 +115,55 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...InternalIDFields,
       cached,
+      accessiblePropertiesConnection: {
+        type: UserAccessiblePropertiesConnectionType,
+        args: pageable({
+          model: UserAccessiblePropertiesModelInputType,
+        }),
+        resolve: async (
+          { id },
+          args,
+          { userAccessControlLoaderAllProperties }
+        ) => {
+          if (!userAccessControlLoaderAllProperties) {
+            throw new Error(
+              "Loader not found. You must supply an X-Access-Token header."
+            )
+          }
+
+          const {
+            page,
+            size,
+            offset,
+            model,
+          } = convertConnectionArgsToGravityArgs(args)
+          const { body, headers } = await userAccessControlLoaderAllProperties(
+            id,
+            {
+              page,
+              size,
+              total_count: true,
+              model,
+            }
+          )
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return {
+            totalCount,
+            pageCursors: createPageCursors({ page, size }, totalCount),
+            ...connectionFromArraySlice(body, args, {
+              arrayLength: totalCount,
+              sliceStart: offset,
+              resolveNode: ({ property, property_type: propertyType }) => {
+                return {
+                  propertyType,
+                  ...property,
+                }
+              },
+            }),
+          }
+        },
+      },
       adminNotes: UserAdminNotesField,
       collectorProfile: {
         type: CollectorProfileType,

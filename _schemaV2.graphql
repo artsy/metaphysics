@@ -16192,6 +16192,14 @@ type UpdateViewingRoomSubsectionsPayload {
 scalar Upload
 
 type User implements Node {
+  accessiblePropertiesConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    model: UserAccessiblePropertyInput
+  ): UserAccessiblePropertyConnection
+
   # The admin notes associated with the user
   adminNotes: [UserAdminNotes]!
   analytics: AnalyticsUserStats
@@ -16325,6 +16333,35 @@ type User implements Node {
 
   # Check whether a user exists by email address before creating an account.
   userAlreadyExists: Boolean
+}
+
+union UserAccessibleProperty = Artist | Artwork | Partner | Profile
+
+# A connection to a list of items.
+type UserAccessiblePropertyConnection {
+  # A list of edges.
+  edges: [UserAccessiblePropertyEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type UserAccessiblePropertyEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: UserAccessibleProperty
+}
+
+enum UserAccessiblePropertyInput {
+  ARTIST
+  ARTWORK
+  PARTNER
+  PROFILE
 }
 
 # User saved address

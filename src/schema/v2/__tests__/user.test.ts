@@ -499,6 +499,80 @@ describe("User", () => {
     })
   })
 
+  describe("accessiblePropertiesConnection", () => {
+    it("returns properties a user has access to", async () => {
+      const query = `
+        {
+          user(id: "blah") {
+            accessiblePropertiesConnection(first: 10) {
+              edges {
+                node {
+                  ... on Artwork {
+                    title
+                  }
+                  ... on Partner {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const user = {
+        id: "blah",
+      }
+
+      const accessControls = [
+        {
+          property_type: "Artwork",
+          property: {
+            title: "Catty Artwork",
+          },
+        },
+        {
+          property_type: "Partner",
+          property: {
+            name: "Catty Partner",
+          },
+        },
+      ]
+
+      const context = {
+        userByIDLoader: () => {
+          return Promise.resolve(user)
+        },
+        userAccessControlLoaderAllProperties: () => {
+          return Promise.resolve({
+            body: accessControls,
+            headers: { "x-total-count": "2" },
+          })
+        },
+      }
+
+      const {
+        user: {
+          accessiblePropertiesConnection: { edges },
+        },
+      } = await runAuthenticatedQuery(query, context)
+
+      expect(edges.length).toEqual(2)
+
+      expect(edges[0]).toEqual({
+        node: {
+          title: "Catty Artwork",
+        },
+      })
+
+      expect(edges[1]).toEqual({
+        node: {
+          name: "Catty Partner",
+        },
+      })
+    })
+  })
+
   describe("follows", () => {
     it("returns user follows", async () => {
       const query = `
