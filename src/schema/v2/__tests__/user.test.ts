@@ -67,7 +67,7 @@ describe("User", () => {
     const user = {
       name: "Percy Z",
       email: "percy-z@catmail.com",
-      unconfirmedEmail: "percy-z@purr.me",
+      unconfirmed_email: "percy-z@purr.me",
       confirmed_at: "2020-01-01T01:00:00.000Z",
       confirmation_sent_at: "2022-01-01T00:00:00.000Z",
     }
