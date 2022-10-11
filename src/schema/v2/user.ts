@@ -192,6 +192,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       unconfirmedEmail: {
         description: "The unconfirmed email of the user.",
         type: GraphQLString,
+        resolve: ({ unconfirmed_email }) => unconfirmed_email,
       },
       phone: {
         description: "The given phone number of the user.",
