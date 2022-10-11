@@ -592,7 +592,10 @@ describe("Sale type", () => {
         {
           auction_state: "open",
           live_start_at: now().subtract(1, "days").toISOString(),
-          registration_ends_at: now().subtract(2, "days").toISOString(),
+          registration_ends_at: now()
+            .subtract(2, "days")
+            .subtract(2.5, "hours")
+            .toISOString(),
         },
         "in progress",
       ],
@@ -635,7 +638,7 @@ describe("Sale type", () => {
           registration_ends_at: now().add(10, "minutes").toISOString(),
         },
         `register by\n${moment(now().tz("UTC").add(10, "minutes")).format(
-          "ha"
+          "h:mma"
         )}`,
       ],
       [
@@ -645,7 +648,7 @@ describe("Sale type", () => {
           registration_ends_at: now().tz("UTC").add(10, "days").toISOString(),
         },
         `register by\n${moment(now().tz("UTC").add(10, "days")).format(
-          "MMM D, ha"
+          "MMM D, h:mma"
         )}`,
       ],
       [
