@@ -1,16 +1,48 @@
-import { GraphQLList, GraphQLNonNull, GraphQLString } from "graphql"
+import {
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { UserType } from "../user"
 
 interface Input {
   id: string
-  role: string
+  role_type: string
 }
 
-interface GravityError {
-  statusCode: number
-  body: { error?: string; text?: string; message?: string }
-}
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "deleteUserRoleSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    user: {
+      type: UserType,
+      resolve: (result) => result,
+    },
+  }),
+})
+
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "deleteUserRoleFailure",
+  isTypeOf: (data) => data._type === "GravityMutationError",
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const ResponseOrErrorType = new GraphQLUnionType({
+  name: "deleteUserRoleResponseOrError",
+  types: [SuccessType, FailureType],
+})
 
 export const deleteUserRoleMutation = mutationWithClientMutationId<
   Input,
@@ -18,34 +50,37 @@ export const deleteUserRoleMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "deleteUserRoleMutation",
-  description: "Remove a role from the user",
+  description: "Delete a role associated with a user",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
-    role: { type: new GraphQLNonNull(GraphQLString) },
+    role_type: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
-    roles: {
-      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
-      description: "On success: the updated user roles",
-      resolve: (result) => result.roles,
+    userOrError: {
+      type: ResponseOrErrorType,
+      description: "On success: the user.",
+      resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (args, { deleteUserRole }) => {
-    if (!deleteUserRole) {
+  mutateAndGetPayload: async (args, { deleteUserRoleLoader }) => {
+    if (!deleteUserRoleLoader) {
       throw new Error(
         "You need to pass a X-Access-Token header to perform this action"
       )
     }
 
     try {
-      return await deleteUserRole?.({ id: args.id, role_type: args.role })
-    } catch (err) {
-      if ("body" in (err as any)) {
-        const e = err as GravityError
-        throw new Error(e.body.text ?? e.body.error ?? e.body.message)
+      return await deleteUserRoleLoader?.({
+        id: args.id,
+        role_type: args.role_type,
+      })
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
       }
-
-      throw err
     }
   },
 })
