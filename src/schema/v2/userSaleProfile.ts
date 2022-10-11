@@ -70,7 +70,7 @@ export const UserSaleProfileType = new GraphQLObjectType<any, ResolverContext>({
     jobTitle: {
       description: "The job title for this user",
       type: GraphQLString,
-      resolve: ({ marital_status }) => marital_status,
+      resolve: ({ job_title }) => job_title,
     },
     lastName: {
       description: "The last name  for this user",
