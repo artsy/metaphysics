@@ -637,7 +637,7 @@ describe("Sale type", () => {
           live_start_at: now().add(20, "days").toISOString(),
           registration_ends_at: now().add(10, "minutes").toISOString(),
         },
-        `register by\n${moment(now().tz("UTC").add(10, "minutes")).format(
+        `Register by\n${moment(now().tz("UTC").add(10, "minutes")).format(
           "h:mma"
         )}`,
       ],
@@ -647,7 +647,7 @@ describe("Sale type", () => {
           live_start_at: now().tz("UTC").add(30, "days").toISOString(),
           registration_ends_at: now().tz("UTC").add(10, "days").toISOString(),
         },
-        `register by\n${moment(now().tz("UTC").add(10, "days")).format(
+        `Register by\n${moment(now().tz("UTC").add(10, "days")).format(
           "MMM D, h:mma"
         )}`,
       ],
