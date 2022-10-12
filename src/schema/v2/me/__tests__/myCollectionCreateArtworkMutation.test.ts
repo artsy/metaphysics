@@ -258,6 +258,7 @@ describe("myCollectionCreateArtworkMutation", () => {
           "https://d2v80f5yrouhh2.cloudfront.net/kKRlZGUZU6qHYbsHWV_0ig/large.jpg",
       })
     })
+
     it("returns an error when the additional image can't be created", async () => {
       const externalImageUrls = [
         "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
