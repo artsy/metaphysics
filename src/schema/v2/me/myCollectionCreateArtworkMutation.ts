@@ -255,7 +255,15 @@ export const computeImageSources = (externalImageUrls) => {
   const imageSources = externalImageUrls.map((url) => {
     const match = url.match(externalUrlRegex)
 
-    if (!match) return
+    if (!match) {
+      if (url.startsWith("http")) {
+        return {
+          remote_image_url: url,
+        }
+      } else {
+        return
+      }
+    }
 
     const { sourceBucket, sourceKey } = match.groups
 
