@@ -16,7 +16,7 @@ import { ArtworkImportSourceEnum } from "../artwork"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { EditableLocationFields } from "./update_me_mutation"
 
-const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
+export const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
 export const ArtworkAttributionClassEnum = new GraphQLEnumType({
   name: "ArtworkAttributionClassType",
