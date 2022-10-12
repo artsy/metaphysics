@@ -42,7 +42,7 @@ export async function displayTimelyAt({ sale, meBiddersLoader, timeZone }) {
   }
 
   // Sale requires registration.
-  // Display 'register by' label if there is an unregistered bidder
+  // Display 'Register by' label if there is an unregistered bidder
   // and the registration period is open.
   if (registration_ends_at && moment(registration_ends_at) > moment()) {
     let isRegistered = false
@@ -56,7 +56,7 @@ export async function displayTimelyAt({ sale, meBiddersLoader, timeZone }) {
     if (!isRegistered) {
       const diff = moment().diff(moment(registration_ends_at), "hours")
       const format = diff > -24 ? "h:mma" : "MMM D, h:mma"
-      const label = `register by\n${moment(registration_ends_at)
+      const label = `Register by\n${moment(registration_ends_at)
         .tz(timeZone)
         .locale(LocaleEnAuctionRelative)
         .format(format)}`
