@@ -242,6 +242,23 @@ describe("myCollectionCreateArtworkMutation", () => {
       })
     })
 
+    it("creates an additional image from a valid remote image url", async () => {
+      const externalImageUrls = [
+        "https://d2v80f5yrouhh2.cloudfront.net/kKRlZGUZU6qHYbsHWV_0ig/large.jpg",
+      ]
+      const mutation = computeMutationInput({ externalImageUrls })
+
+      const data = await runAuthenticatedQuery(mutation, defaultContext)
+      const { artworkOrError } = data.myCollectionCreateArtwork
+
+      expect(artworkOrError).toHaveProperty("artwork")
+      expect(artworkOrError).not.toHaveProperty("error")
+      expect(createImageLoader).toBeCalledWith(newArtwork.id, {
+        remote_image_url:
+          "https://d2v80f5yrouhh2.cloudfront.net/kKRlZGUZU6qHYbsHWV_0ig/large.jpg",
+      })
+    })
+
     it("returns an error when the additional image can't be created", async () => {
       const externalImageUrls = [
         "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
@@ -385,8 +402,8 @@ describe("computeImageSources", () => {
     expect(imageSources).toEqual([])
   })
 
-  it("filters out urls that don't match the regex", () => {
-    const externalImageUrls = ["http://example.com/path/to/image.jpg"]
+  it("filters out urls that don't match the regex and are not valid urls", () => {
+    const externalImageUrls = ["example.com/path/to/image.jpg"]
     const imageSources = computeImageSources(externalImageUrls)
     expect(imageSources).toEqual([])
   })
@@ -407,6 +424,6 @@ describe("computeImageSources", () => {
       "https://test-upload-bucket.s3.amazonaws.com/path/to/image.jpg",
     ]
     const imageSources = computeImageSources(externalImageUrls)
-    expect(imageSources.length).toEqual(1)
+    expect(imageSources.length).toEqual(2)
   })
 })
