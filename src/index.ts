@@ -133,6 +133,8 @@ app.use(
   fetchPersistedQuery
 )
 
+const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
+
 const graphqlHTTP = require("express-graphql")
 const graphqlServer = graphqlHTTP((req, res, params) => {
   const accessToken = req.headers["x-access-token"] as string | undefined
@@ -160,8 +162,6 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     userAgent,
     appToken,
   })
-
-  const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
 
   const context: ResolverContext = {
     accessToken,
