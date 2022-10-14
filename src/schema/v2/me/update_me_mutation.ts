@@ -16,7 +16,7 @@ import { snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { UserType } from "../user"
 import Me, { CurrencyPreference, LengthUnitPreference } from "./"
-import { computeImageSources } from "./myCollectionCreateArtworkMutation"
+import { externalUrlRegex } from "./myCollectionCreateArtworkMutation"
 
 export const EditableLocationFields = new GraphQLInputObjectType({
   name: "EditableLocation",
@@ -260,3 +260,21 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     }
   },
 })
+
+export const computeImageSources = (externalImageUrls) => {
+  const imageSources = externalImageUrls.map((url) => {
+    const match = url.match(externalUrlRegex)
+
+    if (!match) return
+
+    const { sourceBucket, sourceKey } = match.groups
+
+    return {
+      source_bucket: sourceBucket,
+      source_key: sourceKey,
+    }
+  })
+
+  const filteredImageSources = imageSources.filter(Boolean)
+  return filteredImageSources
+}
