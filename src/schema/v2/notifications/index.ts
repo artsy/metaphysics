@@ -20,6 +20,7 @@ import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import numeral from "../fields/numeral"
 import { IDFields, NodeInterface } from "../object_identification"
+import moment from "moment-timezone"
 
 const NotificationTypesEnum = new GraphQLEnumType({
   name: "NotificationTypesEnum",
@@ -48,6 +49,24 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ status }) => status === "unread",
     },
     createdAt: date(({ date }) => date),
+    formattedCreatedAt: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ date }, {}, { defaultTimezone }) => {
+        const today = moment.tz(moment(), defaultTimezone!).startOf("day")
+        const createdAt = moment.tz(date, defaultTimezone!).startOf("day")
+        const days = today.diff(createdAt, "days")
+
+        if (days === 0) {
+          return "Today"
+        }
+
+        if (days === 1) {
+          return "Yesterday"
+        }
+
+        return `${days} days ago`
+      },
+    },
     targetHref: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ target_href }) => target_href,

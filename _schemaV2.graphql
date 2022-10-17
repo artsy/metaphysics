@@ -11443,6 +11443,7 @@ type Notification implements Node {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+  formattedCreatedAt: String!
 
   # A globally unique ID.
   id: ID!
