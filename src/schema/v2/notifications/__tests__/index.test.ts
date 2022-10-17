@@ -93,7 +93,7 @@ describe("notificationsConnection", () => {
     })
   })
 
-  describe("with formatted creation date", () => {
+  describe("with formatted publication date", () => {
     const query = gql`
       {
         notificationsConnection(first: 1) {
