@@ -11442,7 +11442,7 @@ type Notification implements Node {
     # http://www.iana.org/time-zones,
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
-  ): String
+  ): String @deprecated(reason: "Please use `publishedAt` instead")
 
   # A globally unique ID.
   id: ID!

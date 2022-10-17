@@ -48,7 +48,10 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ status }) => status === "unread",
     },
-    createdAt: date(({ date }) => date),
+    createdAt: {
+      ...date(({ date }) => date),
+      deprecationReason: "Please use `publishedAt` instead",
+    },
     publishedAt: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ date }, {}, { defaultTimezone }) => {
