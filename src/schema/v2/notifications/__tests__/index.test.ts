@@ -99,7 +99,7 @@ describe("notificationsConnection", () => {
         notificationsConnection(first: 1) {
           edges {
             node {
-              formattedCreatedAt
+              publishedAt
             }
           }
         }
@@ -120,7 +120,7 @@ describe("notificationsConnection", () => {
       const edges = data.notificationsConnection.edges
       const item = edges[0].node
 
-      expect(item.formattedCreatedAt).toEqual("Today")
+      expect(item.publishedAt).toEqual("Today")
     })
 
     it("should return `Yesterday` label", async () => {
@@ -143,7 +143,7 @@ describe("notificationsConnection", () => {
       const edges = data.notificationsConnection.edges
       const item = edges[0].node
 
-      expect(item.formattedCreatedAt).toEqual("Yesterday")
+      expect(item.publishedAt).toEqual("Yesterday")
     })
 
     it("should return `x days ago` label", async () => {
@@ -165,7 +165,7 @@ describe("notificationsConnection", () => {
       const edges = data.notificationsConnection.edges
       const item = edges[0].node
 
-      expect(item.formattedCreatedAt).toEqual("5 days ago")
+      expect(item.publishedAt).toEqual("5 days ago")
     })
   })
 })

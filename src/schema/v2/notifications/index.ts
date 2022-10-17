@@ -49,7 +49,7 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ status }) => status === "unread",
     },
     createdAt: date(({ date }) => date),
-    formattedCreatedAt: {
+    publishedAt: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ date }, {}, { defaultTimezone }) => {
         const today = moment.tz(moment(), defaultTimezone!).startOf("day")
