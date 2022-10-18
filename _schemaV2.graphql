@@ -15706,10 +15706,6 @@ type UpdateAppSecondFactorPayload {
   secondFactorOrErrors: AppSecondFactorOrErrorsUnion!
 }
 
-type UpdateCollectorProfileFailure {
-  mutationError: GravityMutationError
-}
-
 input UpdateCollectorProfileInput {
   # List of affiliated auction house ids, referencing Galaxy.
   affiliatedAuctionHouseIds: [String]
@@ -15783,6 +15779,10 @@ type UpdateCollectorProfilePayload {
   userInterests: [UserInterest]!
 }
 
+type UpdateCollectorProfileWithIDFailure {
+  mutationError: GravityMutationError
+}
+
 input UpdateCollectorProfileWithIDInput {
   # List of affiliated auction house ids, referencing Galaxy.
   affiliatedAuctionHouseIds: [String]
@@ -15816,7 +15816,7 @@ type UpdateCollectorProfileWithIDPayload {
 }
 
 union UpdateCollectorProfileWithIDResponseOrError =
-    UpdateCollectorProfileFailure
+    UpdateCollectorProfileWithIDFailure
   | UpdateCollectorProfileWithIDSuccess
 
 type UpdateCollectorProfileWithIDSuccess {
