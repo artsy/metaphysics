@@ -93,14 +93,14 @@ describe("notificationsConnection", () => {
     })
   })
 
-  describe("with formatted publication date", () => {
+  describe("with publication date", () => {
     describe("the human-friendly date", () => {
       const query = gql`
         {
           notificationsConnection(first: 1) {
             edges {
               node {
-                publishedAt(formatted: true)
+                publishedAt(format: "RELATIVE")
               }
             }
           }
@@ -190,6 +190,28 @@ describe("notificationsConnection", () => {
       const item = edges[0].node
 
       expect(item.publishedAt).toEqual("2022-08-22T21:15:49Z")
+    })
+
+    it("should return date in the specified format", async () => {
+      const query = gql`
+        {
+          notificationsConnection(first: 1) {
+            edges {
+              node {
+                publishedAt(format: "YYYY-MM-DD")
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runAuthenticatedQuery(query, {
+        notificationsFeedLoader,
+      })
+      const edges = data.notificationsConnection.edges
+      const item = edges[0].node
+
+      expect(item.publishedAt).toEqual("2022-08-22")
     })
   })
 })

@@ -56,16 +56,17 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     publishedAt: {
       type: new GraphQLNonNull(GraphQLString),
       args: {
-        formatted: {
-          type: GraphQLBoolean,
+        format: {
+          type: GraphQLString,
           description:
-            'The human-friendly date (e.g. "Today", "Yesterday", "5 days ago")',
+            'pass `RELATIVE` to display the human-friendly date (e.g. "Today", "Yesterday", "5 days ago")',
         },
       },
-      resolve: ({ date }, { formatted }, { defaultTimezone }) => {
+      resolve: ({ date }, { format }, { defaultTimezone }) => {
         const timezone = defaultTimezone ?? DEFAULT_TZ
+        const dateFormat = format ?? "YYYY-MM-DDTHH:mm:ss[Z]"
 
-        if (formatted) {
+        if (format === "RELATIVE") {
           const today = moment.tz(moment(), timezone).startOf("day")
           const createdAt = moment.tz(date, timezone).startOf("day")
           const days = today.diff(createdAt, "days")
@@ -81,7 +82,7 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
           return `${days} days ago`
         }
 
-        return formatDate(date, "YYYY-MM-DDTHH:mm:ss[Z]", timezone)
+        return formatDate(date, dateFormat, timezone)
       },
     },
     targetHref: {

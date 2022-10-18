@@ -11453,8 +11453,8 @@ type Notification implements Node {
   message: String!
   notificationType: NotificationTypesEnum!
   publishedAt(
-    # The human-friendly date (e.g. "Today", "Yesterday", "5 days ago")
-    formatted: Boolean
+    # pass `RELATIVE` to display the human-friendly date (e.g. "Today", "Yesterday", "5 days ago")
+    format: String
   ): String!
   targetHref: String!
   title: String!
