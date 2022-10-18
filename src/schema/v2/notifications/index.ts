@@ -11,7 +11,7 @@ import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pick } from "lodash"
 import { pageable } from "relay-cursor-paging"
-import { date } from "schema/v2/fields/date"
+import { date, formatDate } from "schema/v2/fields/date"
 import {
   connectionWithCursorInfo,
   createPageCursors,
@@ -55,21 +55,33 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     },
     publishedAt: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ date }, {}, { defaultTimezone }) => {
+      args: {
+        formatted: {
+          type: GraphQLBoolean,
+          description:
+            'The human-friendly date (e.g. "Today", "Yesterday", "5 days ago")',
+        },
+      },
+      resolve: ({ date }, { formatted }, { defaultTimezone }) => {
         const timezone = defaultTimezone ?? DEFAULT_TZ
-        const today = moment.tz(moment(), timezone).startOf("day")
-        const createdAt = moment.tz(date, timezone).startOf("day")
-        const days = today.diff(createdAt, "days")
 
-        if (days === 0) {
-          return "Today"
+        if (formatted) {
+          const today = moment.tz(moment(), timezone).startOf("day")
+          const createdAt = moment.tz(date, timezone).startOf("day")
+          const days = today.diff(createdAt, "days")
+
+          if (days === 0) {
+            return "Today"
+          }
+
+          if (days === 1) {
+            return "Yesterday"
+          }
+
+          return `${days} days ago`
         }
 
-        if (days === 1) {
-          return "Yesterday"
-        }
-
-        return `${days} days ago`
+        return formatDate(date, null, timezone)
       },
     },
     targetHref: {

@@ -11452,7 +11452,10 @@ type Notification implements Node {
   isUnread: Boolean!
   message: String!
   notificationType: NotificationTypesEnum!
-  publishedAt: String!
+  publishedAt(
+    # The human-friendly date (e.g. "Today", "Yesterday", "5 days ago")
+    formatted: Boolean
+  ): String!
   targetHref: String!
   title: String!
 }
