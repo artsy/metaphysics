@@ -99,6 +99,8 @@ export const ArtworkImportSourceEnum = new GraphQLEnumType({
 
 const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkPriceInsights",
+  description:
+    "Insights may not be available for all Artwork Connections due to potential performance issues",
   fields: {
     artistId: {
       type: GraphQLString,
