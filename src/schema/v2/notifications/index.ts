@@ -81,7 +81,7 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
           return `${days} days ago`
         }
 
-        return formatDate(date, null, timezone)
+        return formatDate(date, "YYYY-MM-DDTHH:mm:ss[Z]", timezone)
       },
     },
     targetHref: {
