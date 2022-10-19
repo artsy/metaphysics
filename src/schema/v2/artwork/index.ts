@@ -668,6 +668,17 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return false
         },
       },
+      isEligibleForArtsyGuarantee: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: "Artwork is eligible for the Artsy Guarantee",
+        resolve: ({ acquireable, offerable, offerable_from_inquiry }) => {
+          if (acquireable || offerable || offerable_from_inquiry) {
+            return true
+          }
+
+          return false
+        },
+      },
       canRequestLotConditionsReport: {
         type: GraphQLBoolean,
         description:
