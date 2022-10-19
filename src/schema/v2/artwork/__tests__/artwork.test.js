@@ -3739,5 +3739,67 @@ describe("Artwork type", () => {
         })
       })
     })
+
+    describe("isEligibleForArtsyGuarantee", () => {
+      const query = `
+        {
+          artwork(id: "foo-bar") {
+            isEligibleForArtsyGuarantee
+          }
+        }
+      `
+
+      it("returns false by default", () => {
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artwork: {
+              isEligibleForArtsyGuarantee: false,
+            },
+          })
+        })
+      })
+
+      it("returns true if work is acquirable", () => {
+        artwork.acquireable = true
+        artwork.offerable = false
+        artwork.offerable_from_inquiry = false
+
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artwork: {
+              isEligibleForArtsyGuarantee: true,
+            },
+          })
+        })
+      })
+
+      it("returns true if work is offerable", () => {
+        artwork.acquireable = false
+        artwork.offerable = true
+        artwork.offerable_from_inquiry = false
+
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artwork: {
+              isEligibleForArtsyGuarantee: true,
+            },
+          })
+        })
+      })
+
+      it("returns true if work is offerable from inquiry", () => {
+        artwork.acquireable = false
+        artwork.offerable = false
+        artwork.offerable_from_inquiry = true
+
+        return runQuery(query, context).then((data) => {
+          expect(data).toEqual({
+            artwork: {
+              isEligibleForArtsyGuarantee: true,
+            },
+          })
+        })
+      })
+    })
   })
 })
