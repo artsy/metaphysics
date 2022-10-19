@@ -11,7 +11,7 @@ import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pick } from "lodash"
 import { pageable } from "relay-cursor-paging"
-import { date } from "schema/v2/fields/date"
+import { date, formatDate } from "schema/v2/fields/date"
 import {
   connectionWithCursorInfo,
   createPageCursors,
@@ -20,6 +20,8 @@ import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import numeral from "../fields/numeral"
 import { IDFields, NodeInterface } from "../object_identification"
+import moment from "moment-timezone"
+import { DEFAULT_TZ } from "lib/date"
 
 const NotificationTypesEnum = new GraphQLEnumType({
   name: "NotificationTypesEnum",
@@ -47,7 +49,42 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ status }) => status === "unread",
     },
-    createdAt: date(({ date }) => date),
+    createdAt: {
+      ...date(({ date }) => date),
+      deprecationReason: "Please use `publishedAt` instead",
+    },
+    publishedAt: {
+      type: new GraphQLNonNull(GraphQLString),
+      args: {
+        format: {
+          type: GraphQLString,
+          description:
+            'pass `RELATIVE` to display the human-friendly date (e.g. "Today", "Yesterday", "5 days ago")',
+        },
+      },
+      resolve: ({ date }, { format }, { defaultTimezone }) => {
+        const timezone = defaultTimezone ?? DEFAULT_TZ
+        const dateFormat = format ?? "YYYY-MM-DDTHH:mm:ss[Z]"
+
+        if (format === "RELATIVE") {
+          const today = moment.tz(moment(), timezone).startOf("day")
+          const createdAt = moment.tz(date, timezone).startOf("day")
+          const days = today.diff(createdAt, "days")
+
+          if (days === 0) {
+            return "Today"
+          }
+
+          if (days === 1) {
+            return "Yesterday"
+          }
+
+          return `${days} days ago`
+        }
+
+        return formatDate(date, dateFormat, timezone)
+      },
+    },
     targetHref: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ target_href }) => target_href,

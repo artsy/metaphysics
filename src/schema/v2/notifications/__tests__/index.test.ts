@@ -1,24 +1,11 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import moment from "moment-timezone"
 
 describe("notificationsConnection", () => {
   const notificationsFeedLoader = jest.fn(() =>
     Promise.resolve({
-      feed: [
-        {
-          id: "6303f205b54941000843419a",
-          actors: "Works by Damien Hirst",
-          message: "8 Works Added",
-          status: "unread",
-          date: "2022-08-22T21:15:49.000Z",
-          object_ids: ["63036fafbe5cfc000cf358e3", "630392514f13a5000b55ecec"],
-          object: {
-            artist: { id: "damien-hirst", _id: "4d8b926a4eb68a1b2c0000ae" },
-          },
-          activity_type: "ArtworkPublishedActivity",
-          target_href: "/artist/damien-hirst/works-for-sale",
-        },
-      ],
+      feed: [notificationFeedItem],
       total: 100,
       total_unread: 10,
     })
@@ -105,7 +92,143 @@ describe("notificationsConnection", () => {
       expect(data).toEqual(expectedData)
     })
   })
+
+  describe("with publication date", () => {
+    describe("the human-friendly date", () => {
+      const query = gql`
+        {
+          notificationsConnection(first: 1) {
+            edges {
+              node {
+                publishedAt(format: "RELATIVE")
+              }
+            }
+          }
+        }
+      `
+
+      it("should return `Today` label", async () => {
+        const loader = () => {
+          return Promise.resolve({
+            feed: [{ ...notificationFeedItem, date: moment() }],
+            total: 1,
+            total_unread: 1,
+          })
+        }
+        const data = await runAuthenticatedQuery(query, {
+          notificationsFeedLoader: loader,
+        })
+        const edges = data.notificationsConnection.edges
+        const item = edges[0].node
+
+        expect(item.publishedAt).toEqual("Today")
+      })
+
+      it("should return `Yesterday` label", async () => {
+        const loader = () => {
+          return Promise.resolve({
+            feed: [
+              {
+                ...notificationFeedItem,
+                // 23:59:59 yesterday
+                date: moment().endOf("day").subtract(1, "days"),
+              },
+            ],
+            total: 1,
+            total_unread: 1,
+          })
+        }
+        const data = await runAuthenticatedQuery(query, {
+          notificationsFeedLoader: loader,
+        })
+        const edges = data.notificationsConnection.edges
+        const item = edges[0].node
+
+        expect(item.publishedAt).toEqual("Yesterday")
+      })
+
+      it("should return `x days ago` label", async () => {
+        const loader = () => {
+          return Promise.resolve({
+            feed: [
+              {
+                ...notificationFeedItem,
+                date: moment().subtract(5, "days"),
+              },
+            ],
+            total: 1,
+            total_unread: 1,
+          })
+        }
+        const data = await runAuthenticatedQuery(query, {
+          notificationsFeedLoader: loader,
+        })
+        const edges = data.notificationsConnection.edges
+        const item = edges[0].node
+
+        expect(item.publishedAt).toEqual("5 days ago")
+      })
+    })
+
+    it("should return raw date", async () => {
+      const query = gql`
+        {
+          notificationsConnection(first: 1) {
+            edges {
+              node {
+                publishedAt
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runAuthenticatedQuery(query, {
+        notificationsFeedLoader,
+      })
+      const edges = data.notificationsConnection.edges
+      const item = edges[0].node
+
+      expect(item.publishedAt).toEqual("2022-08-22T21:15:49Z")
+    })
+
+    it("should return date in the specified format", async () => {
+      const query = gql`
+        {
+          notificationsConnection(first: 1) {
+            edges {
+              node {
+                publishedAt(format: "YYYY-MM-DD")
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runAuthenticatedQuery(query, {
+        notificationsFeedLoader,
+      })
+      const edges = data.notificationsConnection.edges
+      const item = edges[0].node
+
+      expect(item.publishedAt).toEqual("2022-08-22")
+    })
+  })
 })
+
+const notificationFeedItem = {
+  id: "6303f205b54941000843419a",
+  actors: "Works by Damien Hirst",
+  message: "8 Works Added",
+  status: "unread",
+  date: "2022-08-22T21:15:49.000Z",
+  object_ids: ["63036fafbe5cfc000cf358e3", "630392514f13a5000b55ecec"],
+  object: {
+    artist: { id: "damien-hirst", _id: "4d8b926a4eb68a1b2c0000ae" },
+  },
+  activity_type: "ArtworkPublishedActivity",
+  target_href: "/artist/damien-hirst/works-for-sale",
+}
 
 const expectedData = {
   notificationsConnection: {
