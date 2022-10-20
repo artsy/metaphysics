@@ -85,6 +85,18 @@ const has_multiple_editions = (edition_sets) => {
   return edition_sets && edition_sets.length > 1
 }
 
+const isEligibleForOnPlatformTransaction = ({
+  acquireable,
+  offerable,
+  offerable_from_inquiry,
+}) => {
+  if (acquireable || offerable || offerable_from_inquiry) {
+    return true
+  }
+
+  return false
+}
+
 const IMPORT_SOURCES = {
   CONVECTION: { value: "convection" },
   MY_COLLECTION: { value: "my collection" },
@@ -677,12 +689,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       isEligibleForArtsyGuarantee: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Artwork is eligible for the Artsy Guarantee",
-        resolve: ({ acquireable, offerable, offerable_from_inquiry }) => {
-          if (acquireable || offerable || offerable_from_inquiry) {
-            return true
-          }
-
-          return false
+        resolve: (artwork) => {
+          return isEligibleForOnPlatformTransaction(artwork)
+        },
+      },
+      isEligibleForOnPlatformTransaction: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: "Artwork is eligible for on-platform transaction",
+        resolve: (artwork) => {
+          return isEligibleForOnPlatformTransaction(artwork)
         },
       },
       canRequestLotConditionsReport: {

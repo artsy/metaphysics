@@ -3740,11 +3740,12 @@ describe("Artwork type", () => {
       })
     })
 
-    describe("isEligibleForArtsyGuarantee", () => {
+    describe("isEligibleForArtsyGuarantee/isEligbleForOnPlatformTransaction", () => {
       const query = `
         {
           artwork(id: "foo-bar") {
             isEligibleForArtsyGuarantee
+            isEligibleForOnPlatformTransaction
           }
         }
       `
@@ -3754,6 +3755,7 @@ describe("Artwork type", () => {
           expect(data).toEqual({
             artwork: {
               isEligibleForArtsyGuarantee: false,
+              isEligibleForOnPlatformTransaction: false,
             },
           })
         })
@@ -3768,6 +3770,7 @@ describe("Artwork type", () => {
           expect(data).toEqual({
             artwork: {
               isEligibleForArtsyGuarantee: true,
+              isEligibleForOnPlatformTransaction: true,
             },
           })
         })
@@ -3782,6 +3785,7 @@ describe("Artwork type", () => {
           expect(data).toEqual({
             artwork: {
               isEligibleForArtsyGuarantee: true,
+              isEligibleForOnPlatformTransaction: true,
             },
           })
         })
@@ -3796,6 +3800,7 @@ describe("Artwork type", () => {
           expect(data).toEqual({
             artwork: {
               isEligibleForArtsyGuarantee: true,
+              isEligibleForOnPlatformTransaction: true,
             },
           })
         })
