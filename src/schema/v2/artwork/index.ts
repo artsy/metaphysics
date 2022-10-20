@@ -547,7 +547,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       hasPriceEstimateRequest: {
         description:
-          "If a request for price estimate has been submitted for this artwork",
+          "Whether a request for price estimate has been submitted for this artwork",
         type: GraphQLBoolean,
         resolve: ({ has_price_estimate_request }) => has_price_estimate_request,
       },
