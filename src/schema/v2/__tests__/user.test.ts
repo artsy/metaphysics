@@ -86,6 +86,26 @@ describe("User", () => {
     expect(result.emailConfirmationSentAt).toEqual("2022-01-01T00:00:00.000Z")
   })
 
+  it("includes a fallback when a name isn't set", async () => {
+    const query = `
+      {
+        user(id: "percy-z") {
+          name
+        }
+      }
+    `
+
+    const context = {
+      userByIDLoader: () => {
+        return Promise.resolve({})
+      },
+    }
+
+    const { user: result } = await runAuthenticatedQuery(query, context)
+
+    expect(result.name).toEqual("Artsy User")
+  })
+
   describe("userAlreadyExists", () => {
     it("returns true if a user exists", async () => {
       const foundUser = {
