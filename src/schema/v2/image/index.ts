@@ -29,9 +29,14 @@ export { normalize as normalizeImageData } from "./normalize"
 
 export const getDefault = (images) => {
   if (isArray(images)) {
+    // filter out broken images that don't have a URL
+    const filteredImages = images.filter((image) => image.image_url)
+
     return (
-      find(images, (img) => img.is_default === true || img.default === true) ||
-      first(images)
+      find(
+        filteredImages,
+        (img) => img.is_default === true || img.default === true
+      ) || first(filteredImages)
     )
   }
   return images

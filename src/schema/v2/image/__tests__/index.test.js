@@ -8,17 +8,31 @@ describe("getDefault", () => {
   it("returns the default image", () => {
     expect(
       getDefault([
-        { id: "foo", is_default: false },
-        { id: "bar", is_default: true },
-        { id: "baz", is_default: false },
+        { id: "foo", image_url: "a-url", is_default: false },
+        { id: "bar", image_url: "a-url", is_default: true },
+        { id: "baz", image_url: "a-url", is_default: false },
       ]).id
     ).toBe("bar")
   })
 
   it("returns the first object if there is no default", () => {
-    expect(getDefault([{ id: "foo" }, { id: "bar" }, { id: "baz" }]).id).toBe(
-      "foo"
-    )
+    expect(
+      getDefault([
+        { id: "foo", image_url: "a-url" },
+        { id: "bar", image_url: "a-url" },
+        { id: "baz", image_url: "a-url" },
+      ]).id
+    ).toBe("foo")
+  })
+
+  it("filters out broken images without a URL", () => {
+    expect(
+      getDefault([
+        { id: "foo", image_url: "a-url", is_default: false },
+        { id: "bar", is_default: true },
+        { id: "baz", image_url: "a-url", is_default: false },
+      ]).id
+    ).toBe("foo")
   })
 })
 
