@@ -97,6 +97,19 @@ const isEligibleForOnPlatformTransaction = ({
   return false
 }
 
+const isInAuctionResolver = async ({ sale_ids }, _options, { salesLoader }) => {
+  if (sale_ids && sale_ids.length > 0) {
+    const sales = await salesLoader({
+      id: sale_ids,
+      is_auction: true,
+    })
+
+    return sales.length > 0
+  }
+
+  return false
+}
+
 const IMPORT_SOURCES = {
   CONVECTION: { value: "convection" },
   MY_COLLECTION: { value: "my collection" },
@@ -817,18 +830,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       isInAuction: {
         type: GraphQLBoolean,
         description: "Is this artwork part of an auction?",
-        resolve: async ({ sale_ids }, _options, { salesLoader }) => {
-          if (sale_ids && sale_ids.length > 0) {
-            const sales = await salesLoader({
-              id: sale_ids,
-              is_auction: true,
-            })
-
-            return sales.length > 0
-          }
-
-          return false
-        },
+        resolve: isInAuctionResolver,
       },
       isInShow: {
         type: GraphQLBoolean,
