@@ -817,15 +817,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       isInAuction: {
         type: GraphQLBoolean,
         description: "Is this artwork part of an auction?",
-        resolve: ({ sale_ids }, _options, { salesLoader }) => {
+        resolve: async ({ sale_ids }, _options, { salesLoader }) => {
           if (sale_ids && sale_ids.length > 0) {
-            return salesLoader({
+            const sales = await salesLoader({
               id: sale_ids,
               is_auction: true,
-            }).then((sales) => {
-              return sales.length > 0
             })
+
+            return sales.length > 0
           }
+
           return false
         },
       },
