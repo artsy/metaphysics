@@ -713,6 +713,19 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return isEligibleForOnPlatformTransaction(artwork)
         },
       },
+      isEligibleForShippingAndTaxes: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: "Artwork is eligible for the Shipping and Taxes",
+        resolve: async (artwork, args, context) => {
+          const { inquireable } = artwork
+          const isInAuction = await isInAuctionResolver(artwork, args, context)
+          const isEligibleForTransaction = isEligibleForOnPlatformTransaction(
+            artwork
+          )
+
+          return isEligibleForTransaction || (!!inquireable && !isInAuction)
+        },
+      },
       canRequestLotConditionsReport: {
         type: GraphQLBoolean,
         description:

@@ -3806,5 +3806,76 @@ describe("Artwork type", () => {
         })
       })
     })
+
+    describe("isEligibleForShippingAndTaxes", () => {
+      const query = `
+        {
+          artwork(id: "foo-bar") {
+            isEligibleForShippingAndTaxes
+          }
+        }
+      `
+
+      describe("returns false", () => {
+        it("if the artwork is NOT eligible for on-platform transaction", async () => {
+          artwork.acquireable = false
+          artwork.offerable = false
+          artwork.offerable_from_inquiry = false
+          artwork.sale_ids = []
+
+          const result = await runQuery(query, context)
+
+          expect(result).toEqual({
+            artwork: {
+              isEligibleForShippingAndTaxes: false,
+            },
+          })
+        })
+
+        it("if the artwork is inquireable and in auction", async () => {
+          artwork.inquireable = true
+
+          context.salesLoader = () => {
+            return Promise.resolve([{ ...sale, is_auction: true }])
+          }
+
+          const result = await runQuery(query, context)
+
+          expect(result).toEqual({
+            artwork: {
+              isEligibleForShippingAndTaxes: false,
+            },
+          })
+        })
+      })
+
+      describe("returns true", () => {
+        it("if the artwork is eligible for on-platform transaction", async () => {
+          artwork.acquireable = true
+          artwork.sale_ids = []
+
+          const result = await runQuery(query, context)
+
+          expect(result).toEqual({
+            artwork: {
+              isEligibleForShippingAndTaxes: true,
+            },
+          })
+        })
+
+        it("if the artwork is inquireable and NOT in auction", async () => {
+          artwork.inquireable = true
+          artwork.sale_ids = []
+
+          const result = await runQuery(query, context)
+
+          expect(result).toEqual({
+            artwork: {
+              isEligibleForShippingAndTaxes: true,
+            },
+          })
+        })
+      })
+    })
   })
 })
