@@ -2131,6 +2131,9 @@ type Artwork implements Node & Searchable & Sellable {
   isPriceHidden: Boolean
   isPriceRange: Boolean
   isSaved: Boolean
+
+  # Should the video be used as the cover image
+  isSetVideoAsCover: Boolean
   isShareable: Boolean
   isSold: Boolean
   isUnique: Boolean
@@ -2193,9 +2196,6 @@ type Artwork implements Node & Searchable & Sellable {
   saleArtwork(saleID: String = null): SaleArtwork
   saleMessage: String
   series(format: Format): String
-
-  # Should the video be used as the cover image
-  setVideoAsCover: Boolean
 
   # The country an artwork will be shipped from.
   shippingCountry: String

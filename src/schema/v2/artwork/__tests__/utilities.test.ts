@@ -1,5 +1,5 @@
 import { Artwork } from "types/runtime/gravity"
-import { isTooBig, isTwoDimensional } from "../utilities"
+import { getFigures, isTooBig, isTwoDimensional } from "../utilities"
 
 describe("isTwoDimensional", () => {
   let artwork: Artwork
@@ -153,5 +153,79 @@ describe("isTooBig", () => {
 
       expect(isTooBig(artwork)).toBe(false)
     })
+  })
+})
+
+describe("getFigures", () => {
+  it("returns an array of images", () => {
+    const data = getFigures({
+      images: [
+        {
+          image_url: "foo",
+        },
+        {
+          image_url: "bar",
+        },
+      ],
+      external_video_id: null,
+      set_video_as_cover: null,
+    })
+
+    expect(data).toEqual([
+      { image_url: "foo", type: "Image" },
+      { image_url: "bar", type: "Image" },
+    ])
+  })
+
+  it("returns images with video appended at end by default", () => {
+    const data = getFigures({
+      images: [
+        {
+          image_url: "foo",
+        },
+        {
+          image_url: "bar",
+        },
+      ],
+      external_video_id: "video-id",
+      set_video_as_cover: null,
+    })
+
+    expect(data).toEqual([
+      { image_url: "foo", type: "Image" },
+      { image_url: "bar", type: "Image" },
+      {
+        type: "Video",
+        url: "video-id",
+        width: 360,
+        height: 360,
+      },
+    ])
+  })
+
+  it("returns a video at the front with images at the end if set_video_as_cover=true", () => {
+    const data = getFigures({
+      images: [
+        {
+          image_url: "foo",
+        },
+        {
+          image_url: "bar",
+        },
+      ],
+      external_video_id: "video-id",
+      set_video_as_cover: true,
+    })
+
+    expect(data).toEqual([
+      {
+        type: "Video",
+        url: "video-id",
+        width: 360,
+        height: 360,
+      },
+      { image_url: "foo", type: "Image" },
+      { image_url: "bar", type: "Image" },
+    ])
   })
 })
