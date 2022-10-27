@@ -6,8 +6,8 @@ export const CHECKOUT_TAXES_DOC_URL =
 export const BID_TAXES_DOC_URL =
   "https://support.artsy.net/hc/en-us/articles/360047292933-Are-taxes-included-in-my-bid-"
 
-const TaxInfoMoreInfoType = new GraphQLObjectType({
-  name: "TaxInfoMoreInfo",
+const TaxMoreInfoType = new GraphQLObjectType({
+  name: "TaxMoreInfo",
   fields: {
     displayText: {
       type: new GraphQLNonNull(GraphQLString),
@@ -25,7 +25,7 @@ const TaxInfoType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
     },
     moreInfo: {
-      type: new GraphQLNonNull(TaxInfoMoreInfoType),
+      type: new GraphQLNonNull(TaxMoreInfoType),
     },
   },
 })

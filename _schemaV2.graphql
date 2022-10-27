@@ -15653,10 +15653,10 @@ type TargetSupplyMicrofunnelMetadata {
 
 type TaxInfo {
   displayText: String!
-  moreInfo: TaxInfoMoreInfo!
+  moreInfo: TaxMoreInfo!
 }
 
-type TaxInfoMoreInfo {
+type TaxMoreInfo {
   displayText: String!
   url: String!
 }
