@@ -28,7 +28,6 @@ import _ from "lodash"
 import Article from "schema/v2/article"
 import Artist from "schema/v2/artist"
 import ArtworkMedium from "schema/v2/artwork/artworkMedium"
-import { VIDEOS } from "schema/v2/artwork/artworkVideos"
 import AttributionClass from "schema/v2/artwork/attributionClass"
 import Dimensions from "schema/v2/dimensions"
 import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
@@ -75,7 +74,13 @@ import { ArtworkHighlightType } from "./highlight"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import Meta, { artistNames } from "./meta"
-import { embed, isEmbeddedVideo, isTooBig, isTwoDimensional } from "./utilities"
+import {
+  embed,
+  getFigures,
+  isEmbeddedVideo,
+  isTooBig,
+  isTwoDimensional,
+} from "./utilities"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -1328,6 +1333,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       series: markdown(),
+      isSetVideoAsCover: {
+        type: GraphQLBoolean,
+        description: "Should the video be used as the cover image",
+        resolve: ({ set_video_as_cover }) => set_video_as_cover,
+      },
       show: {
         type: Show.type,
         args: {
@@ -1540,20 +1550,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             )
           )
         ),
-        resolve: ({ images, id }) => {
-          const typedImages = images.map((image) => ({
-            ...image,
-            type: "Image",
-          }))
-          const sortedTypedImages = normalizeImageData(
-            _.sortBy(typedImages, "position")
-          )
-
-          const typedVideos = VIDEOS[id]
-            ? [{ ...VIDEOS[id], type: "Video" }]
-            : []
-          return [...sortedTypedImages, ...typedVideos]
-        },
+        resolve: getFigures,
       },
     }
   },
