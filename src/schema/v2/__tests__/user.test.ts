@@ -275,6 +275,7 @@ describe("User", () => {
         receive_promotion_notification: false,
         receive_order_notification: true,
         receive_viewing_room_notification: true,
+        receive_partner_show_notification: true,
       }
 
       const userByEmailLoader = (data) => {
@@ -299,6 +300,7 @@ describe("User", () => {
             receivePromotionNotification
             receiveOrderNotification
             receiveViewingRoomNotification
+            receivePartnerShowNotification
           }
         }
       `
@@ -316,6 +318,7 @@ describe("User", () => {
       expect(user.receivePromotionNotification).toEqual(false)
       expect(user.receiveOrderNotification).toEqual(true)
       expect(user.receiveViewingRoomNotification).toEqual(true)
+      expect(user.receivePartnerShowNotification).toEqual(true)
     })
   })
 

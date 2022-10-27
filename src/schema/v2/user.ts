@@ -464,6 +464,12 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ receive_viewing_room_notification }) =>
           receive_viewing_room_notification,
       },
+      receivePartnerShowNotification: {
+        description: "This user should receive partner show notifications",
+        type: GraphQLBoolean,
+        resolve: ({ receive_partner_show_notification }) =>
+          receive_partner_show_notification,
+      },
       savedArtworksConnection: {
         type: artworkConnection.connectionType,
         args: pageable({}),
