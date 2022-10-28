@@ -75,6 +75,7 @@ import { isInAuctionResolver } from "./isInAuctionResolver"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import Meta, { artistNames } from "./meta"
+import { TaxInfo } from "./taxInfo"
 import {
   embed,
   getFigures,
@@ -109,10 +110,6 @@ const IMPORT_SOURCES = {
 } as const
 
 const ARTIST_IN_HIGH_DEMAND_RANK = 9
-const TAX_CHECKOUT_DOC_URL =
-  "https://support.artsy.net/hc/en-us/articles/360047294733-How-is-sales-tax-and-VAT-handled-on-works-listed-with-secure-checkout-"
-const TAX_BID_CHECKOUT_DOC_URL =
-  "https://support.artsy.net/hc/en-us/articles/360047292933-Are-taxes-included-in-my-bid-"
 
 export const ArtworkImportSourceEnum = new GraphQLEnumType({
   name: "ArtworkImportSource",
@@ -971,27 +968,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return price_includes_tax ? "VAT included in price" : null
         },
       },
-      taxInfo: {
-        type: TaxInfoType,
-        resolve: async (artwork, args, context) => {
-          const isInAuction = await isInAuctionResolver(artwork, args, context)
-
-          const displayText = "Taxes may apply at checkout."
-          const moreInfo = {
-            displayText: "Learn more.",
-            url: TAX_CHECKOUT_DOC_URL,
-          }
-
-          if (isInAuction) {
-            moreInfo.url = TAX_BID_CHECKOUT_DOC_URL
-          }
-
-          return {
-            displayText,
-            moreInfo,
-          }
-        },
-      },
+      taxInfo: TaxInfo,
       artaShippingEnabled: {
         type: GraphQLBoolean,
         deprecationReason: deprecate({
@@ -1653,30 +1630,6 @@ export const artworkConnection = connectionWithCursorInfo({
   nodeType: ArtworkType,
   connectionInterfaces: [ArtworkConnectionInterface],
   edgeInterfaces: [ArtworkEdgeInterface],
-})
-
-const TaxInfoMoreInfoType = new GraphQLObjectType({
-  name: "TaxInfoMoreInfo",
-  fields: {
-    display: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    url: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-  },
-})
-
-const TaxInfoType = new GraphQLObjectType({
-  name: "TaxInfo",
-  fields: {
-    displayText: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    moreInfo: {
-      type: TaxInfoMoreInfoType,
-    },
-  },
 })
 
 export default Artwork
