@@ -4,6 +4,7 @@ import { assign } from "lodash"
 import moment from "moment"
 import { getMicrofunnelDataByArtworkInternalID } from "schema/v2/artist/targetSupply/utils/getMicrofunnelData"
 import { runQuery } from "schema/v2/test/utils"
+import { BID_TAXES_DOC_URL, CHECKOUT_TAXES_DOC_URL } from "../taxInfo"
 
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
 
@@ -3804,6 +3805,60 @@ describe("Artwork type", () => {
             },
           })
         })
+      })
+    })
+  })
+
+  describe("taxInfo", () => {
+    const query = `
+      {
+        artwork(id: "foo-bar") {
+          taxInfo {
+            displayText
+            moreInfo {
+              displayText
+              url
+            }
+          }
+        }
+      }
+    `
+
+    it("should return correcy tax info when artwork is NOT in auction", async () => {
+      artwork.sale_ids = []
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          taxInfo: {
+            displayText: "Taxes may apply at checkout.",
+            moreInfo: {
+              displayText: "Learn more.",
+              url: CHECKOUT_TAXES_DOC_URL,
+            },
+          },
+        },
+      })
+    })
+
+    it("should return correcy tax info when artwork is in auction", async () => {
+      context.salesLoader = () => {
+        return Promise.resolve([{ ...sale, is_auction: true }])
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          taxInfo: {
+            displayText: "Taxes may apply after the auction.",
+            moreInfo: {
+              displayText: "Learn more.",
+              url: BID_TAXES_DOC_URL,
+            },
+          },
+        },
       })
     })
   })
