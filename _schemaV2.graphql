@@ -12990,6 +12990,19 @@ type Query {
     last: Int
   ): ArtistSeriesConnection
 
+  # A connection of recommended artists for a user.
+  artistsForUser(
+    after: String
+    before: String
+    first: Int
+    includeBackfill: Boolean!
+    last: Int
+    maxWorksPerArtist: Int
+    page: Int
+    userId: String
+    version: String
+  ): ArtistConnection
+
   # An Artwork
   artwork(
     # The slug or ID of the Artwork
@@ -16877,6 +16890,19 @@ type Viewer {
     #
     slugs: [String]
     sort: ArtistSorts
+  ): ArtistConnection
+
+  # A connection of recommended artists for a user.
+  artistsForUser(
+    after: String
+    before: String
+    first: Int
+    includeBackfill: Boolean!
+    last: Int
+    maxWorksPerArtist: Int
+    page: Int
+    userId: String
+    version: String
   ): ArtistConnection
 
   # An Artwork

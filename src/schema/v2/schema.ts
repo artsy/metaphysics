@@ -136,6 +136,7 @@ import { shortcut } from "./shortcut"
 import { channel } from "./article/channel"
 import { departments, job, jobs } from "./jobs"
 import { RecentlySoldArtworks } from "./recentlySoldArtworks"
+import { artistsForUser } from "./artistsForUser"
 import { artworksForUser } from "./artworksForUser"
 import {
   IdentityVerification,
@@ -168,6 +169,7 @@ const OptionalFieldDirective = new GraphQLDirective({
 
 const rootFields = {
   admin: AdminField,
+  artistsForUser,
   artworksForUser,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkMediums: ArtworkMediums,
