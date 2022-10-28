@@ -647,6 +647,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           return followedArtistLoader(id).then(({ is_followed }) => is_followed)
         },
       },
+      isPersonalArtist: {
+        type: GraphQLBoolean,
+        description: "Whether the artist has been created by a user.",
+        resolve: ({ is_personal_artist }) => is_personal_artist,
+      },
       isPublic: { type: GraphQLBoolean, resolve: (artist) => artist.public },
       isShareable: {
         type: GraphQLBoolean,
