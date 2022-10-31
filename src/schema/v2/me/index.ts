@@ -353,6 +353,12 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ receive_viewing_room_notification }) =>
         receive_viewing_room_notification,
     },
+    receivePartnerShowNotification: {
+      description: "This user should receive partner show notifications",
+      type: GraphQLBoolean,
+      resolve: ({ receive_partner_show_notification }) =>
+        receive_partner_show_notification,
+    },
     recentlyViewedArtworkIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
       resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,

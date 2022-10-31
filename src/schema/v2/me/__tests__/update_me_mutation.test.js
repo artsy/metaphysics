@@ -27,6 +27,7 @@ describe("UpdateMeMutation", () => {
             receiveSaleOpeningClosingNotification: false
             receiveOrderNotification: false
             receiveViewingRoomNotification: true
+            receivePartnerShowNotification: true
             shareFollows: false
             currencyPreference: EUR
             lengthUnitPreference: CM
@@ -49,6 +50,7 @@ describe("UpdateMeMutation", () => {
             receivePromotionNotification
             receiveOrderNotification
             receiveViewingRoomNotification
+            receivePartnerShowNotification
           }
           userOrError {
             ... on UpdateMyProfileMutationSuccess {
@@ -89,6 +91,7 @@ describe("UpdateMeMutation", () => {
         receive_sale_opening_closing_notification: false,
         receive_order_notification: false,
         receive_viewing_room_notification: true,
+        receive_partner_show_notification: true,
         currency_preference: "EUR",
         length_unit_preference: "cm",
       })
@@ -113,6 +116,7 @@ describe("UpdateMeMutation", () => {
           receive_sale_opening_closing_notification: true,
           receive_order_notification: true,
           receive_viewing_room_notification: true,
+          receive_partner_show_notification: true,
           currency_preference: "EUR",
           length_unit_preference: "cm",
         }),
@@ -143,6 +147,7 @@ describe("UpdateMeMutation", () => {
       receive_sale_opening_closing_notification: false,
       receive_order_notification: false,
       receive_viewing_room_notification: true,
+      receive_partner_show_notification: true,
       share_follows: false,
       currency_preference: "EUR",
       length_unit_preference: "cm",
@@ -211,6 +216,7 @@ describe("UpdateMeMutation", () => {
         receive_sale_opening_closing_notification: false,
         receive_order_notification: false,
         receive_viewing_room_notification: true,
+        receive_partner_show_notification: true,
       })
     )
 
