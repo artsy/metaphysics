@@ -187,7 +187,7 @@ describe("getFigures", () => {
           image_url: "bar",
         },
       ],
-      external_video_id: "video-id",
+      external_video_id: "video-id?id=foo&width=200&height=300",
       set_video_as_cover: null,
     })
 
@@ -196,9 +196,9 @@ describe("getFigures", () => {
       { image_url: "bar", type: "Image" },
       {
         type: "Video",
-        url: "video-id",
-        width: 360,
-        height: 360,
+        url: "video-id?id=foo&width=200&height=300",
+        width: 200,
+        height: 300,
       },
     ])
   })
@@ -213,16 +213,16 @@ describe("getFigures", () => {
           image_url: "bar",
         },
       ],
-      external_video_id: "video-id",
+      external_video_id: "video-id?id=foo&width=200&height=300",
       set_video_as_cover: true,
     })
 
     expect(data).toEqual([
       {
         type: "Video",
-        url: "video-id",
-        width: 360,
-        height: 360,
+        url: "video-id?id=foo&width=200&height=300",
+        width: 200,
+        height: 300,
       },
       { image_url: "foo", type: "Image" },
       { image_url: "bar", type: "Image" },
