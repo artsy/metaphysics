@@ -1,5 +1,6 @@
 import { Artwork } from "types/runtime/gravity"
 import { parse } from "url"
+import qs from "querystring"
 import { normalizeImageData } from "../image"
 import _ from "lodash"
 
@@ -84,16 +85,25 @@ export const getFigures = ({
   }))
   const sortedImages = normalizeImageData(_.sortBy(_images, "position"))
 
-  const videos = external_video_id
-    ? [
-        {
-          type: "Video",
-          url: external_video_id,
-          width: 360,
-          height: 360,
-        },
-      ]
-    : []
+  let videos = [] as {
+    type: string
+    url: string
+    width: number
+    height: number
+  }[]
+
+  if (external_video_id) {
+    const { width, height } = qs.parse(external_video_id)
+
+    videos = [
+      {
+        type: "Video",
+        url: external_video_id,
+        width: Number(width),
+        height: Number(height),
+      },
+    ]
+  }
 
   if (set_video_as_cover) {
     return [...videos, ...sortedImages]
