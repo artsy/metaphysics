@@ -239,6 +239,44 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: async ({ data_transfer_opt_out }) => data_transfer_opt_out,
       },
+      dislikedArtworksConnection: {
+        type: artworkConnection.connectionType,
+        args: pageable({}),
+        resolve: async ({ id }, args, { dislikedArtworksLoader }) => {
+          if (!dislikedArtworksLoader) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const gravityOptions = {
+            page,
+            size,
+            user_id: id,
+            private: true,
+            total_count: true,
+            sort: "-position",
+          }
+
+          try {
+            const { body, headers } = await dislikedArtworksLoader(
+              gravityOptions
+            )
+
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+            return paginationResolver({
+              totalCount,
+              offset,
+              page,
+              size,
+              body,
+              args,
+            })
+          } catch (error) {
+            return CatchCollectionNotFoundException(error)
+          }
+        },
+      },
       inquiredArtworksConnection: {
         type: UserInquiredArtworksConnection,
         args: pageable({}),
