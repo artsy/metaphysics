@@ -2100,6 +2100,7 @@ type Artwork implements Node & Searchable & Sellable {
   # When in an auction, can the work be bought immediately
   isBuyNowable: Boolean
   isComparableWithAuctionResults: Boolean
+  isDisliked: Boolean
   isDownloadable: Boolean
   isEdition: Boolean
 
@@ -7615,6 +7616,17 @@ type DisableSecondFactorPayload {
   secondFactorOrErrors: SecondFactorOrErrorsUnion!
 }
 
+input DislikeArtworkInput {
+  artworkID: String
+  clientMutationId: String
+  remove: Boolean
+}
+
+type DislikeArtworkPayload {
+  artwork: Artwork
+  clientMutationId: String
+}
+
 type DoNotUseThisPartner {
   display_name: String @deprecated(reason: "Use displayName")
   displayName: String
@@ -11043,6 +11055,9 @@ type Mutation {
   disableSecondFactor(
     input: DisableSecondFactorInput!
   ): DisableSecondFactorPayload
+
+  # Add (or remove) an artwork to (from) a users dislikes.
+  dislikeArtwork(input: DislikeArtworkInput!): DislikeArtworkPayload
   enableSecondFactor(input: EnableSecondFactorInput!): EnableSecondFactorPayload
 
   # Mark sale as ended.
@@ -16220,6 +16235,12 @@ type User implements Node {
   # Has the user opted out of data transfer.
   dataTransferOptOut: Boolean
   devices: [Device!]!
+  dislikedArtworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection
 
   # The given email of the user.
   email: String!
