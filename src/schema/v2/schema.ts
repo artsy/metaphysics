@@ -75,6 +75,7 @@ import { myCollectionCreateArtworkMutation } from "./me/myCollectionCreateArtwor
 import { myCollectionDeleteArtworkMutation } from "./me/myCollectionDeleteArtworkMutation"
 import { myCollectionUpdateArtworkMutation } from "./me/myCollectionUpdateArtworkMutation"
 import saveArtworkMutation from "./me/saveArtworkMutation"
+import dislikeArtworkMutation from "./me/dislikeArtworkMutation"
 import { sendConfirmationEmailMutation } from "./me/sendConfirmationEmailMutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
 import UpdateCollectorProfileWithID from "./CollectorProfile/mutations/updateCollectorProfileWithID"
@@ -298,6 +299,7 @@ export default new GraphQLSchema({
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteUserInterest: deleteUserInterestMutation,
       deleteUserRole: deleteUserRoleMutation,
+      dislikeArtwork: dislikeArtworkMutation,
       endSale: endSaleMutation,
       followArtist: FollowArtist,
       followGene: FollowGene,
