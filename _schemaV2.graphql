@@ -9495,7 +9495,7 @@ type Image {
     width: Int!
   ): CroppedImageUrl
   deepZoom: DeepZoom
-  height: Int
+  height: Int!
   href: String
   imageURL: String
   imageVersions: [String]
@@ -9531,7 +9531,7 @@ type Image {
   title: String
   url(version: [String]): String
   versions: [String]
-  width: Int
+  width: Int!
 }
 
 type ImageSearch {

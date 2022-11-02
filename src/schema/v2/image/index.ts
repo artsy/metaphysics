@@ -61,8 +61,8 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     height: {
-      type: GraphQLInt,
-      resolve: ({ original_height }) => original_height,
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ original_height }) => original_height || 0,
     },
     imageURL: {
       type: GraphQLString,
@@ -137,8 +137,8 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     width: {
-      type: GraphQLInt,
-      resolve: ({ original_width }) => original_width,
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ original_width }) => original_width || 0,
     },
     url: VersionedUrl,
     versions: {
