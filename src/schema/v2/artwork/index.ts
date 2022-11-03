@@ -79,6 +79,7 @@ import { TaxInfo } from "./taxInfo"
 import {
   embed,
   getFigures,
+  isEligibleForOnPlatformTransaction,
   isEmbeddedVideo,
   isTooBig,
   isTwoDimensional,
@@ -90,18 +91,6 @@ const has_price_range = (price) => {
 
 const has_multiple_editions = (edition_sets) => {
   return edition_sets && edition_sets.length > 1
-}
-
-const isEligibleForOnPlatformTransaction = ({
-  acquireable,
-  offerable,
-  offerable_from_inquiry,
-}) => {
-  if (acquireable || offerable || offerable_from_inquiry) {
-    return true
-  }
-
-  return false
 }
 
 const IMPORT_SOURCES = {
