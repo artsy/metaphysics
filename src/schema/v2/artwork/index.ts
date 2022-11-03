@@ -71,7 +71,6 @@ import { ArtworkContextGrids } from "./artworkContextGrids"
 import { ComparableAuctionResults } from "./comparableAuctionResults"
 import Context from "./context"
 import { ArtworkHighlightType } from "./highlight"
-import { isInAuctionResolver } from "./isInAuctionResolver"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import Meta, { artistNames } from "./meta"
@@ -813,7 +812,18 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       isInAuction: {
         type: GraphQLBoolean,
         description: "Is this artwork part of an auction?",
-        resolve: isInAuctionResolver,
+        resolve: async ({ sale_ids }, _options, { salesLoader }) => {
+          if (sale_ids && sale_ids.length > 0) {
+            const sales = await salesLoader({
+              id: sale_ids,
+              is_auction: true,
+            })
+
+            return sales.length > 0
+          }
+
+          return false
+        },
       },
       isInShow: {
         type: GraphQLBoolean,

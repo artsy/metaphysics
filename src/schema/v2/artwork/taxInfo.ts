@@ -1,5 +1,4 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
-import {} from "./isInAuctionResolver"
 import { isEligibleForOnPlatformTransaction } from "./utilities"
 
 export const CHECKOUT_TAXES_DOC_URL =
