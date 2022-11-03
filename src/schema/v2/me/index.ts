@@ -58,6 +58,13 @@ import { SaleRegistrationConnection } from "./sale_registrations"
 import { SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { WatchedLotConnection } from "./watchedLotConnection"
+import {
+  convertConnectionArgsToGravityArgs,
+  CatchCollectionNotFoundException,
+} from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
+import { artworkConnection } from "../artwork"
+import { paginationResolver } from "../fields/pagination"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -149,6 +156,40 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     conversationsConnection: Conversations,
     createdAt: date,
     creditCards: CreditCards,
+    dislikedArtworksConnection: {
+      type: artworkConnection.connectionType,
+      args: pageable({}),
+      resolve: async ({ id }, args, { dislikedArtworksLoader }) => {
+        if (!dislikedArtworksLoader) return null
+
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        const gravityOptions = {
+          page,
+          size,
+          user_id: id,
+          private: true,
+          total_count: true,
+          sort: "-position",
+        }
+
+        try {
+          const { body, headers } = await dislikedArtworksLoader(gravityOptions)
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+          })
+        } catch (error) {
+          return CatchCollectionNotFoundException(error)
+        }
+      },
+    },
     email: {
       type: GraphQLString,
     },

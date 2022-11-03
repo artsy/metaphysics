@@ -10351,6 +10351,12 @@ type Me implements Node {
 
   # Currency preference of the user
   currencyPreference: CurrencyPreference!
+  dislikedArtworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection
   email: String
 
   # User has confirmed their email address
@@ -16235,12 +16241,6 @@ type User implements Node {
   # Has the user opted out of data transfer.
   dataTransferOptOut: Boolean
   devices: [Device!]!
-  dislikedArtworksConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): ArtworkConnection
 
   # The given email of the user.
   email: String!
