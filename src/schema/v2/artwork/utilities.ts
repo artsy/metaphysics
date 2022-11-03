@@ -111,3 +111,15 @@ export const getFigures = ({
     return [...sortedImages, ...videos]
   }
 }
+
+export const isEligibleForOnPlatformTransaction = ({
+  acquireable,
+  offerable,
+  offerable_from_inquiry,
+}) => {
+  if (acquireable || offerable || offerable_from_inquiry) {
+    return true
+  }
+
+  return false
+}

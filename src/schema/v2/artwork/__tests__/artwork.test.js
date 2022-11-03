@@ -3824,41 +3824,75 @@ describe("Artwork type", () => {
       }
     `
 
-    it("should return correcy tax info when artwork is NOT in auction", async () => {
-      artwork.sale_ids = []
+    describe("when artwork is eligible for on-platform transaction", () => {
+      it("should return correct tax info when acquireable = true", async () => {
+        artwork.acquireable = true
 
-      const data = await runQuery(query, context)
+        const data = await runQuery(query, context)
 
-      expect(data).toEqual({
-        artwork: {
-          taxInfo: {
-            displayText: "Taxes may apply at checkout.",
-            moreInfo: {
-              displayText: "Learn more.",
-              url: CHECKOUT_TAXES_DOC_URL,
+        expect(data).toEqual({
+          artwork: {
+            taxInfo: {
+              displayText: "Taxes may apply at checkout.",
+              moreInfo: {
+                displayText: "Learn more.",
+                url: CHECKOUT_TAXES_DOC_URL,
+              },
             },
           },
-        },
+        })
+      })
+
+      it("should return correct tax info when offerable = true", async () => {
+        artwork.offerable = true
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          artwork: {
+            taxInfo: {
+              displayText: "Taxes may apply at checkout.",
+              moreInfo: {
+                displayText: "Learn more.",
+                url: CHECKOUT_TAXES_DOC_URL,
+              },
+            },
+          },
+        })
+      })
+
+      it("should return correct tax info when offerable_from_inquiry = true", async () => {
+        artwork.offerable_from_inquiry = true
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          artwork: {
+            taxInfo: {
+              displayText: "Taxes may apply at checkout.",
+              moreInfo: {
+                displayText: "Learn more.",
+                url: CHECKOUT_TAXES_DOC_URL,
+              },
+            },
+          },
+        })
       })
     })
 
-    it("should return correcy tax info when artwork is in auction", async () => {
-      context.salesLoader = () => {
-        return Promise.resolve([{ ...sale, is_auction: true }])
-      }
+    describe("when artwork is NOT eligible for on-platform transaction", () => {
+      it("should return null", async () => {
+        artwork.acquireable = false
+        artwork.offerable = false
+        artwork.offerable_from_inquiry = false
 
-      const data = await runQuery(query, context)
+        const data = await runQuery(query, context)
 
-      expect(data).toEqual({
-        artwork: {
-          taxInfo: {
-            displayText: "Taxes may apply after the auction.",
-            moreInfo: {
-              displayText: "Learn more.",
-              url: BID_TAXES_DOC_URL,
-            },
+        expect(data).toEqual({
+          artwork: {
+            taxInfo: null,
           },
-        },
+        })
       })
     })
   })
