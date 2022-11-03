@@ -3824,7 +3824,7 @@ describe("Artwork type", () => {
       }
     `
 
-    it("should return correcy tax info when artwork is NOT in auction", async () => {
+    it("should return correct tax info when artwork is NOT in auction", async () => {
       artwork.sale_ids = []
 
       const data = await runQuery(query, context)
@@ -3842,7 +3842,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it("should return correcy tax info when artwork is in auction", async () => {
+    it("should return null when artwork is in auction", async () => {
       context.salesLoader = () => {
         return Promise.resolve([{ ...sale, is_auction: true }])
       }
@@ -3851,13 +3851,7 @@ describe("Artwork type", () => {
 
       expect(data).toEqual({
         artwork: {
-          taxInfo: {
-            displayText: "Taxes may apply after the auction.",
-            moreInfo: {
-              displayText: "Learn more.",
-              url: BID_TAXES_DOC_URL,
-            },
-          },
+          taxInfo: null,
         },
       })
     })
