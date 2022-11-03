@@ -1,5 +1,6 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
-import { isInAuctionResolver } from "./isInAuctionResolver"
+import {} from "./isInAuctionResolver"
+import { isEligibleForOnPlatformTransaction } from "./utilities"
 
 export const CHECKOUT_TAXES_DOC_URL =
   "https://support.artsy.net/hc/en-us/articles/360047294733-How-is-sales-tax-and-VAT-handled-on-works-listed-with-secure-checkout-"
@@ -30,10 +31,8 @@ const TaxInfoType = new GraphQLObjectType({
 
 export const TaxInfo = {
   type: TaxInfoType,
-  resolve: async (artwork, args, context) => {
-    const isInAuction = await isInAuctionResolver(artwork, args, context)
-
-    if (isInAuction) {
+  resolve: async (artwork) => {
+    if (!isEligibleForOnPlatformTransaction(artwork)) {
       return null
     }
 
