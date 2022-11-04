@@ -9160,6 +9160,7 @@ type HomePage {
   # A list of enabled hero units to show on the requested platform
   heroUnits(platform: HomePageHeroUnitPlatform!): [HomePageHeroUnit]
   marketingCollectionsModule: HomePageMarketingCollectionsModule
+  onboardingModule: OnboardingModule
   salesModule: HomePageSalesModule
 }
 
@@ -11543,6 +11544,11 @@ type OfferResponse {
   offer: ConsignmentOffer!
   phoneNumber: String
   rejectionReason: String
+}
+
+type OnboardingModule {
+  showMyCollectionCard: Boolean
+  showSWACard: Boolean
 }
 
 type OpeningHoursArray {
