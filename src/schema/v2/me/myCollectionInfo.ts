@@ -11,8 +11,8 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { artistConnection } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
-import { ArtistInsight, ArtistInsightKind } from "../artist/insights"
 import { getArtistInsights } from "../artist/helpers"
+import { ArtistInsight, ArtistInsightKind } from "../artist/insights"
 import { paginationResolver } from "../fields/pagination"
 import ArtistSorts from "../sorts/artist_sorts"
 
@@ -180,6 +180,7 @@ export const myCollectionInfoFields = {
         size,
         page,
         sort,
+        all: true,
         total_count: true,
         user_id: userID,
       })
