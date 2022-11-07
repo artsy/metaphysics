@@ -5,46 +5,40 @@ const MyCollectionOnboardingModuleType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "OnboardingModule",
+  name: "HomePageMyCollectionOnboardingModule",
   fields: {
     showMyCollectionCard: {
       type: GraphQLBoolean,
-      resolve: async ({ id }, _options, context) => {
-        if (!context.collectionLoader) {
-          return null
+      resolve: async (_root, _options, { collectionLoader, meLoader }) => {
+        if (!collectionLoader || !meLoader) {
+          return false
         }
-        console.log("id id id ======= ", id)
 
-        const collectionResponse = await context.collectionLoader(
-          "my-collection",
-          {
-            user_id: "61928a867fb62d000ec819e0",
+        return meLoader().then((me) => {
+          return collectionLoader("my-collection", {
+            user_id: me.id,
             private: true,
-          }
-        )
-        console.log("collectionResponse ======= ", collectionResponse)
-
-        return collectionResponse.artworks_count > 3
+          }).then((res) => {
+            return res.artworks_count > 3
+          })
+        })
       },
     },
     showSWACard: {
       type: GraphQLBoolean,
-      resolve: async ({ id }, _options, context) => {
-        if (!context.collectionLoader) {
-          return null
+      resolve: async (_root, _options, { collectionLoader, meLoader }) => {
+        if (!collectionLoader || !meLoader) {
+          return false
         }
-        console.log("id id id ======= ", id)
 
-        const collectionResponse = await context.collectionLoader(
-          "my-collection",
-          {
-            user_id: "61928a867fb62d000ec819e0",
+        return meLoader().then((me) => {
+          return collectionLoader("my-collection", {
+            user_id: me.id,
             private: true,
-          }
-        )
-        console.log("collectionResponse ======= ", collectionResponse)
-
-        return collectionResponse.artworks_count > 3
+          }).then((res) => {
+            return res.artworks_count > 3
+          })
+        })
       },
     },
   },
