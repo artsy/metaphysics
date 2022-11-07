@@ -22,6 +22,11 @@ export const VideoType = new GraphQLObjectType<any, ResolverContext>({
       description: "The url of the video",
       type: GraphQLNonNull(GraphQLString),
     },
+    playerUrl: {
+      description:
+        "Returns a full-qualified, embeddable iframe player for the video",
+      type: GraphQLNonNull(GraphQLString),
+    },
     height: {
       description: "The height of the video",
       type: GraphQLNonNull(GraphQLInt),

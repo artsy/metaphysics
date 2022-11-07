@@ -197,6 +197,7 @@ describe("getFigures", () => {
       {
         type: "Video",
         url: "video-id?id=foo&width=200&height=300",
+        playerUrl: "video-id?id=foo&width=200&height=300",
         width: 200,
         height: 300,
       },
@@ -221,6 +222,7 @@ describe("getFigures", () => {
       {
         type: "Video",
         url: "video-id?id=foo&width=200&height=300",
+        playerUrl: "video-id?id=foo&width=200&height=300",
         width: 200,
         height: 300,
       },

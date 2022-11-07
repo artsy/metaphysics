@@ -88,6 +88,7 @@ export const getFigures = ({
   let videos = [] as {
     type: string
     url: string
+    playerUrl: string
     width: number
     height: number
   }[]
@@ -99,6 +100,7 @@ export const getFigures = ({
       {
         type: "Video",
         url: external_video_id,
+        playerUrl: external_video_id,
         width: Number(width),
         height: Number(height),
       },
