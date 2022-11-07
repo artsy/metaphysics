@@ -18,10 +18,6 @@ export const VideoType = new GraphQLObjectType<any, ResolverContext>({
         return uuid(url, uuid.URL)
       },
     },
-    url: {
-      description: "The url of the video",
-      type: GraphQLNonNull(GraphQLString),
-    },
     playerUrl: {
       description:
         "Returns a full-qualified, embeddable iframe player for the video",
