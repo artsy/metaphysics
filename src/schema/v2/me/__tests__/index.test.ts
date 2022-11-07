@@ -311,24 +311,21 @@ describe("me/index", () => {
   })
 
   describe("dislikedArtworksConnection", () => {
-    const query = `
-    {
-      user(id: "blah") {
-        dislikedArtworksConnection(first: 10) {
-          totalCount
-          edges {
-            node {
-              title
+    const dislikedArtworksQuery = gql`
+     query {
+       me {
+          dislikedArtworksConnection(first: 10) {
+            totalCount
+            edges {
+              node {
+                title
+                }
+              }
             }
           }
         }
       }
-    }
-  `
-
-    const user = {
-      id: "blah",
-    }
+    `
 
     const artworks = [
       {
@@ -339,68 +336,68 @@ describe("me/index", () => {
       },
     ]
 
-    let context
-
-    beforeEach(() => {
-      context = {
-        userByIDLoader: () => {
-          return Promise.resolve(user)
-        },
-        dislikedArtworksLoader: () => {
-          return Promise.resolve({
+    it("returns disliked artworks for a user", async () => {
+      return runAuthenticatedQuery(dislikedArtworksQuery, {
+        dislikedArtworksLoader: () =>
+          Promise.resolve({
             body: artworks,
             headers: { "x-total-count": "2" },
-          })
-        },
-      }
-    })
-
-    it("returns disliked artworks for a user", async () => {
-      const {
-        user: {
-          dislikedArtworksConnection: { totalCount, edges },
-        },
-      } = await runAuthenticatedQuery(query, context)
-
-      expect(totalCount).toEqual(2)
-      expect(edges.length).toEqual(2)
-      expect(edges[0]).toEqual({
-        node: {
-          title: "Not A Fan",
-        },
-      })
-      expect(edges[1]).toEqual({
-        node: {
-          title: "Don't Like This",
-        },
+          }),
+      }).then((data) => {
+        expect(data).toEqual({
+          me: {
+            dislikedArtworksConnection: {
+              totalCount: 2,
+              edges: [
+                {
+                  node: {
+                    title: "Not A Fan",
+                  },
+                },
+                {
+                  node: {
+                    title: "Don't Like This",
+                  },
+                },
+              ],
+            },
+          },
+        })
       })
     })
 
     it("returns an empty connection w/ no error if the gravity request 404's", async () => {
-      context.dislikedArtworksLoader = () => {
-        return Promise.reject(new HTTPError("Not Found", 404))
-      }
-
-      const {
-        user: {
-          dislikedArtworksConnection: { totalCount, edges },
-        },
-      } = await runAuthenticatedQuery(query, context)
-
-      expect(totalCount).toEqual(0)
-      expect(edges).toEqual([])
+      return runAuthenticatedQuery(dislikedArtworksQuery, {
+        dislikedArtworksLoader: () =>
+          Promise.reject(new HTTPError("Not Found", 404)),
+      }).then((data) => {
+        expect(data).toEqual({
+          me: {
+            dislikedArtworksConnection: {
+              totalCount: 0,
+              edges: [],
+            },
+          },
+        })
+      })
     })
 
     it("throws an error if the gravity request errors and it's not a 404", async () => {
-      context.dislikedArtworksLoader = () => {
-        return Promise.reject(new HTTPError("Cats in the server room", 500))
-      }
+      return runAuthenticatedQuery(dislikedArtworksQuery, {
+        dislikedArtworksLoader: () =>
+          Promise.reject(new HTTPError("Cats in the server room", 500)),
+      })
 
       expect.assertions(1)
 
       try {
-        await runAuthenticatedQuery(query, context)
-        throw new Error("An error was not thrown but was expected to throw.")
+        await runAuthenticatedQuery(dislikedArtworksQuery, {
+          dislikedArtworkLoader: () => {
+            throw new Error(
+              "An error was not thrown but was expected to throw."
+            )
+          },
+        })
       } catch (error) {
         // eslint-disable-next-line jest/no-conditional-expect, jest/no-try-expect
         expect(error.message).toEqual("Cats in the server room")
