@@ -938,7 +938,6 @@ describe("Artist type", () => {
               }
               pageInfo {
                 hasNextPage
-                hasPreviousPage
               }
               totalCount
               edges {
@@ -955,7 +954,7 @@ describe("Artist type", () => {
         ({
           artist: {
             showsConnection: {
-              pageInfo: { hasNextPage, hasPreviousPage },
+              pageInfo: { hasNextPage },
               totalCount,
               pageCursors,
               edges,
@@ -975,9 +974,8 @@ describe("Artist type", () => {
           expect(edges).toHaveLength(1)
           // Check show data included in edges.
           expect(edges[0].node.name).toEqual("Catty Art Show")
-          // Check that there is a previous and next page.
+          // Check that there is a next page.
           expect(hasNextPage).toBe(true)
-          expect(hasPreviousPage).toBe(true)
           expect(totalCount).toEqual(35)
         }
       )
