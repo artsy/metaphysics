@@ -4,15 +4,13 @@ import {
   GraphQLString,
   GraphQLBoolean,
   GraphQLFieldConfig,
-  GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import ShowSorts from "schema/v2/sorts/show_sorts"
-import { merge, defaults, reject, includes } from "lodash"
-import { createPageCursors } from "schema/v2/fields/pagination"
+import { reject, includes } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { ShowsConnection } from "../show"
+import { paginationResolver } from "../fields/pagination"
 
 // TODO: Fix upstream, for now we remove shows from certain Partner types
 const denyListedPartnerTypes = [
@@ -22,6 +20,7 @@ const denyListedPartnerTypes = [
   "Auction",
 ]
 
+// FIXME: Filtering like this can lead to gaps in grids and/or blank pages
 export function showsWithDenyListedPartnersRemoved(shows) {
   return reject(shows, (show) => {
     if (show.partner) {
@@ -34,92 +33,55 @@ export function showsWithDenyListedPartnersRemoved(shows) {
   })
 }
 
-export const ShowArgs: GraphQLFieldConfigArgumentMap = {
-  active: {
-    type: GraphQLBoolean,
-  },
-  atAFair: {
-    type: GraphQLBoolean,
-  },
-  isReference: {
-    type: GraphQLBoolean,
-  },
-  size: {
-    type: GraphQLInt,
-    description: "The number of PartnerShows to return",
-  },
-  soloShow: {
-    type: GraphQLBoolean,
-  },
-  status: {
-    type: GraphQLString,
-  },
-  topTier: {
-    type: GraphQLBoolean,
-  },
-  visibleToPublic: {
-    type: GraphQLBoolean,
-  },
-  sort: {
-    type: ShowSorts,
-  },
-}
-
 export const ShowsConnectionField: GraphQLFieldConfig<
   { id: string },
   ResolverContext
 > = {
   type: ShowsConnection.connectionType,
-  args: pageable(ShowArgs),
-  resolve: ({ id }, args, { relatedShowsLoader }) => {
-    const gravityArgs = {
+  args: pageable({
+    active: { type: GraphQLBoolean },
+    atAFair: { type: GraphQLBoolean },
+    isReference: { type: GraphQLBoolean },
+    page: { type: GraphQLInt },
+    size: {
+      type: GraphQLInt,
+      description: "The number of PartnerShows to return",
+    },
+    soloShow: { type: GraphQLBoolean },
+    status: { type: GraphQLString },
+    topTier: { type: GraphQLBoolean },
+    visibleToPublic: { type: GraphQLBoolean },
+    sort: { type: ShowSorts },
+  }),
+  resolve: async ({ id }, args, { relatedShowsLoader }) => {
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    const { body, headers } = await relatedShowsLoader({
       active: args.active,
+      artist_id: id,
       at_a_fair: args.atAFair,
       is_reference: args.isReference,
-      size: args.size,
+      // /related endpoint doesn't support offset based navigation
+      page,
+      size,
       solo_show: args.soloShow,
+      sort: args.sort || "-end_at",
       status: args.status,
       top_tier: args.topTier,
+      total_count: true,
       visible_to_public: args.visibleToPublic,
-      sort: args.sort,
-    }
-    const pageOptions = convertConnectionArgsToGravityArgs(args)
-    const { page, size, offset } = pageOptions
-    return relatedShowsLoader(
-      defaults(
-        gravityArgs,
-        { page, size },
-        {
-          artist_id: id,
-          sort: "-end_at",
-          total_count: true,
-        }
-      )
-    )
-      .then(({ body, headers = {} }) => {
-        const allowListedShows = showsWithDenyListedPartnersRemoved(body)
-        return { body: allowListedShows, headers }
-      })
-      .then(({ body, headers }) => {
-        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-        const totalPages = Math.ceil(totalCount / size)
+    })
 
-        return merge(
-          {
-            pageCursors: createPageCursors(pageOptions, totalCount),
-            totalCount,
-          },
-          connectionFromArraySlice(body, args, {
-            arrayLength: totalCount,
-            sliceStart: offset,
-          }),
-          {
-            pageInfo: {
-              hasPreviousPage: page > 1,
-              hasNextPage: page < totalPages,
-            },
-          }
-        )
-      })
+    const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+    const allowListedShows = showsWithDenyListedPartnersRemoved(body)
+
+    return paginationResolver({
+      totalCount,
+      offset,
+      page,
+      size,
+      body: allowListedShows,
+      args,
+    })
   },
 }

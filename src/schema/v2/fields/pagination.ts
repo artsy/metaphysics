@@ -204,17 +204,20 @@ export const paginationResolver = <T>({
   /** Returned from the 'X-TOTAL-COUNT' header */
   totalCount: number
 }) => {
+  const connectionArgs = {
+    // If we're exclusively using page/size pagination, `hasNextPage` will
+    // always be `false` unless we include `first` as `size` for creating the connection.
+    first: size,
+    ...pick(args, "before", "after", "first", "last"),
+  }
+
   return {
     totalCount,
     pageCursors: createPageCursors({ page, size }, totalCount),
-    ...connectionFromArraySlice(
-      body,
-      pick(args, "before", "after", "first", "last"),
-      {
-        arrayLength: totalCount,
-        sliceStart: offset,
-      }
-    ),
+    ...connectionFromArraySlice(body, connectionArgs, {
+      arrayLength: totalCount,
+      sliceStart: offset,
+    }),
   }
 }
 
