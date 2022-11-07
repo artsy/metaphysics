@@ -196,7 +196,6 @@ describe("getFigures", () => {
       { image_url: "bar", type: "Image" },
       {
         type: "Video",
-        url: "video-id?id=foo&width=200&height=300",
         playerUrl: "video-id?id=foo&width=200&height=300",
         width: 200,
         height: 300,
@@ -221,7 +220,6 @@ describe("getFigures", () => {
     expect(data).toEqual([
       {
         type: "Video",
-        url: "video-id?id=foo&width=200&height=300",
         playerUrl: "video-id?id=foo&width=200&height=300",
         width: 200,
         height: 300,
