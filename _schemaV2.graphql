@@ -2100,7 +2100,7 @@ type Artwork implements Node & Searchable & Sellable {
   # When in an auction, can the work be bought immediately
   isBuyNowable: Boolean
   isComparableWithAuctionResults: Boolean
-  isDisliked: Boolean
+  isDisliked: Boolean!
   isDownloadable: Boolean
   isEdition: Boolean
 
@@ -7617,9 +7617,9 @@ type DisableSecondFactorPayload {
 }
 
 input DislikeArtworkInput {
-  artworkID: String
+  artworkID: String!
   clientMutationId: String
-  remove: Boolean
+  remove: Boolean!
 }
 
 type DislikeArtworkPayload {

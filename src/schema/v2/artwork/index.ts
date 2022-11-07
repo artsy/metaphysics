@@ -862,7 +862,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       isDisliked: {
-        type: GraphQLBoolean,
+        type: new GraphQLNonNull(GraphQLBoolean),
         resolve: ({ _id }, {}, { dislikedArtworkLoader }) => {
           if (!dislikedArtworkLoader) return false
           return dislikedArtworkLoader(_id).then(

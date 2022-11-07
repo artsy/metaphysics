@@ -1,4 +1,4 @@
-import { GraphQLBoolean, GraphQLString } from "graphql"
+import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType } from "../artwork"
@@ -8,10 +8,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   description: "Add (or remove) an artwork to (from) a users dislikes.",
   inputFields: {
     artworkID: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     remove: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
   },
   outputFields: {
@@ -23,7 +23,6 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
   },
   mutateAndGetPayload: (
     { artworkID: artwork_id, remove },
-    /* TODO */
     { userID, dislikeArtworkLoader, deleteDislikedArtworkLoader }
   ) => {
     if (!deleteDislikedArtworkLoader || !dislikeArtworkLoader) {
