@@ -11822,7 +11822,7 @@ type Partner implements Node {
     first: Int
     last: Int
     showID: String
-  ): PartnerDocumentsConnectionConnection
+  ): PartnerDocumentConnection
   featuredShow: Show
 
   # Artworks Elastic Search results
@@ -12060,9 +12060,9 @@ type PartnerArtistCounts {
 }
 
 # A connection to a list of items.
-type PartnerArtistDocumentsConnectionConnection {
+type PartnerArtistDocumentConnection {
   # A list of edges.
-  edges: [PartnerArtistDocumentsConnectionEdge]
+  edges: [PartnerArtistDocumentEdge]
   pageCursors: PageCursors!
 
   # Information to aid in pagination.
@@ -12071,7 +12071,7 @@ type PartnerArtistDocumentsConnectionConnection {
 }
 
 # An edge in a connection.
-type PartnerArtistDocumentsConnectionEdge {
+type PartnerArtistDocumentEdge {
   # A cursor for use in pagination
   cursor: String!
 
@@ -12289,26 +12289,6 @@ type PartnerDocumentEdge {
   node: PartnerDocument
 }
 
-# A connection to a list of items.
-type PartnerDocumentsConnectionConnection {
-  # A list of edges.
-  edges: [PartnerDocumentsConnectionEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type PartnerDocumentsConnectionEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: PartnerDocument
-}
-
 # An edge in a connection.
 type PartnerEdge {
   # A cursor for use in pagination
@@ -12349,6 +12329,26 @@ enum PartnersAggregation {
 type PartnersAggregationResults {
   counts: [AggregationCount]
   slice: PartnersAggregation
+}
+
+# A connection to a list of items.
+type PartnerShowDocumentConnection {
+  # A list of edges.
+  edges: [PartnerShowDocumentEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerShowDocumentEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: PartnerDocument
 }
 
 enum PartnerShowPartnerType {
@@ -13570,7 +13570,7 @@ type Query {
     # The slug or ID of the Partner
     partnerID: String!
     size: Int
-  ): PartnerArtistDocumentsConnectionConnection
+  ): PartnerArtistDocumentConnection
     @deprecated(reason: "Prefer `partner.documentsConnection`")
 
   # A list of Artworks for a partner
@@ -13640,7 +13640,7 @@ type Query {
     # The slug or ID of the Show
     showID: String!
     size: Int
-  ): PartnerDocumentConnection
+  ): PartnerShowDocumentConnection
     @deprecated(reason: "Prefer `partner.documentsConnection`")
 
   # Phone number information
@@ -17319,7 +17319,7 @@ type Viewer {
     # The slug or ID of the Partner
     partnerID: String!
     size: Int
-  ): PartnerArtistDocumentsConnectionConnection
+  ): PartnerArtistDocumentConnection
     @deprecated(reason: "Prefer `partner.documentsConnection`")
 
   # A list of Artworks for a partner
@@ -17389,7 +17389,7 @@ type Viewer {
     # The slug or ID of the Show
     showID: String!
     size: Int
-  ): PartnerDocumentConnection
+  ): PartnerShowDocumentConnection
     @deprecated(reason: "Prefer `partner.documentsConnection`")
 
   # Phone number information

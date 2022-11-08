@@ -59,7 +59,6 @@ export const PartnerDocumentsConnection: GraphQLFieldConfig<
 > = {
   description: "Return partner documents if current user has CMS access.",
   type: connectionWithCursorInfo({
-    name: "PartnerDocumentsConnection",
     nodeType: PartnerDocumentType,
   }).connectionType,
   args: pageable({

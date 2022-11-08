@@ -15,7 +15,7 @@ export const PartnerArtistDocumentsConnection: GraphQLFieldConfig<
   description: "Retrieve all partner documents for a given partner",
   deprecationReason: "Prefer `partner.documentsConnection`",
   type: connectionWithCursorInfo({
-    name: "PartnerArtistDocumentsConnection",
+    name: "PartnerArtistDocument",
     nodeType: PartnerDocumentType,
   }).connectionType,
   args: pageable({

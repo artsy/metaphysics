@@ -14,6 +14,7 @@ export const PartnerShowDocumentsConnection: GraphQLFieldConfig<
   ResolverContext
 > = {
   type: connectionWithCursorInfo({
+    name: "PartnerShowDocument",
     nodeType: PartnerDocumentType,
   }).connectionType,
   description:
