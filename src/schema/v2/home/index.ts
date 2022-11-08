@@ -19,8 +19,8 @@ const HomePageType = new GraphQLObjectType<any, ResolverContext>({
     artworkModules: HomePageArtworkModules,
     heroUnits: HomePageHeroUnits,
     fairsModule: HomePageFairsModule,
-    salesModule: HomePageSalesModule,
     onboardingModule: HomePageMyCollectionOnboardingModule,
+    salesModule: HomePageSalesModule,
   },
 })
 

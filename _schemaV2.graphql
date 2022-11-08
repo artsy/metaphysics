@@ -9290,8 +9290,8 @@ type HomePageModulesParams {
 }
 
 type HomePageMyCollectionOnboardingModule {
-  showMyCollectionCard: Boolean
-  showSWACard: Boolean
+  showMyCollectionCard: Boolean!
+  showSWACard: Boolean!
 }
 
 type HomePageRelatedArtistArtworkModule {

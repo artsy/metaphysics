@@ -1,4 +1,4 @@
-import { GraphQLBoolean, GraphQLObjectType } from "graphql"
+import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 const MyCollectionOnboardingModuleType = new GraphQLObjectType<
@@ -8,7 +8,7 @@ const MyCollectionOnboardingModuleType = new GraphQLObjectType<
   name: "HomePageMyCollectionOnboardingModule",
   fields: {
     showMyCollectionCard: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
       resolve: async (_root, _options, { collectionLoader, meLoader }) => {
         if (!collectionLoader || !meLoader) {
           return false
@@ -19,13 +19,13 @@ const MyCollectionOnboardingModuleType = new GraphQLObjectType<
             user_id: me.id,
             private: true,
           }).then((res) => {
-            return res.artworks_count > 3
+            return !(res.artworks_count > 3)
           })
         })
       },
     },
     showSWACard: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
       resolve: async (_root, _options, { collectionLoader, meLoader }) => {
         if (!collectionLoader || !meLoader) {
           return false
@@ -36,7 +36,7 @@ const MyCollectionOnboardingModuleType = new GraphQLObjectType<
             user_id: me.id,
             private: true,
           }).then((res) => {
-            return res.artworks_count > 3
+            return !(res.artworks_count > 3)
           })
         })
       },
