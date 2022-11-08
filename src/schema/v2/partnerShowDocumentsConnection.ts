@@ -1,11 +1,4 @@
-import config from "config"
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLInt,
-} from "graphql"
-import { InternalIDFields } from "./object_identification"
+import { GraphQLString, GraphQLNonNull, GraphQLInt } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
   connectionWithCursorInfo,
@@ -14,42 +7,19 @@ import {
 import { GraphQLFieldConfig } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-
-export const PartnerShowDocumentType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "PartnerShowDocument",
-  fields: {
-    ...InternalIDFields,
-    uri: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    filename: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    title: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    size: {
-      type: new GraphQLNonNull(GraphQLInt),
-    },
-    publicUrl: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ uri }) => `${config.GRAVITY_API_BASE}/${uri}`,
-    },
-  },
-})
+import { PartnerDocumentType } from "./partnerDocumentsConnection"
 
 export const PartnerShowDocumentsConnection: GraphQLFieldConfig<
   void,
   ResolverContext
 > = {
   type: connectionWithCursorInfo({
-    nodeType: PartnerShowDocumentType,
+    name: "PartnerShowDocument",
+    nodeType: PartnerDocumentType,
   }).connectionType,
   description:
     "Retrieve all partner show documents for a given partner and show",
+  deprecationReason: "Prefer `partner.documentsConnection`",
   args: pageable({
     partnerID: {
       type: new GraphQLNonNull(GraphQLString),
@@ -78,7 +48,7 @@ export const PartnerShowDocumentsConnection: GraphQLFieldConfig<
       total_count: true,
     }
     const { body, headers } = await partnerShowDocumentsLoader(
-      { showId: args.showID, partnerId: args.partnerID },
+      { showID: args.showID, partnerID: args.partnerID },
       gravityOptions
     )
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)

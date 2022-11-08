@@ -9,17 +9,14 @@ describe("partnerShowDocumentsConnection", () => {
     response = [
       {
         uri: "partner/name/filename-one.pdf",
-        filename: "filename-one.pdf",
         title: "File One",
       },
       {
         uri: "partner/name/filename-two.pdf",
-        filename: "filename-two.png",
         title: "File Two",
       },
       {
         uri: "partner/name/filename-three.pdf",
-        filename: "filename-three.jpg",
         title: "File Three",
       },
     ]
@@ -46,7 +43,6 @@ describe("partnerShowDocumentsConnection", () => {
         ) {
           edges {
             node {
-              filename
               title
             }
           }
@@ -61,19 +57,16 @@ describe("partnerShowDocumentsConnection", () => {
         edges: [
           {
             node: {
-              filename: "filename-one.pdf",
               title: "File One",
             },
           },
           {
             node: {
-              filename: "filename-two.png",
               title: "File Two",
             },
           },
           {
             node: {
-              filename: "filename-three.jpg",
               title: "File Three",
             },
           },

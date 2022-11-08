@@ -42,6 +42,7 @@ import { truncate } from "lib/helpers"
 import { setVersion } from "./image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquirerCollectorProfile"
+import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -482,6 +483,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ default_profile_id }) => default_profile_id,
       },
+      documentsConnection: PartnerDocumentsConnection,
       featuredShow: {
         type: ShowType,
         resolve: async ({ id }, _args, { partnerShowsLoader }) => {
