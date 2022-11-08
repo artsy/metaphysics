@@ -11810,6 +11810,19 @@ type Partner implements Node {
   displayFullPartnerPage: Boolean
   displayWorksSection: Boolean
   distinguishRepresentedArtists: Boolean
+
+  # A connection of documents at a partner.
+  documentsConnection(
+    after: String
+    before: String
+
+    # Return only document(s) included in this list of IDs.
+    documentIDs: [String]
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): PartnerDocumentConnection
   featuredShow: Show
 
   # Artworks Elastic Search results
@@ -12254,6 +12267,40 @@ type PartnerCounts {
     format: String
     label: String
   ): FormattedNumber
+}
+
+type PartnerDocument {
+  filename: String!
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  publicUrl: String!
+  size: Int!
+  title: String!
+  uri: String!
+}
+
+# A connection to a list of items.
+type PartnerDocumentConnection {
+  # A list of edges.
+  edges: [PartnerDocumentEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerDocumentEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: PartnerDocument
 }
 
 # An edge in a connection.
@@ -13581,6 +13628,19 @@ type Query {
     # The slug or ID of the PartnerCategory
     id: String!
   ): PartnerCategory
+
+  # Retrieve all partner documents for a given partner
+  partnerDocumentsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+
+    # The slug or ID of the Partner
+    partnerID: String!
+    size: Int
+  ): PartnerDocumentConnection
 
   # A list of Partners
   partnersConnection(
@@ -17328,6 +17388,19 @@ type Viewer {
     # The slug or ID of the PartnerCategory
     id: String!
   ): PartnerCategory
+
+  # Retrieve all partner documents for a given partner
+  partnerDocumentsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+
+    # The slug or ID of the Partner
+    partnerID: String!
+    size: Int
+  ): PartnerDocumentConnection
 
   # A list of Partners
   partnersConnection(
