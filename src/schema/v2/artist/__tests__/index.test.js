@@ -870,7 +870,7 @@ describe("Artist type", () => {
         ({
           artist: {
             articlesConnection: {
-              pageInfo: { startCursor, hasNextPage, hasPreviousPage },
+              pageInfo: { startCursor, hasNextPage },
               pageCursors,
               edges,
             },
@@ -887,9 +887,8 @@ describe("Artist type", () => {
           }
           // Check article data included in edges.
           expect(edges[0].node.title).toEqual("My Awesome Article")
-          // Check prev/next are true.
+          // Check next are true.
           expect(hasNextPage).toBe(true)
-          expect(hasPreviousPage).toBe(true)
           expect(startCursor).not.toBe(null)
         }
       )

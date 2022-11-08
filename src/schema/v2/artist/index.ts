@@ -10,15 +10,7 @@ import {
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { totalViaLoader } from "lib/total"
-import {
-  compact,
-  defaults,
-  first,
-  flatten,
-  includes,
-  merge,
-  omit,
-} from "lodash"
+import { compact, defaults, first, flatten, includes, merge } from "lodash"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import Article, { articleConnection } from "schema/v2/article"
 import { artworkConnection } from "schema/v2/artwork"
@@ -34,6 +26,7 @@ import numeral from "schema/v2/fields/numeral"
 import {
   connectionWithCursorInfo,
   createPageCursors,
+  paginationResolver,
 } from "schema/v2/fields/pagination"
 import Image, { getDefault } from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
@@ -118,42 +111,33 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             description:
               "Get only articles with 'standard', 'feature', 'series' or 'video' layouts.",
           },
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
         }),
         type: articleConnection.connectionType,
-        resolve: (
-          { _id },
-          { inEditorialFeed, ..._args },
-          { articlesLoader }
-        ) => {
-          const args: any = {
-            in_editorial_feed: inEditorialFeed,
-            ..._args,
-          }
-          const pageOptions = convertConnectionArgsToGravityArgs(args)
-          const { page, size, offset } = pageOptions
+        resolve: async ({ _id }, args, { articlesLoader }) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
 
-          const gravityArgs = omit(args, ["first", "after", "last", "before"])
-          return articlesLoader(
-            defaults(gravityArgs, pageOptions, {
-              artist_id: _id,
-              published: true,
-              count: true,
-            })
-          ).then(({ results, count }) => {
-            const totalPages = Math.ceil(count / size)
-            return merge(
-              { pageCursors: createPageCursors(pageOptions, count) },
-              connectionFromArraySlice(results, args, {
-                arrayLength: count,
-                sliceStart: offset,
-              }),
-              {
-                pageInfo: {
-                  hasPreviousPage: page > 1,
-                  hasNextPage: page < totalPages,
-                },
-              }
-            )
+          const { results: body, count: totalCount } = await articlesLoader({
+            count: true,
+            published: true,
+            artist_id: _id,
+            in_editorial_feed: args.inEditorialFeed,
+            limit: args.limit,
+            offset,
+            size,
+            sort: args.sort,
+          })
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
           })
         },
       },
