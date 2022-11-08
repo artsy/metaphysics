@@ -11811,13 +11811,13 @@ type Partner implements Node {
   displayWorksSection: Boolean
   distinguishRepresentedArtists: Boolean
 
-  # Retrieve all partner documents for a given partner
+  # Return partner documents if current user has CMS access.
   documentsConnection(
     after: String
     artistID: String
     before: String
 
-    # Return only document(s) included in this list of IDs.
+    # Filter documents by ID.
     documentIDs: [String]
     first: Int
     last: Int
@@ -13571,6 +13571,7 @@ type Query {
     partnerID: String!
     size: Int
   ): PartnerArtistDocumentsConnectionConnection
+    @deprecated(reason: "Prefer `partner.documentsConnection`")
 
   # A list of Artworks for a partner
   partnerArtworks(
@@ -13640,6 +13641,7 @@ type Query {
     showID: String!
     size: Int
   ): PartnerDocumentConnection
+    @deprecated(reason: "Prefer `partner.documentsConnection`")
 
   # Phone number information
   phoneNumber(phoneNumber: String!, regionCode: String): PhoneNumberType
@@ -17318,6 +17320,7 @@ type Viewer {
     partnerID: String!
     size: Int
   ): PartnerArtistDocumentsConnectionConnection
+    @deprecated(reason: "Prefer `partner.documentsConnection`")
 
   # A list of Artworks for a partner
   partnerArtworks(
@@ -17387,6 +17390,7 @@ type Viewer {
     showID: String!
     size: Int
   ): PartnerDocumentConnection
+    @deprecated(reason: "Prefer `partner.documentsConnection`")
 
   # Phone number information
   phoneNumber(phoneNumber: String!, regionCode: String): PhoneNumberType

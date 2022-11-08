@@ -13,6 +13,7 @@ export const PartnerArtistDocumentsConnection: GraphQLFieldConfig<
   ResolverContext
 > = {
   description: "Retrieve all partner documents for a given partner",
+  deprecationReason: "Prefer `partner.documentsConnection`",
   type: connectionWithCursorInfo({
     name: "PartnerArtistDocumentsConnection",
     nodeType: PartnerDocumentType,
@@ -45,7 +46,7 @@ export const PartnerArtistDocumentsConnection: GraphQLFieldConfig<
       total_count: true,
     }
     const { body, headers } = await partnerArtistDocumentsLoader(
-      { artistId: args.artistID, partnerId: args.partnerID },
+      { artistID: args.artistID, partnerID: args.partnerID },
       gravityOptions
     )
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)

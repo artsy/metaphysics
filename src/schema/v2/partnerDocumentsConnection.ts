@@ -44,12 +44,20 @@ export const PartnerDocumentType = new GraphQLObjectType<any, ResolverContext>({
     },
   },
 })
+interface GravityArgs {
+  document_ids?: string[]
+  offset: number
+  size: number
+  total_count: boolean
+}
+
+const FILTER_KEYS = ["documentIDs", "artistID", "showID"]
 
 export const PartnerDocumentsConnection: GraphQLFieldConfig<
   any,
   ResolverContext
 > = {
-  description: "Retrieve all partner documents for a given partner",
+  description: "Return partner documents if current user has CMS access.",
   type: connectionWithCursorInfo({
     name: "PartnerDocumentsConnection",
     nodeType: PartnerDocumentType,
@@ -57,7 +65,7 @@ export const PartnerDocumentsConnection: GraphQLFieldConfig<
   args: pageable({
     documentIDs: {
       type: new GraphQLList(GraphQLString),
-      description: "Return only document(s) included in this list of IDs.",
+      description: "Filter documents by ID.",
     },
     artistID: {
       type: GraphQLString,
@@ -75,21 +83,19 @@ export const PartnerDocumentsConnection: GraphQLFieldConfig<
       partnerShowDocumentsLoader,
     }
   ) => {
-    interface GravityArgs {
-      document_ids?: string[]
-      offset: number
-      size: number
-      total_count: boolean
+    if (
+      !partnerArtistDocumentsLoader ||
+      !partnerArtistDocumentsLoader ||
+      !partnerShowDocumentsLoader
+    ) {
+      return null
     }
 
-    const filterKeys = ["documentIDs", "artistID", "showID"]
-
     if (
-      Object.keys(args).filter((key) => filterKeys.includes(key)).length > 1
+      Object.keys(args).filter((key) => FILTER_KEYS.includes(key)).length > 1
     ) {
       throw Error("Only one filter arg supported at a time.")
     }
-
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
     const gravityArgs: GravityArgs = {
       size,
@@ -97,26 +103,28 @@ export const PartnerDocumentsConnection: GraphQLFieldConfig<
       total_count: true,
     }
 
-    if (args.documentIDs) {
-      gravityArgs.document_ids = flatten([args.documentIDs])
-    }
-
     let response: BodyAndHeaders<any, ResponseHeaders> = {
       body: undefined,
       headers: {},
     }
 
-    if (args.artistID) {
-      response = await partnerArtistDocumentsLoader!(
-        { artistId: args.artistID, partnerId: partnerID },
+    const { artistID, showID, documentIDs } = args
+
+    if (artistID) {
+      response = await partnerArtistDocumentsLoader(
+        { artistID, partnerID },
         gravityArgs
       )
-    } else if (args.showID) {
-      response = await partnerShowDocumentsLoader!(
-        { showId: args.showID, partnerId: partnerID },
+    } else if (showID) {
+      response = await partnerShowDocumentsLoader(
+        { showID, partnerID },
         gravityArgs
       )
     } else {
+      if (documentIDs) {
+        gravityArgs.document_ids = flatten([args.documentIDs])
+      }
+
       response = await partnerDocumentsLoader!(partnerID, gravityArgs)
     }
 

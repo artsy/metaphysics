@@ -1,7 +1,7 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("partnerDocumentsConnection", () => {
+describe("partner.documentsConnection", () => {
   let response
   let context
 
@@ -9,41 +9,86 @@ describe("partnerDocumentsConnection", () => {
     response = [
       {
         uri: "partner/name/filename-one.pdf",
-        filename: "filename-one.pdf",
         title: "File One",
       },
       {
         uri: "partner/name/filename-two.pdf",
-        filename: "filename-two.png",
         title: "File Two",
       },
       {
         uri: "partner/name/filename-three.pdf",
-        filename: "filename-three.jpg",
         title: "File Three",
       },
     ]
+    const documentsLoader = () => {
+      return Promise.resolve({
+        body: response,
+        headers: {
+          "x-total-count": response.length,
+        },
+      })
+    }
 
     context = {
-      partnerDocumentsLoader: () => {
+      partnerLoader: () => {
         return Promise.resolve({
-          body: response,
-          headers: {
-            "x-total-count": response.length,
-          },
+          _id: "partnerID",
         })
       },
+      partnerDocumentsLoader: documentsLoader,
+      partnerArtistDocumentsLoader: documentsLoader,
+      partnerShowDocumentsLoader: documentsLoader,
     }
   })
 
   it("returns documents", async () => {
     const query = gql`
       {
-        partnerDocumentsConnection(partnerID: "partnerID", first: 5) {
-          edges {
-            node {
-              filename
-              title
+        partner(id: "partnerID") {
+          documentsConnection(first: 5) {
+            edges {
+              node {
+                title
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      partner: {
+        documentsConnection: {
+          edges: [
+            {
+              node: {
+                title: "File One",
+              },
+            },
+            {
+              node: {
+                title: "File Two",
+              },
+            },
+            {
+              node: {
+                title: "File Three",
+              },
+            },
+          ],
+        },
+      },
+    })
+  })
+
+  it("returns hasNextPage=true when first is below total", async () => {
+    const query = gql`
+      {
+        partner(id: "partnerID") {
+          documentsConnection(first: 1) {
+            pageInfo {
+              hasNextPage
             }
           }
         }
@@ -53,48 +98,11 @@ describe("partnerDocumentsConnection", () => {
     const data = await runQuery(query, context)
 
     expect(data).toEqual({
-      partnerDocumentsConnection: {
-        edges: [
-          {
-            node: {
-              filename: "filename-one.pdf",
-              title: "File One",
-            },
+      partner: {
+        documentsConnection: {
+          pageInfo: {
+            hasNextPage: true,
           },
-          {
-            node: {
-              filename: "filename-two.png",
-              title: "File Two",
-            },
-          },
-          {
-            node: {
-              filename: "filename-three.jpg",
-              title: "File Three",
-            },
-          },
-        ],
-      },
-    })
-  })
-
-  it("returns hasNextPage=true when first is below total", async () => {
-    const query = gql`
-      {
-        partnerDocumentsConnection(partnerID: "partnerID", first: 1) {
-          pageInfo {
-            hasNextPage
-          }
-        }
-      }
-    `
-
-    const data = await runQuery(query, context)
-
-    expect(data).toEqual({
-      partnerDocumentsConnection: {
-        pageInfo: {
-          hasNextPage: true,
         },
       },
     })
@@ -103,9 +111,11 @@ describe("partnerDocumentsConnection", () => {
   it("returns hasNextPage=false when first is above total", async () => {
     const query = gql`
       {
-        partnerDocumentsConnection(partnerID: "partnerID", first: 3) {
-          pageInfo {
-            hasNextPage
+        partner(id: "partnerID") {
+          documentsConnection(first: 3) {
+            pageInfo {
+              hasNextPage
+            }
           }
         }
       }
@@ -114,9 +124,11 @@ describe("partnerDocumentsConnection", () => {
     const data = await runQuery(query, context)
 
     expect(data).toEqual({
-      partnerDocumentsConnection: {
-        pageInfo: {
-          hasNextPage: false,
+      partner: {
+        documentsConnection: {
+          pageInfo: {
+            hasNextPage: false,
+          },
         },
       },
     })
@@ -125,8 +137,10 @@ describe("partnerDocumentsConnection", () => {
   it("loads the total count", async () => {
     const query = gql`
       {
-        partnerDocumentsConnection(partnerID: "partnerID", first: 3) {
-          totalCount
+        partner(id: "partnerID") {
+          documentsConnection(first: 3) {
+            totalCount
+          }
         }
       }
     `
@@ -134,8 +148,10 @@ describe("partnerDocumentsConnection", () => {
     const data = await runQuery(query, context)
 
     expect(data).toEqual({
-      partnerDocumentsConnection: {
-        totalCount: 3,
+      partner: {
+        documentsConnection: {
+          totalCount: 3,
+        },
       },
     })
   })
@@ -143,10 +159,12 @@ describe("partnerDocumentsConnection", () => {
   it("returns public links", async () => {
     const query = gql`
       {
-        partnerDocumentsConnection(partnerID: "partnerID", first: 3) {
-          edges {
-            node {
-              publicUrl
+        partner(id: "partnerID") {
+          documentsConnection(first: 3) {
+            edges {
+              node {
+                publicURL
+              }
             }
           }
         }
@@ -154,15 +172,15 @@ describe("partnerDocumentsConnection", () => {
     `
 
     const data = await runQuery(query, context)
-    const edges = data.partnerDocumentsConnection.edges
+    const edges = data.partner.documentsConnection.edges
 
-    expect(edges[0].node.publicUrl).toBe(
+    expect(edges[0].node.publicURL).toBe(
       "https://api.artsy.test/api/v1/partner/name/filename-one.pdf"
     )
-    expect(edges[1].node.publicUrl).toBe(
+    expect(edges[1].node.publicURL).toBe(
       "https://api.artsy.test/api/v1/partner/name/filename-two.pdf"
     )
-    expect(edges[2].node.publicUrl).toBe(
+    expect(edges[2].node.publicURL).toBe(
       "https://api.artsy.test/api/v1/partner/name/filename-three.pdf"
     )
   })

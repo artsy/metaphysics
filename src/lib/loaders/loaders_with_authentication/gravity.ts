@@ -323,10 +323,10 @@ export default (accessToken, userID, opts) => {
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
     partnerArtistDocumentsLoader: gravityLoader<
       any,
-      { partnerId: string; artistId: string }
+      { partnerID: string; artistID: string }
     >(
-      ({ partnerId, artistId }) =>
-        `partner/${partnerId}/artist/${artistId}/documents`,
+      ({ partnerID, artistID }) =>
+        `partner/${partnerID}/artist/${artistID}/documents`,
       {},
       { headers: true }
     ),
@@ -345,7 +345,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerDocumentsLoader: gravityLoader<any, { partnerId: string }>(
+    partnerDocumentsLoader: gravityLoader<any, { id: string }>(
       (id) => `partner/${id}/documents`,
       {},
       { headers: true }
@@ -373,10 +373,10 @@ export default (accessToken, userID, opts) => {
     ),
     partnerShowDocumentsLoader: gravityLoader<
       any,
-      { partnerId: string; showId: string }
+      { partnerID: string; showID: string }
     >(
-      ({ partnerId, showId }) =>
-        `partner/${partnerId}/show/${showId}/documents`,
+      ({ partnerID, showID }) =>
+        `partner/${partnerID}/show/${showID}/documents`,
       {},
       { headers: true }
     ),
