@@ -1,6 +1,8 @@
 import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 
+const MIN_MY_COLLECTION_ARTWORKS_COUNT = 3
+
 const MyCollectionOnboardingModuleType = new GraphQLObjectType<
   any,
   ResolverContext
@@ -19,7 +21,7 @@ const MyCollectionOnboardingModuleType = new GraphQLObjectType<
             user_id: me.id,
             private: true,
           }).then((res) => {
-            return !(res.artworks_count > 3)
+            return !(res.artworks_count > MIN_MY_COLLECTION_ARTWORKS_COUNT)
           })
         })
       },
@@ -36,7 +38,7 @@ const MyCollectionOnboardingModuleType = new GraphQLObjectType<
             user_id: me.id,
             private: true,
           }).then((res) => {
-            return !(res.artworks_count > 3)
+            return !(res.artworks_count > MIN_MY_COLLECTION_ARTWORKS_COUNT)
           })
         })
       },
