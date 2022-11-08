@@ -1,6 +1,7 @@
 import config from "config"
 import {
   GraphQLFieldConfig,
+  GraphQLList,
   GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -13,12 +14,12 @@ import {
   paginationResolver,
 } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "./object_identification"
+import { GravityIDFields } from "./object_identification"
 
-const PartnerDocumentType = new GraphQLObjectType<any, ResolverContext>({
+export const PartnerDocumentType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerDocument",
   fields: {
-    ...InternalIDFields,
+    ...GravityIDFields,
     uri: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -38,20 +39,19 @@ const PartnerDocumentType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-export const partnerDocumentsConnection = connectionWithCursorInfo({
-  nodeType: PartnerDocumentType,
-})
-
 export const PartnerDocumentsConnection: GraphQLFieldConfig<
-  void,
+  any,
   ResolverContext
 > = {
   description: "Retrieve all partner documents for a given partner",
-  type: partnerDocumentsConnection.connectionType,
+  type: connectionWithCursorInfo({
+    name: "PartnerDocumentsConnection",
+    nodeType: PartnerDocumentType,
+  }).connectionType,
   args: pageable({
-    partnerID: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The slug or ID of the Partner",
+    documentIDs: {
+      type: new GraphQLList(GraphQLString),
+      description: "Return only document(s) included in this list of IDs.",
     },
     page: {
       type: GraphQLInt,
@@ -60,7 +60,7 @@ export const PartnerDocumentsConnection: GraphQLFieldConfig<
       type: GraphQLInt,
     },
   }),
-  resolve: async (_root, args, { partnerDocumentsLoader }) => {
+  resolve: async ({ _id: partnerID }, args, { partnerDocumentsLoader }) => {
     if (!partnerDocumentsLoader) {
       return null
     }
@@ -72,7 +72,7 @@ export const PartnerDocumentsConnection: GraphQLFieldConfig<
       total_count: true,
     }
     const { body, headers } = await partnerDocumentsLoader(
-      { partnerId: args.partnerID },
+      partnerID,
       gravityOptions
     )
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)

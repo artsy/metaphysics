@@ -11811,7 +11811,7 @@ type Partner implements Node {
   displayWorksSection: Boolean
   distinguishRepresentedArtists: Boolean
 
-  # A connection of documents at a partner.
+  # Retrieve all partner documents for a given partner
   documentsConnection(
     after: String
     before: String
@@ -11822,7 +11822,7 @@ type Partner implements Node {
     last: Int
     page: Int
     size: Int
-  ): PartnerDocumentConnection
+  ): PartnerDocumentsConnectionConnection
   featuredShow: Show
 
   # Artworks Elastic Search results
@@ -12059,24 +12059,10 @@ type PartnerArtistCounts {
   ): FormattedNumber
 }
 
-type PartnerArtistDocument {
-  filename: String!
-
-  # A globally unique ID.
-  id: ID!
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-  publicUrl: String!
-  size: Int!
-  title: String!
-  uri: String!
-}
-
 # A connection to a list of items.
-type PartnerArtistDocumentConnection {
+type PartnerArtistDocumentsConnectionConnection {
   # A list of edges.
-  edges: [PartnerArtistDocumentEdge]
+  edges: [PartnerArtistDocumentsConnectionEdge]
   pageCursors: PageCursors!
 
   # Information to aid in pagination.
@@ -12085,12 +12071,12 @@ type PartnerArtistDocumentConnection {
 }
 
 # An edge in a connection.
-type PartnerArtistDocumentEdge {
+type PartnerArtistDocumentsConnectionEdge {
   # A cursor for use in pagination
   cursor: String!
 
   # The item at the end of the edge
-  node: PartnerArtistDocument
+  node: PartnerDocument
 }
 
 # An edge in a connection.
@@ -12275,7 +12261,7 @@ type PartnerDocument {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID likely used as a database ID.
+  # A type-specific Gravity Mongo Document ID.
   internalID: ID!
   publicUrl: String!
   size: Int!
@@ -12296,6 +12282,26 @@ type PartnerDocumentConnection {
 
 # An edge in a connection.
 type PartnerDocumentEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: PartnerDocument
+}
+
+# A connection to a list of items.
+type PartnerDocumentsConnectionConnection {
+  # A list of edges.
+  edges: [PartnerDocumentsConnectionEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerDocumentsConnectionEdge {
   # A cursor for use in pagination
   cursor: String!
 
@@ -12343,40 +12349,6 @@ enum PartnersAggregation {
 type PartnersAggregationResults {
   counts: [AggregationCount]
   slice: PartnersAggregation
-}
-
-type PartnerShowDocument {
-  filename: String!
-
-  # A globally unique ID.
-  id: ID!
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-  publicUrl: String!
-  size: Int!
-  title: String!
-  uri: String!
-}
-
-# A connection to a list of items.
-type PartnerShowDocumentConnection {
-  # A list of edges.
-  edges: [PartnerShowDocumentEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type PartnerShowDocumentEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: PartnerShowDocument
 }
 
 enum PartnerShowPartnerType {
@@ -13584,7 +13556,7 @@ type Query {
     id: String!
   ): Partner
 
-  # Retrieve all partner artist documents for a given partner and artist
+  # Retrieve all partner documents for a given partner
   partnerArtistDocumentsConnection(
     after: String
 
@@ -13598,7 +13570,7 @@ type Query {
     # The slug or ID of the Partner
     partnerID: String!
     size: Int
-  ): PartnerArtistDocumentConnection
+  ): PartnerArtistDocumentsConnectionConnection
 
   # A list of Artworks for a partner
   partnerArtworks(
@@ -13628,19 +13600,6 @@ type Query {
     # The slug or ID of the PartnerCategory
     id: String!
   ): PartnerCategory
-
-  # Retrieve all partner documents for a given partner
-  partnerDocumentsConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    page: Int
-
-    # The slug or ID of the Partner
-    partnerID: String!
-    size: Int
-  ): PartnerDocumentConnection
 
   # A list of Partners
   partnersConnection(
@@ -13680,7 +13639,7 @@ type Query {
     # The slug or ID of the Show
     showID: String!
     size: Int
-  ): PartnerShowDocumentConnection
+  ): PartnerDocumentConnection
 
   # Phone number information
   phoneNumber(phoneNumber: String!, regionCode: String): PhoneNumberType
@@ -17344,7 +17303,7 @@ type Viewer {
     id: String!
   ): Partner
 
-  # Retrieve all partner artist documents for a given partner and artist
+  # Retrieve all partner documents for a given partner
   partnerArtistDocumentsConnection(
     after: String
 
@@ -17358,7 +17317,7 @@ type Viewer {
     # The slug or ID of the Partner
     partnerID: String!
     size: Int
-  ): PartnerArtistDocumentConnection
+  ): PartnerArtistDocumentsConnectionConnection
 
   # A list of Artworks for a partner
   partnerArtworks(
@@ -17388,19 +17347,6 @@ type Viewer {
     # The slug or ID of the PartnerCategory
     id: String!
   ): PartnerCategory
-
-  # Retrieve all partner documents for a given partner
-  partnerDocumentsConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    page: Int
-
-    # The slug or ID of the Partner
-    partnerID: String!
-    size: Int
-  ): PartnerDocumentConnection
 
   # A list of Partners
   partnersConnection(
@@ -17440,7 +17386,7 @@ type Viewer {
     # The slug or ID of the Show
     showID: String!
     size: Int
-  ): PartnerShowDocumentConnection
+  ): PartnerDocumentConnection
 
   # Phone number information
   phoneNumber(phoneNumber: String!, regionCode: String): PhoneNumberType

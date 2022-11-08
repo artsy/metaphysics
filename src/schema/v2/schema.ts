@@ -155,7 +155,6 @@ import { PartnerShowDocumentsConnection } from "./partnerShowDocumentsConnection
 import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
 import { NotificationsConnection } from "./notifications"
 import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_as_read_mutation"
-import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -235,7 +234,6 @@ const rootFields = {
   partnerArtworks: PartnerArtworks,
   partnerCategories: PartnerCategories,
   partnerCategory: PartnerCategory,
-  partnerDocumentsConnection: PartnerDocumentsConnection,
   partnerShowDocumentsConnection: PartnerShowDocumentsConnection,
   partnersConnection: PartnersConnection,
   phoneNumber: PhoneNumber,

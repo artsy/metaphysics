@@ -32,7 +32,6 @@ import { fields as partnerArtistFields } from "./partner_artist"
 import {
   connectionWithCursorInfo,
   createPageCursors,
-  paginationResolver,
 } from "./fields/pagination"
 import { deprecate } from "lib/deprecation"
 import { articleConnection } from "./article"
@@ -43,7 +42,7 @@ import { truncate } from "lib/helpers"
 import { setVersion } from "./image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquirerCollectorProfile"
-import { partnerDocumentsConnection } from "./partnerDocumentsConnection"
+import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -484,65 +483,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ default_profile_id }) => default_profile_id,
       },
-      documentsConnection: {
-        description: "A connection of documents at a partner.",
-        type: partnerDocumentsConnection.connectionType,
-        args: pageable({
-          documentIDs: {
-            type: new GraphQLList(GraphQLString),
-            description:
-              "Return only document(s) included in this list of IDs.",
-          },
-          page: {
-            type: GraphQLInt,
-          },
-          size: {
-            type: GraphQLInt,
-          },
-        }),
-        resolve: async (_root, args, { partnerDocumentsLoader }) => {
-          if (!partnerDocumentsLoader) {
-            return null
-          }
-
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            args
-          )
-
-          interface GravityArgs {
-            document_ids?: string[]
-            offset: number
-            size: number
-            total_count: boolean
-          }
-
-          const gravityArgs: GravityArgs = {
-            size,
-            offset,
-            total_count: true,
-          }
-
-          if (args.documentIDs) {
-            gravityArgs.document_ids = flatten([args.documentIDs])
-          }
-
-          const { body, headers } = await partnerDocumentsLoader(
-            _root.id,
-            gravityArgs
-          )
-
-          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-          return paginationResolver({
-            totalCount,
-            offset,
-            page,
-            size,
-            body,
-            args,
-          })
-        },
-      },
+      documentsConnection: PartnerDocumentsConnection,
       featuredShow: {
         type: ShowType,
         resolve: async ({ id }, _args, { partnerShowsLoader }) => {
