@@ -11814,12 +11814,14 @@ type Partner implements Node {
   # Retrieve all partner documents for a given partner
   documentsConnection(
     after: String
+    artistID: String
     before: String
 
     # Return only document(s) included in this list of IDs.
     documentIDs: [String]
     first: Int
     last: Int
+    showID: String
   ): PartnerDocumentsConnectionConnection
   featuredShow: Show
 
@@ -12261,7 +12263,9 @@ type PartnerDocument {
 
   # A type-specific Gravity Mongo Document ID.
   internalID: ID!
+  publicUrl: String! @deprecated(reason: "Prefer `publicURL`")
   publicURL: String!
+  size: Int! @deprecated(reason: "Prefer `filesize`")
   title: String!
 }
 
