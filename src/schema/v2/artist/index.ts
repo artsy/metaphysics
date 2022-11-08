@@ -105,6 +105,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           sort: ArticleSorts,
           limit: {
             type: GraphQLInt,
+            description: "DEPRECATION REASON: Use `size` instead",
           },
           inEditorialFeed: {
             type: GraphQLBoolean,
@@ -125,9 +126,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             published: true,
             artist_id: _id,
             in_editorial_feed: args.inEditorialFeed,
-            limit: args.limit,
+            limit: size,
             offset,
-            size,
             sort: args.sort,
           })
 
