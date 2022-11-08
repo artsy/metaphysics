@@ -11820,8 +11820,6 @@ type Partner implements Node {
     documentIDs: [String]
     first: Int
     last: Int
-    page: Int
-    size: Int
   ): PartnerDocumentsConnectionConnection
   featuredShow: Show
 
@@ -12256,17 +12254,15 @@ type PartnerCounts {
 }
 
 type PartnerDocument {
-  filename: String!
+  filesize: Int!
 
   # A globally unique ID.
   id: ID!
 
   # A type-specific Gravity Mongo Document ID.
   internalID: ID!
-  publicUrl: String!
-  size: Int!
+  publicURL: String!
   title: String!
-  uri: String!
 }
 
 # A connection to a list of items.

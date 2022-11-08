@@ -7,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { flatten } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import {
@@ -20,19 +21,14 @@ export const PartnerDocumentType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerDocument",
   fields: {
     ...GravityIDFields,
-    uri: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    filename: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
     title: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    size: {
+    filesize: {
       type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ size }) => size,
     },
-    publicUrl: {
+    publicURL: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ uri }) => `${config.GRAVITY_API_BASE}/${uri}`,
     },
@@ -53,27 +49,32 @@ export const PartnerDocumentsConnection: GraphQLFieldConfig<
       type: new GraphQLList(GraphQLString),
       description: "Return only document(s) included in this list of IDs.",
     },
-    page: {
-      type: GraphQLInt,
-    },
-    size: {
-      type: GraphQLInt,
-    },
   }),
   resolve: async ({ _id: partnerID }, args, { partnerDocumentsLoader }) => {
     if (!partnerDocumentsLoader) {
       return null
     }
+    interface GravityArgs {
+      document_ids?: string[]
+      offset: number
+      size: number
+      total_count: boolean
+    }
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-    const gravityOptions = {
+    const gravityArgs: GravityArgs = {
       size,
       offset,
       total_count: true,
     }
+
+    if (args.documentIDs) {
+      gravityArgs.document_ids = flatten([args.documentIDs])
+    }
+
     const { body, headers } = await partnerDocumentsLoader(
       partnerID,
-      gravityOptions
+      gravityArgs
     )
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
