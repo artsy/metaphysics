@@ -16537,6 +16537,9 @@ type UserAddressEdge {
 union UserAddressOrErrorsUnion = Errors | UserAddress
 
 type UserAdminNotes {
+  # The name of the admin user who created the note
+  adminName: String
+
   # The body of the admin note
   body: String!
   createdAt(
