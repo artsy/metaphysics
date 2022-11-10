@@ -3,6 +3,8 @@ import { parse } from "url"
 import qs from "querystring"
 import { normalizeImageData } from "../image"
 import _ from "lodash"
+import { GraphQLFieldResolver } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export const isTwoDimensional = ({
   width_cm,
@@ -74,42 +76,60 @@ export const embed = (website, { width, height, autoplay }) => {
   }
 }
 
-export const getFigures = ({
-  images,
-  external_video_id,
-  set_video_as_cover,
-}) => {
-  const _images = images.map((image) => ({
-    ...image,
-    type: "Image",
-  }))
+export const getFigures: GraphQLFieldResolver<any, ResolverContext> = async (
+  { images, external_video_id, set_video_as_cover },
+  _args,
+  { videoLoader }
+) => {
+  const _images = images.map((image) => ({ ...image, type: "Image" }))
   const sortedImages = normalizeImageData(_.sortBy(_images, "position"))
 
-  let videos = [] as {
+  let videos: {
     type: string
     playerUrl: string
     width: number
     height: number
-  }[]
+  }[] = []
 
   if (external_video_id) {
-    const { width, height } = qs.parse(external_video_id)
+    const [baseUrl, queryString] = external_video_id.split("?")
+    const id = baseUrl.split("/").pop()
 
-    videos = [
-      {
-        type: "Video",
-        playerUrl: external_video_id,
-        width: Number(width),
-        height: Number(height),
-      },
-    ]
+    try {
+      const res = await videoLoader(id)
+
+      videos = [
+        {
+          type: "Video",
+          playerUrl: res.player_embed_url,
+          width: res.width,
+          height: res.height,
+        },
+      ]
+    } catch (err) {
+      // Ignore error
+      console.error(err)
+
+      // Currently `external_video_id` contains the player embed URL
+      // along with the uploaded width and height in the query string
+      const { width, height } = qs.parse(queryString)
+
+      videos = [
+        {
+          type: "Video",
+          playerUrl: external_video_id,
+          width: Number(width),
+          height: Number(height),
+        },
+      ]
+    }
   }
 
   if (set_video_as_cover) {
     return [...videos, ...sortedImages]
-  } else {
-    return [...sortedImages, ...videos]
   }
+
+  return [...sortedImages, ...videos]
 }
 
 export const isEligibleForOnPlatformTransaction = ({
