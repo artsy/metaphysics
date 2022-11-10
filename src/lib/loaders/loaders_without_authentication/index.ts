@@ -8,6 +8,7 @@ import positronLoaders from "./positron"
 import greenhouseLoaders from "./greenhouse"
 import ipbaseLoaders from "./ipbase"
 import vortexLoaders from "./vortex"
+import vimeoLoaders from "./vimeo"
 
 export const createLoadersWithoutAuthentication = (opts) => ({
   ...deltaLoaders(opts),
@@ -20,6 +21,7 @@ export const createLoadersWithoutAuthentication = (opts) => ({
   ...greenhouseLoaders(opts),
   ...ipbaseLoaders(opts),
   ...vortexLoaders(opts),
+  ...vimeoLoaders(opts),
 })
 
 export type LoadersWithoutAuthentication = ReturnType<

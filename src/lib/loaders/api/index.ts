@@ -12,6 +12,7 @@ import { vortex } from "lib/apis/vortex"
 import { greenhouse } from "lib/apis/greenhouse"
 import { ipbase } from "lib/apis/ipbase"
 import { unleash } from "lib/apis/unleash"
+import { vimeo } from "lib/apis/vimeo"
 
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
@@ -226,6 +227,20 @@ export default (opts) => ({
   vortexLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
     vortex,
     "vortex",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
+  ),
+
+  /**
+   * The Vimeo loaders produced by this factory _will_ cache all responses to memcache.
+   *
+   * Do **not** use it for authenticated requests!
+   */
+  vimeoLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    vimeo,
+    "vimeo",
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
