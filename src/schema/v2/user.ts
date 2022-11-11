@@ -43,6 +43,23 @@ export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString),
     },
     createdAt: date(({ created_at }) => created_at),
+    creator: {
+      description: "The user who created the note",
+      type: UserType,
+      resolve: ({ created_by }, _args, { userByIDLoader }) => {
+        if (!userByIDLoader) {
+          throw new Error(
+            "A X-Access-Token header is required to perform this action."
+          )
+        }
+
+        if (!created_by) {
+          return null // This is a legacy note, associated user is not available
+        }
+
+        return userByIDLoader(created_by)
+      },
+    },
   }),
 })
 
@@ -52,7 +69,7 @@ export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async ({ id }, {}, { userAdminNotesLoader }) => {
     if (!userAdminNotesLoader) {
       throw new Error(
-        "You need to pass a X-Access-Token header to perform this action"
+        "A X-Access-Token header is required to perform this action."
       )
     }
 
@@ -74,7 +91,7 @@ export const PartnerAccessField: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async ({ id }, {}, { userAccessControlLoader }) => {
     if (!userAccessControlLoader) {
       throw new Error(
-        "You need to pass a X-Access-Token header to perform this action"
+        "A X-Access-Token header is required to perform this action."
       )
     }
 
@@ -93,7 +110,7 @@ export const ProfileAccessField: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async ({ id }, {}, { userAccessControlLoader }) => {
     if (!userAccessControlLoader) {
       throw new Error(
-        "You need to pass a X-Access-Token header to perform this action"
+        "A X-Access-Token header is required to perform this action."
       )
     }
 
@@ -127,7 +144,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         ) => {
           if (!userAccessControlLoaderAllProperties) {
             throw new Error(
-              "Loader not found. You must supply an X-Access-Token header."
+              "A X-Access-Token header is required to perform this action."
             )
           }
 
@@ -170,7 +187,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async ({ id: user_id }, {}, { collectorProfilesLoader }) => {
           if (!collectorProfilesLoader)
             throw new Error(
-              "Loader not found. You must supply an X-Access-Token header."
+              "A X-Access-Token header is required to perform this action."
             )
 
           const { body: profiles } = await collectorProfilesLoader({
@@ -245,7 +262,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async ({ id }, args, { userInquiryRequestsLoader }) => {
           if (!userInquiryRequestsLoader) {
             throw new Error(
-              "Loader not found. You must supply an X-Access-Token header."
+              "A X-Access-Token header is required to perform this action."
             )
           }
 
@@ -276,7 +293,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async ({ id }, args, { userInterestsLoader }) => {
           if (!userInterestsLoader) {
             throw new Error(
-              "Loader not found. You must supply an X-Access-Token header."
+              "A X-Access-Token header is required to perform this action."
             )
           }
 
@@ -311,7 +328,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
               resolve: async ({ id }, args, { userArtistFollowsLoader }) => {
                 if (!userArtistFollowsLoader) {
                   throw new Error(
-                    "Loader not found. You must supply an X-Access-Token header."
+                    "A X-Access-Token header is required to perform this action."
                   )
                 }
                 const {
@@ -342,7 +359,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
               resolve: async ({ id }, args, { userGeneFollowsLoader }) => {
                 if (!userGeneFollowsLoader) {
                   throw new Error(
-                    "Loader not found. You must supply an X-Access-Token header."
+                    "A X-Access-Token header is required to perform this action."
                   )
                 }
                 const {
@@ -384,7 +401,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async ({ id }, args, { purchasesLoader }) => {
           if (!purchasesLoader) {
             throw new Error(
-              "Loader not found. You must supply an X-Access-Token header."
+              "A X-Access-Token header is required to perform this action."
             )
           }
 

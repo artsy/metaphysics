@@ -903,6 +903,9 @@ describe("User", () => {
             adminNotes {
               body
               createdAt
+              creator {
+                name
+              }
             }
           }
         }
@@ -912,25 +915,34 @@ describe("User", () => {
         id: "abc123",
       }
 
+      const creator = {
+        id: "def456",
+        name: "Percy Z",
+      }
+
       const userAdminNotes = [
         {
           body: "A Good collector",
           created_at: "2022-04-24T09:00:00+00:00",
+          created_by: null,
         },
         {
           body: "Now a great collector",
           created_at: "2022-06-15T10:00:00+00:00",
+          created_by: null,
         },
         {
           body: "The best collector",
           created_at: "2022-09-30T12:00:00+00:00",
+          created_by: "def456",
         },
       ]
 
       const context = {
-        userByIDLoader: () => {
-          return Promise.resolve(user)
-        },
+        userByIDLoader: jest
+          .fn()
+          .mockReturnValueOnce(Promise.resolve(user))
+          .mockReturnValueOnce(Promise.resolve(creator)),
         userAdminNotesLoader: () => {
           return Promise.resolve(userAdminNotes)
         },
@@ -940,7 +952,13 @@ describe("User", () => {
         user: { adminNotes },
       } = await runAuthenticatedQuery(query, context)
 
+      console.log(adminNotes)
+
+      expect(context.userByIDLoader).toHaveBeenCalledTimes(2)
+      expect(context.userByIDLoader.mock.calls[0][0]).toEqual("abc123")
+      expect(context.userByIDLoader.mock.calls[1][0]).toEqual("def456")
       expect(adminNotes[0].body).toEqual("The best collector")
+      expect(adminNotes[0].creator.name).toEqual("Percy Z")
       expect(adminNotes[1].body).toEqual("Now a great collector")
       expect(adminNotes[2].body).toEqual("A Good collector")
     })
