@@ -46,7 +46,7 @@ export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
     creator: {
       description: "The user who created the note",
       type: UserType,
-      resolve: ({ created_by }, {}, { userByIDLoader }) => {
+      resolve: ({ created_by }, _args, { userByIDLoader }) => {
         if (!userByIDLoader) {
           throw new Error(
             "Loader not found. You must supply an X-Access-Token header."
