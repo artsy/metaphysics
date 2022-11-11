@@ -139,11 +139,6 @@ export default (accessToken, userID, opts) => {
         entityIDKeyPath: "_id",
       }
     ),
-    dislikedArtworksLoader: gravityLoader(
-      "collection/disliked-artwork/artworks",
-      {},
-      { headers: true }
-    ),
     filterArtworksLoader: gravityLoader("filter/artworks"),
     authenticatedArtistLoader: gravityLoader((id) => `artist/${id}`),
     followArtistLoader: gravityLoader(
