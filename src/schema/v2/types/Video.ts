@@ -33,11 +33,11 @@ export const VideoType = new GraphQLObjectType<VideoTypeProps, ResolverContext>(
       },
       height: {
         description: "The height of the video",
-        type: GraphQLNonNull(GraphQLInt),
+        type: GraphQLInt,
       },
       width: {
         description: "The width of the video",
-        type: GraphQLNonNull(GraphQLInt),
+        type: GraphQLInt,
       },
     },
   }
