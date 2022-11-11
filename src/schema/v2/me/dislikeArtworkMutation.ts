@@ -21,7 +21,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
         artworkLoader(artwork_id),
     },
   },
-  mutateAndGetPayload: (
+  mutateAndGetPayload: async (
     { artworkID: artwork_id, remove },
     { userID, dislikeArtworkLoader, deleteDislikedArtworkLoader }
   ) => {
@@ -30,6 +30,12 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     }
 
     const loader = remove ? deleteDislikedArtworkLoader : dislikeArtworkLoader
-    return loader(artwork_id, { user_id: userID }).then(() => ({ artwork_id }))
+    try {
+      return loader(artwork_id, { user_id: userID }).then(() => ({
+        artwork_id,
+      }))
+    } catch (error) {
+      throw error
+    }
   },
 })
