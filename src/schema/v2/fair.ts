@@ -39,6 +39,7 @@ import ArticleSorts from "./sorts/article_sorts"
 import {
   connectionWithCursorInfo,
   createPageCursors,
+  paginationResolver,
 } from "./fields/pagination"
 import { FairOrganizerType } from "./fair_organizer"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
@@ -489,9 +490,12 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             description:
               "Get only articles with 'standard', 'feature', 'series' or 'video' layouts.",
           },
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
         }),
         resolve: async ({ _id }, args, { articlesLoader }) => {
           const {
+            page,
             size,
             offset,
             sort,
@@ -508,13 +512,14 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             in_editorial_feed: inEditorialFeed,
           })
 
-          return {
+          return paginationResolver({
+            args,
+            body: results,
+            offset,
+            page,
+            size,
             totalCount: count,
-            ...connectionFromArraySlice(results, args, {
-              arrayLength: count,
-              sliceStart: offset,
-            }),
-          }
+          })
         },
       },
     }
