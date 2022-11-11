@@ -58,7 +58,6 @@ import { SaleRegistrationConnection } from "./sale_registrations"
 import { SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { WatchedLotConnection } from "./watchedLotConnection"
-import { DislikedArtworks } from "./dislikedArtworks"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -150,7 +149,6 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     conversationsConnection: Conversations,
     createdAt: date,
     creditCards: CreditCards,
-    dislikedArtworksConnection: DislikedArtworks,
     email: {
       type: GraphQLString,
     },

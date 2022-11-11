@@ -7627,31 +7627,6 @@ type DislikeArtworkPayload {
   clientMutationId: String
 }
 
-# A connection to a list of items.
-type DislikedArtworksConnection {
-  default: Boolean!
-  description: String!
-
-  # A list of edges.
-  edges: [DislikedArtworksEdge]
-  name: String!
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  private: Boolean!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type DislikedArtworksEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Artwork
-}
-
 type DoNotUseThisPartner {
   display_name: String @deprecated(reason: "Use displayName")
   displayName: String
@@ -10376,16 +10351,6 @@ type Me implements Node {
 
   # Currency preference of the user
   currencyPreference: CurrencyPreference!
-  dislikedArtworksConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    page: Int
-    private: Boolean = false
-    size: Int
-    sort: CollectionSorts
-  ): DislikedArtworksConnection
   email: String
 
   # User has confirmed their email address
