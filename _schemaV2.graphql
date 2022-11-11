@@ -7625,6 +7625,7 @@ input DislikeArtworkInput {
 type DislikeArtworkPayload {
   artwork: Artwork
   clientMutationId: String
+  me: Me!
 }
 
 type DoNotUseThisPartner {

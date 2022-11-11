@@ -1,6 +1,7 @@
 import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
+import { meType } from "./index"
 import { ArtworkType } from "../artwork"
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({
@@ -20,6 +21,12 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       resolve: ({ artwork_id }, _, { artworkLoader }) =>
         artworkLoader(artwork_id),
     },
+    me: {
+      type: new GraphQLNonNull(meType),
+      resolve: (_source, _args, { meLoader }) => {
+        return meLoader?.()
+      },
+    },
   },
   mutateAndGetPayload: async (
     { artworkID: artwork_id, remove },
@@ -31,11 +38,14 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
 
     const loader = remove ? deleteDislikedArtworkLoader : dislikeArtworkLoader
     try {
-      return loader(artwork_id, { user_id: userID }).then(() => ({
-        artwork_id,
-      }))
+      const response = await loader(artwork_id, { user_id: userID }).then(
+        () => ({
+          artwork_id,
+        })
+      )
+      return response
     } catch (error) {
-      throw error
+      throw new Error(error)
     }
   },
 })
