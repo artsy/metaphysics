@@ -45,7 +45,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       )
       return response
     } catch (error) {
-      throw new Error(error)
+      throw new Error("The mutation cannot be performed")
     }
   },
 })
