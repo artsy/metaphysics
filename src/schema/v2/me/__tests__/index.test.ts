@@ -1,6 +1,5 @@
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
-import { HTTPError } from "lib/HTTPError"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 describe("me/index", () => {
   const query = gql`
