@@ -312,14 +312,13 @@ describe("me/index", () => {
 
   describe("dislikedArtworksConnection", () => {
     const dislikedArtworksQuery = gql`
-     query {
-       me {
+      query {
+        me {
           dislikedArtworksConnection(first: 10) {
             totalCount
             edges {
               node {
                 title
-                }
               }
             }
           }
@@ -338,7 +337,7 @@ describe("me/index", () => {
 
     it("returns disliked artworks for a user", async () => {
       return runAuthenticatedQuery(dislikedArtworksQuery, {
-        dislikedArtworksLoader: () =>
+        collectionArtworksLoader: () =>
           Promise.resolve({
             body: artworks,
             headers: { "x-total-count": "2" },
@@ -366,9 +365,9 @@ describe("me/index", () => {
       })
     })
 
-    it("returns an empty connection w/ no error if the gravity request 404's", async () => {
+    it("returns an empty connection w/ no error if the gravity request 404's", () => {
       return runAuthenticatedQuery(dislikedArtworksQuery, {
-        dislikedArtworksLoader: () =>
+        collectionArtworksLoader: () =>
           Promise.reject(new HTTPError("Not Found", 404)),
       }).then((data) => {
         expect(data).toEqual({
@@ -380,28 +379,6 @@ describe("me/index", () => {
           },
         })
       })
-    })
-
-    it("throws an error if the gravity request errors and it's not a 404", async () => {
-      return runAuthenticatedQuery(dislikedArtworksQuery, {
-        dislikedArtworksLoader: () =>
-          Promise.reject(new HTTPError("Cats in the server room", 500)),
-      })
-
-      expect.assertions(1)
-
-      try {
-        await runAuthenticatedQuery(dislikedArtworksQuery, {
-          dislikedArtworkLoader: () => {
-            throw new Error(
-              "An error was not thrown but was expected to throw."
-            )
-          },
-        })
-      } catch (error) {
-        // eslint-disable-next-line jest/no-conditional-expect, jest/no-try-expect
-        expect(error.message).toEqual("Cats in the server room")
-      }
     })
   })
 })

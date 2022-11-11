@@ -6,7 +6,9 @@ describe("DislikeArtworkMutation", () => {
   it("adds a disliked artwork", () => {
     const mutation = gql`
       mutation {
-        dislikeArtwork(input: { artworkID: "not-my-aesthetic-choice" }) {
+        dislikeArtwork(
+          input: { artworkID: "not-my-aesthetic-choice", remove: false }
+        ) {
           artwork {
             date
             title
