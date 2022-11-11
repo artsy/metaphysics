@@ -16537,9 +16537,6 @@ type UserAddressEdge {
 union UserAddressOrErrorsUnion = Errors | UserAddress
 
 type UserAdminNotes {
-  # The name of the admin user who created the note
-  adminName: String
-
   # The body of the admin note
   body: String!
   createdAt(
@@ -16550,6 +16547,9 @@ type UserAdminNotes {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+
+  # The user who created the note
+  creator: User
 
   # A globally unique ID.
   id: ID!

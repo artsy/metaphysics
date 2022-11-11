@@ -43,10 +43,10 @@ export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString),
     },
     createdAt: date(({ created_at }) => created_at),
-    adminName: {
-      description: "The name of the admin user who created the note",
-      type: GraphQLString,
-      resolve: async ({ created_by }, {}, { userByIDLoader }) => {
+    creator: {
+      description: "The user who created the note",
+      type: UserType,
+      resolve: ({ created_by }, {}, { userByIDLoader }) => {
         if (!userByIDLoader) {
           throw new Error(
             "Loader not found. You must supply an X-Access-Token header."
@@ -57,8 +57,7 @@ export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
           return null // This is a legacy note, associated user is not available
         }
 
-        const { name } = await userByIDLoader(created_by)
-        return name
+        return userByIDLoader(created_by)
       },
     },
   }),
