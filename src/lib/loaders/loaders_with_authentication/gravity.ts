@@ -97,6 +97,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deleteDislikedArtworkLoader: gravityLoader(
+      (id) => `collection/disliked-artwork/artwork/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     deleteBankAccountLoader: gravityLoader(
       (id) => `me/bank_account/${id}`,
       {},
@@ -117,6 +122,22 @@ export default (accessToken, userID, opts) => {
       (id) => `sale/${id}/end_sale`,
       {},
       { method: "PUT" }
+    ),
+    dislikeArtworkLoader: gravityLoader(
+      (id) => `collection/disliked-artwork/artwork/${id}`,
+      {},
+      { method: "POST" }
+    ),
+    dislikedArtworkLoader: trackedEntityLoaderFactory(
+      gravityLoader("collection/disliked-artwork/artworks", {
+        user_id: userID,
+        private: true,
+      }),
+      {
+        paramKey: "artworks",
+        trackingKey: "is_disliked",
+        entityIDKeyPath: "_id",
+      }
     ),
     filterArtworksLoader: gravityLoader("filter/artworks"),
     authenticatedArtistLoader: gravityLoader((id) => `artist/${id}`),
@@ -424,7 +445,6 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-
     sendConfirmationEmailLoader: gravityLoader(
       "me/confirmation_emails",
       {},

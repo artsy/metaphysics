@@ -857,6 +857,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return savedArtworkLoader(_id).then(({ is_saved }) => is_saved)
         },
       },
+      isDisliked: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: ({ _id }, {}, { dislikedArtworkLoader }) => {
+          if (!dislikedArtworkLoader) return false
+          return dislikedArtworkLoader(_id).then(
+            ({ is_disliked }) => is_disliked
+          )
+        },
+      },
       isShareable: {
         type: GraphQLBoolean,
         resolve: ({ can_share_image }) => can_share_image,
