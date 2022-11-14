@@ -35,17 +35,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     if (!deleteDislikedArtworkLoader || !dislikeArtworkLoader) {
       return new Error("You need to be signed in to perform this action")
     }
-
     const loader = remove ? deleteDislikedArtworkLoader : dislikeArtworkLoader
-    try {
-      const response = await loader(artwork_id, { user_id: userID }).then(
-        () => ({
-          artwork_id,
-        })
-      )
-      return response
-    } catch (error) {
-      throw new Error("The mutation cannot be performed")
-    }
+    return loader(artwork_id, { user_id: userID }).then(() => ({ artwork_id }))
   },
 })
