@@ -16319,7 +16319,7 @@ type User implements Node {
   id: ID!
 
   # Has the users identity been verified.
-  identityVerified: Boolean
+  identityVerified: Boolean!
   inquiredArtworksConnection(
     after: String
     before: String
