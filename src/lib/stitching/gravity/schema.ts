@@ -10,6 +10,7 @@ import { readFileSync } from "fs"
 
 const allowList = [
   "agreement",
+  "curatedMarketingCollections",
   "viewingRoom",
   "viewingRooms",
   "artistSeries",

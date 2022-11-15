@@ -169,6 +169,10 @@ export const gravityStitchingEnvironment = (
         ): [MarketingCollection]
       }
 
+      extend type Query {
+        curatedMarketingCollections(first: Int, last: Int, after: String, before: String): [MarketingCollection]
+      }
+
       extend type System {
         algolia: Algolia
       }
@@ -763,6 +767,37 @@ export const gravityStitchingEnvironment = (
               context,
               info,
             })
+          },
+        },
+      },
+      Query: {
+        curatedMarketingCollections: {
+          fragment: gql`
+            ...on Viewer {
+              __typename
+            }
+          `,
+          resolve: async (_parent, _args, context, info) => {
+            try {
+              return await info.mergeInfo.delegateToSchema({
+                schema: gravitySchema,
+                operation: "query",
+                fieldName: "marketingCollections",
+                args: {
+                  slugs: [
+                    "trending-this-week",
+                    "artists-on-the-rise",
+                    "trove-editors-picks",
+                    "painting",
+                    "photography",
+                  ],
+                },
+                context,
+                info,
+              })
+            } catch (error) {
+              return []
+            }
           },
         },
       },

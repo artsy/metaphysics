@@ -13288,6 +13288,12 @@ type Query {
     # The ID of the Credit Card
     id: String!
   ): CreditCard
+  curatedMarketingCollections(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [MarketingCollection]
   departments: [Department!]!
 
   # Get an image info
