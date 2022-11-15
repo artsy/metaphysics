@@ -1,6 +1,6 @@
 import { GraphQLFieldConfig } from "graphql/type"
 import { ResolverContext } from "types/graphql"
-import { Partners } from "../partners"
+import { Partners } from "schema/v2/partner/partners"
 
 export const ManagedPartners: GraphQLFieldConfig<void, ResolverContext> = {
   type: Partners.type,

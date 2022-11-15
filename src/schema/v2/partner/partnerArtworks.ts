@@ -1,4 +1,4 @@
-import { artworkConnection } from "./artwork"
+import { artworkConnection } from "schema/v2/artwork"
 import { GraphQLString, GraphQLFieldConfig, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
@@ -6,7 +6,7 @@ import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { GraphQLBoolean } from "graphql"
 import { merge } from "lodash"
-import { createPageCursors } from "./fields/pagination"
+import { createPageCursors } from "schema/v2/fields/pagination"
 
 const PartnerArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,

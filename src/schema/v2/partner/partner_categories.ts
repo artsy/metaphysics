@@ -1,5 +1,5 @@
 import PartnerCategory from "./partner_category"
-import PartnerCategoryTypeEnum from "./input_fields/partner_category_type"
+import PartnerCategoryTypeEnum from "schema/v2/input_fields/partner_category_type"
 
 import {
   GraphQLList,

@@ -2,7 +2,7 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { PartnerType } from "schema/v2/partner"
+import { PartnerType } from "schema/v2/partner/partner"
 
 export const FollowedGalleryConnection = connectionDefinitions({
   name: "FollowedGallery",

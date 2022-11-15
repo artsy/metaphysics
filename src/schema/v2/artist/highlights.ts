@@ -5,14 +5,16 @@ import {
   GraphQLString,
   GraphQLFieldConfig,
 } from "graphql"
-import { partnersForArtist } from "../partner_artist"
+import { partnersForArtist } from "schema/v2/partner/partner_artist"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 
 const ArtistHighlightsType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistHighlights",
   fields: () => {
-    const { PartnerArtistConnection } = require("../partnerArtistConnection")
+    const {
+      PartnerArtistConnection,
+    } = require("schema/v2/partner/partnerArtistConnection")
     return {
       partnersConnection: {
         type: PartnerArtistConnection,

@@ -17,7 +17,7 @@ import { FeatureType } from "./Feature"
 import {
   connectionWithCursorInfo,
   paginationResolver,
-} from "./fields/pagination"
+} from "schema/v2/fields/pagination"
 import { GeneType } from "./gene"
 import { pageType } from "./page"
 import { ProfileType } from "./profile"

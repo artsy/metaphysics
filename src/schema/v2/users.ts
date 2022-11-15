@@ -1,6 +1,6 @@
 import { GraphQLFieldConfig, GraphQLList, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { paginationResolver } from "./fields/pagination"
+import { paginationResolver } from "schema/v2/fields/pagination"
 import { UsersConnection } from "./user"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"

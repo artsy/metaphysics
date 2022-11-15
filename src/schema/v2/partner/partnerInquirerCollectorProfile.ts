@@ -9,10 +9,10 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import date from "./fields/date"
-import Image, { normalizeImageData } from "./image"
-import { CollectorProfileFields } from "./CollectorProfile/collectorProfile"
-import { myLocationType } from "./me/myLocation"
+import date from "schema/v2/fields/date"
+import Image, { normalizeImageData } from "schema/v2/image"
+import { CollectorProfileFields } from "schema/v2/CollectorProfile/collectorProfile"
+import { myLocationType } from "schema/v2/me/myLocation"
 
 export const CollectorProfileArtists = new GraphQLObjectType<
   any,

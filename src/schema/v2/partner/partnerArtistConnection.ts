@@ -1,6 +1,6 @@
 import { connectionDefinitions } from "graphql-relay"
 
-import { PartnerType } from "schema/v2/partner"
+import { PartnerType } from "schema/v2/partner/partner"
 
 import { fields } from "./partner_artist"
 

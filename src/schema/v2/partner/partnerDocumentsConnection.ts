@@ -15,7 +15,7 @@ import {
   paginationResolver,
 } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { GravityIDFields } from "./object_identification"
+import { GravityIDFields } from "schema/v2/object_identification"
 import { BodyAndHeaders, ResponseHeaders } from "lib/loaders"
 
 export const PartnerDocumentType = new GraphQLObjectType<any, ResolverContext>({

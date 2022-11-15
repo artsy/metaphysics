@@ -12,34 +12,37 @@ import {
 import { connectionFromArraySlice } from "graphql-relay"
 import { flatten } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import cached from "./fields/cached"
-import initials from "./fields/initials"
-import Profile from "./profile"
-import { locationsConnection, LocationType } from "./location"
+import cached from "schema/v2/fields/cached"
+import initials from "schema/v2/fields/initials"
+import Profile from "schema/v2/profile"
+import { locationsConnection, LocationType } from "schema/v2/location"
 import EventStatus from "schema/v2/input_fields/event_status"
-import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
-import { artworkConnection } from "./artwork"
-import numeral from "./fields/numeral"
-import { ShowsConnection, ShowType } from "./show"
-import { ArtistType } from "./artist"
-import ArtworkSorts from "./sorts/artwork_sorts"
+import {
+  NodeInterface,
+  SlugAndInternalIDFields,
+} from "schema/v2/object_identification"
+import { artworkConnection } from "schema/v2/artwork"
+import numeral from "schema/v2/fields/numeral"
+import { ShowsConnection, ShowType } from "schema/v2/show"
+import { ArtistType } from "schema/v2/artist"
+import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 import { ResolverContext } from "types/graphql"
 import { PartnerCategoryType } from "./partner_category"
-import ShowSorts from "./sorts/show_sorts"
-import ArtistSorts from "./sorts/artist_sorts"
+import ShowSorts from "schema/v2/sorts/show_sorts"
+import ArtistSorts from "schema/v2/sorts/artist_sorts"
 import { fields as partnerArtistFields } from "./partner_artist"
 import {
   connectionWithCursorInfo,
   createPageCursors,
-} from "./fields/pagination"
+} from "schema/v2/fields/pagination"
 import { deprecate } from "lib/deprecation"
-import { articleConnection } from "./article"
-import ArticleSorts, { ArticleSort } from "./sorts/article_sorts"
+import { articleConnection } from "schema/v2/article"
+import ArticleSorts, { ArticleSort } from "schema/v2/sorts/article_sorts"
 import { allViaLoader } from "lib/all"
 
 import { truncate } from "lib/helpers"
-import { setVersion } from "./image/normalize"
+import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquirerCollectorProfile"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
@@ -117,7 +120,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       edgeFields: partnerArtistFields,
     }).connectionType
 
-    const { filterArtworksConnection } = require("./filterArtworksConnection")
+    const {
+      filterArtworksConnection,
+    } = require("schema/v2/filterArtworksConnection")
 
     const {
       partnerArtistsMatchConnection,

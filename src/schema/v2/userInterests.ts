@@ -12,7 +12,7 @@ import {
   GraphQLBoolean,
 } from "graphql"
 import { IDFields } from "./object_identification"
-import { connectionWithCursorInfo } from "./fields/pagination"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 
 export const edgeFields: Thunk<GraphQLFieldConfigMap<
   UserInterest,

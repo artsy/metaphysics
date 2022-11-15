@@ -9,7 +9,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
-import { connectionWithCursorInfo } from "./fields/pagination"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { BodyAndHeaders } from "lib/loaders"

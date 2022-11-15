@@ -1,7 +1,7 @@
-import { PartnerType } from "./partner"
-import Artist from "./artist/index"
-import numeral from "./fields/numeral"
-import { IDFields } from "./object_identification"
+import { PartnerType } from "schema/v2/partner/partner"
+import Artist from "schema/v2/artist/index"
+import numeral from "schema/v2/fields/numeral"
+import { IDFields } from "schema/v2/object_identification"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -17,8 +17,8 @@ import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
-import { formatMarkdownValue, markdown } from "./fields/markdown"
-import { artworkConnection } from "./artwork"
+import { formatMarkdownValue, markdown } from "schema/v2/fields/markdown"
+import { artworkConnection } from "schema/v2/artwork"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 // TODO: This should move to the gravity loader
