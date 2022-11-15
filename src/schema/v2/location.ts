@@ -12,7 +12,7 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { connectionWithCursorInfo } from "./fields/pagination"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 
 export const LatLngType = new GraphQLObjectType<any, ResolverContext>({
   name: "LatLng",

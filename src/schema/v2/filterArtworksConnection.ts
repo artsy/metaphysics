@@ -32,7 +32,7 @@ import {
   createPageCursors,
   pageToCursor,
   PageCursorsType,
-} from "./fields/pagination"
+} from "schema/v2/fields/pagination"
 
 import Artwork, {
   artworkConnection,

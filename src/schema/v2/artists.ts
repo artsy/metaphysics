@@ -13,7 +13,7 @@ import {
   convertConnectionArgsToGravityArgs,
   convertGravityToConnectionArgs,
 } from "lib/helpers"
-import { createPageCursors } from "./fields/pagination"
+import { createPageCursors } from "schema/v2/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 import { omit } from "lodash"
 

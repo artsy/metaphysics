@@ -1,4 +1,4 @@
-import { PartnerType } from "./partner"
+import { PartnerType } from "schema/v2/partner/partner"
 import { FairType } from "./fair"
 import {
   GraphQLFieldConfig,

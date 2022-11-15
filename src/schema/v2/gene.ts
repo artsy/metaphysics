@@ -24,7 +24,7 @@ import { Searchable } from "./searchable"
 import { setVersion } from "./image/normalize"
 import { getDefault } from "./image"
 import { markdown } from "schema/v2/fields/markdown"
-import { connectionWithCursorInfo } from "./fields/pagination"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",

@@ -31,7 +31,9 @@ import {
 import Image, { getDefault } from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
-import PartnerArtist, { partnersForArtist } from "schema/v2/partner_artist"
+import PartnerArtist, {
+  partnersForArtist,
+} from "schema/v2/partner/partner_artist"
 import Sale from "schema/v2/sale/index"
 import SaleSorts from "schema/v2/sale/sorts"
 import Show from "schema/v2/show"
@@ -40,7 +42,7 @@ import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
 import { GeneType } from "../gene"
-import { PartnerType } from "../partner"
+import { PartnerType } from "schema/v2/partner/partner"
 import ArtistArtworksFilters from "./artwork_filters"
 import ArtistCarousel from "./carousel"
 import { CurrentEvent } from "./current"
@@ -89,7 +91,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => {
     const {
       PartnerArtistConnection,
-    } = require("schema/v2/partnerArtistConnection")
+    } = require("schema/v2/partner/partnerArtistConnection")
     const {
       filterArtworksConnectionWithParams,
     } = require("../filterArtworksConnection")

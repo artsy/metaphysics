@@ -10,7 +10,7 @@ import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
 import { markdown } from "./fields/markdown"
 import { ArtistType } from "./artist"
-import { PartnerType } from "./partner"
+import { PartnerType } from "schema/v2/partner/partner"
 import { GeneType } from "./gene"
 import { URL } from "url"
 

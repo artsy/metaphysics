@@ -5,7 +5,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { createPageCursors } from "./fields/pagination"
+import { createPageCursors } from "schema/v2/fields/pagination"
 import { ShowsConnection } from "./show"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"

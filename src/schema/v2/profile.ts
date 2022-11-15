@@ -12,7 +12,7 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { PartnerType } from "./partner"
+import { PartnerType } from "schema/v2/partner/partner"
 import { FairOrganizerType } from "./fair_organizer"
 import { FairType } from "./fair"
 

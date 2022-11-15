@@ -1,8 +1,8 @@
 import { GraphQLEnumType, GraphQLUnionType } from "graphql"
-import { connectionWithCursorInfo } from "./fields/pagination"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { ArtworkType } from "./artwork"
 import { ProfileType } from "./profile"
-import { PartnerType } from "./partner"
+import { PartnerType } from "schema/v2/partner/partner"
 import { ArtistType } from "./artist"
 
 const userAccessControlPropertiesType = new GraphQLUnionType({

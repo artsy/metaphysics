@@ -20,7 +20,7 @@ import {
   SaleArtworksAggregationResultsType,
 } from "./aggregations/filter_sale_artworks_aggregation"
 import { ArtworkType, ArtworkConnectionInterface } from "./artwork"
-import { connectionWithCursorInfo } from "./fields/pagination"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 
 const DEFAULTS = {
   aggregations: ["total"],

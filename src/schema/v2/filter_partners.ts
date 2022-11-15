@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Partners } from "./partners"
+import { Partners } from "schema/v2/partner/partners"
 import {
   FilterPartnersType,
   PartnersAggregation,
@@ -15,7 +15,7 @@ const FilterPartners: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(new GraphQLList(PartnersAggregation)),
     },
   }),
-  resolve: Partners.resolve
+  resolve: Partners.resolve,
 }
 
 export default FilterPartners

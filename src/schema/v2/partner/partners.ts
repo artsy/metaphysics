@@ -1,6 +1,6 @@
 import { clone, identity, pick, pickBy } from "lodash"
-import Partner, { PartnerType } from "./partner"
-import PartnerTypeType from "./input_fields/partner_type_type"
+import Partner, { PartnerType } from "schema/v2/partner/partner"
+import PartnerTypeType from "schema/v2/input_fields/partner_type_type"
 import {
   GraphQLString,
   GraphQLList,
@@ -15,7 +15,7 @@ import { pageable } from "relay-cursor-paging"
 import {
   connectionWithCursorInfo,
   createPageCursors,
-} from "./fields/pagination"
+} from "schema/v2/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 
 export const Partners: GraphQLFieldConfig<void, ResolverContext> = {

@@ -1,5 +1,5 @@
 import { map, omit } from "lodash"
-import Partner from "schema/v2/partner"
+import Partner from "schema/v2/partner/partner"
 import AggregationCount from "./aggregation_count"
 import {
   GraphQLObjectType,

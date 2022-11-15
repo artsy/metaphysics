@@ -1,6 +1,6 @@
-import cached from "./fields/cached"
-import PartnerCategoryTypeEnum from "./input_fields/partner_category_type"
-import { SlugAndInternalIDFields } from "./object_identification"
+import cached from "schema/v2/fields/cached"
+import PartnerCategoryTypeEnum from "schema/v2/input_fields/partner_category_type"
+import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import {
   GraphQLString,
   GraphQLObjectType,

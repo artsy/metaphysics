@@ -11,7 +11,7 @@ import numeral from "./fields/numeral"
 import Profile from "./profile"
 import Image from "./image"
 import Artist from "./artist"
-import Partner, { PartnerType } from "./partner"
+import Partner, { PartnerType } from "schema/v2/partner/partner"
 import { ShowsConnection } from "./show"
 import { LocationType } from "./location"
 import {
@@ -40,7 +40,7 @@ import {
   connectionWithCursorInfo,
   createPageCursors,
   paginationResolver,
-} from "./fields/pagination"
+} from "schema/v2/fields/pagination"
 import { FairOrganizerType } from "./fair_organizer"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 

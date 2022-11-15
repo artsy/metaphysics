@@ -15,7 +15,7 @@ import {
   connectionWithCursorInfo,
   createPageCursors,
   paginationResolver,
-} from "./fields/pagination"
+} from "schema/v2/fields/pagination"
 import { date } from "./fields/date"
 import { CollectorProfileType } from "./CollectorProfile/collectorProfile"
 import { UserSaleProfile } from "./userSaleProfile"

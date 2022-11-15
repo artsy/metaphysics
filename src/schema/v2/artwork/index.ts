@@ -51,7 +51,7 @@ import {
   NodeInterface,
   SlugAndInternalIDFields,
 } from "schema/v2/object_identification"
-import Partner from "schema/v2/partner"
+import Partner from "schema/v2/partner/partner"
 import Sale from "schema/v2/sale"
 import SaleArtwork from "schema/v2/sale_artwork"
 import { Searchable } from "schema/v2/searchable"

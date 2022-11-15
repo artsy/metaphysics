@@ -9,7 +9,7 @@ import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArray } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { createPageCursors } from "./fields/pagination"
+import { createPageCursors } from "schema/v2/fields/pagination"
 
 const Artworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,

@@ -3,10 +3,10 @@ import { GraphQLFieldConfig } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
-import { artistConnection } from "./artist"
-import { artworkConnection } from "./artwork"
-import { paginationResolver } from "./fields/pagination"
-import { ShowsConnection } from "./show"
+import { artistConnection } from "schema/v2/artist"
+import { artworkConnection } from "schema/v2/artwork"
+import { paginationResolver } from "schema/v2/fields/pagination"
+import { ShowsConnection } from "schema/v2/show"
 
 export const partnerShowsMatchConnection: GraphQLFieldConfig<
   { id: string },

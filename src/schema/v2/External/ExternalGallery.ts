@@ -1,7 +1,7 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields } from "../object_identification"
-import { PartnerType } from "../partner"
+import { PartnerType } from "schema/v2/partner/partner"
 
 export interface Response {
   total_count: number
