@@ -68,6 +68,8 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       from,
       reply_to_message_id,
       body_text,
+      reply_all: true,
+      from_id: userID,
     }).then(({ id: newMessageID }) => {
       return conversationLoader(id).then((updatedConversation) => {
         return {
