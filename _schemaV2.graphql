@@ -10075,6 +10075,7 @@ type MarketingCollection {
   showHeaderArtworksRail: Boolean!
   slug: String!
   thumbnail: String
+  thumbnailImage: Image
   title: String!
   updatedAt: ISO8601DateTime!
 }

@@ -206,6 +206,7 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type MarketingCollection {
+        thumbnailImage: Image
         artworksConnection(${argsToSDL(
           pageableFilterArtworksArgsWithInput
         ).join("\n")}): FilterArtworksConnection
@@ -291,6 +292,31 @@ export const gravityStitchingEnvironment = (
         },
       },
       MarketingCollection: {
+        thumbnailImage: {
+          fragment: gql`
+          ... on MarketingCollection {
+            image_url: thumbnail
+          }
+          `,
+          resolve: async ({ image_url }, args, context, info) => {
+            if (image_url) {
+              context.imageData = {
+                image_url,
+              }
+            } else {
+              context.imageData = null
+            }
+
+            return info.mergeInfo.delegateToSchema({
+              args,
+              schema: localSchema,
+              operation: "query",
+              fieldName: "_do_not_use_image",
+              context,
+              info,
+            })
+          },
+        },
         artworksConnection: {
           fragment: `
               ... on MarketingCollection {
