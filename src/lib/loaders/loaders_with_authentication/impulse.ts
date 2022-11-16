@@ -3,7 +3,7 @@ import config from "config"
 
 const { IMPULSE_APPLICATION_ID } = config
 
-export default (accessToken, userID, opts) => {
+export default (accessToken, _userID, opts) => {
   let impulseTokenLoader
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
   const impulseAccessTokenLoader = () =>
@@ -28,11 +28,7 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
-    conversationsLoader: impulseLoader("conversations", {
-      from_id: userID,
-      from_type: "User",
-      has_message: true,
-    }),
+    conversationsLoader: impulseLoader("conversations"),
     conversationLoader: impulseLoader((id) => `conversations/${id}`),
     conversationUpdateLoader: impulseLoader(
       (id) => `conversations/${id}`,
@@ -44,10 +40,7 @@ export default (accessToken, userID, opts) => {
     }),
     conversationCreateMessageLoader: impulseLoader(
       (id) => `conversations/${id}/messages`,
-      {
-        reply_all: true,
-        from_id: userID,
-      },
+      {},
       { method: "POST" }
     ),
     conversationCreateConversationOrderLoader: impulseLoader(
