@@ -811,11 +811,11 @@ export const gravityStitchingEnvironment = (
                 fieldName: "marketingCollections",
                 args: {
                   slugs: [
+                    "trove-editors-picks",
                     "trending-this-week",
                     "artists-on-the-rise",
-                    "trove-editors-picks",
-                    "painting",
-                    "photography",
+                    "blue-chip-artists",
+                    "top-auction-lots",
                   ],
                 },
                 context,
