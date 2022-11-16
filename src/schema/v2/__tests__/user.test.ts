@@ -110,7 +110,7 @@ describe("User", () => {
     const query = `
       {
         user(id: "percy-z") {
-          identityVerified
+          isIdentityVerified
         }
       }
     `
@@ -123,7 +123,7 @@ describe("User", () => {
 
     const { user: result } = await runAuthenticatedQuery(query, context)
 
-    expect(result.identityVerified).toEqual(true)
+    expect(result.isIdentityVerified).toEqual(true)
   })
 
   describe("userAlreadyExists", () => {
