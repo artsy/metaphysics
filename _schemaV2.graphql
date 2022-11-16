@@ -16317,9 +16317,6 @@ type User implements Node {
 
   # A globally unique ID.
   id: ID!
-
-  # Has the users identity been verified.
-  identityVerified: Boolean!
   inquiredArtworksConnection(
     after: String
     before: String
@@ -16335,6 +16332,9 @@ type User implements Node {
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
+
+  # Has the users identity been verified.
+  isIdentityVerified: Boolean!
   lastSignInAt(
     format: String
 
