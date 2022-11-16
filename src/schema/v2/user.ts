@@ -256,6 +256,11 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: async ({ data_transfer_opt_out }) => data_transfer_opt_out,
       },
+      identityVerified: {
+        description: "Has the users identity been verified.",
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: async ({ identity_verified }) => identity_verified,
+      },
       inquiredArtworksConnection: {
         type: UserInquiredArtworksConnection,
         args: pageable({}),

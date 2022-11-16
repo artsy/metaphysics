@@ -106,6 +106,26 @@ describe("User", () => {
     expect(result.name).toEqual("Artsy User")
   })
 
+  it("returns identity verification status", async () => {
+    const query = `
+      {
+        user(id: "percy-z") {
+          identityVerified
+        }
+      }
+    `
+
+    const context = {
+      userByIDLoader: () => {
+        return Promise.resolve({ identity_verified: true })
+      },
+    }
+
+    const { user: result } = await runAuthenticatedQuery(query, context)
+
+    expect(result.identityVerified).toEqual(true)
+  })
+
   describe("userAlreadyExists", () => {
     it("returns true if a user exists", async () => {
       const foundUser = {
