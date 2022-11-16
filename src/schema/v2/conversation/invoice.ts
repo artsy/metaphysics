@@ -5,8 +5,11 @@ import {
   GraphQLEnumType,
   GraphQLFieldConfig,
 } from "graphql"
-import { amount } from "../../fields/money"
-import { NodeInterface, InternalIDFields } from "../../object_identification"
+import { amount } from "schema/v2/fields/money"
+import {
+  NodeInterface,
+  InternalIDFields,
+} from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import { deprecate, deprecateType } from "lib/deprecation"
 

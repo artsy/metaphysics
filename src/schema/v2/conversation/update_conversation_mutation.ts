@@ -1,6 +1,6 @@
 import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import Conversation from "schema/v2/me/conversation"
+import Conversation from "schema/v2/conversation"
 import { ResolverContext } from "types/graphql"
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({

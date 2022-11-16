@@ -4,7 +4,7 @@ import { GraphQLInt, GraphQLFieldConfig } from "graphql"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { assign } from "lodash"
 
-import { ConversationType } from "./conversation"
+import { ConversationType } from "schema/v2/conversation"
 import { ResolverContext } from "types/graphql"
 
 const Conversations: GraphQLFieldConfig<void, ResolverContext> = {
