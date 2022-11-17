@@ -156,6 +156,7 @@ import { PartnerShowDocumentsConnection } from "./partner/partnerShowDocumentsCo
 import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
 import { NotificationsConnection } from "./notifications"
 import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_as_read_mutation"
+import Conversations from "./conversation/conversations"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -187,8 +188,7 @@ const rootFields = {
   channel,
   city: City,
   cities,
-  notificationPreferences,
-  // collection: Collection,
+  conversationsConnection: Conversations,
   _do_not_use_conversation: {
     ...Conversation,
     description: "Do not use (only used internally for stitching)",
@@ -227,6 +227,7 @@ const rootFields = {
   me: Me,
   node: ObjectIdentification.NodeField,
   notificationsConnection: NotificationsConnection,
+  notificationPreferences,
   orderedSet: OrderedSet,
   orderedSets: OrderedSets,
   page,
