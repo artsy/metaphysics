@@ -154,10 +154,14 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           const totalCount = headers["x-total-count"]
             ? parseInt(headers["x-total-count"], 10)
             : eligible_sale_artworks_count
-          return connectionFromArraySlice(artworks, options, {
-            arrayLength: totalCount,
-            sliceStart: offset,
-          })
+
+          return {
+            totalCount,
+            ...connectionFromArraySlice(artworks, options, {
+              arrayLength: totalCount,
+              sliceStart: offset,
+            }),
+          }
         },
       },
       associatedSale: {
