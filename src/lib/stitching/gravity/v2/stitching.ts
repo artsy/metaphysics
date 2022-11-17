@@ -169,6 +169,10 @@ export const gravityStitchingEnvironment = (
         ): [MarketingCollection]
       }
 
+      extend type Query {
+        curatedMarketingCollections(size: Int): [MarketingCollection]
+      }
+
       extend type System {
         algolia: Algolia
       }
@@ -202,6 +206,7 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type MarketingCollection {
+        thumbnailImage: Image
         artworksConnection(${argsToSDL(
           pageableFilterArtworksArgsWithInput
         ).join("\n")}): FilterArtworksConnection
@@ -287,6 +292,24 @@ export const gravityStitchingEnvironment = (
         },
       },
       MarketingCollection: {
+        thumbnailImage: {
+          fragment: gql`
+          ... on MarketingCollection {
+            image_url: thumbnail
+          }
+          `,
+          resolve: async ({ image_url }, _args, context, info) => {
+            context.imageData = normalizeImageData(image_url)
+
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "_do_not_use_image",
+              context,
+              info,
+            })
+          },
+        },
         artworksConnection: {
           fragment: `
               ... on MarketingCollection {
@@ -763,6 +786,38 @@ export const gravityStitchingEnvironment = (
               context,
               info,
             })
+          },
+        },
+      },
+      Query: {
+        curatedMarketingCollections: {
+          fragment: gql`
+            ...on Query {
+              __typename
+            }
+          `,
+          resolve: async (_parent, args, context, info) => {
+            try {
+              return await info.mergeInfo.delegateToSchema({
+                schema: gravitySchema,
+                operation: "query",
+                fieldName: "marketingCollections",
+                args: {
+                  slugs: [
+                    "trove-editors-picks",
+                    "trending-this-week",
+                    "artists-on-the-rise",
+                    "blue-chip-artists",
+                    "top-auction-lots",
+                  ],
+                  ...args,
+                },
+                context,
+                info,
+              })
+            } catch (error) {
+              return []
+            }
           },
         },
       },
