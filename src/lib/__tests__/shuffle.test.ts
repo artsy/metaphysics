@@ -53,3 +53,57 @@ describe("seededShuffle", () => {
     })
   })
 })
+
+describe("dailyShuffle", () => {
+  describe("with no time zone specified", () => {
+    it("produces a stable shuffle for an entire UTC day", () => {
+      const veryEarly = new Date("2022-11-15T01:00:00Z").valueOf()
+      const veryLate = new Date("2022-11-15T23:00:00Z").valueOf()
+      const nextDay = new Date("2022-11-16T01:00:00Z").valueOf()
+
+      // early in the day - same
+      jest.spyOn(global.Date, "now").mockImplementation(() => veryEarly)
+      expect(dailyShuffle([1, 2, 3, 4, 5])).toEqual([4, 2, 5, 3, 1])
+
+      // late in the day - same
+      jest.spyOn(global.Date, "now").mockImplementation(() => veryLate)
+      expect(dailyShuffle([1, 2, 3, 4, 5])).toEqual([4, 2, 5, 3, 1])
+
+      // next day - different
+      jest.spyOn(global.Date, "now").mockImplementation(() => nextDay)
+      expect(dailyShuffle([1, 2, 3, 4, 5])).toEqual([3, 4, 1, 5, 2])
+    })
+  })
+
+  describe("with a valid time zone specified", () => {
+    it("produces a stable shuffle for an entire day in that time zone", () => {
+      const veryEarly = new Date("2022-11-15T01:00:00-05:00").valueOf()
+      const veryLate = new Date("2022-11-15T23:00:00-05:00").valueOf()
+      const nextDay = new Date("2022-11-16T01:00:00-05:00").valueOf()
+      const nycTime = "America/New_York"
+
+      // early in the day - same
+      jest.spyOn(global.Date, "now").mockImplementation(() => veryEarly)
+      expect(dailyShuffle([1, 2, 3, 4, 5], nycTime)).toEqual([4, 2, 5, 3, 1])
+
+      // late in the day - same
+      jest.spyOn(global.Date, "now").mockImplementation(() => veryLate)
+      expect(dailyShuffle([1, 2, 3, 4, 5], nycTime)).toEqual([4, 2, 5, 3, 1])
+
+      // next day - different
+      jest.spyOn(global.Date, "now").mockImplementation(() => nextDay)
+      expect(dailyShuffle([1, 2, 3, 4, 5], nycTime)).toEqual([3, 4, 1, 5, 2])
+    })
+  })
+
+  describe("with an invalid time zone", () => {
+    it("does not error", () => {
+      expect(() => dailyShuffle([1, 2, 3, 4, 5], "lol/jk")).not.toThrow()
+    })
+    it("falls back to default UTC behavior", () => {
+      const veryEarly = new Date("2022-11-15T01:00:00Z").valueOf()
+      jest.spyOn(global.Date, "now").mockImplementation(() => veryEarly)
+      expect(dailyShuffle([1, 2, 3, 4, 5], "lol/jk")).toEqual([4, 2, 5, 3, 1])
+    })
+  })
+})

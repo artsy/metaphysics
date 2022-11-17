@@ -61,3 +61,41 @@ export const seededShuffle = (seed: string) => {
 
   return { shuffle }
 }
+
+/**
+ * Performs a single Fisher-Yates shuffle that will remain stable
+ * for the entire duration of the current UTC day (default), or
+ * for an entire day in the provided time zone (optional).
+ *
+ * The second argument is an optional IANA time zone identifier string,
+ * e.g. `America/New_York` or `Asia/Shanghai`.
+ *
+ * In a resolver, this info may be read from a request context:
+ *
+ * ```ts
+ * resolve: (parent, _args, context, _info) => {
+    const { artworkIDs } = parent
+    const { defaultTimezone } = context
+    const shuffledIDs = dailyShuffle(artworkIDs, defaultTimezone)
+    …
+  },
+ * ```
+ */
+export const dailyShuffle = <T>(array: T[], timeZone = "UTC") => {
+  let today: string
+
+  try {
+    today = new Date(Date.now()).toLocaleString("en-GB", { timeZone })
+  } catch (error) {
+    if (error.name === "RangeError") {
+      // invalid time zone; fall back to UTC
+      today = new Date(Date.now()).toLocaleString("en-GB", { timeZone: "UTC" })
+    } else {
+      throw error
+    }
+  }
+
+  const dd_mm_yyyy = today.slice(0, 10)
+  const { shuffle } = seededShuffle(dd_mm_yyyy)
+  return shuffle(array)
+}
