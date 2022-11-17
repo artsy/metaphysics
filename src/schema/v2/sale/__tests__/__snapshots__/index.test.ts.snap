@@ -59,6 +59,7 @@ Object {
       "pageInfo": Object {
         "hasNextPage": true,
       },
+      "totalCount": 20,
     },
   },
 }
