@@ -299,7 +299,7 @@ export const gravityStitchingEnvironment = (
           }
           `,
           resolve: async ({ image_url }, _args, context, info) => {
-            context.imageData = image_url ? normalizeImageData(image_url) : null
+            context.imageData = normalizeImageData(image_url)
 
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
