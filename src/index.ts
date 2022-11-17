@@ -65,7 +65,7 @@ function logQueryDetailsIfEnabled() {
   return (_req, _res, next) => next()
 }
 
-function createExtensions(document, result, requestID) {
+function createExtensions(document, result, requestID, userAgent) {
   const principalFieldExtensions = principalFieldDirectiveExtension(
     document,
     result
@@ -77,7 +77,7 @@ function createExtensions(document, result, requestID) {
   )
 
   const requestLoggerExtensions = enableRequestLogging
-    ? fetchLoggerRequestDone(requestID)
+    ? fetchLoggerRequestDone(requestID, userAgent)
     : {}
 
   const extensions = {
@@ -199,7 +199,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     }),
     validationRules,
     extensions: ({ document, result }) =>
-      createExtensions(document, result, requestID),
+      createExtensions(document, result, requestID, userAgent),
   }
 })
 
