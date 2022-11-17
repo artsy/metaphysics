@@ -21,8 +21,8 @@ interface ConversationsArguments extends CursorPageable {
   type?: "Partner" | "User"
 }
 
-const ConversationsTypeEnum = new GraphQLEnumType({
-  name: "ConversationType",
+const ConversationsInputModeEnum = new GraphQLEnumType({
+  name: "ConversationsInputMode",
   values: {
     PARTNER: {
       value: "Partner",
@@ -62,7 +62,8 @@ const Conversations: GraphQLFieldConfig<
       type: GraphQLString,
     },
     type: {
-      type: ConversationsTypeEnum,
+      type: ConversationsInputModeEnum,
+      defaultValue: "USER",
     },
   }),
   resolve: (_root, args, { conversationsLoader, userID }) => {
