@@ -170,7 +170,7 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Query {
-        curatedMarketingCollections(first: Int, last: Int, after: String, before: String): [MarketingCollection]
+        curatedMarketingCollections(size: Int): [MarketingCollection]
       }
 
       extend type System {
@@ -298,17 +298,10 @@ export const gravityStitchingEnvironment = (
             image_url: thumbnail
           }
           `,
-          resolve: async ({ image_url }, args, context, info) => {
-            if (image_url) {
-              context.imageData = {
-                image_url,
-              }
-            } else {
-              context.imageData = null
-            }
+          resolve: async ({ image_url }, _args, context, info) => {
+            context.imageData = image_url ? normalizeImageData(image_url) : null
 
             return info.mergeInfo.delegateToSchema({
-              args,
               schema: localSchema,
               operation: "query",
               fieldName: "_do_not_use_image",
@@ -799,11 +792,11 @@ export const gravityStitchingEnvironment = (
       Query: {
         curatedMarketingCollections: {
           fragment: gql`
-            ...on Viewer {
+            ...on Query {
               __typename
             }
           `,
-          resolve: async (_parent, _args, context, info) => {
+          resolve: async (_parent, args, context, info) => {
             try {
               return await info.mergeInfo.delegateToSchema({
                 schema: gravitySchema,
@@ -817,6 +810,7 @@ export const gravityStitchingEnvironment = (
                     "blue-chip-artists",
                     "top-auction-lots",
                   ],
+                  ...args,
                 },
                 context,
                 info,
