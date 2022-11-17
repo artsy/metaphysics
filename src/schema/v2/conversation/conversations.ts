@@ -1,13 +1,43 @@
-import { pageable } from "relay-cursor-paging"
+import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { GraphQLInt, GraphQLFieldConfig } from "graphql"
+import {
+  GraphQLInt,
+  GraphQLFieldConfig,
+  GraphQLString,
+  GraphQLBoolean,
+} from "graphql"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { assign } from "lodash"
 
 import { ConversationType } from "schema/v2/conversation"
 import { ResolverContext } from "types/graphql"
+import { GraphQLEnumType } from "graphql"
 
-const Conversations: GraphQLFieldConfig<void, ResolverContext> = {
+interface ConversationsArguments extends CursorPageable {
+  dismissed?: boolean
+  hasMessage?: boolean
+  hasReply?: boolean
+  partnerId?: string
+  type?: "Partner" | "User"
+}
+
+const ConversationsTypeEnum = new GraphQLEnumType({
+  name: "ConversationType",
+  values: {
+    PARTNER: {
+      value: "Partner",
+    },
+    USER: {
+      value: "User",
+    },
+  },
+})
+
+const Conversations: GraphQLFieldConfig<
+  void,
+  ResolverContext,
+  ConversationsArguments
+> = {
   type: connectionDefinitions({
     nodeType: ConversationType,
     connectionFields: {
@@ -18,22 +48,65 @@ const Conversations: GraphQLFieldConfig<void, ResolverContext> = {
     },
   }).connectionType,
   description: "Conversations, usually between a user and partner.",
-  args: pageable(),
-  resolve: (_root, options, { conversationsLoader, userID }) => {
-    if (!conversationsLoader) return null
-    const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
+  args: pageable({
+    dismissed: {
+      type: GraphQLBoolean,
+    },
+    hasMessage: {
+      type: GraphQLBoolean,
+    },
+    hasReply: {
+      type: GraphQLBoolean,
+    },
+    partnerId: {
+      type: GraphQLString,
+    },
+    type: {
+      type: ConversationsTypeEnum,
+    },
+  }),
+  resolve: (_root, args, { conversationsLoader, userID }) => {
+    if (!conversationsLoader) {
+      return null
+    }
+
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
     const expand = ["total_unread_count"]
+
+    let params
+    if (args.type === "Partner") {
+      if (!args.partnerId) {
+        throw new Error("Argument `partnerId` is required.")
+      }
+
+      params = {
+        deleted: false,
+        intercepted: false,
+        to_id: args.partnerId,
+        to_type: "Partner",
+
+        // TODO
+        dismissed: args.dismissed,
+        has_message: args.hasMessage,
+        has_reply: args.hasReply,
+      }
+      // User
+    } else {
+      params = {
+        expand,
+        from_id: userID,
+        from_type: "User",
+        has_message: true,
+      }
+    }
     return conversationsLoader({
       page,
       size,
-      expand,
-      from_id: userID,
-      from_type: "User",
-      has_message: true,
+      ...params,
     }).then(({ total_count, total_unread_count, conversations }) => {
       return assign(
         { total_unread_count },
-        connectionFromArraySlice(conversations, options, {
+        connectionFromArraySlice(conversations, args, {
           arrayLength: total_count,
           sliceStart: offset,
         })
