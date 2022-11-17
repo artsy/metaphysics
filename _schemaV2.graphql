@@ -14936,7 +14936,7 @@ union SendConfirmationEmailMutationType =
 
 input SendConversationMessageMutationInput {
   # Attachments to the message
-  attachments: [ConversationMessageAttachmentInput]
+  attachments: [ConversationMessageAttachmentInput!]
 
   # Message body (html)
   bodyHTML: String

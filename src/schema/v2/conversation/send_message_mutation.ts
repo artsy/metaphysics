@@ -41,26 +41,28 @@ export default mutationWithClientMutationId<
     attachments: {
       description: "Attachments to the message",
       type: new GraphQLList(
-        new GraphQLInputObjectType({
-          name: "ConversationMessageAttachmentInput",
-          fields: {
-            name: {
-              type: new GraphQLNonNull(GraphQLString),
+        new GraphQLNonNull(
+          new GraphQLInputObjectType({
+            name: "ConversationMessageAttachmentInput",
+            fields: {
+              name: {
+                type: new GraphQLNonNull(GraphQLString),
+              },
+              type: {
+                type: new GraphQLNonNull(GraphQLString),
+              },
+              url: {
+                type: new GraphQLNonNull(GraphQLString),
+              },
+              id: {
+                type: GraphQLString,
+              },
+              size: {
+                type: GraphQLString,
+              },
             },
-            type: {
-              type: new GraphQLNonNull(GraphQLString),
-            },
-            url: {
-              type: new GraphQLNonNull(GraphQLString),
-            },
-            id: {
-              type: GraphQLString,
-            },
-            size: {
-              type: GraphQLString,
-            },
-          },
-        })
+          })
+        )
       ),
     },
     bodyHTML: {
@@ -124,37 +126,46 @@ export default mutationWithClientMutationId<
       return null
     }
 
+    // The params replyAll and to are mutually exclusive. If replyAll: false
+    // and `to` is defined, set `replyAll: undefined` to avoid Impulse error.
+    const replyAll =
+      args.replyAll === false && args.to ? undefined : args.replyAll
+
     return conversationCreateMessageLoader(args.id, {
       attachments: args.attachments,
       body_html: args.bodyHTML,
       body_text: args.bodyText,
       from: args.from,
       from_id: args.fromId ?? userID,
-      reply_all: args.replyAll,
+      reply_all: replyAll,
       reply_to_message_id: args.replyToMessageID,
       to: args.to,
-    }).then(({ id: newMessageID }) => {
-      return conversationLoader(args.id).then((updatedConversation) => {
-        return {
-          conversation: updatedConversation,
-
-          // Because Impulse does not have the full new message object available
-          // immediately, we return an optimistic response so the mutation can
-          // return it too.
-          newMessagePayload: {
-            attachments: args.attachments,
-            body: args.bodyText,
-            created_at: new Date().toISOString(),
-            from_email_address: args.from,
-            from_id: args.fromId ?? userID,
-            id: newMessageID,
-            raw_text: args.bodyText,
-            // This addition is only for MP so it can determine if the message
-            // was from the current user.
-            conversation_from_address: updatedConversation.from_email,
-          },
-        }
-      })
     })
+      .then(({ id: newMessageID }) => {
+        return conversationLoader(args.id).then((updatedConversation) => {
+          return {
+            conversation: updatedConversation,
+
+            // Because Impulse does not have the full new message object available
+            // immediately, we return an optimistic response so the mutation can
+            // return it too.
+            newMessagePayload: {
+              attachments: args.attachments || [],
+              body: args.bodyText,
+              created_at: new Date().toISOString(),
+              from_email_address: args.from,
+              from_id: args.fromId ?? userID,
+              id: newMessageID,
+              raw_text: args.bodyText,
+              // This addition is only for MP so it can determine if the message
+              // was from the current user.
+              conversation_from_address: updatedConversation.from_email,
+            },
+          }
+        })
+      })
+      .catch((error) => {
+        throw new Error(`Error: ${error.body?.error}`)
+      })
   },
 })
