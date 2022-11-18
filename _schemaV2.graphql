@@ -15933,8 +15933,17 @@ input UpdateConversationMutationInput {
   # The id of the conversation to be updated.
   conversationId: String!
 
+  # Mark the conversation as dismissed
+  dismissed: Boolean
+
   # The message id to mark as read.
-  fromLastViewedMessageId: String!
+  fromLastViewedMessageId: String
+
+  # The seller outcome for the conversation. Options include `already_contacted`, `dont_trust`, `other`, `work_unavailable`.
+  sellerOutcome: String
+
+  # The seller outcome comment for the conversation.
+  sellerOutcomeComment: String
 }
 
 type UpdateConversationMutationPayload {
