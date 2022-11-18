@@ -4,7 +4,7 @@ import Conversation from "schema/v2/conversation"
 import { ResolverContext } from "types/graphql"
 
 interface UpdateMessageMutationInputProps {
-  messageId: string
+  id: string
   spam: boolean
 }
 
@@ -16,7 +16,7 @@ export default mutationWithClientMutationId<
   name: "UpdateMessageMutation",
   description: "Update a message.",
   inputFields: {
-    messageId: {
+    id: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The id of the message to be updated.",
     },
@@ -37,7 +37,7 @@ export default mutationWithClientMutationId<
     }
 
     try {
-      const response = await messageUpdateLoader(args.messageId, {
+      const response = await messageUpdateLoader(args.id, {
         spam: args.spam,
       })
       return response

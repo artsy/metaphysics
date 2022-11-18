@@ -48,6 +48,11 @@ export default (accessToken, _userID, opts) => {
       {},
       { method: "POST" }
     ),
+    conversationDeleteLoader: impulseLoader(
+      (id) => `conversations/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     messageUpdateLoader: impulseLoader(
       (id) => `messages/${id}`,
       {},

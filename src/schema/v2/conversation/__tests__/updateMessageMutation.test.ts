@@ -1,10 +1,10 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("UpdateConversationMutation", () => {
-  it("sets from_last_viewed_message_id", async () => {
+describe("UpdateMessageMutation", () => {
+  it("marks the message as spam", async () => {
     const mutation = `
       mutation {
-        updateMessage(input: { messageId: "25", spam: true }) {
+        updateMessage(input: { id: "25", spam: true }) {
           conversation {
             initialMessage
           }
@@ -22,6 +22,8 @@ describe("UpdateConversationMutation", () => {
 
     try {
       const updatedMessage = await runAuthenticatedQuery(mutation, context)
+
+      // TODO
       expect(updatedMessage).toEqual("foo")
     } catch (error) {
       console.log(error)
