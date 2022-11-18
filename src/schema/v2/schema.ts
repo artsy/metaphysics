@@ -13,6 +13,7 @@ import Articles from "./articles"
 import ArticlesConnection from "./articlesConnection"
 import Artist from "./artist"
 import Artists, { artistsConnection } from "./artists"
+import { CuratedTrendingArtists } from "./artists/curatedTrending"
 import { mergeArtistsMutation } from "./artists/mergeArtistsMutation"
 import Artwork from "./artwork"
 import { ArtistArtworkGridType } from "./artwork/artworkContextGrids/ArtistArtworkGrid"
@@ -195,6 +196,7 @@ const rootFields = {
   },
   bankAccount: BankAccount,
   creditCard: CreditCard,
+  curatedTrendingArtists: CuratedTrendingArtists,
   departments,
   // externalPartner: ExternalPartner,
   fair: Fair,
