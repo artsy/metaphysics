@@ -64,9 +64,17 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
                         { time, cache: false, length }
                       )
                     })
-                    .catch((err) => {
-                      warn(path, err)
-                      reject(err)
+                    .catch((error) => {
+                      warn(path, error)
+                      reject(error)
+
+                      // Log failed requests
+                      extensionsLogger(
+                        globalAPIOptions.requestIDs.requestID,
+                        apiName,
+                        key,
+                        { failed: true, error }
+                      )
                     })
                 })
               })
