@@ -3,7 +3,16 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import Conversation from "schema/v2/conversation"
 import { ResolverContext } from "types/graphql"
 
-export default mutationWithClientMutationId<any, any, ResolverContext>({
+interface UpdateMessageMutationInputProps {
+  conversationId: string
+  fromLastViewedMessageId: string
+}
+
+export default mutationWithClientMutationId<
+  UpdateMessageMutationInputProps,
+  any,
+  ResolverContext
+>({
   name: "UpdateConversationMutation",
   description: "Update a conversation.",
   inputFields: {

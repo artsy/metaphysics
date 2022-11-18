@@ -11161,6 +11161,11 @@ type Mutation {
     input: UpdateConversationMutationInput!
   ): UpdateConversationMutationPayload
 
+  # Update a message.
+  updateMessage(
+    input: UpdateMessageMutationInput!
+  ): UpdateMessageMutationPayload
+
   # Updates the logged in user's password
   updateMyPassword(
     input: UpdateMyPasswordMutationInput!
@@ -15908,6 +15913,21 @@ input UpdateConversationMutationInput {
 }
 
 type UpdateConversationMutationPayload {
+  clientMutationId: String
+  conversation: Conversation
+}
+
+input UpdateMessageMutationInput {
+  clientMutationId: String
+
+  # The id of the message to be updated.
+  messageId: String!
+
+  # Mark the message as spam
+  spam: Boolean!
+}
+
+type UpdateMessageMutationPayload {
   clientMutationId: String
   conversation: Conversation
 }

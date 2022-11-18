@@ -48,5 +48,10 @@ export default (accessToken, _userID, opts) => {
       {},
       { method: "POST" }
     ),
+    messageUpdateLoader: impulseLoader(
+      (id) => `messages/${id}`,
+      {},
+      { method: "PUT" }
+    ),
   }
 }
