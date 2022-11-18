@@ -7,10 +7,15 @@ describe("SendConversationMessageMutation", () => {
       mutation {
         sendConversationMessage(
           input: {
-            id: "623",
-            from: "pio-dog@example.com",
+            attachments: [{ name: "foo", type: "bar", url: "baz", id: "bam", size: "20"}],
+            bodyHTML: "Body html...",
             bodyText: "Sehr schön!"
-            replyToMessageID: "221"
+            from: "pio-dog@example.com",
+            fromId: "123",
+            id: "623",
+            replyAll: true,
+            replyToMessageID: "221",
+            to: ["foo@bar.com"]
           }
         ) {
             conversation {
@@ -34,11 +39,14 @@ describe("SendConversationMessageMutation", () => {
     const context = {
       conversationLoader: () =>
         Promise.resolve({
+          attachments: [
+            { name: "foo", type: "bar", url: "baz", id: "bam", size: "20" },
+          ],
+          from_email: "gallery@example.com",
           id: "420",
           initial_message: "10/10 would buy",
-          from_email: "gallery@example.com",
-          to: ["1234567"],
           to_name: "Some Gallery",
+          to: ["1234567"],
         }),
       conversationCreateMessageLoader: () =>
         Promise.resolve({
@@ -47,10 +55,19 @@ describe("SendConversationMessageMutation", () => {
         }),
     }
 
-    expect.assertions(1)
     return runAuthenticatedQuery(mutation, context).then(
       ({ sendConversationMessage }) => {
-        expect(sendConversationMessage).toMatchSnapshot()
+        expect(sendConversationMessage).toEqual({
+          conversation: { internalID: "420" },
+          messageEdge: {
+            cursor: "YXJyYXljb25uZWN0aW9uOjA=",
+            node: {
+              internalID: "222",
+              body: "Sehr schön!",
+              from: { email: "pio-dog@example.com", name: null },
+            },
+          },
+        })
       }
     )
   })
