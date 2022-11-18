@@ -10021,6 +10021,9 @@ type MarketingCollection {
   showHeaderArtworksRail: Boolean!
   slug: String!
   thumbnail: String
+    @deprecated(
+      reason: "If querying via Metaphysics use thumbnailImage instead."
+    )
   thumbnailImage: Image
   title: String!
   updatedAt: ISO8601DateTime!
