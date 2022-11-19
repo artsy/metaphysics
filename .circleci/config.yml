@@ -4,7 +4,7 @@ orbs:
   hokusai: artsy/hokusai@volatile
   horizon: artsy/release@volatile
   node: circleci/node@5.0.3
-  yarn: artsy/yarn@6.2.0
+  yarn: artsy/yarn@6.4.0
 
 not_staging_or_release: &not_staging_or_release
   filters:
