@@ -1231,6 +1231,7 @@ describe("Sale type", () => {
           {
             sale(id: "foo-foo") {
               artworksConnection(first: 10) {
+                totalCount
                 pageInfo {
                   hasNextPage
                 }
