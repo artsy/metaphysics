@@ -3,6 +3,7 @@ import {
   GraphQLString,
   GraphQLFieldConfig,
   GraphQLList,
+  GraphQLBoolean,
 } from "graphql"
 import { artworkConnection } from "schema/v2/artwork"
 import { pageable } from "relay-cursor-paging"
@@ -62,12 +63,21 @@ export const ArtworkContextGridType = new GraphQLInterfaceType({
 
 export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLList(ArtworkContextGridType),
+  args: {
+    includeRelatedArtworks: {
+      type: GraphQLBoolean,
+      defaultValue: true,
+      description:
+        "Whether to include the `RelatedArtworksGrid` module. Defaults to `true`; preferred behavior is to opt out with `false`.",
+    },
+  },
   resolve: async (
     artwork,
-    _options,
+    args,
     { saleLoader, relatedFairsLoader, relatedShowsLoader }
   ) => {
     const { id, artist, partner, sale_ids } = artwork
+    const { includeRelatedArtworks } = args
 
     // If the artwork is in an auction, return a context that includes the auction
     if (sale_ids && sale_ids.length > 0) {
@@ -78,11 +88,9 @@ export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
             ...(artist
               ? [{ gridType: "ArtistArtworkGrid", artist, artwork }]
               : []),
-            {
-              gridType: "RelatedArtworkGrid",
-              artist,
-              artwork,
-            },
+            ...(includeRelatedArtworks
+              ? [{ gridType: "RelatedArtworkGrid", artist, artwork }]
+              : []),
           ]
         } else {
           return [
@@ -122,7 +130,9 @@ export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
             ...(artist
               ? [{ gridType: "ArtistArtworkGrid", artist, artwork }]
               : []),
-            { gridType: "RelatedArtworkGrid", artwork },
+            ...(includeRelatedArtworks
+              ? [{ gridType: "RelatedArtworkGrid", artwork }]
+              : []),
           ]
         }
       }
@@ -148,7 +158,9 @@ export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
         ...(partner
           ? [{ gridType: "PartnerArtworkGrid", partner, artwork }]
           : []),
-        { gridType: "RelatedArtworkGrid", artwork },
+        ...(includeRelatedArtworks
+          ? [{ gridType: "RelatedArtworkGrid", artwork }]
+          : []),
       ]
     }
 
@@ -158,7 +170,9 @@ export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
       ...(partner
         ? [{ gridType: "PartnerArtworkGrid", partner, artwork }]
         : []),
-      { gridType: "RelatedArtworkGrid", artwork },
+      ...(includeRelatedArtworks
+        ? [{ gridType: "RelatedArtworkGrid", artwork }]
+        : []),
     ]
   },
 }
