@@ -2706,6 +2706,11 @@ type ViewingRoom {
   Datetime after which the viewing room is no longer viewable
   """
   endAt: ISO8601DateTime
+
+  """
+  Datetime when viewing room first viewable
+  """
+  firstLiveAt: ISO8601DateTime
   heroImageURL: String @deprecated(reason: "Use image field instead")
   href: String
   image: ARImage
