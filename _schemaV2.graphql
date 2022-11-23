@@ -2017,7 +2017,7 @@ type Artwork implements Node & Searchable & Sellable {
   context: ArtworkContext
   contextGrids(
     # Whether to include the `RelatedArtworksGrid` module. Defaults to `true`; preferred behavior is to opt out with `false`.
-    includeRelatedArtworks: Boolean = true
+    includeRelatedArtworks: Boolean! = true
   ): [ArtworkContextGrid]
 
   # The currency code used to pay for the artwork

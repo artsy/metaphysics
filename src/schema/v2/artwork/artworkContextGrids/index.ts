@@ -4,6 +4,7 @@ import {
   GraphQLFieldConfig,
   GraphQLList,
   GraphQLBoolean,
+  GraphQLNonNull,
 } from "graphql"
 import { artworkConnection } from "schema/v2/artwork"
 import { pageable } from "relay-cursor-paging"
@@ -65,7 +66,7 @@ export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLList(ArtworkContextGridType),
   args: {
     includeRelatedArtworks: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       defaultValue: true,
       description:
         "Whether to include the `RelatedArtworksGrid` module. Defaults to `true`; preferred behavior is to opt out with `false`.",
