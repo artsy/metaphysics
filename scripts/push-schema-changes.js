@@ -73,6 +73,7 @@ async function main() {
       { repo: "energy" },
       { repo: "force" },
       { repo: "forque" },
+      { repo: "volt-v2" },
       { repo: "pulse", dest: "vendor/graphql/schema/metaphysics.json" },
       { repo: "volt", dest: "vendor/graphql/schema/metaphysics.json" },
     ]
