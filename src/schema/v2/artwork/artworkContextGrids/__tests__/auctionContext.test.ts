@@ -2,7 +2,7 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { assign } from "lodash"
 
-describe("Default Context", () => {
+describe("Auction Context", () => {
   let context: any
   const parentArtwork = {}
 
@@ -147,5 +147,38 @@ describe("Default Context", () => {
     ])
     // Related artworks grid should have no artworks
     expect(data.artwork.contextGrids[1].artworksConnection).toEqual(null)
+  })
+
+  it("allows related artworks to be excluded", async () => {
+    context.relatedLayersLoader = () => Promise.resolve([{ id: "main" }])
+    context.relatedLayerArtworksLoader = jest.fn()
+
+    const response = await runAuthenticatedQuery(
+      gql`
+        {
+          artwork(id: "donn-delson-space-invader") {
+            contextGrids(includeRelatedArtworks: false) {
+              title
+              artworksConnection(first: 2) {
+                edges {
+                  node {
+                    slug
+                    title
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    const grids = response.artwork.contextGrids
+    const gridTitles = grids.map((grid) => grid.title)
+
+    expect(grids.length).toEqual(1)
+    expect(gridTitles).not.toInclude("Related works")
+    expect(context.relatedLayerArtworksLoader).not.toHaveBeenCalled()
   })
 })

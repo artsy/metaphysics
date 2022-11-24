@@ -191,4 +191,37 @@ describe("Default Context", () => {
     ).toEqual(["relatedArtwork1", "relatedArtwork2"])
     expect.assertions(13)
   })
+
+  it("allows related artworks to be excluded", async () => {
+    context.relatedLayersLoader = () => Promise.resolve([{ id: "main" }])
+    context.relatedLayerArtworksLoader = jest.fn()
+
+    const response = await runAuthenticatedQuery(
+      gql`
+        {
+          artwork(id: "donn-delson-space-invader") {
+            contextGrids(includeRelatedArtworks: false) {
+              title
+              artworksConnection(first: 2) {
+                edges {
+                  node {
+                    slug
+                    title
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      context
+    )
+
+    const grids = response.artwork.contextGrids
+    const gridTitles = grids.map((grid) => grid.title)
+
+    expect(grids.length).toEqual(2)
+    expect(gridTitles).not.toInclude("Related works")
+    expect(context.relatedLayerArtworksLoader).not.toHaveBeenCalled()
+  })
 })
