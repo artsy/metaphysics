@@ -189,6 +189,7 @@ const rootFields = {
   channel,
   city: City,
   cities,
+  conversation: Conversation,
   conversationsConnection: Conversations,
   _do_not_use_conversation: {
     ...Conversation,
