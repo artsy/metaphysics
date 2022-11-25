@@ -14,6 +14,7 @@ import {
   computeImageSources,
 } from "./myCollectionCreateArtworkMutation"
 import { EditableLocationFields } from "./update_me_mutation"
+import { Long } from "./../../v2/types/big_numbers"
 
 interface MyCollectionArtworkUpdateMutationInput {
   artworkId: string
@@ -96,7 +97,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
     },
     pricePaidCents: {
-      type: GraphQLInt,
+      type: Long,
     },
     pricePaidCurrency: {
       type: GraphQLString,

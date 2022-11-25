@@ -13,6 +13,7 @@ import { ResolverContext } from "types/graphql"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 import currencyCodes from "lib/currency_codes.json"
+import { Long } from "./../../v2/types/big_numbers"
 
 export const amountSDL = (name) => `
   ${name}(
@@ -159,7 +160,7 @@ export const Money = new GraphQLObjectType<any, ResolverContext>({
   name: "Money",
   fields: {
     minor: {
-      type: new GraphQLNonNull(GraphQLInt),
+      type: new GraphQLNonNull(Long),
       description: "An amount of money expressed in minor units (like cents).",
       resolve: ({ cents }) => cents,
     },
@@ -174,7 +175,7 @@ export const Money = new GraphQLObjectType<any, ResolverContext>({
       description: "A pre-formatted price.",
     },
     major: {
-      type: new GraphQLNonNull(GraphQLFloat),
+      type: new GraphQLNonNull(Long),
       description:
         "An amount of money expressed in major units (like dollars).",
       args: {

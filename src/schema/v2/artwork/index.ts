@@ -84,6 +84,8 @@ import {
   isTwoDimensional,
 } from "./utilities"
 
+import { Long } from "./../../v2/types/big_numbers"
+
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
 }
@@ -445,7 +447,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       costMinor: {
         description: "The amount paid for the artwork, in cents",
-        type: GraphQLInt,
+        type: Long,
         resolve: ({ cost_minor }) => cost_minor,
       },
       culturalMaker: {
