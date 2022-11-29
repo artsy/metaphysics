@@ -1,4 +1,4 @@
-import { GraphQLString } from "graphql"
+import { GraphQLBoolean, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
@@ -8,6 +8,7 @@ import { meType } from "./index"
 
 interface Input {
   id: string
+  onMe?: boolean
   anonymousSessionId?: string
   sessionId?: string
 }
@@ -19,9 +20,14 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
 >({
   name: "DeleteUserInterestMutation",
   description:
-    "Deletes a UserInterest on the logged in User's CollectorProfile.",
+    "Deletes a UserInterest on 'me' or another user's CollectorProfile.",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
+    onMe: {
+      type: GraphQLBoolean,
+      defaultValue: true,
+      description: "Delete on 'me' or another user's CollectorProfile",
+    },
     anonymousSessionId: { type: GraphQLString },
     sessionID: { type: GraphQLString },
   },
@@ -37,10 +43,16 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
       },
     },
   },
-  mutateAndGetPayload: async (args, { meDeleteUserInterestLoader }) => {
-    if (!meDeleteUserInterestLoader) {
+  mutateAndGetPayload: async (
+    args,
+    { meDeleteUserInterestLoader, deleteUserInterestLoader }
+  ) => {
+    if (!meDeleteUserInterestLoader || !deleteUserInterestLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
+
+    // check if we're deleting on 'me' or another user's CollectorProfile
+    const onMe = args.onMe ?? true
 
     // snake_case keys for Gravity (keys are the same otherwise)
     const { id, ...gravityOptions } = Object.keys(args).reduce(
@@ -49,10 +61,14 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
     )
 
     try {
-      const userInterest: UserInterest = await meDeleteUserInterestLoader?.(
-        id,
-        gravityOptions
-      )
+      let userInterest: UserInterest
+      if (onMe === false) {
+        // delete interest for another user
+        userInterest = await deleteUserInterestLoader?.(id, gravityOptions)
+      } else {
+        // delete interest for 'me'
+        userInterest = await meDeleteUserInterestLoader?.(id, gravityOptions)
+      }
 
       return userInterest
     } catch (err) {
@@ -68,6 +84,7 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
 
 interface GravityInput {
   id: string
+  onMe?: boolean
   anonymous_session_id?: string
   session_id?: string
 }

@@ -6,6 +6,8 @@ import {
   UserInterest,
   UserInterestCategory,
   userInterestCategoryEnum,
+  UserInterestOwnerType,
+  userInterestOwnerTypeEnum,
   userInterestType,
 } from "./userInterests"
 import { snakeCase } from "lodash"
@@ -16,6 +18,8 @@ interface Input {
   interestType: "Artist" | "Gene"
   category: UserInterestCategory
   body?: string
+  userId?: string
+  ownerType?: UserInterestOwnerType
   anonymousSessionId?: string
   sessionId?: string
 }
@@ -35,12 +39,21 @@ export const createUserInterestMutation = mutationWithClientMutationId<
 >({
   name: "CreateUserInterestMutation",
   description:
-    "Creates a UserInterest on the logged in User's CollectorProfile.",
+    "Creates a UserInterest on 'me' or another user's CollectorProfile.",
   inputFields: {
     interestId: { type: new GraphQLNonNull(GraphQLString) },
     interestType: { type: new GraphQLNonNull(userInterestInterestTypeEnum) },
     category: { type: new GraphQLNonNull(userInterestCategoryEnum) },
     body: { type: GraphQLString, description: "Optional body for note" },
+    userId: {
+      type: GraphQLString,
+      description: "Optional userId when creating an interest for another user",
+    },
+    ownerType: {
+      type: userInterestOwnerTypeEnum,
+      description:
+        "Owner type is required when creating an interest for antother user",
+    },
     anonymousSessionId: { type: GraphQLString },
     sessionID: { type: GraphQLString },
   },
@@ -56,8 +69,11 @@ export const createUserInterestMutation = mutationWithClientMutationId<
       },
     },
   },
-  mutateAndGetPayload: async (args, { meCreateUserInterestLoader }) => {
-    if (!meCreateUserInterestLoader) {
+  mutateAndGetPayload: async (
+    args,
+    { meCreateUserInterestLoader, createUserInterestLoader }
+  ) => {
+    if (!meCreateUserInterestLoader || !createUserInterestLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
@@ -68,9 +84,14 @@ export const createUserInterestMutation = mutationWithClientMutationId<
     )
 
     try {
-      const userInterest: UserInterest = await meCreateUserInterestLoader?.(
-        userInterestInput
-      )
+      let userInterest: UserInterest
+      if (args.userId) {
+        // create interest for another user
+        userInterest = await createUserInterestLoader?.(userInterestInput)
+      } else {
+        // create interest for 'me'
+        userInterest = await meCreateUserInterestLoader?.(userInterestInput)
+      }
 
       return userInterest
     } catch (err) {

@@ -14,6 +14,8 @@ export type UserInterestCategory =
   | "collected_before"
   | "interested_in_collecting"
 
+export type UserInterestOwnerType = "CollectorProfile" | "UserSaleProfile"
+
 export interface UserInterest {
   body?: string
   category: UserInterestCategory
@@ -21,7 +23,7 @@ export interface UserInterest {
   id: number
   interest: unknown // object which is one of Artist | Gene
   owner: unknown // object which is one of CollectorProfile | UserSaleProfile
-  owner_type: string // CollectorProfile | UserSaleProfile
+  owner_type: UserInterestOwnerType
   updated_at: string
 }
 
@@ -30,6 +32,14 @@ export const userInterestCategoryEnum = new GraphQLEnumType({
   values: {
     COLLECTED_BEFORE: { value: "collected_before" },
     INTERESTED_IN_COLLECTING: { value: "interested_in_collecting" },
+  },
+})
+
+export const userInterestOwnerTypeEnum = new GraphQLEnumType({
+  name: "UserInterestOwnerType",
+  values: {
+    COLLECTOR_PROFILE: { value: "CollectorProfile" },
+    USER_SALE_PROFILE: { value: "UserSaleProfile" },
   },
 })
 
@@ -48,6 +58,7 @@ export const userInterestType = new GraphQLObjectType<
     ...IDFields,
     body: { type: GraphQLString },
     category: { type: new GraphQLNonNull(userInterestCategoryEnum) },
+    ownerType: { type: userInterestOwnerTypeEnum },
     interest: { type: new GraphQLNonNull(userInterestInterestUnion) },
   },
 })

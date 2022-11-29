@@ -7083,7 +7083,13 @@ input CreateUserInterestMutationInput {
   clientMutationId: String
   interestId: String!
   interestType: UserInterestInterestType!
+
+  # Owner type is required when creating an interest for antother user
+  ownerType: UserInterestOwnerType
   sessionID: String
+
+  # Optional userId when creating an interest for another user
+  userId: String
 }
 
 type CreateUserInterestMutationPayload {
@@ -7395,6 +7401,9 @@ input DeleteUserInterestMutationInput {
   anonymousSessionId: String
   clientMutationId: String
   id: String!
+
+  # Delete on 'me' or another user's CollectorProfile
+  onMe: Boolean = true
   sessionID: String
 }
 
@@ -10977,7 +10986,7 @@ type Mutation {
     input: createUserAdminNoteMutationInput!
   ): createUserAdminNoteMutationPayload
 
-  # Creates a UserInterest on the logged in User's CollectorProfile.
+  # Creates a UserInterest on 'me' or another user's CollectorProfile.
   createUserInterest(
     input: CreateUserInterestMutationInput!
   ): CreateUserInterestMutationPayload
@@ -11004,7 +11013,7 @@ type Mutation {
     input: deleteUserAdminNoteMutationInput!
   ): deleteUserAdminNoteMutationPayload
 
-  # Deletes a UserInterest on the logged in User's CollectorProfile.
+  # Deletes a UserInterest on 'me' or another user's CollectorProfile.
   deleteUserInterest(
     input: DeleteUserInterestMutationInput!
   ): DeleteUserInterestMutationPayload
@@ -16673,6 +16682,7 @@ type UserInterest {
 
   # A type-specific ID.
   internalID: ID!
+  ownerType: UserInterestOwnerType
 }
 
 enum UserInterestCategory {
@@ -16715,6 +16725,11 @@ union UserInterestInterest = Artist | Gene
 enum UserInterestInterestType {
   ARTIST
   GENE
+}
+
+enum UserInterestOwnerType {
+  COLLECTOR_PROFILE
+  USER_SALE_PROFILE
 }
 
 # A connection to a list of items.
