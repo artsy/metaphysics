@@ -37,8 +37,8 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
       },
     },
   },
-  mutateAndGetPayload: async (args, { deleteUserInterestLoader }) => {
-    if (!deleteUserInterestLoader) {
+  mutateAndGetPayload: async (args, { meDeleteUserInterestLoader }) => {
+    if (!meDeleteUserInterestLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
@@ -49,7 +49,7 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
     )
 
     try {
-      const userInterest: UserInterest = await deleteUserInterestLoader?.(
+      const userInterest: UserInterest = await meDeleteUserInterestLoader?.(
         id,
         gravityOptions
       )

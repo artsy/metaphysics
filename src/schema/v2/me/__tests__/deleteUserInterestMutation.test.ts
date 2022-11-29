@@ -23,20 +23,20 @@ describe("deleteUserInterestMutation", () => {
     },
   }
 
-  const mockCreateUserInterestLoader = jest.fn()
+  const mockMeDeleteUserInterestLoader = jest.fn()
 
   const context = {
-    deleteUserInterestLoader: mockCreateUserInterestLoader,
+    meDeleteUserInterestLoader: mockMeDeleteUserInterestLoader,
   }
 
   beforeEach(() => {
-    mockCreateUserInterestLoader.mockResolvedValue(
+    mockMeDeleteUserInterestLoader.mockResolvedValue(
       Promise.resolve(userInterest)
     )
   })
 
   afterEach(() => {
-    mockCreateUserInterestLoader.mockReset()
+    mockMeDeleteUserInterestLoader.mockReset()
   })
 
   it("returns the deleted user interest", async () => {
@@ -56,6 +56,6 @@ describe("deleteUserInterestMutation", () => {
   it("calls the loader with the correct input", async () => {
     await runAuthenticatedQuery(mutation, context)
 
-    expect(mockCreateUserInterestLoader).toBeCalledWith("example", {})
+    expect(mockMeDeleteUserInterestLoader).toBeCalledWith("example", {})
   })
 })
