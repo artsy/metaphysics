@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLFloat,
   GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
@@ -15,7 +16,6 @@ import { ResolverContext } from "types/graphql"
 import { ArtworkImportSourceEnum } from "../artwork"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { EditableLocationFields } from "./update_me_mutation"
-import { Long } from "./../../v2/types/big_numbers"
 
 export const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
@@ -116,7 +116,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
     },
     pricePaidCents: {
-      type: Long,
+      type: GraphQLFloat,
     },
     pricePaidCurrency: {
       type: GraphQLString,
