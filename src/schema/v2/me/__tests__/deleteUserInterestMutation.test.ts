@@ -1,7 +1,7 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("deleteUserInterestMutation", () => {
-  const mutation = `
+  const mutationOnMe = `
     mutation {
       deleteUserInterest(input: {id: "example"}) {
         userInterest {
@@ -14,6 +14,19 @@ describe("deleteUserInterestMutation", () => {
       }
     }
   `
+  const mutation = `
+  mutation {
+    deleteUserInterest(input: {id: "example", isOnMe: false}) {
+      userInterest {
+        interest {
+          ... on Artist {
+            name
+          }
+        }
+      }
+    }
+  }
+`
 
   const userInterest = {
     interest: {
@@ -24,23 +37,29 @@ describe("deleteUserInterestMutation", () => {
   }
 
   const mockMeDeleteUserInterestLoader = jest.fn()
+  const mockDeleteUserInterestLoader = jest.fn()
 
   const context = {
     meDeleteUserInterestLoader: mockMeDeleteUserInterestLoader,
+    deleteUserInterestLoader: mockDeleteUserInterestLoader,
   }
 
   beforeEach(() => {
     mockMeDeleteUserInterestLoader.mockResolvedValue(
       Promise.resolve(userInterest)
     )
+    mockDeleteUserInterestLoader.mockResolvedValue(
+      Promise.resolve(userInterest)
+    )
   })
 
   afterEach(() => {
     mockMeDeleteUserInterestLoader.mockReset()
+    mockDeleteUserInterestLoader.mockReset()
   })
 
   it("returns the deleted user interest", async () => {
-    const res = await runAuthenticatedQuery(mutation, context)
+    const res = await runAuthenticatedQuery(mutationOnMe, context)
 
     expect(res).toEqual({
       deleteUserInterest: {
@@ -53,9 +72,21 @@ describe("deleteUserInterestMutation", () => {
     })
   })
 
-  it("calls the loader with the correct input", async () => {
+  it("calls the 'me' loader with the correct input", async () => {
+    await runAuthenticatedQuery(mutationOnMe, context)
+
+    expect(mockMeDeleteUserInterestLoader).toBeCalledWith("example", {
+      is_on_me: true,
+    })
+    expect(mockDeleteUserInterestLoader).not.toBeCalled()
+  })
+
+  it("calls the loader with the correct input when deleting for another user", async () => {
     await runAuthenticatedQuery(mutation, context)
 
-    expect(mockMeDeleteUserInterestLoader).toBeCalledWith("example", {})
+    expect(mockDeleteUserInterestLoader).toBeCalledWith("example", {
+      is_on_me: false,
+    })
+    expect(mockMeDeleteUserInterestLoader).not.toBeCalled()
   })
 })
