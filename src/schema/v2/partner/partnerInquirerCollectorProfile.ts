@@ -95,7 +95,18 @@ export const InquiryRequestType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     collectorProfile: {
       type: InquirerCollectorProfileType,
-      resolve: (collectorProfile) => collectorProfile,
+      resolve: (
+        { id: inquiryId, partnerId },
+        _args,
+        { partnerInquirerCollectorProfileLoader }
+      ) => {
+        if (!partnerInquirerCollectorProfileLoader) return
+
+        return partnerInquirerCollectorProfileLoader({
+          partnerId,
+          inquiryId,
+        })
+      },
     },
   },
 })

@@ -366,6 +366,13 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerInquiryRequestLoader: gravityLoader<
+      any,
+      { partnerId: string; inquiryId: string }
+    >(
+      ({ partnerId, inquiryId }) =>
+        `partner/${partnerId}/inquiry_request/${inquiryId}`
+    ),
     partnerDocumentsLoader: gravityLoader<any, { id: string }>(
       (id) => `partner/${id}/documents`,
       {},
