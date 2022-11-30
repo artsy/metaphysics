@@ -4,6 +4,8 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 describe("Me", () => {
   describe("Conversation", () => {
     const context = {
+      userByIDLoader: () =>
+        Promise.resolve({ id: "user-id", email: "collector@example.com" }),
       conversationLoader: () => {
         return Promise.resolve({
           id: "420",
@@ -124,6 +126,9 @@ describe("Me", () => {
               internalID
               initialMessage
               from {
+                email
+              }
+              fromUser {
                 email
               }
               lastMessage
