@@ -26,6 +26,7 @@ import {
 } from "schema/v2/object_identification"
 import { MessageType } from "./message"
 import { ResolverContext } from "types/graphql"
+import { UserType } from "../user"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -265,6 +266,17 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
           name: conversation.from_name,
           email: conversation.from_email,
         }
+      },
+    },
+    fromUser: {
+      description: "The user who initiated the conversation",
+      type: UserType,
+      resolve: ({ from_id }, _options, { userByIDLoader }) => {
+        if (!userByIDLoader) {
+          return null
+        }
+
+        return userByIDLoader(from_id)
       },
     },
     to: {
