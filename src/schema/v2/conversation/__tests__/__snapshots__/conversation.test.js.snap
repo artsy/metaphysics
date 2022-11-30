@@ -45,6 +45,9 @@ Object {
     "from": Object {
       "email": "collector@example.com",
     },
+    "fromUser": Object {
+      "email": "collector@example.com",
+    },
     "initialMessage": "Loved some of the works at your fair booth!",
     "internalID": "420",
     "lastMessage": "Loved some of the works at your fair booth!",
