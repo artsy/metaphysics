@@ -160,6 +160,7 @@ import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_
 import Conversations from "./conversation/conversations"
 import updateMessageMutation from "./conversation/updateMessageMutation"
 import deleteConversationMutation from "./conversation/deleteConversationMutation"
+import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -328,6 +329,7 @@ export default new GraphQLSchema({
       sendFeedback: sendFeedbackMutation,
       startIdentityVerification: startIdentityVerificationMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
+      updateArtwork: updateArtworkMutation,
       updateCollectorProfile: UpdateCollectorProfile,
       updateCollectorProfileWithID: UpdateCollectorProfileWithID,
       updateConversation: UpdateConversationMutation,

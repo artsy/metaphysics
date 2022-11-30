@@ -11167,6 +11167,11 @@ type Mutation {
     input: UpdateAppSecondFactorInput!
   ): UpdateAppSecondFactorPayload
 
+  # Updates an artwork.
+  updateArtwork(
+    input: UpdateArtworkMutationInput!
+  ): UpdateArtworkMutationPayload
+
   # Updating a collector profile (loyalty applicant status).
   updateCollectorProfile(
     input: UpdateCollectorProfileInput!
@@ -15808,6 +15813,20 @@ type UpdateAppSecondFactorPayload {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
   secondFactorOrErrors: AppSecondFactorOrErrorsUnion!
+}
+
+input UpdateArtworkMutationInput {
+  # The availability of the artwork
+  availability: String
+  clientMutationId: String
+
+  # The id of the artwork to update.
+  id: String!
+}
+
+type UpdateArtworkMutationPayload {
+  artwork: Artwork
+  clientMutationId: String
 }
 
 input UpdateCollectorProfileInput {
