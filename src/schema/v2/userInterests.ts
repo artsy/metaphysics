@@ -2,6 +2,7 @@ import {
   userInterestInterestUnion,
   UserInterest,
   userInterestCategoryEnum,
+  userInterestOwnerTypeEnum,
 } from "./me/userInterests"
 import { ResolverContext } from "types/graphql"
 import {
@@ -24,6 +25,10 @@ export const edgeFields: Thunk<GraphQLFieldConfigMap<
   createdByAdmin: {
     type: new GraphQLNonNull(GraphQLBoolean),
     resolve: ({ owner_type }) => owner_type === "UserSaleProfile",
+  },
+  ownerType: {
+    type: userInterestOwnerTypeEnum,
+    resolve: ({ owner_type }) => owner_type,
   },
 })
 

@@ -7077,18 +7077,18 @@ type createUserAdminNoteSuccess {
 input CreateUserInterestMutationInput {
   anonymousSessionId: String
 
-  # Optional body for note
+  # Optional body for a note.
   body: String
   category: UserInterestCategory!
   clientMutationId: String
   interestId: String!
   interestType: UserInterestInterestType!
 
-  # Owner type is required when creating an interest for antother user
+  # Optional ownerType field that is required when creating a UserInterest for another user.
   ownerType: UserInterestOwnerType
   sessionID: String
 
-  # Optional userId when creating an interest for another user
+  # Optional userId field that is required when creating a UserInterest for another user.
   userId: String
 }
 
@@ -7402,8 +7402,8 @@ input DeleteUserInterestMutationInput {
   clientMutationId: String
   id: String!
 
-  # Delete on 'me' or another user's CollectorProfile
-  onMe: Boolean = true
+  # Optional isOnMe field that is required when deleting a UserInterest for another user.
+  isOnMe: Boolean = true
   sessionID: String
 }
 
@@ -10986,7 +10986,7 @@ type Mutation {
     input: createUserAdminNoteMutationInput!
   ): createUserAdminNoteMutationPayload
 
-  # Creates a UserInterest on 'me' or another user's CollectorProfile.
+  # Creates a UserInterest on the (logged in) user or for another user.
   createUserInterest(
     input: CreateUserInterestMutationInput!
   ): CreateUserInterestMutationPayload
@@ -11013,7 +11013,7 @@ type Mutation {
     input: deleteUserAdminNoteMutationInput!
   ): deleteUserAdminNoteMutationPayload
 
-  # Deletes a UserInterest on 'me' or another user's CollectorProfile.
+  # Deletes a UserInterest on the (logged in) user or for another user.
   deleteUserInterest(
     input: DeleteUserInterestMutationInput!
   ): DeleteUserInterestMutationPayload
@@ -16718,6 +16718,7 @@ type UserInterestEdge {
 
   # The item at the end of the edge
   node: UserInterestInterest
+  ownerType: UserInterestOwnerType
 }
 
 union UserInterestInterest = Artist | Gene

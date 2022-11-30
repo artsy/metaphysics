@@ -39,20 +39,21 @@ export const createUserInterestMutation = mutationWithClientMutationId<
 >({
   name: "CreateUserInterestMutation",
   description:
-    "Creates a UserInterest on 'me' or another user's CollectorProfile.",
+    "Creates a UserInterest on the (logged in) user or for another user.",
   inputFields: {
     interestId: { type: new GraphQLNonNull(GraphQLString) },
     interestType: { type: new GraphQLNonNull(userInterestInterestTypeEnum) },
     category: { type: new GraphQLNonNull(userInterestCategoryEnum) },
-    body: { type: GraphQLString, description: "Optional body for note" },
+    body: { type: GraphQLString, description: "Optional body for a note." },
     userId: {
       type: GraphQLString,
-      description: "Optional userId when creating an interest for another user",
+      description:
+        "Optional userId field that is required when creating a UserInterest for another user.",
     },
     ownerType: {
       type: userInterestOwnerTypeEnum,
       description:
-        "Owner type is required when creating an interest for antother user",
+        "Optional ownerType field that is required when creating a UserInterest for another user.",
     },
     anonymousSessionId: { type: GraphQLString },
     sessionID: { type: GraphQLString },

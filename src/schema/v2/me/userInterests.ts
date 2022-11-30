@@ -58,7 +58,10 @@ export const userInterestType = new GraphQLObjectType<
     ...IDFields,
     body: { type: GraphQLString },
     category: { type: new GraphQLNonNull(userInterestCategoryEnum) },
-    ownerType: { type: userInterestOwnerTypeEnum },
     interest: { type: new GraphQLNonNull(userInterestInterestUnion) },
+    ownerType: {
+      type: userInterestOwnerTypeEnum,
+      resolve: ({ owner_type }) => owner_type,
+    },
   },
 })

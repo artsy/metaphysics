@@ -8,7 +8,7 @@ import { meType } from "./index"
 
 interface Input {
   id: string
-  onMe?: boolean
+  isOnMe?: boolean
   anonymousSessionId?: string
   sessionId?: string
 }
@@ -20,13 +20,14 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
 >({
   name: "DeleteUserInterestMutation",
   description:
-    "Deletes a UserInterest on 'me' or another user's CollectorProfile.",
+    "Deletes a UserInterest on the (logged in) user or for another user.",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
-    onMe: {
+    isOnMe: {
       type: GraphQLBoolean,
       defaultValue: true,
-      description: "Delete on 'me' or another user's CollectorProfile",
+      description:
+        "Optional isOnMe field that is required when deleting a UserInterest for another user.",
     },
     anonymousSessionId: { type: GraphQLString },
     sessionID: { type: GraphQLString },
@@ -51,8 +52,8 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    // check if we're deleting on 'me' or another user's CollectorProfile
-    const onMe = args.onMe ?? true
+    // check if the delete operation is for another user
+    const isOnMe = args.isOnMe ?? true
 
     // snake_case keys for Gravity (keys are the same otherwise)
     const { id, ...gravityOptions } = Object.keys(args).reduce(
@@ -62,11 +63,11 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
 
     try {
       let userInterest: UserInterest
-      if (onMe === false) {
+      if (isOnMe === false) {
         // delete interest for another user
         userInterest = await deleteUserInterestLoader?.(id, gravityOptions)
       } else {
-        // delete interest for 'me'
+        // delete interest on the (logged in) user
         userInterest = await meDeleteUserInterestLoader?.(id, gravityOptions)
       }
 
@@ -84,7 +85,7 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
 
 interface GravityInput {
   id: string
-  onMe?: boolean
+  isOnMe?: boolean
   anonymous_session_id?: string
   session_id?: string
 }
