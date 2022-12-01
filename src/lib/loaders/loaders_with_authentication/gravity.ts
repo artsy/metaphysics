@@ -392,6 +392,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updatePartnerFlagsLoader: gravityLoader(
+      (id) => `partner/${id}/partner_flags`,
+      {},
+      { method: "PUT" }
+    ),
     partnerInquirerCollectorProfileLoader: gravityLoader<
       any,
       { partnerId: string; inquiryId: string }

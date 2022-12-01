@@ -813,14 +813,18 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             return null
           }
 
-          const response = await partnerInquiryRequestLoader({
-            partnerId,
-            inquiryId,
-          })
+          try {
+            const response = await partnerInquiryRequestLoader({
+              partnerId,
+              inquiryId,
+            })
 
-          return {
-            partnerId,
-            ...response,
+            return {
+              partnerId,
+              ...response,
+            }
+          } catch (error) {
+            throw error
           }
         },
       },
