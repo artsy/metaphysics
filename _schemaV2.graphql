@@ -7404,9 +7404,6 @@ input DeleteUserInterestMutationInput {
   anonymousSessionId: String
   clientMutationId: String
   id: String!
-
-  # Optional isOnMe field that is required when deleting a UserInterest for another user.
-  isOnMe: Boolean = true
   sessionID: String
 }
 
