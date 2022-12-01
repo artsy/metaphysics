@@ -1,6 +1,9 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import { computeImageSources } from "../myCollectionCreateArtworkMutation"
+import {
+  computeImageSources,
+  transformToPricePaidCents,
+} from "../myCollectionCreateArtworkMutation"
 
 const newArtwork = { id: "some-artwork-id" }
 const newArtist = { id: "some-artist-id" }
@@ -425,5 +428,50 @@ describe("computeImageSources", () => {
     ]
     const imageSources = computeImageSources(externalImageUrls)
     expect(imageSources.length).toEqual(2)
+  })
+
+  describe("API backwords compatibility with the price paid", () => {
+    it("returns the price paid in cents as it is when no major cost is specified", () => {
+      expect(
+        transformToPricePaidCents({
+          costMajor: undefined,
+          costMinor: undefined,
+          pricePaidCents: 1234500,
+        })
+      ).toEqual(1234500)
+    })
+    it("returns the price paid in cents computed from the costMajor and costMinor when a costMajor is specified", () => {
+      expect(
+        transformToPricePaidCents({
+          costMajor: 12345,
+          costMinor: undefined,
+          pricePaidCents: 1234500,
+        })
+      ).toEqual(1234500)
+
+      expect(
+        transformToPricePaidCents({
+          costMajor: 12345,
+          costMinor: 0,
+          pricePaidCents: 1234500,
+        })
+      ).toEqual(1234500)
+
+      expect(
+        transformToPricePaidCents({
+          costMajor: 12345,
+          costMinor: 1,
+          pricePaidCents: 1234500,
+        })
+      ).toEqual(1234501)
+
+      expect(
+        transformToPricePaidCents({
+          costMajor: 12345,
+          costMinor: undefined,
+          pricePaidCents: undefined,
+        })
+      ).toEqual(1234500)
+    })
   })
 })

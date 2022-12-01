@@ -63,7 +63,6 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     title: {
       type: new GraphQLNonNull(GraphQLString),
     },
-
     // Optional
     importSource: {
       type: ArtworkImportSourceEnum,
@@ -79,6 +78,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
     costCurrencyCode: {
       type: GraphQLString,
+    },
+    costMajor: {
+      type: GraphQLInt,
     },
     costMinor: {
       type: GraphQLInt,
@@ -115,6 +117,8 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
     },
     pricePaidCents: {
+      description:
+        "@deprecated use the cost major and cost minor fields instead",
       type: GraphQLInt,
     },
     pricePaidCurrency: {
@@ -140,19 +144,20 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     {
       artistIds,
       artists,
-      submissionId,
-      costCurrencyCode,
-      costMinor,
-      isEdition,
-      editionSize,
-      editionNumber,
-      externalImageUrls = [],
       artworkLocation,
+      attributionClass,
       collectorLocation,
+      costCurrencyCode,
+      costMajor,
+      costMinor,
+      editionNumber,
+      editionSize,
+      externalImageUrls = [],
+      importSource,
+      isEdition,
       pricePaidCents,
       pricePaidCurrency,
-      attributionClass,
-      importSource,
+      submissionId,
       ...rest
     },
     {
@@ -182,6 +187,12 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       artistIds = [...(artistIds || []), ...newArtistIDs]
     }
 
+    const transformedPricePaidCents = transformToPricePaidCents({
+      costMajor,
+      costMinor,
+      pricePaidCents,
+    })
+
     try {
       const response = await createArtworkLoader({
         artists: artistIds,
@@ -189,7 +200,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         collection_id: "my-collection",
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
-        price_paid_cents: pricePaidCents,
+        price_paid_cents: transformedPricePaidCents,
         price_paid_currency: pricePaidCurrency,
         artwork_location: artworkLocation,
         collector_location: collectorLocation,
@@ -275,4 +286,22 @@ export const computeImageSources = (externalImageUrls) => {
 
   const filteredImageSources = imageSources.filter(Boolean)
   return filteredImageSources
+}
+
+// This a temporary workaround to support the old way we were sending
+// the price paid as a whole number instead of dividing it into major and minor
+// More context about this can be found here
+export const transformToPricePaidCents = ({
+  costMajor,
+  costMinor,
+  pricePaidCents,
+}: {
+  costMajor: number | null | undefined
+  costMinor: number | null | undefined
+  pricePaidCents: number | null | undefined
+}) => {
+  if (costMajor) {
+    return costMajor * 100 + (costMinor || 0)
+  }
+  return pricePaidCents
 }

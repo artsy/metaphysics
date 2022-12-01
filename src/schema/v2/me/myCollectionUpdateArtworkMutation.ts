@@ -12,6 +12,7 @@ import { MyCollectionArtworkMutationType } from "./myCollection"
 import {
   ArtworkAttributionClassEnum,
   computeImageSources,
+  transformToPricePaidCents,
 } from "./myCollectionCreateArtworkMutation"
 import { EditableLocationFields } from "./update_me_mutation"
 
@@ -21,6 +22,7 @@ interface MyCollectionArtworkUpdateMutationInput {
   attributionClass?: string
   category?: string
   costCurrencyCode?: string
+  costMajor?: number
   costMinor?: number
   date?: string
   depth?: string
@@ -57,6 +59,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     },
     costCurrencyCode: {
       type: GraphQLString,
+    },
+    costMajor: {
+      type: GraphQLInt,
     },
     costMinor: {
       type: GraphQLInt,
@@ -122,20 +127,21 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     {
-      artworkId,
       artistIds,
+      artworkId,
+      artworkLocation,
+      attributionClass,
+      collectorLocation,
       costCurrencyCode,
+      costMajor,
       costMinor,
-      isEdition,
       editionNumber,
       editionSize,
       externalImageUrls = [],
-      artworkLocation,
-      collectorLocation,
+      isEdition,
       pricePaidCents,
       pricePaidCurrency,
       submissionId,
-      attributionClass,
       ...rest
     },
     {
@@ -156,6 +162,12 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       return new Error("You need to be signed in to perform this action")
     }
 
+    const transformedPricePaidCents = transformToPricePaidCents({
+      costMajor,
+      costMinor,
+      pricePaidCents,
+    })
+
     try {
       const response = await updateArtworkLoader(artworkId, {
         artists: artistIds,
@@ -163,7 +175,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         cost_minor: costMinor,
         artwork_location: artworkLocation,
         collector_location: collectorLocation,
-        price_paid_cents: pricePaidCents,
+        price_paid_cents: transformedPricePaidCents,
         price_paid_currency: pricePaidCurrency,
         attribution_class: attributionClass,
         submission_id: submissionId,

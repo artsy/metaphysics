@@ -6,6 +6,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLInt,
 } from "graphql"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -108,6 +109,10 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
           }
         })
       },
+    },
+    objectsCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ objects_count }) => objects_count,
     },
   }),
 })
