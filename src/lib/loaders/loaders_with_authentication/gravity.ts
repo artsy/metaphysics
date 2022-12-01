@@ -527,11 +527,6 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    meDeleteUserInterestLoader: gravityLoader(
-      (id) => `me/user_interest/${id}`,
-      {},
-      { method: "DELETE" }
-    ),
     meUserInterestsLoader: gravityLoader("me/user_interests"),
     createUserInterestLoader: gravityLoader(
       "user_interest",
