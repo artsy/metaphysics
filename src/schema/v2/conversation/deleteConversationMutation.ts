@@ -1,5 +1,14 @@
-import { GraphQLString, GraphQLNonNull } from "graphql"
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
 import Conversation from "schema/v2/conversation"
 import { ResolverContext } from "types/graphql"
 
@@ -7,13 +16,40 @@ interface DeleteConversationMutationInputProps {
   id: string
 }
 
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "deleteConversationSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    conversation: {
+      type: Conversation.type,
+      resolve: (conversation) => conversation,
+    },
+  }),
+})
+
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "deleteConversationFailure",
+  isTypeOf: (data) => data._type === "GravityMutationError",
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const ResponseOrErrorType = new GraphQLUnionType({
+  name: "deleteConversationResponseOrError",
+  types: [SuccessType, FailureType],
+})
+
 export default mutationWithClientMutationId<
   DeleteConversationMutationInputProps,
   any,
   ResolverContext
 >({
   name: "DeleteConversationMutation",
-  description: "Delete a conversation.",
+  description: "Soft-delete a conversation.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -21,21 +57,27 @@ export default mutationWithClientMutationId<
     },
   },
   outputFields: {
-    conversation: {
-      type: Conversation.type,
-      resolve: (conversation) => conversation,
+    conversationOrError: {
+      type: ResponseOrErrorType,
+      description: "On success: the conversation that was soft deleted.",
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (args, { conversationDeleteLoader }) => {
     if (!conversationDeleteLoader) {
-      return null
+      return new Error("You need to be signed in to perform this action")
     }
 
     try {
       const response = await conversationDeleteLoader(args.id)
       return response
     } catch (error) {
-      throw new Error(JSON.parse(error.body).error)
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
     }
   },
 })

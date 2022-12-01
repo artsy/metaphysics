@@ -7343,6 +7343,10 @@ type DeleteBankAccountPayload {
   me: Me
 }
 
+type deleteConversationFailure {
+  mutationError: GravityMutationError
+}
+
 input DeleteConversationMutationInput {
   clientMutationId: String
 
@@ -7352,6 +7356,16 @@ input DeleteConversationMutationInput {
 
 type DeleteConversationMutationPayload {
   clientMutationId: String
+
+  # On success: the conversation that was soft deleted.
+  conversationOrError: deleteConversationResponseOrError
+}
+
+union deleteConversationResponseOrError =
+    deleteConversationFailure
+  | deleteConversationSuccess
+
+type deleteConversationSuccess {
   conversation: Conversation
 }
 
@@ -9022,6 +9036,7 @@ type GravityMutationError {
   error: String
   fieldErrors: [FieldErrorResults]
   message: String!
+  statusCode: Int
   type: String
 }
 
@@ -11012,7 +11027,7 @@ type Mutation {
   # Remove a bank account
   deleteBankAccount(input: DeleteBankAccountInput!): DeleteBankAccountPayload
 
-  # Delete a conversation.
+  # Soft-delete a conversation.
   deleteConversation(
     input: DeleteConversationMutationInput!
   ): DeleteConversationMutationPayload
