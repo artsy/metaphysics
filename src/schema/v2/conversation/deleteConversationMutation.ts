@@ -5,7 +5,6 @@ import { ResolverContext } from "types/graphql"
 
 interface DeleteConversationMutationInputProps {
   id: string
-  spam: boolean
 }
 
 export default mutationWithClientMutationId<

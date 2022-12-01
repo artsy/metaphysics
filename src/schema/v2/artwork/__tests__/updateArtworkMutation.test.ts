@@ -1,31 +1,71 @@
+import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("UpdateArtworkMutation", () => {
-  it("updates an artwork", async () => {
-    const mutation = `
-      mutation {
-        updateArtwork(input: { id: "25", availability: "sold" }) {
-          artwork {
-            availability
+  const mutation = gql`
+    mutation {
+      updateArtwork(input: { id: "25", availability: "sold" }) {
+        artworkOrError {
+          __typename
+          ... on updateArtworkSuccess {
+            artwork {
+              availability
+            }
+          }
+          ... on updateArtworkFailure {
+            mutationError {
+              message
+            }
           }
         }
       }
-    `
+    }
+  `
 
+  it("updates an artwork", async () => {
     const context = {
       updateArtworkLoader: () =>
         Promise.resolve({
+          id: "foo",
           availability: "sold",
         }),
     }
 
-    try {
-      const artwork = await runAuthenticatedQuery(mutation, context)
-      expect(artwork).toEqual({
-        updateArtwork: { artwork: { availability: "sold" } },
+    const artwork = await runAuthenticatedQuery(mutation, context)
+
+    expect(artwork).toEqual({
+      updateArtwork: {
+        artworkOrError: {
+          __typename: "updateArtworkSuccess",
+          artwork: { availability: "sold" },
+        },
+      },
+    })
+  })
+
+  describe("when failure", () => {
+    it("return an error", async () => {
+      const context = {
+        updateArtworkLoader: () =>
+          Promise.reject(
+            new Error(
+              `https://stagingapi.artsy.net/api/v1/some-endpoint - {"type":"error","message":"Error from API"}`
+            )
+          ),
+      }
+
+      const response = await runAuthenticatedQuery(mutation, context)
+
+      expect(response).toEqual({
+        updateArtwork: {
+          artworkOrError: {
+            __typename: "updateArtworkFailure",
+            mutationError: {
+              message: "Error from API",
+            },
+          },
+        },
       })
-    } catch (error) {
-      console.log(error)
-    }
+    })
   })
 })

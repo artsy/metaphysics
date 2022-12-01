@@ -11209,7 +11209,7 @@ type Mutation {
     input: updateNotificationPreferencesMutationInput!
   ): updateNotificationPreferencesMutationPayload
 
-  # Updates an artwork.
+  # Updates the flags on a partner.
   updatePartnerFlags(
     input: UpdatePartnerFlagsMutationInput!
   ): UpdatePartnerFlagsMutationPayload
@@ -15820,6 +15820,10 @@ type UpdateAppSecondFactorPayload {
   secondFactorOrErrors: AppSecondFactorOrErrorsUnion!
 }
 
+type updateArtworkFailure {
+  mutationError: GravityMutationError
+}
+
 input UpdateArtworkMutationInput {
   # The availability of the artwork
   availability: String
@@ -15830,8 +15834,15 @@ input UpdateArtworkMutationInput {
 }
 
 type UpdateArtworkMutationPayload {
-  artwork: Artwork
+  # On success: the artwork note updated.
+  artworkOrError: updateArtworkResponseOrError
   clientMutationId: String
+}
+
+union updateArtworkResponseOrError = updateArtworkFailure | updateArtworkSuccess
+
+type updateArtworkSuccess {
+  artwork: Artwork
 }
 
 input UpdateCollectorProfileInput {
@@ -16141,7 +16152,7 @@ type updateNotificationPreferencesMutationPayload {
 input UpdatePartnerFlagsMutationInput {
   clientMutationId: String
 
-  # The id of the artwork to update.
+  # The id of the partner to update.
   id: String!
 }
 

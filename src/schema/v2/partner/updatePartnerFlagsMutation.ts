@@ -13,11 +13,11 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "UpdatePartnerFlagsMutation",
-  description: "Updates an artwork.",
+  description: "Updates the flags on a partner.",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The id of the artwork to update.",
+      description: "The id of the partner to update.",
     },
   },
   outputFields: {

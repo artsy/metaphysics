@@ -1,13 +1,49 @@
-import { GraphQLString, GraphQLNonNull } from "graphql"
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import Artwork from "schema/v2/artwork"
 import { omitBy } from "lodash"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
 
 interface UpdateArtworkMutationInputProps {
   id: string
   availability?: boolean
 }
+
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "updateArtworkSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    artwork: {
+      type: Artwork.type,
+      resolve: (artwork) => artwork,
+    },
+  }),
+})
+
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "updateArtworkFailure",
+  isTypeOf: (data) => data._type === "GravityMutationError",
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const ResponseOrErrorType = new GraphQLUnionType({
+  name: "updateArtworkResponseOrError",
+  types: [SuccessType, FailureType],
+})
 
 export const updateArtworkMutation = mutationWithClientMutationId<
   UpdateArtworkMutationInputProps,
@@ -27,9 +63,10 @@ export const updateArtworkMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    artwork: {
-      type: Artwork.type,
-      resolve: (artwork) => artwork,
+    artworkOrError: {
+      type: ResponseOrErrorType,
+      description: "On success: the artwork note updated.",
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async ({ id, ...props }, { updateArtworkLoader }) => {
@@ -43,7 +80,12 @@ export const updateArtworkMutation = mutationWithClientMutationId<
       const response = await updateArtworkLoader(id, payload)
       return response
     } catch (error) {
-      throw new Error(error.body.error)
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
     }
   },
 })
