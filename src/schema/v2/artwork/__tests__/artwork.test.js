@@ -2127,7 +2127,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             attributionClass: {
-              shortDescription: "This is a unique work",
+              shortDescription: "Unique work",
             },
           },
         })
@@ -2148,7 +2148,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             attributionClass: {
-              shortArrayDescription: ["This is", "a unique work"],
+              shortArrayDescription: ["", "Unique work"],
             },
           },
         })
