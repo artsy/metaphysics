@@ -7403,6 +7403,8 @@ type DeleteUserIconPayload {
 input DeleteUserInterestMutationInput {
   anonymousSessionId: String
   clientMutationId: String
+
+  # The ID of the UserInterest to delete.
   id: String!
   sessionID: String
 }
@@ -11013,7 +11015,7 @@ type Mutation {
     input: deleteUserAdminNoteMutationInput!
   ): deleteUserAdminNoteMutationPayload
 
-  # Deletes a UserInterest on the (logged in) user or for another user.
+  # Delete a UserInterest.
   deleteUserInterest(
     input: DeleteUserInterestMutationInput!
   ): DeleteUserInterestMutationPayload

@@ -18,10 +18,12 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "DeleteUserInterestMutation",
-  description:
-    "Deletes a UserInterest on the (logged in) user or for another user.",
+  description: "Delete a UserInterest.",
   inputFields: {
-    id: { type: new GraphQLNonNull(GraphQLString) },
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the UserInterest to delete.",
+    },
     anonymousSessionId: { type: GraphQLString },
     sessionID: { type: GraphQLString },
   },
