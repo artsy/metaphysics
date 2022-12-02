@@ -73,6 +73,9 @@ const partnerTitleContent = (type) => {
   return result
 }
 
+const isPartnerPageEligible = ({ type }) =>
+  ["Gallery", "Institution", "Institutional Seller", "Brand"].includes(type)
+
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   artworkIDs: {
     type: new GraphQLList(GraphQLString),
@@ -563,10 +566,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       href: {
         type: GraphQLString,
-        resolve: ({ type, default_profile_id, id }) =>
-          type === "Auction"
-            ? `/auction/${default_profile_id}`
-            : `/partner/${id}`,
+        description:
+          "The url for a partner. May be `null` if partner is not eligible for page.",
+        resolve: (partner) =>
+          isPartnerPageEligible(partner) ? `/partner/${partner.id}` : null,
       },
       initials: initials("name"),
       isDefaultProfilePublic: {
@@ -592,10 +595,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       partnerPageEligible: {
         type: GraphQLBoolean,
-        resolve: ({ type }) =>
-          ["Gallery", "Institution", "Institutional Seller", "Brand"].includes(
-            type
-          ),
+        resolve: isPartnerPageEligible,
       },
       fullProfileEligible: {
         deprecationReason: "Prefer displayFullPartnerPage",

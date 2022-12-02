@@ -1586,4 +1586,44 @@ describe("Partner type", () => {
       })
     })
   })
+
+  describe("#href", () => {
+    it("returns an href when partner type is eligible for a page", async () => {
+      partnerData.type = "Gallery"
+
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            href
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          href: "/partner/catty-partner",
+        },
+      })
+    })
+
+    it("returns null when partner type is not eligible for a page", async () => {
+      partnerData.type = "Auction"
+
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            href
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          href: null,
+        },
+      })
+    })
+  })
 })
