@@ -157,10 +157,13 @@ export const moneyMajorResolver = async (
 
 export const Money = new GraphQLObjectType<any, ResolverContext>({
   name: "Money",
+  description:
+    "An interface to handle money in different formats and currencies. See specs here https://www.notion.so/artsy/Currency-Best-Practices-95081d370e664509928509e3dbd74c81#8412fa3a336447119463590f950f5c32",
   fields: {
     minor: {
       type: new GraphQLNonNull(GraphQLInt),
-      description: "An amount of money expressed in minor units (like cents).",
+      description:
+        "An amount of money expressed in minor units (like cents). @example 1050",
       resolve: ({ cents }) => cents,
     },
     currencyCode: {
@@ -176,7 +179,7 @@ export const Money = new GraphQLObjectType<any, ResolverContext>({
     major: {
       type: new GraphQLNonNull(GraphQLFloat),
       description:
-        "An amount of money expressed in major units (like dollars).",
+        "An amount of money expressed in major units (like dollars). @example 10.50",
       args: {
         convertTo: {
           type: GraphQLString,
