@@ -18,7 +18,7 @@ describe("ArtworkAttributionClasses type", () => {
       expect(data!.artworkAttributionClasses[0].internalID).toBe("unique")
       expect(data!.artworkAttributionClasses[0].name).toBe("Unique")
       expect(data!.artworkAttributionClasses[0].shortDescription).toBe(
-        "This is a unique work"
+        "Unique work"
       )
       expect(data!.artworkAttributionClasses[0].longDescription).toBe(
         "One-of-a-kind piece."
