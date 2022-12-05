@@ -2,7 +2,7 @@ import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { UserInterest, userInterestType } from "./userInterests"
+import { UserInterest, userInterestType } from "../userInterests"
 import { snakeCase } from "lodash"
 import { meType } from "./index"
 

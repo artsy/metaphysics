@@ -16703,6 +16703,7 @@ type UserInterest {
 
   # A type-specific ID.
   internalID: ID!
+  ownerType: UserInterestOwnerType
 }
 
 enum UserInterestCategory {
@@ -16738,6 +16739,7 @@ type UserInterestEdge {
 
   # The item at the end of the edge
   node: UserInterestInterest
+  ownerType: String
 }
 
 union UserInterestInterest = Artist | Gene
@@ -16745,6 +16747,11 @@ union UserInterestInterest = Artist | Gene
 enum UserInterestInterestType {
   ARTIST
   GENE
+}
+
+enum UserInterestOwnerType {
+  COLLECTOR_PROFILE
+  USER_SALE_PROFILE
 }
 
 # A connection to a list of items.

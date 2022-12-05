@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLEnumType } from "graphql"
+import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
@@ -6,8 +6,9 @@ import {
   UserInterest,
   UserInterestCategory,
   userInterestCategoryEnum,
+  userInterestInterestTypeEnum,
   userInterestType,
-} from "./userInterests"
+} from "../userInterests"
 import { snakeCase } from "lodash"
 import { meType } from "./index"
 
@@ -19,14 +20,6 @@ interface Input {
   anonymousSessionId?: string
   sessionId?: string
 }
-
-const userInterestInterestTypeEnum = new GraphQLEnumType({
-  name: "UserInterestInterestType",
-  values: {
-    ARTIST: { value: "Artist" },
-    GENE: { value: "Gene" },
-  },
-})
 
 export const createUserInterestMutation = mutationWithClientMutationId<
   Input,
