@@ -7091,6 +7091,39 @@ type createUserAdminNoteSuccess {
   adminNote: UserAdminNotes
 }
 
+type createUserInterestForUserFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateUserInterestForUserInput {
+  anonymousSessionId: String
+
+  # Optional body for a note.
+  body: String
+  category: UserInterestCategory!
+  clientMutationId: String
+  interestId: String!
+  interestType: UserInterestInterestType!
+  ownerType: UserInterestOwnerType!
+  sessionID: String
+  userId: String!
+}
+
+type CreateUserInterestForUserPayload {
+  clientMutationId: String
+
+  # On success: UserInterest. On failure: MutationError.
+  userInterestOrError: createUserInterestForUserResponseOrError
+}
+
+union createUserInterestForUserResponseOrError =
+    createUserInterestForUserFailure
+  | createUserInterestForUserSuccess
+
+type createUserInterestForUserSuccess {
+  userInterest: UserInterest
+}
+
 input CreateUserInterestMutationInput {
   anonymousSessionId: String
 
@@ -7406,6 +7439,34 @@ input DeleteUserIconInput {
 type DeleteUserIconPayload {
   clientMutationId: String
   iconOrError: UserIconDeletionMutationType
+}
+
+type deleteUserInterestForUserFailure {
+  mutationError: GravityMutationError
+}
+
+input DeleteUserInterestForUserInput {
+  anonymousSessionId: String
+  clientMutationId: String
+
+  # The ID of the UserInterest to delete.
+  id: String!
+  sessionID: String
+}
+
+type DeleteUserInterestForUserPayload {
+  clientMutationId: String
+
+  # On success: UserInterest. On failure: MutationError.
+  userInterestOrError: deleteUserInterestForUserResponseOrError
+}
+
+union deleteUserInterestForUserResponseOrError =
+    deleteUserInterestForUserFailure
+  | deleteUserInterestForUserSuccess
+
+type deleteUserInterestForUserSuccess {
+  userInterest: UserInterest
 }
 
 input DeleteUserInterestMutationInput {
@@ -11004,6 +11065,11 @@ type Mutation {
   createUserInterest(
     input: CreateUserInterestMutationInput!
   ): CreateUserInterestMutationPayload
+
+  # Creates a UserInterest for another user.
+  createUserInterestForUser(
+    input: CreateUserInterestForUserInput!
+  ): CreateUserInterestForUserPayload
   createViewingRoom(input: CreateViewingRoomInput!): CreateViewingRoomPayload
 
   # Deletes an image from an artwork in my collection
@@ -11031,6 +11097,11 @@ type Mutation {
   deleteUserInterest(
     input: DeleteUserInterestMutationInput!
   ): DeleteUserInterestMutationPayload
+
+  # Delete a UserInterest.
+  deleteUserInterestForUser(
+    input: DeleteUserInterestForUserInput!
+  ): DeleteUserInterestForUserPayload
 
   # Delete a role associated with a user
   deleteUserRole(
