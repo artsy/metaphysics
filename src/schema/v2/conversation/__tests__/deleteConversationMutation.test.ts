@@ -1,4 +1,5 @@
 import gql from "lib/gql"
+import { HTTPError } from "lib/HTTPError"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("DeleteConversationMutation", () => {
@@ -47,9 +48,7 @@ describe("DeleteConversationMutation", () => {
     it("returns an error", async () => {
       const context = {
         conversationDeleteLoader: () =>
-          Promise.reject(
-            new Error(`{"type":"error","message":"Error from API"}`)
-          ),
+          Promise.reject(new HTTPError(`Oops`, 500, "Error from API")),
       }
 
       const deletedConversation = await runAuthenticatedQuery(mutation, context)

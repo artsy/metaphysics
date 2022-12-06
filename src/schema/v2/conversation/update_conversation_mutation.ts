@@ -1,4 +1,4 @@
-import { GraphQLBoolean, GraphQLEnumType } from "graphql"
+import { GraphQLBoolean } from "graphql"
 import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import Conversation from "schema/v2/conversation"

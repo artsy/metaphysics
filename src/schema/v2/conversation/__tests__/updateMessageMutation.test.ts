@@ -1,4 +1,5 @@
 import gql from "lib/gql"
+import { HTTPError } from "lib/HTTPError"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("UpdateMessageMutation", () => {
@@ -50,9 +51,7 @@ describe("UpdateMessageMutation", () => {
     it("returns an error", async () => {
       const context = {
         messageUpdateLoader: () =>
-          Promise.reject(
-            new Error(`{"body": {"type":"error","message":"Error from API"}}`)
-          ),
+          Promise.reject(new HTTPError(`Oops`, 500, "Error from API")),
       }
 
       const updatedMessage = await runAuthenticatedQuery(mutation, context)

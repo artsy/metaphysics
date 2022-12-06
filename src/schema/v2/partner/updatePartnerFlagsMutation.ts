@@ -70,7 +70,7 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
     }
 
     try {
-      const timestamp = new Date()
+      const timestamp = new Date().toISOString()
 
       const response = await updatePartnerFlagsLoader(id, {
         key: "last_cms_access",
