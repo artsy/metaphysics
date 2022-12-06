@@ -210,10 +210,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLInt,
             description: "Filter auction results by earliest created at year",
           },
-          includeUpcoming: {
+          showUpcoming: {
             type: GraphQLBoolean,
-            defaultValue: true,
-            description: "include upcoming auction results",
+            description:
+              "Show only upcoming auction results, set to false to show only past results, by default both are shown",
           },
           keyword: {
             type: GraphQLString,
@@ -254,12 +254,12 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             size,
             sizes,
           } = convertConnectionArgsToGravityArgs(options)
-          const diffusionArgs = {
+          const defaultDiffusionArgs = {
             allow_empty_created_dates: options.allowEmptyCreatedDates,
             artist_id: _id,
             categories,
             earliest_created_year: options.earliestCreatedYear,
-            include_upcoming: options.includeUpcoming,
+            upcoming: options.showUpcoming,
             keyword: options.keyword,
             latest_created_year: options.latestCreatedYear,
             organizations,
@@ -269,38 +269,50 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             sort: options.sort,
           }
 
-          return auctionLotsLoader(diffusionArgs).then(
-            ({ total_count, _embedded }) => {
-              const totalPages = Math.ceil(total_count / size)
-              return merge(
-                {
-                  pageCursors: createPageCursors(
-                    {
-                      page,
-                      size,
-                    },
-                    total_count
-                  ),
-                },
-                {
-                  totalCount: total_count,
-                },
-                connectionFromArraySlice(_embedded.items, options, {
-                  arrayLength: total_count,
-                  sliceStart: offset,
-                }),
-                {
-                  pageInfo: {
-                    hasPreviousPage: page > 1,
-                    hasNextPage: page < totalPages,
-                  },
-                },
-                {
-                  artist_id: _id,
-                }
-              )
+          let optionalDiffusionArgs = {}
+
+          // We should only inject upcoming if it's explicitly set to true or false
+          // See https://github.com/artsy/diffusion/pull/653
+          if (options.showUpcoming === true || options.showUpcoming === false) {
+            optionalDiffusionArgs = {
+              ...optionalDiffusionArgs,
+              upcoming: options.showUpcoming,
             }
-          )
+          }
+
+          return auctionLotsLoader({
+            ...defaultDiffusionArgs,
+            ...optionalDiffusionArgs,
+          }).then(({ total_count, _embedded }) => {
+            const totalPages = Math.ceil(total_count / size)
+            return merge(
+              {
+                pageCursors: createPageCursors(
+                  {
+                    page,
+                    size,
+                  },
+                  total_count
+                ),
+              },
+              {
+                totalCount: total_count,
+              },
+              connectionFromArraySlice(_embedded.items, options, {
+                arrayLength: total_count,
+                sliceStart: offset,
+              }),
+              {
+                pageInfo: {
+                  hasPreviousPage: page > 1,
+                  hasNextPage: page < totalPages,
+                },
+              },
+              {
+                artist_id: _id,
+              }
+            )
+          })
         },
       },
       basedOn: {

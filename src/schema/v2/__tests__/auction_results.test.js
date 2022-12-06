@@ -266,14 +266,13 @@ describe("Artist type", () => {
     })
   })
 
-  describe("passes the correct arguments to the auctionLotsLoader", () => {
-    describe("include_upcomimg", () => {
+  describe.only("passes the correct arguments to the auctionLotsLoader", () => {
+    describe("upcoming", () => {
       const defaultAuctionLotsArgs = {
         allow_empty_created_dates: true,
         artist_id: "4d8b92b34eb68a1b2c0003f4",
         categories: undefined,
         earliest_created_year: undefined,
-        include_upcoming: true,
         keyword: undefined,
         latest_created_year: undefined,
         organizations: undefined,
@@ -283,7 +282,7 @@ describe("Artist type", () => {
         sort: undefined,
       }
 
-      it("as true when not specified", async () => {
+      it("is not passed when not specified", async () => {
         const query = `
         {
           artist(id: "percy-z") {
@@ -327,7 +326,7 @@ describe("Artist type", () => {
         const query = `
         {
           artist(id: "percy-z") {
-            auctionResultsConnection(recordsTrusted: true, first: 1, includeUpcoming: true) {
+            auctionResultsConnection(recordsTrusted: true, first: 1, showUpcoming: true) {
               edges {
                 node {
                   internalID
@@ -344,9 +343,10 @@ describe("Artist type", () => {
 
         const data = await runQuery(query, context)
 
-        expect(context.auctionLotsLoader).toHaveBeenCalledWith(
-          defaultAuctionLotsArgs
-        )
+        expect(context.auctionLotsLoader).toHaveBeenCalledWith({
+          ...defaultAuctionLotsArgs,
+          upcoming: true,
+        })
 
         expect(data).toEqual({
           artist: {
@@ -367,7 +367,7 @@ describe("Artist type", () => {
         const query = `
         {
           artist(id: "percy-z") {
-            auctionResultsConnection(recordsTrusted: true, first: 1, includeUpcoming: false) {
+            auctionResultsConnection(recordsTrusted: true, first: 1, showUpcoming: false) {
               edges {
                 node {
                   internalID
@@ -386,7 +386,7 @@ describe("Artist type", () => {
 
         expect(context.auctionLotsLoader).toHaveBeenCalledWith({
           ...defaultAuctionLotsArgs,
-          include_upcoming: false,
+          upcoming: false,
         })
 
         expect(data).toEqual({

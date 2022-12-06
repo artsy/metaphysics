@@ -1329,9 +1329,6 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     earliestCreatedYear: Int
     first: Int
 
-    # include upcoming auction results
-    includeUpcoming: Boolean = true
-
     # Filter by artwork title or description keyword search
     keyword: String
     last: Int
@@ -1344,6 +1341,9 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
 
     # When true, will only return records for allowed artists.
     recordsTrusted: Boolean = false
+
+    # Show only upcoming auction results, set to false to show only past results, by default both are shown
+    showUpcoming: Boolean
 
     # Filter auction results by Artwork sizes
     sizes: [ArtworkSizes]
