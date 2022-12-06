@@ -8,12 +8,12 @@ describe("DeleteConversationMutation", () => {
       deleteConversation(input: { id: "25" }) {
         conversationOrError {
           __typename
-          ... on deleteConversationSuccess {
+          ... on DeleteConversationSuccess {
             conversation {
               deletedAt
             }
           }
-          ... on deleteConversationFailure {
+          ... on DeleteConversationFailure {
             mutationError {
               message
             }
@@ -37,7 +37,7 @@ describe("DeleteConversationMutation", () => {
     expect(deletedConversation).toEqual({
       deleteConversation: {
         conversationOrError: {
-          __typename: "deleteConversationSuccess",
+          __typename: "DeleteConversationSuccess",
           conversation: { deletedAt: "2022" },
         },
       },
@@ -56,7 +56,7 @@ describe("DeleteConversationMutation", () => {
       expect(deletedConversation).toEqual({
         deleteConversation: {
           conversationOrError: {
-            __typename: "deleteConversationFailure",
+            __typename: "DeleteConversationFailure",
             mutationError: {
               message: "Error from API",
             },

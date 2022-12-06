@@ -7,7 +7,6 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import Artwork from "schema/v2/artwork"
-import { omitBy } from "lodash"
 import {
   formatGravityError,
   GravityMutationErrorType,
@@ -65,19 +64,22 @@ export const updateArtworkMutation = mutationWithClientMutationId<
   outputFields: {
     artworkOrError: {
       type: ResponseOrErrorType,
-      description: "On success: the artwork note updated.",
+      description: "On success: the artwork updated.",
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async ({ id, ...props }, { updateArtworkLoader }) => {
+  mutateAndGetPayload: async (
+    { availability, id },
+    { updateArtworkLoader }
+  ) => {
     if (!updateArtworkLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
-    const payload = omitBy(props, (prop) => prop == null)
-
     try {
-      const response = await updateArtworkLoader(id, payload)
+      const response = await updateArtworkLoader(id, {
+        availability,
+      })
       return response
     } catch (error) {
       const formattedErr = formatGravityError(error)

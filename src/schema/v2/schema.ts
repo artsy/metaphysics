@@ -161,7 +161,7 @@ import Conversations from "./conversation/conversations"
 import updateMessageMutation from "./conversation/updateMessageMutation"
 import deleteConversationMutation from "./conversation/deleteConversationMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
-import { updatePartnerFlagsMutation } from "./partner/updatePartnerFlagsMutation"
+import { updateCMSLastAccessTimestampMutation } from "./partner/updateCMSLastAccessTimestampMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -331,12 +331,12 @@ export default new GraphQLSchema({
       startIdentityVerification: startIdentityVerificationMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
       updateArtwork: updateArtworkMutation,
+      updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
       updateCollectorProfile: UpdateCollectorProfile,
       updateCollectorProfileWithID: UpdateCollectorProfileWithID,
       updateConversation: UpdateConversationMutation,
       updateMessage: updateMessageMutation,
       updateMyPassword: updateMyPasswordMutation,
-      updatePartnerFlags: updatePartnerFlagsMutation,
       updateUser: updateUserMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,

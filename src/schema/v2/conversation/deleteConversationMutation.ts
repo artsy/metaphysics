@@ -17,7 +17,7 @@ interface DeleteConversationMutationInputProps {
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "deleteConversationSuccess",
+  name: "DeleteConversationSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
     conversation: {
@@ -28,7 +28,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "deleteConversationFailure",
+  name: "DeleteConversationFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -39,7 +39,7 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "deleteConversationResponseOrError",
+  name: "DeleteConversationResponseOrError",
   types: [SuccessType, FailureType],
 })
 
