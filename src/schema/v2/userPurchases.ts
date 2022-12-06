@@ -16,6 +16,7 @@ export const edgeFields: Thunk<GraphQLFieldConfigMap<
   ...IDFields,
   ownerType: { type: GraphQLString, resolve: ({ owner_type }) => owner_type },
   salePrice: { type: GraphQLFloat, resolve: ({ sale_price }) => sale_price },
+  saleDate: { type: GraphQLString, resolve: ({ sale_date }) => sale_date },
   source: { type: GraphQLString },
 })
 

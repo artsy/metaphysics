@@ -17044,6 +17044,7 @@ type UserPurchasesEdge {
   # The item at the end of the edge
   node: Artwork
   ownerType: String
+  saleDate: String
   salePrice: Float
   source: String
 }

@@ -477,6 +477,7 @@ describe("User", () => {
         {
           owner_type: "SaleArtwork",
           sale_price: 1000.9999,
+          sale_date: "2018-09-26 04:00:00 UTC",
           source: "auction",
           artwork: {
             title: "Monkey Business",
