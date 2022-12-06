@@ -266,7 +266,7 @@ describe("Artist type", () => {
     })
   })
 
-  describe.only("passes the correct arguments to the auctionLotsLoader", () => {
+  describe("passes the correct arguments to the auctionLotsLoader", () => {
     describe("upcoming", () => {
       const defaultAuctionLotsArgs = {
         allow_empty_created_dates: true,

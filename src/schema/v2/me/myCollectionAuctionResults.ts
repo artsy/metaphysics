@@ -80,7 +80,7 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
         categories,
       } = convertConnectionArgsToGravityArgs(options)
 
-      const auctionLotsLoaderArgs = {
+      const defaultAuctionLotsLoaderArgs = {
         page,
         size,
         artist_ids: artistIds,
@@ -93,9 +93,21 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
         sort: options.sort,
       }
 
-      const { total_count, _embedded } = await auctionLotsLoader(
-        auctionLotsLoaderArgs
-      )
+      let optionalDiffusionArgs = {}
+
+      // We should only inject upcoming if it's explicitly set to true or false
+      // See https://github.com/artsy/diffusion/pull/653
+      if (options.showUpcoming === true || options.showUpcoming === false) {
+        optionalDiffusionArgs = {
+          ...optionalDiffusionArgs,
+          upcoming: options.showUpcoming,
+        }
+      }
+
+      const { total_count, _embedded } = await auctionLotsLoader({
+        ...defaultAuctionLotsLoaderArgs,
+        ...optionalDiffusionArgs,
+      })
 
       const totalPages = Math.ceil(total_count / size)
 

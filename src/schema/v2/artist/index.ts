@@ -254,6 +254,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             size,
             sizes,
           } = convertConnectionArgsToGravityArgs(options)
+
           const defaultDiffusionArgs = {
             allow_empty_created_dates: options.allowEmptyCreatedDates,
             artist_id: _id,
