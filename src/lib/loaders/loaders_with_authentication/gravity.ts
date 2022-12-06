@@ -366,6 +366,13 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerInquiryRequestLoader: gravityLoader<
+      any,
+      { partnerId: string; inquiryId: string }
+    >(
+      ({ partnerId, inquiryId }) =>
+        `partner/${partnerId}/inquiry_request/${inquiryId}`
+    ),
     partnerDocumentsLoader: gravityLoader<any, { id: string }>(
       (id) => `partner/${id}/documents`,
       {},
@@ -382,6 +389,11 @@ export default (accessToken, userID, opts) => {
     ),
     updatePartnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerFlagsLoader: gravityLoader(
+      (id) => `partner/${id}/partner_flags`,
       {},
       { method: "PUT" }
     ),

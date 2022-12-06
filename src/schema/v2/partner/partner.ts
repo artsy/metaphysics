@@ -804,17 +804,28 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
         description: "Inquiry Request details",
-        resolve: (
-          { id },
+        resolve: async (
+          { id: partnerId },
           { inquiryId },
-          { partnerInquirerCollectorProfileLoader }
+          { partnerInquiryRequestLoader }
         ) => {
-          if (!partnerInquirerCollectorProfileLoader) return
+          if (!partnerInquiryRequestLoader) {
+            return null
+          }
 
-          return partnerInquirerCollectorProfileLoader({
-            partnerId: id,
-            inquiryId,
-          }).then((collectorProfile) => collectorProfile)
+          try {
+            const response = await partnerInquiryRequestLoader({
+              partnerId,
+              inquiryId,
+            })
+
+            return {
+              partnerId,
+              ...response,
+            }
+          } catch (error) {
+            throw error
+          }
         },
       },
     }

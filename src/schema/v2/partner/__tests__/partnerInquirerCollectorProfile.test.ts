@@ -19,6 +19,8 @@ describe("partnerInquirerCollectorProfile", () => {
   }
 
   const context = {
+    partnerInquiryRequestLoader: () =>
+      Promise.resolve({ id: "123", partnerId: "catty-partner" }),
     partnerInquirerCollectorProfileLoader: () =>
       Promise.resolve(collectorProfile),
     partnerLoader: () => Promise.resolve(partnerData),

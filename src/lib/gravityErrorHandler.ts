@@ -3,8 +3,9 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLList,
+  GraphQLInt,
 } from "graphql"
-import { isArray, omit, pickBy } from "lodash"
+import { isArray, isObject, omit, pickBy } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { HTTPError } from "./HTTPError"
 
@@ -29,6 +30,9 @@ export const GravityMutationErrorType = new GraphQLObjectType<
     fieldErrors: {
       type: GraphQLList(FieldErrorResultsType),
     },
+    statusCode: {
+      type: GraphQLInt,
+    },
   }),
 })
 
@@ -39,7 +43,20 @@ export const formatGravityError = (error) => {
     // gravity returns errors as HTTPErrors but the body is actually
     // a json object and not a string as expected, this checks for both cases
     const freeBody: any = error.body
-    if (freeBody.error as string) {
+
+    let parsedError
+    try {
+      parsedError = JSON.parse(freeBody)
+    } catch {}
+
+    if (isObject(parsedError)) {
+      return {
+        type: "error",
+        error: freeBody,
+        statusCode: error?.statusCode,
+        message: parsedError.error,
+      }
+    } else if (freeBody.error as string) {
       return {
         type: "error",
         message: freeBody.error,
