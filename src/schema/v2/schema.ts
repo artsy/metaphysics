@@ -90,6 +90,7 @@ import { updateUserSaleProfileMutation } from "./users/updateUserSaleProfileMuta
 import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileIconMutation"
 import ObjectIdentification from "./object_identification"
 import { OrderedSet } from "./OrderedSet"
+import { createOrderedSetMutation } from "./OrderedSet/createOrderedSetMutation"
 import OrderedSets from "./ordered_sets"
 import Partner from "schema/v2/partner/partner"
 import PartnerArtworks from "./partner/partnerArtworks"
@@ -298,6 +299,7 @@ export default new GraphQLSchema({
       createUserAdminNote: createUserAdminNoteMutation,
       deleteUserAdminNote: deleteUserAdminNoteMutation,
       createUserInterest: createUserInterestMutation,
+      createOrderedSet: createOrderedSetMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCreditCard: deleteCreditCardMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,

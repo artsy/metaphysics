@@ -573,5 +573,6 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    createSetLoader: gravityLoader("set", {}, { method: "POST" }),
   }
 }
