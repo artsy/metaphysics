@@ -210,6 +210,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLInt,
             description: "Filter auction results by earliest created at year",
           },
+          includeUpcoming: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+            description: "include upcoming auction results",
+          },
           keyword: {
             type: GraphQLString,
             description:
@@ -254,6 +259,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             artist_id: _id,
             categories,
             earliest_created_year: options.earliestCreatedYear,
+            include_upcoming: options.includeUpcoming,
             keyword: options.keyword,
             latest_created_year: options.latestCreatedYear,
             organizations,
