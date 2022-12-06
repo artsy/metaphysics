@@ -1,11 +1,47 @@
-import { GraphQLString, GraphQLNonNull } from "graphql"
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
 import Partner from "./partner"
+import { ResolverContext } from "types/graphql"
 
 interface UpdatePartnerFlagsMutationInputProps {
   id: string
 }
+
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "updatePartnerFlagsSuccess",
+  isTypeOf: (data) => data._id,
+  fields: () => ({
+    partner: {
+      type: Partner.type,
+      resolve: (partner) => partner,
+    },
+  }),
+})
+
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "updatePartnerFlagsFailure",
+  isTypeOf: (data) => data._type === "GravityMutationError",
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const ResponseOrErrorType = new GraphQLUnionType({
+  name: "updatePartnerFlagsResponseOrError",
+  types: [SuccessType, FailureType],
+})
 
 export const updatePartnerFlagsMutation = mutationWithClientMutationId<
   UpdatePartnerFlagsMutationInputProps,
@@ -21,9 +57,11 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    partner: {
-      type: Partner.type,
-      resolve: (partner) => partner,
+    partnerOrError: {
+      type: ResponseOrErrorType,
+      description:
+        "On success: the updated partner. On error: the error that occurred.",
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async ({ id }, { updatePartnerFlagsLoader }) => {
@@ -32,15 +70,21 @@ export const updatePartnerFlagsMutation = mutationWithClientMutationId<
     }
 
     try {
-      const timestamp = new Date().getTime()
+      const timestamp = new Date()
 
       const response = await updatePartnerFlagsLoader(id, {
         key: "last_cms_access",
         value: timestamp,
       })
+
       return response
     } catch (error) {
-      throw new Error(error.body.error)
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
     }
   },
 })

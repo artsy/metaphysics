@@ -16001,6 +16001,10 @@ type UpdateConversationMutationPayload {
   conversation: Conversation
 }
 
+type updateMessageFailure {
+  mutationError: GravityMutationError
+}
+
 input UpdateMessageMutationInput {
   clientMutationId: String
 
@@ -16013,6 +16017,14 @@ input UpdateMessageMutationInput {
 
 type UpdateMessageMutationPayload {
   clientMutationId: String
+
+  # On success: the updated conversation
+  conversationOrError: updateMessageResponseOrError
+}
+
+union updateMessageResponseOrError = updateMessageFailure | updateMessageSuccess
+
+type updateMessageSuccess {
   conversation: Conversation
 }
 
@@ -16164,6 +16176,10 @@ type updateNotificationPreferencesMutationPayload {
   ): [NotificationPreference!]!
 }
 
+type updatePartnerFlagsFailure {
+  mutationError: GravityMutationError
+}
+
 input UpdatePartnerFlagsMutationInput {
   clientMutationId: String
 
@@ -16173,6 +16189,16 @@ input UpdatePartnerFlagsMutationInput {
 
 type UpdatePartnerFlagsMutationPayload {
   clientMutationId: String
+
+  # On success: the updated partner. On error: the error that occurred.
+  partnerOrError: updatePartnerFlagsResponseOrError
+}
+
+union updatePartnerFlagsResponseOrError =
+    updatePartnerFlagsFailure
+  | updatePartnerFlagsSuccess
+
+type updatePartnerFlagsSuccess {
   partner: Partner
 }
 

@@ -1,32 +1,72 @@
+import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("UpdateMessageMutation", () => {
-  it("marks the message as spam", async () => {
-    const mutation = `
-      mutation {
-        updateMessage(input: { id: "25", spam: true }) {
-          conversation {
-            initialMessage
+  const mutation = gql`
+    mutation {
+      updateMessage(input: { id: "25", spam: true }) {
+        conversationOrError {
+          __typename
+          ... on updateMessageSuccess {
+            conversation {
+              initialMessage
+            }
+          }
+          ... on updateMessageFailure {
+            mutationError {
+              message
+            }
           }
         }
       }
-    `
+    }
+  `
 
+  it("marks the message as spam", async () => {
     const context = {
       messageUpdateLoader: () =>
         Promise.resolve({
+          id: "foo",
           initial_message: "Howdy",
           from_email_address: "percy@cat.com",
         }),
     }
 
-    try {
+    const updatedMessage = await runAuthenticatedQuery(mutation, context)
+
+    expect(updatedMessage).toEqual({
+      updateMessage: {
+        conversationOrError: {
+          __typename: "updateMessageSuccess",
+          conversation: {
+            initialMessage: "Howdy",
+          },
+        },
+      },
+    })
+  })
+
+  describe("when failure", () => {
+    it("returns an error", async () => {
+      const context = {
+        messageUpdateLoader: () =>
+          Promise.reject(
+            new Error(`{"body": {"type":"error","message":"Error from API"}}`)
+          ),
+      }
+
       const updatedMessage = await runAuthenticatedQuery(mutation, context)
 
-      // TODO
-      expect(updatedMessage).toEqual("foo")
-    } catch (error) {
-      console.log(error)
-    }
+      expect(updatedMessage).toEqual({
+        updateMessage: {
+          conversationOrError: {
+            __typename: "updateMessageFailure",
+            mutationError: {
+              message: "Error from API",
+            },
+          },
+        },
+      })
+    })
   })
 })

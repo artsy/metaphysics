@@ -1,12 +1,49 @@
-import { GraphQLString, GraphQLNonNull, GraphQLBoolean } from "graphql"
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLBoolean,
+  GraphQLObjectType,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import Conversation from "schema/v2/conversation"
 import { ResolverContext } from "types/graphql"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
 
 interface UpdateMessageMutationInputProps {
   id: string
   spam: boolean
 }
+
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "updateMessageSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    conversation: {
+      type: Conversation.type,
+      resolve: (conversation) => conversation,
+    },
+  }),
+})
+
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "updateMessageFailure",
+  isTypeOf: (data) => data._type === "GravityMutationError",
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const ResponseOrErrorType = new GraphQLUnionType({
+  name: "updateMessageResponseOrError",
+  types: [SuccessType, FailureType],
+})
 
 export default mutationWithClientMutationId<
   UpdateMessageMutationInputProps,
@@ -26,23 +63,29 @@ export default mutationWithClientMutationId<
     },
   },
   outputFields: {
-    conversation: {
-      type: Conversation.type,
-      resolve: (conversation) => conversation,
+    conversationOrError: {
+      type: ResponseOrErrorType,
+      description: "On success: the updated conversation",
+      resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (args, { messageUpdateLoader }) => {
+  mutateAndGetPayload: async ({ id, spam }, { messageUpdateLoader }) => {
     if (!messageUpdateLoader) {
-      return null
+      return new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const response = await messageUpdateLoader(args.id, {
-        spam: args.spam,
+      const response = await messageUpdateLoader(id, {
+        spam: spam,
       })
       return response
     } catch (error) {
-      throw new Error(error.body?.error)
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
     }
   },
 })
