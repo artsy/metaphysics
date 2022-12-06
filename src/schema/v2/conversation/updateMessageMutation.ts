@@ -76,7 +76,7 @@ export default mutationWithClientMutationId<
 
     try {
       const response = await messageUpdateLoader(id, {
-        spam: spam,
+        spam,
       })
       return response
     } catch (error) {

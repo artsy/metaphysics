@@ -1,18 +1,18 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("UpdatePartnerFlagsMutation", () => {
+describe("UpdateCMSLastAccessTimestampMutation", () => {
   const mutation = gql`
     mutation {
-      updatePartnerFlags(input: { id: "25" }) {
+      updateCMSLastAccessTimestamp(input: { id: "25" }) {
         partnerOrError {
           __typename
-          ... on updatePartnerFlagsSuccess {
+          ... on UpdateCMSLastAccessTimestampSuccess {
             partner {
               internalID
             }
           }
-          ... on updatePartnerFlagsFailure {
+          ... on UpdateCMSLastAccessTimestampFailure {
             mutationError {
               message
             }
@@ -22,7 +22,7 @@ describe("UpdatePartnerFlagsMutation", () => {
     }
   `
 
-  it("updates an partner flags", async () => {
+  it("updates CMS last access timestamp", async () => {
     const context = {
       updatePartnerFlagsLoader: () =>
         Promise.resolve({
@@ -33,9 +33,9 @@ describe("UpdatePartnerFlagsMutation", () => {
     const updatedPartner = await runAuthenticatedQuery(mutation, context)
 
     expect(updatedPartner).toEqual({
-      updatePartnerFlags: {
+      updateCMSLastAccessTimestamp: {
         partnerOrError: {
-          __typename: "updatePartnerFlagsSuccess",
+          __typename: "UpdateCMSLastAccessTimestampSuccess",
           partner: {
             internalID: "foo",
           },
@@ -58,9 +58,9 @@ describe("UpdatePartnerFlagsMutation", () => {
       const updatedPartner = await runAuthenticatedQuery(mutation, context)
 
       expect(updatedPartner).toEqual({
-        updatePartnerFlags: {
+        updateCMSLastAccessTimestamp: {
           partnerOrError: {
-            __typename: "updatePartnerFlagsFailure",
+            __typename: "UpdateCMSLastAccessTimestampFailure",
             mutationError: {
               message: "Error from API",
             },

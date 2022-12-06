@@ -6,9 +6,16 @@ import { ResolverContext } from "types/graphql"
 
 interface UpdateMessageMutationInputProps {
   conversationId: string
+  dismissed: boolean
   fromLastViewedMessageId: string
+  sellerOutcome: string
+  sellerOutcomeComment: string
 }
 
+/**
+ * Note that this mutation doesn't use our `thingOrError` pattern due because
+ * its a breaking change to existing clients.
+ */
 export default mutationWithClientMutationId<
   UpdateMessageMutationInputProps,
   any,
@@ -56,8 +63,14 @@ export default mutationWithClientMutationId<
     try {
       const updatedConversation = await conversationUpdateLoader(
         conversationId,
-        args
+        {
+          dismissed: args.dismissed,
+          from_last_viewed_message_id: args.fromLastViewedMessageId,
+          seller_outcome: args.sellerOutcome,
+          seller_outcome_comment: args.sellerOutcomeComment,
+        }
       )
+
       return updatedConversation
     } catch (error) {
       throw new Error(error.body?.error)

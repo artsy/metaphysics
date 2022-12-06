@@ -12,12 +12,12 @@ import {
 import Partner from "./partner"
 import { ResolverContext } from "types/graphql"
 
-interface UpdatePartnerFlagsMutationInputProps {
+interface UpdateCMSLastAccessTimestampMutationInputProps {
   id: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "updatePartnerFlagsSuccess",
+  name: "UpdateCMSLastAccessTimestampSuccess",
   isTypeOf: (data) => data._id,
   fields: () => ({
     partner: {
@@ -28,7 +28,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "updatePartnerFlagsFailure",
+  name: "UpdateCMSLastAccessTimestampFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -39,16 +39,16 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "updatePartnerFlagsResponseOrError",
+  name: "UpdateCMSLastAccessTimestampResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const updatePartnerFlagsMutation = mutationWithClientMutationId<
-  UpdatePartnerFlagsMutationInputProps,
+export const updateCMSLastAccessTimestampMutation = mutationWithClientMutationId<
+  UpdateCMSLastAccessTimestampMutationInputProps,
   any,
   ResolverContext
 >({
-  name: "UpdatePartnerFlagsMutation",
+  name: "UpdateCMSLastAccessTimestampMutation",
   description: "Updates the flags on a partner.",
   inputFields: {
     id: {
