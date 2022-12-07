@@ -75,24 +75,24 @@ export default (accessToken, opts) => {
   }
 
   return {
-    convectionTokenLoader,
-    convectionGraphQLLoader,
-    submissionsLoader: convectionLoader(`submissions`),
     assetCreateLoader: convectionLoader(`assets`, {}, { method: "POST" }),
+    convectionGraphQLLoader,
+    convectionTokenLoader,
+    createConsignmentInquiryLoader: convectionLoader(
+      "consignment_inquiries",
+      {},
+      { method: "POST" }
+    ),
     submissionCreateLoader: convectionLoader(
       `submissions`,
       {},
       { method: "POST" }
     ),
+    submissionsLoader: convectionLoader(`submissions`),
     submissionUpdateLoader: convectionLoader(
       (id) => `submissions/${id}`,
       {},
       { method: "PUT" }
-    ),
-    createConsignmentInquiryLoader: convectionLoader(
-      "consignment_inquiries",
-      {},
-      { method: "POST" }
     ),
   }
 }

@@ -4,7 +4,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 describe("CreateConsignmentInquiryMutation", () => {
   const consignmentInquiry = {
     id: 1,
-    gravity_user_id: "748383jjsjsjsj",
+    gravity_user_id: "1234gravity",
     email: "user@art.com",
     name: "User",
     message: "This is my message to you",
@@ -21,6 +21,7 @@ describe("CreateConsignmentInquiryMutation", () => {
         email: "user@art.com",
         name: "User",
         message: "This is my message to you",
+        userId: "1234gravity"
       }
     ) {
       consignmentInquiryOrError {
@@ -30,6 +31,7 @@ describe("CreateConsignmentInquiryMutation", () => {
             name
             email
             message
+            userId
           }
         }
         ... on ConsignmentInquiryMutationFailure {
@@ -52,6 +54,7 @@ describe("CreateConsignmentInquiryMutation", () => {
             id: 1,
             message: "This is my message to you",
             name: "User",
+            userId: "1234gravity",
           },
         },
       },

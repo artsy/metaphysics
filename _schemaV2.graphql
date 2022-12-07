@@ -5559,9 +5559,6 @@ type ConsignmentInquiry {
   # Email of inquirer
   email: String!
 
-  # gravity user id if user is logged in
-  gravityUserId: String
-
   # id of the ConsignmentInquiry
   id: Int!
 
@@ -5573,6 +5570,9 @@ type ConsignmentInquiry {
 
   # Phone number of the inquirer
   phoneNumber: String
+
+  # gravity user id if user is logged in
+  userId: String
 }
 
 type ConsignmentInquiryMutationFailure {
@@ -6886,10 +6886,10 @@ type CreateBidderPayload {
 input CreateConsignmentInquiryMutationInput {
   clientMutationId: String
   email: String!
-  gravityUserId: String
   message: String!
   name: String!
   phoneNumber: String
+  userId: String
 }
 
 type CreateConsignmentInquiryMutationPayload {

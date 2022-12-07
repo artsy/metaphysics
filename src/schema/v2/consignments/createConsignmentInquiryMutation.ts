@@ -20,7 +20,7 @@ const ConsignmentInquiryType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLInt),
       description: "id of the ConsignmentInquiry",
     },
-    gravityUserId: {
+    userId: {
       type: GraphQLString,
       description: "gravity user id if user is logged in",
     },
@@ -53,10 +53,12 @@ const MutationSuccessType = new GraphQLObjectType<any, ResolverContext>({
       type: ConsignmentInquiryType,
       resolve: (consignmentInquiry) => {
         const result = {}
-        const keys = Object.keys(consignmentInquiry)
+        const { gravity_user_id, ...otherFields } = consignmentInquiry
+        const keys = Object.keys(otherFields)
         keys.forEach((key) => {
           result[camelCase(key)] = consignmentInquiry[key]
         })
+        result["userId"] = consignmentInquiry.gravity_user_id ?? null
         return result
       },
     },
@@ -89,7 +91,7 @@ export const createConsignmentInquiryMutation = mutationWithClientMutationId<
   name: "CreateConsignmentInquiryMutation",
   description: "Make inquiry about consignments",
   inputFields: {
-    gravityUserId: {
+    userId: {
       type: GraphQLString,
     },
     name: {
@@ -112,7 +114,7 @@ export const createConsignmentInquiryMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: (
-    { name, email, gravityUserId, phoneNumber, message },
+    { name, email, userId, phoneNumber, message },
     { createConsignmentInquiryLoader }
   ) => {
     if (!createConsignmentInquiryLoader) {
@@ -122,7 +124,7 @@ export const createConsignmentInquiryMutation = mutationWithClientMutationId<
     return createConsignmentInquiryLoader({
       name,
       email,
-      gravity_user_id: gravityUserId,
+      gravity_user_id: userId,
       message,
       phone_number: phoneNumber,
     })
