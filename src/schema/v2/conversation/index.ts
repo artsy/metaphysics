@@ -297,6 +297,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     },
     buyerOutcomeAt: date,
     createdAt: date,
+    deletedAt: date,
     fromLastViewedMessageID: {
       type: GraphQLString,
       resolve: ({ from_last_viewed_message_id }) => from_last_viewed_message_id,
