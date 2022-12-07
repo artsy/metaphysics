@@ -580,5 +580,10 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    addSetItemLoader: gravityLoader(
+      (id) => `set/${id}/item`,
+      {},
+      { method: "POST" }
+    ),
   }
 }

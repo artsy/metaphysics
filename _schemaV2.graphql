@@ -79,6 +79,34 @@ type AddAssetToConsignmentSubmissionPayload {
   clientMutationId: String
 }
 
+type addOrderedSetItemFailure {
+  mutationError: GravityMutationError
+}
+
+input addOrderedSetItemMutationInput {
+  clientMutationId: String
+  geminiToken: String
+  id: String!
+  itemId: String!
+  itemType: String!
+  position: Int
+}
+
+type addOrderedSetItemMutationPayload {
+  clientMutationId: String
+
+  # On success: the ordered set item added.
+  orderedSetOrError: addOrderedSetItemResponseOrError
+}
+
+union addOrderedSetItemResponseOrError =
+    addOrderedSetItemFailure
+  | addOrderedSetItemSuccess
+
+type addOrderedSetItemSuccess {
+  setItem: OrderedSetItem
+}
+
 type addUserRoleFailure {
   mutationError: GravityMutationError
 }
@@ -10845,6 +10873,11 @@ type Mutation {
     # Parameters for AddAssetToConsignmentSubmission
     input: AddAssetToConsignmentSubmissionInput!
   ): AddAssetToConsignmentSubmissionPayload
+
+  # adds an item to an ordered set.
+  addOrderedSetItem(
+    input: addOrderedSetItemMutationInput!
+  ): addOrderedSetItemMutationPayload
 
   # Add a role associated with a user
   addUserRole(input: addUserRoleMutationInput!): addUserRoleMutationPayload
