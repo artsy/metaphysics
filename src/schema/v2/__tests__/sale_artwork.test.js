@@ -624,6 +624,39 @@ describe("SaleArtwork type", () => {
     })
   })
 
+  describe("lotLabel", () => {
+    const query = ({ trim }) =>
+      gql`
+        {
+          node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+            ... on SaleArtwork {
+              lotLabel(trim: ${trim})
+            }
+          }
+        }
+      `
+
+    beforeEach(() => {
+      saleArtwork.lot_label = "123456b - Curated by Cereus Art"
+    })
+
+    it("returns the lot label", async () => {
+      expect(await execute(query({ trim: false }), saleArtwork)).toEqual({
+        node: {
+          lotLabel: "123456b - Curated by Cereus Art",
+        },
+      })
+    })
+
+    it("trims away anything past the first alphanumeric chunk if trim option is enabled", async () => {
+      expect(await execute(query({ trim: true }), saleArtwork)).toEqual({
+        node: {
+          lotLabel: "123456b",
+        },
+      })
+    })
+  })
+
   describe("formattedStartDateTime", () => {
     const query = gql`
       {

@@ -315,7 +315,16 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       lotLabel: {
         type: GraphQLString,
-        resolve: ({ lot_label }) => lot_label,
+        args: {
+          trim: {
+            type: GraphQLBoolean,
+            description:
+              "Whether to trim anything past the first alphanumeric chunk",
+            defaultValue: false,
+          },
+        },
+        resolve: ({ lot_label }, { trim }) =>
+          trim ? lot_label?.match(/\S+/)?.shift() : lot_label,
       },
       lotID: {
         type: GraphQLString,
