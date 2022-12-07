@@ -86,11 +86,6 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    createUserInterestLoader: gravityLoader(
-      "me/user_interest",
-      {},
-      { method: "POST" }
-    ),
     creditCardLoader: gravityLoader((id) => `credit_card/${id}`),
     deleteSavedArtworkLoader: gravityLoader(
       (id) => `collection/saved-artwork/artwork/${id}`,
@@ -109,11 +104,6 @@ export default (accessToken, userID, opts) => {
     ),
     deleteCreditCardLoader: gravityLoader(
       (id) => `me/credit_card/${id}`,
-      {},
-      { method: "DELETE" }
-    ),
-    deleteUserInterestLoader: gravityLoader(
-      (id) => `me/user_interest/${id}`,
       {},
       { method: "DELETE" }
     ),
@@ -544,7 +534,27 @@ export default (accessToken, userID, opts) => {
     ),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
+    meCreateUserInterestLoader: gravityLoader(
+      "me/user_interest",
+      {},
+      { method: "POST" }
+    ),
+    meDeleteUserInterestLoader: gravityLoader(
+      (id) => `me/user_interest/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     meUserInterestsLoader: gravityLoader("me/user_interests"),
+    createUserInterestLoader: gravityLoader(
+      "user_interest",
+      {},
+      { method: "POST" }
+    ),
+    deleteUserInterestLoader: gravityLoader(
+      (id) => `user_interest/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     userInterestsLoader: gravityLoader(
       (id) => `user_interests?user_id=${id}`,
       {},

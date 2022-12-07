@@ -10,7 +10,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { userInterestType } from "../me/userInterests"
+import { userInterestType } from "../userInterests"
 
 export const CollectorProfileFields: GraphQLFieldConfigMap<
   any,

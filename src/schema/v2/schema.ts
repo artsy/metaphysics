@@ -123,8 +123,10 @@ import VanityURLEntity from "./vanityURLEntity"
 import FairOrganizer from "./fair_organizer"
 import { externalField } from "./External/External"
 import { createUserInterestMutation } from "./me/createUserInterestMutation"
+import { createUserInterestForUser } from "./users/createUserInterestForUserMutation"
 import { page } from "./page"
 import { deleteUserInterestMutation } from "./me/deleteUserInterestMutation"
+import { deleteUserInterestForUser } from "./users/deleteUserInterestForUserMutation"
 import { PhoneNumber } from "./phoneNumber"
 import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
 import { linkAuthenticationMutation } from "./me/linkAuthenticationMutation"
@@ -302,11 +304,13 @@ export default new GraphQLSchema({
       createUserAdminNote: createUserAdminNoteMutation,
       deleteUserAdminNote: deleteUserAdminNoteMutation,
       createUserInterest: createUserInterestMutation,
+      createUserInterestForUser: createUserInterestForUser,
       deleteBankAccount: deleteBankAccountMutation,
       deleteConversation: deleteConversationMutation,
       deleteCreditCard: deleteCreditCardMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteUserInterest: deleteUserInterestMutation,
+      deleteUserInterestForUser: deleteUserInterestForUser,
       deleteUserRole: deleteUserRoleMutation,
       dislikeArtwork: dislikeArtworkMutation,
       endSale: endSaleMutation,
