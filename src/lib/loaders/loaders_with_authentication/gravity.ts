@@ -40,7 +40,6 @@ export default (accessToken, userID, opts) => {
       { user_id: userID },
       { headers: true }
     ),
-
     collectionLoader: gravityLoader((id) => `collection/${id}`, {
       user_id: userID,
     }),
@@ -93,7 +92,6 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     creditCardLoader: gravityLoader((id) => `credit_card/${id}`),
-
     deleteArtworkEditionSetLoader: gravityLoader<
       any,
       { artworkId: string; editionSetId: string }
@@ -207,7 +205,6 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-
     followedArtistsArtworksLoader: gravityLoader(
       "me/follow/artists/artworks",
       {},
