@@ -5555,6 +5555,34 @@ type ConsignmentEdge {
   node: Consignment
 }
 
+type ConsignmentInquiry {
+  # Email of inquirer
+  email: String!
+
+  # gravity user id if user is logged in
+  gravityUserId: String
+
+  # id of the ConsignmentInquiry
+  id: Int!
+
+  # Message of the inquirer
+  message: String!
+
+  # Name of the inquirer
+  name: String!
+
+  # Phone number of the inquirer
+  phoneNumber: String
+}
+
+type ConsignmentInquiryMutationFailure {
+  mutationError: GravityMutationError
+}
+
+type ConsignmentInquiryMutationSuccess {
+  consignmentInquiry: ConsignmentInquiry
+}
+
 # Consignment Offer
 type ConsignmentOffer {
   commissionPercentWhole: Int
@@ -6854,6 +6882,24 @@ type CreateBidderPayload {
   bidder: Bidder
   clientMutationId: String
 }
+
+input CreateConsignmentInquiryMutationInput {
+  clientMutationId: String
+  email: String!
+  gravityUserId: String
+  message: String!
+  name: String!
+  phoneNumber: String
+}
+
+type CreateConsignmentInquiryMutationPayload {
+  clientMutationId: String
+  consignmentInquiryOrError: CreateConsignmentInquiryMutationType
+}
+
+union CreateConsignmentInquiryMutationType =
+    ConsignmentInquiryMutationFailure
+  | ConsignmentInquiryMutationSuccess
 
 input CreateGeminiEntryForAssetInput {
   clientMutationId: String
@@ -10990,6 +11036,11 @@ type Mutation {
 
   # Creates a bidder position
   createBidderPosition(input: BidderPositionInput!): BidderPositionPayload
+
+  # Make inquiry about consignments
+  createConsignmentInquiry(
+    input: CreateConsignmentInquiryMutationInput!
+  ): CreateConsignmentInquiryMutationPayload
   createConsignmentOffer(
     # Parameters for CreateOfferMutation
     input: CreateOfferMutationInput!

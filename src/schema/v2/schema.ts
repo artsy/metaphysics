@@ -162,6 +162,7 @@ import updateMessageMutation from "./conversation/updateMessageMutation"
 import deleteConversationMutation from "./conversation/deleteConversationMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { updateCMSLastAccessTimestampMutation } from "./partner/updateCMSLastAccessTimestampMutation"
+import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -297,6 +298,7 @@ export default new GraphQLSchema({
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
       createCreditCard: createCreditCardMutation,
+      createConsignmentInquiry: createConsignmentInquiryMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createUserAdminNote: createUserAdminNoteMutation,

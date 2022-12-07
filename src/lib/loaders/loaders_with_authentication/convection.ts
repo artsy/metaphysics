@@ -89,5 +89,10 @@ export default (accessToken, opts) => {
       {},
       { method: "PUT" }
     ),
+    createConsignmentInquiryLoader: convectionLoader(
+      "consignment_inquiries",
+      {},
+      { method: "POST" }
+    ),
   }
 }
