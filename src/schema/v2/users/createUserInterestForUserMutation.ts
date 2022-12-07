@@ -6,6 +6,7 @@ import {
   UserInterest,
   UserInterestCategory,
   userInterestCategoryEnum,
+  UserInterestInterestType,
   userInterestInterestTypeEnum,
   UserInterestOwnerType,
   userInterestOwnerTypeEnum,
@@ -18,14 +19,12 @@ import {
 } from "lib/gravityErrorHandler"
 
 interface Input {
-  interestId: string
-  interestType: "Artist" | "Gene"
-  category: UserInterestCategory
   body?: string
-  userId?: string
-  ownerType?: UserInterestOwnerType
-  anonymousSessionId?: string
-  sessionId?: string
+  category: UserInterestCategory
+  interestId: string
+  interestType: UserInterestInterestType
+  ownerType: UserInterestOwnerType
+  userId: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -61,16 +60,14 @@ export const createUserInterestForUser = mutationWithClientMutationId<
   ResolverContext
 >({
   name: "CreateUserInterestForUser",
-  description: "Creates a UserInterest for another user.",
+  description: "Creates a UserInterest for a user.",
   inputFields: {
-    userId: { type: new GraphQLNonNull(GraphQLString) },
+    body: { type: GraphQLString, description: "Optional body for a note." },
+    category: { type: new GraphQLNonNull(userInterestCategoryEnum) },
     interestId: { type: new GraphQLNonNull(GraphQLString) },
     interestType: { type: new GraphQLNonNull(userInterestInterestTypeEnum) },
     ownerType: { type: new GraphQLNonNull(userInterestOwnerTypeEnum) },
-    category: { type: new GraphQLNonNull(userInterestCategoryEnum) },
-    body: { type: GraphQLString, description: "Optional body for a note." },
-    anonymousSessionId: { type: GraphQLString },
-    sessionID: { type: GraphQLString },
+    userId: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
     userInterestOrError: {

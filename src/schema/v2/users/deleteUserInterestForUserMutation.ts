@@ -3,7 +3,6 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { UserInterest, userInterestType } from "../userInterests"
-import { snakeCase } from "lodash"
 import {
   formatGravityError,
   GravityMutationErrorType,
@@ -12,8 +11,6 @@ import { GraphQLUnionType } from "graphql"
 
 interface Input {
   id: string
-  anonymousSessionId?: string
-  sessionId?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -55,8 +52,6 @@ export const deleteUserInterestForUser = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the UserInterest to delete.",
     },
-    anonymousSessionId: { type: GraphQLString },
-    sessionID: { type: GraphQLString },
   },
   outputFields: {
     userInterestOrError: {
@@ -65,24 +60,15 @@ export const deleteUserInterestForUser = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (args, { deleteUserInterestLoader }) => {
+  mutateAndGetPayload: async ({ id }, { deleteUserInterestLoader }) => {
     if (!deleteUserInterestLoader) {
       throw new Error(
         "A X-Access-Token header is required to perform this action."
       )
     }
 
-    // snake_case keys for Gravity (keys are the same otherwise)
-    const { id, ...gravityOptions } = Object.keys(args).reduce(
-      (acc, key) => ({ ...acc, [snakeCase(key)]: args[key] }),
-      {} as GravityInput
-    )
-
     try {
-      const userInterest: UserInterest = await deleteUserInterestLoader(
-        id,
-        gravityOptions
-      )
+      const userInterest: UserInterest = await deleteUserInterestLoader(id)
 
       return userInterest
     } catch (err) {
@@ -95,9 +81,3 @@ export const deleteUserInterestForUser = mutationWithClientMutationId<
     }
   },
 })
-
-interface GravityInput {
-  id: string
-  anonymous_session_id?: string
-  session_id?: string
-}

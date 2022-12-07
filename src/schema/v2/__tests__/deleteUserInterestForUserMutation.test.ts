@@ -59,7 +59,7 @@ describe("deleteUserInterestForUserMutation", () => {
     it("returns the deleted user interest", async () => {
       const res = await runAuthenticatedQuery(mutation, context)
 
-      expect(mockDeleteUserInterestLoader).toBeCalledWith("example", {})
+      expect(mockDeleteUserInterestLoader).toBeCalledWith("example")
 
       expect(res).toEqual({
         deleteUserInterestForUser: {

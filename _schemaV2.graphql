@@ -7096,8 +7096,6 @@ type createUserInterestForUserFailure {
 }
 
 input CreateUserInterestForUserInput {
-  anonymousSessionId: String
-
   # Optional body for a note.
   body: String
   category: UserInterestCategory!
@@ -7105,7 +7103,6 @@ input CreateUserInterestForUserInput {
   interestId: String!
   interestType: UserInterestInterestType!
   ownerType: UserInterestOwnerType!
-  sessionID: String
   userId: String!
 }
 
@@ -7446,12 +7443,10 @@ type deleteUserInterestForUserFailure {
 }
 
 input DeleteUserInterestForUserInput {
-  anonymousSessionId: String
   clientMutationId: String
 
   # The ID of the UserInterest to delete.
   id: String!
-  sessionID: String
 }
 
 type DeleteUserInterestForUserPayload {
@@ -11066,7 +11061,7 @@ type Mutation {
     input: CreateUserInterestMutationInput!
   ): CreateUserInterestMutationPayload
 
-  # Creates a UserInterest for another user.
+  # Creates a UserInterest for a user.
   createUserInterestForUser(
     input: CreateUserInterestForUserInput!
   ): CreateUserInterestForUserPayload

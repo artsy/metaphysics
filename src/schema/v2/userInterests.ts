@@ -20,6 +20,8 @@ export type UserInterestCategory =
 
 export type UserInterestOwnerType = "CollectorProfile" | "UserSaleProfile"
 
+export type UserInterestInterestType = "Artist" | "Gene"
+
 export interface UserInterest {
   body?: string
   category: UserInterestCategory
