@@ -92,6 +92,7 @@ import ObjectIdentification from "./object_identification"
 import { OrderedSet } from "./OrderedSet"
 import { createOrderedSetMutation } from "./OrderedSet/createOrderedSetMutation"
 import { updateOrderedSetMutation } from "./OrderedSet/updateOrderedSetMutation"
+import { deleteOrderedSetMutation } from "./OrderedSet/deleteOrderedSetMutation"
 import OrderedSets from "./ordered_sets"
 import Partner from "schema/v2/partner/partner"
 import PartnerArtworks from "./partner/partnerArtworks"
@@ -302,6 +303,7 @@ export default new GraphQLSchema({
       createUserInterest: createUserInterestMutation,
       createOrderedSet: createOrderedSetMutation,
       updateOrderedSet: updateOrderedSetMutation,
+      deleteOrderedSet: deleteOrderedSetMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCreditCard: deleteCreditCardMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,

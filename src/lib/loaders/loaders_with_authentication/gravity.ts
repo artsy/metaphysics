@@ -575,5 +575,10 @@ export default (accessToken, userID, opts) => {
     ),
     createSetLoader: gravityLoader("set", {}, { method: "POST" }),
     updateSetLoader: gravityLoader((id) => `set/${id}`, {}, { method: "PUT" }),
+    deleteSetLoader: gravityLoader(
+      (id) => `set/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
   }
 }
