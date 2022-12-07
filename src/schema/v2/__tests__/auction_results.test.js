@@ -303,9 +303,10 @@ describe("Artist type", () => {
 
         const data = await runQuery(query, context)
 
-        expect(context.auctionLotsLoader).toHaveBeenCalledWith(
-          defaultAuctionLotsArgs
-        )
+        expect(context.auctionLotsLoader).toHaveBeenCalledWith({
+          ...defaultAuctionLotsArgs,
+          upcoming: true,
+        })
 
         expect(data).toEqual({
           artist: {
@@ -326,7 +327,7 @@ describe("Artist type", () => {
         const query = `
         {
           artist(id: "percy-z") {
-            auctionResultsConnection(recordsTrusted: true, first: 1, showUpcoming: true) {
+            auctionResultsConnection(recordsTrusted: true, first: 1, includeUpcoming: true) {
               edges {
                 node {
                   internalID
@@ -367,7 +368,7 @@ describe("Artist type", () => {
         const query = `
         {
           artist(id: "percy-z") {
-            auctionResultsConnection(recordsTrusted: true, first: 1, showUpcoming: false) {
+            auctionResultsConnection(recordsTrusted: true, first: 1, includeUpcoming: false) {
               edges {
                 node {
                   internalID

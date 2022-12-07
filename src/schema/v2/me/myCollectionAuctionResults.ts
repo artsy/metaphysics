@@ -32,6 +32,11 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
       type: new GraphQLList(GraphQLString),
       description: "Filter auction results by category (medium)",
     },
+    includeUpcoming: {
+      type: GraphQLBoolean,
+      defaultValue: true,
+      description: "Include upcoming auction results",
+    },
     recordsTrusted: {
       type: GraphQLBoolean,
       defaultValue: false,
@@ -80,7 +85,7 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
         categories,
       } = convertConnectionArgsToGravityArgs(options)
 
-      const defaultAuctionLotsLoaderArgs = {
+      const auctionLotsLoaderArgs = {
         page,
         size,
         artist_ids: artistIds,
@@ -91,23 +96,12 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
         allow_empty_created_dates: options.allowEmptyCreatedDates,
         sizes,
         sort: options.sort,
+        upcoming: options.includeUpcoming,
       }
 
-      let optionalDiffusionArgs = {}
-
-      // We should only inject upcoming if it's explicitly set to true or false
-      // See https://github.com/artsy/diffusion/pull/653
-      if (options.showUpcoming === true || options.showUpcoming === false) {
-        optionalDiffusionArgs = {
-          ...optionalDiffusionArgs,
-          upcoming: options.showUpcoming,
-        }
-      }
-
-      const { total_count, _embedded } = await auctionLotsLoader({
-        ...defaultAuctionLotsLoaderArgs,
-        ...optionalDiffusionArgs,
-      })
+      const { total_count, _embedded } = await auctionLotsLoader(
+        auctionLotsLoaderArgs
+      )
 
       const totalPages = Math.ceil(total_count / size)
 
