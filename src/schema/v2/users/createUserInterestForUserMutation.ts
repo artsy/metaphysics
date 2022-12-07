@@ -12,7 +12,6 @@ import {
   userInterestOwnerTypeEnum,
   userInterestType,
 } from "../userInterests"
-import { snakeCase } from "lodash"
 import {
   formatGravityError,
   GravityMutationErrorType,
@@ -78,19 +77,20 @@ export const createUserInterestForUser = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (args, { createUserInterestLoader }) => {
     if (!createUserInterestLoader) {
-      throw new Error("You need to be signed in to perform this action")
+      throw new Error(
+        "A X-Access-Token header is required to perform this action."
+      )
     }
 
-    // snake_case keys for Gravity (keys are the same otherwise)
-    const userInterestInput = Object.keys(args).reduce(
-      (acc, key) => ({ ...acc, [snakeCase(key)]: args[key] }),
-      {}
-    )
-
     try {
-      const userInterest: UserInterest = await createUserInterestLoader(
-        userInterestInput
-      )
+      const userInterest: UserInterest = await createUserInterestLoader({
+        body: args.body,
+        category: args.category,
+        interest_id: args.interestId,
+        interest_type: args.interestType,
+        owner_type: args.ownerType,
+        user_id: args.userId,
+      })
 
       return userInterest
     } catch (err) {
