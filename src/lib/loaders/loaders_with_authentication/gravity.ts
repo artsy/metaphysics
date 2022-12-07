@@ -9,24 +9,8 @@ export default (accessToken, userID, opts) => {
   )
 
   return {
-    identityVerificationsLoader: gravityLoader(
-      "identity_verifications",
-      {},
-      { headers: true }
-    ),
-    identityVerificationOverridesLoader: gravityLoader(
-      (id) => `identity_verification/${id}/overrides`
-    ),
-    createIdentityVerificationOverrideLoader: gravityLoader(
-      (id) => `identity_verification/${id}/override`,
-      {},
-      { method: "POST" }
-    ),
-    identityVerificationScanReferencesLoader: gravityLoader(
-      (id) => `identity_verification/${id}/scan_references`
-    ),
-    sendIdentityVerificationEmailLoader: gravityLoader(
-      `identity_verification`,
+    addUserRoleLoader: gravityLoader<any, { id: string; role_type: string }>(
+      ({ id, role_type }) => `user/${id}/roles/${role_type}`,
       {},
       { method: "POST" }
     ),
@@ -35,14 +19,8 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    mergeArtistLoader: gravityLoader("artists/merge", {}, { method: "POST" }),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
-    notificationPreferencesLoader: gravityLoader("notification_preferences"),
-    updateNotificationPreferencesLoader: gravityLoader(
-      "notification_preferences",
-      {},
-      { method: "POST" }
-    ),
+    authenticatedArtistLoader: gravityLoader((id) => `artist/${id}`),
     authenticatedArtworkVersionLoader: gravityLoader(
       (id) => `artwork_version/${id}`
     ),
@@ -52,13 +30,13 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     bankAccountLoader: gravityLoader((id) => `bank_account/${id}`),
-    collectionArtworksLoader: gravityLoader(
-      (id) => `collection/${id}/artworks`,
+    collectionArtistsLoader: gravityLoader(
+      (id) => `collection/${id}/artists`,
       { user_id: userID },
       { headers: true }
     ),
-    collectionArtistsLoader: gravityLoader(
-      (id) => `collection/${id}/artists`,
+    collectionArtworksLoader: gravityLoader(
+      (id) => `collection/${id}/artworks`,
       { user_id: userID },
       { headers: true }
     ),
@@ -75,6 +53,18 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createArtistLoader: gravityLoader("artist", {}, { method: "POST" }),
+    createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
+    createArtworkEditionSetLoader: gravityLoader(
+      (artworkID) => `artwork/${artworkID}/edition_set`,
+      {},
+      { method: "POST" }
+    ),
+    createArtworkImageLoader: gravityLoader(
+      (id) => `artwork/${id}/image`,
+      {},
+      { method: "POST" }
+    ),
     createBidderLoader: gravityLoader("bidder", {}, { method: "POST" }),
     createBidderPositionLoader: gravityLoader(
       "me/bidder_position",
@@ -86,14 +76,41 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createIdentityVerificationOverrideLoader: gravityLoader(
+      (id) => `identity_verification/${id}/override`,
+      {},
+      { method: "POST" }
+    ),
+    createUserAdminNoteLoader: gravityLoader(
+      (id) => `/user/${id}/admin_note`,
+      {},
+      { method: "POST" }
+    ),
+    createUserInterestLoader: gravityLoader(
+      "user_interest",
+      {},
+      { method: "POST" }
+    ),
     creditCardLoader: gravityLoader((id) => `credit_card/${id}`),
-    deleteSavedArtworkLoader: gravityLoader(
-      (id) => `collection/saved-artwork/artwork/${id}`,
+    deleteArtworkEditionSetLoader: gravityLoader<
+      any,
+      { artworkId: string; editionSetId: string }
+    >(
+      ({ artworkId, editionSetId }) =>
+        `artwork/${artworkId}/edition_set/${editionSetId}`,
       {},
       { method: "DELETE" }
     ),
-    deleteDislikedArtworkLoader: gravityLoader(
-      (id) => `collection/disliked-artwork/artwork/${id}`,
+    deleteArtworkImageLoader: gravityLoader<
+      any,
+      { artworkID: string; imageID: string }
+    >(
+      ({ artworkID, imageID }) => `artwork/${artworkID}/image/${imageID}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deleteArtworkLoader: gravityLoader(
+      (id) => `artwork/${id}`,
       {},
       { method: "DELETE" }
     ),
@@ -102,16 +119,44 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deleteCollectorProfileIconLoader: gravityLoader(
+      "me/collector_profile/icon",
+      {},
+      { method: "DELETE" }
+    ),
     deleteCreditCardLoader: gravityLoader(
       (id) => `me/credit_card/${id}`,
       {},
       { method: "DELETE" }
     ),
-    deleteUserAccountLoader: gravityLoader("me", {}, { method: "DELETE" }),
-    endSaleLoader: gravityLoader(
-      (id) => `sale/${id}/end_sale`,
+    deleteDislikedArtworkLoader: gravityLoader(
+      (id) => `collection/disliked-artwork/artwork/${id}`,
       {},
-      { method: "PUT" }
+      { method: "DELETE" }
+    ),
+    deleteSavedArtworkLoader: gravityLoader(
+      (id) => `collection/saved-artwork/artwork/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deleteUserAccountLoader: gravityLoader("me", {}, { method: "DELETE" }),
+    deleteUserAdminNoteLoader: gravityLoader<
+      any,
+      { id: string; admin_note_id: string }
+    >(
+      ({ id, admin_note_id }) => `user/${id}/admin_note/${admin_note_id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deleteUserInterestLoader: gravityLoader(
+      (id) => `user_interest/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deleteUserRoleLoader: gravityLoader<any, { id: string; role_type: string }>(
+      ({ id, role_type }) => `user/${id}/roles/${role_type}`,
+      {},
+      { method: "DELETE" }
     ),
     dislikeArtworkLoader: gravityLoader(
       (id) => `collection/disliked-artwork/artwork/${id}`,
@@ -129,12 +174,36 @@ export default (accessToken, userID, opts) => {
         entityIDKeyPath: "_id",
       }
     ),
+    endSaleLoader: gravityLoader(
+      (id) => `sale/${id}/end_sale`,
+      {},
+      { method: "PUT" }
+    ),
     filterArtworksLoader: gravityLoader("filter/artworks"),
-    authenticatedArtistLoader: gravityLoader((id) => `artist/${id}`),
     followArtistLoader: gravityLoader(
       "me/follow/artist",
       {},
       { method: "POST" }
+    ),
+    followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
+    followProfileLoader: gravityLoader(
+      "me/follow/profile",
+      {},
+      { method: "POST" }
+    ),
+    followShowLoader: gravityLoader("follow_shows", {}, { method: "POST" }),
+    followedArtistLoader: trackedEntityLoaderFactory(
+      gravityLoader("me/follow/artists"),
+      {
+        paramKey: "artists",
+        trackingKey: "is_followed",
+        entityKeyPath: "artist",
+      }
+    ),
+    followedArtistsLoader: gravityLoader(
+      "me/follow/artists",
+      {},
+      { headers: true }
     ),
     followedArtistsArtworksLoader: gravityLoader(
       "me/follow/artists/artworks",
@@ -146,19 +215,6 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    followedArtistsLoader: gravityLoader(
-      "me/follow/artists",
-      {},
-      { headers: true }
-    ),
-    followedArtistLoader: trackedEntityLoaderFactory(
-      gravityLoader("me/follow/artists"),
-      {
-        paramKey: "artists",
-        trackingKey: "is_followed",
-        entityKeyPath: "artist",
-      }
-    ),
     followedGeneLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/genes"),
       {
@@ -167,24 +223,18 @@ export default (accessToken, userID, opts) => {
         entityKeyPath: "gene",
       }
     ),
-    followedGenesLoader: gravityLoader<
-      { gene: { id: string; name: string } }[]
-    >("me/follow/genes", {}, { headers: true }),
-    followedProfilesArtworksLoader: gravityLoader(
-      "me/follow/profiles/artworks",
+    followedFairsLoader: gravityLoader(
+      "/me/follow/profiles",
       {},
       { headers: true }
     ),
-    followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
-    unfollowGeneLoader: gravityLoader(
-      (geneID) => `me/follow/gene/${geneID}`,
+    followedGenesLoader: gravityLoader<
+      { gene: { id: string; name: string } }[]
+    >("me/follow/genes", {}, { headers: true }),
+    followedPartnersLoader: gravityLoader(
+      "/me/follow/profiles",
       {},
-      { method: "DELETE" }
-    ),
-    followProfileLoader: gravityLoader(
-      "me/follow/profile",
-      {},
-      { method: "POST" }
+      { headers: true }
     ),
     followedProfileLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/profiles"),
@@ -194,9 +244,11 @@ export default (accessToken, userID, opts) => {
         entityKeyPath: "profile",
       }
     ),
-    followShowLoader: gravityLoader("follow_shows", {}, { method: "POST" }),
-    unfollowShowLoader: gravityLoader("follow_shows", {}, { method: "DELETE" }),
-    followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
+    followedProfilesArtworksLoader: gravityLoader(
+      "me/follow/profiles/artworks",
+      {},
+      { headers: true }
+    ),
     followedShowLoader: trackedEntityLoaderFactory(
       gravityLoader("follow_shows"),
       {
@@ -206,19 +258,23 @@ export default (accessToken, userID, opts) => {
         entityIDKeyPath: "_id",
       }
     ),
-    followedFairsLoader: gravityLoader(
-      "/me/follow/profiles",
-      {},
-      { headers: true }
-    ),
-    followedPartnersLoader: gravityLoader(
-      "/me/follow/profiles",
-      {},
-      { headers: true }
-    ),
+    followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
     homepageModulesLoader: gravityLoader("me/modules"),
     homepageSuggestedArtworksLoader: gravityLoader(
       "me/suggested/artworks/homepage"
+    ),
+
+    identityVerificationOverridesLoader: gravityLoader(
+      (id) => `identity_verification/${id}/overrides`
+    ),
+
+    identityVerificationScanReferencesLoader: gravityLoader(
+      (id) => `identity_verification/${id}/scan_references`
+    ),
+    identityVerificationsLoader: gravityLoader(
+      "identity_verifications",
+      {},
+      { headers: true }
     ),
     inquiryIntroductionLoader: gravityLoader(
       "me/inquiry_introduction",
@@ -230,11 +286,6 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    submitArtworkInquiryRequestLoader: gravityLoader(
-      "me/artwork_inquiry_request",
-      {},
-      { method: "POST" }
-    ),
     linkAuthenticationLoader: gravityLoader(
       (provider) => `me/authentications/${provider}`,
       {},
@@ -242,6 +293,7 @@ export default (accessToken, userID, opts) => {
     ),
     lotStandingLoader: gravityLoader("me/lot_standings", { size: 100 }),
     matchUsersLoader: gravityLoader("match/users", {}, { headers: true }),
+    mergeArtistLoader: gravityLoader("artists/merge", {}, { method: "POST" }),
     meBankAccountsLoader: gravityLoader(
       "me/bank_accounts",
       {},
@@ -255,71 +307,74 @@ export default (accessToken, userID, opts) => {
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     meBiddersLoader: gravityLoader("me/bidders"),
     meCollectorProfileLoader: gravityLoader("me/collector_profile"),
+    meCreateUserInterestLoader: gravityLoader(
+      "me/user_interest",
+      {},
+      { method: "POST" }
+    ),
     meCreditCardsLoader: gravityLoader(
       "me/credit_cards",
       {},
       { headers: true }
     ),
+    meDeleteUserInterestLoader: gravityLoader(
+      (id) => `me/user_interest/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
-    createArtistLoader: gravityLoader("artist", {}, { method: "POST" }),
-    createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
-    createArtworkImageLoader: gravityLoader(
-      (id) => `artwork/${id}/image`,
-      {},
-      { method: "POST" }
-    ),
-    updateArtworkLoader: gravityLoader(
-      (id) => `artwork/${id}`,
+    meUpdateCollectorProfileLoader: gravityLoader(
+      "me/collector_profile",
       {},
       { method: "PUT" }
     ),
-    deleteArtworkLoader: gravityLoader(
-      (id) => `artwork/${id}`,
-      {},
-      { method: "DELETE" }
-    ),
-    deleteArtworkImageLoader: gravityLoader<
-      any,
-      { artworkID: string; imageID: string }
-    >(
-      ({ artworkID, imageID }) => `artwork/${artworkID}/image/${imageID}`,
-      {},
-      { method: "DELETE" }
-    ),
-    createArtworkEditionSetLoader: gravityLoader(
-      (artworkID) => `artwork/${artworkID}/edition_set`,
-      {},
-      { method: "POST" }
-    ),
-    updateArtworkEditionSetLoader: gravityLoader<
-      any,
-      { artworkId: string; editionSetId: string }
-    >(
-      ({ artworkId, editionSetId }) =>
-        `artwork/${artworkId}/edition_set/${editionSetId}`,
-      {},
-      { method: "PUT" }
-    ),
-    deleteArtworkEditionSetLoader: gravityLoader<
-      any,
-      { artworkId: string; editionSetId: string }
-    >(
-      ({ artworkId, editionSetId }) =>
-        `artwork/${artworkId}/edition_set/${editionSetId}`,
-      {},
-      { method: "DELETE" }
-    ),
-    updateNotificationsLoader: gravityLoader(
-      "me/notifications",
-      {},
-      { method: "PUT" }
-    ),
+    meUserInterestsLoader: gravityLoader("me/user_interests"),
+    notificationPreferencesLoader: gravityLoader("notification_preferences"),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
-    partnerSearchShowsLoader: gravityLoader(
-      (id) => `/match/partner/${id}/shows`,
+    partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
+    partnerArtistDocumentsLoader: gravityLoader<
+      any,
+      { partnerID: string; artistID: string }
+    >(
+      ({ partnerID, artistID }) =>
+        `partner/${partnerID}/artist/${artistID}/documents`,
       {},
       { headers: true }
+    ),
+    partnerArtistsAllLoader: gravityLoader(
+      (id) => `partner/${id}/partner_artists/all`,
+      {},
+      { headers: true }
+    ),
+    partnerArtworksAllLoader: gravityLoader(
+      (id) => `partner/${id}/artworks/all`,
+      {},
+      { headers: true }
+    ),
+    partnerArtworksLoader: gravityLoader(
+      (id) => `partner/${id}/artworks`,
+      {},
+      { headers: true }
+    ),
+    partnerDocumentsLoader: gravityLoader<any, { id: string }>(
+      (id) => `partner/${id}/documents`,
+      {},
+      { headers: true }
+    ),
+    partnerInquirerCollectorProfileLoader: gravityLoader<
+      any,
+      { partnerId: string; inquiryId: string }
+    >(
+      ({ partnerId, inquiryId }) =>
+        `partner/${partnerId}/inquiry_request/${inquiryId}/collector_profile`
+    ),
+    partnerInquiryRequestLoader: gravityLoader<
+      any,
+      { partnerId: string; inquiryId: string }
+    >(
+      ({ partnerId, inquiryId }) =>
+        `partner/${partnerId}/inquiry_request/${inquiryId}`
     ),
     partnerSearchArtistsLoader: gravityLoader(
       (id) => `/match/partner/${id}/artists`,
@@ -331,40 +386,8 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
-    partnerArtistDocumentsLoader: gravityLoader<
-      any,
-      { partnerID: string; artistID: string }
-    >(
-      ({ partnerID, artistID }) =>
-        `partner/${partnerID}/artist/${artistID}/documents`,
-      {},
-      { headers: true }
-    ),
-    partnerArtworksLoader: gravityLoader(
-      (id) => `partner/${id}/artworks`,
-      {},
-      { headers: true }
-    ),
-    partnerArtworksAllLoader: gravityLoader(
-      (id) => `partner/${id}/artworks/all`,
-      {},
-      { headers: true }
-    ),
-    partnerArtistsAllLoader: gravityLoader(
-      (id) => `partner/${id}/partner_artists/all`,
-      {},
-      { headers: true }
-    ),
-    partnerInquiryRequestLoader: gravityLoader<
-      any,
-      { partnerId: string; inquiryId: string }
-    >(
-      ({ partnerId, inquiryId }) =>
-        `partner/${partnerId}/inquiry_request/${inquiryId}`
-    ),
-    partnerDocumentsLoader: gravityLoader<any, { id: string }>(
-      (id) => `partner/${id}/documents`,
+    partnerSearchShowsLoader: gravityLoader(
+      (id) => `/match/partner/${id}/shows`,
       {},
       { headers: true }
     ),
@@ -377,23 +400,6 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    updatePartnerArtworksLoader: gravityLoader(
-      (id) => `partner/${id}/artworks`,
-      {},
-      { method: "PUT" }
-    ),
-    updatePartnerFlagsLoader: gravityLoader(
-      (id) => `partner/${id}/partner_flags`,
-      {},
-      { method: "PUT" }
-    ),
-    partnerInquirerCollectorProfileLoader: gravityLoader<
-      any,
-      { partnerId: string; inquiryId: string }
-    >(
-      ({ partnerId, inquiryId }) =>
-        `partner/${partnerId}/inquiry_request/${inquiryId}/collector_profile`
-    ),
     partnerShowDocumentsLoader: gravityLoader<
       any,
       { partnerID: string; showID: string }
@@ -404,6 +410,7 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     popularArtistsLoader: gravityLoader("artists/popular"),
+    purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
     recordArtworkViewLoader: gravityLoader(
       "me/recently_viewed_artworks",
       {},
@@ -453,7 +460,17 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
+    sendIdentityVerificationEmailLoader: gravityLoader(
+      `identity_verification`,
+      {},
+      { method: "POST" }
+    ),
     showLoader: gravityLoader((id) => `show/${id}`),
+    submitArtworkInquiryRequestLoader: gravityLoader(
+      "me/artwork_inquiry_request",
+      {},
+      { method: "POST" }
+    ),
     suggestedArtistsLoader: gravityLoader(
       "me/suggested/artists",
       {},
@@ -469,18 +486,33 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    unfollowGeneLoader: gravityLoader(
+      (geneID) => `me/follow/gene/${geneID}`,
+      {},
+      { method: "DELETE" }
+    ),
     unfollowProfileLoader: gravityLoader(
       (id) => `me/follow/profile/${id}`,
       {},
       { method: "DELETE" }
     ),
-    meUpdateCollectorProfileLoader: gravityLoader(
-      "me/collector_profile",
+    unfollowShowLoader: gravityLoader("follow_shows", {}, { method: "DELETE" }),
+    unlinkAuthenticationLoader: gravityLoader(
+      (provider) => `me/authentications/${provider}`,
+      {},
+      { method: "DELETE" }
+    ),
+    updateArtworkEditionSetLoader: gravityLoader<
+      any,
+      { artworkId: string; editionSetId: string }
+    >(
+      ({ artworkId, editionSetId }) =>
+        `artwork/${artworkId}/edition_set/${editionSetId}`,
       {},
       { method: "PUT" }
     ),
-    updateCollectorProfileLoader: gravityLoader(
-      (id) => `collector_profile/${id}`,
+    updateArtworkLoader: gravityLoader(
+      (id) => `artwork/${id}`,
       {},
       { method: "PUT" }
     ),
@@ -489,97 +521,42 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
-    deleteCollectorProfileIconLoader: gravityLoader(
-      "me/collector_profile/icon",
+    updateCollectorProfileLoader: gravityLoader(
+      (id) => `collector_profile/${id}`,
       {},
-      { method: "DELETE" }
-    ),
-    unlinkAuthenticationLoader: gravityLoader(
-      (provider) => `me/authentications/${provider}`,
-      {},
-      { method: "DELETE" }
+      { method: "PUT" }
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
     updateMyPasswordLoader: gravityLoader("me/password", {}, { method: "PUT" }),
+    updateNotificationPreferencesLoader: gravityLoader(
+      "notification_preferences",
+      {},
+      { method: "POST" }
+    ),
+    updateNotificationsLoader: gravityLoader(
+      "me/notifications",
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerArtworksLoader: gravityLoader(
+      (id) => `partner/${id}/artworks`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerFlagsLoader: gravityLoader(
+      (id) => `partner/${id}/partner_flags`,
+      {},
+      { method: "PUT" }
+    ),
     updateUserLoader: gravityLoader(
       (id) => `user/${id}`,
       {},
       { method: "PUT" }
     ),
-    usersLoader: gravityLoader("users", {}, { headers: true }),
-    userInquiryRequestsLoader: gravityLoader(
-      (id) => `user/${id}/artwork_inquiry_requests`,
-      {},
-      { headers: true }
-    ),
-    userSaleProfileLoader: gravityLoader((id) => `user_sale_profile/${id}`),
-    userAdminNotesLoader: gravityLoader((id) => `user/${id}/admin_notes`),
-    deleteUserAdminNoteLoader: gravityLoader<
-      any,
-      { id: string; admin_note_id: string }
-    >(
-      ({ id, admin_note_id }) => `user/${id}/admin_note/${admin_note_id}`,
-      {},
-      { method: "DELETE" }
-    ),
-    createUserAdminNoteLoader: gravityLoader(
-      (id) => `/user/${id}/admin_note`,
-      {},
-      { method: "POST" }
-    ),
     updateUserSaleProfileLoader: gravityLoader(
       (id) => `user_sale_profile/${id}`,
       {},
       { method: "PUT" }
-    ),
-    userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
-    userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
-    meCreateUserInterestLoader: gravityLoader(
-      "me/user_interest",
-      {},
-      { method: "POST" }
-    ),
-    meDeleteUserInterestLoader: gravityLoader(
-      (id) => `me/user_interest/${id}`,
-      {},
-      { method: "DELETE" }
-    ),
-    meUserInterestsLoader: gravityLoader("me/user_interests"),
-    createUserInterestLoader: gravityLoader(
-      "user_interest",
-      {},
-      { method: "POST" }
-    ),
-    deleteUserInterestLoader: gravityLoader(
-      (id) => `user_interest/${id}`,
-      {},
-      { method: "DELETE" }
-    ),
-    userInterestsLoader: gravityLoader(
-      (id) => `user_interests?user_id=${id}`,
-      {},
-      { headers: true }
-    ),
-    userArtistFollowsLoader: gravityLoader(
-      (id) => `user/${id}/follow/artists`,
-      {},
-      { headers: true }
-    ),
-    userGeneFollowsLoader: gravityLoader(
-      (id) => `user/${id}/follow/genes`,
-      {},
-      { headers: true }
-    ),
-    purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
-    deleteUserRoleLoader: gravityLoader<any, { id: string; role_type: string }>(
-      ({ id, role_type }) => `user/${id}/roles/${role_type}`,
-      {},
-      { method: "DELETE" }
-    ),
-    addUserRoleLoader: gravityLoader<any, { id: string; role_type: string }>(
-      ({ id, role_type }) => `user/${id}/roles/${role_type}`,
-      {},
-      { method: "POST" }
     ),
     userAccessControlLoader: gravityLoader<
       any,
@@ -595,5 +572,30 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    userAdminNotesLoader: gravityLoader((id) => `user/${id}/admin_notes`),
+    userArtistFollowsLoader: gravityLoader(
+      (id) => `user/${id}/follow/artists`,
+      {},
+      { headers: true }
+    ),
+    userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
+    userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
+    userGeneFollowsLoader: gravityLoader(
+      (id) => `user/${id}/follow/genes`,
+      {},
+      { headers: true }
+    ),
+    userInquiryRequestsLoader: gravityLoader(
+      (id) => `user/${id}/artwork_inquiry_requests`,
+      {},
+      { headers: true }
+    ),
+    userInterestsLoader: gravityLoader(
+      (id) => `user_interests?user_id=${id}`,
+      {},
+      { headers: true }
+    ),
+    userSaleProfileLoader: gravityLoader((id) => `user_sale_profile/${id}`),
+    usersLoader: gravityLoader("users", {}, { headers: true }),
   }
 }
