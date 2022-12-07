@@ -79,7 +79,7 @@ export const deleteUserInterestForUser = mutationWithClientMutationId<
     )
 
     try {
-      const userInterest: UserInterest = await deleteUserInterestLoader?.(
+      const userInterest: UserInterest = await deleteUserInterestLoader(
         id,
         gravityOptions
       )

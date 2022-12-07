@@ -91,7 +91,7 @@ export const createUserInterestForUser = mutationWithClientMutationId<
     )
 
     try {
-      const userInterest: UserInterest = await createUserInterestLoader?.(
+      const userInterest: UserInterest = await createUserInterestLoader(
         userInterestInput
       )
 
