@@ -10371,6 +10371,9 @@ type Me implements Node {
     # Filter auction results by earliest created at year
     earliestCreatedYear: Int
     first: Int
+
+    # Include upcoming auction results
+    includeUpcoming: Boolean = true
     last: Int
 
     # Filter auction results by latest created at year

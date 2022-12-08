@@ -260,7 +260,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             artist_id: _id,
             categories,
             earliest_created_year: options.earliestCreatedYear,
-            upcoming: options.includeUpcoming,
             keyword: options.keyword,
             latest_created_year: options.latestCreatedYear,
             organizations,
@@ -268,6 +267,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             size,
             sizes,
             sort: options.sort,
+            upcoming: options.includeUpcoming,
           }
 
           return auctionLotsLoader(diffusionArgs).then(
