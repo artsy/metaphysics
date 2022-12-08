@@ -27,7 +27,7 @@ describe("CreateConsignmentInquiryMutation", () => {
       consignmentInquiryOrError {
         ... on ConsignmentInquiryMutationSuccess {
           consignmentInquiry {
-            id
+            internalID
             name
             email
             message
@@ -51,7 +51,7 @@ describe("CreateConsignmentInquiryMutation", () => {
         consignmentInquiryOrError: {
           consignmentInquiry: {
             email: "user@art.com",
-            id: 1,
+            internalID: 1,
             message: "This is my message to you",
             name: "User",
             userId: "1234gravity",
