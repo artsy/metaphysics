@@ -3,6 +3,8 @@ import {
   GraphQLFloat,
   GraphQLInputObjectType,
   GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
@@ -56,6 +58,10 @@ export const EditableLocationFields = new GraphQLInputObjectType({
     stateCode: {
       description: "The (optional) state code of the state for location",
       type: GraphQLString,
+    },
+    coordinates: {
+      description: "The optional location coordinates. [lat, lng]",
+      type: GraphQLList(GraphQLNonNull(GraphQLFloat)),
     },
   },
 })

@@ -22,20 +22,20 @@ describe("createUserInterestMutation", () => {
     },
   }
 
-  const mockCreateUserInterestLoader = jest.fn()
+  const mockMeCreateUserInterestLoader = jest.fn()
 
   const context = {
-    createUserInterestLoader: mockCreateUserInterestLoader,
+    meCreateUserInterestLoader: mockMeCreateUserInterestLoader,
   }
 
   beforeEach(() => {
-    mockCreateUserInterestLoader.mockResolvedValue(
+    mockMeCreateUserInterestLoader.mockResolvedValue(
       Promise.resolve(userInterest)
     )
   })
 
   afterEach(() => {
-    mockCreateUserInterestLoader.mockReset()
+    mockMeCreateUserInterestLoader.mockReset()
   })
 
   it("returns a user interest", async () => {
@@ -55,7 +55,7 @@ describe("createUserInterestMutation", () => {
   it("calls the loader with the correct input", async () => {
     await runAuthenticatedQuery(mutation, context)
 
-    expect(mockCreateUserInterestLoader).toBeCalledWith({
+    expect(mockMeCreateUserInterestLoader).toBeCalledWith({
       category: "collected_before",
       interest_id: "example",
       interest_type: "Artist",

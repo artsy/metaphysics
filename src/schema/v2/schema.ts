@@ -128,8 +128,10 @@ import VanityURLEntity from "./vanityURLEntity"
 import FairOrganizer from "./fair_organizer"
 import { externalField } from "./External/External"
 import { createUserInterestMutation } from "./me/createUserInterestMutation"
+import { createUserInterestForUser } from "./users/createUserInterestForUserMutation"
 import { page } from "./page"
 import { deleteUserInterestMutation } from "./me/deleteUserInterestMutation"
+import { deleteUserInterestForUser } from "./users/deleteUserInterestForUserMutation"
 import { PhoneNumber } from "./phoneNumber"
 import { unlinkAuthenticationMutation } from "./me/unlinkAuthenticationMutation"
 import { linkAuthenticationMutation } from "./me/linkAuthenticationMutation"
@@ -163,6 +165,11 @@ import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMu
 import { NotificationsConnection } from "./notifications"
 import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_as_read_mutation"
 import Conversations from "./conversation/conversations"
+import updateMessageMutation from "./conversation/updateMessageMutation"
+import deleteConversationMutation from "./conversation/deleteConversationMutation"
+import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
+import { updateCMSLastAccessTimestampMutation } from "./partner/updateCMSLastAccessTimestampMutation"
+import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -300,14 +307,17 @@ export default new GraphQLSchema({
       createAccountRequest: createAccountRequestMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
+      createConsignmentInquiry: createConsignmentInquiryMutation,
       createCreditCard: createCreditCardMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createOrderedSet: createOrderedSetMutation,
       createUserAdminNote: createUserAdminNoteMutation,
       createUserInterest: createUserInterestMutation,
+      createUserInterestForUser: createUserInterestForUser,
       deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
+      deleteConversation: deleteConversationMutation,
       deleteCreditCard: deleteCreditCardMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
@@ -315,6 +325,7 @@ export default new GraphQLSchema({
       deleteOrderedSetItemMutation: deleteOrderedSetItemMutation,
       deleteUserAdminNote: deleteUserAdminNoteMutation,
       deleteUserInterest: deleteUserInterestMutation,
+      deleteUserInterestForUser: deleteUserInterestForUser,
       deleteUserRole: deleteUserRoleMutation,
       dislikeArtwork: dislikeArtworkMutation,
       endSale: endSaleMutation,
@@ -338,9 +349,12 @@ export default new GraphQLSchema({
       startIdentityVerification: startIdentityVerificationMutation,
       submitInquiryRequestMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
+      updateArtwork: updateArtworkMutation,
+      updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
       updateCollectorProfile: UpdateCollectorProfile,
       updateCollectorProfileWithID: UpdateCollectorProfileWithID,
       updateConversation: UpdateConversationMutation,
+      updateMessage: updateMessageMutation,
       updateMyPassword: updateMyPasswordMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateNotificationPreferences: updateNotificationPreferencesMutation,

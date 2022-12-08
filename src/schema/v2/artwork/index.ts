@@ -760,7 +760,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ images }) => !!(_.first(images) && images[0].downloadable),
       },
       isEmbeddableVideo: { type: GraphQLBoolean, resolve: isEmbeddedVideo },
-      isForSale: { type: GraphQLBoolean, resolve: ({ forsale }) => forsale },
+      isForSale: {
+        type: GraphQLBoolean,
+        resolve: ({ forsale, sold }) => forsale && !sold,
+      },
       isHangable: {
         type: GraphQLBoolean,
         resolve: (artwork) => {

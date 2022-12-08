@@ -266,6 +266,147 @@ describe("Artist type", () => {
     })
   })
 
+  describe("passes the correct arguments to the auctionLotsLoader", () => {
+    describe("upcoming", () => {
+      const defaultAuctionLotsArgs = {
+        allow_empty_created_dates: true,
+        artist_id: "4d8b92b34eb68a1b2c0003f4",
+        categories: undefined,
+        earliest_created_year: undefined,
+        keyword: undefined,
+        latest_created_year: undefined,
+        organizations: undefined,
+        page: 1,
+        size: 1,
+        sizes: undefined,
+        sort: undefined,
+      }
+
+      it("is not passed when not specified", async () => {
+        const query = `
+        {
+          artist(id: "percy-z") {
+            auctionResultsConnection(recordsTrusted: true, first: 1) {
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+        context.auctionLotsLoader = jest
+          .fn()
+          .mockReturnValueOnce(Promise.resolve(auctionResultResponse()))
+
+        const data = await runQuery(query, context)
+
+        expect(context.auctionLotsLoader).toHaveBeenCalledWith({
+          ...defaultAuctionLotsArgs,
+          upcoming: true,
+        })
+
+        expect(data).toEqual({
+          artist: {
+            auctionResultsConnection: {
+              edges: [
+                {
+                  node: {
+                    internalID: "1",
+                  },
+                },
+              ],
+            },
+          },
+        })
+      })
+
+      it("as true when passed as true", async () => {
+        const query = `
+        {
+          artist(id: "percy-z") {
+            auctionResultsConnection(recordsTrusted: true, first: 1, includeUpcoming: true) {
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+        context.auctionLotsLoader = jest
+          .fn()
+          .mockReturnValueOnce(Promise.resolve(auctionResultResponse()))
+
+        const data = await runQuery(query, context)
+
+        expect(context.auctionLotsLoader).toHaveBeenCalledWith({
+          ...defaultAuctionLotsArgs,
+          upcoming: true,
+        })
+
+        expect(data).toEqual({
+          artist: {
+            auctionResultsConnection: {
+              edges: [
+                {
+                  node: {
+                    internalID: "1",
+                  },
+                },
+              ],
+            },
+          },
+        })
+      })
+
+      it("as false when passed as false", async () => {
+        const query = `
+        {
+          artist(id: "percy-z") {
+            auctionResultsConnection(recordsTrusted: true, first: 1, includeUpcoming: false) {
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+        context.auctionLotsLoader = jest
+          .fn()
+          .mockReturnValueOnce(Promise.resolve(auctionResultResponse()))
+
+        const data = await runQuery(query, context)
+
+        expect(context.auctionLotsLoader).toHaveBeenCalledWith({
+          ...defaultAuctionLotsArgs,
+          upcoming: false,
+        })
+
+        expect(data).toEqual({
+          artist: {
+            auctionResultsConnection: {
+              edges: [
+                {
+                  node: {
+                    internalID: "1",
+                  },
+                },
+              ],
+            },
+          },
+        })
+      })
+    })
+  })
+
   describe("priceRealized", () => {
     function givenAnAuctionResultResponseWith(specs) {
       context.auctionLotsLoader = jest

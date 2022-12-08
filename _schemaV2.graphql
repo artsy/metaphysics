@@ -1356,6 +1356,9 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     earliestCreatedYear: Int
     first: Int
 
+    # Include upcoming auction results
+    includeUpcoming: Boolean = true
+
     # Filter by artwork title or description keyword search
     keyword: String
     last: Int
@@ -5582,6 +5585,34 @@ type ConsignmentEdge {
   node: Consignment
 }
 
+type ConsignmentInquiry {
+  # Email of inquirer
+  email: String!
+
+  # id of the ConsignmentInquiry
+  internalID: Int!
+
+  # Message of the inquirer
+  message: String!
+
+  # Name of the inquirer
+  name: String!
+
+  # Phone number of the inquirer
+  phoneNumber: String
+
+  # gravity user id if user is logged in
+  userId: String
+}
+
+type ConsignmentInquiryMutationFailure {
+  mutationError: GravityMutationError
+}
+
+type ConsignmentInquiryMutationSuccess {
+  consignmentInquiry: ConsignmentInquiry
+}
+
 # Consignment Offer
 type ConsignmentOffer {
   commissionPercentWhole: Int
@@ -6613,6 +6644,14 @@ type Conversation implements Node {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+  deletedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 
   # The participant who initiated the conversation
   from: ConversationInitiator!
@@ -6873,6 +6912,24 @@ type CreateBidderPayload {
   bidder: Bidder
   clientMutationId: String
 }
+
+input CreateConsignmentInquiryMutationInput {
+  clientMutationId: String
+  email: String!
+  message: String!
+  name: String!
+  phoneNumber: String
+  userId: String
+}
+
+type CreateConsignmentInquiryMutationPayload {
+  clientMutationId: String
+  consignmentInquiryOrError: CreateConsignmentInquiryMutationType
+}
+
+union CreateConsignmentInquiryMutationType =
+    ConsignmentInquiryMutationFailure
+  | ConsignmentInquiryMutationSuccess
 
 input CreateGeminiEntryForAssetInput {
   clientMutationId: String
@@ -7149,6 +7206,36 @@ type createUserAdminNoteSuccess {
   adminNote: UserAdminNotes
 }
 
+type createUserInterestForUserFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateUserInterestForUserInput {
+  # Optional body for a note.
+  body: String
+  category: UserInterestCategory!
+  clientMutationId: String
+  interestId: String!
+  interestType: UserInterestInterestType!
+  ownerType: UserInterestOwnerType!
+  userId: String!
+}
+
+type CreateUserInterestForUserPayload {
+  clientMutationId: String
+
+  # On success: UserInterest. On failure: MutationError.
+  userInterestOrError: createUserInterestForUserResponseOrError
+}
+
+union createUserInterestForUserResponseOrError =
+    createUserInterestForUserFailure
+  | createUserInterestForUserSuccess
+
+type createUserInterestForUserSuccess {
+  userInterest: UserInterest
+}
+
 input CreateUserInterestMutationInput {
   anonymousSessionId: String
 
@@ -7407,6 +7494,32 @@ type DeleteBankAccountPayload {
   me: Me
 }
 
+type DeleteConversationFailure {
+  mutationError: GravityMutationError
+}
+
+input DeleteConversationMutationInput {
+  clientMutationId: String
+
+  # The id of the conversation to be deleted.
+  id: String!
+}
+
+type DeleteConversationMutationPayload {
+  clientMutationId: String
+
+  # On success: the conversation that was soft deleted.
+  conversationOrError: DeleteConversationResponseOrError
+}
+
+union DeleteConversationResponseOrError =
+    DeleteConversationFailure
+  | DeleteConversationSuccess
+
+type DeleteConversationSuccess {
+  conversation: Conversation
+}
+
 input DeleteCreditCardInput {
   clientMutationId: String
   id: String!
@@ -7513,6 +7626,32 @@ input DeleteUserIconInput {
 type DeleteUserIconPayload {
   clientMutationId: String
   iconOrError: UserIconDeletionMutationType
+}
+
+type deleteUserInterestForUserFailure {
+  mutationError: GravityMutationError
+}
+
+input DeleteUserInterestForUserInput {
+  clientMutationId: String
+
+  # The ID of the UserInterest to delete.
+  id: String!
+}
+
+type DeleteUserInterestForUserPayload {
+  clientMutationId: String
+
+  # On success: UserInterest. On failure: MutationError.
+  userInterestOrError: deleteUserInterestForUserResponseOrError
+}
+
+union deleteUserInterestForUserResponseOrError =
+    deleteUserInterestForUserFailure
+  | deleteUserInterestForUserSuccess
+
+type deleteUserInterestForUserSuccess {
+  userInterest: UserInterest
 }
 
 input DeleteUserInterestMutationInput {
@@ -7722,6 +7861,9 @@ input EditableLocation {
 
   # The city the location is based in
   city: String
+
+  # The optional location coordinates. [lat, lng]
+  coordinates: [Float!]
 
   # The county the location is based in
   country: String
@@ -9123,6 +9265,7 @@ type GravityMutationError {
   error: String
   fieldErrors: [FieldErrorResults]
   message: String!
+  statusCode: Int
   type: String
 }
 
@@ -10335,6 +10478,9 @@ type Me implements Node {
     # Filter auction results by earliest created at year
     earliestCreatedYear: Int
     first: Int
+
+    # Include upcoming auction results
+    includeUpcoming: Boolean = true
     last: Int
 
     # Filter auction results by latest created at year
@@ -10555,6 +10701,9 @@ type Me implements Node {
     # Filter auction results by earliest created at year
     earliestCreatedYear: Int
     first: Int
+
+    # Include upcoming auction results
+    includeUpcoming: Boolean = true
     last: Int
 
     # Filter auction results by latest created at year
@@ -11067,6 +11216,11 @@ type Mutation {
 
   # Creates a bidder position
   createBidderPosition(input: BidderPositionInput!): BidderPositionPayload
+
+  # Make inquiry about consignments
+  createConsignmentInquiry(
+    input: CreateConsignmentInquiryMutationInput!
+  ): CreateConsignmentInquiryMutationPayload
   createConsignmentOffer(
     # Parameters for CreateOfferMutation
     input: CreateOfferMutationInput!
@@ -11121,6 +11275,11 @@ type Mutation {
   createUserInterest(
     input: CreateUserInterestMutationInput!
   ): CreateUserInterestMutationPayload
+
+  # Creates a UserInterest for a user.
+  createUserInterestForUser(
+    input: CreateUserInterestForUserInput!
+  ): CreateUserInterestForUserPayload
   createViewingRoom(input: CreateViewingRoomInput!): CreateViewingRoomPayload
 
   # Deletes an image from an artwork in my collection
@@ -11128,6 +11287,11 @@ type Mutation {
 
   # Remove a bank account
   deleteBankAccount(input: DeleteBankAccountInput!): DeleteBankAccountPayload
+
+  # Soft-delete a conversation.
+  deleteConversation(
+    input: DeleteConversationMutationInput!
+  ): DeleteConversationMutationPayload
 
   # Remove a credit card
   deleteCreditCard(input: DeleteCreditCardInput!): DeleteCreditCardPayload
@@ -11158,6 +11322,11 @@ type Mutation {
   deleteUserInterest(
     input: DeleteUserInterestMutationInput!
   ): DeleteUserInterestMutationPayload
+
+  # Delete a UserInterest.
+  deleteUserInterestForUser(
+    input: DeleteUserInterestForUserInput!
+  ): DeleteUserInterestForUserPayload
 
   # Delete a role associated with a user
   deleteUserRole(
@@ -11289,6 +11458,16 @@ type Mutation {
     input: UpdateAppSecondFactorInput!
   ): UpdateAppSecondFactorPayload
 
+  # Updates an artwork.
+  updateArtwork(
+    input: UpdateArtworkMutationInput!
+  ): UpdateArtworkMutationPayload
+
+  # Updates the flags on a partner.
+  updateCMSLastAccessTimestamp(
+    input: UpdateCMSLastAccessTimestampMutationInput!
+  ): UpdateCMSLastAccessTimestampMutationPayload
+
   # Updating a collector profile (loyalty applicant status).
   updateCollectorProfile(
     input: UpdateCollectorProfileInput!
@@ -11307,6 +11486,11 @@ type Mutation {
   updateConversation(
     input: UpdateConversationMutationInput!
   ): UpdateConversationMutationPayload
+
+  # Update a message.
+  updateMessage(
+    input: UpdateMessageMutationInput!
+  ): UpdateMessageMutationPayload
 
   # Updates the logged in user's password
   updateMyPassword(
@@ -14521,7 +14705,10 @@ type SaleArtwork implements ArtworkEdgeInterface & Node {
   isWatching: Boolean
   isWithReserve: Boolean
   lotID: String
-  lotLabel: String
+  lotLabel(
+    # Whether to trim anything past the first alphanumeric chunk
+    trim: Boolean = false
+  ): String
   lotState: CausalityLotState
   lowEstimate: SaleArtworkLowEstimate
   minimumNextBid: SaleArtworkMinimumNextBid
@@ -15939,6 +16126,57 @@ type UpdateAppSecondFactorPayload {
   secondFactorOrErrors: AppSecondFactorOrErrorsUnion!
 }
 
+type updateArtworkFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateArtworkMutationInput {
+  # The availability of the artwork
+  availability: String
+  clientMutationId: String
+
+  # The id of the artwork to update.
+  id: String!
+}
+
+type UpdateArtworkMutationPayload {
+  # On success: the artwork updated.
+  artworkOrError: updateArtworkResponseOrError
+  clientMutationId: String
+}
+
+union updateArtworkResponseOrError = updateArtworkFailure | updateArtworkSuccess
+
+type updateArtworkSuccess {
+  artwork: Artwork
+}
+
+type UpdateCMSLastAccessTimestampFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateCMSLastAccessTimestampMutationInput {
+  clientMutationId: String
+
+  # The id of the partner to update.
+  id: String!
+}
+
+type UpdateCMSLastAccessTimestampMutationPayload {
+  clientMutationId: String
+
+  # On success: the updated partner. On error: the error that occurred.
+  partnerOrError: UpdateCMSLastAccessTimestampResponseOrError
+}
+
+union UpdateCMSLastAccessTimestampResponseOrError =
+    UpdateCMSLastAccessTimestampFailure
+  | UpdateCMSLastAccessTimestampSuccess
+
+type UpdateCMSLastAccessTimestampSuccess {
+  partner: Partner
+}
+
 input UpdateCollectorProfileInput {
   # List of affiliated auction house ids, referencing Galaxy.
   affiliatedAuctionHouseIds: [String]
@@ -16062,12 +16300,48 @@ input UpdateConversationMutationInput {
   # The id of the conversation to be updated.
   conversationId: String!
 
+  # Mark the conversation as dismissed
+  dismissed: Boolean
+
   # The message id to mark as read.
-  fromLastViewedMessageId: String!
+  fromLastViewedMessageId: String
+
+  # The seller outcome for the conversation. Options include `already_contacted`, `dont_trust`, `other`, `work_unavailable`.
+  sellerOutcome: String
+
+  # The seller outcome comment for the conversation.
+  sellerOutcomeComment: String
 }
 
 type UpdateConversationMutationPayload {
   clientMutationId: String
+  conversation: Conversation
+}
+
+type updateMessageFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateMessageMutationInput {
+  clientMutationId: String
+
+  # The id of the message to be updated.
+  id: String!
+
+  # Mark the message as spam
+  spam: Boolean!
+}
+
+type UpdateMessageMutationPayload {
+  clientMutationId: String
+
+  # On success: the updated conversation
+  conversationOrError: updateMessageResponseOrError
+}
+
+union updateMessageResponseOrError = updateMessageFailure | updateMessageSuccess
+
+type updateMessageSuccess {
   conversation: Conversation
 }
 
@@ -16867,6 +17141,7 @@ type UserInterest {
 
   # A type-specific ID.
   internalID: ID!
+  ownerType: UserInterestOwnerType
 }
 
 enum UserInterestCategory {
@@ -16902,6 +17177,7 @@ type UserInterestEdge {
 
   # The item at the end of the edge
   node: UserInterestInterest
+  ownerType: String
 }
 
 union UserInterestInterest = Artist | Gene
@@ -16909,6 +17185,11 @@ union UserInterestInterest = Artist | Gene
 enum UserInterestInterestType {
   ARTIST
   GENE
+}
+
+enum UserInterestOwnerType {
+  COLLECTOR_PROFILE
+  USER_SALE_PROFILE
 }
 
 # A connection to a list of items.

@@ -5,7 +5,7 @@ describe("UpdateConversationMutation", () => {
   it("sets from_last_viewed_message_id", async () => {
     const mutation = `
       mutation {
-        updateConversation(input: { conversationId: "25", fromLastViewedMessageId: "35" }) {
+        updateConversation(input: { conversationId: "25", fromLastViewedMessageId: "35", dismissed: true, sellerOutcome: "already_contacted", sellerOutcomeComment: "Outcome comment" }) {
           conversation {
             initialMessage
           }
@@ -23,7 +23,9 @@ describe("UpdateConversationMutation", () => {
 
     await runAuthenticatedQuery(mutation, context).then(
       (updatedConversation) => {
-        expect(updatedConversation).toMatchSnapshot()
+        expect(updatedConversation).toEqual({
+          updateConversation: { conversation: { initialMessage: "Howdy" } },
+        })
       }
     )
     expect.assertions(1)
