@@ -13,22 +13,10 @@ import {
 } from "lib/gravityErrorHandler"
 import { OrderedSetItemType } from "../item"
 
-type ItemType =
-  | "Artist"
-  | "Artwork"
-  | "Feature Link"
-  | "Gene"
-  | "Ordered Set"
-  | "Partner Show"
-  | "Profile"
-  | "Sale"
-  | "User"
-
 interface Input {
   geminiToken: string
   id: string
   itemId: string
-  itemType: ItemType
   position: number
 }
 
@@ -70,7 +58,6 @@ export const addOrderedSetItemMutation = mutationWithClientMutationId<
     geminiToken: { type: GraphQLString },
     id: { type: new GraphQLNonNull(GraphQLString) },
     itemId: { type: new GraphQLNonNull(GraphQLString) },
-    itemType: { type: new GraphQLNonNull(GraphQLString) },
     position: { type: GraphQLInt },
   },
   outputFields: {
@@ -81,8 +68,8 @@ export const addOrderedSetItemMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { geminiToken, id, itemId, itemType, position },
-    { addSetItemLoader }
+    { geminiToken, id, itemId, position },
+    { addSetItemLoader, setLoader }
   ) => {
     if (!addSetItemLoader) {
       throw new Error(
@@ -96,7 +83,10 @@ export const addOrderedSetItemMutation = mutationWithClientMutationId<
         item_id: itemId,
         position,
       })
-      return { item_type: itemType, ...res }
+
+      const { item_type } = await setLoader(id)
+
+      return { item_type, ...res }
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

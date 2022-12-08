@@ -11,7 +11,6 @@ import { OrderedSetItemType } from "../item"
 interface Input {
   id: string
   itemId: string
-  itemType: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -51,7 +50,6 @@ export const deleteOrderedSetItemMutation = mutationWithClientMutationId<
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
     itemId: { type: new GraphQLNonNull(GraphQLString) },
-    itemType: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
     orderedSetItemOrError: {
@@ -61,8 +59,8 @@ export const deleteOrderedSetItemMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { id, itemId, itemType },
-    { deleteSetItemLoader }
+    { id, itemId },
+    { deleteSetItemLoader, setLoader }
   ) => {
     if (!deleteSetItemLoader) {
       throw new Error(
@@ -71,8 +69,11 @@ export const deleteOrderedSetItemMutation = mutationWithClientMutationId<
     }
 
     try {
-      const res = await deleteSetItemLoader({ id, itemId }, { itemType })
-      return { item_type: itemType, ...res }
+      const res = await deleteSetItemLoader({ id, itemId })
+
+      const { item_type } = await setLoader(id)
+
+      return { item_type, ...res }
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
