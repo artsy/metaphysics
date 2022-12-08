@@ -3896,4 +3896,36 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("isForSale", () => {
+    const query = `
+      {
+        artwork(id: "foo-bar") {
+          isForSale
+        }
+      }
+    `
+
+    //
+    // FIXME: We've seen cases on the backend, especially when edition sets are
+    // involved, where the availability of the partent artwork is not aligned
+    // with overall availability of its edition sets and the `sold` attribute.
+    // When all of an artwork's edition sets have sold, the parent artwork
+    // _should_ transition to a "not for sale" availability. While we look into
+    // why that isn't reliably happening, this patch ensures that we return
+    // false if the artwork is considered sold.
+    //
+    it("should return false if the artwork is marked as sold", async () => {
+      artwork.forsale = true
+      artwork.sold = true
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          isForSale: false,
+        },
+      })
+    })
+  })
 })
