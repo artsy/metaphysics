@@ -16,7 +16,7 @@ import { ResolverContext } from "types/graphql"
 const ConsignmentInquiryType = new GraphQLObjectType<any, ResolverContext>({
   name: "ConsignmentInquiry",
   fields: () => ({
-    id: {
+    internalID: {
       type: new GraphQLNonNull(GraphQLInt),
       description: "id of the ConsignmentInquiry",
     },
@@ -53,11 +53,12 @@ const MutationSuccessType = new GraphQLObjectType<any, ResolverContext>({
       type: ConsignmentInquiryType,
       resolve: (consignmentInquiry) => {
         const result = {}
-        const { gravity_user_id, ...otherFields } = consignmentInquiry
+        const { gravity_user_id, id, ...otherFields } = consignmentInquiry
         const keys = Object.keys(otherFields)
         keys.forEach((key) => {
           result[camelCase(key)] = consignmentInquiry[key]
         })
+        result["internalID"] = id
         result["userId"] = consignmentInquiry.gravity_user_id ?? null
         return result
       },
