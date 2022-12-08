@@ -7423,6 +7423,32 @@ type deleteOrderedSetFailure {
   mutationError: GravityMutationError
 }
 
+type deleteOrderedSetItemFailure {
+  mutationError: GravityMutationError
+}
+
+input deleteOrderedSetItemMutationInput {
+  clientMutationId: String
+  id: String!
+  itemId: String!
+  itemType: String!
+}
+
+type deleteOrderedSetItemMutationPayload {
+  clientMutationId: String
+
+  # On success: the ordered set item deleted.
+  orderedSetItemOrError: deleteOrderedSetItemResponseOrError
+}
+
+union deleteOrderedSetItemResponseOrError =
+    deleteOrderedSetItemFailure
+  | deleteOrderedSetItemSuccess
+
+type deleteOrderedSetItemSuccess {
+  setItem: OrderedSetItem
+}
+
 input deleteOrderedSetMutationInput {
   clientMutationId: String
   id: String!
@@ -11118,6 +11144,11 @@ type Mutation {
   deleteOrderedSet(
     input: deleteOrderedSetMutationInput!
   ): deleteOrderedSetMutationPayload
+
+  # deletes an item to an ordered set.
+  deleteOrderedSetItemMutation(
+    input: deleteOrderedSetItemMutationInput!
+  ): deleteOrderedSetItemMutationPayload
   deleteUserAddress(input: DeleteUserAddressInput!): DeleteUserAddressPayload
 
   # delete an admin note for the user

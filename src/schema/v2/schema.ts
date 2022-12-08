@@ -91,6 +91,7 @@ import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileI
 import ObjectIdentification from "./object_identification"
 import { OrderedSet } from "./OrderedSet"
 import { createOrderedSetMutation } from "./OrderedSet/createOrderedSetMutation"
+import { deleteOrderedSetItemMutation } from "./OrderedSet/deleteOrderedSetItemMutation"
 import { updateOrderedSetMutation } from "./OrderedSet/updateOrderedSetMutation"
 import { deleteOrderedSetMutation } from "./OrderedSet/deleteOrderedSetMutation"
 import { addOrderedSetItemMutation } from "./OrderedSet/addOrderedSetItemMutation"
@@ -304,6 +305,7 @@ export default new GraphQLSchema({
       createUserInterest: createUserInterestMutation,
       addOrderedSetItem: addOrderedSetItemMutation,
       createOrderedSet: createOrderedSetMutation,
+      deleteOrderedSetItemMutation: deleteOrderedSetItemMutation,
       updateOrderedSet: updateOrderedSetMutation,
       deleteOrderedSet: deleteOrderedSetMutation,
       deleteBankAccount: deleteBankAccountMutation,
