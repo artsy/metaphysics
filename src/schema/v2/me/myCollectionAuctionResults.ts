@@ -32,6 +32,11 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
       type: new GraphQLList(GraphQLString),
       description: "Filter auction results by category (medium)",
     },
+    includeUpcoming: {
+      type: GraphQLBoolean,
+      defaultValue: true,
+      description: "Include upcoming auction results",
+    },
     recordsTrusted: {
       type: GraphQLBoolean,
       defaultValue: false,
@@ -91,6 +96,7 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
         allow_empty_created_dates: options.allowEmptyCreatedDates,
         sizes,
         sort: options.sort,
+        upcoming: options.includeUpcoming,
       }
 
       const { total_count, _embedded } = await auctionLotsLoader(

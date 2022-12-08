@@ -56,6 +56,11 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
       description:
         "Filter auction results by empty artwork created date values",
     },
+    includeUpcoming: {
+      type: GraphQLBoolean,
+      defaultValue: true,
+      description: "Include upcoming auction results",
+    },
   }),
   description: "A list of the auction results by followed artists",
   resolve: async (
@@ -103,16 +108,17 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
       } = convertConnectionArgsToGravityArgs(options)
 
       const diffusionArgs = {
-        page,
-        size,
+        allow_empty_created_dates: options.allowEmptyCreatedDates,
         artist_ids: followedArtistIds,
-        organizations,
         categories,
         earliest_created_year: options.earliestCreatedYear,
         latest_created_year: options.latestCreatedYear,
-        allow_empty_created_dates: options.allowEmptyCreatedDates,
+        organizations,
+        page,
+        size,
         sizes,
         sort: options.sort,
+        upcoming: options.includeUpcoming,
       }
 
       return auctionLotsLoader(diffusionArgs).then(

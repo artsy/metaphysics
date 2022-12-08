@@ -196,18 +196,37 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       auctionResultsConnection: {
         type: auctionResultConnection.connectionType,
         args: pageable({
-          sort: AuctionResultSorts,
-          organizations: {
-            type: new GraphQLList(GraphQLString),
-            description: "Filter auction results by organizations",
-          },
-          sizes: {
-            type: new GraphQLList(ArtworkSizes),
-            description: "Filter auction results by Artwork sizes",
+          allowEmptyCreatedDates: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+            description:
+              "Filter auction results by empty artwork created date values",
           },
           categories: {
             type: new GraphQLList(GraphQLString),
             description: "Filter auction results by category (medium)",
+          },
+          earliestCreatedYear: {
+            type: GraphQLInt,
+            description: "Filter auction results by earliest created at year",
+          },
+          includeUpcoming: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+            description: "Include upcoming auction results",
+          },
+          keyword: {
+            type: GraphQLString,
+            description:
+              "Filter by artwork title or description keyword search",
+          },
+          latestCreatedYear: {
+            type: GraphQLInt,
+            description: "Filter auction results by latest created at year",
+          },
+          organizations: {
+            type: new GraphQLList(GraphQLString),
+            description: "Filter auction results by organizations",
           },
           recordsTrusted: {
             type: GraphQLBoolean,
@@ -215,25 +234,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             description:
               "When true, will only return records for allowed artists.",
           },
-          earliestCreatedYear: {
-            type: GraphQLInt,
-            description: "Filter auction results by earliest created at year",
+          sizes: {
+            type: new GraphQLList(ArtworkSizes),
+            description: "Filter auction results by Artwork sizes",
           },
-          latestCreatedYear: {
-            type: GraphQLInt,
-            description: "Filter auction results by latest created at year",
-          },
-          allowEmptyCreatedDates: {
-            type: GraphQLBoolean,
-            defaultValue: true,
-            description:
-              "Filter auction results by empty artwork created date values",
-          },
-          keyword: {
-            type: GraphQLString,
-            description:
-              "Filter by artwork title or description keyword search",
-          },
+          sort: AuctionResultSorts,
         }),
         resolve: async ({ _id }, options, { auctionLotsLoader }) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
@@ -242,25 +247,27 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
 
           // Convert `after` cursors to page params
           const {
-            page,
-            size,
+            categories,
             offset,
-            sizes,
             organizations,
-            categories,
-          } = convertConnectionArgsToGravityArgs(options)
-          const diffusionArgs = {
             page,
             size,
-            artist_id: _id,
-            organizations,
-            categories,
-            keyword: options.keyword,
-            earliest_created_year: options.earliestCreatedYear,
-            latest_created_year: options.latestCreatedYear,
+            sizes,
+          } = convertConnectionArgsToGravityArgs(options)
+
+          const diffusionArgs = {
             allow_empty_created_dates: options.allowEmptyCreatedDates,
+            artist_id: _id,
+            categories,
+            earliest_created_year: options.earliestCreatedYear,
+            keyword: options.keyword,
+            latest_created_year: options.latestCreatedYear,
+            organizations,
+            page,
+            size,
             sizes,
             sort: options.sort,
+            upcoming: options.includeUpcoming,
           }
 
           return auctionLotsLoader(diffusionArgs).then(
