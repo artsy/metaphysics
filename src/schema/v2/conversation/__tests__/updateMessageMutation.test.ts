@@ -8,12 +8,12 @@ describe("UpdateMessageMutation", () => {
       updateMessage(input: { id: "25", spam: true }) {
         conversationOrError {
           __typename
-          ... on updateMessageSuccess {
+          ... on UpdateMessageSuccess {
             conversation {
               initialMessage
             }
           }
-          ... on updateMessageFailure {
+          ... on UpdateMessageFailure {
             mutationError {
               message
             }
@@ -38,7 +38,7 @@ describe("UpdateMessageMutation", () => {
     expect(updatedMessage).toEqual({
       updateMessage: {
         conversationOrError: {
-          __typename: "updateMessageSuccess",
+          __typename: "UpdateMessageSuccess",
           conversation: {
             initialMessage: "Howdy",
           },
@@ -59,7 +59,7 @@ describe("UpdateMessageMutation", () => {
       expect(updatedMessage).toEqual({
         updateMessage: {
           conversationOrError: {
-            __typename: "updateMessageFailure",
+            __typename: "UpdateMessageFailure",
             mutationError: {
               message: "Error from API",
             },
