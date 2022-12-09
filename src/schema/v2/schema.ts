@@ -322,7 +322,7 @@ export default new GraphQLSchema({
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       deleteOrderedSet: deleteOrderedSetMutation,
-      deleteOrderedSetItemMutation: deleteOrderedSetItemMutation,
+      deleteOrderedSetItem: deleteOrderedSetItemMutation,
       deleteUserAdminNote: deleteUserAdminNoteMutation,
       deleteUserInterest: deleteUserInterestMutation,
       deleteUserInterestForUser: deleteUserInterestForUser,

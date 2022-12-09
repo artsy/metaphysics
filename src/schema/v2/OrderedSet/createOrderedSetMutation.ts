@@ -13,7 +13,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 
-type OwnerType =
+type ItemType =
   | "Artist"
   | "Artwork"
   | "Feature Link"
@@ -24,7 +24,7 @@ type OwnerType =
   | "Sale"
   | "User"
 
-type ItemType = "Fair" | "Feature" | "Sale"
+type OwnerType = "Fair" | "Feature" | "Sale"
 
 type LayoutType = "default" | "full"
 
@@ -78,10 +78,10 @@ export const createOrderedSetMutation = mutationWithClientMutationId<
     itemId: { type: GraphQLString },
     itemType: { type: new GraphQLNonNull(GraphQLString) },
     key: { type: new GraphQLNonNull(GraphQLString) },
-    layout: { type: GraphQLBoolean },
+    layout: { type: GraphQLString },
     name: { type: GraphQLString },
     ownerType: { type: GraphQLString },
-    published: { type: GraphQLString },
+    published: { type: GraphQLBoolean },
   },
   outputFields: {
     orderedSetOrError: {

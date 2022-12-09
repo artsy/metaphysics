@@ -61,7 +61,7 @@ export const addOrderedSetItemMutation = mutationWithClientMutationId<
     position: { type: GraphQLInt },
   },
   outputFields: {
-    orderedSetOrError: {
+    orderedSetItemOrError: {
       type: ResponseOrErrorType,
       description: "On success: the ordered set item added.",
       resolve: (result) => result,
@@ -79,7 +79,7 @@ export const addOrderedSetItemMutation = mutationWithClientMutationId<
 
     try {
       const res = await addSetItemLoader(id, {
-        geminiToken,
+        gemini_token: geminiToken,
         item_id: itemId,
         position,
       })

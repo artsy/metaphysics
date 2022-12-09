@@ -95,7 +95,7 @@ type addOrderedSetItemMutationPayload {
   clientMutationId: String
 
   # On success: the ordered set item added.
-  orderedSetOrError: addOrderedSetItemResponseOrError
+  orderedSetItemOrError: addOrderedSetItemResponseOrError
 }
 
 union addOrderedSetItemResponseOrError =
@@ -7056,10 +7056,10 @@ input CreateOrderedSetMutationInput {
   itemId: String
   itemType: String!
   key: String!
-  layout: Boolean
+  layout: String
   name: String
   ownerType: String
-  published: String
+  published: Boolean
 }
 
 type CreateOrderedSetMutationPayload {
@@ -11308,7 +11308,7 @@ type Mutation {
   ): deleteOrderedSetMutationPayload
 
   # deletes an item to an ordered set.
-  deleteOrderedSetItemMutation(
+  deleteOrderedSetItem(
     input: deleteOrderedSetItemMutationInput!
   ): deleteOrderedSetItemMutationPayload
   deleteUserAddress(input: DeleteUserAddressInput!): DeleteUserAddressPayload
@@ -11900,6 +11900,8 @@ type OrderedSet {
     first: Int
     last: Int
   ): OrderedSetItemConnection!
+  ownerType: String
+  published: Boolean!
 }
 
 # A connection to a list of items.
@@ -16504,10 +16506,10 @@ input updateOrderedSetMutationInput {
   itemId: String
   itemType: String
   key: String
-  layout: Boolean
+  layout: String
   name: String
   ownerType: String
-  published: String
+  published: Boolean
 }
 
 type updateOrderedSetMutationPayload {
