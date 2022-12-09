@@ -6,7 +6,7 @@ import { dailyShuffle } from "lib/shuffle"
 import { ArtworksAggregation } from "../aggregations/filter_artworks_aggregation"
 import { artistConnection } from "../artist"
 
-const getCuratedArtists = async (context): Promise<[typeof Artist]> => {
+export const getCuratedArtists = async (context): Promise<[typeof Artist]> => {
   const { artistsLoader, filterArtworksLoader, defaultTimezone } = context
   const artworks = await filterArtworksLoader({
     size: 0,
