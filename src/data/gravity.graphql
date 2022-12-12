@@ -2247,8 +2247,10 @@ input TransferMyCollectionInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
-  emailFrom: String!
-  emailTo: String!
+  emailFrom: String
+  emailTo: String
+  idFrom: String
+  idTo: String
 }
 
 """
@@ -2264,11 +2266,11 @@ type TransferMyCollectionPayload {
 }
 
 """
-Successfully transfered My Collection artworks.
+Successfully transferred My Collection artworks.
 """
 type TransferMyCollectionSuccess {
   """
-  Number of transfered artworks.
+  Number of transferred artworks.
   """
   count: Int!
 }
