@@ -9290,6 +9290,9 @@ type HomePageArtistModule implements Node {
 }
 
 enum HomePageArtistModuleTypes {
+  # The curated trending artists.
+  CURATED_TRENDING
+
   # The most searched for artists.
   POPULAR
 
