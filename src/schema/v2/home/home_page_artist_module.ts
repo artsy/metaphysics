@@ -54,10 +54,15 @@ export const HomePageArtistModuleTypes: {
       )
     },
   },
+  CURATED_TRENDING: {
+    description: "The curated trending artists.",
+    display: () => Promise.resolve(true),
+    resolve: async (context) => getCuratedArtists(context),
+  },
   TRENDING: {
     description: "The trending artists.",
     display: () => Promise.resolve(true),
-    resolve: async (context) => getCuratedArtists(context),
+    resolve: ({ trendingArtistsLoader }) => trendingArtistsLoader(),
   },
   POPULAR: {
     description: "The most searched for artists.",
