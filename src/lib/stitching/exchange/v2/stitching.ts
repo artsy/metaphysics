@@ -518,7 +518,7 @@ export const exchangeStitchingEnvironment = ({
             __typename
           }`,
           resolve: async (_source, args, context, info) => {
-            return await info.mergeInfo.delegateToSchema({
+            const orderResult = await info.mergeInfo.delegateToSchema({
               schema: exchangeSchema,
               operation: "query",
               fieldName: "commerceMyOrders",
@@ -526,6 +526,12 @@ export const exchangeStitchingEnvironment = ({
               context,
               info,
             })
+
+            orderResult.nodes
+              .filter((order) => order.state === "IN_REVIEW")
+              .forEach((order) => (order.state = "SUBMITTED"))
+
+            return orderResult
           },
         },
       },
