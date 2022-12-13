@@ -29,6 +29,10 @@ export interface ResolverContextValues {
    * to the MP `Image` type
    */
   imageData?: ImageData
+
+  /** Sent as a X-Image-Service header from Force, when a specific
+   * image service is desired to be used. */
+  imageService?: string
 }
 
 export type ResolverContext = ResolverContextValues &

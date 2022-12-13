@@ -1,7 +1,7 @@
 import { ResizeMode } from "@artsy/img"
 import { services, DEFAULT_1X_QUALITY } from "./config"
 
-interface Gemini {
+interface Lambda {
   src: string
   mode: ResizeMode
   width?: number
@@ -9,12 +9,12 @@ interface Gemini {
   quality?: number
 }
 
-export const gemini = ({
+export const lambda = ({
   src,
   mode,
   width,
   height,
   quality = DEFAULT_1X_QUALITY,
-}: Gemini): string => {
-  return services.gemini.exec(mode, src, { width, height, quality })
+}: Lambda): string => {
+  return services.lambda.exec(mode, src, { width, height, quality })
 }

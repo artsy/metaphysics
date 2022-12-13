@@ -12,7 +12,7 @@ import {
   find,
   curry,
 } from "lodash"
-import { DEFAULT_SRCSET_QUALITY } from "./services"
+import { DEFAULT_SRCSET_QUALITY } from "./services/config"
 
 export const grab: any = flow(pick, values, first)
 
