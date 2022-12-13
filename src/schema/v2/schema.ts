@@ -159,14 +159,12 @@ import { PartnerShowDocumentsConnection } from "./partner/partnerShowDocumentsCo
 import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
 import { NotificationsConnection } from "./notifications"
 import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_as_read_mutation"
-import Conversations from "./conversation/conversations"
 import updateMessageMutation from "./conversation/updateMessageMutation"
 import deleteConversationMutation from "./conversation/deleteConversationMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { updateCMSLastAccessTimestampMutation } from "./partner/updateCMSLastAccessTimestampMutation"
 import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
-import { Quiz } from "schema/v2/quiz/quiz"
-import { updateQuizMutation } from "schema/v2/quiz/updateQuizMutation"
+import Conversations from "./conversation/conversations"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -275,7 +273,6 @@ const rootFields = {
   usersConnection: Users,
   // popularArtists: PopularArtists,
   vanityURLEntity: VanityURLEntity,
-  artQuiz: Quiz,
 }
 
 // FIXME: Remove type once Reaction MPv2 migration is complete
@@ -354,7 +351,6 @@ export default new GraphQLSchema({
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       requestPriceEstimate: requestPriceEstimateMutation,
-      updateQuiz: updateQuizMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
