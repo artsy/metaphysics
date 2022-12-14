@@ -597,5 +597,7 @@ export default (accessToken, userID, opts) => {
     ),
     userSaleProfileLoader: gravityLoader((id) => `user_sale_profile/${id}`),
     usersLoader: gravityLoader("users", {}, { headers: true }),
+    quizLoader: gravityLoader(`user_art_quiz`, {}, { method: "GET" }),
+    updateQuizLoader: gravityLoader(`user_art_quiz`, {}, { method: "PUT" }),
   }
 }

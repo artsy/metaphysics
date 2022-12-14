@@ -5,6 +5,7 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
+  GraphQLFieldResolver,
 } from "graphql"
 import {
   connectionDefinitions,
@@ -190,6 +191,7 @@ export const paginationResolver = <T>({
   size,
   body,
   args,
+  resolveNode,
 }: {
   /** Args object containing either `page/size` or `first/after` */
   args: ConnectionArguments
@@ -203,6 +205,8 @@ export const paginationResolver = <T>({
   size: number
   /** Returned from the 'X-TOTAL-COUNT' header */
   totalCount: number
+  /** Optional callback. Allows resolution of custom node structure. */
+  resolveNode?: GraphQLFieldResolver<any, any> | null
 }) => {
   const connectionArgs = {
     // If we're exclusively using page/size pagination, `hasNextPage` will
@@ -217,6 +221,7 @@ export const paginationResolver = <T>({
     ...connectionFromArraySlice(body, connectionArgs, {
       arrayLength: totalCount,
       sliceStart: offset,
+      resolveNode,
     }),
   }
 }
