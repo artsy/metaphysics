@@ -23,7 +23,7 @@ export const updateQuizMutation = mutationWithClientMutationId<
     quiz: { type: QuizType, resolve: quiz.resolve },
   },
   mutateAndGetPayload: async (
-    { userId, artworkId, clearInteraction },
+    { artworkId, clearInteraction },
     { updateQuizLoader }
   ) => {
     if (!updateQuizLoader) return
@@ -33,7 +33,7 @@ export const updateQuizMutation = mutationWithClientMutationId<
       clear_interaction: !!clearInteraction,
     }
 
-    const result = await updateQuizLoader(userId, params)
+    const result = await updateQuizLoader(params)
     return result
   },
 })
