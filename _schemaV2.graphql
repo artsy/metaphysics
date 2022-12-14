@@ -11380,6 +11380,9 @@ type Mutation {
   updateNotificationPreferences(
     input: updateNotificationPreferencesMutationInput!
   ): updateNotificationPreferencesMutationPayload
+
+  # Update a quiz artwork interacted_with flag
+  updateQuiz(input: updateQuizMutationInput!): updateQuizMutationPayload
   updateSavedSearch(input: UpdateSavedSearchInput!): UpdateSavedSearchPayload
   updateSmsSecondFactor(
     input: UpdateSmsSecondFactorInput!
@@ -14172,7 +14175,6 @@ type QuizArtworkEdge {
   # The item at the end of the edge
   node: Artwork
   position: Int!
-  test: String
 }
 
 type RecentlySoldArtworkType {
@@ -16789,9 +16791,6 @@ type User implements Node {
 
   # The unconfirmed email of the user.
   unconfirmedEmail: String
-
-  # Update a quiz artwork interacted_with flag
-  updateQuiz(input: updateQuizMutationInput!): updateQuizMutationPayload
 
   # Check whether a user exists by email address before creating an account.
   userAlreadyExists: Boolean

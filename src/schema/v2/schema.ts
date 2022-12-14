@@ -165,6 +165,7 @@ import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { updateCMSLastAccessTimestampMutation } from "./partner/updateCMSLastAccessTimestampMutation"
 import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
 import Conversations from "./conversation/conversations"
+import { updateQuizMutation } from "schema/v2/updateQuizMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -351,6 +352,7 @@ export default new GraphQLSchema({
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       requestPriceEstimate: requestPriceEstimateMutation,
+      updateQuiz: updateQuizMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({

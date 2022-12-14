@@ -130,7 +130,6 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
     const { UserPurchasesConnection } = require("./userPurchases")
     const { UserInquiredArtworksConnection } = require("./userInquiredArtworks")
     const { quiz } = require("./quiz")
-    const { updateQuizMutation } = require("./updateQuizMutation.ts")
 
     return {
       ...InternalIDFields,
@@ -543,7 +542,6 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       quiz,
-      updateQuiz: updateQuizMutation,
     }
   },
 })

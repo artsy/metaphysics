@@ -1,9 +1,4 @@
-import {
-  GraphQLFieldConfig,
-  GraphQLInt,
-  GraphQLNonNull,
-  GraphQLString,
-} from "graphql"
+import { GraphQLFieldConfig, GraphQLInt, GraphQLNonNull } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { ArtworkType } from "schema/v2/artwork"
@@ -17,10 +12,6 @@ import { ResolverContext } from "types/graphql"
 export const QuizArtworkConnectionType = connectionWithCursorInfo({
   name: "QuizArtwork",
   edgeFields: {
-    test: {
-      type: GraphQLString,
-      resolve: () => "test",
-    },
     interactedAt: date(
       ({ interacted_at }: { interacted_at: string | null }) => interacted_at
     ),
@@ -39,10 +30,7 @@ export const quizArtworkConnection: GraphQLFieldConfig<any, ResolverContext> = {
     size: { type: GraphQLInt },
   }),
   resolve: ({ quiz_artworks }, args) => {
-    const { page, size, offset } = convertConnectionArgsToGravityArgs({
-      first: args?.first || 16,
-      ...args,
-    })
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
     const totalCount = quiz_artworks.length
 
     const quizArtworks = paginationResolver({

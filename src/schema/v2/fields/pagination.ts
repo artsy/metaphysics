@@ -205,7 +205,7 @@ export const paginationResolver = <T>({
   size: number
   /** Returned from the 'X-TOTAL-COUNT' header */
   totalCount: number
-
+  /** Optional callback. Allows resolution of custom node structure. */
   resolveNode?: GraphQLFieldResolver<any, any> | null
 }) => {
   const connectionArgs = {

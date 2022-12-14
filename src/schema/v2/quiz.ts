@@ -8,11 +8,11 @@ import { date } from "schema/v2/fields/date"
 export const QuizType = new GraphQLObjectType({
   name: "Quiz",
   fields: () => ({
+    ...InternalIDFields,
     quizArtworkConnection,
     completedAt: date(
       ({ completed_at }: { completed_at: string | null }) => completed_at
     ),
-    ...InternalIDFields,
   }),
 })
 
