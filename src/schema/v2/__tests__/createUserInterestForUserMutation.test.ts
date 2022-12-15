@@ -26,6 +26,9 @@ const mutation = gql`
               }
             }
           }
+          user {
+            email
+          }
         }
         ... on createUserInterestForUserFailure {
           mutationError {
@@ -41,6 +44,11 @@ const mutation = gql`
 
 describe("createUserInterestForUserMutation", () => {
   describe("on success", () => {
+    const user = {
+      id: "parcy-z",
+      email: "percy-z@catsy.net",
+    }
+
     const artistInterest = {
       id: "example",
       body: "example body",
@@ -51,19 +59,23 @@ describe("createUserInterestForUserMutation", () => {
     }
 
     const mockCreateUserInterestLoader = jest.fn()
+    const mockUserByIDLoader = jest.fn()
 
     const context = {
       createUserInterestLoader: mockCreateUserInterestLoader,
+      userByIDLoader: mockUserByIDLoader,
     }
 
     beforeEach(() => {
       mockCreateUserInterestLoader.mockResolvedValue(
         Promise.resolve(artistInterest)
       )
+      mockUserByIDLoader.mockResolvedValue(Promise.resolve(user))
     })
 
     afterEach(() => {
       mockCreateUserInterestLoader.mockReset()
+      mockUserByIDLoader.mockReset()
     })
 
     it("returns a user interest", async () => {
@@ -89,6 +101,9 @@ describe("createUserInterestForUserMutation", () => {
                 name: "example name",
                 birthday: "",
               },
+            },
+            user: {
+              email: "percy-z@catsy.net",
             },
           },
         },
