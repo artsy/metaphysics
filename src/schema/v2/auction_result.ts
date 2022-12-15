@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/node"
 import {
+  GraphQLArgumentConfig,
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
@@ -44,6 +45,26 @@ export const AuctionResultSorts = {
       },
     },
   }),
+}
+
+export const AuctionResultsState: GraphQLArgumentConfig = {
+  type: new GraphQLEnumType({
+    name: "AuctionResultsState",
+    values: {
+      ALL: {
+        value: "all",
+      },
+      PAST: {
+        value: "past",
+      },
+      UPCOMING: {
+        value: "upcoming",
+      },
+    },
+  }),
+  defaultValue: "all",
+  description:
+    "State of the returned auction results (can be past, upcoming, or all)",
 }
 
 const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({

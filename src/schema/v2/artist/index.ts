@@ -17,6 +17,7 @@ import { artworkConnection } from "schema/v2/artwork"
 import {
   auctionResultConnection,
   AuctionResultSorts,
+  AuctionResultsState,
 } from "schema/v2/auction_result"
 import cached from "schema/v2/fields/cached"
 import { date } from "schema/v2/fields/date"
@@ -210,11 +211,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLInt,
             description: "Filter auction results by earliest created at year",
           },
-          includeUpcoming: {
-            type: GraphQLBoolean,
-            defaultValue: true,
-            description: "Include upcoming auction results",
-          },
           keyword: {
             type: GraphQLString,
             description:
@@ -239,6 +235,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             description: "Filter auction results by Artwork sizes",
           },
           sort: AuctionResultSorts,
+          state: AuctionResultsState,
         }),
         resolve: async ({ _id }, options, { auctionLotsLoader }) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
@@ -267,7 +264,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             size,
             sizes,
             sort: options.sort,
-            upcoming: options.includeUpcoming,
+            state: options.state,
           }
 
           return auctionLotsLoader(diffusionArgs).then(
