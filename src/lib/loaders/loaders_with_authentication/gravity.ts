@@ -14,6 +14,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    addSetItemLoader: gravityLoader(
+      (id) => `set/${id}/item`,
+      {},
+      { method: "POST" }
+    ),
     artistDuplicatesLoader: gravityLoader(
       (id) => `artist/${id}/duplicates`,
       {},
@@ -81,6 +86,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createSetLoader: gravityLoader("set", {}, { method: "POST" }),
     createUserAdminNoteLoader: gravityLoader(
       (id) => `/user/${id}/admin_note`,
       {},
@@ -136,6 +142,16 @@ export default (accessToken, userID, opts) => {
     ),
     deleteSavedArtworkLoader: gravityLoader(
       (id) => `collection/saved-artwork/artwork/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deleteSetLoader: gravityLoader(
+      (id) => `set/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deleteSetItemLoader: gravityLoader<any, { id: string; itemId: string }>(
+      ({ id, itemId }) => `set/${id}/item/${itemId}`,
       {},
       { method: "DELETE" }
     ),
@@ -548,6 +564,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updateSetLoader: gravityLoader((id) => `set/${id}`, {}, { method: "PUT" }),
     updateUserLoader: gravityLoader(
       (id) => `user/${id}`,
       {},

@@ -58,6 +58,7 @@ import { SaleRegistrationConnection } from "./sale_registrations"
 import { SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { WatchedLotConnection } from "./watchedLotConnection"
+import { quiz } from "../quiz"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -300,6 +301,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       description: "Collector's position with relevant institutions",
       resolve: collectorProfileResolver("other_relevant_positions"),
     },
+    quiz,
     receivePurchaseNotification: {
       description: "This user should receive purchase notifications",
       type: GraphQLBoolean,
