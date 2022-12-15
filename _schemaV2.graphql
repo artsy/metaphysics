@@ -5578,8 +5578,15 @@ type ConsignmentInquiry {
   userId: String
 }
 
+type ConsignmentInquiryMutationError {
+  error: String
+  message: String!
+  statusCode: Int
+  type: String
+}
+
 type ConsignmentInquiryMutationFailure {
-  mutationError: GravityMutationError
+  mutationError: ConsignmentInquiryMutationError
 }
 
 type ConsignmentInquiryMutationSuccess {
