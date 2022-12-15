@@ -90,6 +90,11 @@ import { updateUserSaleProfileMutation } from "./users/updateUserSaleProfileMuta
 import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileIconMutation"
 import ObjectIdentification from "./object_identification"
 import { OrderedSet } from "./OrderedSet"
+import { createOrderedSetMutation } from "./OrderedSet/createOrderedSetMutation"
+import { deleteOrderedSetItemMutation } from "./OrderedSet/deleteOrderedSetItemMutation"
+import { updateOrderedSetMutation } from "./OrderedSet/updateOrderedSetMutation"
+import { deleteOrderedSetMutation } from "./OrderedSet/deleteOrderedSetMutation"
+import { addOrderedSetItemMutation } from "./OrderedSet/addOrderedSetItemMutation"
 import OrderedSets from "./ordered_sets"
 import Partner from "schema/v2/partner/partner"
 import PartnerArtworks from "./partner/partnerArtworks"
@@ -293,10 +298,13 @@ export default new GraphQLSchema({
   mutation: new GraphQLObjectType<any, ResolverContext>({
     name: "Mutation",
     fields: {
+      addOrderedSetItem: addOrderedSetItemMutation,
+      addUserRole: addUserRoleMutation,
       adminCreateFeatureFlag: createFeatureFlagMutation,
-      adminUpdateFeatureFlag: updateFeatureFlagMutation,
       adminDeleteFeatureFlag: deleteFeatureFlagMutation,
       adminToggleFeatureFlag: toggleFeatureFlagMutation,
+      adminUpdateFeatureFlag: updateFeatureFlagMutation,
+      bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       createAccountRequest: createAccountRequestMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
@@ -304,14 +312,19 @@ export default new GraphQLSchema({
       createCreditCard: createCreditCardMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
+      createOrderedSet: createOrderedSetMutation,
       createUserAdminNote: createUserAdminNoteMutation,
-      deleteUserAdminNote: deleteUserAdminNoteMutation,
       createUserInterest: createUserInterestMutation,
       createUserInterestForUser: createUserInterestForUser,
+      deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteConversation: deleteConversationMutation,
       deleteCreditCard: deleteCreditCardMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
+      deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
+      deleteOrderedSet: deleteOrderedSetMutation,
+      deleteOrderedSetItem: deleteOrderedSetItemMutation,
+      deleteUserAdminNote: deleteUserAdminNoteMutation,
       deleteUserInterest: deleteUserInterestMutation,
       deleteUserInterestForUser: deleteUserInterestForUser,
       deleteUserRole: deleteUserRoleMutation,
@@ -325,17 +338,17 @@ export default new GraphQLSchema({
       markAllNotificationsAsRead: markAllNotificationsAsReadMutation,
       mergeArtists: mergeArtistsMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
-      myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
-      deleteArtworkImage: DeleteArtworkImageMutation,
+      myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
+      requestPriceEstimate: requestPriceEstimateMutation,
       saveArtwork: saveArtworkMutation,
       sendConfirmationEmail: sendConfirmationEmailMutation,
       sendConversationMessage: SendConversationMessageMutation,
-      sendIdentityVerificationEmail: sendIdentityVerificationEmailMutation,
-      submitInquiryRequestMutation,
       sendFeedback: sendFeedbackMutation,
+      sendIdentityVerificationEmail: sendIdentityVerificationEmailMutation,
       startIdentityVerification: startIdentityVerificationMutation,
+      submitInquiryRequestMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
       updateArtwork: updateArtworkMutation,
       updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
@@ -344,14 +357,11 @@ export default new GraphQLSchema({
       updateConversation: UpdateConversationMutation,
       updateMessage: updateMessageMutation,
       updateMyPassword: updateMyPasswordMutation,
+      updateMyUserProfile: UpdateMyUserProfileMutation,
+      updateNotificationPreferences: updateNotificationPreferencesMutation,
+      updateOrderedSet: updateOrderedSetMutation,
       updateUser: updateUserMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
-      updateMyUserProfile: UpdateMyUserProfileMutation,
-      addUserRole: addUserRoleMutation,
-      updateNotificationPreferences: updateNotificationPreferencesMutation,
-      bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
-      deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
-      requestPriceEstimate: requestPriceEstimateMutation,
       updateQuiz: updateQuizMutation,
     },
   }),

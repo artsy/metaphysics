@@ -7,6 +7,7 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLFieldConfig,
+  GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
@@ -40,6 +41,13 @@ export const OrderedSetType = new GraphQLObjectType<
     itemType: {
       type: GraphQLString,
       resolve: ({ item_type }) => item_type,
+    },
+    ownerType: {
+      type: GraphQLString,
+      resolve: ({ owner_type }) => owner_type,
+    },
+    published: {
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
     items: {
       type: new GraphQLList(OrderedSetItemType),
