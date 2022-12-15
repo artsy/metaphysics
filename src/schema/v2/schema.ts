@@ -164,12 +164,13 @@ import { PartnerShowDocumentsConnection } from "./partner/partnerShowDocumentsCo
 import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
 import { NotificationsConnection } from "./notifications"
 import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_as_read_mutation"
-import Conversations from "./conversation/conversations"
 import updateMessageMutation from "./conversation/updateMessageMutation"
 import deleteConversationMutation from "./conversation/deleteConversationMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { updateCMSLastAccessTimestampMutation } from "./partner/updateCMSLastAccessTimestampMutation"
 import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
+import Conversations from "./conversation/conversations"
+import { updateQuizMutation } from "schema/v2/updateQuizMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -361,6 +362,7 @@ export default new GraphQLSchema({
       updateOrderedSet: updateOrderedSetMutation,
       updateUser: updateUserMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
+      updateQuiz: updateQuizMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({

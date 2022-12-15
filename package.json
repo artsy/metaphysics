@@ -37,6 +37,7 @@
   "author": "Art.sy Inc",
   "license": "MIT",
   "dependencies": {
+    "@artsy/img": "^1.0.0",
     "@artsy/morgan": "^1.0.2",
     "@artsy/multienv": "^1.2.0",
     "@artsy/to-title-case": "^1.1.0",
@@ -89,7 +90,7 @@
     "patch-package": "6.2.2",
     "postinstall-prepare": "1.0.1",
     "proportional-scale": "4.0.0",
-    "qs": "6.9.1",
+    "qs": "6.9.7",
     "rate-limit-memcached": "0.6.0",
     "react-relay-network-modern": "4.7.7",
     "relay-cursor-paging": "0.2.0",

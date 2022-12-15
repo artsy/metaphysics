@@ -129,6 +129,8 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => {
     const { UserPurchasesConnection } = require("./userPurchases")
     const { UserInquiredArtworksConnection } = require("./userInquiredArtworks")
+    const { quiz } = require("./quiz")
+
     return {
       ...InternalIDFields,
       cached,
@@ -539,6 +541,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
           return false
         },
       },
+      quiz,
     }
   },
 })

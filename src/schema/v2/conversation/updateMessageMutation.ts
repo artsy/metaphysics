@@ -19,7 +19,7 @@ interface UpdateMessageMutationInputProps {
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "updateMessageSuccess",
+  name: "UpdateMessageSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
     conversation: {
@@ -30,7 +30,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "updateMessageFailure",
+  name: "UpdateMessageFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -41,7 +41,7 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "updateMessageResponseOrError",
+  name: "UpdateMessageResponseOrError",
   types: [SuccessType, FailureType],
 })
 

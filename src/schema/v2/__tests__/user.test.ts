@@ -450,6 +450,7 @@ describe("User", () => {
               edges {
                 ownerType
                 salePrice
+                saleDate(format: "MMM Do, YYYY")
                 source
                 node {
                   __typename
@@ -477,6 +478,7 @@ describe("User", () => {
         {
           owner_type: "SaleArtwork",
           sale_price: 1000.9999,
+          sale_date: "2018-09-26 04:00:00 UTC",
           source: "auction",
           artwork: {
             title: "Monkey Business",
@@ -495,6 +497,7 @@ describe("User", () => {
         {
           owner_type: "ArtworkInquiryRequest",
           sale_price: 600.1234,
+          sale_date: "2018-09-26 04:00:00 UTC",
           source: "inquiry",
           artwork: {
             __typename: "Artwork",
@@ -541,6 +544,7 @@ describe("User", () => {
       expect(edges[0]).toEqual({
         ownerType: "SaleArtwork",
         salePrice: 1000.9999,
+        saleDate: "Sep 26th, 2018",
         source: "auction",
         node: {
           __typename: "Artwork",
@@ -559,6 +563,7 @@ describe("User", () => {
       expect(edges[1]).toEqual({
         ownerType: "ArtworkInquiryRequest",
         salePrice: 600.1234,
+        saleDate: "Sep 26th, 2018",
         source: "inquiry",
         node: {
           __typename: "Artwork",

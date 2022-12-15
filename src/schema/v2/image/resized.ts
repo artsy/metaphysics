@@ -1,5 +1,6 @@
 import { MaxDimensions, scale } from "proportional-scale"
-import { DEFAULT_SRCSET_QUALITY, gemini } from "./services"
+import { getImageService } from "./services"
+import { DEFAULT_SRCSET_QUALITY } from "./services/config"
 import { normalizeQuality, setVersion } from "./normalize"
 import {
   GraphQLObjectType,
@@ -36,7 +37,8 @@ export const resizedImageUrl = (
     width: targetWidth,
     height: targetHeight,
     quality = DEFAULT_SRCSET_QUALITY,
-  }: ResizedImageArguments = {}
+  }: ResizedImageArguments = {},
+  { imageService = "gemini" } = {}
 ): ResizedImageUrl => {
   const src = setVersion(image as any, version)
 
@@ -81,7 +83,9 @@ export const resizedImageUrl = (
   const proxiedHeight = scaled.height || targetHeight
   const [quality1x, quality2x] = normalizeQuality(quality)
 
-  const url1x = gemini({
+  const loader = getImageService(imageService)
+
+  const url1x = loader({
     src,
     mode: "resize",
     width: proxiedWidth,
@@ -89,7 +93,7 @@ export const resizedImageUrl = (
     quality: quality1x,
   })
 
-  const url2x = gemini({
+  const url2x = loader({
     src,
     mode: "resize",
     width: (proxiedWidth || 0) * 2 || undefined,

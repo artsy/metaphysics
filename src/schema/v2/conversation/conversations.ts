@@ -85,11 +85,9 @@ const Conversations: GraphQLFieldConfig<
         intercepted: false,
         to_id: args.partnerId,
         to_type: "Partner",
-
-        // TODO
-        dismissed: args.dismissed,
-        has_message: args.hasMessage,
-        has_reply: args.hasReply,
+        has_reply: args.hasReply ?? undefined,
+        has_message: args.hasMessage ?? undefined,
+        dismissed: args.dismissed ?? undefined,
       }
       // User
     } else {

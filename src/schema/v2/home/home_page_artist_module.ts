@@ -12,6 +12,7 @@ import {
 } from "graphql"
 import { totalViaLoader } from "lib/total"
 import { ResolverContext } from "types/graphql"
+import { getCuratedArtists } from "schema/v2/artists/curatedTrending"
 
 // This object is used for both the `key` argument enum and to do fetching.
 // The order of the artists should be 1. suggested, 2. trending, 3. popular
@@ -52,6 +53,11 @@ export const HomePageArtistModuleTypes: {
         }))
       )
     },
+  },
+  CURATED_TRENDING: {
+    description: "The curated trending artists.",
+    display: () => Promise.resolve(true),
+    resolve: async (context) => getCuratedArtists(context),
   },
   TRENDING: {
     description: "The trending artists.",
