@@ -26,8 +26,7 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
     allowEmptyCreatedDates: {
       type: GraphQLBoolean,
       defaultValue: true,
-      description:
-        "Filter auction results by empty artwork created date values",
+      description: "Allow auction results with empty created date values",
     },
     categories: {
       type: new GraphQLList(GraphQLString),
