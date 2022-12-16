@@ -16,6 +16,7 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { UserType } from "../user"
 
 interface Input {
   body?: string
@@ -33,6 +34,14 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     userInterest: {
       type: userInterestType,
       resolve: (userInterest) => userInterest,
+    },
+    user: {
+      type: UserType,
+      resolve: ({ userId }, _args, { userByIDLoader }) => {
+        if (!userByIDLoader) return null
+
+        return userByIDLoader(userId)
+      },
     },
   }),
 })
@@ -71,7 +80,7 @@ export const createUserInterestForUser = mutationWithClientMutationId<
   outputFields: {
     userInterestOrError: {
       type: ResponseOrErrorType,
-      description: "On success: UserInterest. On failure: MutationError.",
+      description: "On success: UserInterest, User. On failure: MutationError.",
       resolve: (result) => result,
     },
   },
@@ -92,7 +101,7 @@ export const createUserInterestForUser = mutationWithClientMutationId<
         user_id: args.userId,
       })
 
-      return userInterest
+      return { ...userInterest, userId: args.userId }
     } catch (err) {
       const formattedErr = formatGravityError(err)
       if (formattedErr) {
