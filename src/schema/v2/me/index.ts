@@ -59,6 +59,7 @@ import { SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { WatchedLotConnection } from "./watchedLotConnection"
 import { quiz } from "../quiz"
+import moment from "moment"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -210,8 +211,22 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       resolve: (_root, _options, { meCreditCardsLoader }) => {
         if (!meCreditCardsLoader) return null
         return meCreditCardsLoader({ qualified_for_bidding: true }).then(
-          ({ body }) => {
-            return body && body.length > 0
+          ({ body: cards = [] }) => {
+            const unexpiredCards = cards.filter((card) => {
+              const {
+                expiration_month: expMonth,
+                expiration_year: expYear,
+              } = card
+
+              // Moment months are 0-indexed
+              const expirationMoment = moment({
+                year: expYear,
+                month: expMonth - 1,
+              }).endOf("month")
+
+              return expirationMoment.isAfter(moment.utc())
+            })
+            return unexpiredCards.length > 0
           }
         )
       },
