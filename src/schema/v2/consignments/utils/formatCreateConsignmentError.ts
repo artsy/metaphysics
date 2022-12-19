@@ -4,6 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 
 export const ConsignmentInquiryMutationErrorName =
@@ -31,23 +32,5 @@ export const ConsignmentInquiryErrorType = new GraphQLObjectType<
 })
 
 export const formatCreateConsignmentError = (error) => {
-  if (typeof error === "string") {
-    return {
-      error,
-      message: error,
-    }
-  }
-
-  let err
-  if (error instanceof Error) {
-    err = JSON.parse(error.message)
-    const message = err?.error || err?.message || ""
-    return {
-      error: message.length ? message : error.message,
-      message,
-      statusCode: err?.statusCode,
-      type: "error",
-    }
-  }
-  return { ...err }
+  return formatGravityError(error)
 }
