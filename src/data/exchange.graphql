@@ -98,6 +98,7 @@ type BuyOrder implements Order {
   bankAccountId: String
   buyer: OrderPartyUnion!
   buyerPhoneNumber: String
+  buyerPhoneNumberCountryCode: String
   buyerTotalCents: Int
   code: String!
   commissionFeeCents: Int
@@ -1093,6 +1094,7 @@ type OfferOrder implements Order {
   """
   buyerAction: BuyerOfferActionEnum
   buyerPhoneNumber: String
+  buyerPhoneNumberCountryCode: String
   buyerTotalCents: Int
   code: String!
   commissionFeeCents: Int
@@ -1203,6 +1205,7 @@ interface Order {
   bankAccountId: String
   buyer: OrderPartyUnion!
   buyerPhoneNumber: String
+  buyerPhoneNumberCountryCode: String
   buyerTotalCents: Int
   code: String!
   commissionFeeCents: Int
@@ -1476,6 +1479,11 @@ enum OrderSourceEnum {
   The order was originated on a conversation
   """
   inquiry
+
+  """
+  The order was originated from a private sale
+  """
+  private_sale
 }
 
 type OrderStateChangedEvent implements EventInterface {
@@ -1984,6 +1992,7 @@ input SetShippingInput {
   fulfillmentType: OrderFulfillmentTypeEnum!
   id: ID!
   phoneNumber: String
+  phoneNumberCountryCode: String
   shipping: ShippingAttributes
 }
 
