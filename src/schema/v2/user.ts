@@ -33,6 +33,7 @@ import {
   UserAccessiblePropertiesConnectionType,
   UserAccessiblePropertiesModelInputType,
 } from "./userAccessibleProperties"
+import initials from "./fields/initials"
 
 export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserAdminNotes",
@@ -395,6 +396,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: (result) => result,
       },
+      initials: initials("name"),
       paddleNumber: {
         description: "The paddle number of the user",
         type: GraphQLString,
