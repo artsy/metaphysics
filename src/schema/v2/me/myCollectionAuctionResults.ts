@@ -12,49 +12,48 @@ import { pageable } from "relay-cursor-paging"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
-import { auctionResultConnection, AuctionResultSorts } from "../auction_result"
+import {
+  auctionResultConnection,
+  AuctionResultSorts,
+  AuctionResultsState,
+} from "../auction_result"
 import { MAX_ARTISTS } from "./myCollectionInfo"
 
 const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
   type: auctionResultConnection.connectionType,
   description: "A list of auction results from artists in My Collection",
   args: pageable({
-    sort: AuctionResultSorts,
-    organizations: {
-      type: new GraphQLList(GraphQLString),
-      description: "Filter auction results by organizations",
-    },
-    sizes: {
-      type: new GraphQLList(ArtworkSizes),
-      description: "Filter auction results by Artwork sizes",
+    allowEmptyCreatedDates: {
+      type: GraphQLBoolean,
+      defaultValue: true,
+      description: "Allow auction results with empty created date values",
     },
     categories: {
       type: new GraphQLList(GraphQLString),
       description: "Filter auction results by category (medium)",
     },
-    includeUpcoming: {
-      type: GraphQLBoolean,
-      defaultValue: true,
-      description: "Include upcoming auction results",
-    },
-    recordsTrusted: {
-      type: GraphQLBoolean,
-      defaultValue: false,
-      description: "When true, will only return records for allowed artists.",
-    },
     earliestCreatedYear: {
       type: GraphQLInt,
       description: "Filter auction results by earliest created at year",
+    },
+    organizations: {
+      type: new GraphQLList(GraphQLString),
+      description: "Filter auction results by organizations",
     },
     latestCreatedYear: {
       type: GraphQLInt,
       description: "Filter auction results by latest created at year",
     },
-    allowEmptyCreatedDates: {
+    sizes: {
+      type: new GraphQLList(ArtworkSizes),
+      description: "Filter auction results by Artwork sizes",
+    },
+    sort: AuctionResultSorts,
+    state: AuctionResultsState,
+    recordsTrusted: {
       type: GraphQLBoolean,
-      defaultValue: true,
-      description:
-        "Filter auction results by empty artwork created date values",
+      defaultValue: false,
+      description: "When true, will only return records for allowed artists.",
     },
   }),
   resolve: async (
@@ -96,7 +95,7 @@ const MyCollectionAuctionResults: GraphQLFieldConfig<any, ResolverContext> = {
         allow_empty_created_dates: options.allowEmptyCreatedDates,
         sizes,
         sort: options.sort,
-        upcoming: options.includeUpcoming,
+        state: options.state,
       }
 
       const { total_count, _embedded } = await auctionLotsLoader(

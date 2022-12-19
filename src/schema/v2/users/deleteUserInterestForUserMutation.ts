@@ -8,9 +8,11 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { GraphQLUnionType } from "graphql"
+import { UserType } from "../user"
 
 interface Input {
   id: string
+  userId?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -20,6 +22,14 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     userInterest: {
       type: userInterestType,
       resolve: (userInterest) => userInterest,
+    },
+    user: {
+      type: UserType,
+      resolve: ({ userId }, _args, { userByIDLoader }) => {
+        if (!userId || !userByIDLoader) return null
+
+        return userByIDLoader(userId)
+      },
     },
   }),
 })
@@ -52,15 +62,20 @@ export const deleteUserInterestForUser = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the UserInterest to delete.",
     },
+    userId: {
+      type: GraphQLString,
+      description: "An optional ID of a User.",
+    },
   },
   outputFields: {
     userInterestOrError: {
       type: ResponseOrErrorType,
-      description: "On success: UserInterest. On failure: MutationError.",
+      description:
+        "On success: UserInterest and optionally a User. On failure: MutationError.",
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async ({ id }, { deleteUserInterestLoader }) => {
+  mutateAndGetPayload: async (args, { deleteUserInterestLoader }) => {
     if (!deleteUserInterestLoader) {
       throw new Error(
         "A X-Access-Token header is required to perform this action."
@@ -68,9 +83,13 @@ export const deleteUserInterestForUser = mutationWithClientMutationId<
     }
 
     try {
-      const userInterest: UserInterest = await deleteUserInterestLoader(id)
+      const userInterest: UserInterest = await deleteUserInterestLoader(args.id)
 
-      return userInterest
+      if (Object.keys(args).includes("userId")) {
+        return { ...userInterest, userId: args.userId }
+      } else {
+        return userInterest
+      }
     } catch (err) {
       const formattedErr = formatGravityError(err)
       if (formattedErr) {
