@@ -37,7 +37,7 @@
   "author": "Art.sy Inc",
   "license": "MIT",
   "dependencies": {
-    "@artsy/img": "^1.0.0",
+    "@artsy/img": "^1.0.1",
     "@artsy/morgan": "^1.0.2",
     "@artsy/multienv": "^1.2.0",
     "@artsy/to-title-case": "^1.1.0",
