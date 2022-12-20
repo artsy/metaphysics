@@ -171,6 +171,7 @@ import { updateCMSLastAccessTimestampMutation } from "./partner/updateCMSLastAcc
 import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
 import Conversations from "./conversation/conversations"
 import { updateQuizMutation } from "schema/v2/updateQuizMutation"
+import { MatchOrderedSetsConnection } from "./match/orderedSet"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -240,6 +241,7 @@ const rootFields = {
   matchArtist: MatchArtist,
   // matchGene: MatchGene,
   matchConnection: MatchConnection,
+  matchOrderedSetsConnection: MatchOrderedSetsConnection,
   me: Me,
   node: ObjectIdentification.NodeField,
   notificationsConnection: NotificationsConnection,
