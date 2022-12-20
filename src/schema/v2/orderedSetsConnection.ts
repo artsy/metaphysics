@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLNonNull, GraphQLString } from "graphql"
+import { GraphQLFieldConfig, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { paginationResolver } from "schema/v2/fields/pagination"
 import { pageable } from "relay-cursor-paging"
