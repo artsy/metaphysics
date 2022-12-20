@@ -282,6 +282,11 @@ enum CancelReasonTypeEnum {
   ADMIN_CANCELED
 
   """
+  cancelation reason is: admin_failed_review
+  """
+  ADMIN_FAILED_REVIEW
+
+  """
   cancelation reason is: buyer_lapsed
   """
   BUYER_LAPSED
@@ -1513,6 +1518,11 @@ enum OrderStateEnum {
   order is fulfilled by seller
   """
   FULFILLED
+
+  """
+  order is undergoing review by Artsy admins
+  """
+  IN_REVIEW
 
   """
   order is still pending submission by buyer
