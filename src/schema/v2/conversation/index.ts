@@ -94,7 +94,6 @@ export const ConversationResponderType = new GraphQLObjectType<
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ name }) => name || "Artsy User", // users may lack names, so fall back this non-null field
     },
     replyToImpulseIDs: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
