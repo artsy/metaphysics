@@ -3,9 +3,9 @@ import { ResolverContext } from "types/graphql"
 import { paginationResolver } from "schema/v2/fields/pagination"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { OrderedSetConnection } from "../OrderedSet"
+import { OrderedSetConnection } from "./OrderedSet"
 
-export const MatchOrderedSetsConnection: GraphQLFieldConfig<
+export const OrderedSetsConnection: GraphQLFieldConfig<
   void,
   ResolverContext
 > = {
@@ -13,12 +13,11 @@ export const MatchOrderedSetsConnection: GraphQLFieldConfig<
   description: "A list of Ordered Sets",
   args: pageable({
     term: {
-      type: new GraphQLNonNull(GraphQLString),
-      description:
-        "If present, will search by term, cannot be combined with `ids`",
+      type: GraphQLString,
+      description: "If present, will search by term",
     },
   }),
-  resolve: async (_root, args, { matchSetsLoader }) => {
+  resolve: async (_root, args, { matchSetsLoader, setsLoader }) => {
     if (!matchSetsLoader)
       throw new Error(
         "You need to pass a X-Access-Token header to perform this action"
@@ -28,12 +27,23 @@ export const MatchOrderedSetsConnection: GraphQLFieldConfig<
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const { body } = await matchSetsLoader({
-      term,
+    const gravityArgs: {
+      page: number
+      size: number
+      total_count: boolean
+      term?: string
+    } = {
       page,
       size,
       total_count: true,
-    })
+    }
+
+    if (term) gravityArgs.term = term
+
+    // NOTE: api/v1/match/sets doesn't currently support pagination
+    const loader = term ? matchSetsLoader : setsLoader
+
+    const { body } = await loader(gravityArgs)
 
     const totalCount = body.length
 

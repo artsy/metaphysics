@@ -13848,17 +13848,6 @@ type Query {
     size: Int = 10
     term: String!
   ): MatchConnection
-
-  # A list of Ordered Sets
-  matchOrderedSetsConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-
-    # If present, will search by term, cannot be combined with `ids`
-    term: String!
-  ): OrderedSetConnection
   me: Me
 
   # Fetches an object given its globally unique ID.
@@ -13926,6 +13915,17 @@ type Query {
     key: String!
     public: Boolean = true
   ): [OrderedSet]
+
+  # A list of Ordered Sets
+  orderedSetsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    # If present, will search by term
+    term: String
+  ): OrderedSetConnection
   page(id: ID!): Page!
 
   # A Partner
@@ -17897,17 +17897,6 @@ type Viewer {
     size: Int = 10
     term: String!
   ): MatchConnection
-
-  # A list of Ordered Sets
-  matchOrderedSetsConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-
-    # If present, will search by term, cannot be combined with `ids`
-    term: String!
-  ): OrderedSetConnection
   me: Me
 
   # Fetches an object given its globally unique ID.
@@ -17944,6 +17933,17 @@ type Viewer {
     key: String!
     public: Boolean = true
   ): [OrderedSet]
+
+  # A list of Ordered Sets
+  orderedSetsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    # If present, will search by term
+    term: String
+  ): OrderedSetConnection
   page(id: ID!): Page!
 
   # A Partner
