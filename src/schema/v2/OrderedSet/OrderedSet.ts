@@ -30,7 +30,7 @@ export const OrderedSetType = new GraphQLObjectType<
   fields: () => ({
     ...IDFields,
     cached,
-    createdAt: date(),
+    createdAt: date(({ created_at }) => created_at),
     createdBy: {
       type: UserType,
       resolve: ({ created_by }) => created_by,
