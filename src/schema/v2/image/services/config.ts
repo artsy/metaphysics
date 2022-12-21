@@ -23,6 +23,10 @@ export const services = configureImageServices({
         source: "https://files.artsy.net",
         bucket: "artsy-vanity-files-production",
       },
+      {
+        source: "https://artsy-media-uploads.s3.amazonaws.com",
+        bucket: "artsy-media-uploads",
+      },
     ],
   },
 })

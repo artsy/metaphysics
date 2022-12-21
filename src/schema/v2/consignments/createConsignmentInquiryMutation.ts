@@ -6,12 +6,13 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import {
-  formatGravityError,
-  GravityMutationErrorType,
-} from "lib/gravityErrorHandler"
 import { camelCase } from "lodash"
 import { ResolverContext } from "types/graphql"
+import {
+  ConsignmentInquiryErrorType,
+  ConsignmentInquiryMutationErrorName,
+  formatCreateConsignmentError,
+} from "./utils/formatCreateConsignmentError"
 
 const ConsignmentInquiryType = new GraphQLObjectType<any, ResolverContext>({
   name: "ConsignmentInquiry",
@@ -46,7 +47,7 @@ const ConsignmentInquiryType = new GraphQLObjectType<any, ResolverContext>({
 const MutationSuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "ConsignmentInquiryMutationSuccess",
   isTypeOf: (data) => {
-    return data._type !== "GravityMutationError"
+    return data._type !== ConsignmentInquiryMutationErrorName
   },
   fields: () => ({
     consignmentInquiry: {
@@ -69,11 +70,11 @@ const MutationSuccessType = new GraphQLObjectType<any, ResolverContext>({
 const MutationFailureType = new GraphQLObjectType<any, ResolverContext>({
   name: "ConsignmentInquiryMutationFailure",
   isTypeOf: (data) => {
-    return data._type === "GravityMutationError"
+    return data._type === ConsignmentInquiryMutationErrorName
   },
   fields: () => ({
     mutationError: {
-      type: GravityMutationErrorType,
+      type: ConsignmentInquiryErrorType,
       resolve: (err) => (typeof err.message === "object" ? err.message : err),
     },
   }),
@@ -119,7 +120,7 @@ export const createConsignmentInquiryMutation = mutationWithClientMutationId<
     { createConsignmentInquiryLoader }
   ) => {
     if (!createConsignmentInquiryLoader) {
-      throw new Error("No createConsignmentInquiryLoader found!")
+      throw new Error("No loader available for createConsignmentInquiry!")
     }
 
     return createConsignmentInquiryLoader({
@@ -131,9 +132,9 @@ export const createConsignmentInquiryMutation = mutationWithClientMutationId<
     })
       .then((result) => result)
       .catch((error) => {
-        const formattedErr = formatGravityError(error)
+        const formattedErr = formatCreateConsignmentError(error)
         if (formattedErr) {
-          return { ...formattedErr, _type: "GravityMutationError" }
+          return { ...formattedErr, _type: ConsignmentInquiryMutationErrorName }
         } else {
           throw new Error(error)
         }

@@ -11,10 +11,10 @@
     chokidar "^3.0.0"
     decache "^4.4.0"
 
-"@artsy/img@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@artsy/img/-/img-1.0.0.tgz#537162b159085758663e757bdaabba01b1b0d73f"
-  integrity sha512-rtc/vn5rSt3Roo/hVbZBicE/OgNFqc36CMDeqvA/Y4s52Q8omCUw9lTHogiMHziOGubZq9HckDjsUE79mlvnJQ==
+"@artsy/img@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@artsy/img/-/img-1.0.3.tgz#9c4eb0928b400df1261193f5be35bc6ac3fca37c"
+  integrity sha512-lI52XSFcCutuiIIWaj9jmbTwu8lGWpRbV/FwtE7OtYo7sKumfo1cea+kslnmkLoUtSku5jTzyag6dQO8MNDolg==
   dependencies:
     md5 "^2.3.0"
 
