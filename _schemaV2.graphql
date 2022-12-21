@@ -11893,6 +11893,15 @@ union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
 
 type OrderedSet {
   cached: Int
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+  createdBy: User
   description(format: Format): String
 
   # A globally unique ID.

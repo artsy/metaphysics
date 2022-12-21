@@ -19,6 +19,8 @@ import { connectionWithCursorInfo } from "../fields/pagination"
 import { Array } from "runtypes"
 import { markdown } from "../fields/markdown"
 import { OrderedSetLayoutsEnum } from "./OrderedSetLayoutsEnum"
+import { date } from "../fields/date"
+import { UserType } from "../user"
 
 export const OrderedSetType = new GraphQLObjectType<
   Gravity.OrderedSet & { cached: number },
@@ -28,6 +30,11 @@ export const OrderedSetType = new GraphQLObjectType<
   fields: () => ({
     ...IDFields,
     cached,
+    createdAt: date(),
+    createdBy: {
+      type: UserType,
+      resolve: ({ created_by }) => created_by,
+    },
     description: markdown(),
     key: {
       type: GraphQLString,
