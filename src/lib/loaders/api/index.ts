@@ -53,7 +53,6 @@ export default (opts) => ({
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
-      appToken: opts.appToken,
     }
   ),
 
