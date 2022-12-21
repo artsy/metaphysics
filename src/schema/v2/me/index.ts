@@ -219,7 +219,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
               } = card
 
               // Moment months are 0-indexed
-              const expirationMoment = moment({
+              const expirationMoment = moment.utc({
                 year: expYear,
                 month: expMonth - 1,
               }).endOf("month")
