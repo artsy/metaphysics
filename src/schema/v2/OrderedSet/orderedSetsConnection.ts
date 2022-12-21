@@ -40,11 +40,13 @@ export const OrderedSetsConnection: GraphQLFieldConfig<
 
     if (term) gravityArgs.term = term
 
-    // NOTE: api/v1/match/sets doesn't currently support pagination
     const loader = term ? matchSetsLoader : setsLoader
 
     const { body } = await loader(gravityArgs)
 
+    // NOTE: the api/v1/match/sets doesn't currently support pagination
+    // so we need manually declare the totalCount since we can't
+    // count on it being returned as a header.
     const totalCount = body.length
 
     return paginationResolver({
