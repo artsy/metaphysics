@@ -95,7 +95,7 @@ import { deleteOrderedSetItemMutation } from "./OrderedSet/deleteOrderedSetItemM
 import { updateOrderedSetMutation } from "./OrderedSet/updateOrderedSetMutation"
 import { deleteOrderedSetMutation } from "./OrderedSet/deleteOrderedSetMutation"
 import { addOrderedSetItemMutation } from "./OrderedSet/addOrderedSetItemMutation"
-import OrderedSets from "./ordered_sets"
+import OrderedSets from "./OrderedSet/orderedSets"
 import Partner from "schema/v2/partner/partner"
 import PartnerArtworks from "./partner/partnerArtworks"
 import Profile from "./profile"
@@ -171,7 +171,7 @@ import { updateCMSLastAccessTimestampMutation } from "./partner/updateCMSLastAcc
 import { createConsignmentInquiryMutation } from "./consignments/createConsignmentInquiryMutation"
 import Conversations from "./conversation/conversations"
 import { updateQuizMutation } from "schema/v2/updateQuizMutation"
-import { OrderedSetsConnection } from "./orderedSetsConnection"
+import { OrderedSetsConnection } from "./OrderedSet/orderedSetsConnection"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
