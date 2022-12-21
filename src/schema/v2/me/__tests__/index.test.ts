@@ -1,5 +1,6 @@
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
+import moment from "moment"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 describe("me/index", () => {
   const query = gql`
@@ -122,7 +123,8 @@ describe("me/index", () => {
         }
       }
     `
-    it("returns true for has_qualified_credit_cards if one is returned from the me/credit_cards endpoint", () => {
+    it("returns true if at least one non-expired card is returned from the me/credit_cards endpoint", () => {
+      const futureExpirationDate = moment.utc().add(1, "day")
       const creditCardsResponse = [
         {
           id: "aabbccddee",
@@ -130,8 +132,9 @@ describe("me/index", () => {
           name: "Test User",
           last_digits: "4242",
           created_at: "2018-04-25T14:53:44.000Z",
-          expiration_month: 3,
-          expiration_year: 2022,
+          // Moment months are 0-indexed
+          expiration_month: futureExpirationDate.month() + 1,
+          expiration_year: futureExpirationDate.year(),
           deactivated_at: null,
           created_by_admin: null,
           created_by_trusted_client: null,
@@ -151,6 +154,40 @@ describe("me/index", () => {
           }),
       }).then((data) => {
         expect(data).toEqual({ me: { hasQualifiedCreditCards: true } })
+      })
+    })
+
+    it("returns false if the me/credit_cards endpoint returns only expired cards", () => {
+      const futureExpirationDate = moment.utc().subtract(1, "month")
+      const creditCardsResponse = [
+        {
+          id: "aabbccddee",
+          brand: "Visa",
+          name: "Test User",
+          last_digits: "4242",
+          created_at: "2018-04-25T14:53:44.000Z",
+          // Moment months are 0-indexed
+          expiration_month: futureExpirationDate.month() + 1,
+          expiration_year: futureExpirationDate.year(),
+          deactivated_at: null,
+          created_by_admin: null,
+          created_by_trusted_client: null,
+          qualified_for_bidding: true,
+          provider: "Stripe",
+          address_zip_check: "pass",
+          address_line1_check: "pass",
+          cvc_check: "pass",
+        },
+      ]
+
+      return runAuthenticatedQuery(creditCardQuery, {
+        meCreditCardsLoader: () =>
+          Promise.resolve({
+            body: creditCardsResponse,
+            headers: { "x-total-count": "1" },
+          }),
+      }).then((data) => {
+        expect(data).toEqual({ me: { hasQualifiedCreditCards: false } })
       })
     })
 
