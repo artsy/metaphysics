@@ -90,6 +90,12 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   },
   identityVerified: {
     type: GraphQLBoolean,
+    deprecationReason:
+      "identityVerified is going to be removed, use isIdentityVerified instead",
+    resolve: ({ owner }) => owner.identity_verified,
+  },
+  isIdentityVerified: {
+    type: GraphQLBoolean,
     resolve: ({ owner }) => owner.identity_verified,
   },
   isActiveInquirer: {

@@ -16,7 +16,7 @@ describe("Me", () => {
               privacy
               profession
               isEmailConfirmed
-              identityVerified 
+              isIdentityVerified
               isActiveInquirer
               isActiveBidder
               collectorProfileArtists {
@@ -56,7 +56,7 @@ describe("Me", () => {
         privacy: "public",
         profession: "typer",
         isEmailConfirmed: true,
-        identityVerified: true,
+        isIdentityVerified: true,
         isActiveInquirer: true,
         isActiveBidder: false,
         collectorProfileArtists: [{ name: "Gumball" }, { name: "Edgar" }],
