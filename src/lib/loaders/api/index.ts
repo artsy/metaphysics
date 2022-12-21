@@ -45,6 +45,18 @@ export default (opts) => ({
   // Unauthenticated loaders
 
   /**
+   * The Convection loaders produced by this factory _will_ cache all responses to memcache.
+   */
+  convectionLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    convection,
+    "convection",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
+  ),
+
+  /**
    * The Delta loaders produced by this factory _will_ cache all responses to memcache.
    */
   deltaLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(

@@ -1,3 +1,4 @@
+import { convectionLoaders } from "./convection"
 import deltaLoaders from "./delta"
 import diffusionLoaders from "./diffusion"
 import galaxyLoaders from "./galaxy"
@@ -10,6 +11,7 @@ import ipbaseLoaders from "./ipbase"
 import vortexLoaders from "./vortex"
 
 export const createLoadersWithoutAuthentication = (opts) => ({
+  ...convectionLoaders(opts),
   ...deltaLoaders(opts),
   ...diffusionLoaders(opts),
   ...galaxyLoaders(opts),
