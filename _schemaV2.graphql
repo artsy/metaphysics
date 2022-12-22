@@ -11525,6 +11525,9 @@ type Mutation {
     input: TransferMyCollectionInput!
   ): TransferMyCollectionPayload
 
+  # Triggers a campaign send.
+  triggerCampaign(input: TriggerCampaignInput!): TriggerCampaignPayload
+
   # Unlinks a 3rd party account
   unlinkAuthentication(
     input: UnlinkAuthenticationMutationInput!
@@ -16242,6 +16245,19 @@ union TransferMyCollectionSuccessOrErrorsUnion =
 
 type TrendingArtists {
   artists: [Artist]
+}
+
+enum TriggerCampaignID {
+  ART_QUIZ
+}
+
+input TriggerCampaignInput {
+  campaignID: TriggerCampaignID!
+  clientMutationId: String
+}
+
+type TriggerCampaignPayload {
+  clientMutationId: String
 }
 
 union UnderlyingCurrentEvent = Sale | Show

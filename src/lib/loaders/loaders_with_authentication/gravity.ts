@@ -498,6 +498,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    triggerCampaignLoader: gravityLoader(
+      "me/trigger_campaign",
+      {},
+      { method: "POST" }
+    ),
     unfollowArtistLoader: gravityLoader(
       (id) => `me/follow/artist/${id}`,
       {},

@@ -172,6 +172,7 @@ import { createConsignmentInquiryMutation } from "./consignments/createConsignme
 import Conversations from "./conversation/conversations"
 import { updateQuizMutation } from "schema/v2/updateQuizMutation"
 import { OrderedSetsConnection } from "./OrderedSet/orderedSetsConnection"
+import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -350,6 +351,7 @@ export default new GraphQLSchema({
       sendIdentityVerificationEmail: sendIdentityVerificationEmailMutation,
       startIdentityVerification: startIdentityVerificationMutation,
       submitInquiryRequestMutation,
+      triggerCampaign: triggerCampaignMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
       updateArtwork: updateArtworkMutation,
       updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
