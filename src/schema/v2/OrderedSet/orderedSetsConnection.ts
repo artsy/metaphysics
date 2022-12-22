@@ -18,7 +18,7 @@ export const OrderedSetsConnection: GraphQLFieldConfig<
     },
   }),
   resolve: async (_root, args, { matchSetsLoader, setsLoader }) => {
-    if (!!args.term || !matchSetsLoader)
+    if (!matchSetsLoader)
       throw new Error(
         "You need to pass a X-Access-Token header to perform this action"
       )
