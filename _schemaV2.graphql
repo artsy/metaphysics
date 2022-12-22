@@ -13986,7 +13986,7 @@ type Query {
     public: Boolean = true
   ): [OrderedSet]
 
-  # A list of Ordered Sets
+  # A connection of Ordered Sets
   orderedSetsConnection(
     after: String
     before: String
@@ -18038,7 +18038,7 @@ type Viewer {
     public: Boolean = true
   ): [OrderedSet]
 
-  # A list of Ordered Sets
+  # A connection of Ordered Sets
   orderedSetsConnection(
     after: String
     before: String

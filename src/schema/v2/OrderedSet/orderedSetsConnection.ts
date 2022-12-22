@@ -10,7 +10,7 @@ export const OrderedSetsConnection: GraphQLFieldConfig<
   ResolverContext
 > = {
   type: OrderedSetConnection.connectionType,
-  description: "A list of Ordered Sets",
+  description: "A connection of Ordered Sets",
   args: pageable({
     term: {
       type: GraphQLString,
@@ -18,7 +18,7 @@ export const OrderedSetsConnection: GraphQLFieldConfig<
     },
   }),
   resolve: async (_root, args, { matchSetsLoader, setsLoader }) => {
-    if (!matchSetsLoader)
+    if (!!args.term || !matchSetsLoader)
       throw new Error(
         "You need to pass a X-Access-Token header to perform this action"
       )

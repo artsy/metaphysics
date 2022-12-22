@@ -27,7 +27,6 @@ export const OrderedSet = Record({
   display_on_martsy: Boolean,
   created_at: String,
   updated_at: String,
-  created_by: String,
 })
 
 export type OrderedSet = Static<typeof OrderedSet>

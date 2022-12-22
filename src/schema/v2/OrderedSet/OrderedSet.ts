@@ -23,7 +23,7 @@ import { date } from "../fields/date"
 import { UserType } from "../user"
 
 export const OrderedSetType = new GraphQLObjectType<
-  Gravity.OrderedSet & { cached: number },
+  Gravity.OrderedSet & { cached: number; created_by: any },
   ResolverContext
 >({
   name: "OrderedSet",
