@@ -96,6 +96,15 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ category_text }) => category_text,
     },
+    isUpcoming: {
+      type: GraphQLBoolean,
+      resolve: ({ sale_date }) => {
+        if (!sale_date) return null
+        const utc = new Date().toJSON().slice(0, 10).replace(/-/g, "/")
+
+        return new Date(sale_date) >= new Date(utc)
+      },
+    },
     comparableAuctionResults: {
       type: auctionResultConnection.connectionType,
       description: "Comparable auction results ",
