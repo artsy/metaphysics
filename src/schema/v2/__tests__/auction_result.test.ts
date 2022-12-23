@@ -9,7 +9,7 @@ const mockAuctionResult = {
   dimension_text: "20 x 20",
   organization: "Christie's",
   category_text: "an old guitar",
-  sale_date: "yesterday",
+  sale_date: "2022-01-19T20:00:00.000Z",
   images: [
     {
       thumbnail: "https://path.to.thumbnail.jpg",
@@ -148,6 +148,52 @@ describe("AuctionResult type", () => {
             display: null,
           },
         })
+      })
+    })
+  })
+  describe("isUpcoming", () => {
+    it("returns true when the sale date is in the future", () => {
+      const auctionResult = {
+        ...mockAuctionResult,
+        sale_date: "2050-01-19T20:00:00.000Z",
+      }
+
+      const context = {
+        auctionLotLoader: jest.fn(() => Promise.resolve(auctionResult)),
+      }
+
+      const query = `
+        {
+          auctionResult(id: "foo-bar") {
+            isUpcoming
+          }
+        }
+      `
+
+      return runQuery(query, context!).then((data) => {
+        expect(data.auctionResult.isUpcoming).toEqual(true)
+      })
+    })
+    it("returns false when the sale date is in the past", () => {
+      const auctionResult = {
+        ...mockAuctionResult,
+        sale_date: "2000-01-19T20:00:00.000Z",
+      }
+
+      const context = {
+        auctionLotLoader: jest.fn(() => Promise.resolve(auctionResult)),
+      }
+
+      const query = `
+          {
+            auctionResult(id: "foo-bar") {
+              isUpcoming
+            }
+          }
+        `
+
+      return runQuery(query, context!).then((data) => {
+        expect(data.auctionResult.isUpcoming).toEqual(false)
       })
     })
   })

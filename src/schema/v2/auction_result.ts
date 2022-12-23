@@ -96,6 +96,14 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ category_text }) => category_text,
     },
+    isUpcoming: {
+      type: GraphQLBoolean,
+      resolve: ({ sale_date }) => {
+        if (!sale_date) return null
+
+        return isSameOrAfterToday(sale_date)
+      },
+    },
     comparableAuctionResults: {
       type: auctionResultConnection.connectionType,
       description: "Comparable auction results ",
@@ -378,3 +386,9 @@ export const auctionResultConnection = connectionWithCursorInfo({
     },
   },
 })
+
+// Compare two dates and return true if the first date is after todoy's date (00:00:00)
+const isSameOrAfterToday = (date: string | number | Date): boolean => {
+  const utc = new Date().toJSON().slice(0, 10).replace(/-/g, "/")
+  return new Date(date) >= new Date(utc)
+}
