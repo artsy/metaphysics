@@ -140,12 +140,14 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     emailConfirmed: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: "User has confirmed their email address",
-      resolve: ({ confirmed_at }) => {
-        if (confirmed_at) {
-          return true
-        }
-        return false
-      },
+      deprecationReason:
+        "emailConfirmed is going to be removed, use isEmailConfirmed instead",
+      resolve: ({ confirmed_at }) => !!confirmed_at,
+    },
+    isEmailConfirmed: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: "User has confirmed their email address",
+      resolve: ({ confirmed_at }) => !!confirmed_at,
     },
     conversation: Conversation,
     conversationsConnection: Conversations,
@@ -219,10 +221,12 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
               } = card
 
               // Moment months are 0-indexed
-              const expirationMoment = moment.utc({
-                year: expYear,
-                month: expMonth - 1,
-              }).endOf("month")
+              const expirationMoment = moment
+                .utc({
+                  year: expYear,
+                  month: expMonth - 1,
+                })
+                .endOf("month")
 
               return expirationMoment.isAfter(moment.utc())
             })
@@ -242,6 +246,12 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     invoice: Invoice,
     identityVerification: IdentityVerification,
     identityVerified: {
+      type: GraphQLBoolean,
+      deprecationReason:
+        "identityVerified is going to be removed, use isIdentityVerified instead",
+      resolve: ({ identity_verified }) => identity_verified,
+    },
+    isIdentityVerified: {
       type: GraphQLBoolean,
       resolve: ({ identity_verified }) => identity_verified,
     },

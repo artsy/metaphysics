@@ -10,7 +10,7 @@ describe("me/index", () => {
         email
         phone
         paddleNumber
-        identityVerified
+        isIdentityVerified
         hasSecondFactorEnabled
         hasPassword
         labFeatures
@@ -94,7 +94,7 @@ describe("me/index", () => {
           email: "test@email.com",
           phone: "07892938949",
           paddleNumber: "123456",
-          identityVerified: true,
+          isIdentityVerified: true,
           hasSecondFactorEnabled: true,
           hasPassword: false,
           labFeatures: ["CMS Batch Edit", "Collector Resume"],
@@ -322,11 +322,11 @@ describe("me/index", () => {
     })
   })
 
-  describe("emailConfirmed", () => {
+  describe("isEmailConfirmed", () => {
     const emailConfirmedQuery = gql`
       query {
         me {
-          emailConfirmed
+          isEmailConfirmed
         }
       }
     `
@@ -336,15 +336,15 @@ describe("me/index", () => {
         meLoader: () =>
           Promise.resolve({ confirmed_at: "2020-10-01T20:21:45+00:00" }),
       }).then((data) => {
-        expect(data).toEqual({ me: { emailConfirmed: true } })
+        expect(data).toEqual({ me: { isEmailConfirmed: true } })
       })
     })
 
     it("returns email is not confirmed when the email is not confirmed in gravity", () => {
       return runQuery(emailConfirmedQuery, {
-        meLoader: () => Promise.resolve({ emailConfirmed: false }),
+        meLoader: () => Promise.resolve({ isEmailConfirmed: false }),
       }).then((data) => {
-        expect(data).toEqual({ me: { emailConfirmed: false } })
+        expect(data).toEqual({ me: { isEmailConfirmed: false } })
       })
     })
   })
