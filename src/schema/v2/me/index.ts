@@ -222,10 +222,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
 
               // Moment months are 0-indexed
               const expirationMoment = moment
-                .utc({
-                  year: expYear,
-                  month: expMonth - 1,
-                })
+                .utc({ year: expYear, month: expMonth - 1 })
                 .endOf("month")
 
               return expirationMoment.isAfter(moment.utc())
