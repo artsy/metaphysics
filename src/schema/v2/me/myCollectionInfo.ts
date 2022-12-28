@@ -182,7 +182,8 @@ export const myCollectionInfoFields = {
       )
 
       // TODO: Remove this once all clients pass includePersonalArtists correctly
-      // This is a hack and currently we are defaulting to true if the query comes from the artwork form (passing a size of 100)
+      // This is a hack we need to return the correct results for older cleints that don't send the param `includePersonalArtists`.
+      // With this solution we are defaulting to true if the query comes from the My Collection artwork form (which is the only query that passes `size: 100`)
       const includePersonalArtists =
         args.size === 100 ? true : args.includePersonalArtists
 
