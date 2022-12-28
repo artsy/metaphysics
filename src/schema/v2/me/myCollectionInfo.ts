@@ -181,6 +181,11 @@ export const myCollectionInfoFields = {
         args
       )
 
+      // TODO: Remove this once all clients pass includePersonalArtists correctly
+      // This is a hack and currently we are defaulting to true if the query comes from the artwork form (passing a size of 100)
+      const includePersonalArtists =
+        args.size === 100 ? true : args.includePersonalArtists
+
       const { body, headers } = await collectionArtistsLoader("my-collection", {
         size,
         page,
@@ -188,7 +193,7 @@ export const myCollectionInfoFields = {
         all: true,
         total_count: true,
         user_id: userID,
-        include_personal_artists: args.includePersonalArtists,
+        include_personal_artists: includePersonalArtists,
       })
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
