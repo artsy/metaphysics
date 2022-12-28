@@ -11674,7 +11674,7 @@ type MyCollectionConnection {
     first: Int
 
     # Include artists that have been created by the user.
-    includePersonalArtists: Boolean = true
+    includePersonalArtists: Boolean = false
     last: Int
     page: Int
     size: Int
@@ -11769,7 +11769,7 @@ type MyCollectionInfo {
     first: Int
 
     # Include artists that have been created by the user.
-    includePersonalArtists: Boolean = true
+    includePersonalArtists: Boolean = false
     last: Int
     page: Int
     size: Int
