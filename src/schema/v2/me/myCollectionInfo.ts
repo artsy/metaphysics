@@ -166,6 +166,11 @@ export const myCollectionInfoFields = {
       sort: ArtistSorts,
       page: { type: GraphQLInt },
       size: { type: GraphQLInt },
+      includePersonalArtists: {
+        type: GraphQLBoolean,
+        defaultValue: false,
+        description: "Include artists that have been created by the user.",
+      },
     }),
     resolve: async (_root, args, context) => {
       const { collectionArtistsLoader, userID } = context
@@ -183,6 +188,7 @@ export const myCollectionInfoFields = {
         all: true,
         total_count: true,
         user_id: userID,
+        include_personal_artists: args.includePersonalArtists,
       })
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
