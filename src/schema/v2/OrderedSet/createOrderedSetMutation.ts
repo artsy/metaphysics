@@ -30,6 +30,7 @@ type LayoutType = "default" | "full"
 
 interface Input {
   description: string
+  internalName: string
   itemId: string
   itemType: ItemType
   key: string
@@ -75,6 +76,7 @@ export const createOrderedSetMutation = mutationWithClientMutationId<
   description: "Creates an ordered set.",
   inputFields: {
     description: { type: GraphQLString },
+    internalName: { type: GraphQLString },
     itemId: { type: GraphQLString },
     itemType: { type: new GraphQLNonNull(GraphQLString) },
     key: { type: new GraphQLNonNull(GraphQLString) },
@@ -91,7 +93,17 @@ export const createOrderedSetMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { description, itemId, itemType, key, layout, name, ownerType, published },
+    {
+      description,
+      internalName,
+      itemId,
+      itemType,
+      key,
+      layout,
+      name,
+      ownerType,
+      published,
+    },
     { createSetLoader }
   ) => {
     if (!createSetLoader) {
@@ -103,6 +115,7 @@ export const createOrderedSetMutation = mutationWithClientMutationId<
     try {
       return await createSetLoader({
         description,
+        internal_name: internalName,
         item_id: itemId,
         item_type: itemType,
         key,
