@@ -11978,6 +11978,7 @@ type OrderedSet {
 
   # A type-specific ID.
   internalID: ID!
+  internalName: String
   items: [OrderedSetItem]
 
   # Returns a connection of the items. Only Artwork supported right now.
