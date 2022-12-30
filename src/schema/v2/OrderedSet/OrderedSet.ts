@@ -45,6 +45,10 @@ export const OrderedSetType = new GraphQLObjectType<
     layout: {
       type: new GraphQLNonNull(OrderedSetLayoutsEnum),
     },
+    internalName: {
+      type: GraphQLString,
+      resolve: ({ internal_name }) => internal_name,
+    },
     itemType: {
       type: GraphQLString,
       resolve: ({ item_type }) => item_type,
