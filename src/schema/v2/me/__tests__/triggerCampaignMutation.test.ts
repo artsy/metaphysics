@@ -6,6 +6,11 @@ describe("triggerCampaignMutation", () => {
     mutation {
       triggerCampaign(input: { campaignID: ART_QUIZ }) {
         clientMutationId
+        successOrError {
+          ... on TriggerCampaignMutationSuccess {
+            success
+          }
+        }
       }
     }
   `
@@ -15,12 +20,13 @@ describe("triggerCampaignMutation", () => {
     .mockReturnValue(Promise.resolve({ success: true }))
 
   it("passes correct values to gravity", async () => {
-    await runAuthenticatedQuery(mutation, {
+    const response = await runAuthenticatedQuery(mutation, {
       triggerCampaignLoader: mockTriggerCampaignLoader,
     })
 
     expect(mockTriggerCampaignLoader).toHaveBeenCalledWith({
       campaign_id: "art-quiz",
     })
+    expect(response.triggerCampaign.successOrError.success).toBe(true)
   })
 })
