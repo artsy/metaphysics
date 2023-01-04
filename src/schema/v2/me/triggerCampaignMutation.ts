@@ -13,6 +13,15 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import config from "config"
+
+const CAMPAIGN_IDS = {
+  // TODO: replace w/ actual campaignIDs
+  // New campaign IDs can be added based on environment variable here
+  development: { ART_QUIZ: "art-quiz" },
+  staging: { ART_QUIZ: "art-quiz" },
+  production: { ART_QUIZ: "art-quiz" },
+}
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "TriggerCampaignMutationSuccess",
@@ -72,9 +81,8 @@ export const triggerCampaignMutation = mutationWithClientMutationId<
         new GraphQLEnumType({
           name: "TriggerCampaignID",
           values: {
-            // TODO: replace value w/ actual campaignID
             ART_QUIZ: {
-              value: "art-quiz",
+              value: CAMPAIGN_IDS[config.SYSTEM_ENVIRONMENT].ART_QUIZ,
             },
           },
         })
@@ -98,6 +106,7 @@ export const triggerCampaignMutation = mutationWithClientMutationId<
 
       return {
         success: true,
+        statusCode: 200,
       }
     } catch (error) {
       const formattedErr = formatGravityError(error)

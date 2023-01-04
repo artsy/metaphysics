@@ -9,6 +9,7 @@ describe("triggerCampaignMutation", () => {
         successOrError {
           ... on TriggerCampaignMutationSuccess {
             success
+            statusCode
           }
         }
       }
@@ -28,5 +29,6 @@ describe("triggerCampaignMutation", () => {
       campaign_id: "art-quiz",
     })
     expect(response.triggerCampaign.successOrError.success).toBe(true)
+    expect(response.triggerCampaign.successOrError.statusCode).toBe(200)
   })
 })
