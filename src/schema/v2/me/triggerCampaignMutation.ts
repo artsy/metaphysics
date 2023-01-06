@@ -16,11 +16,10 @@ import {
 import config from "config"
 
 const CAMPAIGN_IDS = {
-  // TODO: replace w/ actual campaignIDs
-  // New campaign IDs can be added based on environment variable here
-  development: { ART_QUIZ: "art-quiz" },
-  staging: { ART_QUIZ: "art-quiz" },
-  production: { ART_QUIZ: "art-quiz" },
+  // New campaign IDs can be added by environment variable here
+  development: { ART_QUIZ: "485a7169-b3d8-4b0e-81f3-5741db0a1361" },
+  staging: { ART_QUIZ: "485a7169-b3d8-4b0e-81f3-5741db0a1361" },
+  production: { ART_QUIZ: "bcc384c0-348f-4449-e4c0-0ad9efa7707f" },
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -107,12 +106,17 @@ export const triggerCampaignMutation = mutationWithClientMutationId<
       return {
         success: true,
         statusCode: 200,
+        message: "Campaign successfully triggered",
       }
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
       if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
+        return {
+          ...formattedErr,
+          _type: "GravityMutationError",
+          message: "Campaign failed to trigger",
+        }
       } else {
         throw new Error(error)
       }
