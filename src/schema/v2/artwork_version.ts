@@ -64,6 +64,7 @@ export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
     attributionClass: {
       type: GraphQLString,
       description: "The Artwork Version attribution class",
+      resolve: ({ attribution_class }) => attribution_class,
     },
   }),
 })
