@@ -120,6 +120,15 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
     description: "List of artists the Collector is interested in.",
     resolve: ({ collected_artist_names }) => collected_artist_names,
   },
+  isProfileComplete: {
+    type: GraphQLBoolean,
+    resolve: ({ name, location, profession, other_relevant_positions, bio }) =>
+      !!name &&
+      !!location?.display &&
+      !!profession &&
+      !!other_relevant_positions &&
+      !!bio,
+  },
 }
 
 export const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>(
