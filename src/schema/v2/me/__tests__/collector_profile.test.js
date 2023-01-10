@@ -72,5 +72,75 @@ describe("Me", () => {
         }
       )
     })
+
+    describe("isProfileComplete", () => {
+      it("returns true if the profile is complete", () => {
+        const query = `
+          {
+            me {
+              collectorProfile {
+                isProfileComplete
+              }
+            }
+          }
+        `
+
+        const collectorProfile = {
+          id: "3",
+          name: "Johnathan Storm",
+          email: "johnathan@storm.com",
+          location: {
+            display: "Berlin",
+          },
+          profession: "coder",
+          other_relevant_positions: "other typer",
+          bio: "J. Storm",
+        }
+
+        const context = {
+          meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+        }
+
+        return runAuthenticatedQuery(query, context).then(
+          ({ me: { collectorProfile } }) => {
+            expect(collectorProfile.isProfileComplete).toBe(true)
+          }
+        )
+      })
+
+      it("returns false if the profile is incomplete", () => {
+        const query = `
+        {
+          me {
+            collectorProfile {
+              isProfileComplete
+            }
+          }
+        }
+      `
+
+        const collectorProfile = {
+          id: "3",
+          name: "Anonny",
+          email: "anonny@mos.sos",
+          location: {
+            display: "Berlin",
+          },
+          profession: "",
+          other_relevant_positions: "no one knows",
+          bio: "¯\\_(ツ)_//¯",
+        }
+
+        const context = {
+          meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+        }
+
+        return runAuthenticatedQuery(query, context).then(
+          ({ me: { collectorProfile } }) => {
+            expect(collectorProfile.isProfileComplete).toBe(false)
+          }
+        )
+      })
+    })
   })
 })

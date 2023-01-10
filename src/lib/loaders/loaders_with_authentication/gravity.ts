@@ -482,6 +482,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    setsLoader: gravityLoader("sets", {}, { headers: true }),
     showLoader: gravityLoader((id) => `show/${id}`),
     submitArtworkInquiryRequestLoader: gravityLoader(
       "me/artwork_inquiry_request",
@@ -497,6 +498,11 @@ export default (accessToken, userID, opts) => {
       `user/${userID}/suggested/similar/artists`,
       {},
       { headers: true }
+    ),
+    triggerCampaignLoader: gravityLoader(
+      "me/trigger_campaign",
+      {},
+      { method: "POST" }
     ),
     unfollowArtistLoader: gravityLoader(
       (id) => `me/follow/artist/${id}`,

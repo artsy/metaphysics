@@ -45,7 +45,7 @@ export const ARTIST_INSIGHT_MAPPING = {
     getLabel: () => "Included in a major biennial",
   },
   ACTIVE_SECONDARY_MARKET: {
-    getDescription: () => "Recent auction results in the Artsy Price Database",
+    getDescription: () => "Recent auction results in the Artsy Price Database.",
     getEntities: (artist) => artist.active_secondary_market && [],
     getLabel: () => "Active Secondary Market",
   },
@@ -56,7 +56,7 @@ export const ARTIST_INSIGHT_MAPPING = {
   },
   ARTSY_VANGUARD_YEAR: {
     getDescription: () =>
-      "Featured in Artsy's annual list of the most promising artists working today.",
+      "Featured in Artsy’s annual list of the most promising artists working today.",
     getEntities: (artist) => artist.vanguard_year && [],
     getLabel: (artist) => `The Artsy Vanguard ${artist.vanguard_year}`,
   },

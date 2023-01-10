@@ -166,6 +166,11 @@ export const myCollectionInfoFields = {
       sort: ArtistSorts,
       page: { type: GraphQLInt },
       size: { type: GraphQLInt },
+      includePersonalArtists: {
+        type: GraphQLBoolean,
+        defaultValue: false,
+        description: "Include artists that have been created by the user.",
+      },
     }),
     resolve: async (_root, args, context) => {
       const { collectionArtistsLoader, userID } = context
@@ -176,6 +181,15 @@ export const myCollectionInfoFields = {
         args
       )
 
+      // TODO: Remove this once all clients pass includePersonalArtists correctly
+      // This is a hack we need to return the correct results for older cleints that don't send the param `includePersonalArtists`.
+      // With this solution we are defaulting to true if the query comes from the My Collection artwork form (which is the only query that passes `first: 100`)
+      const SIZE_ARG_VALUE_FOR_MY_COLLECTION_ARTWORK_FORM = 100
+      const includePersonalArtists =
+        args.first === SIZE_ARG_VALUE_FOR_MY_COLLECTION_ARTWORK_FORM
+          ? true
+          : args.includePersonalArtists
+
       const { body, headers } = await collectionArtistsLoader("my-collection", {
         size,
         page,
@@ -183,6 +197,7 @@ export const myCollectionInfoFields = {
         all: true,
         total_count: true,
         user_id: userID,
+        include_personal_artists: includePersonalArtists,
       })
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
