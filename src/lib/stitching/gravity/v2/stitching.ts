@@ -804,7 +804,7 @@ export const gravityStitchingEnvironment = (
                 fieldName: "marketingCollections",
                 args: {
                   slugs: [
-                    "trove-editors-picks",
+                    "curators-picks-emerging",
                     "trending-this-week",
                     "artists-on-the-rise",
                     "blue-chip-artists",
