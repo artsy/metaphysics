@@ -7014,6 +7014,31 @@ union CreateConsignmentInquiryMutationType =
     ConsignmentInquiryMutationFailure
   | ConsignmentInquiryMutationSuccess
 
+type CreateFeatureFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateFeatureMutationInput {
+  active: Boolean!
+  callout: String
+  clientMutationId: String
+  description: String
+  layout: FeatureLayouts
+  name: String!
+  subheadline: String
+}
+
+type CreateFeatureMutationPayload {
+  clientMutationId: String
+  featureOrError: createFeatureResponseOrError
+}
+
+union createFeatureResponseOrError = CreateFeatureFailure | CreateFeatureSuccess
+
+type CreateFeatureSuccess {
+  feature: Feature
+}
+
 input CreateGeminiEntryForAssetInput {
   clientMutationId: String
 
@@ -7614,6 +7639,26 @@ type DeleteCreditCardPayload {
   clientMutationId: String
   creditCardOrError: CreditCardMutationType
   me: Me
+}
+
+type DeleteFeatureFailure {
+  mutationError: GravityMutationError
+}
+
+input DeleteFeatureMutationInput {
+  clientMutationId: String
+  id: String!
+}
+
+type DeleteFeatureMutationPayload {
+  clientMutationId: String
+  featureOrError: DeleteFeatureResponseOrError
+}
+
+union DeleteFeatureResponseOrError = DeleteFeatureFailure | DeleteFeatureSuccess
+
+type DeleteFeatureSuccess {
+  feature: Feature
 }
 
 type deleteOrderedSetFailure {
@@ -11378,6 +11423,11 @@ type Mutation {
   # Create a credit card
   createCreditCard(input: CreditCardInput!): CreditCardPayload
 
+  # Creates a feature.
+  createFeature(
+    input: CreateFeatureMutationInput!
+  ): CreateFeatureMutationPayload
+
   # Attach an gemini asset to a consignment submission
   createGeminiEntryForAsset(
     input: CreateGeminiEntryForAssetInput!
@@ -11436,6 +11486,11 @@ type Mutation {
 
   # Remove a credit card
   deleteCreditCard(input: DeleteCreditCardInput!): DeleteCreditCardPayload
+
+  # deletes a feature.
+  deleteFeature(
+    input: DeleteFeatureMutationInput!
+  ): DeleteFeatureMutationPayload
 
   # Delete User Artsy Account
   deleteMyAccountMutation(input: DeleteAccountInput!): DeleteAccountPayload
@@ -11630,6 +11685,11 @@ type Mutation {
   updateConversation(
     input: UpdateConversationMutationInput!
   ): UpdateConversationMutationPayload
+
+  # updates a feature.
+  updateFeature(
+    input: UpdateFeatureMutationInput!
+  ): UpdateFeatureMutationPayload
 
   # Update a message.
   updateMessage(
@@ -16624,6 +16684,34 @@ input UpdateConversationMutationInput {
 type UpdateConversationMutationPayload {
   clientMutationId: String
   conversation: Conversation
+}
+
+type UpdateFeatureFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateFeatureMutationInput {
+  active: Boolean!
+  callout: String
+  clientMutationId: String
+  description: String
+  id: String!
+  layout: FeatureLayouts
+  name: String!
+  subheadline: String
+}
+
+type UpdateFeatureMutationPayload {
+  clientMutationId: String
+
+  # On success: the ordered set updated.
+  featureOrError: UpdateFeatureResponseOrError
+}
+
+union UpdateFeatureResponseOrError = UpdateFeatureFailure | UpdateFeatureSuccess
+
+type UpdateFeatureSuccess {
+  feature: Feature
 }
 
 type UpdateMessageFailure {
