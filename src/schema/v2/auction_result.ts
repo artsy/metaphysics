@@ -104,6 +104,10 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
         return isSameOrAfterToday(sale_date)
       },
     },
+    lotNumber: {
+      type: GraphQLString,
+      resolve: ({ lot_number }) => lot_number,
+    },
     comparableAuctionResults: {
       type: auctionResultConnection.connectionType,
       description: "Comparable auction results ",
