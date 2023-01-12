@@ -164,6 +164,7 @@ import { PartnerShowDocumentsConnection } from "./partner/partnerShowDocumentsCo
 import { bulkUpdatePartnerArtworksMutation } from "./bulkUpdatePartnerArtworksMutation"
 import { NotificationsConnection } from "./notifications"
 import { markAllNotificationsAsReadMutation } from "./me/mark_all_notifications_as_read_mutation"
+import { markNotificationAsReadMutation } from "./me/mark_notification_as_read_mutation"
 import updateMessageMutation from "./conversation/updateMessageMutation"
 import deleteConversationMutation from "./conversation/deleteConversationMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
@@ -338,6 +339,7 @@ export default new GraphQLSchema({
       followShow: FollowShow,
       linkAuthentication: linkAuthenticationMutation,
       markAllNotificationsAsRead: markAllNotificationsAsReadMutation,
+      markNotificationAsRead: markNotificationAsReadMutation,
       mergeArtists: mergeArtistsMutation,
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
