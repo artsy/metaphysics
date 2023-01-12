@@ -2749,6 +2749,7 @@ type AuctionResultsByArtists {
   highEstimateCentsUsd: BigInt
   id: ID!
   location: String
+  lotNumber: String
   lowEstimateCents: BigInt
   lowEstimateCentsUsd: BigInt
   mediumText: String
