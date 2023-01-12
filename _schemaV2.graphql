@@ -8565,6 +8565,17 @@ type Feature {
   subheadline(format: Format): String
 }
 
+# A connection to a list of items.
+type FeatureConnection {
+  # A list of edges.
+  edges: [FeatureEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
 # An illustrated link chosen to highlight a Gene from a given GeneFamily
 type FeaturedGeneLink {
   href: String!
@@ -8592,6 +8603,15 @@ type FeaturedLink {
 }
 
 union FeaturedLinkEntity = Artist | Gene | Partner
+
+# An edge in a connection.
+type FeatureEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Feature
+}
 
 type FeatureFlag {
   createdAt(
@@ -8680,6 +8700,13 @@ type FeatureMeta {
   description: String!
   image: String
   name: String!
+}
+
+enum FeatureSorts {
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  NAME_ASC
+  NAME_DESC
 }
 
 type Feedback {
@@ -13824,6 +13851,16 @@ type Query {
     # The slug or ID of the Feature
     id: ID
   ): Feature
+  featuresConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    sort: FeatureSorts
+
+    # If present, will search by term
+    term: String
+  ): FeatureConnection
 
   # Partners Elastic Search results
   filterPartners(
@@ -17947,6 +17984,16 @@ type Viewer {
     # The slug or ID of the Feature
     id: ID
   ): Feature
+  featuresConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    sort: FeatureSorts
+
+    # If present, will search by term
+    term: String
+  ): FeatureConnection
 
   # Partners Elastic Search results
   filterPartners(

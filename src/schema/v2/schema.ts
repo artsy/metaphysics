@@ -173,6 +173,7 @@ import Conversations from "./conversation/conversations"
 import { updateQuizMutation } from "schema/v2/updateQuizMutation"
 import { OrderedSetsConnection } from "./OrderedSet/orderedSetsConnection"
 import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
+import { FeaturesConnection } from "./Feature/FeaturesConnection"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -233,6 +234,7 @@ const rootFields = {
   fairs: Fairs,
   fairsConnection,
   feature: Feature,
+  featuresConnection: FeaturesConnection,
   filterPartners: FilterPartners,
   gene: Gene,
   geneFamiliesConnection: GeneFamilies,
