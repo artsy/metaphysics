@@ -36,7 +36,7 @@ export const setVersion = (
 
 const normalizeImageUrl = (image) => {
   const image_url = grab(image, ["url", "image_url"])
-  // if (!image_url) return null
+
   return assign({ image_url }, image)
 }
 
