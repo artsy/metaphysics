@@ -1,16 +1,16 @@
 import {
-  pick,
-  values,
-  first,
   assign,
   compact,
+  curry,
+  find,
+  first,
   flow,
   includes,
-  last,
   isArray,
   isString,
-  find,
-  curry,
+  last,
+  pick,
+  values,
 } from "lodash"
 import { DEFAULT_SRCSET_QUALITY } from "./services/config"
 
@@ -36,7 +36,7 @@ export const setVersion = (
 
 const normalizeImageUrl = (image) => {
   const image_url = grab(image, ["url", "image_url"])
-  if (!image_url) return null
+  // if (!image_url) return null
   return assign({ image_url }, image)
 }
 

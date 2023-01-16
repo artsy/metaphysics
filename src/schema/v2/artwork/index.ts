@@ -46,7 +46,7 @@ import Image, {
   normalizeImageData,
 } from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
-import { LocationType, COUNTRIES } from "schema/v2/location"
+import { COUNTRIES, LocationType } from "schema/v2/location"
 import {
   NodeInterface,
   SlugAndInternalIDFields,
