@@ -105,7 +105,7 @@ const computeMutationInput = ({
                 city
                 country
               }
-              images {
+              images(includeAll: true) {
                 imageURL
               }
               metric
