@@ -60,6 +60,7 @@ import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { WatchedLotConnection } from "./watchedLotConnection"
 import { quiz } from "../quiz"
 import moment from "moment"
+import { Collection } from "./collection"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -130,6 +131,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: collectorProfileResolver("bio"),
     },
+    collection: Collection,
     collectorLevel: {
       type: GraphQLInt,
       resolve: ({ collector_level }) => {
