@@ -27,6 +27,7 @@ import { DEFAULT_TZ } from "lib/date"
 const NotificationTypesEnum = new GraphQLEnumType({
   name: "NotificationTypesEnum",
   values: {
+    ARTICLE_FEATURED_ARTIST: { value: "ArticleFeaturedArtistActivity" },
     ARTWORK_ALERT: { value: "SavedSearchHitActivity" },
     ARTWORK_PUBLISHED: { value: "ArtworkPublishedActivity" },
     VIEWING_ROOM_PUBLISHED: { value: "ViewingRoomPublishedActivity" },
