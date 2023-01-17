@@ -594,8 +594,17 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       href: { type: GraphQLString, resolve: ({ id }) => `/artwork/${id}` },
       image: {
         type: Image.type,
-        resolve: ({ images }) => {
-          return normalizeImageData(getDefault(images))
+        args: {
+          size: { type: GraphQLInt },
+          showAll: {
+            type: GraphQLBoolean,
+            default: false,
+            description:
+              "Show all images, even if they are not ready or processing failed.",
+          },
+        },
+        resolve: ({ images }, { showAll }) => {
+          return normalizeImageData(getDefault(images, showAll), showAll)
         },
       },
       imageUrl: {
@@ -618,10 +627,21 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       images: {
         type: new GraphQLList(Image.type),
-        args: { size: { type: GraphQLInt } },
-        resolve: ({ images }, { size }) => {
+        args: {
+          size: { type: GraphQLInt },
+          showAll: {
+            type: GraphQLBoolean,
+            default: false,
+            description:
+              "Show all images, even if they are not ready or processing failed.",
+          },
+        },
+        resolve: ({ images }, { size, showAll }) => {
           const sorted = _.sortBy(images, "position")
-          return normalizeImageData(size ? _.take(sorted, size) : sorted)
+          return normalizeImageData(
+            size ? _.take(sorted, size) : sorted,
+            showAll
+          )
         },
       },
       inquiryQuestions: {

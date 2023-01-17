@@ -111,6 +111,20 @@ describe("image response normalization", () => {
       expect(normalize(weirdResponse).length).toBe(1)
     })
 
+    describe("with showAll param set to true", () => {
+      it("allows a bad response", () => {
+        expect(normalize(badResponse, true).length).toBe(1)
+      })
+
+      it("allows a good response through", () => {
+        expect(normalize(goodResponse, true).length).toBe(1)
+      })
+
+      it("allows a weird response through", () => {
+        expect(normalize(weirdResponse, true).length).toBe(1)
+      })
+    })
+
     it("normalizes the keys", () => {
       const normalized = normalize(first(weirdResponse))
       expect(normalized.image_url).toBe(

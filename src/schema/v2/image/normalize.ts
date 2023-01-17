@@ -34,8 +34,10 @@ export const setVersion = (
   return image_url
 }
 
-const normalizeImageUrl = (image) => {
+const normalizeImageUrl = (showAll: boolean = false) => (image) => {
   const image_url = grab(image, ["url", "image_url"])
+
+  if (!showAll && !image_url) return null
 
   return assign({ image_url }, image)
 }
@@ -53,11 +55,8 @@ const normalizeBareUrls = (image) => {
   return image
 }
 
-const _normalize = flow(
-  normalizeBareUrls,
-  normalizeImageUrl,
-  normalizeImageVersions
-)
+const _normalize = (showAll: boolean = false) =>
+  flow(normalizeBareUrls, normalizeImageUrl(showAll), normalizeImageVersions)
 
 export type ImageData =
   | string
@@ -70,11 +69,20 @@ export type ImageData =
 
 type NormalizedImageData = { image_url: string; image_versions: string[] }
 
-export function normalize(response: ImageData): NormalizedImageData
-export function normalize(response: ImageData[]): NormalizedImageData[]
-export function normalize(response: ImageData | ImageData[]) {
-  if (isArray(response)) return compact(response.map(_normalize))
-  return _normalize(response)
+export function normalize(
+  response: ImageData,
+  showAll?: boolean
+): NormalizedImageData
+export function normalize(
+  response: ImageData[],
+  showAll?: boolean
+): NormalizedImageData[]
+export function normalize(
+  response: ImageData | ImageData[],
+  showAll: boolean = false
+) {
+  if (isArray(response)) return compact(response.map(_normalize(showAll)))
+  return _normalize(showAll)(response)
 }
 
 export default normalize
