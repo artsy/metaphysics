@@ -103,6 +103,7 @@ type BuyOrder implements Order {
   code: String!
   commissionFeeCents: Int
   commissionRate: Float
+  conditionsOfSale: String
   createdAt: DateTime!
   creditCardId: String
   currencyCode: String!
@@ -295,6 +296,11 @@ enum CancelReasonTypeEnum {
   cancelation reason is: buyer_rejected
   """
   BUYER_REJECTED
+
+  """
+  cancelation reason is: funds_not_received
+  """
+  FUNDS_NOT_RECEIVED
 
   """
   cancelation reason is: seller_lapsed
@@ -1104,6 +1110,7 @@ type OfferOrder implements Order {
   code: String!
   commissionFeeCents: Int
   commissionRate: Float
+  conditionsOfSale: String
   createdAt: DateTime!
   creditCardId: String
   currencyCode: String!
@@ -1215,6 +1222,7 @@ interface Order {
   code: String!
   commissionFeeCents: Int
   commissionRate: Float
+  conditionsOfSale: String
   createdAt: DateTime!
   creditCardId: String
   currencyCode: String!
@@ -1442,10 +1450,7 @@ enum OrderModeEnum {
 """
 Represents either a resolved Order or a potential failure
 """
-union OrderOrFailureUnion =
-    OrderRequiresAction
-  | OrderWithMutationFailure
-  | OrderWithMutationSuccess
+union OrderOrFailureUnion = OrderRequiresAction | OrderWithMutationFailure | OrderWithMutationSuccess
 
 enum OrderParticipantEnum {
   """
