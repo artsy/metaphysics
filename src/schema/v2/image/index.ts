@@ -27,10 +27,10 @@ export type OriginalImage = {
 
 export { normalize as normalizeImageData } from "./normalize"
 
-export const getDefault = (images, showAll = false) => {
+export const getDefault = (images, includeAll = false) => {
   if (isArray(images)) {
     // filter out broken images that don't have a URL
-    const filteredImages = showAll
+    const filteredImages = includeAll
       ? images
       : images.filter((image) => image.image_url)
 

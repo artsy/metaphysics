@@ -2110,13 +2110,13 @@ type Artwork implements Node & Searchable & Sellable {
   id: ID!
   image(
     # Show all images, even if they are not ready or processing failed.
-    showAll: Boolean
+    includeAll: Boolean
     size: Int
   ): Image
   imageRights: String
   images(
     # Show all images, even if they are not ready or processing failed.
-    showAll: Boolean
+    includeAll: Boolean
     size: Int
   ): [Image]
   imageTitle: String
