@@ -63,7 +63,7 @@ export const markNotificationAsReadMutation = mutationWithClientMutationId<
     }
 
     try {
-      await updateNotificationsLoader({ feed_ids: [args.id], status: "read" })
+      await updateNotificationsLoader({ ids: [args.id], status: "read" })
 
       return {
         success: true,
