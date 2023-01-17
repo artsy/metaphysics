@@ -10,6 +10,8 @@ import Image from "./image"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields, NodeInterface } from "./object_identification"
 import Artist from "./artist"
+import AttributionClass from "./artwork/attributionClass"
+import attributionClasses from "lib/attributionClasses"
 
 export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkVersion",
@@ -62,9 +64,13 @@ export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
     },
 
     attributionClass: {
-      type: GraphQLString,
+      type: AttributionClass,
       description: "The Artwork Version attribution class",
-      resolve: ({ attribution_class }) => attribution_class,
+      resolve: ({ attribution_class }) => {
+        if (attribution_class) {
+          return attributionClasses[attribution_class]
+        }
+      },
     },
   }),
 })
