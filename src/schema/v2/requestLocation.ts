@@ -39,16 +39,30 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: async (_root, args, { requestLocationLoader }) => {
-    const { body, headers, cached } = await requestLocationLoader({
-      ip: args.ip,
-    })
+    try {
+      const {
+        body: { data },
+        headers,
+        cached,
+      } = await requestLocationLoader({ ip: args.ip })
 
-    if (config.ENABLE_GEOLOCATION_LOGGING) {
-      logRateHeaders(headers)
+      if (config.ENABLE_GEOLOCATION_LOGGING) {
+        logRateHeaders(headers)
+      }
+
+      // Unspecified/unknown address
+      if (!("location" in data)) {
+        return { id: base64(args.ip), cached }
+      }
+
+      const { alpha2: countryCode, name: country } = data.location.country
+
+      return { id: base64(args.ip), country, countryCode, cached }
+    } catch (error) {
+      // Likely, an invalid IP address
+      console.error(error)
+
+      return { id: base64(args.ip), cached: false }
     }
-
-    const { alpha2: countryCode, name: country } = body.data.location.country
-
-    return { id: base64(args.ip), country, countryCode, cached }
   },
 }
