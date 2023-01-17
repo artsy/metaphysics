@@ -227,11 +227,12 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
 
       const imageSources = computeImageSources(externalImageUrls)
 
+      const images: any[] = []
       for (const imageSource of imageSources) {
-        await createArtworkImageLoader(artworkId, imageSource)
+        images.push(await createArtworkImageLoader(artworkId, imageSource))
       }
 
-      return response
+      return { ...response, images }
     } catch (error) {
       const formattedErr = formatGravityError(error)
 

@@ -20,7 +20,12 @@ const artworkDetails = {
 }
 const artworkLoader = jest.fn().mockResolvedValue(artworkDetails)
 
-const createImageLoader = jest.fn()
+const createImageLoader = jest.fn().mockResolvedValue({
+  id: "63c6ad60d58c97000d3fb1a7",
+  position: 1,
+  aspect_ratio: null,
+  image_url: null,
+})
 
 const computeMutationInput = ({
   externalImageUrls = [],
@@ -80,6 +85,9 @@ const computeMutationInput = ({
               }
               pricePaid {
                 display
+              }
+              images(includeAll: true) {
+                imageURL
               }
             }
             artworkEdge {
@@ -148,27 +156,30 @@ describe("myCollectionCreateArtworkMutation", () => {
       const data = await runAuthenticatedQuery(mutation, defaultContext)
       const { artworkOrError } = data.myCollectionCreateArtwork
 
-      expect(artworkOrError).toEqual({
-        artwork: {
-          medium: "Painting",
-          pricePaid: {
-            display: "$100",
-          },
-          artworkLocation: "Berlin, Germany",
-          collectorLocation: {
-            city: "Berlin",
-            country: "Germany",
-          },
-        },
-        artworkEdge: {
-          node: {
-            medium: "Painting",
-            attributionClass: {
-              name: "Open edition",
+      expect(artworkOrError).toMatchInlineSnapshot(`
+        Object {
+          "artwork": Object {
+            "artworkLocation": "Berlin, Germany",
+            "collectorLocation": Object {
+              "city": "Berlin",
+              "country": "Germany",
+            },
+            "images": Array [],
+            "medium": "Painting",
+            "pricePaid": Object {
+              "display": "$100",
             },
           },
-        },
-      })
+          "artworkEdge": Object {
+            "node": Object {
+              "attributionClass": Object {
+                "name": "Open edition",
+              },
+              "medium": "Painting",
+            },
+          },
+        }
+      `)
     })
   })
 
@@ -237,7 +248,30 @@ describe("myCollectionCreateArtworkMutation", () => {
       const data = await runAuthenticatedQuery(mutation, defaultContext)
       const { artworkOrError } = data.myCollectionCreateArtwork
 
-      expect(artworkOrError).toHaveProperty("artwork")
+      expect(artworkOrError).toMatchInlineSnapshot(`
+        Object {
+          "artwork": Object {
+            "artworkLocation": "Berlin, Germany",
+            "collectorLocation": Object {
+              "city": "Berlin",
+              "country": "Germany",
+            },
+            "images": Array [],
+            "medium": "Painting",
+            "pricePaid": Object {
+              "display": "$100",
+            },
+          },
+          "artworkEdge": Object {
+            "node": Object {
+              "attributionClass": Object {
+                "name": "Open edition",
+              },
+              "medium": "Painting",
+            },
+          },
+        }
+      `)
       expect(artworkOrError).not.toHaveProperty("error")
       expect(createImageLoader).toBeCalledWith(newArtwork.id, {
         source_bucket: "test-upload-bucket",

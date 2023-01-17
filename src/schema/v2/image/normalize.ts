@@ -1,16 +1,16 @@
 import {
-  pick,
-  values,
-  first,
   assign,
   compact,
+  curry,
+  find,
+  first,
   flow,
   includes,
-  last,
   isArray,
   isString,
-  find,
-  curry,
+  last,
+  pick,
+  values,
 } from "lodash"
 import { DEFAULT_SRCSET_QUALITY } from "./services/config"
 
@@ -34,9 +34,11 @@ export const setVersion = (
   return image_url
 }
 
-const normalizeImageUrl = (image) => {
+const normalizeImageUrl = (includeAll: boolean = false) => (image) => {
   const image_url = grab(image, ["url", "image_url"])
-  if (!image_url) return null
+
+  if (!includeAll && !image_url) return null
+
   return assign({ image_url }, image)
 }
 
@@ -53,11 +55,8 @@ const normalizeBareUrls = (image) => {
   return image
 }
 
-const _normalize = flow(
-  normalizeBareUrls,
-  normalizeImageUrl,
-  normalizeImageVersions
-)
+const _normalize = (includeAll: boolean = false) =>
+  flow(normalizeBareUrls, normalizeImageUrl(includeAll), normalizeImageVersions)
 
 export type ImageData =
   | string
@@ -70,11 +69,20 @@ export type ImageData =
 
 type NormalizedImageData = { image_url: string; image_versions: string[] }
 
-export function normalize(response: ImageData): NormalizedImageData
-export function normalize(response: ImageData[]): NormalizedImageData[]
-export function normalize(response: ImageData | ImageData[]) {
-  if (isArray(response)) return compact(response.map(_normalize))
-  return _normalize(response)
+export function normalize(
+  response: ImageData,
+  includeAll?: boolean
+): NormalizedImageData
+export function normalize(
+  response: ImageData[],
+  includeAll?: boolean
+): NormalizedImageData[]
+export function normalize(
+  response: ImageData | ImageData[],
+  includeAll: boolean = false
+) {
+  if (isArray(response)) return compact(response.map(_normalize(includeAll)))
+  return _normalize(includeAll)(response)
 }
 
 export default normalize

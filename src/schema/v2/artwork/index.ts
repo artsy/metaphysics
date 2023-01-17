@@ -46,7 +46,7 @@ import Image, {
   normalizeImageData,
 } from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
-import { LocationType, COUNTRIES } from "schema/v2/location"
+import { COUNTRIES, LocationType } from "schema/v2/location"
 import {
   NodeInterface,
   SlugAndInternalIDFields,
@@ -594,8 +594,17 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       href: { type: GraphQLString, resolve: ({ id }) => `/artwork/${id}` },
       image: {
         type: Image.type,
-        resolve: ({ images }) => {
-          return normalizeImageData(getDefault(images))
+        args: {
+          size: { type: GraphQLInt },
+          includeAll: {
+            type: GraphQLBoolean,
+            default: false,
+            description:
+              "Show all images, even if they are not ready or processing failed.",
+          },
+        },
+        resolve: ({ images }, { includeAll }) => {
+          return normalizeImageData(getDefault(images, includeAll), includeAll)
         },
       },
       imageUrl: {
@@ -618,10 +627,22 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       images: {
         type: new GraphQLList(Image.type),
-        args: { size: { type: GraphQLInt } },
-        resolve: ({ images }, { size }) => {
+        args: {
+          size: { type: GraphQLInt },
+          includeAll: {
+            type: GraphQLBoolean,
+            default: false,
+            description:
+              "Show all images, even if they are not ready or processing failed.",
+          },
+        },
+        resolve: ({ images }, { size, includeAll }) => {
           const sorted = _.sortBy(images, "position")
-          return normalizeImageData(size ? _.take(sorted, size) : sorted)
+          const normalized = normalizeImageData(
+            size ? _.take(sorted, size) : sorted,
+            includeAll
+          )
+          return normalized
         },
       },
       inquiryQuestions: {
