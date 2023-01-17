@@ -42,7 +42,7 @@ export const quiz: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLNonNull(QuizType),
   resolve: async ({ id }, _args, { quizLoader }) => {
     if (!quizLoader) return
-    const quiz = await quizLoader(id)
+    const quiz = await quizLoader({ user_id: id })
     return quiz
   },
 }

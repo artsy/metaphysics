@@ -1,7 +1,6 @@
 import { Gravity } from "types/runtime"
 import factories from "../api"
-import { uncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_factory"
-import gravity from "lib/apis/gravity"
+import { gravityUncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_factory"
 import { createBatchLoaders } from "../batchLoader"
 import { searchLoader } from "../searchLoader"
 
@@ -13,7 +12,7 @@ export type StartIdentityVerificationGravityOutput = {
 export default (opts) => {
   const { gravityLoaderWithoutAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithoutAuthenticationFactory
-  const gravityUncachedLoader = uncachedLoaderFactory(gravity, "gravity")
+  const gravityUncachedLoader = gravityUncachedLoaderFactory(opts)
 
   const [batchSaleLoader, batchSalesLoader] = createBatchLoaders({
     singleLoader: gravityLoader((id) => `sale/${id}`),
@@ -264,5 +263,12 @@ export default (opts) => {
     trendingArtistsLoader: gravityLoader("artists/trending"),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
+    quizLoader: gravityUncachedLoader(`user_art_quiz`, {}, { method: "GET" }),
+    // quizLoader: gravityLoader(`user_art_quiz`, {}, { method: "GET" }),
+    savedArtworksLoader: gravityUncachedLoader(
+      "collection/saved-artwork/artworks",
+      {},
+      { headers: true }
+    ),
   }
 }

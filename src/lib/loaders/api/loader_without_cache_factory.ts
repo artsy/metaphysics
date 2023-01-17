@@ -1,7 +1,9 @@
 import DataLoader from "dataloader"
 import { loaderInterface } from "./loader_interface"
 import { LoaderFactory } from "../index"
-import { DataLoaderKey } from "./index"
+import { API, DataLoaderKey, APIOptions } from "./index"
+import { warn } from "lib/loggers"
+import gravity from "lib/apis/gravity"
 
 /**
  * This factory provides a short-cut system for our data loader system, it provides
@@ -11,32 +13,40 @@ import { DataLoaderKey } from "./index"
  * @param {string} _apiName the name of the API service
  */
 
-export const uncachedLoaderFactory = (
-  api: (route: string, params) => Promise<any>,
-  apiName: string
+export const uncachedLoaderFactory = <T = any>(
+  api: API,
+  _apiName: string,
+  apiOptions: APIOptions = {}
 ) => {
-  const apiLoaderFactory = (path, options: any | null) => {
-    // If you use gravity as the api here, then options will get interpreted as
-    // an accessToken, so you have to explicitly pass null
-    const loader = new DataLoader<DataLoaderKey, any>(
+  const apiLoaderFactory = (path, params = {}) => {
+    const loader = new DataLoader<DataLoaderKey, T | { body: T; headers: any }>(
       (keys) =>
-        Promise.all(
-          keys.map(({ key, apiOptions }) => {
-            if (apiOptions) {
-              throw new Error("A uncachedLoader does not accept API options.")
-            }
-
+        Promise.all<any>(
+          keys.map(({ key }) => {
             const reduceData = ({ body, headers }) =>
-              options && options.headers ? { body, headers } : body
+              apiOptions && apiOptions.headers ? { body, headers } : body
 
-            return Promise.resolve(
-              api(key, apiName === "gravity" ? null : options).then(reduceData)
-            )
+            const callApi = () =>
+              api(key, null, apiOptions)
+                .then(reduceData)
+                .catch((error) => {
+                  warn(key, error)
+                  throw error
+                })
+
+            return callApi()
           })
         ),
       { cache: false, batch: false }
     )
-    return loaderInterface(loader, path, options)
+    return loaderInterface(loader, path, params)
   }
   return apiLoaderFactory as LoaderFactory
 }
+
+export const gravityUncachedLoaderFactory = (opts) =>
+  uncachedLoaderFactory(gravity, "gravity", {
+    requestIDs: opts.requestIDs,
+    userAgent: opts.userAgent,
+    appToken: opts.appToken,
+  })
