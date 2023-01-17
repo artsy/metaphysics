@@ -151,6 +151,7 @@ describe("AuctionResult type", () => {
       })
     })
   })
+
   describe("isUpcoming", () => {
     it("returns true when the sale date is in the future", () => {
       const auctionResult = {
@@ -194,6 +195,54 @@ describe("AuctionResult type", () => {
 
       return runQuery(query, context!).then((data) => {
         expect(data.auctionResult.isUpcoming).toEqual(false)
+      })
+    })
+  })
+
+  describe("lotNumber", () => {
+    it("returns the lot number when it is present", () => {
+      const auctionResult = {
+        ...mockAuctionResult,
+        lot_number: "123",
+      }
+
+      const context = {
+        auctionLotLoader: jest.fn(() => Promise.resolve(auctionResult)),
+      }
+
+      const query = `
+        {
+          auctionResult(id: "foo-bar") {
+            lotNumber
+          }
+        }
+      `
+
+      return runQuery(query, context).then((data) => {
+        expect(data.auctionResult.lotNumber).toEqual("123")
+      })
+    })
+
+    it("returns null when the lot number is not present", () => {
+      const auctionResult = {
+        ...mockAuctionResult,
+        lot_number: null,
+      }
+
+      const context = {
+        auctionLotLoader: jest.fn(() => Promise.resolve(auctionResult)),
+      }
+
+      const query = `
+          {
+            auctionResult(id: "foo-bar") {
+              lotNumber
+            }
+          }
+        `
+
+      return runQuery(query, context).then((data) => {
+        expect(data.auctionResult.lotNumber).toEqual(null)
       })
     })
   })
