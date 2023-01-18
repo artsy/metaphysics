@@ -7,25 +7,25 @@ import {
 
 const newArtwork = { id: "some-artwork-id" }
 const newArtist = { id: "some-artist-id" }
-const createArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
-const createArtistLoader = jest.fn().mockResolvedValue(newArtist)
-
 const artworkDetails = {
+  id: "some-artwork-id",
   medium: "Painting",
   price_paid_cents: 10000,
   price_paid_currency: "USD",
   artwork_location: "Berlin, Germany",
   collector_location: { country: "Germany", city: "Berlin" },
   attribution_class: "open edition",
+  images: [
+    {
+      aspect_ratio: 1,
+    },
+  ],
 }
-const artworkLoader = jest.fn().mockResolvedValue(artworkDetails)
 
-const createImageLoader = jest.fn().mockResolvedValue({
-  id: "63c6ad60d58c97000d3fb1a7",
-  position: 1,
-  aspect_ratio: null,
-  image_url: null,
-})
+const createArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
+const createArtistLoader = jest.fn().mockResolvedValue(newArtist)
+const artworkLoader = jest.fn().mockResolvedValue(artworkDetails)
+const createImageLoader = jest.fn()
 
 const computeMutationInput = ({
   externalImageUrls = [],
@@ -116,7 +116,7 @@ const createArtworkEditionSetLoader = jest.fn()
 const defaultContext = {
   createArtworkLoader,
   createArtistLoader,
-  artworkLoader: artworkLoader,
+  artworkLoader,
   createArtworkImageLoader: createImageLoader,
   createArtworkEditionSetLoader,
 }
@@ -164,7 +164,11 @@ describe("myCollectionCreateArtworkMutation", () => {
               "city": "Berlin",
               "country": "Germany",
             },
-            "images": Array [],
+            "images": Array [
+              Object {
+                "imageURL": null,
+              },
+            ],
             "medium": "Painting",
             "pricePaid": Object {
               "display": "$100",
@@ -256,7 +260,11 @@ describe("myCollectionCreateArtworkMutation", () => {
               "city": "Berlin",
               "country": "Germany",
             },
-            "images": Array [],
+            "images": Array [
+              Object {
+                "imageURL": null,
+              },
+            ],
             "medium": "Painting",
             "pricePaid": Object {
               "display": "$100",
