@@ -4,6 +4,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
   GraphQLBoolean,
+  GraphQLInt,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "../object_identification"
@@ -29,6 +30,11 @@ export const Collection: GraphQLFieldConfig<any, ResolverContext> = {
         type: new GraphQLNonNull(GraphQLBoolean),
         description:
           "True if this collection represents artworks explicitly saved by the user, false otherwise.",
+      },
+      artworksCount: {
+        type: new GraphQLNonNull(GraphQLInt),
+        description: "Number of artworks associated with this collection.",
+        resolve: ({ artworks_count }) => artworks_count,
       },
     }),
   }),

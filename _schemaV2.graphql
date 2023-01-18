@@ -3551,6 +3551,9 @@ type CitySponsoredContent {
 
 # A collection of artworks
 type Collection {
+  # Number of artworks associated with this collection.
+  artworksCount: Int!
+
   # True if this is the default collection for this user, i.e. the default Saved Artwork collection.
   default: Boolean!
 

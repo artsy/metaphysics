@@ -10,6 +10,7 @@ const query = gql`
         name
         default
         saves
+        artworksCount
       }
     }
   }
@@ -20,6 +21,7 @@ const mockGravityCollection = {
   name: "Works for dining room",
   default: false,
   saves: true,
+  artworks_count: 42,
 }
 
 let context: Partial<ResolverContext>
@@ -54,6 +56,7 @@ it("returns collection attributes", async () => {
         name: "Works for dining room",
         default: false,
         saves: true,
+        artworksCount: 42,
       },
     },
   })
