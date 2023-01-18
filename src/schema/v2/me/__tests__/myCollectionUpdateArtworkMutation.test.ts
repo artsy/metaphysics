@@ -15,6 +15,7 @@ const defaultArtworkDetails = ({
   editionNumber?: string | null
   isEdition?: boolean | null
 } = {}) => ({
+  id: "some-artwork-id",
   artistIds: ["4d8b92b34eb68a1b2c0003f4"],
   artworkId: "some-artwork-id",
   category: "some strange category",
@@ -186,39 +187,45 @@ describe("myCollectionUpdateArtworkMutation", () => {
       const data = await runAuthenticatedQuery(mutation, defaultContext)
       const { artworkOrError } = data.myCollectionUpdateArtwork
 
-      expect(artworkOrError).toEqual({
-        artwork: {
-          category: "some strange category",
-          date: "1990",
-          depth: "20",
-          editionNumber: null,
-          editionSize: null,
-          height: "20",
-          isEdition: null,
-          medium: "Updated",
-          metric: "in",
-          pricePaid: {
-            display: "$100",
+      expect(artworkOrError).toMatchInlineSnapshot(`
+        Object {
+          "artwork": Object {
+            "artworkLocation": "Berlin, Germany",
+            "attributionClass": Object {
+              "name": "Open edition",
+            },
+            "category": "some strange category",
+            "collectorLocation": Object {
+              "city": "Berlin",
+              "country": "Germany",
+            },
+            "date": "1990",
+            "depth": "20",
+            "editionNumber": null,
+            "editionSize": null,
+            "height": "20",
+            "images": Array [
+              Object {
+                "imageURL": null,
+              },
+            ],
+            "isEdition": null,
+            "medium": "Updated",
+            "metric": "in",
+            "pricePaid": Object {
+              "display": "$100",
+            },
+            "provenance": "Pat Hearn Gallery",
+            "title": "hey now",
+            "width": "20",
           },
-          images: [],
-          artworkLocation: "Berlin, Germany",
-          collectorLocation: {
-            city: "Berlin",
-            country: "Germany",
+          "artworkEdge": Object {
+            "node": Object {
+              "medium": "Updated",
+            },
           },
-          provenance: "Pat Hearn Gallery",
-          title: "hey now",
-          width: "20",
-          attributionClass: {
-            name: "Open edition",
-          },
-        },
-        artworkEdge: {
-          node: {
-            medium: "Updated",
-          },
-        },
-      })
+        }
+      `)
     })
   })
 
@@ -249,7 +256,11 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "editionNumber": null,
             "editionSize": null,
             "height": "20",
-            "images": Array [],
+            "images": Array [
+              Object {
+                "imageURL": null,
+              },
+            ],
             "isEdition": null,
             "medium": "Updated",
             "metric": "in",

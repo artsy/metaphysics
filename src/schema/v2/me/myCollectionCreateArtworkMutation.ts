@@ -161,6 +161,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       ...rest
     },
     {
+      artworkLoader,
       createArtworkLoader,
       createArtworkImageLoader,
       createArtworkEditionSetLoader,
@@ -168,6 +169,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     }
   ) => {
     if (
+      !artworkLoader ||
       !createArtworkLoader ||
       !createArtworkImageLoader ||
       !createArtworkEditionSetLoader ||
@@ -227,12 +229,12 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
 
       const imageSources = computeImageSources(externalImageUrls)
 
-      const images: any[] = []
       for (const imageSource of imageSources) {
-        images.push(await createArtworkImageLoader(artworkId, imageSource))
+        await createArtworkImageLoader(artworkId, imageSource)
       }
 
-      return { ...response, images }
+      // Loading the artwork again to get the updated version with the new images
+      return await artworkLoader(artworkId)
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
