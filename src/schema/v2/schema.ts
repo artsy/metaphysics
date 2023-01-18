@@ -174,6 +174,10 @@ import Conversations from "./conversation/conversations"
 import { updateQuizMutation } from "schema/v2/updateQuizMutation"
 import { OrderedSetsConnection } from "./OrderedSet/orderedSetsConnection"
 import { triggerCampaignMutation } from "./me/triggerCampaignMutation"
+import { FeaturesConnection } from "./Feature/FeaturesConnection"
+import { CreateFeatureMutation } from "./Feature/CreateFeatureMutation"
+import { UpdateFeatureMutation } from "./Feature/UpdateFeatureMutation"
+import { DeleteFeatureMutation } from "./Feature/DeleteFeatureMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -234,6 +238,7 @@ const rootFields = {
   fairs: Fairs,
   fairsConnection,
   feature: Feature,
+  featuresConnection: FeaturesConnection,
   filterPartners: FilterPartners,
   gene: Gene,
   geneFamiliesConnection: GeneFamilies,
@@ -314,6 +319,7 @@ export default new GraphQLSchema({
       createConsignmentInquiry: createConsignmentInquiryMutation,
       createCreditCard: createCreditCardMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
+      createFeature: CreateFeatureMutation,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createOrderedSet: createOrderedSetMutation,
       createUserAdminNote: createUserAdminNoteMutation,
@@ -323,6 +329,7 @@ export default new GraphQLSchema({
       deleteBankAccount: deleteBankAccountMutation,
       deleteConversation: deleteConversationMutation,
       deleteCreditCard: deleteCreditCardMutation,
+      deleteFeature: DeleteFeatureMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       deleteOrderedSet: deleteOrderedSetMutation,
@@ -360,6 +367,7 @@ export default new GraphQLSchema({
       updateCollectorProfile: UpdateCollectorProfile,
       updateCollectorProfileWithID: UpdateCollectorProfileWithID,
       updateConversation: UpdateConversationMutation,
+      updateFeature: UpdateFeatureMutation,
       updateMessage: updateMessageMutation,
       updateMyPassword: updateMyPasswordMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,

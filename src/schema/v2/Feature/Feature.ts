@@ -1,5 +1,6 @@
 import { GraphQLID, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { connectionWithCursorInfo } from "../fields/pagination"
 import { FeatureType } from "./FeatureType"
 
 export const Feature: GraphQLFieldConfig<void, ResolverContext> = {
@@ -13,3 +14,7 @@ export const Feature: GraphQLFieldConfig<void, ResolverContext> = {
   },
   resolve: (_root, { id }, { featureLoader }) => featureLoader(id),
 }
+
+export const FeatureConnection = connectionWithCursorInfo({
+  nodeType: FeatureType,
+})

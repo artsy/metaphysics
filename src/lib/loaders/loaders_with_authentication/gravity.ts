@@ -195,6 +195,20 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    featureLoader: gravityLoader((id) => `feature/${id}`),
+    featuresLoader: gravityLoader("features", {}, { headers: true }),
+    createFeatureLoader: gravityLoader("feature", {}, { method: "POST" }),
+    deleteFeatureLoader: gravityLoader(
+      (id) => `feature/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    updateFeatureLoader: gravityLoader(
+      (id) => `feature/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    matchFeaturesLoader: gravityLoader("match/features", {}, { headers: true }),
     filterArtworksLoader: gravityLoader("filter/artworks"),
     followArtistLoader: gravityLoader(
       "me/follow/artist",
