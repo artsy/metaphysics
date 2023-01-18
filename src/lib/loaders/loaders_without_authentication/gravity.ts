@@ -4,6 +4,7 @@ import { uncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_fact
 import gravity from "lib/apis/gravity"
 import { createBatchLoaders } from "../batchLoader"
 import { searchLoader } from "../searchLoader"
+import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
 export type StartIdentityVerificationGravityOutput = {
   identity_verification_id: string
@@ -14,6 +15,8 @@ export default (opts) => {
   const { gravityLoaderWithoutAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithoutAuthenticationFactory
   const gravityUncachedLoader = uncachedLoaderFactory(gravity, "gravity")
+
+  console.log({ opts })
 
   const [batchSaleLoader, batchSalesLoader] = createBatchLoaders({
     singleLoader: gravityLoader((id) => `sale/${id}`),
@@ -264,5 +267,20 @@ export default (opts) => {
     trendingArtistsLoader: gravityLoader("artists/trending"),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
+    quizLoader: gravityUncachedLoader("user_art_quiz", {
+      xapp_token: opts.appToken,
+    }),
+    savedArtworkLoader: trackedEntityLoaderFactory(
+      gravityUncachedLoader("collection/saved-artwork/artworks", {
+        user_id: opts.userID,
+        private: true,
+        xapp_token: opts.appToken,
+      }),
+      {
+        paramKey: "artworks",
+        trackingKey: "is_saved",
+        entityIDKeyPath: "_id",
+      }
+    ),
   }
 }
