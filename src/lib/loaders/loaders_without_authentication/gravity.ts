@@ -264,7 +264,6 @@ export default (opts) => {
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
     quizLoader: gravityUncachedLoader(`user_art_quiz`, {}, { method: "GET" }),
-    // quizLoader: gravityLoader(`user_art_quiz`, {}, { method: "GET" }),
     savedArtworksLoader: gravityUncachedLoader(
       "collection/saved-artwork/artworks",
       {},

@@ -1,11 +1,14 @@
 import gemini from "../../apis/gemini"
 import { unescape } from "querystring"
 
-import { uncachedLoaderFactory } from "../api/loader_without_cache_factory"
+import { unauthenticatedUncachedApiLoaderFactory } from "../api/loader_without_cache_factory"
 
 const toBase64 = (string) =>
   Buffer.from(unescape(encodeURIComponent(string)), "binary").toString("base64")
-const geminiUncachedLoader = uncachedLoaderFactory(gemini, "gemini")
+const geminiUncachedLoader = unauthenticatedUncachedApiLoaderFactory(
+  gemini,
+  "gemini"
+)
 
 export default () => ({
   // The outer function is so that we can pass params from the schema,
