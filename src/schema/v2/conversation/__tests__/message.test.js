@@ -30,6 +30,8 @@ describe("Me", () => {
                 original_text:
                   "Loved some of the works at your fair booth! ABOUT THIS COLLECTOR: blah, blah",
                 body: "I'm a cat",
+                to: [],
+                cc: [],
               },
               {
                 id: "222",
@@ -45,6 +47,8 @@ describe("Me", () => {
                 from_principal: true,
                 original_text: "I'm a cat oh yea!",
                 body: "I'm a cat",
+                to: ['"Recipient Name" <recipient@cat.com>'],
+                cc: ['"Another Recipient" <another_recipient_in_cc@cat.com>'],
               },
             ],
           }),
@@ -71,6 +75,8 @@ describe("Me", () => {
                         email
                         name
                       }
+                      to
+                      cc
                     }
                   }
                 }

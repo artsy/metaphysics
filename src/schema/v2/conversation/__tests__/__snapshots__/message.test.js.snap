@@ -64,23 +64,31 @@ Object {
         Object {
           "node": Object {
             "body": "Loved some of the works at your fair booth!",
+            "cc": Array [],
             "from": Object {
               "email": "fancy_german_person@posteo.de",
               "name": "Percy Z",
             },
             "internalID": "222",
             "isFirstMessage": true,
+            "to": Array [],
           },
         },
         Object {
           "node": Object {
             "body": "I'm a cat oh yea!",
+            "cc": Array [
+              "\\"Another Recipient\\" <another_recipient_in_cc@cat.com>",
+            ],
             "from": Object {
               "email": "fancy_german_person@posteo.de",
               "name": "Percy Z",
             },
             "internalID": "222",
             "isFirstMessage": false,
+            "to": Array [
+              "\\"Recipient Name\\" <recipient@cat.com>",
+            ],
           },
         },
       ],
