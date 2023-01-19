@@ -1,5 +1,5 @@
-import initials from "./fields/initials"
-import Image from "./image"
+import initials from "../fields/initials"
+import Image from "../image"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -7,12 +7,13 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "./object_identification"
-import { markdown } from "./fields/markdown"
-import { ArtistType } from "./artist"
+import { InternalIDFields } from "../object_identification"
+import { markdown } from "../fields/markdown"
+import { ArtistType } from "../artist"
 import { PartnerType } from "schema/v2/partner/partner"
-import { GeneType } from "./gene"
+import { GeneType } from "../gene"
 import { URL } from "url"
+import { connectionWithCursorInfo } from "../fields/pagination"
 
 export const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeaturedLink",
@@ -74,6 +75,10 @@ export const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
     title: { type: GraphQLString },
   },
 })
+
+export const FeaturedLinkConnectionType = connectionWithCursorInfo({
+  nodeType: FeaturedLinkType,
+}).connectionType
 
 const FeaturedLink: GraphQLFieldConfig<void, ResolverContext> = {
   type: FeaturedLinkType,
