@@ -134,5 +134,13 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ metadata }) => isInvoiceMessage(metadata),
     },
     createdAt: date(),
+    to: {
+      description: "Masked emails w/ display name of the recipients.",
+      type: new GraphQLList(GraphQLString),
+    },
+    cc: {
+      description: "Masked emails w/ display name of the recipients in copy.",
+      type: new GraphQLList(GraphQLString),
+    },
   },
 })
