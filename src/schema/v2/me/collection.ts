@@ -16,25 +16,25 @@ export const Collection: GraphQLFieldConfig<any, ResolverContext> = {
     description: "A collection of artworks",
     fields: () => ({
       ...InternalIDFields,
-      name: {
-        type: new GraphQLNonNull(GraphQLString),
-        description:
-          "Name of the collection. Has a predictable value for 'standard' collections such as Saved Artwork, My Collection, etc. Can be provided by user otherwise.",
+      artworksCount: {
+        type: new GraphQLNonNull(GraphQLInt),
+        description: "Number of artworks associated with this collection.",
+        resolve: ({ artworks_count }) => artworks_count,
       },
       default: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description:
           "True if this is the default collection for this user, i.e. the default Saved Artwork collection.",
       },
+      name: {
+        type: new GraphQLNonNull(GraphQLString),
+        description:
+          "Name of the collection. Has a predictable value for 'standard' collections such as Saved Artwork, My Collection, etc. Can be provided by user otherwise.",
+      },
       saves: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description:
           "True if this collection represents artworks explicitly saved by the user, false otherwise.",
-      },
-      artworksCount: {
-        type: new GraphQLNonNull(GraphQLInt),
-        description: "Number of artworks associated with this collection.",
-        resolve: ({ artworks_count }) => artworks_count,
       },
     }),
   }),
