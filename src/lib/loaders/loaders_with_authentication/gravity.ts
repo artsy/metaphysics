@@ -195,6 +195,28 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    featuredLinkLoader: gravityLoader((id) => `featured_link/${id}`),
+    featuredLinksLoader: gravityLoader("featured_links", {}, { headers: true }),
+    createFeaturedLinkLoader: gravityLoader(
+      "featured_link",
+      {},
+      { method: "POST" }
+    ),
+    deleteFeaturedLinkLoader: gravityLoader(
+      (id) => `featured_link/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    updateFeaturedLinkLoader: gravityLoader(
+      (id) => `featured_link/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    matchFeaturedLinksLoader: gravityLoader(
+      "match/featured_links",
+      {},
+      { headers: true }
+    ),
     featureLoader: gravityLoader((id) => `feature/${id}`),
     featuresLoader: gravityLoader("features", {}, { headers: true }),
     createFeatureLoader: gravityLoader("feature", {}, { method: "POST" }),

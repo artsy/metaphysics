@@ -178,6 +178,10 @@ import { FeaturesConnection } from "./Feature/FeaturesConnection"
 import { CreateFeatureMutation } from "./Feature/CreateFeatureMutation"
 import { UpdateFeatureMutation } from "./Feature/UpdateFeatureMutation"
 import { DeleteFeatureMutation } from "./Feature/DeleteFeatureMutation"
+import { FeaturedLinksConnection } from "./FeaturedLink/featuredLinksConnection"
+import { CreateFeaturedLinkMutation } from "./FeaturedLink/createFeaturedLinkMutation"
+import { UpdateFeaturedLinkMutation } from "./FeaturedLink/updateFeaturedLinkMutation"
+import { DeleteFeaturedLinkMutation } from "./FeaturedLink/deleteFeaturedLinkMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -238,6 +242,7 @@ const rootFields = {
   fairs: Fairs,
   fairsConnection,
   feature: Feature,
+  featuredLinksConnection: FeaturedLinksConnection,
   featuresConnection: FeaturesConnection,
   filterPartners: FilterPartners,
   gene: Gene,
@@ -320,6 +325,7 @@ export default new GraphQLSchema({
       createCreditCard: createCreditCardMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createFeature: CreateFeatureMutation,
+      createFeaturedLink: CreateFeaturedLinkMutation,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createOrderedSet: createOrderedSetMutation,
       createUserAdminNote: createUserAdminNoteMutation,
@@ -330,6 +336,7 @@ export default new GraphQLSchema({
       deleteConversation: deleteConversationMutation,
       deleteCreditCard: deleteCreditCardMutation,
       deleteFeature: DeleteFeatureMutation,
+      deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       deleteOrderedSet: deleteOrderedSetMutation,
@@ -368,6 +375,7 @@ export default new GraphQLSchema({
       updateCollectorProfileWithID: UpdateCollectorProfileWithID,
       updateConversation: UpdateConversationMutation,
       updateFeature: UpdateFeatureMutation,
+      updateFeaturedLink: UpdateFeaturedLinkMutation,
       updateMessage: updateMessageMutation,
       updateMyPassword: updateMyPasswordMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,

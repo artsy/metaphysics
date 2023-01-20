@@ -1,7 +1,7 @@
 import { GraphQLUnionType } from "graphql"
 import { ArtistType } from "./artist"
 import { ArtworkType } from "./artwork"
-import { FeaturedLinkType } from "./featured_link"
+import { FeaturedLinkType } from "./FeaturedLink/featuredLink"
 import { GeneType } from "./gene"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { Gravity } from "types/runtime"
