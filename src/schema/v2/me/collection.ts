@@ -6,8 +6,16 @@ import {
   GraphQLBoolean,
   GraphQLInt,
 } from "graphql"
+import {
+  CatchCollectionNotFoundException,
+  convertConnectionArgsToGravityArgs,
+} from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
+import { artworkConnection } from "../artwork"
+import { paginationResolver } from "../fields/pagination"
 import { InternalIDFields } from "../object_identification"
+import CollectionSorts from "../sorts/collection_sorts"
 
 export const Collection: GraphQLFieldConfig<any, ResolverContext> = {
   description: "A collection belonging to the current user",
@@ -16,6 +24,54 @@ export const Collection: GraphQLFieldConfig<any, ResolverContext> = {
     description: "A collection of artworks",
     fields: () => ({
       ...InternalIDFields,
+      artworksConnection: {
+        type: artworkConnection.connectionType,
+        args: {
+          ...pageable(),
+          sort: {
+            type: CollectionSorts,
+            defaultValue: CollectionSorts.getValue("SAVED_AT_DESC")!.value,
+          },
+        },
+        resolve: async (parent, args, context, _info) => {
+          const { collectionArtworksLoader } = context
+          if (!collectionArtworksLoader) return null
+
+          const { id, user_id } = parent
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const gravityOptions = {
+            page,
+            size,
+            user_id,
+            private: true,
+            sort: args.sort,
+            total_count: true,
+          }
+
+          try {
+            const { headers, body } = await collectionArtworksLoader(
+              id,
+              gravityOptions
+            )
+
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+            return paginationResolver({
+              totalCount,
+              offset,
+              page,
+              size,
+              body,
+              args,
+            })
+          } catch (error) {
+            return CatchCollectionNotFoundException(error)
+          }
+        },
+      },
       artworksCount: {
         type: new GraphQLNonNull(GraphQLInt),
         description: "Number of artworks associated with this collection.",
@@ -55,6 +111,9 @@ export const Collection: GraphQLFieldConfig<any, ResolverContext> = {
       private: true,
     })
 
-    return response
+    return {
+      ...response,
+      user_id: meID,
+    }
   },
 }

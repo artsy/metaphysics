@@ -9,6 +9,12 @@ const CollectionSorts = new GraphQLEnumType({
     POSITION_DESC: {
       value: "-position",
     },
+    SAVED_AT_ASC: {
+      value: "created_at",
+    },
+    SAVED_AT_DESC: {
+      value: "-created_at",
+    },
   },
 })
 

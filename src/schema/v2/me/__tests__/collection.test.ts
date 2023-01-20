@@ -2,7 +2,7 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
 
-const query = gql`
+let query = gql`
   query {
     me {
       collection(id: "123-abc") {
@@ -30,7 +30,6 @@ beforeEach(() => {
   context = {
     meLoader: jest.fn(() => Promise.resolve({ id: "user-42" })),
     collectionLoader: jest.fn(() => Promise.resolve(mockGravityCollection)),
-    authenticatedLoaders: {},
   }
 })
 
@@ -59,5 +58,90 @@ it("returns collection attributes", async () => {
         artworksCount: 42,
       },
     },
+  })
+})
+
+describe("artworksConnection", () => {
+  const mockGravityCollectionArtworks = {
+    headers: {
+      "x-total-count": 42,
+    },
+    body: [
+      {
+        _id: "11",
+        id: "first-artwork",
+        title: "First Artwork",
+      },
+      {
+        _id: "22",
+        id: "second-artwork",
+        title: "Second Artwork",
+      },
+    ],
+  }
+
+  beforeEach(() => {
+    context.collectionArtworksLoader = jest.fn(() =>
+      Promise.resolve(mockGravityCollectionArtworks)
+    )
+
+    query = gql`
+      query {
+        me {
+          collection(id: "123-abc") {
+            artworksConnection(first: 2, sort: SAVED_AT_DESC) {
+              totalCount
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+  })
+
+  it("passes correct args to Gravity", async () => {
+    await runAuthenticatedQuery(query, context)
+
+    expect(context.collectionArtworksLoader as jest.Mock).toHaveBeenCalledWith(
+      mockGravityCollection.id,
+      {
+        page: 1,
+        size: 2,
+        sort: "-created_at",
+        user_id: "user-42",
+        private: true,
+        total_count: true,
+      }
+    )
+  })
+
+  it("returns artwork data as a connection", async () => {
+    const response = await runAuthenticatedQuery(query, context)
+
+    expect(response).toEqual({
+      me: {
+        collection: {
+          artworksConnection: {
+            totalCount: 42,
+            edges: [
+              {
+                node: {
+                  slug: "first-artwork",
+                },
+              },
+              {
+                node: {
+                  slug: "second-artwork",
+                },
+              },
+            ],
+          },
+        },
+      },
+    })
   })
 })
