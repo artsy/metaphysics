@@ -136,11 +136,15 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
     createdAt: date(),
     to: {
       description: "Masked emails w/ display name of the recipients.",
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      ),
     },
     cc: {
       description: "Masked emails w/ display name of the recipients in copy.",
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      ),
     },
   },
 })
