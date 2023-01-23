@@ -6,6 +6,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { MyCollectionArtworkMutationType } from "./myCollection"
@@ -101,7 +102,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLString,
     },
     pricePaidCents: {
-      type: GraphQLInt,
+      type: GraphQLLong,
     },
     pricePaidCurrency: {
       type: GraphQLString,

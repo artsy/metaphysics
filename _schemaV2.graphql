@@ -12071,7 +12071,7 @@ input MyCollectionUpdateArtworkInput {
   isEdition: Boolean
   medium: String
   metric: String
-  pricePaidCents: Int
+  pricePaidCents: Long
   pricePaidCurrency: String
   provenance: String
   submissionId: String
