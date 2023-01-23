@@ -8,6 +8,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { mapKeys, snakeCase } from "lodash"
@@ -118,8 +119,8 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
     pricePaidCents: {
       description:
-        "@deprecated use the cost major and cost minor fields instead",
-      type: GraphQLInt,
+        "The price paid for the MyCollection artwork in cents for any given currency",
+      type: GraphQLLong,
     },
     pricePaidCurrency: {
       type: GraphQLString,
