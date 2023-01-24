@@ -1575,6 +1575,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             )
           )
         ),
+        args: {
+          includeAll: {
+            type: GraphQLBoolean,
+            default: false,
+            description:
+              "Include all images, even if they are not ready or processing failed.",
+          },
+        },
         resolve: getFigures,
       },
     }
