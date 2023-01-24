@@ -1,8 +1,8 @@
+import _ from "lodash"
+import qs from "querystring"
 import { Artwork } from "types/runtime/gravity"
 import { parse } from "url"
-import qs from "querystring"
 import { normalizeImageData } from "../image"
-import _ from "lodash"
 
 export const isTwoDimensional = ({
   width_cm,
@@ -78,12 +78,16 @@ export const getFigures = ({
   images,
   external_video_id,
   set_video_as_cover,
+  includeAll = false,
 }) => {
   const _images = images.map((image) => ({
     ...image,
     type: "Image",
   }))
-  const sortedImages = normalizeImageData(_.sortBy(_images, "position"))
+  const sortedImages = normalizeImageData(
+    _.sortBy(_images, "position"),
+    includeAll
+  )
 
   let videos = [] as {
     type: string
