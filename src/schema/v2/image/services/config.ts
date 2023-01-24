@@ -5,7 +5,7 @@ export const DEFAULT_1X_QUALITY = 80
 const DEFAULT_2X_QUALITY = 50
 export const DEFAULT_SRCSET_QUALITY = [DEFAULT_1X_QUALITY, DEFAULT_2X_QUALITY]
 
-const { GEMINI_ENDPOINT } = config
+const { GEMINI_ENDPOINT, IMGIX_ENDPOINT, IMGIX_TOKEN } = config
 
 export const services = configureImageServices({
   gemini: {
@@ -28,5 +28,9 @@ export const services = configureImageServices({
         bucket: "artsy-media-uploads",
       },
     ],
+  },
+  imgix: {
+    endpoint: IMGIX_ENDPOINT!,
+    token: IMGIX_TOKEN!,
   },
 })
