@@ -27,17 +27,18 @@ export const Collection: GraphQLFieldConfig<any, ResolverContext> = {
       artworksConnection: {
         type: artworkConnection.connectionType,
         args: {
-          ...pageable(),
-          sort: {
-            type: CollectionSorts,
-            defaultValue: CollectionSorts.getValue("SAVED_AT_DESC")!.value,
-          },
+          ...pageable({
+            sort: {
+              type: CollectionSorts,
+              defaultValue: CollectionSorts.getValue("SAVED_AT_DESC")!.value,
+            },
+          }),
         },
         resolve: async (parent, args, context, _info) => {
           const { collectionArtworksLoader } = context
           if (!collectionArtworksLoader) return null
 
-          const { id, user_id } = parent
+          const { id, userID } = parent
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )
@@ -45,7 +46,7 @@ export const Collection: GraphQLFieldConfig<any, ResolverContext> = {
           const gravityOptions = {
             page,
             size,
-            user_id,
+            user_id: userID,
             private: true,
             sort: args.sort,
             total_count: true,
@@ -113,7 +114,7 @@ export const Collection: GraphQLFieldConfig<any, ResolverContext> = {
 
     return {
       ...response,
-      user_id: meID,
+      userID: meID,
     }
   },
 }
