@@ -36,32 +36,6 @@ describe("getArtistInsights", () => {
         kind: "BIENNIAL",
         value,
       },
-    ]
-
-    fields.forEach((field) => {
-      it(`returns an array of ${field.key} entities split by pipe`, () => {
-        const artist = {
-          [field.key]: field.value,
-        }
-
-        const insights = getArtistInsights(artist)
-        const insight = insights.find((insight) => insight.kind === field.kind)!
-
-        expect(insight.count).toEqual(3)
-        expect(insight.entities).toEqual([
-          "Art Institute of Chicago",
-          "Brooklyn Museum",
-          "Hamburger Bahnhof",
-        ])
-      })
-    })
-  })
-
-  describe("newline delimited insight fields", () => {
-    const value =
-      "Art Institute of Chicago \nBrooklyn Museum \n       Hamburger Bahnhof"
-
-    const fields = [
       {
         key: "collections",
         kind: "COLLECTED",
@@ -70,7 +44,7 @@ describe("getArtistInsights", () => {
     ]
 
     fields.forEach((field) => {
-      it(`returns an array of ${field.key} entities split by newline`, () => {
+      it(`returns an array of ${field.key} entities split by pipe`, () => {
         const artist = {
           [field.key]: field.value,
         }
