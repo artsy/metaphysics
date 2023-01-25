@@ -44,7 +44,7 @@ describe("getArtistInsights", () => {
     ]
 
     fields.forEach((field) => {
-      it(`returns an array of ${field.key} entities split by pipe`, () => {
+      it(`returns an array of ${field.key} entities split by newline`, () => {
         const artist = {
           [field.key]: field.value,
         }
