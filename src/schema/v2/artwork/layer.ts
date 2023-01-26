@@ -5,11 +5,13 @@ import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
+import cached from "../fields/cached"
 
 const ArtworkLayerType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkLayer",
   fields: () => ({
     ...IDFields,
+    cached,
     // NOTE: pagination is not truly supported here.
     // The GraphQL connection spec is observed, but only
     // the number of items to return is respected.
