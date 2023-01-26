@@ -61,6 +61,7 @@ import { WatchedLotConnection } from "./watchedLotConnection"
 import { quiz } from "../quiz"
 import moment from "moment"
 import { Collection } from "./collection"
+import { CollectionsConnection } from "./collectionsConnection"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -132,6 +133,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       resolve: collectorProfileResolver("bio"),
     },
     collection: Collection,
+    collectionsConnection: CollectionsConnection,
     collectorLevel: {
       type: GraphQLInt,
       resolve: ({ collector_level }) => {

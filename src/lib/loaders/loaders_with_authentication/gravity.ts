@@ -48,6 +48,7 @@ export default (accessToken, userID, opts) => {
     collectionLoader: gravityLoader((id) => `collection/${id}`, {
       user_id: userID,
     }),
+    collectionsLoader: gravityLoader("collections", {}, { headers: true }),
     collectorProfilesLoader: gravityLoader(
       "collector_profiles",
       {},
