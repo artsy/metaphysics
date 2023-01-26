@@ -14713,6 +14713,7 @@ type Quiz {
     page: Int
     size: Int
   ): QuizArtworkConnection
+  recommendedArtworks: [Artwork!]!
   savedArtworks: [Artwork!]!
 }
 

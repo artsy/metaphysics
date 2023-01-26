@@ -31,14 +31,19 @@ export const quizArtworkConnection: GraphQLFieldConfig<any, ResolverContext> = {
   }),
   resolve: ({ quiz_artworks }, args) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
     const totalCount = quiz_artworks.length
+
+    const sorted = quiz_artworks.sort((a, b) => {
+      return a.position - b.position
+    })
 
     const quizArtworks = paginationResolver({
       totalCount,
       offset,
       page,
       size,
-      body: quiz_artworks,
+      body: sorted,
       args,
       resolveNode: (node) => {
         return node.artwork
