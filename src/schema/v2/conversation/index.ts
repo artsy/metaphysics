@@ -272,12 +272,17 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     fromUser: {
       description: "The user who initiated the conversation",
       type: UserType,
-      resolve: ({ from_id }, _options, { userByIDLoader }) => {
+      resolve: async ({ from_id }, _options, { userByIDLoader }) => {
         if (!userByIDLoader) {
           return null
         }
-
-        return userByIDLoader(from_id)
+        try {
+          const user = await userByIDLoader(from_id)
+          return user
+        } catch (error) {
+          console.error("[schema/v2/conversation/fromUser] Error:", error)
+          return null
+        }
       },
     },
     to: {
