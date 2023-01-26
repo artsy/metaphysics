@@ -1,4 +1,4 @@
-import date from "schema/v2/fields/date"
+import date, { date as dateFormatter } from "schema/v2/fields/date"
 import { InternalIDFields } from "schema/v2/object_identification"
 import {
   GraphQLID,
@@ -59,7 +59,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
 
   // moved InquirerCollectorProfileFields here
   location: { type: myLocationType },
-  artsyUserSince: date,
+  artsyUserSince: dateFormatter(({ artsy_user_since }) => artsy_user_since),
   ownerID: {
     type: new GraphQLNonNull(GraphQLID),
     description: "User ID of the collector profile's owner",
