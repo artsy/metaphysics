@@ -127,6 +127,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deleteCollectionLoader: gravityLoader(
+      (id) => `collection/${id}`,
+      { user_id: userID },
+      { method: "DELETE" }
+    ),
     deleteCollectorProfileIconLoader: gravityLoader(
       "me/collector_profile/icon",
       {},
