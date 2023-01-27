@@ -82,6 +82,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createCollectionLoader: gravityLoader("collection", {}, { method: "POST" }),
     createIdentityVerificationOverrideLoader: gravityLoader(
       (id) => `identity_verification/${id}/override`,
       {},

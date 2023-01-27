@@ -35,6 +35,7 @@ import {
 } from "./notification_preferences"
 import { City } from "./city"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
+import { createCollectionMutation } from "./me/createCollectionMutation"
 // import Collection from "./collection"
 import { CreditCard } from "./credit_card"
 import { DeleteArtworkImageMutation } from "./deleteArtworkImageMutation"
@@ -322,6 +323,7 @@ export default new GraphQLSchema({
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
+      createCollection: createCollectionMutation,
       createCreditCard: createCreditCardMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createFeature: CreateFeatureMutation,
