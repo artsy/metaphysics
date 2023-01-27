@@ -31,7 +31,7 @@ export const ARTIST_INSIGHT_MAPPING = {
   },
   COLLECTED: {
     getDescription: () => null,
-    getEntities: (artist) => splitEntities(artist.collections, "\n"),
+    getEntities: (artist) => splitEntities(artist.collections),
     getLabel: () => "Collected by a major institution",
   },
   REVIEWED: {
