@@ -36,6 +36,7 @@ import {
 import { City } from "./city"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
 import { createCollectionMutation } from "./me/createCollectionMutation"
+import { deleteCollectionMutation } from "./me/deleteCollectionMutation"
 // import Collection from "./collection"
 import { CreditCard } from "./credit_card"
 import { DeleteArtworkImageMutation } from "./deleteArtworkImageMutation"
@@ -335,6 +336,7 @@ export default new GraphQLSchema({
       createUserInterestForUser: createUserInterestForUser,
       deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
+      deleteCollection: deleteCollectionMutation,
       deleteConversation: deleteConversationMutation,
       deleteCreditCard: deleteCreditCardMutation,
       deleteFeature: DeleteFeatureMutation,
