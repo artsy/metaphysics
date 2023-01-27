@@ -16,6 +16,7 @@ import { GraphQLEnumType } from "graphql"
 interface ConversationsArguments extends CursorPageable {
   dismissed?: boolean
   hasMessage?: boolean
+  toBeReplied?: boolean
   hasReply?: boolean
   partnerId?: string
   type?: "Partner" | "User"
@@ -65,6 +66,9 @@ const Conversations: GraphQLFieldConfig<
       type: ConversationsInputModeEnum,
       defaultValue: "USER",
     },
+    toBeReplied: {
+      type: GraphQLBoolean,
+    },
   }),
   resolve: (_root, args, { conversationsLoader, userID }) => {
     if (!conversationsLoader) {
@@ -88,6 +92,7 @@ const Conversations: GraphQLFieldConfig<
         has_reply: args.hasReply ?? undefined,
         has_message: args.hasMessage ?? undefined,
         dismissed: args.dismissed ?? undefined,
+        to_be_replied: args.toBeReplied ?? undefined,
       }
       // User
     } else {

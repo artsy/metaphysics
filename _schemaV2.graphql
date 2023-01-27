@@ -10920,6 +10920,7 @@ type Me implements Node {
     hasReply: Boolean
     last: Int
     partnerId: String
+    toBeReplied: Boolean
     type: ConversationsInputMode = USER
   ): ConversationConnection
   createdAt(
@@ -14039,6 +14040,7 @@ type Query {
     hasReply: Boolean
     last: Int
     partnerId: String
+    toBeReplied: Boolean
     type: ConversationsInputMode = USER
   ): ConversationConnection
 
@@ -18241,6 +18243,7 @@ type Viewer {
     hasReply: Boolean
     last: Int
     partnerId: String
+    toBeReplied: Boolean
     type: ConversationsInputMode = USER
   ): ConversationConnection
 
