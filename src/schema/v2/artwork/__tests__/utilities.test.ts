@@ -158,18 +158,21 @@ describe("isTooBig", () => {
 
 describe("getFigures", () => {
   it("returns an array of images", () => {
-    const data = getFigures({
-      images: [
-        {
-          image_url: "foo",
-        },
-        {
-          image_url: "bar",
-        },
-      ],
-      external_video_id: null,
-      set_video_as_cover: null,
-    })
+    const data = getFigures(
+      {
+        images: [
+          {
+            image_url: "foo",
+          },
+          {
+            image_url: "bar",
+          },
+        ],
+        external_video_id: null,
+        set_video_as_cover: null,
+      },
+      {}
+    )
 
     expect(data).toEqual([
       { image_url: "foo", type: "Image" },
@@ -178,18 +181,21 @@ describe("getFigures", () => {
   })
 
   it("returns images with video appended at end by default", () => {
-    const data = getFigures({
-      images: [
-        {
-          image_url: "foo",
-        },
-        {
-          image_url: "bar",
-        },
-      ],
-      external_video_id: "video-id?id=foo&width=200&height=300",
-      set_video_as_cover: null,
-    })
+    const data = getFigures(
+      {
+        images: [
+          {
+            image_url: "foo",
+          },
+          {
+            image_url: "bar",
+          },
+        ],
+        external_video_id: "video-id?id=foo&width=200&height=300",
+        set_video_as_cover: null,
+      },
+      {}
+    )
 
     expect(data).toEqual([
       { image_url: "foo", type: "Image" },
@@ -204,18 +210,21 @@ describe("getFigures", () => {
   })
 
   it("returns a video at the front with images at the end if set_video_as_cover=true", () => {
-    const data = getFigures({
-      images: [
-        {
-          image_url: "foo",
-        },
-        {
-          image_url: "bar",
-        },
-      ],
-      external_video_id: "video-id?id=foo&width=200&height=300",
-      set_video_as_cover: true,
-    })
+    const data = getFigures(
+      {
+        images: [
+          {
+            image_url: "foo",
+          },
+          {
+            image_url: "bar",
+          },
+        ],
+        external_video_id: "video-id?id=foo&width=200&height=300",
+        set_video_as_cover: true,
+      },
+      {}
+    )
 
     expect(data).toEqual([
       {

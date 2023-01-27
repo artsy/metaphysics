@@ -74,12 +74,10 @@ export const embed = (website, { width, height, autoplay }) => {
   }
 }
 
-export const getFigures = ({
-  images,
-  external_video_id,
-  set_video_as_cover,
-  includeAll = false,
-}) => {
+export const getFigures = (
+  { images, external_video_id, set_video_as_cover },
+  { includeAll = false }
+) => {
   const _images = images.map((image) => ({
     ...image,
     type: "Image",
