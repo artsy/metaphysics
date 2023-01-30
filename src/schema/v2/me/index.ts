@@ -431,6 +431,18 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         }).then(({ total_unread_count }) => total_unread_count)
       },
     },
+    unseenNotificationsCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "A count of unseen notifications.",
+      resolve: (_root, options, { notificationsFeedLoader }) => {
+        if (!notificationsFeedLoader)
+          throw new Error("You need to be signed in to perform this action")
+
+        return notificationsFeedLoader(options).then(({ total_unseen }) => {
+          return total_unseen || 0
+        })
+      },
+    },
     watchedLotConnection: WatchedLotConnection,
   },
 })
@@ -460,6 +472,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "lotsByFollowedArtistsConnection",
       "identityVerification",
       "unreadNotificationsCount",
+      "unseenNotificationsCount",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader()
