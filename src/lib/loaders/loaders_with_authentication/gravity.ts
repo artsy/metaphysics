@@ -346,6 +346,11 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     lotStandingLoader: gravityLoader("me/lot_standings", { size: 100 }),
+    markNotificationsAsSeenLoader: gravityLoader(
+      "me/notifications/mark_as_seen",
+      {},
+      { method: "PUT" }
+    ),
     matchUsersLoader: gravityLoader("match/users", {}, { headers: true }),
     matchSetsLoader: gravityLoader("match/sets", {}, { headers: true }),
     mergeArtistLoader: gravityLoader("artists/merge", {}, { method: "POST" }),

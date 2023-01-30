@@ -2,13 +2,13 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 const mutation = `
   mutation {
-    markAllNotificationsAsRead(input: {}) {
+    markNotificationsAsSeen(input: { until: "2023-01-30T11:03:19Z" }) {
       responseOrError {
-        ... on MarkAllNotificationsAsReadSuccess {
+        ... on MarkNotificationsAsSeenSuccess {
           success
         }
 
-        ... on MarkAllNotificationsAsReadFailure {
+        ... on MarkNotificationsAsSeenFailure {
           mutationError {
             message
           }
@@ -18,17 +18,17 @@ const mutation = `
   }
 `
 
-describe("markAllNotificationsAsReadMutation", () => {
-  it("should return success response when all unread notifications are marked as read", async () => {
+describe("markNotificationsAsSeenMutation", () => {
+  it("should return success response", async () => {
     const context = {
-      updateNotificationsLoader: jest.fn().mockResolvedValue(true),
+      markNotificationsAsSeenLoader: jest.fn().mockResolvedValue(true),
     }
 
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
       Object {
-        "markAllNotificationsAsRead": Object {
+        "markNotificationsAsSeen": Object {
           "responseOrError": Object {
             "success": true,
           },
@@ -38,17 +38,17 @@ describe("markAllNotificationsAsReadMutation", () => {
   })
 
   it("should return failure response when something went wrong", async () => {
-    const message = `https://stagingapi.artsy.net/api/v1/me/notifications - {"error":"Something went wrong"}`
+    const message = `https://stagingapi.artsy.net/api/v1/me/notifications/mark_as_seen - {"error":"Something went wrong"}`
     const error = new Error(message)
     const context = {
-      updateNotificationsLoader: jest.fn().mockRejectedValue(error),
+      markNotificationsAsSeenLoader: jest.fn().mockRejectedValue(error),
     }
 
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
       Object {
-        "markAllNotificationsAsRead": Object {
+        "markNotificationsAsSeen": Object {
           "responseOrError": Object {
             "mutationError": Object {
               "message": "Something went wrong",

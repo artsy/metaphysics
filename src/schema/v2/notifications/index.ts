@@ -124,6 +124,7 @@ const NotificationCounts = {
     fields: {
       total: numeral(({ total }) => total),
       unread: numeral(({ unread }) => unread),
+      unseen: numeral(({ unseen }) => unseen),
     },
   }),
   resolve: (data) => data.counts,
@@ -156,7 +157,11 @@ export const NotificationsConnection: GraphQLFieldConfig<
     })
 
     return {
-      counts: { total: body.total, unread: body.total_unread },
+      counts: {
+        total: body.total,
+        unread: body.total_unread,
+        unseen: body.total_unseen,
+      },
       totalCount: body.total,
       pageCursors: createPageCursors({ page, size }, body.total),
       ...connectionFromArraySlice(
