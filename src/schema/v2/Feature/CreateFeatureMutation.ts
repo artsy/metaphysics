@@ -15,12 +15,25 @@ import {
 import { FeatureLayoutsEnum } from "./FeatureLayoutsEnum"
 
 interface Input {
-  description: string
+  description?: string
   name: string
   active: boolean
-  callout: string
-  subheadline: string
-  layout: string
+  callout?: string
+  subheadline?: string
+  layout?: string
+  sourceBucket?: string
+  sourceKey?: string
+}
+
+interface GravityInput {
+  description?: string
+  name: string
+  active: boolean
+  callout?: string
+  subheadline?: string
+  layout?: string
+  source_bucket?: string
+  source_key?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -64,6 +77,8 @@ export const CreateFeatureMutation = mutationWithClientMutationId<
     active: { type: new GraphQLNonNull(GraphQLBoolean) },
     callout: { type: GraphQLString },
     subheadline: { type: GraphQLString },
+    sourceBucket: { type: GraphQLString },
+    sourceKey: { type: GraphQLString },
   },
   outputFields: {
     featureOrError: {
@@ -78,8 +93,19 @@ export const CreateFeatureMutation = mutationWithClientMutationId<
       )
     }
 
+    const gravityArgs: GravityInput = {
+      description: args.description,
+      name: args.name,
+      active: args.active,
+      callout: args.callout,
+      subheadline: args.subheadline,
+      layout: args.layout,
+      source_bucket: args.sourceBucket,
+      source_key: args.sourceKey,
+    }
+
     try {
-      return await createFeatureLoader(args)
+      return await createFeatureLoader(gravityArgs)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
