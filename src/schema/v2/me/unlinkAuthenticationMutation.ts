@@ -3,14 +3,10 @@ import { GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { meType } from "./index"
 import { AuthenticationProviderType } from "./authentications"
+import { formatGravityError } from "lib/gravityErrorHandler"
 
 interface Input {
   provider: string
-}
-
-interface GravityError {
-  statusCode: number
-  body: { error?: string; text?: string; message?: string }
 }
 
 export const unlinkAuthenticationMutation = mutationWithClientMutationId<
@@ -40,12 +36,7 @@ export const unlinkAuthenticationMutation = mutationWithClientMutationId<
       await unlinkAuthenticationLoader(provider)
       return {}
     } catch (err) {
-      if ("body" in (err as any)) {
-        const e = err as GravityError
-        throw new Error(e.body.text ?? e.body.error ?? e.body.message)
-      }
-
-      throw err
+      throw new Error(formatGravityError(err).message)
     }
   },
 })
