@@ -97,7 +97,6 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
       paginationArgs
     )
 
-    //TODO: FIX
     if (term) {
       if (!matchSalesLoader)
         throw new Error(
