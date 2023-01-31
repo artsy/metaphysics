@@ -582,6 +582,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updateCollectionLoader: gravityLoader(
+      (id) => `collection/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     updateCollectorProfileIconLoader: gravityLoader(
       "me/collector_profile/icon",
       {},
