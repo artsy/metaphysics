@@ -3,7 +3,14 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 const mutation = gql`
   mutation {
-    createFeature(input: { name: "Catty Feature", active: true }) {
+    createFeature(
+      input: {
+        sourceBucket: "catty-bucket"
+        sourceKey: "catty-key"
+        name: "Catty Feature"
+        active: true
+      }
+    ) {
       featureOrError {
         __typename
         ... on CreateFeatureSuccess {
@@ -30,6 +37,8 @@ describe("CreateFeatureMutation", () => {
       name: "Catty Feature",
       active: true,
       id: "feature-id",
+      source_bucket: "catty-bucket",
+      source_key: "catty-key",
     }
 
     const mockCreateFeatureLoader = jest.fn()
@@ -52,6 +61,8 @@ describe("CreateFeatureMutation", () => {
       expect(mockCreateFeatureLoader).toBeCalledWith({
         name: "Catty Feature",
         active: true,
+        source_bucket: "catty-bucket",
+        source_key: "catty-key",
       })
 
       expect(res).toEqual({

@@ -15,13 +15,26 @@ import {
 import { FeatureLayoutsEnum } from "./FeatureLayoutsEnum"
 
 interface Input {
-  description: string
-  name: string
-  active: boolean
-  callout: string
-  subheadline: string
-  layout: string
+  description?: string
+  name?: string
+  active?: boolean
+  callout?: string
+  subheadline?: string
+  layout?: string
   id: string
+  sourceBucket?: string
+  sourceKey?: string
+}
+
+interface GravityInput {
+  description?: string
+  name?: string
+  active?: boolean
+  callout?: string
+  subheadline?: string
+  layout?: string
+  source_bucket?: string
+  source_key?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -61,11 +74,13 @@ export const UpdateFeatureMutation = mutationWithClientMutationId<
   inputFields: {
     description: { type: GraphQLString },
     layout: { type: FeatureLayoutsEnum },
-    name: { type: new GraphQLNonNull(GraphQLString) },
-    active: { type: new GraphQLNonNull(GraphQLBoolean) },
+    name: { type: GraphQLString },
+    active: { type: GraphQLBoolean },
     callout: { type: GraphQLString },
     subheadline: { type: GraphQLString },
     id: { type: new GraphQLNonNull(GraphQLString) },
+    sourceBucket: { type: GraphQLString },
+    sourceKey: { type: GraphQLString },
   },
   outputFields: {
     featureOrError: {
@@ -81,10 +96,21 @@ export const UpdateFeatureMutation = mutationWithClientMutationId<
       )
     }
 
-    const { id, ...rest } = args
+    const { id, description, name, active, callout, subheadline, layout } = args
+
+    const gravityArgs: GravityInput = {
+      description,
+      name,
+      active,
+      callout,
+      subheadline,
+      layout,
+      source_bucket: args.sourceBucket,
+      source_key: args.sourceKey,
+    }
 
     try {
-      return await updateFeatureLoader(id, rest)
+      return await updateFeatureLoader(id, gravityArgs)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
