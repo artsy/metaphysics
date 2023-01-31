@@ -95,7 +95,8 @@ export default (opts) => {
     ),
     incrementsLoader: gravityLoader("increments"),
     inquiryRequestQuestionsLoader: gravityLoader(`inquiry_request_questions`),
-    matchArtistsLoader: gravityLoader("match/artists"),
+    matchArtistsLoader: gravityLoader("match/artists", {}, { headers: true }),
+    matchArtworksLoader: gravityLoader("match/artworks", {}, { headers: true }),
     matchGenesLoader: gravityLoader("match/genes"),
     anonNotificationPreferencesLoader: gravityLoader(
       (authenticationToken) =>

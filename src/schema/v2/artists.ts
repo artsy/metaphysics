@@ -13,7 +13,10 @@ import {
   convertConnectionArgsToGravityArgs,
   convertGravityToConnectionArgs,
 } from "lib/helpers"
-import { createPageCursors } from "schema/v2/fields/pagination"
+import {
+  createPageCursors,
+  paginationResolver,
+} from "schema/v2/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 import { omit } from "lodash"
 
@@ -84,6 +87,7 @@ export const artistsConnection = {
     page: { type: GraphQLInt },
     size: { type: GraphQLInt },
     sort: ArtistSorts,
+    term: { type: GraphQLString },
   }),
   description: "A list of artists",
   resolve: async (
@@ -95,11 +99,39 @@ export const artistsConnection = {
       page?: number
       size?: number
       sort?: ArtistSort
+      term?: string
     } & CursorPageable,
-    { artistsLoader, artistLoader, artistsByLetterLoader }
+    { artistsLoader, artistLoader, artistsByLetterLoader, matchArtistsLoader }
   ) => {
     const gravityArguments = convertConnectionArgsToGravityArgs(args)
     const connectionArguments = convertGravityToConnectionArgs(args)
+
+    if (args.term) {
+      const { term } = args
+
+      const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+      const gravityArgs: {
+        page: number
+        size: number
+        total_count: boolean
+        term?: string
+        id?: string[]
+      } = { page, size, term, total_count: true }
+
+      const { body, headers } = await matchArtistsLoader(gravityArgs)
+
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+      return paginationResolver({
+        args,
+        body,
+        offset,
+        page,
+        size,
+        totalCount,
+      })
+    }
 
     if (args.slugs) {
       return Promise.all(

@@ -9,7 +9,10 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
-import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "schema/v2/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { BodyAndHeaders } from "lib/loaders"
@@ -67,6 +70,7 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
       defaultValue: undefined,
     },
     sort: SaleSorts,
+    term: { type: GraphQLString },
   }),
   resolve: async (
     _root,
@@ -78,16 +82,48 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
       published,
       sort,
       registered,
+      term,
       ...paginationArgs
     },
     {
       unauthenticatedLoaders: { salesLoaderWithHeaders: loaderWithCache },
-      authenticatedLoaders: { salesLoaderWithHeaders: loaderWithoutCache },
+      authenticatedLoaders: {
+        salesLoaderWithHeaders: loaderWithoutCache,
+        matchSalesLoader,
+      },
     }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(
       paginationArgs
     )
+
+    //TODO: FIX
+    if (term) {
+      if (!matchSalesLoader)
+        throw new Error(
+          "You need to pass a X-Access-Token header to perform this action"
+        )
+      const gravityArgs: {
+        page: number
+        size: number
+        total_count: boolean
+        term?: string
+        id?: string[]
+      } = { page, size, term, total_count: true }
+
+      const { body, headers } = await matchSalesLoader(gravityArgs)
+
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+      return paginationResolver({
+        args: paginationArgs,
+        body,
+        offset,
+        page,
+        size,
+        totalCount,
+      })
+    }
 
     const loader =
       typeof registered === "boolean" ? loaderWithoutCache : loaderWithCache
