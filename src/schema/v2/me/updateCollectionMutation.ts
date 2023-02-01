@@ -18,7 +18,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     collection: {
       type: CollectionType,
-      resolve: async (response) => {
+      resolve: (response) => {
         return response
       },
     },
@@ -58,7 +58,7 @@ export const updateCollectionMutation = mutationWithClientMutationId<
   inputFields: {
     id: {
       description: "The internal ID of the collection",
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     name: { type: new GraphQLNonNull(GraphQLString) },
   },
@@ -77,7 +77,6 @@ export const updateCollectionMutation = mutationWithClientMutationId<
       const response = await context.updateCollectionLoader(args.id, {
         name: args.name,
         user_id: context.userID,
-        saves: true,
       })
 
       return response

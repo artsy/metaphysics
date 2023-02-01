@@ -46,7 +46,6 @@ describe("updateCollection", () => {
         {
           user_id: "user-42",
           name: "Dining room",
-          saves: true,
         }
       )
     })

@@ -16771,7 +16771,7 @@ input updateCollectionInput {
   clientMutationId: String
 
   # The internal ID of the collection
-  id: String
+  id: String!
   name: String!
 }
 
