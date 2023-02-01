@@ -301,6 +301,42 @@ describe("me/index", () => {
     })
   })
 
+  describe("unseenNotificationsCount", () => {
+    const countQuery = gql`
+      query {
+        me {
+          unseenNotificationsCount
+        }
+      }
+    `
+
+    it("returns the number of unseen notifications", () => {
+      return runAuthenticatedQuery(countQuery, {
+        notificationsFeedLoader: () => Promise.resolve({ total_unseen: 12 }),
+      }).then((data) => {
+        expect(data).toEqual({ me: { unseenNotificationsCount: 12 } })
+      })
+    })
+
+    it("handles an unauthorized request", () => {
+      return runQuery(countQuery, {
+        notificationsFeedLoader: () => Promise.resolve({ total_unseen: null }),
+      }).catch((error) => {
+        expect(error.message).toEqual(
+          "You need to be signed in to perform this action"
+        )
+      })
+    })
+
+    it("handles a null from gravity", () => {
+      return runAuthenticatedQuery(countQuery, {
+        notificationsFeedLoader: () => Promise.resolve({ total_unseen: null }),
+      }).then((data) => {
+        expect(data).toEqual({ me: { unseenNotificationsCount: 0 } })
+      })
+    })
+  })
+
   describe("canRequestEmailConfirmation", () => {
     it("returns whatever boolean is returned at `can_request_email_confirmation` in the Gravity response", async () => {
       const minimalMeLoaderResponse = {

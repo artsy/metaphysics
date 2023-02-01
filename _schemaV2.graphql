@@ -7130,6 +7130,8 @@ input CreateFeatureMutationInput {
   description: String
   layout: FeatureLayouts
   name: String!
+  sourceBucket: String
+  sourceKey: String
   subheadline: String
 }
 
@@ -10764,6 +10766,30 @@ type MarkNotificationAsReadSuccess {
   success: Boolean
 }
 
+type MarkNotificationsAsSeenFailure {
+  mutationError: GravityMutationError
+}
+
+input MarkNotificationsAsSeenInput {
+  clientMutationId: String
+
+  # Until what point of time notifications were seen. ISO8601 standard-formatted string.
+  until: String!
+}
+
+type MarkNotificationsAsSeenPayload {
+  clientMutationId: String
+  responseOrError: MarkNotificationsAsSeenResponseOrError
+}
+
+union MarkNotificationsAsSeenResponseOrError =
+    MarkNotificationsAsSeenFailure
+  | MarkNotificationsAsSeenSuccess
+
+type MarkNotificationsAsSeenSuccess {
+  success: Boolean
+}
+
 union Match =
     Article
   | Artist
@@ -11268,6 +11294,9 @@ type Me implements Node {
 
   # A count of unread notifications.
   unreadNotificationsCount: Int!
+
+  # A count of unseen notifications.
+  unseenNotificationsCount: Int!
 
   # A list of lots a user is watching.
   watchedLotConnection(
@@ -11803,6 +11832,11 @@ type Mutation {
     input: MarkNotificationAsReadInput!
   ): MarkNotificationAsReadPayload
 
+  # Mark notifications as seen
+  markNotificationsAsSeen(
+    input: MarkNotificationsAsSeenInput!
+  ): MarkNotificationsAsSeenPayload
+
   # Merge multiple artist records in order to deduplicate artists
   mergeArtists(input: MergeArtistsMutationInput!): MergeArtistsMutationPayload
 
@@ -11902,6 +11936,9 @@ type Mutation {
   updateCMSLastAccessTimestamp(
     input: UpdateCMSLastAccessTimestampMutationInput!
   ): UpdateCMSLastAccessTimestampMutationPayload
+
+  # Update a collection
+  updateCollection(input: updateCollectionInput!): updateCollectionPayload
 
   # Updating a collector profile (loyalty applicant status).
   updateCollectorProfile(
@@ -12269,6 +12306,11 @@ type NotificationCounts {
     label: String
   ): FormattedNumber
   unread(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
+  unseen(
     # Returns a `String` when format is specified. e.g.`'0,0.0000''`
     format: String
     label: String
@@ -16772,6 +16814,31 @@ type UpdateCMSLastAccessTimestampSuccess {
   partner: Partner
 }
 
+type UpdateCollectionFailure {
+  mutationError: GravityMutationError
+}
+
+input updateCollectionInput {
+  clientMutationId: String
+
+  # The internal ID of the collection
+  id: String!
+  name: String!
+}
+
+type updateCollectionPayload {
+  clientMutationId: String
+  responseOrError: UpdateCollectionResponseOrError
+}
+
+union UpdateCollectionResponseOrError =
+    UpdateCollectionFailure
+  | UpdateCollectionSuccess
+
+type UpdateCollectionSuccess {
+  collection: Collection
+}
+
 input UpdateCollectorProfileInput {
   # List of affiliated auction house ids, referencing Galaxy.
   affiliatedAuctionHouseIds: [String]
@@ -16982,13 +17049,15 @@ type UpdateFeatureFailure {
 }
 
 input UpdateFeatureMutationInput {
-  active: Boolean!
+  active: Boolean
   callout: String
   clientMutationId: String
   description: String
   id: String!
   layout: FeatureLayouts
-  name: String!
+  name: String
+  sourceBucket: String
+  sourceKey: String
   subheadline: String
 }
 

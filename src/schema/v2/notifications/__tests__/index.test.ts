@@ -8,6 +8,7 @@ describe("notificationsConnection", () => {
       feed: [notificationFeedItem],
       total: 100,
       total_unread: 10,
+      total_unseen: 10,
     })
   )
 
@@ -23,6 +24,7 @@ describe("notificationsConnection", () => {
           counts {
             total
             unread
+            unseen
           }
           edges {
             node {
@@ -64,6 +66,7 @@ describe("notificationsConnection", () => {
             counts {
               total
               unread
+              unseen
             }
             edges {
               node {
@@ -115,6 +118,7 @@ describe("notificationsConnection", () => {
             feed: [{ ...notificationFeedItem, date: moment() }],
             total: 1,
             total_unread: 1,
+            total_unseen: 1,
           })
         }
         const data = await runAuthenticatedQuery(query, {
@@ -138,6 +142,7 @@ describe("notificationsConnection", () => {
             ],
             total: 1,
             total_unread: 1,
+            total_unseen: 1,
           })
         }
         const data = await runAuthenticatedQuery(query, {
@@ -160,6 +165,7 @@ describe("notificationsConnection", () => {
             ],
             total: 1,
             total_unread: 1,
+            total_unseen: 1,
           })
         }
         const data = await runAuthenticatedQuery(query, {
@@ -239,6 +245,7 @@ const expectedData = {
     counts: {
       total: 100,
       unread: 10,
+      unseen: 10,
     },
     edges: [
       {

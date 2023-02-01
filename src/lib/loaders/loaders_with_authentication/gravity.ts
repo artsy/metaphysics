@@ -352,13 +352,18 @@ export default (accessToken, userID, opts) => {
     ),
     lotStandingLoader: gravityLoader("me/lot_standings", { size: 100 }),
     matchSalesLoader: gravityLoader("match/sales", {}, { headers: true }),
+    markNotificationsAsSeenLoader: gravityLoader(
+      "me/notifications/mark_as_seen",
+      {},
+      { method: "PUT" }
+    ),
+    matchUsersLoader: gravityLoader("match/users", {}, { headers: true }),
     matchSetsLoader: gravityLoader("match/sets", {}, { headers: true }),
     matchShowsLoader: gravityLoader(
       "match/partner_shows",
       {},
       { headers: true }
     ),
-    matchUsersLoader: gravityLoader("match/users", {}, { headers: true }),
     mergeArtistLoader: gravityLoader("artists/merge", {}, { method: "POST" }),
     meBankAccountsLoader: gravityLoader(
       "me/bank_accounts",
@@ -585,6 +590,11 @@ export default (accessToken, userID, opts) => {
     ),
     updateArtworkLoader: gravityLoader(
       (id) => `artwork/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    updateCollectionLoader: gravityLoader(
+      (id) => `collection/${id}`,
       {},
       { method: "PUT" }
     ),
