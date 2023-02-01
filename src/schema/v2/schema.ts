@@ -80,6 +80,7 @@ import { myCollectionUpdateArtworkMutation } from "./me/myCollectionUpdateArtwor
 import saveArtworkMutation from "./me/saveArtworkMutation"
 import dislikeArtworkMutation from "./me/dislikeArtworkMutation"
 import { sendConfirmationEmailMutation } from "./me/sendConfirmationEmailMutation"
+import { updateCollectionMutation } from "./me/updateCollectionMutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
 import UpdateCollectorProfileWithID from "./CollectorProfile/mutations/updateCollectorProfileWithID"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
@@ -377,6 +378,7 @@ export default new GraphQLSchema({
       unlinkAuthentication: unlinkAuthenticationMutation,
       updateArtwork: updateArtworkMutation,
       updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
+      updateCollection: updateCollectionMutation,
       updateCollectorProfile: UpdateCollectorProfile,
       updateCollectorProfileWithID: UpdateCollectorProfileWithID,
       updateConversation: UpdateConversationMutation,
