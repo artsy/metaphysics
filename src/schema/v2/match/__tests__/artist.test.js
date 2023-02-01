@@ -14,14 +14,16 @@ describe("MatchArtist", () => {
       }
     `
     const matchArtistsLoader = () =>
-      Promise.resolve([
-        {
-          id: "han-myung-ok",
-          name: "Han Myung-Ok",
-          birthday: "1958",
-          artworks_count: 12,
-        },
-      ])
+      Promise.resolve({
+        body: [
+          {
+            id: "han-myung-ok",
+            name: "Han Myung-Ok",
+            birthday: "1958",
+            artworks_count: 12,
+          },
+        ],
+      })
 
     return runQuery(query, { matchArtistsLoader }).then((data) => {
       expect(data).toEqual({

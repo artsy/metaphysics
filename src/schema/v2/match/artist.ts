@@ -29,12 +29,19 @@ const ArtistMatch: GraphQLFieldConfig<void, ResolverContext> = {
       description: "Exclude these MongoDB ids from results",
     },
   },
-  resolve: (_root, { excludeIDs, ..._options }, { matchArtistsLoader }) => {
+  resolve: async (
+    _root,
+    { excludeIDs, ..._options },
+    { matchArtistsLoader }
+  ) => {
     const options: any = {
       exclude_ids: excludeIDs,
       ..._options,
     }
-    return matchArtistsLoader(options)
+
+    const response = await matchArtistsLoader(options)
+
+    return response.body
   },
 }
 

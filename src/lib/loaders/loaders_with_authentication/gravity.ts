@@ -351,6 +351,7 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     lotStandingLoader: gravityLoader("me/lot_standings", { size: 100 }),
+    matchSalesLoader: gravityLoader("match/sales", {}, { headers: true }),
     markNotificationsAsSeenLoader: gravityLoader(
       "me/notifications/mark_as_seen",
       {},
@@ -358,6 +359,11 @@ export default (accessToken, userID, opts) => {
     ),
     matchUsersLoader: gravityLoader("match/users", {}, { headers: true }),
     matchSetsLoader: gravityLoader("match/sets", {}, { headers: true }),
+    matchShowsLoader: gravityLoader(
+      "match/partner_shows",
+      {},
+      { headers: true }
+    ),
     mergeArtistLoader: gravityLoader("artists/merge", {}, { method: "POST" }),
     meBankAccountsLoader: gravityLoader(
       "me/bank_accounts",

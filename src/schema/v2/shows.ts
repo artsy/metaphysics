@@ -5,7 +5,10 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { createPageCursors } from "schema/v2/fields/pagination"
+import {
+  createPageCursors,
+  paginationResolver,
+} from "schema/v2/fields/pagination"
 import { ShowsConnection } from "./show"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -48,9 +51,48 @@ export const Shows: GraphQLFieldConfig<
     status: {
       type: EventStatus.type,
     },
+    term: {
+      description: "If present, will search by term",
+      type: GraphQLString,
+    },
   }),
-  resolve: async (_root, args, { showsWithHeadersLoader }) => {
+  resolve: async (
+    _root,
+    args,
+    { showsWithHeadersLoader, matchShowsLoader }
+  ) => {
+    const { term } = args
+
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    if (term) {
+      if (!matchShowsLoader) {
+        throw new Error(
+          "You need to pass a X-Access-Token header to perform this action"
+        )
+      }
+
+      const gravityArgs: {
+        page: number
+        size: number
+        total_count: boolean
+        term?: string
+        id?: string[]
+      } = { page, size, term, total_count: true }
+
+      const { body, headers } = await matchShowsLoader(gravityArgs)
+
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+      return paginationResolver({
+        args,
+        body,
+        offset,
+        page,
+        size,
+        totalCount,
+      })
+    }
 
     const { body, headers } = await showsWithHeadersLoader({
       total_count: true,
