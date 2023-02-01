@@ -7646,11 +7646,6 @@ type CurrentEvent {
 # Date in YYYY-MM-DD format
 scalar Date
 
-# A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
-# `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
-# 8601 standard for representation of dates and times using the Gregorian calendar.
-scalar DateTime
-
 type DaySchedule {
   dayOfWeek: String
   endTime: Int
@@ -10751,7 +10746,9 @@ type MarkNotificationsAsSeenFailure {
 
 input MarkNotificationsAsSeenInput {
   clientMutationId: String
-  until: DateTime!
+
+  # Until what point of time notifications were seen. ISO8601 standard-formatted string.
+  until: String!
 }
 
 type MarkNotificationsAsSeenPayload {

@@ -2,7 +2,7 @@ import { GraphQLObjectType } from "graphql"
 import { GraphQLUnionType } from "graphql"
 import { GraphQLBoolean } from "graphql"
 import { GraphQLNonNull } from "graphql"
-import { GraphQLDateTime } from "graphql-scalars"
+import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
   formatGravityError,
@@ -47,7 +47,11 @@ export const markNotificationsAsSeenMutation = mutationWithClientMutationId<
   name: "MarkNotificationsAsSeen",
   description: "Mark notifications as seen",
   inputFields: {
-    until: { type: new GraphQLNonNull(GraphQLDateTime) },
+    until: {
+      type: new GraphQLNonNull(GraphQLString),
+      description:
+        "Until what point of time notifications were seen. ISO8601 standard-formatted string.",
+    },
   },
   outputFields: {
     responseOrError: {
