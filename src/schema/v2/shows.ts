@@ -52,6 +52,7 @@ export const Shows: GraphQLFieldConfig<
       type: EventStatus.type,
     },
     term: {
+      description: "If present, will search by term",
       type: GraphQLString,
     },
   }),

@@ -70,7 +70,10 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
       defaultValue: undefined,
     },
     sort: SaleSorts,
-    term: { type: GraphQLString },
+    term: {
+      description: "If present, will search by term",
+      type: GraphQLString,
+    },
   }),
   resolve: async (
     _root,
@@ -102,6 +105,7 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
         throw new Error(
           "You need to pass a X-Access-Token header to perform this action"
         )
+
       const gravityArgs: {
         page: number
         size: number

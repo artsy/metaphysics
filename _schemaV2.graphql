@@ -11235,6 +11235,8 @@ type Me implements Node {
     # Returns sales the user has registered for if true, returns sales the user has not registered for if false.
     registered: Boolean
     sort: SaleSorts
+
+    # If present, will search by term
     term: String
   ): SaleRegistrationConnection
   savedSearch(criteria: SearchCriteriaAttributes, id: ID): SearchCriteria
@@ -13773,6 +13775,8 @@ type Query {
     #
     slugs: [String]
     sort: ArtistSorts
+
+    # If present, will search by term
     term: String
   ): ArtistConnection
 
@@ -14600,6 +14604,8 @@ type Query {
     # Returns sales the user has registered for if true, returns sales the user has not registered for if false.
     registered: Boolean
     sort: SaleSorts
+
+    # If present, will search by term
     term: String
   ): SaleConnection
 
@@ -14643,6 +14649,8 @@ type Query {
     last: Int
     sort: ShowSorts
     status: EventStatus
+
+    # If present, will search by term
     term: String
   ): ShowConnection
 
@@ -18125,6 +18133,8 @@ type Viewer {
     #
     slugs: [String]
     sort: ArtistSorts
+
+    # If present, will search by term
     term: String
   ): ArtistConnection
 
@@ -18746,6 +18756,8 @@ type Viewer {
     # Returns sales the user has registered for if true, returns sales the user has not registered for if false.
     registered: Boolean
     sort: SaleSorts
+
+    # If present, will search by term
     term: String
   ): SaleConnection
 
@@ -18789,6 +18801,8 @@ type Viewer {
     last: Int
     sort: ShowSorts
     status: EventStatus
+
+    # If present, will search by term
     term: String
   ): ShowConnection
 

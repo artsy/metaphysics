@@ -87,7 +87,10 @@ export const artistsConnection = {
     page: { type: GraphQLInt },
     size: { type: GraphQLInt },
     sort: ArtistSorts,
-    term: { type: GraphQLString },
+    term: {
+      type: GraphQLString,
+      description: "If present, will search by term",
+    },
   }),
   description: "A list of artists",
   resolve: async (
