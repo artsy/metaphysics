@@ -39,7 +39,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateUserSaleProfileSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
-    saleProfile: {
+    userSaleProfile: {
       type: UserSaleProfileType,
       resolve: (result) => result,
     },
@@ -80,9 +80,9 @@ export const createUserSaleProfileMutation = mutationWithClientMutationId<
     requireBidderApproval: { type: GraphQLBoolean },
   },
   outputFields: {
-    saleProfileOrError: {
+    userSaleProfileOrError: {
       type: ResponseOrErrorType,
-      description: "On success: the sale profile created.",
+      description: "On success: the user sale profile created.",
       resolve: (result) => result,
     },
   },
@@ -105,7 +105,7 @@ export const createUserSaleProfileMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await createUserSaleProfileLoader?.(gravityOptions)
+      return await createUserSaleProfileLoader(gravityOptions)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
