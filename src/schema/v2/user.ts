@@ -66,7 +66,7 @@ export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
 
 export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
   description: "The admin notes associated with the user",
-  type: new GraphQLNonNull(new GraphQLList(UserAdminNoteType)),
+  type: new GraphQLList(UserAdminNoteType),
   resolve: async ({ id }, {}, { userAdminNotesLoader }) => {
     if (!userAdminNotesLoader) {
       throw new Error(
@@ -87,7 +87,7 @@ export const UserAdminNotesField: GraphQLFieldConfig<any, ResolverContext> = {
 }
 
 export const PartnerAccessField: GraphQLFieldConfig<any, ResolverContext> = {
-  description: "The Parnter or Profile access granted to the user",
+  description: "The Partner or Profile access granted to the user",
   type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
   resolve: async ({ id }, {}, { userAccessControlLoader }) => {
     if (!userAccessControlLoader) {
@@ -106,7 +106,7 @@ export const PartnerAccessField: GraphQLFieldConfig<any, ResolverContext> = {
 }
 
 export const ProfileAccessField: GraphQLFieldConfig<any, ResolverContext> = {
-  description: "The Parnter or Profile access granted to the user",
+  description: "The Partner or Profile access granted to the user",
   type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
   resolve: async ({ id }, {}, { userAccessControlLoader }) => {
     if (!userAccessControlLoader) {
