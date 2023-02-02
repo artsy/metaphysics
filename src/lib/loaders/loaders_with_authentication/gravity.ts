@@ -99,6 +99,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createUserSaleProfileLoader: gravityLoader(
+      `user_sale_profile`,
+      {},
+      { method: "POST" }
+    ),
     creditCardLoader: gravityLoader((id) => `credit_card/${id}`),
     deleteArtworkEditionSetLoader: gravityLoader<
       any,

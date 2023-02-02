@@ -186,6 +186,7 @@ import { FeaturedLinksConnection } from "./FeaturedLink/featuredLinksConnection"
 import { CreateFeaturedLinkMutation } from "./FeaturedLink/createFeaturedLinkMutation"
 import { UpdateFeaturedLinkMutation } from "./FeaturedLink/updateFeaturedLinkMutation"
 import { DeleteFeaturedLinkMutation } from "./FeaturedLink/deleteFeaturedLinkMutation"
+import { createUserSaleProfileMutation } from "./users/createUserSaleProfileMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -336,6 +337,7 @@ export default new GraphQLSchema({
       createUserAdminNote: createUserAdminNoteMutation,
       createUserInterest: createUserInterestMutation,
       createUserInterestForUser: createUserInterestForUser,
+      createUserSaleProfile: createUserSaleProfileMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCollection: deleteCollectionMutation,
