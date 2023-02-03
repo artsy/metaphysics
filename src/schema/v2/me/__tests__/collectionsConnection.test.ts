@@ -5,10 +5,10 @@ import { ResolverContext } from "types/graphql"
 let context: Partial<ResolverContext>
 
 describe("collectionsConnection", () => {
-  let query = gql`
+  const query = gql`
     query {
       me {
-        collectionsConnection(first: 1) {
+        collectionsConnection(first: 1, saves: true) {
           edges {
             node {
               internalID
@@ -51,6 +51,7 @@ describe("collectionsConnection", () => {
     expect(context.collectionsLoader as jest.Mock).toHaveBeenCalledWith({
       user_id: "user-42",
       private: true,
+      saves: true,
       offset: 0,
       size: 1,
       total_count: true,
@@ -81,7 +82,7 @@ describe("collectionsConnection", () => {
 })
 
 describe("collectionsConnection with artworksConnection", () => {
-  let query = gql`
+  const query = gql`
     query {
       me {
         collectionsConnection(first: 1) {
