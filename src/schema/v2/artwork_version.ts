@@ -64,9 +64,16 @@ export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
       description: "The Artwork Version medium",
     },
 
-    dimensions: Dimensions,
+    dimensions: {
+      type: Dimensions.type,
+      description:
+        "The Artwork Version dimensions formatted for different units",
+    },
 
-    date: { type: GraphQLString },
+    date: {
+      type: GraphQLString,
+      description: "The Artwork Version formatted date",
+    },
 
     attributionClass: {
       type: AttributionClass,
