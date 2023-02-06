@@ -15,7 +15,7 @@ import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import { paginationResolver } from "../fields/pagination"
 import { InternalIDFields } from "../object_identification"
-import CollectionSorts from "../sorts/collection_sorts"
+import CollectionArtworkSorts from "../sorts/collection_sorts"
 
 export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
   name: "Collection",
@@ -27,8 +27,9 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
       args: {
         ...pageable({
           sort: {
-            type: CollectionSorts,
-            defaultValue: CollectionSorts.getValue("SAVED_AT_DESC")!.value,
+            type: CollectionArtworkSorts,
+            defaultValue: CollectionArtworkSorts.getValue("SAVED_AT_DESC")!
+              .value,
           },
         }),
       },

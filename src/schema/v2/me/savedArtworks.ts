@@ -12,7 +12,7 @@ import {
 } from "../fields/pagination"
 import { ArtworkType } from "../artwork"
 import { pageable } from "relay-cursor-paging"
-import CollectionSorts from "../sorts/collection_sorts"
+import CollectionArtworkSorts from "../sorts/collection_sorts"
 import {
   CatchCollectionNotFoundException,
   convertConnectionArgsToGravityArgs,
@@ -47,7 +47,7 @@ export const SavedArtworks: GraphQLFieldConfig<any, ResolverContext> = {
       defaultValue: false,
     },
     sort: {
-      type: CollectionSorts,
+      type: CollectionArtworkSorts,
       defaultValue: "-position",
     },
     page: { type: GraphQLInt },
@@ -74,7 +74,14 @@ export const SavedArtworks: GraphQLFieldConfig<any, ResolverContext> = {
 
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-      return paginationResolver({ totalCount, offset, page, size, body, args })
+      return paginationResolver({
+        totalCount,
+        offset,
+        page,
+        size,
+        body,
+        args,
+      })
     } catch (error) {
       return CatchCollectionNotFoundException(error)
     }
