@@ -3616,6 +3616,11 @@ type CollectionsEdge {
   node: Collection
 }
 
+enum CollectionSorts {
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+}
+
 type CollectorProfileArtists {
   name: String
 }
@@ -10990,6 +10995,7 @@ type Me implements Node {
     page: Int
     saves: Boolean
     size: Int
+    sort: CollectionSorts
   ): CollectionsConnection
   collectorLevel: Int
 

@@ -8,7 +8,7 @@ describe("collectionsConnection", () => {
   const query = gql`
     query {
       me {
-        collectionsConnection(first: 1, saves: true) {
+        collectionsConnection(first: 1, saves: true, sort: CREATED_AT_DESC) {
           edges {
             node {
               internalID
@@ -52,6 +52,7 @@ describe("collectionsConnection", () => {
       user_id: "user-42",
       private: true,
       saves: true,
+      sort: "-created_at",
       offset: 0,
       size: 1,
       total_count: true,
