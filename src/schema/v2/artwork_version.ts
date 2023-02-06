@@ -12,6 +12,7 @@ import { InternalIDFields, NodeInterface } from "./object_identification"
 import Artist from "./artist"
 import AttributionClass from "./artwork/attributionClass"
 import attributionClasses from "lib/attributionClasses"
+import Dimensions from "./dimensions"
 
 export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkVersion",
@@ -62,6 +63,10 @@ export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description: "The Artwork Version medium",
     },
+
+    dimensions: Dimensions,
+
+    date: { type: GraphQLString },
 
     attributionClass: {
       type: AttributionClass,

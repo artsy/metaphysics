@@ -2556,9 +2556,11 @@ type ArtworkVersion implements Node {
 
   # The Artwork Version attribution class
   attributionClass: AttributionClass
+  date: String
 
   # The Image id
   defaultImageID: String
+  dimensions: dimensions
 
   # A globally unique ID.
   id: ID!
