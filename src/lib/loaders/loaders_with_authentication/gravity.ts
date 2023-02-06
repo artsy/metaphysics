@@ -523,6 +523,7 @@ export default (accessToken, userID, opts) => {
         paramKey: "artworks",
         trackingKey: "is_saved",
         entityIDKeyPath: "_id",
+        batchSize: 10,
       }
     ),
     savedArtworksLoader: gravityLoader(
