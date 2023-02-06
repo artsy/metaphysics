@@ -3846,6 +3846,7 @@ type CommerceBuyOrder implements CommerceOrder {
     thousand: String = ","
   ): String
   artsyTotalCents: Int
+  artworkDetails: String
   availablePaymentMethods: [CommercePaymentMethodEnum!]!
   bankAccountId: String
   buyer: CommerceOrderPartyUnion!
@@ -4575,6 +4576,7 @@ type CommerceOfferOrder implements CommerceOrder {
     thousand: String = ","
   ): String
   artsyTotalCents: Int
+  artworkDetails: String
   availablePaymentMethods: [CommercePaymentMethodEnum!]!
   awaitingResponseFrom: CommerceOrderParticipantEnum
   bankAccountId: String
@@ -4812,6 +4814,7 @@ interface CommerceOrder {
     thousand: String = ","
   ): String
   artsyTotalCents: Int
+  artworkDetails: String
   availablePaymentMethods: [CommercePaymentMethodEnum!]!
   bankAccountId: String
   buyer: CommerceOrderPartyUnion!
