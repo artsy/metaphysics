@@ -812,7 +812,8 @@ export const exchangeStitchingEnvironment = ({
             if (
               orderOrError.error ||
               !orderOrError.order ||
-              orderOrError.order.source === "inquiry"
+              orderOrError.order.source === "inquiry" ||
+              orderOrError.order.state === "IN_REVIEW"
             ) {
               return submitOrderWithOffer
             }
