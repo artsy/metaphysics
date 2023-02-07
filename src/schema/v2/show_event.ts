@@ -24,8 +24,8 @@ const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
     dateTimeRange: {
       type: GraphQLString,
       description: "A formatted description of the dates with hours",
-      resolve: ({ start_at, end_at }, { timezone }, { defaultTimezone }) => {
-        const timezoneString = timezone ? timezone : defaultTimezone
+      resolve: ({ start_at, end_at, time_zone }, { defaultTimezone }) => {
+        const timezoneString = time_zone ? time_zone : defaultTimezone
         return dateTimeRange(start_at, end_at, timezoneString, true)
       },
     },
