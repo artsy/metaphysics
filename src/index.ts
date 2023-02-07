@@ -29,10 +29,10 @@ import { graphqlBatchHTTPWrapper } from "react-relay-network-modern"
 
 import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
-import { optionalFieldsDirectiveExtension } from "./extensions/optionalFieldsDirectiveExtension"
-import { principalFieldDirectiveExtension } from "./extensions/principalFieldDirectiveExtension"
-import { principalFieldDirectiveValidation } from "validations/principalFieldDirectiveValidation"
-import { NoSchemaIntrospectionCustomRule } from "validations/noSchemaIntrospectionCustomRule"
+import { NoSchemaIntrospectionCustomRule } from "lib/noSchemaIntrospectionCustomRule"
+import { optionalFieldsDirectiveExtension } from "directives/optionalField/optionalFieldsDirectiveExtension"
+import { principalFieldDirectiveExtension } from "directives/principleField/principalFieldDirectiveExtension"
+import { principalFieldDirectiveValidation } from "directives/principleField/principalFieldDirectiveValidation"
 import * as Sentry from "@sentry/node"
 
 const {

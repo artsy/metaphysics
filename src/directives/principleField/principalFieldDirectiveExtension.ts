@@ -1,4 +1,4 @@
-import { getPrincipalFieldDirectivePath } from "lib/getPrincipalFieldDirectivePath"
+import { getPrincipalFieldDirectivePath } from "directives/principleField/getPrincipalFieldDirectivePath"
 import { isEqual } from "lodash"
 import { flattenErrors, statusCodeForError } from "lib/graphqlErrorHandler"
 

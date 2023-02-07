@@ -1,4 +1,4 @@
-import { getOptionalFieldsDirectivePaths } from "lib/getOptionalFieldsDirectivePaths"
+import { getOptionalFieldsDirectivePaths } from "directives/optionalField/getOptionalFieldsDirectivePaths"
 import { isEqual } from "lodash"
 import { flattenErrors, statusCodeForError } from "lib/graphqlErrorHandler"
 
