@@ -19,7 +19,7 @@ const CAMPAIGN_IDS = {
   // New campaign IDs can be added by environment variable here
   development: { ART_QUIZ: "485a7169-b3d8-4b0e-81f3-5741db0a1361" },
   staging: { ART_QUIZ: "485a7169-b3d8-4b0e-81f3-5741db0a1361" },
-  production: { ART_QUIZ: "bcc384c0-348f-4449-e4c0-0ad9efa7707f" },
+  production: { ART_QUIZ: "2fa0661e-341a-4e7f-b8ae-25254bb4eb9c" },
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
