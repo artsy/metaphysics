@@ -31,7 +31,6 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
             defaultValue: CollectionArtworkSorts.getValue("SAVED_AT_DESC")!
               .value,
           },
-          size: { type: GraphQLInt, defaultValue: 10 },
           page: { type: GraphQLInt, defaultValue: 1 },
         }),
       },

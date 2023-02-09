@@ -151,7 +151,7 @@ describe("artworksConnection", () => {
         query {
           me {
             collection(id: "123-abc") {
-              artworksConnection(page: 2, size: 3, sort: SAVED_AT_DESC) {
+              artworksConnection(page: 2, sort: SAVED_AT_DESC) {
                 totalCount
                 edges {
                   node {
@@ -170,7 +170,6 @@ describe("artworksConnection", () => {
         context.collectionArtworksLoader as jest.Mock
       ).toHaveBeenCalledWith(mockGravityCollection.id, {
         page: 2,
-        size: 3,
         sort: "-created_at",
         user_id: "user-42",
         private: true,
