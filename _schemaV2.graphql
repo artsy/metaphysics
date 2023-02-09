@@ -10579,6 +10579,55 @@ type LotStanding {
   saleArtwork: SaleArtwork
 }
 
+type ManageArtworksCollectionsCounts {
+  addedToCollections(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
+  artworks(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
+  removedFromCollections(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
+}
+
+type ManageArtworksCollectionsFailure {
+  mutationError: GravityMutationError
+}
+
+input manageArtworksCollectionsInput {
+  # Collection ids. To which collections to add artworks.
+  addToCollectionIDs: [String!]
+
+  # Artwork ids or slugs.
+  artworkIDs: [String!]!
+  clientMutationId: String
+
+  # Collection ids. From which collections to remove artworks.
+  removeFromCollectionIDs: [String!]
+}
+
+type manageArtworksCollectionsPayload {
+  clientMutationId: String
+  responseOrError: ManageArtworksCollectionsResponseOrError
+}
+
+union ManageArtworksCollectionsResponseOrError =
+    ManageArtworksCollectionsFailure
+  | ManageArtworksCollectionsSuccess
+
+type ManageArtworksCollectionsSuccess {
+  addedToCollections: [Collection]
+  counts: ManageArtworksCollectionsCounts
+  removedFromCollections: [Collection]
+}
+
 type MarkAllNotificationsAsReadFailure {
   mutationError: GravityMutationError
 }
@@ -11874,6 +11923,11 @@ type Mutation {
   linkAuthentication(
     input: LinkAuthenticationMutationInput!
   ): LinkAuthenticationMutationPayload
+
+  # Add / remove artworks to / from collections
+  manageArtworksCollections(
+    input: manageArtworksCollectionsInput!
+  ): manageArtworksCollectionsPayload
 
   # Mark all unread notifications as read
   markAllNotificationsAsRead(

@@ -187,6 +187,7 @@ import { CreateFeaturedLinkMutation } from "./FeaturedLink/createFeaturedLinkMut
 import { UpdateFeaturedLinkMutation } from "./FeaturedLink/updateFeaturedLinkMutation"
 import { DeleteFeaturedLinkMutation } from "./FeaturedLink/deleteFeaturedLinkMutation"
 import { createUserSaleProfileMutation } from "./users/createUserSaleProfileMutation"
+import { manageArtworksCollectionsMutation } from "./me/manageArtworksCollectionsMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -394,6 +395,7 @@ export default new GraphQLSchema({
       updateUser: updateUserMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
       updateQuiz: updateQuizMutation,
+      manageArtworksCollections: manageArtworksCollectionsMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
