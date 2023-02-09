@@ -515,6 +515,56 @@ describe("submitOfferOrderWithConversation", () => {
     expect(context.submitArtworkInquiryRequestLoader).not.toHaveBeenCalled()
   })
 
+  it("does not call submitArtworkInquiryRequestLoader if order is in_review", async () => {
+    const { resolvers } = await getExchangeStitchedSchema()
+    const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
+    const args = {
+      input: {
+        offerId: "offer-id",
+      },
+    }
+    const order = {
+      orderOrError: {
+        order: {
+          state: "IN_REVIEW",
+          source: "artwork_page",
+          internalID: "order-id",
+          myLastOffer: {
+            note: "test note",
+          },
+          lineItems: {
+            edges: [
+              {
+                node: {
+                  artworkId: "artwork-id",
+                },
+              },
+            ],
+          },
+        },
+      },
+    }
+    mergeInfo.delegateToSchema.mockResolvedValue(order)
+
+    const result = await resolver({}, args, context, { mergeInfo })
+
+    expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+      args: {
+        input: {
+          offerId: "offer-id",
+        },
+      },
+      fieldName: "commerceSubmitOrderWithOffer",
+      operation: "mutation",
+      schema: expect.anything(),
+      context: expect.anything(),
+      info: expect.anything(),
+      transforms: [expect.anything()],
+    })
+    expect(result).toEqual(order)
+    expect(context.submitArtworkInquiryRequestLoader).not.toHaveBeenCalled()
+  })
+
   it("returns an error from exchange", async () => {
     const { resolvers } = await getExchangeStitchedSchema()
     const resolver = resolvers.Mutation.submitOfferOrderWithConversation.resolve
