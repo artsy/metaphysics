@@ -144,4 +144,37 @@ describe("artworksConnection", () => {
       },
     })
   })
+
+  describe("pagination", () => {
+    it("supports page and size params", async () => {
+      query = gql`
+        query {
+          me {
+            collection(id: "123-abc") {
+              artworksConnection(page: 2, sort: SAVED_AT_DESC) {
+                totalCount
+                edges {
+                  node {
+                    slug
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      await runAuthenticatedQuery(query, context)
+
+      expect(
+        context.collectionArtworksLoader as jest.Mock
+      ).toHaveBeenCalledWith(mockGravityCollection.id, {
+        page: 2,
+        sort: "-created_at",
+        user_id: "user-42",
+        private: true,
+        total_count: true,
+      })
+    })
+  })
 })
