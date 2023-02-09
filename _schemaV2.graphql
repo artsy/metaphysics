@@ -3566,6 +3566,8 @@ type Collection {
     before: String
     first: Int
     last: Int
+    page: Int = 1
+    size: Int = 10
     sort: CollectionArtworkSorts
   ): ArtworkConnection
 
