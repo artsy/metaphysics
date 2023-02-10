@@ -299,13 +299,14 @@ export const gravityStitchingEnvironment = (
           }
           `,
           resolve: async ({ image_url }, _args, context, info) => {
-            context.imageData = normalizeImageData(image_url)
-
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
               operation: "query",
               fieldName: "_do_not_use_image",
-              context,
+              context: {
+                ...context,
+                imageData: normalizeImageData(image_url),
+              },
               info,
             })
           },
