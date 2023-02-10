@@ -498,24 +498,24 @@ describe("gravity/stitching", () => {
     it("returns Invalid dates if dates are missing", async () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { exhibitionPeriod } = resolvers.ViewingRoom
-      const startAt = moment().add(1, "days").format("MMMM D")
-      const endAt = moment().add(30, "days").format("MMMM D")
-      const startAtYear = moment().add(1, "days").format("YYYY")
-      const endAtAtYear = moment().add(30, "days").format("YYYY")
+      const startAt = moment.utc().add(1, "days").format("MMMM D")
+      const endAt = moment.utc().add(30, "days").format("MMMM D")
+      const startAtYear = moment.utc().add(1, "days").format("YYYY")
+      const endAtAtYear = moment.utc().add(30, "days").format("YYYY")
 
       expect(
         exhibitionPeriod.resolve({
           startAt: null,
           endAt: momentAdd(30, "days"),
         })
-      ).toEqual(`${"Invalid date"} – ${endAt}, ${endAtAtYear}`)
+      ).toEqual(`Invalid date – ${endAt}, ${endAtAtYear}`)
 
       expect(
         exhibitionPeriod.resolve({
           startAt: momentAdd(1, "days"),
           endAt: null,
         })
-      ).toEqual(`${startAt}, ${startAtYear} – ${"Invalid date"}`)
+      ).toEqual(`${startAt}, ${startAtYear} – Invalid date`)
 
       expect(
         exhibitionPeriod.resolve({
@@ -646,13 +646,16 @@ describe("gravity/stitching", () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { artists } = resolvers.ArtistSeries
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+      const sharedContext = {}
 
       artists.resolve(
         { artistIDs: ["fakeid"], internalID: "abc123" },
         {},
-        {},
+        sharedContext,
         info
       )
+
+      expect(sharedContext).not.toHaveProperty("currentArtistSeriesInternalID")
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
         args: { ids: ["fakeid"] },
@@ -766,13 +769,16 @@ describe("gravity/stitching", () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { artistSeriesConnection } = resolvers.Artwork
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+      const sharedContext = {}
 
       artistSeriesConnection.resolve(
         { internalID: "fakeid" },
         { first: 5 },
-        {},
+        sharedContext,
         info
       )
+
+      expect(sharedContext).not.toHaveProperty("currentArtworkID")
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
         args: { artworkID: "fakeid", first: 5 },
@@ -796,13 +802,18 @@ describe("gravity/stitching", () => {
         original_width: 200,
         representativeArtworkID: "artwork-id",
       }
-      image.resolve(artistSeriesData, {}, {}, info)
+      const sharedContext = {}
+
+      image.resolve(artistSeriesData, {}, sharedContext, info)
 
       const imageData = {
         image_url: "cat.jpg",
         original_height: 200,
         original_width: 200,
       }
+
+      expect(sharedContext).not.toHaveProperty("imageData")
+
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
         args: expect.anything(),
         operation: "query",
@@ -833,10 +844,13 @@ describe("gravity/stitching", () => {
         Promise.resolve({
           images: [imageData],
         })
-      const context = {
+      const sharedContext = {
         artworkLoader,
       }
-      await image.resolve(artistSeriesData, {}, context, info)
+
+      await image.resolve(artistSeriesData, {}, sharedContext, info)
+
+      expect(sharedContext).not.toHaveProperty("imageData")
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
         args: expect.anything(),
@@ -1065,6 +1079,28 @@ describe("gravity/stitching", () => {
           context: expect.anything(),
           info: expect.anything(),
         })
+      })
+
+      it("resolves the thumbnailImage field with a copy of the request context", async () => {
+        const { resolvers } = await getGravityStitchedSchema()
+        const { thumbnailImage } = resolvers.MarketingCollection
+
+        const parent = { image_url: "https://www.example.com/image.jpg" }
+        const args = {}
+        const sharedContext = {}
+        const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+        thumbnailImage.resolve(parent, args, sharedContext, info)
+
+        expect(sharedContext).not.toHaveProperty("imageData")
+
+        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+          expect.objectContaining({
+            context: {
+              imageData: { image_url: "https://www.example.com/image.jpg" },
+            },
+          })
+        )
       })
     })
   })

@@ -299,13 +299,14 @@ export const gravityStitchingEnvironment = (
           }
           `,
           resolve: async ({ image_url }, _args, context, info) => {
-            context.imageData = normalizeImageData(image_url)
-
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
               operation: "query",
               fieldName: "_do_not_use_image",
-              context,
+              context: {
+                ...context,
+                imageData: normalizeImageData(image_url),
+              },
               info,
             })
           },
@@ -508,8 +509,9 @@ export const gravityStitchingEnvironment = (
             context,
             info
           ) => {
+            let imageData: unknown
             if (image_url) {
-              context.imageData = {
+              imageData = {
                 image_url,
                 original_width,
                 original_height,
@@ -517,7 +519,7 @@ export const gravityStitchingEnvironment = (
             } else if (representativeArtworkID) {
               const { artworkLoader } = context
               const { images } = await artworkLoader(representativeArtworkID)
-              context.imageData = normalizeImageData(getDefault(images))
+              imageData = normalizeImageData(getDefault(images))
             }
 
             return info.mergeInfo.delegateToSchema({
@@ -525,7 +527,10 @@ export const gravityStitchingEnvironment = (
               schema: localSchema,
               operation: "query",
               fieldName: "_do_not_use_image",
-              context,
+              context: {
+                ...context,
+                imageData,
+              },
               info,
             })
           },
@@ -542,8 +547,6 @@ export const gravityStitchingEnvironment = (
               return []
             }
 
-            context.currentArtistSeriesInternalID = internalID
-
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
               operation: "query",
@@ -552,7 +555,10 @@ export const gravityStitchingEnvironment = (
                 ids,
                 ...args,
               },
-              context,
+              context: {
+                ...context,
+                currentArtistSeriesInternalID: internalID,
+              },
               info,
             })
           },
@@ -922,7 +928,6 @@ export const gravityStitchingEnvironment = (
             }
             `,
           resolve: ({ internalID: artworkID }, args, context, info) => {
-            context.currentArtworkID = artworkID
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,
               operation: "query",
@@ -931,7 +936,10 @@ export const gravityStitchingEnvironment = (
                 artworkID,
                 ...args,
               },
-              context,
+              context: {
+                ...context,
+                currentArtworkID: artworkID,
+              },
               info,
             })
           },
