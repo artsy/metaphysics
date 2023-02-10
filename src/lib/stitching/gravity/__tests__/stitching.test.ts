@@ -646,13 +646,16 @@ describe("gravity/stitching", () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { artists } = resolvers.ArtistSeries
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+      const sharedContext = {}
 
       artists.resolve(
         { artistIDs: ["fakeid"], internalID: "abc123" },
         {},
-        {},
+        sharedContext,
         info
       )
+
+      expect(sharedContext).not.toHaveProperty("currentArtistSeriesInternalID")
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
         args: { ids: ["fakeid"] },
@@ -766,13 +769,16 @@ describe("gravity/stitching", () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { artistSeriesConnection } = resolvers.Artwork
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+      const sharedContext = {}
 
       artistSeriesConnection.resolve(
         { internalID: "fakeid" },
         { first: 5 },
-        {},
+        sharedContext,
         info
       )
+
+      expect(sharedContext).not.toHaveProperty("currentArtworkID")
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
         args: { artworkID: "fakeid", first: 5 },
@@ -796,13 +802,18 @@ describe("gravity/stitching", () => {
         original_width: 200,
         representativeArtworkID: "artwork-id",
       }
-      image.resolve(artistSeriesData, {}, {}, info)
+      const sharedContext = {}
+
+      image.resolve(artistSeriesData, {}, sharedContext, info)
 
       const imageData = {
         image_url: "cat.jpg",
         original_height: 200,
         original_width: 200,
       }
+
+      expect(sharedContext).not.toHaveProperty("imageData")
+
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
         args: expect.anything(),
         operation: "query",
@@ -833,10 +844,13 @@ describe("gravity/stitching", () => {
         Promise.resolve({
           images: [imageData],
         })
-      const context = {
+      const sharedContext = {
         artworkLoader,
       }
-      await image.resolve(artistSeriesData, {}, context, info)
+
+      await image.resolve(artistSeriesData, {}, sharedContext, info)
+
+      expect(sharedContext).not.toHaveProperty("imageData")
 
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
         args: expect.anything(),
