@@ -498,24 +498,24 @@ describe("gravity/stitching", () => {
     it("returns Invalid dates if dates are missing", async () => {
       const { resolvers } = await getGravityStitchedSchema()
       const { exhibitionPeriod } = resolvers.ViewingRoom
-      const startAt = moment().add(1, "days").format("MMMM D")
-      const endAt = moment().add(30, "days").format("MMMM D")
-      const startAtYear = moment().add(1, "days").format("YYYY")
-      const endAtAtYear = moment().add(30, "days").format("YYYY")
+      const startAt = moment.utc().add(1, "days").format("MMMM D")
+      const endAt = moment.utc().add(30, "days").format("MMMM D")
+      const startAtYear = moment.utc().add(1, "days").format("YYYY")
+      const endAtAtYear = moment.utc().add(30, "days").format("YYYY")
 
       expect(
         exhibitionPeriod.resolve({
           startAt: null,
           endAt: momentAdd(30, "days"),
         })
-      ).toEqual(`${"Invalid date"} – ${endAt}, ${endAtAtYear}`)
+      ).toEqual(`Invalid date – ${endAt}, ${endAtAtYear}`)
 
       expect(
         exhibitionPeriod.resolve({
           startAt: momentAdd(1, "days"),
           endAt: null,
         })
-      ).toEqual(`${startAt}, ${startAtYear} – ${"Invalid date"}`)
+      ).toEqual(`${startAt}, ${startAtYear} – Invalid date`)
 
       expect(
         exhibitionPeriod.resolve({
