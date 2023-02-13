@@ -577,7 +577,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ default_profile_public }) => default_profile_public,
       },
       isInquireable: {
-        type: GraphQLBoolean,
+        type: new GraphQLNonNull(GraphQLBoolean),
         description: "If the partner supports inquiries",
         resolve: ({ inquireable }) => inquireable,
       },

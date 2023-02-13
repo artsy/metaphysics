@@ -12785,7 +12785,7 @@ type Partner implements Node {
   isDefaultProfilePublic: Boolean
 
   # If the partner supports inquiries
-  isInquireable: Boolean
+  isInquireable: Boolean!
   isLinkable: Boolean
   isPreQualify: Boolean
 
