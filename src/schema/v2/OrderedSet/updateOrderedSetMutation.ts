@@ -37,6 +37,7 @@ interface Input {
   layout: LayoutType
   name: string
   ownerType: OwnerType
+  ownerId: string
   published: boolean
 }
 
@@ -82,6 +83,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
     key: { type: GraphQLString },
     layout: { type: GraphQLString },
     name: { type: GraphQLString },
+    ownerId: { type: GraphQLString },
     ownerType: { type: GraphQLString },
     published: { type: GraphQLBoolean },
   },
@@ -103,6 +105,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
       name,
       ownerType,
       published,
+      ownerId,
     },
     { updateSetLoader }
   ) => {
@@ -120,6 +123,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
         key,
         layout,
         name,
+        owner_id: ownerId,
         owner_type: ownerType,
         published,
       })

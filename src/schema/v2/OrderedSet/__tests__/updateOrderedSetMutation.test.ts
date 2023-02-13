@@ -12,6 +12,7 @@ const mutation = gql`
         key: "a"
         layout: "default"
         name: "Example set"
+        ownerId: "feature-id"
         ownerType: "Feature"
         published: true
       }
@@ -72,6 +73,7 @@ describe("updateOrderedSetMutation", () => {
         key: "a",
         layout: "default",
         name: "Example set",
+        owner_id: "feature-id",
         owner_type: "Feature",
         published: true,
       })
