@@ -13,6 +13,7 @@ describe("Partner type", () => {
       name: "Catty Partner",
       type: "Gallery",
       has_full_profile: true,
+      inquireable: false,
       profile_banner_display: true,
       distinguish_represented_artists: true,
       profile_banner_display: "Artworks",
@@ -66,6 +67,23 @@ describe("Partner type", () => {
     expect(data).toEqual({
       partner: {
         profileBannerDisplay: "Artworks",
+      },
+    })
+  })
+
+  it("returns isInquireable field", async () => {
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          isInquireable
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      partner: {
+        isInquireable: false,
       },
     })
   })
