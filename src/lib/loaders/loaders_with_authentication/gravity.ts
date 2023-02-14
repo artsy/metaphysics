@@ -25,6 +25,11 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
+    artworksCollectionsBatchUpdateLoader: gravityLoader(
+      "artworks/collections/batch",
+      {},
+      { method: "POST" }
+    ),
     authenticatedArtistLoader: gravityLoader((id) => `artist/${id}`),
     authenticatedArtworkVersionLoader: gravityLoader(
       (id) => `artwork_version/${id}`
@@ -356,11 +361,6 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     lotStandingLoader: gravityLoader("me/lot_standings", { size: 100 }),
-    manageArtworksCollectionsLoader: gravityLoader(
-      "artworks/collections/batch",
-      {},
-      { method: "POST" }
-    ),
     matchSalesLoader: gravityLoader("match/sales", {}, { headers: true }),
     markNotificationsAsSeenLoader: gravityLoader(
       "me/notifications/mark_as_seen",

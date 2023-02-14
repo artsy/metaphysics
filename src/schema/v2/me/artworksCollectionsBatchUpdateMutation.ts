@@ -4,6 +4,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
   GraphQLList,
+  GraphQLInt,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
@@ -12,19 +13,27 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { CollectionType } from "./collection"
-import numeral from "../fields/numeral"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "ManageArtworksCollectionsSuccess",
+  name: "ArtworksCollectionsBatchUpdateSuccess",
   isTypeOf: (data) => data.counts,
   fields: () => ({
     counts: {
       type: new GraphQLObjectType<any, ResolverContext>({
-        name: "ManageArtworksCollectionsCounts",
+        name: "ArtworksCollectionsBatchUpdateCounts",
         fields: {
-          artworks: numeral(({ artworks }) => artworks),
-          addedToCollections: numeral(({ added_to }) => added_to),
-          removedFromCollections: numeral(({ removed_from }) => removed_from),
+          artworks: {
+            type: GraphQLInt,
+            resolve: ({ artworks }) => artworks,
+          },
+          addedToCollections: {
+            type: GraphQLInt,
+            resolve: ({ added_to }) => added_to,
+          },
+          removedFromCollections: {
+            type: GraphQLInt,
+            resolve: ({ removed_from }) => removed_from,
+          },
         },
       }),
       resolve: (response) => {
@@ -47,7 +56,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ErrorType = new GraphQLObjectType<any, ResolverContext>({
-  name: "ManageArtworksCollectionsFailure",
+  name: "ArtworksCollectionsBatchUpdateFailure",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
@@ -60,7 +69,7 @@ const ErrorType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "ManageArtworksCollectionsResponseOrError",
+  name: "ArtworksCollectionsBatchUpdateResponseOrError",
   types: [SuccessType, ErrorType],
 })
 
@@ -70,12 +79,12 @@ interface InputProps {
   removeFromCollectionIDs: string[]
 }
 
-export const manageArtworksCollectionsMutation = mutationWithClientMutationId<
+export const artworksCollectionsBatchUpdateMutation = mutationWithClientMutationId<
   InputProps,
   any,
   ResolverContext
 >({
-  name: "manageArtworksCollections",
+  name: "ArtworksCollectionsBatchUpdate",
   description: "Add / remove artworks to / from collections",
   inputFields: {
     artworkIDs: {
@@ -100,12 +109,12 @@ export const manageArtworksCollectionsMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (args, context) => {
-    if (!context.manageArtworksCollectionsLoader) {
+    if (!context.artworksCollectionsBatchUpdateLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const response = await context.manageArtworksCollectionsLoader({
+      const response = await context.artworksCollectionsBatchUpdateLoader({
         artwork_ids: args.artworkIDs,
         add_to: args.addToCollectionIDs,
         remove_from: args.removeFromCollectionIDs,

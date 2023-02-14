@@ -3,9 +3,9 @@ import { ResolverContext } from "types/graphql"
 
 const mutation = `
   mutation {
-    manageArtworksCollections(input: { artworkIDs: ["artwork-id"], addToCollectionIDs: ["collection-1", "collection-2"], removeFromCollectionIDs: ["collection-3"] }) {
+    artworksCollectionsBatchUpdate(input: { artworkIDs: ["artwork-id"], addToCollectionIDs: ["collection-1", "collection-2"], removeFromCollectionIDs: ["collection-3"] }) {
       responseOrError {
-        ... on ManageArtworksCollectionsSuccess {
+        ... on ArtworksCollectionsBatchUpdateSuccess {
           counts {
             artworks
             addedToCollections
@@ -21,7 +21,7 @@ const mutation = `
           }
         }
 
-        ... on ManageArtworksCollectionsFailure {
+        ... on ArtworksCollectionsBatchUpdateFailure {
           mutationError {
             message
           }
@@ -31,7 +31,7 @@ const mutation = `
   }
 `
 
-describe("manageArtworksCollections", () => {
+describe("artworksCollectionsBatchUpdate", () => {
   describe("valid query", () => {
     const mockGravityResponse = {
       counts: {
@@ -47,7 +47,7 @@ describe("manageArtworksCollections", () => {
 
     beforeEach(() => {
       context = {
-        manageArtworksCollectionsLoader: jest
+        artworksCollectionsBatchUpdateLoader: jest
           .fn()
           .mockResolvedValue(mockGravityResponse),
       }
@@ -57,7 +57,7 @@ describe("manageArtworksCollections", () => {
       await runAuthenticatedQuery(mutation, context)
 
       expect(
-        context.manageArtworksCollectionsLoader as jest.Mock
+        context.artworksCollectionsBatchUpdateLoader as jest.Mock
       ).toHaveBeenCalledWith({
         artwork_ids: ["artwork-id"],
         add_to: ["collection-1", "collection-2"],
@@ -70,7 +70,7 @@ describe("manageArtworksCollections", () => {
 
       expect(result).toMatchInlineSnapshot(`
         Object {
-          "manageArtworksCollections": Object {
+          "artworksCollectionsBatchUpdate": Object {
             "responseOrError": Object {
               "addedToCollections": Array [
                 Object {
@@ -101,14 +101,14 @@ describe("manageArtworksCollections", () => {
     const message = `https://stagingapi.artsy.net/api/v1/artworks/collections/batch - {"error":"One or more specified artworks was not found"}`
     const error = new Error(message)
     const context = {
-      manageArtworksCollectionsLoader: jest.fn().mockRejectedValue(error),
+      artworksCollectionsBatchUpdateLoader: jest.fn().mockRejectedValue(error),
     }
 
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
       Object {
-        "manageArtworksCollections": Object {
+        "artworksCollectionsBatchUpdate": Object {
           "responseOrError": Object {
             "mutationError": Object {
               "message": "One or more specified artworks was not found",

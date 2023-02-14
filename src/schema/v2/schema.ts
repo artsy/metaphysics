@@ -24,6 +24,7 @@ import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGr
 import ArtworkAttributionClasses from "./artworkAttributionClasses"
 import ArtworkMediums from "./artworkMediums"
 import Artworks from "./artworks"
+import { artworksCollectionsBatchUpdateMutation } from "./me/artworksCollectionsBatchUpdateMutation"
 import { ArtworkVersionType } from "./artwork_version"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
@@ -187,7 +188,6 @@ import { CreateFeaturedLinkMutation } from "./FeaturedLink/createFeaturedLinkMut
 import { UpdateFeaturedLinkMutation } from "./FeaturedLink/updateFeaturedLinkMutation"
 import { DeleteFeaturedLinkMutation } from "./FeaturedLink/deleteFeaturedLinkMutation"
 import { createUserSaleProfileMutation } from "./users/createUserSaleProfileMutation"
-import { manageArtworksCollectionsMutation } from "./me/manageArtworksCollectionsMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -323,6 +323,7 @@ export default new GraphQLSchema({
       adminDeleteFeatureFlag: deleteFeatureFlagMutation,
       adminToggleFeatureFlag: toggleFeatureFlagMutation,
       adminUpdateFeatureFlag: updateFeatureFlagMutation,
+      artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       createAccountRequest: createAccountRequestMutation,
       createBidder: createBidderMutation,
@@ -395,7 +396,6 @@ export default new GraphQLSchema({
       updateUser: updateUserMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
       updateQuiz: updateQuizMutation,
-      manageArtworksCollections: manageArtworksCollectionsMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
