@@ -10601,6 +10601,10 @@ type MarkAllNotificationsAsReadSuccess {
   success: Boolean
 }
 
+type MarkdownContent {
+  content(format: Format): String
+}
+
 type MarketingCollection {
   artworksConnection(
     acquireable: Boolean
@@ -14357,6 +14361,7 @@ type Query {
   ): IdentityVerificationConnection
   job(id: ID!): Job!
   jobs: [Job!]!
+  markdown(content: String!): MarkdownContent
   marketingCategories: [MarketingCollectionCategory!]!
 
   # Find a marketing collection by ID or slug
@@ -18597,6 +18602,7 @@ type Viewer {
   ): IdentityVerificationConnection
   job(id: ID!): Job!
   jobs: [Job!]!
+  markdown(content: String!): MarkdownContent
   marketingCollections(
     artistID: String
     category: String

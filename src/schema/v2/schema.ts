@@ -187,6 +187,7 @@ import { CreateFeaturedLinkMutation } from "./FeaturedLink/createFeaturedLinkMut
 import { UpdateFeaturedLinkMutation } from "./FeaturedLink/updateFeaturedLinkMutation"
 import { DeleteFeaturedLinkMutation } from "./FeaturedLink/deleteFeaturedLinkMutation"
 import { createUserSaleProfileMutation } from "./users/createUserSaleProfileMutation"
+import { MarkdownContent } from "./markdownContent"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -259,6 +260,7 @@ const rootFields = {
   identityVerificationsConnection,
   job,
   jobs,
+  markdown: MarkdownContent,
   matchArtist: MatchArtist,
   matchConnection: MatchConnection,
   me: Me,
