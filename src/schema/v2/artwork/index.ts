@@ -380,7 +380,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ confidential_notes }) => confidential_notes,
         description:
-          "Notes by a partner on the artwork, requires partner access",
+          "Notes by a partner or MyCollection user on the artwork, can only be accessed by partner or the user that owns the artwork",
       },
       consignmentSubmission: {
         type: ArtworkConsignmentSubmissionType,

@@ -65,6 +65,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
     },
     // Optional
+    confidentialNotes: {
+      type: GraphQLString,
+    },
     importSource: {
       type: ArtworkImportSourceEnum,
     },
@@ -148,6 +151,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       artworkLocation,
       attributionClass,
       collectorLocation,
+      confidentialNotes,
       costCurrencyCode,
       costMajor,
       costMinor,
@@ -201,6 +205,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         artists: artistIds,
         submission_id: submissionId,
         collection_id: "my-collection",
+        confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
         price_paid_cents: transformedPricePaidCents,

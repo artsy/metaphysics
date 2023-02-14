@@ -22,6 +22,7 @@ interface MyCollectionArtworkUpdateMutationInput {
   artistIds?: [string]
   attributionClass?: string
   category?: string
+  confidentialNotes?: string
   costCurrencyCode?: string
   costMajor?: number
   costMinor?: number
@@ -56,6 +57,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       type: ArtworkAttributionClassEnum,
     },
     category: {
+      type: GraphQLString,
+    },
+    confidentialNotes: {
       type: GraphQLString,
     },
     costCurrencyCode: {
@@ -133,6 +137,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       artworkLocation,
       attributionClass,
       collectorLocation,
+      confidentialNotes,
       costCurrencyCode,
       costMajor,
       costMinor,
@@ -174,6 +179,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     try {
       const response = await updateArtworkLoader(artworkId, {
         artists: artistIds,
+        confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
         artwork_location: artworkLocation,
