@@ -12,6 +12,7 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { FeatureType } from "../Feature"
 
 type ItemType =
   | "Artist"
@@ -48,6 +49,13 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     set: {
       type: OrderedSetType,
       resolve: (orderedSet) => orderedSet,
+    },
+    feature: {
+      type: FeatureType,
+      resolve: ({ owner, owner_type }) => {
+        if (owner_type !== "Feature") return null
+        return owner
+      },
     },
   }),
 })
