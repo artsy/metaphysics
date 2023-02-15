@@ -1,6 +1,6 @@
-import { MarketPriceInsight } from "lib/loaders/loaders_with_authentication/vortex"
-import { uniqWith, isEqual } from "lodash"
 import * as Sentry from "@sentry/node"
+import { MarketPriceInsight } from "lib/loaders/loaders_with_authentication/vortex"
+import { isEqual, uniqWith } from "lodash"
 export const enrichArtworksWithPriceInsights = async (
   artworks: Array<any>,
   marketPriceInsightsBatchLoader: (
@@ -28,9 +28,7 @@ export const enrichArtworksWithPriceInsights = async (
       const insights = priceInsightNodes.find(
         (insight: MarketPriceInsight) =>
           insight.artistId === artwork.artist?._id &&
-          // TODO: Fix this logic once we only need category to fetch insights
-          (insight.medium === artwork.medium ||
-            insight.medium === artwork.category)
+          insight.medium === artwork.category
       )
 
       artwork.marketPriceInsights = insights

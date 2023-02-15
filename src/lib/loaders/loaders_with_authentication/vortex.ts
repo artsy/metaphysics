@@ -51,10 +51,9 @@ export default (accessToken, opts) => {
     marketPriceInsightsBatchLoader: async (
       params: { artistId: string; medium: string; category: string }[]
     ) => {
-      // TODO: Fix this logic once we only need category to fetch insights
       const artistIDMediumTuples = params.map((artist) => ({
         artistId: artist.artistId,
-        medium: getVortexMedium(artist.medium, artist.category),
+        medium: artist.medium,
       }))
 
       const vortexResult = await vortexGraphqlLoader({
@@ -100,31 +99,4 @@ export type MarketPriceInsight = {
   lastAuctionResultDate: string
   annualLotsSold: number
   annualValueSold: number
-}
-
-const VALID_VORTEX_MEDIUMS = [
-  "Painting",
-  "Sculpture",
-  "Photography",
-  "Print",
-  "Drawing, Collage or other Work on Paper",
-  "Mixed Media",
-  "Performance Art",
-  "Installation",
-  "Video/Film/Animation",
-  "Architecture",
-  "Fashion Design and Wearable Art",
-  "Jewelry",
-  "Design/Decorative Art",
-  "Textile Arts",
-  "Posters",
-  "Books and Portfolios",
-  "Other",
-  "Ephemera or Merchandise",
-  "Reproduction",
-  "NFT",
-]
-
-const getVortexMedium = (medium: string, category: string) => {
-  return VALID_VORTEX_MEDIUMS.includes(medium) ? medium : category
 }
