@@ -813,7 +813,11 @@ export const exchangeStitchingEnvironment = ({
               orderOrError.error ||
               !orderOrError.order ||
               orderOrError.order.source === "inquiry" ||
-              orderOrError.order.state === "IN_REVIEW"
+              // TODO: uncomment state & remove payment method once buyerStatus
+              // is implemented in Exchange.
+              // See https://www.notion.so/artsy/2023-02-09-Platform-Practice-Meeting-Notes-87f4cc9987a7436c9c4b207847e318db?pvs=4
+              // orderOrError.order.state === "IN_REVIEW"
+              orderOrError.order.paymentMethod == "WIRE_TRANSFER"
             ) {
               return submitOrderWithOffer
             }
