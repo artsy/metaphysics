@@ -53,7 +53,7 @@ export default (accessToken, opts) => {
     ) => {
       const artistIDMediumTuples = params.map((artist) => ({
         artistId: artist.artistId,
-        medium: artist.medium,
+        medium: artist.category,
       }))
 
       const vortexResult = await vortexGraphqlLoader({
