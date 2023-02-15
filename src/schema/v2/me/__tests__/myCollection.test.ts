@@ -333,7 +333,7 @@ describe("me.myCollection", () => {
               node {
                 internalID
                 title
-                medium
+                category
                 artist {
                   internalID
                 }
@@ -364,7 +364,7 @@ describe("me.myCollection", () => {
               _id: "artwork_id_with_market_price_insights",
               id: "artwork_id_with_market_price_insights",
               title: "some title",
-              medium: "Painting",
+              category: "Painting",
               artist: {
                 _id: "artist-id",
               },
@@ -393,6 +393,7 @@ describe("me.myCollection", () => {
                   "artist": Object {
                     "internalID": "artist-id",
                   },
+                  "category": "Painting",
                   "internalID": "artwork_id_with_market_price_insights",
                   "marketPriceInsights": Object {
                     "annualValueSoldDisplayText": "$22M",
@@ -402,7 +403,6 @@ describe("me.myCollection", () => {
                     "liquidityRankDisplayText": "Medium",
                     "medianSalePriceDisplayText": "US$5,776,622,000",
                   },
-                  "medium": "Painting",
                   "title": "some title",
                 },
               },
@@ -482,7 +482,7 @@ const mockCollectionArtworksResponse = {
     {
       _id: "58e3e54aa09a6708282022f6",
       title: "some title",
-      medium: "Print",
+      medium: "Painting and something else",
       category: "Print",
       artist: {
         _id: "artist-id",
@@ -491,7 +491,7 @@ const mockCollectionArtworksResponse = {
     {
       _id: "58e3e52aa09a6708282022f6",
       title: "another title",
-      medium: "Print",
+      medium: "Painting and something else",
       category: "Print",
       artist: {
         _id: "artist-id",
@@ -500,7 +500,7 @@ const mockCollectionArtworksResponse = {
     {
       _id: "58e3e54aa09a6708282022f6",
       title: "some title",
-      medium: "Painting",
+      medium: "Painting and something else",
       category: "Painting",
       artist: {
         _id: "artist-id",

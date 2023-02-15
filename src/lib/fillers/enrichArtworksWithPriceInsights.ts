@@ -28,7 +28,7 @@ export const enrichArtworksWithPriceInsights = async (
       const insights = priceInsightNodes.find(
         (insight: MarketPriceInsight) =>
           insight.artistId === artwork.artist?._id &&
-          insight.medium === artwork.medium
+          insight.medium === artwork.category
       )
 
       artwork.marketPriceInsights = insights
