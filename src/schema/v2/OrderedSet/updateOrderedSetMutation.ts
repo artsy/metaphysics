@@ -3,6 +3,7 @@ import {
   GraphQLUnionType,
   GraphQLObjectType,
   GraphQLBoolean,
+  GraphQLList,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLNonNull } from "graphql"
@@ -33,6 +34,7 @@ interface Input {
   description: string
   id: string
   itemId: string
+  itemIds: string
   itemType: ItemType
   key: string
   layout: LayoutType
@@ -87,6 +89,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
     description: { type: GraphQLString },
     id: { type: new GraphQLNonNull(GraphQLString) },
     itemId: { type: GraphQLString },
+    itemIds: { type: new GraphQLList(GraphQLString) },
     itemType: { type: GraphQLString },
     key: { type: GraphQLString },
     layout: { type: GraphQLString },
@@ -107,6 +110,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
       description,
       id,
       itemId,
+      itemIds,
       itemType,
       key,
       layout,
@@ -127,6 +131,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
       return await updateSetLoader(id, {
         description,
         item_id: itemId,
+        item_ids: itemIds,
         item_type: itemType,
         key,
         layout,

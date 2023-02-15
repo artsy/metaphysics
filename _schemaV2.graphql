@@ -17322,6 +17322,7 @@ input updateOrderedSetMutationInput {
   description: String
   id: String!
   itemId: String
+  itemIds: [String]
   itemType: String
   key: String
   layout: String
