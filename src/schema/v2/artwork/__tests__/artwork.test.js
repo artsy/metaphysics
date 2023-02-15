@@ -17,8 +17,7 @@ describe("Artwork type", () => {
   const artworkInLowDemand = {
     artistId: "artist-id",
     demandRank: 0.64,
-    medium: "print",
-    category: "print",
+    medium: "Painting",
     annualLotsSold: 25,
     annualValueSoldCents: 577662200012,
     lastAuctionResultDate: "2022-06-15T00:00:00Z",
@@ -30,8 +29,7 @@ describe("Artwork type", () => {
   const artworkInHighDemand = {
     artistId: "artist-id",
     demandRank: 0.9,
-    medium: "print",
-    category: "print",
+    medium: "Painting",
     annualLotsSold: 25,
     annualValueSoldCents: 577662200012,
     lastAuctionResultDate: "2022-06-15T00:00:00Z",
