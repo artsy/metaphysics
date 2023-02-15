@@ -17322,6 +17322,8 @@ input UpdateOrderedSetMutationInput {
   description: String
   id: String!
   itemId: String
+
+  # Modify the OrderedSet's items to only included provided ids. An empty array will remove all items from the set
   itemIds: [String]
   itemType: String
   key: String

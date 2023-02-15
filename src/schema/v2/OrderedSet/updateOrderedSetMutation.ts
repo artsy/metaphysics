@@ -89,7 +89,11 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
     description: { type: GraphQLString },
     id: { type: new GraphQLNonNull(GraphQLString) },
     itemId: { type: GraphQLString },
-    itemIds: { type: new GraphQLList(GraphQLString) },
+    itemIds: {
+      description:
+        "Modify the OrderedSet's items to only included provided ids. An empty array will remove all items from the set",
+      type: new GraphQLList(GraphQLString),
+    },
     itemType: { type: GraphQLString },
     key: { type: GraphQLString },
     layout: { type: GraphQLString },
