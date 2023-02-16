@@ -86,6 +86,7 @@ import UpdateCollectorProfile from "./me/update_collector_profile"
 import UpdateCollectorProfileWithID from "./CollectorProfile/mutations/updateCollectorProfileWithID"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import { updateMyPasswordMutation } from "./me/updateMyPasswordMutation"
+import { updateArtistMutation } from "./artist/updateArtistMutation"
 import { updateUserMutation } from "./users/updateUserMutation"
 import { addUserRoleMutation } from "./users/addUserRoleMutation"
 import { createUserAdminNoteMutation } from "./users/createUserAdminNoteMutation"
@@ -396,6 +397,7 @@ export default new GraphQLSchema({
       updateNotificationPreferences: updateNotificationPreferencesMutation,
       updateOrderedSet: updateOrderedSetMutation,
       updateUser: updateUserMutation,
+      updateArtist: updateArtistMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
       updateQuiz: updateQuizMutation,
     },

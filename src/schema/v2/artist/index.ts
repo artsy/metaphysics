@@ -651,6 +651,13 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       meta: Meta,
       nationality: { type: GraphQLString },
       name: { type: GraphQLString },
+      first: { type: GraphQLString },
+      last: { type: GraphQLString },
+      displayName: {
+        type: GraphQLString,
+        resolve: ({ display_name }) => display_name,
+      },
+      middle: { type: GraphQLString },
       partnersConnection: {
         type: PartnerArtistConnection,
         args: pageable({
