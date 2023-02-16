@@ -815,10 +815,7 @@ export const exchangeStitchingEnvironment = ({
             })
 
             const { orderOrError } = submitOrderWithOffer
-            console.log("🐖 🐖 🐖 🐖 🐖 🐖 🐖 🐖 🐖 🐖 🐖 🐖")
-            console.log(orderOrError.order.source)
-            console.log(orderOrError.order.state)
-            console.log(orderOrError.order.paymentMethod)
+
             if (
               orderOrError.error ||
               !orderOrError.order ||
