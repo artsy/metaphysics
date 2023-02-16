@@ -721,6 +721,13 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                       {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "paymentMethod",
+                        },
+                      },
+                      {
                         kind: Kind.INLINE_FRAGMENT,
                         typeCondition: {
                           kind: Kind.NAMED_TYPE,
