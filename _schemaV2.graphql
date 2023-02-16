@@ -2526,6 +2526,43 @@ type ArtworksAggregationResults {
   slice: ArtworkAggregation
 }
 
+type ArtworksCollectionsBatchUpdateCounts {
+  addedToCollections: Int
+  artworks: Int
+  removedFromCollections: Int
+}
+
+type ArtworksCollectionsBatchUpdateFailure {
+  mutationError: GravityMutationError
+}
+
+input ArtworksCollectionsBatchUpdateInput {
+  # Collection ids. To which collections to add artworks.
+  addToCollectionIDs: [String!]
+
+  # Artwork ids or slugs.
+  artworkIDs: [String!]!
+  clientMutationId: String
+
+  # Collection ids. From which collections to remove artworks.
+  removeFromCollectionIDs: [String!]
+}
+
+type ArtworksCollectionsBatchUpdatePayload {
+  clientMutationId: String
+  responseOrError: ArtworksCollectionsBatchUpdateResponseOrError
+}
+
+union ArtworksCollectionsBatchUpdateResponseOrError =
+    ArtworksCollectionsBatchUpdateFailure
+  | ArtworksCollectionsBatchUpdateSuccess
+
+type ArtworksCollectionsBatchUpdateSuccess {
+  addedToCollections: [Collection]
+  counts: ArtworksCollectionsBatchUpdateCounts
+  removedFromCollections: [Collection]
+}
+
 enum ArtworkSizes {
   LARGE
   MEDIUM
@@ -11561,6 +11598,11 @@ type Mutation {
   adminUpdateFeatureFlag(
     input: AdminUpdateFeatureFlagInput!
   ): AdminUpdateFeatureFlagPayload
+
+  # Add / remove artworks to / from collections
+  artworksCollectionsBatchUpdate(
+    input: ArtworksCollectionsBatchUpdateInput!
+  ): ArtworksCollectionsBatchUpdatePayload
 
   # Update all artworks that belong to the partner
   bulkUpdatePartnerArtworks(

@@ -25,6 +25,11 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
+    artworksCollectionsBatchUpdateLoader: gravityLoader(
+      "artworks/collections/batch",
+      {},
+      { method: "POST" }
+    ),
     authenticatedArtistLoader: gravityLoader((id) => `artist/${id}`),
     authenticatedArtworkVersionLoader: gravityLoader(
       (id) => `artwork_version/${id}`
