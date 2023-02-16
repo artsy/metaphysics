@@ -721,6 +721,13 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                       {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "paymentMethod",
+                        },
+                      },
+                      {
                         kind: Kind.INLINE_FRAGMENT,
                         typeCondition: {
                           kind: Kind.NAMED_TYPE,
@@ -808,7 +815,10 @@ export const exchangeStitchingEnvironment = ({
             })
 
             const { orderOrError } = submitOrderWithOffer
-
+            console.log("🐖 🐖 🐖 🐖 🐖 🐖 🐖 🐖 🐖 🐖 🐖 🐖")
+            console.log(orderOrError.order.source)
+            console.log(orderOrError.order.state)
+            console.log(orderOrError.order.paymentMethod)
             if (
               orderOrError.error ||
               !orderOrError.order ||
