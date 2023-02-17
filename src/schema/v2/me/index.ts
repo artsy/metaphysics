@@ -55,7 +55,7 @@ import { NewWorksByInterestingArtists } from "./newWorksByInterestingArtists"
 import { ManagedPartners } from "./partners"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import { SaleRegistrationConnection } from "./sale_registrations"
-import { SavedArtworks } from "./savedArtworks"
+import { COLLECTION_ID, SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { WatchedLotConnection } from "./watchedLotConnection"
 import { quiz } from "../quiz"
@@ -155,6 +155,46 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     },
     conversation: Conversation,
     conversationsConnection: Conversations,
+    counts: {
+      type: new GraphQLObjectType<any, ResolverContext>({
+        name: "MeCounts",
+        fields: {
+          followedArtists: {
+            type: new GraphQLNonNull(GraphQLInt),
+            resolve: async (_me, _args, { followedArtistsLoader }) => {
+              if (!followedArtistsLoader) return 0
+
+              const { headers } = await followedArtistsLoader({
+                page: 1,
+                size: 1,
+                total_count: true,
+              })
+
+              return headers["x-total-count"] ?? 0
+            },
+          },
+          savedArtworks: {
+            type: new GraphQLNonNull(GraphQLInt),
+            resolve: async (_me, _args, { collectionArtworksLoader }) => {
+              if (!collectionArtworksLoader) return 0
+
+              const { headers } = await collectionArtworksLoader(
+                COLLECTION_ID,
+                {
+                  page: 1,
+                  private: true,
+                  size: 1,
+                  total_count: true,
+                }
+              )
+
+              return headers["x-total-count"] ?? 0
+            },
+          },
+        },
+      }),
+      resolve: (me) => me,
+    },
     createdAt: date,
     creditCards: CreditCards,
     email: {
