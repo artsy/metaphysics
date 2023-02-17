@@ -117,6 +117,9 @@ export const getAuctionRecord = async (artist, auctionLotsLoader) => {
   })
 
   const auctionLot = response._embedded.items[0]
+
+  if (!auctionLot) return null
+
   const { currency, price_realized_cents } = auctionLot
   const price = priceDisplayText(price_realized_cents, currency, "0.0a")
   const year = auctionLot.sale_date.split("-")[0]
