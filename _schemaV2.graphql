@@ -14967,10 +14967,16 @@ type QuizArtworkEdge {
   position: Int!
 }
 
+type RecenltySoldArtworkPerformance {
+  # Percentage performance over mid-estimate
+  mid: String
+}
+
 type RecentlySoldArtworkType {
   artwork: Artwork
   highEstimate: Money
   lowEstimate: Money
+  performance: RecenltySoldArtworkPerformance
   priceRealized: Money
 }
 
