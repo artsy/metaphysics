@@ -9203,6 +9203,7 @@ input FollowArtistInput {
 type FollowArtistPayload {
   artist: Artist
   clientMutationId: String
+  me: Me!
 
   # Popular artists
   popularArtists(
@@ -15744,6 +15745,7 @@ input SaveArtworkInput {
 type SaveArtworkPayload {
   artwork: Artwork
   clientMutationId: String
+  me: Me!
 }
 
 # A connection to a list of items.

@@ -3,6 +3,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ArtistType } from "schema/v2/artist/index"
 import { PopularArtistsField } from "schema/v2/Highlights/PopularArtists"
 import { ResolverContext } from "types/graphql"
+import { meType } from "./index"
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "FollowArtist",
@@ -23,6 +24,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
         artistLoader(artist_id),
     },
     popularArtists: PopularArtistsField,
+    me: {
+      type: new GraphQLNonNull(meType),
+      resolve: (_root, _options, { meLoader }) => meLoader?.(),
+    },
   },
   mutateAndGetPayload: (
     { artistID: artist_id, unfollow },
