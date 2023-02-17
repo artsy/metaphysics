@@ -55,6 +55,9 @@ describe("RecentlySoldArtworks", () => {
               priceRealized {
                 display
               }
+              performance {
+                mid
+              }
             }
           }
         }
@@ -81,6 +84,9 @@ describe("RecentlySoldArtworks", () => {
       },
       priceRealized: {
         display: "US$20,160",
+      },
+      performance: {
+        mid: "706%",
       },
     })
   })
