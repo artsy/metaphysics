@@ -164,13 +164,18 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
             resolve: async (_me, _args, { followedArtistsLoader }) => {
               if (!followedArtistsLoader) return 0
 
-              const { headers } = await followedArtistsLoader({
-                page: 1,
-                size: 1,
-                total_count: true,
-              })
+              try {
+                const { headers } = await followedArtistsLoader({
+                  page: 1,
+                  size: 1,
+                  total_count: true,
+                })
 
-              return headers["x-total-count"] ?? 0
+                return headers["x-total-count"] ?? 0
+              } catch (error) {
+                console.error(error)
+                return 0
+              }
             },
           },
           savedArtworks: {
@@ -178,17 +183,22 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
             resolve: async (_me, _args, { collectionArtworksLoader }) => {
               if (!collectionArtworksLoader) return 0
 
-              const { headers } = await collectionArtworksLoader(
-                COLLECTION_ID,
-                {
-                  page: 1,
-                  private: true,
-                  size: 1,
-                  total_count: true,
-                }
-              )
+              try {
+                const { headers } = await collectionArtworksLoader(
+                  COLLECTION_ID,
+                  {
+                    page: 1,
+                    private: true,
+                    size: 1,
+                    total_count: true,
+                  }
+                )
 
-              return headers["x-total-count"] ?? 0
+                return headers["x-total-count"] ?? 0
+              } catch (error) {
+                console.error(error)
+                return 0
+              }
             },
           },
         },
