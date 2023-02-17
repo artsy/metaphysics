@@ -18,7 +18,7 @@ import {
   convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
 
-const COLLECTION_ID = "saved-artwork"
+export const COLLECTION_ID = "saved-artwork"
 
 export const SavedArtworksConnection = connectionWithCursorInfo({
   name: "SavedArtworks",

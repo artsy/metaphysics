@@ -11067,6 +11067,7 @@ type Me implements Node {
     toBeReplied: Boolean
     type: ConversationsInputMode = USER
   ): ConversationConnection
+  counts: MeCounts
   createdAt(
     format: String
 
@@ -11399,6 +11400,11 @@ type Me implements Node {
     first: Int
     last: Int
   ): LotConnection
+}
+
+type MeCounts {
+  followedArtists: Int!
+  savedArtworks: Int!
 }
 
 type MergeArtistsFailure {
