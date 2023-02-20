@@ -93,7 +93,7 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
     },
     isSavedArtwork: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: "Add Description",
+      description: "Checking whether artwork is included in collection",
       args: {
         artworkID: {
           type: new GraphQLNonNull(GraphQLString),
