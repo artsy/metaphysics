@@ -86,6 +86,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       return null
     }
 
+    // We're setting the size to 100 here because we're going to filter and sort these artworks later manualy.
     const paginationArgs = options.sortByLastAuctionResultDate
       ? { size: 100 }
       : convertConnectionArgsToGravityArgs(options)
