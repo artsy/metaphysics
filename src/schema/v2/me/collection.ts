@@ -91,6 +91,33 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
       description:
         "True if this collection represents artworks explicitly saved by the user, false otherwise.",
     },
+    isSavedArtwork: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: "Add Description",
+      args: {
+        artworkID: {
+          type: new GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve: async (parent, args, context) => {
+        const { collectionArtworksLoader } = context
+
+        if (!collectionArtworksLoader) {
+          throw new Error("You need to be signed in to perform this action")
+        }
+
+        const { headers } = await collectionArtworksLoader(parent.id, {
+          artworks: [args.artworkID],
+          user_id: parent.userID,
+          private: true,
+          size: 0,
+          total_count: true,
+        })
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return totalCount > 0
+      },
+    },
   }),
 })
 
