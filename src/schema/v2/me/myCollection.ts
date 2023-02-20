@@ -21,6 +21,8 @@ import {
 import { loadSubmissions } from "./loadSubmissions"
 import { myCollectionInfoFields } from "./myCollectionInfo"
 
+const MAX_COLLECTION_SIZE = 100
+
 const MyCollectionConnection = connectionWithCursorInfo({
   name: "MyCollection",
   nodeType: ArtworkType,
@@ -86,8 +88,10 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       return null
     }
 
+    // We're setting the size to 100 here because we're going to filter and sort these artworks later manualy.
+    // The idea is to fetch (almost) all artworks and then filter/sort them in memory.
     const paginationArgs = options.sortByLastAuctionResultDate
-      ? { size: 100 }
+      ? { size: MAX_COLLECTION_SIZE }
       : convertConnectionArgsToGravityArgs(options)
 
     const gravityOptions = {
