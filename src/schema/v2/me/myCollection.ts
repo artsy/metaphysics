@@ -86,9 +86,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       return null
     }
 
-    const paginationArgs = options.sortByLastAuctionResultDate
-      ? { size: 100 }
-      : convertConnectionArgsToGravityArgs(options)
+    const paginationArgs = convertConnectionArgsToGravityArgs(options)
 
     const gravityOptions = {
       exclude_purchased_artworks: options.excludePurchasedArtworks,
