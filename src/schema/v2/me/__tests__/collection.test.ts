@@ -61,6 +61,59 @@ it("returns collection attributes", async () => {
   })
 })
 
+describe("isSavedArtwork field", () => {
+  beforeEach(() => {
+    query = gql`
+      query {
+        me {
+          collection(id: "123-abc") {
+            isSavedArtwork(artworkID: "artwork-id")
+          }
+        }
+      }
+    `
+  })
+
+  it("should return true if artwork is included in the collection", async () => {
+    context.collectionArtworksLoader = jest.fn(() => {
+      return Promise.resolve({
+        headers: {
+          "x-total-count": 1,
+        },
+      })
+    })
+
+    const response = await runAuthenticatedQuery(query, context)
+
+    expect(response).toEqual({
+      me: {
+        collection: {
+          isSavedArtwork: true,
+        },
+      },
+    })
+  })
+
+  it("should return false if artwork is included in the collection", async () => {
+    context.collectionArtworksLoader = jest.fn(() => {
+      return Promise.resolve({
+        headers: {
+          "x-total-count": 0,
+        },
+      })
+    })
+    const response = await runAuthenticatedQuery(query, context)
+
+    expect(response).toEqual({
+      me: {
+        collection: {
+          isSavedArtwork: false,
+        },
+      },
+    })
+  })
+})
+
 describe("artworksConnection", () => {
   const mockGravityCollectionArtworks = {
     headers: {
