@@ -87,6 +87,10 @@ export default (accessToken, opts) => {
         vortexResult.data?.marketPriceInsightsBatch
       )
 
+      if (vortexResult.errors.length) {
+        console.error(vortexResult.errors)
+      }
+
       return priceInsightNodes
     },
   }
