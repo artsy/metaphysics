@@ -3623,6 +3623,9 @@ type Collection {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
+  # Checking whether artwork is included in collection
+  isSavedArtwork(artworkID: String!): Boolean!
+
   # Name of the collection. Has a predictable value for 'standard' collections
   # such as Saved Artwork, My Collection, etc. Can be provided by user otherwise.
   name: String!
