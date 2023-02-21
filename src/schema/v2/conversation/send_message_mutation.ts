@@ -19,7 +19,7 @@ interface SendConversationMessageMutationProps {
     url: string
     id?: string
     size?: string
-  }
+  }[]
   bodyHTML?: string
   bodyText: string
   from: string
@@ -131,16 +131,22 @@ export default mutationWithClientMutationId<
     const replyAll =
       args.replyAll === false && args.to ? undefined : args.replyAll
 
-    return conversationCreateMessageLoader(args.id, {
-      attachments: args.attachments,
-      body_html: args.bodyHTML,
-      body_text: args.bodyText,
-      from: args.from,
-      from_id: args.fromId ?? userID,
-      reply_all: replyAll,
-      reply_to_message_id: args.replyToMessageID,
-      to: args.to,
-    })
+    return conversationCreateMessageLoader(
+      args.id,
+      {
+        attachments: { ...args.attachments },
+        body_html: args.bodyHTML,
+        body_text: args.bodyText,
+        from: args.from,
+        from_id: args.fromId ?? userID,
+        reply_all: replyAll,
+        reply_to_message_id: args.replyToMessageID,
+        to: args.to,
+      },
+      {
+        headers: true,
+      }
+    )
       .then(({ id: newMessageID }) => {
         return conversationLoader(args.id).then((updatedConversation) => {
           return {
