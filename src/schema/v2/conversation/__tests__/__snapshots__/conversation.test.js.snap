@@ -39,6 +39,27 @@ Object {
 }
 `;
 
+exports[`Me Conversation inquiry request returns the questions and shipping location when present 1`] = `
+Array [
+  Object {
+    "internalID": "shipping_quote",
+    "question": "Shipping",
+  },
+  Object {
+    "internalID": "condition_and_provenance",
+    "question": "Condition & Provenance",
+  },
+]
+`;
+
+exports[`Me Conversation inquiry request returns the questions and shipping location when present 2`] = `
+Object {
+  "city": "New York City",
+  "country": "US",
+  "state": "NY",
+}
+`;
+
 exports[`Me Conversation returns a conversation 1`] = `
 Object {
   "conversation": Object {
