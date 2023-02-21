@@ -28,24 +28,3 @@ export const PartnerInquirerCollectorProfile: GraphQLFieldConfig<
   type: InquirerCollectorProfileType,
   description: "Inquiry requester's profile",
 }
-
-export const InquiryRequestType = new GraphQLObjectType<any, ResolverContext>({
-  name: "PartnerInquiryRequest",
-  fields: {
-    collectorProfile: {
-      type: InquirerCollectorProfileType,
-      resolve: (
-        { id: inquiryId, partnerId },
-        _args,
-        { partnerInquirerCollectorProfileLoader }
-      ) => {
-        if (!partnerInquirerCollectorProfileLoader) return
-
-        return partnerInquirerCollectorProfileLoader({
-          partnerId,
-          inquiryId,
-        })
-      },
-    },
-  },
-})

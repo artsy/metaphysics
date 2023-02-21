@@ -561,5 +561,59 @@ describe("Me", () => {
         )
       })
     })
+    describe("inquiry request", () => {
+      const query = `
+          {
+            conversation(id: "420") {
+              inquiryRequest {
+                questions {
+                  question
+                  internalID
+                }
+                shippingLocation {
+                  country
+                  state
+                  city
+                }
+              }
+            }
+          }
+        `
+      it("returns null when questions are not present", () => {
+        return runAuthenticatedQuery(query, context).then(
+          ({ conversation: { inquiryRequest } }) => {
+            expect(inquiryRequest).toBeNull()
+          }
+        )
+      })
+      it("returns the questions and shipping location when present", () => {
+        const newContext = {
+          ...context,
+          partnerInquiryRequestLoader: () =>
+            Promise.resolve({
+              inquiry_questions: [
+                { id: "shipping_quote", question: "Shipping" },
+                {
+                  id: "condition_and_provenance",
+                  question: "Condition & Provenance",
+                },
+              ],
+              inquiry_shipping_location: {
+                country: "US",
+                city: "New York City",
+                address: "123 Main St",
+                state: "NY",
+              },
+            }),
+        }
+        return runAuthenticatedQuery(query, newContext).then(
+          ({ conversation: { inquiryRequest } }) => {
+            expect(inquiryRequest.questions).toHaveLength(2)
+            expect(inquiryRequest.questions).toMatchSnapshot()
+            expect(inquiryRequest.shippingLocation).toMatchSnapshot()
+          }
+        )
+      })
+    })
   })
 })
