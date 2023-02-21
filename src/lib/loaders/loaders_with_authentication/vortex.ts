@@ -49,14 +49,12 @@ export default (accessToken, opts) => {
     vortexTokenLoader,
     vortexGraphqlLoader,
     marketPriceInsightsBatchLoader: async (
-      params: MarketPriceInsightsBatchLoaderParams
+      params: { artistId: string; medium: string; category: string }[]
     ) => {
-      const artistIDMediumTuples = params
-        .map((artist) => ({
-          artistId: artist.artistId,
-          medium: artist.category,
-        }))
-        .filter((tuple) => tuple.artistId && tuple.medium)
+      const artistIDMediumTuples = params.map((artist) => ({
+        artistId: artist.artistId,
+        medium: artist.category,
+      }))
 
       const vortexResult = await vortexGraphqlLoader({
         query: gql`
@@ -87,10 +85,6 @@ export default (accessToken, opts) => {
         vortexResult.data?.marketPriceInsightsBatch
       )
 
-      if (vortexResult.errors.length) {
-        console.error(vortexResult.errors)
-      }
-
       return priceInsightNodes
     },
   }
@@ -106,9 +100,3 @@ export type MarketPriceInsight = {
   annualLotsSold: number
   annualValueSold: number
 }
-
-export type MarketPriceInsightsBatchLoaderParams = {
-  artistId?: string
-  medium?: string
-  category?: string
-}[]
