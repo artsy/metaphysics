@@ -1,18 +1,22 @@
 import * as Sentry from "@sentry/node"
-import { MarketPriceInsight } from "lib/loaders/loaders_with_authentication/vortex"
+import {
+  MarketPriceInsight,
+  MarketPriceInsightsBatchLoaderParams,
+} from "lib/loaders/loaders_with_authentication/vortex"
 import { isEqual, uniqWith } from "lodash"
+
 export const enrichArtworksWithPriceInsights = async (
   artworks: Array<any>,
   marketPriceInsightsBatchLoader: (
-    params: {
-      artistId: string
-      medium: string
-      category: string
-    }[]
+    params: MarketPriceInsightsBatchLoaderParams
   ) => Promise<MarketPriceInsight[]>
 ) => {
   try {
-    const marketPriceInsightParams = uniqWith(
+    const marketPriceInsightParams: {
+      artistId?: string
+      medium?: string
+      category?: string
+    }[] = uniqWith(
       artworks.map((artwork: any) => ({
         artistId: artwork.artist?._id,
         medium: artwork.medium,
