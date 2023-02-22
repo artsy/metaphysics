@@ -39,7 +39,12 @@ Object {
 }
 `;
 
-exports[`Me Conversation inquiry request returns the questions and shipping location when present 1`] = `
+exports[`Me Conversation inquiry request returns the formatted first message as just the formatted questions if no message is present 1`] = `
+"I would like to request the following information about this artwork:
+• Condition & Provenance"
+`;
+
+exports[`Me Conversation inquiry request returns the formatted first message, questions, and shipping location when present 1`] = `
 Array [
   Object {
     "internalID": "shipping_quote",
@@ -52,12 +57,20 @@ Array [
 ]
 `;
 
-exports[`Me Conversation inquiry request returns the questions and shipping location when present 2`] = `
+exports[`Me Conversation inquiry request returns the formatted first message, questions, and shipping location when present 2`] = `
 Object {
   "city": "New York City",
   "country": "US",
   "state": "NY",
 }
+`;
+
+exports[`Me Conversation inquiry request returns the formatted first message, questions, and shipping location when present 3`] = `
+"Hello world!,
+
+I would like to request the following information about this artwork:
+• Shipping Quote to New York City, US
+• Condition & Provenance"
 `;
 
 exports[`Me Conversation returns a conversation 1`] = `
