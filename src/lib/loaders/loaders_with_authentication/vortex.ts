@@ -45,21 +45,18 @@ export default (accessToken, opts) => {
       }
     )
 
-  return {
-    vortexTokenLoader,
-    vortexGraphqlLoader,
-    marketPriceInsightsBatchLoader: async (
-      params: MarketPriceInsightsBatchLoaderParams
-    ) => {
-      const artistIDMediumTuples = params
-        .map((artist) => ({
-          artistId: artist.artistId,
-          medium: artist.category,
-        }))
-        .filter((tuple) => tuple.artistId && tuple.medium)
+  const marketPriceInsightsBatchLoader = async (
+    params: MarketPriceInsightsBatchLoaderParams
+  ) => {
+    const artistIDMediumTuples = params
+      .map((artist) => ({
+        artistId: artist.artistId,
+        medium: artist.category,
+      }))
+      .filter((tuple) => tuple.artistId && tuple.medium)
 
-      const vortexResult = await vortexGraphqlLoader({
-        query: gql`
+    const vortexResult = await vortexGraphqlLoader({
+      query: gql`
         query MarketPriceInsightsBatchQuery($artistIDMediumTuples: [ArtistIdMediumTupleType!]!) {
           marketPriceInsightsBatch(input: $artistIDMediumTuples, first: ${MAX_MARKET_PRICE_INSIGHTS}) {
             totalCount
@@ -80,19 +77,24 @@ export default (accessToken, opts) => {
           }
         }
       `,
-        variables: { artistIDMediumTuples },
-      })()
+      variables: { artistIDMediumTuples },
+    })()
 
-      const priceInsightNodes: MarketPriceInsight[] = extractNodes(
-        vortexResult.data?.marketPriceInsightsBatch
-      )
+    const priceInsightNodes: MarketPriceInsight[] = extractNodes(
+      vortexResult.data?.marketPriceInsightsBatch
+    )
 
-      if (vortexResult.errors.length) {
-        console.error(vortexResult.errors)
-      }
+    if (vortexResult?.errors?.length) {
+      console.error(vortexResult.errors)
+    }
 
-      return priceInsightNodes
-    },
+    return priceInsightNodes
+  }
+
+  return {
+    vortexTokenLoader,
+    vortexGraphqlLoader,
+    marketPriceInsightsBatchLoader,
   }
 }
 
