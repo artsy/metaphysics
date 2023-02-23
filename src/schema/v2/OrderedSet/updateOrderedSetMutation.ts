@@ -33,6 +33,7 @@ type LayoutType = "default" | "full"
 interface Input {
   description: string
   id: string
+  internalName: string
   itemId: string
   itemIds: string
   itemType: ItemType
@@ -88,6 +89,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
   inputFields: {
     description: { type: GraphQLString },
     id: { type: new GraphQLNonNull(GraphQLString) },
+    internalName: { type: GraphQLString },
     itemId: { type: GraphQLString },
     itemIds: {
       description:
@@ -113,6 +115,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
     {
       description,
       id,
+      internalName,
       itemId,
       itemIds,
       itemType,
@@ -134,6 +137,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
     try {
       return await updateSetLoader(id, {
         description,
+        internal_name: internalName,
         item_id: itemId,
         item_ids: itemIds,
         item_type: itemType,
