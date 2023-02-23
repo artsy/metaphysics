@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLObjectType } from "graphql"
+import { GraphQLFieldConfig, GraphQLObjectType, GraphQLString } from "graphql"
 import { connectionDefinitions, connectionFromArray } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { priceDisplayText } from "lib/moneyHelpers"
@@ -37,6 +37,30 @@ const RecentlySoldArtworkType = new GraphQLObjectType<any, ResolverContext>({
     },
     artwork: {
       type: ArtworkType,
+    },
+    performance: {
+      type: new GraphQLObjectType({
+        name: "RecenltySoldArtworkPerformance",
+        fields: {
+          mid: {
+            type: GraphQLString,
+            description: "Percentage performance over mid-estimate",
+            resolve: ({
+              lowEstimateCents,
+              highEstimateCents,
+              priceRealizedCents,
+            }) => {
+              if (priceRealizedCents && highEstimateCents && lowEstimateCents) {
+                const midEstimate = (lowEstimateCents + highEstimateCents) / 2
+                const delta = priceRealizedCents - midEstimate
+                return Math.round((delta / midEstimate) * 100) + "%"
+              }
+              return null
+            },
+          },
+        },
+      }),
+      resolve: (lot) => lot,
     },
   },
 })

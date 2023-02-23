@@ -27,6 +27,7 @@ import {
 import { MessageType } from "./message"
 import { ResolverContext } from "types/graphql"
 import { UserType } from "../user"
+import { InquiryRequestType } from "../partner/partnerInquiryRequest"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -394,7 +395,25 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         return results
       },
     },
-
+    inquiryRequest: {
+      type: InquiryRequestType,
+      description: "The inquiry request associated with the conversation.",
+      resolve: async (conversation, _args, { partnerInquiryRequestLoader }) => {
+        if (!partnerInquiryRequestLoader) {
+          return null
+        }
+        try {
+          const data = await partnerInquiryRequestLoader({
+            inquiryId: conversation.inquiry_id,
+            partnerId: conversation.to_id,
+          })
+          return data
+        } catch (error) {
+          console.error("[schema/v2/conversation/inquiryRequest] Error:", error)
+          return null
+        }
+      },
+    },
     items: {
       type: new GraphQLList(ConversationItem),
       description:

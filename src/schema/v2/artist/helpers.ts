@@ -14,6 +14,9 @@ export const ARTIST_INSIGHT_KINDS = {
   HIGH_AUCTION_RECORD: { value: "HIGH_AUCTION_RECORD" },
   ARTSY_VANGUARD_YEAR: { value: "ARTSY_VANGUARD_YEAR" },
   CRITICALLY_ACCLAIMED: { value: "CRITICALLY_ACCLAIMED" },
+  RESIDENCIES: { value: "RESIDENCIES" },
+  PRIVATE_COLLECTIONS: { value: "PRIVATE_COLLECTIONS" },
+  AWARDS: { value: "AWARDS" },
 } as const
 
 type ArtistInsightKind = keyof typeof ARTIST_INSIGHT_KINDS
@@ -64,6 +67,21 @@ export const ARTIST_INSIGHT_MAPPING = {
     getDescription: () => "Recognized by major institutions and publications.",
     getEntities: (artist) => artist.critically_acclaimed && [],
     getLabel: () => "Critically Acclaimed",
+  },
+  RESIDENCIES: {
+    getDescription: () => "Established artist residencies.",
+    getEntities: (artist) => artist.residencies && [],
+    getLabel: () => "Residencies",
+  },
+  PRIVATE_COLLECTIONS: {
+    getDescription: () => "A list of collections they are part of.",
+    getEntities: (artist) => artist.private_collections && [],
+    getLabel: () => "Private Collections",
+  },
+  AWARDS: {
+    getDescription: () => "Awards and prizes the artist has won.",
+    getEntities: (artist) => artist.awards && [],
+    getLabel: () => "Awards",
   },
 } as const
 
@@ -117,6 +135,9 @@ export const getAuctionRecord = async (artist, auctionLotsLoader) => {
   })
 
   const auctionLot = response._embedded.items[0]
+
+  if (!auctionLot) return null
+
   const { currency, price_realized_cents } = auctionLot
   const price = priceDisplayText(price_realized_cents, currency, "0.0a")
   const year = auctionLot.sale_date.split("-")[0]

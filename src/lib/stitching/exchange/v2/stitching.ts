@@ -721,6 +721,13 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                       {
+                        kind: Kind.FIELD,
+                        name: {
+                          kind: Kind.NAME,
+                          value: "paymentMethod",
+                        },
+                      },
+                      {
                         kind: Kind.INLINE_FRAGMENT,
                         typeCondition: {
                           kind: Kind.NAMED_TYPE,
@@ -817,7 +824,7 @@ export const exchangeStitchingEnvironment = ({
               // is implemented in Exchange.
               // See https://www.notion.so/artsy/2023-02-09-Platform-Practice-Meeting-Notes-87f4cc9987a7436c9c4b207847e318db?pvs=4
               // orderOrError.order.state === "IN_REVIEW"
-              orderOrError.order.paymentMethod == "WIRE_TRANSFER"
+              orderOrError.order.paymentMethod === "WIRE_TRANSFER"
             ) {
               return submitOrderWithOffer
             }

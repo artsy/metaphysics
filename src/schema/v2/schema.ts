@@ -24,6 +24,7 @@ import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGr
 import ArtworkAttributionClasses from "./artworkAttributionClasses"
 import ArtworkMediums from "./artworkMediums"
 import Artworks from "./artworks"
+import { artworksCollectionsBatchUpdateMutation } from "./me/artworksCollectionsBatchUpdateMutation"
 import { ArtworkVersionType } from "./artwork_version"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
@@ -85,6 +86,7 @@ import UpdateCollectorProfile from "./me/update_collector_profile"
 import UpdateCollectorProfileWithID from "./CollectorProfile/mutations/updateCollectorProfileWithID"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import { updateMyPasswordMutation } from "./me/updateMyPasswordMutation"
+import { updateArtistMutation } from "./artist/updateArtistMutation"
 import { updateUserMutation } from "./users/updateUserMutation"
 import { addUserRoleMutation } from "./users/addUserRoleMutation"
 import { createUserAdminNoteMutation } from "./users/createUserAdminNoteMutation"
@@ -324,6 +326,7 @@ export default new GraphQLSchema({
       adminDeleteFeatureFlag: deleteFeatureFlagMutation,
       adminToggleFeatureFlag: toggleFeatureFlagMutation,
       adminUpdateFeatureFlag: updateFeatureFlagMutation,
+      artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       createAccountRequest: createAccountRequestMutation,
       createBidder: createBidderMutation,
@@ -394,6 +397,7 @@ export default new GraphQLSchema({
       updateNotificationPreferences: updateNotificationPreferencesMutation,
       updateOrderedSet: updateOrderedSetMutation,
       updateUser: updateUserMutation,
+      updateArtist: updateArtistMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
       updateQuiz: updateQuizMutation,
     },

@@ -561,5 +561,102 @@ describe("Me", () => {
         )
       })
     })
+    describe("inquiry request", () => {
+      const query = `
+          {
+            conversation(id: "420") {
+              inquiryRequest {
+                questions {
+                  question
+                  internalID
+                }
+                shippingLocation {
+                  country
+                  state
+                  city
+                }
+                formattedFirstMessage
+              }
+            }
+          }
+        `
+      it("returns null when questions are not present", () => {
+        return runAuthenticatedQuery(query, context).then(
+          ({ conversation: { inquiryRequest } }) => {
+            expect(inquiryRequest).toBeNull()
+          }
+        )
+      })
+      it("returns the formatted first message, questions, and shipping location when present", () => {
+        const newContext = {
+          ...context,
+          partnerInquiryRequestLoader: () =>
+            Promise.resolve({
+              message: "Hello world!",
+              inquiry_questions: [
+                { id: "shipping_quote", question: "Shipping" },
+                {
+                  id: "condition_and_provenance",
+                  question: "Condition & Provenance",
+                },
+              ],
+              inquiry_shipping_location: {
+                country: "US",
+                city: "New York City",
+                address: "123 Main St",
+                state: "NY",
+              },
+            }),
+        }
+        return runAuthenticatedQuery(query, newContext).then(
+          ({ conversation: { inquiryRequest } }) => {
+            expect(inquiryRequest.questions).toHaveLength(2)
+            expect(inquiryRequest.questions).toMatchSnapshot()
+            expect(inquiryRequest.shippingLocation).toMatchSnapshot()
+            expect(inquiryRequest.formattedFirstMessage).toMatchSnapshot()
+          }
+        )
+      })
+      it("defaults the formatted first message to just the message if no questions are present", () => {
+        const newContext = {
+          ...context,
+          partnerInquiryRequestLoader: () =>
+            Promise.resolve({
+              message: "Hello world!",
+              inquiry_questions: [],
+              inquiry_shipping_location: null,
+            }),
+        }
+        return runAuthenticatedQuery(query, newContext).then(
+          ({ conversation: { inquiryRequest } }) => {
+            expect(inquiryRequest.questions).toHaveLength(0)
+            expect(inquiryRequest.shippingLocation).toBeNull()
+            expect(inquiryRequest.formattedFirstMessage).toBe("Hello world!")
+          }
+        )
+      })
+      it("returns the formatted first message as just the formatted questions if no message is present", () => {
+        const newContext = {
+          ...context,
+          partnerInquiryRequestLoader: () =>
+            Promise.resolve({
+              message: null,
+              inquiry_questions: [
+                {
+                  id: "condition_and_provenance",
+                  question: "Condition & Provenance",
+                },
+              ],
+            }),
+        }
+        return runAuthenticatedQuery(query, newContext).then(
+          ({ conversation: { inquiryRequest } }) => {
+            expect(inquiryRequest.questions).toHaveLength(1)
+            expect(inquiryRequest.shippingLocation).toBeNull()
+            expect(inquiryRequest.formattedFirstMessage).toMatchSnapshot()
+          }
+        )
+      })
+    })
   })
 })

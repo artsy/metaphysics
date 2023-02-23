@@ -44,7 +44,7 @@ import { allViaLoader } from "lib/all"
 import { truncate } from "lib/helpers"
 import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
-import { InquiryRequestType } from "./partnerInquirerCollectorProfile"
+import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"

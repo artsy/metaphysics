@@ -25,6 +25,11 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     artworkLoader: gravityLoader((id) => `artwork/${id}`),
+    artworksCollectionsBatchUpdateLoader: gravityLoader(
+      "artworks/collections/batch",
+      {},
+      { method: "POST" }
+    ),
     authenticatedArtistLoader: gravityLoader((id) => `artist/${id}`),
     authenticatedArtworkVersionLoader: gravityLoader(
       (id) => `artwork_version/${id}`
@@ -688,5 +693,10 @@ export default (accessToken, userID, opts) => {
     usersLoader: gravityLoader("users", {}, { headers: true }),
     quizLoader: gravityLoader(`user_art_quiz`, {}, { method: "GET" }),
     updateQuizLoader: gravityLoader(`user_art_quiz`, {}, { method: "PUT" }),
+    updateArtistLoader: gravityLoader(
+      (id) => `artist/${id}`,
+      {},
+      { method: "PUT" }
+    ),
   }
 }
