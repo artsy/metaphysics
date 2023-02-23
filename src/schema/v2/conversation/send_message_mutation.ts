@@ -19,7 +19,7 @@ interface SendConversationMessageMutationProps {
     url: string
     id?: string
     size?: string
-  }
+  }[]
   bodyHTML?: string
   bodyText: string
   from: string
@@ -132,7 +132,7 @@ export default mutationWithClientMutationId<
       args.replyAll === false && args.to ? undefined : args.replyAll
 
     return conversationCreateMessageLoader(args.id, {
-      attachments: args.attachments,
+      attachments: { ...args.attachments },
       body_html: args.bodyHTML,
       body_text: args.bodyText,
       from: args.from,
