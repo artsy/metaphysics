@@ -8860,7 +8860,7 @@ type Feature {
 
   # A slug ID.
   slug: ID!
-  subheadline(format: Format): String
+  subheadline: String
 }
 
 # A connection to a list of items.

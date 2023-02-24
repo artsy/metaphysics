@@ -37,7 +37,9 @@ export const FeatureType = new GraphQLObjectType<
       resolve: ({ active }) => active,
     },
     description: markdown(),
-    subheadline: markdown(),
+    subheadline: {
+      type: GraphQLString,
+    },
     callout: markdown(),
     layout: {
       type: new GraphQLNonNull(FeatureLayoutsEnum),
