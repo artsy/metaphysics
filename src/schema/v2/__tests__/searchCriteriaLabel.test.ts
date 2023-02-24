@@ -73,114 +73,125 @@ describe("resolveSearchCriteriaLabels", () => {
     ])
   })
 
-  it("formats medium criteria", async () => {
-    const parent = {
-      additionalGeneIDs: [
-        "painting",
-        "photography",
-        "sculpture",
-        "prints",
-        "work-on-paper",
-        "nft",
-        "design",
-        "drawing",
-        "installation",
-        "film-slash-video",
-        "jewelry",
-        "performance-art",
-        "reproduction",
-        "ephemera-or-merchandise",
-      ],
-    }
+  describe("medium criteria", () => {
+    it("formats medium criteria", async () => {
+      const parent = {
+        additionalGeneIDs: [
+          "painting",
+          "photography",
+          "sculpture",
+          "prints",
+          "work-on-paper",
+          "nft",
+          "design",
+          "installation",
+          "film-slash-video",
+          "jewelry",
+          "performance-art",
+          "reproduction",
+          "ephemera-or-merchandise",
+        ],
+      }
 
-    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
 
-    expect(labels).toIncludeAllMembers([
-      {
-        name: "Medium",
-        displayValue: "Painting",
-        value: "painting",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Photography",
-        value: "photography",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Sculpture",
-        value: "sculpture",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Prints",
-        value: "prints",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Work on Paper",
-        value: "work-on-paper",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "NFT",
-        value: "nft",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Design",
-        value: "design",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Drawing",
-        value: "drawing",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Installation",
-        value: "installation",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Film/Video",
-        value: "film-slash-video",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Jewelry",
-        value: "jewelry",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Performance Art",
-        value: "performance-art",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Reproduction",
-        value: "reproduction",
-        field: "additionalGeneIDs",
-      },
-      {
-        name: "Medium",
-        displayValue: "Ephemera or Merchandise",
-        value: "ephemera-or-merchandise",
-        field: "additionalGeneIDs",
-      },
-    ])
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Medium",
+          displayValue: "Painting",
+          value: "painting",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Photography",
+          value: "photography",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Sculpture",
+          value: "sculpture",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Print",
+          value: "prints",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Drawing, Collage or other Work on Paper",
+          value: "work-on-paper",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "NFT",
+          value: "nft",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Design/Decorative Art",
+          value: "design",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Installation",
+          value: "installation",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Video/Film/Animation",
+          value: "film-slash-video",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Jewelry",
+          value: "jewelry",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Performance Art",
+          value: "performance-art",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Reproduction",
+          value: "reproduction",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Ephemera or Merchandise",
+          value: "ephemera-or-merchandise",
+          field: "additionalGeneIDs",
+        },
+      ])
+    })
+    it("formats medium criteria when medium type is unknown", async () => {
+      const parent = {
+        additionalGeneIDs: ["drawing"],
+      }
+
+      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Medium",
+          displayValue: "Other (drawing)",
+          value: "drawing",
+          field: "additionalGeneIDs",
+        },
+      ])
+    })
   })
 
   describe("price criteria", () => {
