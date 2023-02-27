@@ -14,6 +14,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { FeatureType } from "../Feature"
+import { OrderedSetLayoutsEnum } from "./OrderedSetLayoutsEnum"
 
 type ItemType =
   | "Artist"
@@ -28,8 +29,6 @@ type ItemType =
 
 type OwnerType = "Fair" | "Feature" | "Sale"
 
-type LayoutType = "default" | "full"
-
 interface Input {
   description: string
   id: string
@@ -38,7 +37,7 @@ interface Input {
   itemIds: string
   itemType: ItemType
   key: string
-  layout: LayoutType
+  layout: string
   name: string
   ownerType: OwnerType
   ownerId: string
@@ -98,7 +97,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
     },
     itemType: { type: GraphQLString },
     key: { type: GraphQLString },
-    layout: { type: GraphQLString },
+    layout: { type: OrderedSetLayoutsEnum },
     name: { type: GraphQLString },
     ownerId: { type: GraphQLString },
     ownerType: { type: GraphQLString },
