@@ -144,18 +144,28 @@ function getRarityLabels(attributionClasses: string[]) {
   }))
 }
 
+function getArtworkMediumByGene(geneID: string) {
+  const mediums = Object.assign(
+    {
+      drawing: { name: "Drawing", mediumFilterGeneSlug: "drawing" },
+    },
+    artworkMediums
+  )
+  const fallbackMedium = { name: `Other (${geneID})` }
+  const artworkMedium = Object.values(mediums).find(
+    (entry) => entry.mediumFilterGeneSlug === geneID
+  )
+
+  return artworkMedium ?? fallbackMedium
+}
+
 function getMediumLabels(additionalGeneIDs: string[]) {
   if (!additionalGeneIDs?.length) return []
 
   return additionalGeneIDs.map((geneID) => {
-    const fallbackMedium = { name: `Other (${geneID})` }
-    const artworkMedium = Object.values(artworkMediums).find(
-      (entry) => entry.mediumFilterGeneSlug === geneID
-    )
-
     return {
       name: "Medium",
-      displayValue: (artworkMedium ?? fallbackMedium).name,
+      displayValue: getArtworkMediumByGene(geneID).name,
       value: geneID,
       field: "additionalGeneIDs",
     }
