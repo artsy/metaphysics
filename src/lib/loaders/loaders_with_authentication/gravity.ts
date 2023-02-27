@@ -547,6 +547,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    setLoader: gravityLoader((id) => `set/${id}`),
     setsLoader: gravityLoader("sets", {}, { headers: true }),
     showLoader: gravityLoader((id) => `show/${id}`),
     submitArtworkInquiryRequestLoader: gravityLoader(
