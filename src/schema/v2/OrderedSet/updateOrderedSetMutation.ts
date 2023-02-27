@@ -3,6 +3,7 @@ import {
   GraphQLUnionType,
   GraphQLObjectType,
   GraphQLBoolean,
+  GraphQLList,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLNonNull } from "graphql"
@@ -32,7 +33,9 @@ type LayoutType = "default" | "full"
 interface Input {
   description: string
   id: string
+  internalName: string
   itemId: string
+  itemIds: string
   itemType: ItemType
   key: string
   layout: LayoutType
@@ -43,7 +46,7 @@ interface Input {
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "updateOrderedSetSuccess",
+  name: "UpdateOrderedSetSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
     set: {
@@ -61,7 +64,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "updateOrderedSetFailure",
+  name: "UpdateOrderedSetFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -72,7 +75,7 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "updateOrderedSetResponseOrError",
+  name: "UpdateOrderedSetResponseOrError",
   types: [SuccessType, FailureType],
 })
 
@@ -81,12 +84,18 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
   any | null,
   ResolverContext
 >({
-  name: "updateOrderedSetMutation",
+  name: "UpdateOrderedSetMutation",
   description: "updates an ordered set.",
   inputFields: {
     description: { type: GraphQLString },
     id: { type: new GraphQLNonNull(GraphQLString) },
+    internalName: { type: GraphQLString },
     itemId: { type: GraphQLString },
+    itemIds: {
+      description:
+        "Modify the OrderedSet's items to only included provided ids. An empty array will remove all items from the set",
+      type: new GraphQLList(GraphQLString),
+    },
     itemType: { type: GraphQLString },
     key: { type: GraphQLString },
     layout: { type: GraphQLString },
@@ -106,7 +115,9 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
     {
       description,
       id,
+      internalName,
       itemId,
+      itemIds,
       itemType,
       key,
       layout,
@@ -126,7 +137,9 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
     try {
       return await updateSetLoader(id, {
         description,
+        internal_name: internalName,
         item_id: itemId,
+        item_ids: itemIds,
         item_type: itemType,
         key,
         layout,
