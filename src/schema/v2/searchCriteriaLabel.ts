@@ -148,13 +148,14 @@ function getMediumLabels(additionalGeneIDs: string[]) {
   if (!additionalGeneIDs?.length) return []
 
   return additionalGeneIDs.map((geneID) => {
-    const medium = Object.values(artworkMediums).find(
+    const fallbackMedium = { name: `Other (${geneID})` }
+    const artworkMedium = Object.values(artworkMediums).find(
       (entry) => entry.mediumFilterGeneSlug === geneID
-    ) || { name: `Other (${geneID})` }
+    )
 
     return {
       name: "Medium",
-      displayValue: medium.name,
+      displayValue: (artworkMedium ?? fallbackMedium).name,
       value: geneID,
       field: "additionalGeneIDs",
     }
