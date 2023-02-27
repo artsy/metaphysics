@@ -13,6 +13,7 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import { OrderedSetLayoutsEnum } from "./OrderedSetLayoutsEnum"
 
 type ItemType =
   | "Artist"
@@ -27,8 +28,6 @@ type ItemType =
 
 type OwnerType = "Fair" | "Feature" | "Sale"
 
-type LayoutType = "default" | "full"
-
 interface Input {
   description: string
   internalName: string
@@ -36,7 +35,7 @@ interface Input {
   itemIds: string[]
   itemType: ItemType
   key: string
-  layout: LayoutType
+  layout: string
   name: string
   ownerType: OwnerType
   published: boolean
@@ -83,7 +82,7 @@ export const createOrderedSetMutation = mutationWithClientMutationId<
     itemIds: { type: GraphQLList(GraphQLString) },
     itemType: { type: new GraphQLNonNull(GraphQLString) },
     key: { type: new GraphQLNonNull(GraphQLString) },
-    layout: { type: GraphQLString },
+    layout: { type: OrderedSetLayoutsEnum },
     name: { type: GraphQLString },
     ownerType: { type: GraphQLString },
     published: { type: GraphQLBoolean },

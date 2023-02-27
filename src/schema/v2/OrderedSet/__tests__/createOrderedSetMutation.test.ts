@@ -10,7 +10,7 @@ const mutation = gql`
         itemIds: ["def456", "ghi789"]
         itemType: "Artist"
         key: "a"
-        layout: "default"
+        layout: DEFAULT
         name: "Example set"
         ownerType: "Feature"
         published: true
