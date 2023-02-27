@@ -9,16 +9,18 @@ describe("RecentlyViewedArtworks", () => {
   let context
   beforeEach(() => {
     const me = {
-      recently_viewed_artwork_ids: ["percy", "matt"],
+      recently_viewed_artwork_ids: ["percy", "matt", "paul"],
     }
     const artworks = [
       { id: "percy", title: "Percy the Cat" },
       { id: "matt", title: "Matt the Person" },
+      { id: "paul", title: "Paul the snail" },
+      { id: "paula", title: "Paula the butterfly" },
     ]
     context = {
-      meLoader: () => Promise.resolve(me),
-      artworksLoader: () => Promise.resolve(artworks),
-      recordArtworkViewLoader: jest.fn(() => Promise.resolve(me)),
+      meLoader: async () => me,
+      artworksLoader: async () => artworks,
+      recordArtworkViewLoader: jest.fn(async () => me),
     }
   })
 
@@ -26,7 +28,7 @@ describe("RecentlyViewedArtworks", () => {
     const query = gql`
       {
         me {
-          recentlyViewedArtworksConnection(first: 1) {
+          recentlyViewedArtworksConnection(first: 2) {
             edges {
               node {
                 slug
@@ -44,19 +46,27 @@ describe("RecentlyViewedArtworks", () => {
     const data = await runAuthenticatedQuery(query, context)
     const recentlyViewedArtworks = data!.me.recentlyViewedArtworksConnection
 
-    expect(recentlyViewedArtworks).toEqual({
-      edges: [
-        {
-          node: {
-            slug: "percy",
-            title: "Percy the Cat",
+    expect(recentlyViewedArtworks).toMatchInlineSnapshot(`
+      Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "slug": "percy",
+              "title": "Percy the Cat",
+            },
           },
+          Object {
+            "node": Object {
+              "slug": "matt",
+              "title": "Matt the Person",
+            },
+          },
+        ],
+        "pageInfo": Object {
+          "hasNextPage": true,
         },
-      ],
-      pageInfo: {
-        hasNextPage: true,
-      },
-    })
+      }
+    `)
   })
 
   it("can return an empty connection", async () => {

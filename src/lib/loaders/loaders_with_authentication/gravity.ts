@@ -493,7 +493,7 @@ export default (accessToken, userID, opts) => {
     popularArtistsLoader: gravityLoader("artists/popular"),
     purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
     recordArtworkViewLoader: gravityLoader(
-      "me/recently_viewed_artworks",
+      "me/RecentlyViewedArtworks",
       {},
       { method: "POST" }
     ),
