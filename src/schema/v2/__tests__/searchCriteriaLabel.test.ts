@@ -81,6 +81,7 @@ describe("resolveSearchCriteriaLabels", () => {
           "photography",
           "sculpture",
           "prints",
+          "drawing",
           "work-on-paper",
           "nft",
           "design",
@@ -118,6 +119,12 @@ describe("resolveSearchCriteriaLabels", () => {
           name: "Medium",
           displayValue: "Print",
           value: "prints",
+          field: "additionalGeneIDs",
+        },
+        {
+          name: "Medium",
+          displayValue: "Drawing",
+          value: "drawing",
           field: "additionalGeneIDs",
         },
         {
@@ -178,7 +185,7 @@ describe("resolveSearchCriteriaLabels", () => {
     })
     it("formats medium criteria when medium type is unknown", async () => {
       const parent = {
-        additionalGeneIDs: ["drawing"],
+        additionalGeneIDs: ["watercolor"],
       }
 
       const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
@@ -186,8 +193,8 @@ describe("resolveSearchCriteriaLabels", () => {
       expect(labels).toIncludeAllMembers([
         {
           name: "Medium",
-          displayValue: "Other (drawing)",
-          value: "drawing",
+          displayValue: "Other (watercolor)",
+          value: "watercolor",
           field: "additionalGeneIDs",
         },
       ])
