@@ -2,6 +2,7 @@ import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { toTitleCase } from "@artsy/to-title-case"
 
+import artworkMediums from "lib/artworkMediums"
 import allAttributionClasses from "lib/attributionClasses"
 import { COLORS, OLD_COLORS } from "lib/colors"
 
@@ -143,38 +144,32 @@ function getRarityLabels(attributionClasses: string[]) {
   }))
 }
 
+function getArtworkMediumByGene(geneID: string) {
+  const mediums = Object.assign(
+    {
+      drawing: { name: "Drawing", mediumFilterGeneSlug: "drawing" },
+    },
+    artworkMediums
+  )
+  const fallbackMedium = { name: `Other (${geneID})` }
+  const artworkMedium = Object.values(mediums).find(
+    (entry) => entry.mediumFilterGeneSlug === geneID
+  )
+
+  return artworkMedium ?? fallbackMedium
+}
+
 function getMediumLabels(additionalGeneIDs: string[]) {
   if (!additionalGeneIDs?.length) return []
 
-  // Corresponds to the list of options under
-  // the Medium facet on an artwork grid.
-  //
-  // Being a list of genes, this is related to,
-  // but not the same as, the list of artwork medium types.
-
-  const MEDIUM_GENES = {
-    painting: "Painting",
-    photography: "Photography",
-    sculpture: "Sculpture",
-    prints: "Prints",
-    "work-on-paper": "Work on Paper",
-    nft: "NFT",
-    design: "Design",
-    drawing: "Drawing",
-    installation: "Installation",
-    "film-slash-video": "Film/Video",
-    jewelry: "Jewelry",
-    "performance-art": "Performance Art",
-    reproduction: "Reproduction",
-    "ephemera-or-merchandise": "Ephemera or Merchandise",
-  }
-
-  return additionalGeneIDs.map((geneID) => ({
-    name: "Medium",
-    displayValue: MEDIUM_GENES[geneID],
-    value: geneID,
-    field: "additionalGeneIDs",
-  }))
+  return additionalGeneIDs.map((geneID) => {
+    return {
+      name: "Medium",
+      displayValue: getArtworkMediumByGene(geneID).name,
+      value: geneID,
+      field: "additionalGeneIDs",
+    }
+  })
 }
 
 function getPriceLabel(priceRange: string): SearchCriteriaLabel | undefined {
