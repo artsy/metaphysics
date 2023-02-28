@@ -1,5 +1,5 @@
-import factories from "../api"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
+import factories from "../api"
 
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
@@ -493,7 +493,7 @@ export default (accessToken, userID, opts) => {
     popularArtistsLoader: gravityLoader("artists/popular"),
     purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
     recordArtworkViewLoader: gravityLoader(
-      "me/recently_viewed_artworks",
+      "me/Recently_viewed_artworks",
       {},
       { method: "POST" }
     ),
