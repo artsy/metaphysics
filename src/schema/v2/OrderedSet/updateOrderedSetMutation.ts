@@ -42,6 +42,7 @@ interface Input {
   ownerType: OwnerType
   ownerId: string
   published: boolean
+  unsetOwner: boolean
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -102,6 +103,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
     ownerId: { type: GraphQLString },
     ownerType: { type: GraphQLString },
     published: { type: GraphQLBoolean },
+    unsetOwner: { type: GraphQLBoolean },
   },
   outputFields: {
     orderedSetOrError: {
@@ -124,6 +126,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
       ownerType,
       published,
       ownerId,
+      unsetOwner,
     },
     { updateSetLoader }
   ) => {
@@ -146,6 +149,7 @@ export const updateOrderedSetMutation = mutationWithClientMutationId<
         owner_id: ownerId,
         owner_type: ownerType,
         published,
+        unset_owner: unsetOwner,
       })
     } catch (error) {
       const formattedErr = formatGravityError(error)
