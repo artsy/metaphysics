@@ -1,11 +1,11 @@
 import { GraphQLFieldConfig, GraphQLInt } from "graphql"
-import { connectionFromArray } from "graphql-relay"
+import { connectionFromArraySlice } from "graphql-relay"
 import gql from "lib/gql"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import { compact, find } from "lodash"
 import { CursorPageable, pageable } from "relay-cursor-paging"
-import { createPageCursors } from "schema/v2/fields/pagination"
 import { artworkConnection } from "schema/v2/artwork"
+import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 
 // This limits the maximum number of artworks we receive from Vortex and is related to how we implement the Connection in this resolver.
@@ -27,7 +27,7 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
   ) => {
     if (!vortexGraphqlLoader || !artworksLoader) return
 
-    const { page, size } = convertConnectionArgsToGravityArgs(args)
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     // Fetching artwork IDs from Vortex
 
@@ -54,30 +54,44 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
       (node: any) => node?.artworkId
     )
 
+    const pageArtworkIDs = artworkIds?.slice(offset, offset + size)
+
     // Fetching artwork details from Gravity
 
     let artworks: any[] = []
 
     if (artworkIds?.length) {
       artworks = await artworksLoader({
-        ids: artworkIds,
+        ids: pageArtworkIDs,
       })
 
       // Applying order from Vortex result (score ASC)
 
       artworks = compact(
-        artworkIds.map((artworkId) => {
+        pageArtworkIDs.map((artworkId) => {
           return find(artworks, { _id: artworkId })
         })
       )
     }
 
-    const count = artworks.length
+    const totalCount = artworks.length
+
+    const connection = connectionFromArraySlice(artworks, args, {
+      arrayLength: totalCount,
+      sliceStart: offset,
+    })
+
+    const totalPages = Math.ceil(totalCount / size)
 
     return {
-      totalCount: count,
-      pageCursors: createPageCursors({ ...args, page, size }, count),
-      ...connectionFromArray(artworks, args),
+      totalCount,
+      pageCursors: createPageCursors({ ...args, page, size }, totalCount),
+      ...connection,
+      pageInfo: {
+        ...connection.pageInfo,
+        hasPreviousPage: page > 1,
+        hasNextPage: page < totalPages,
+      },
     }
   },
 }
