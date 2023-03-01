@@ -11,12 +11,22 @@ import {
 } from "graphql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
+import moment from "moment"
+import Conversation from "schema/v2/conversation"
+import Conversations from "schema/v2/conversation/conversations"
+import Invoice from "schema/v2/conversation/invoice"
 import date from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
 import { IDFields, NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
+import { CollectorProfile } from "../CollectorProfile/collectorProfile"
+import {
+  IdentityVerification,
+  PendingIdentityVerification,
+} from "../identityVerification"
 import Image from "../image"
 import { PhoneNumber } from "../phoneNumber"
+import { quiz } from "../quiz"
 import { SaleArtworksConnectionField } from "../sale_artworks"
 import { ArtistRecommendations } from "./artistRecommendations"
 import { ArtworkRecommendations } from "./artworkRecommendations"
@@ -28,10 +38,8 @@ import Bidders from "./bidders"
 import { BidderPosition } from "./bidder_position"
 import BidderPositions from "./bidder_positions"
 import BidderStatus from "./bidder_status"
-import { CollectorProfile } from "../CollectorProfile/collectorProfile"
-import Conversation from "schema/v2/conversation"
-import Invoice from "schema/v2/conversation/invoice"
-import Conversations from "schema/v2/conversation/conversations"
+import { Collection } from "./collection"
+import { CollectionsConnection } from "./collectionsConnection"
 import { CreditCards } from "./credit_cards"
 import { followedProfiles } from "./followedProfiles"
 import FollowedArtists from "./followed_artists"
@@ -40,10 +48,6 @@ import FollowedFairs from "./followed_fairs"
 import FollowedGalleries from "./followed_galleries"
 import FollowedGenes from "./followed_genes"
 import FollowedShows from "./followed_shows"
-import {
-  IdentityVerification,
-  PendingIdentityVerification,
-} from "../identityVerification"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { MyBids } from "./myBids"
@@ -52,16 +56,13 @@ import MyCollectionAuctionResults from "./myCollectionAuctionResults"
 import { MyCollectionInfo } from "./myCollectionInfo"
 import { myLocationType } from "./myLocation"
 import { NewWorksByInterestingArtists } from "./newWorksByInterestingArtists"
+import { newWorksFromGalleriesYouFollow } from "./newWorksFromGalleriesYouFollow"
 import { ManagedPartners } from "./partners"
 import { RecentlyViewedArtworks } from "./recentlyViewedArtworks"
 import { SaleRegistrationConnection } from "./sale_registrations"
 import { COLLECTION_ID, SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { WatchedLotConnection } from "./watchedLotConnection"
-import { quiz } from "../quiz"
-import moment from "moment"
-import { Collection } from "./collection"
-import { CollectionsConnection } from "./collectionsConnection"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -442,6 +443,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,
     },
     recentlyViewedArtworksConnection: RecentlyViewedArtworks,
+    newWorksFromGalleriesYouFollowConnection: newWorksFromGalleriesYouFollow,
     saleRegistrationsConnection: SaleRegistrationConnection,
     shareFollows: {
       type: new GraphQLNonNull(GraphQLBoolean),
