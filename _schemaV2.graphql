@@ -11404,7 +11404,7 @@ type Me implements Node {
     status: EventStatus
   ): ShowConnection
 
-  # A list of the current user’s recently viewed artworks.
+  # A list of artworks similar to recently viewed artworks.
   similarToRecentlyViewedConnection(
     after: String
     before: String

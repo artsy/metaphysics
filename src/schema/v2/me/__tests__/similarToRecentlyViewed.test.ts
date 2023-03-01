@@ -3,7 +3,6 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 jest.mock("node-fetch", () => jest.fn())
-import fetch from "node-fetch"
 
 describe("SimilarToRecentlyViewed", () => {
   let context

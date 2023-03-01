@@ -12,7 +12,7 @@ export const SimilarToRecentlyViewed: GraphQLFieldConfig<
 > = {
   type: artworkConnection.connectionType,
   args: pageable({}),
-  description: "A list of the current user’s recently viewed artworks.",
+  description: "A list of artworks similar to recently viewed artworks.",
   resolve: async (
     { recently_viewed_artwork_ids },
     args,
