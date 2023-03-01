@@ -25,6 +25,7 @@ export const SimilarToRecentlyViewed: GraphQLFieldConfig<
     const artworks = await similarArtworksLoader({
       artwork_id: recentlyViewedIds,
       for_sale: true,
+      size: 50,
     })
 
     const totalCount = artworks.length
