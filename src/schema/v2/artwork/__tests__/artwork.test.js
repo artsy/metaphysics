@@ -5,6 +5,7 @@ import moment from "moment"
 import { getMicrofunnelDataByArtworkInternalID } from "schema/v2/artist/targetSupply/utils/getMicrofunnelData"
 import { runQuery } from "schema/v2/test/utils"
 import { CHECKOUT_TAXES_DOC_URL } from "../taxInfo"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
 
@@ -1204,6 +1205,88 @@ describe("Artwork type", () => {
             saleMessage: "US$69–US$420",
           },
         })
+      })
+    })
+  })
+
+  describe("#collectionsConnection", () => {
+    const query = gql`
+      query {
+        artwork(id: "richard-prince-untitled-portrait") {
+          collectionsConnection(first: 1, saves: true, sort: CREATED_AT_DESC) {
+            totalCount
+
+            edges {
+              node {
+                internalID
+                name
+                default
+                saves
+                artworksCount
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const collectionsMock = {
+      body: [
+        {
+          id: "123-abc",
+          name: "Works for dining room",
+          default: false,
+          saves: true,
+          artworks_count: 42,
+        },
+      ],
+      headers: {
+        "x-total-count": 1,
+      },
+    }
+
+    beforeEach(() => {
+      context.meLoader = jest.fn(() => Promise.resolve({ id: "user-42" }))
+      context.collectionsLoader = jest.fn(() =>
+        Promise.resolve(collectionsMock)
+      )
+    })
+
+    it("passes correct args to Gravity", async () => {
+      await runAuthenticatedQuery(query, context)
+
+      expect(context.collectionsLoader).toHaveBeenCalledWith({
+        artwork_id: "richard-prince-untitled-portrait",
+        user_id: "user-42",
+        private: true,
+        saves: true,
+        sort: "-created_at",
+        offset: 0,
+        size: 1,
+        total_count: true,
+      })
+    })
+
+    it("returns correct data", async () => {
+      const response = await runAuthenticatedQuery(query, context)
+
+      expect(response).toEqual({
+        artwork: {
+          collectionsConnection: {
+            totalCount: 1,
+            edges: [
+              {
+                node: {
+                  internalID: "123-abc",
+                  name: "Works for dining room",
+                  default: false,
+                  saves: true,
+                  artworksCount: 42,
+                },
+              },
+            ],
+          },
+        },
       })
     })
   })
