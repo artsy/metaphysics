@@ -1,0 +1,102 @@
+/* eslint-disable promise/always-return */
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import gql from "lib/gql"
+
+jest.mock("node-fetch", () => jest.fn())
+
+describe("SimilarToRecentlyViewed", () => {
+  let context
+  beforeEach(() => {
+    const me = {
+      recently_viewed_artwork_ids: ["percy", "matt", "paul"],
+    }
+    const artworks = [
+      { id: "percy", title: "Percy the Cat" },
+      { id: "matt", title: "Matt the Person" },
+      { id: "paul", title: "Paul the snail" },
+      { id: "paula", title: "Paula the butterfly" },
+    ]
+    context = {
+      meLoader: async () => me,
+      similarArtworksLoader: async () => artworks,
+      recordArtworkViewLoader: jest.fn(async () => me),
+    }
+  })
+
+  it("returns an artwork connection", async () => {
+    const query = gql`
+      {
+        me {
+          similarToRecentlyViewedConnection(first: 2) {
+            edges {
+              node {
+                slug
+                title
+              }
+            }
+            pageInfo {
+              hasNextPage
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runAuthenticatedQuery(query, context)
+    const similarToRecentlyViewed = data!.me.similarToRecentlyViewedConnection
+
+    expect(similarToRecentlyViewed).toMatchInlineSnapshot(`
+      Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "slug": "percy",
+              "title": "Percy the Cat",
+            },
+          },
+          Object {
+            "node": Object {
+              "slug": "matt",
+              "title": "Matt the Person",
+            },
+          },
+        ],
+        "pageInfo": Object {
+          "hasNextPage": true,
+        },
+      }
+    `)
+  })
+
+  it("can return an empty connection", async () => {
+    const query = gql`
+      {
+        me {
+          similarToRecentlyViewedConnection(first: 1) {
+            edges {
+              node {
+                id
+                title
+              }
+            }
+            pageInfo {
+              hasNextPage
+            }
+          }
+        }
+      }
+    `
+    context.similarArtworksLoader = async () => []
+
+    const data = await runAuthenticatedQuery(query, context)
+    const similarToRecentlyViewed = data!.me.similarToRecentlyViewedConnection
+
+    expect(similarToRecentlyViewed).toEqual({
+      edges: [],
+      pageInfo: {
+        hasNextPage: false,
+      },
+    })
+    expect.assertions(1)
+  })
+})

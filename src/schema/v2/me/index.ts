@@ -62,6 +62,7 @@ import { RecentlyViewedArtworks } from "./recentlyViewedArtworks"
 import { SaleRegistrationConnection } from "./sale_registrations"
 import { COLLECTION_ID, SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
+import { SimilarToRecentlyViewed } from "./similarToRecentlyViewed"
 import { WatchedLotConnection } from "./watchedLotConnection"
 
 /**
@@ -451,6 +452,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return !!share_follows
       },
     },
+    similarToRecentlyViewedConnection: SimilarToRecentlyViewed,
     type: {
       type: GraphQLString,
     },

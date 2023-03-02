@@ -29,6 +29,10 @@ import Article from "schema/v2/article"
 import Artist from "schema/v2/artist"
 import ArtworkMedium from "schema/v2/artwork/artworkMedium"
 import AttributionClass from "schema/v2/artwork/attributionClass"
+import {
+  CollectionsConnectionType,
+  CollectionSorts,
+} from "schema/v2/me/collectionsConnection"
 import Dimensions from "schema/v2/dimensions"
 import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
 import Fair from "schema/v2/fair"
@@ -39,6 +43,7 @@ import { amount, Money, symbolFromCurrencyCode } from "schema/v2/fields/money"
 import {
   connectionWithCursorInfo,
   PageCursorsType,
+  paginationResolver,
 } from "schema/v2/fields/pagination"
 import Image, {
   getDefault,
@@ -83,6 +88,8 @@ import {
   isTooBig,
   isTwoDimensional,
 } from "./utilities"
+import { pageable } from "relay-cursor-paging"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -369,6 +376,50 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         deprecationReason: "Prefer to use `mediumType`.",
         description:
           'Represents the "**medium type**", such as _Painting_. (This field is also commonly referred to as just "medium", but should not be confused with the artwork attribute called `medium`.)',
+      },
+      collectionsConnection: {
+        type: CollectionsConnectionType,
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+          default: { type: GraphQLBoolean },
+          saves: { type: GraphQLBoolean },
+          sort: { type: CollectionSorts },
+        }),
+        resolve: async (parent, args, context, _info) => {
+          const { id: artwork_id } = parent
+          const { collectionsLoader, userID: meID } = context
+          if (!collectionsLoader) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const { body, headers } = await collectionsLoader({
+            artwork_id,
+            user_id: meID,
+            private: true,
+            default: args.default,
+            saves: args.saves,
+            sort: args.sort,
+            size,
+            offset,
+            total_count: true,
+          })
+          const bodyWithMe = (body ?? []).map((obj) => {
+            return { ...obj, userID: meID }
+          })
+          const totalCount = parseInt(headers?.["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body: bodyWithMe,
+            args,
+          })
+        },
       },
       collectingInstitution: {
         type: GraphQLString,
