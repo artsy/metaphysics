@@ -18,7 +18,7 @@ export const CollectionsConnectionType = connectionWithCursorInfo({
   nodeType: CollectionType,
 }).connectionType
 
-const CollectionSorts = new GraphQLEnumType({
+export const CollectionSorts = new GraphQLEnumType({
   name: "CollectionSorts",
   values: {
     CREATED_AT_ASC: {

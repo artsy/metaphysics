@@ -2032,6 +2032,17 @@ type Artwork implements Node & Searchable & Sellable {
   # Returns the display label and detail when artwork has a certificate of authenticity
   certificateOfAuthenticity: ArtworkInfoRow
   collectingInstitution: String
+  collectionsConnection(
+    after: String
+    before: String
+    default: Boolean
+    first: Int
+    last: Int
+    page: Int
+    saves: Boolean
+    size: Int
+    sort: CollectionSorts
+  ): CollectionsConnection
 
   # The location of the artwork in My Collection
   collectorLocation: MyLocation
