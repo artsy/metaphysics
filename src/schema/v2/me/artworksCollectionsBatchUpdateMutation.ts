@@ -42,8 +42,10 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     },
     addedToCollections: {
       type: new GraphQLList(CollectionType),
-      resolve: (response) => {
-        return response.added_to
+      resolve: (response, _, context) => {
+        return response.added_to.map((entity) => {
+          return { ...entity, userID: context.userID }
+        })
       },
     },
     removedFromCollections: {
