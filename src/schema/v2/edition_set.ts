@@ -88,12 +88,7 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
     },
     saleMessage: {
       type: GraphQLString,
-      resolve: ({ availability, availability_hidden, price, forsale }) => {
-        // Don't display anything if availability is hidden.
-        if (availability_hidden) {
-          return null
-        }
-
+      resolve: ({ availability, price, forsale }) => {
         // If it's a supported availability, just return it (capitalized).
         if (includes(EditionSetAvailabilities, availability)) {
           return capitalizeFirstCharacter(availability)

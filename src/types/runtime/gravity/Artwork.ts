@@ -23,7 +23,6 @@ export const Artwork = Record({
   attribution_class: String.Or(Null),
   artist: EmbeddedArtist.Or(Null),
   artists: Array(EmbeddedArtist),
-  availability_hidden: Boolean,
   availability: String,
   blurb: String,
   can_share_image: Boolean,
