@@ -409,10 +409,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           const bodyWithMe = (body ?? []).map((obj) => {
             return { ...obj, userID: meID }
           })
-          const totalCount = parseInt(
-            (headers ?? {})["x-total-count"] || "0",
-            10
-          )
+          const totalCount = parseInt(headers?.["x-total-count"] || "0", 10)
 
           return paginationResolver({
             totalCount,
