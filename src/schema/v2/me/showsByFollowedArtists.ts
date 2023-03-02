@@ -14,6 +14,7 @@ export const ShowsByFollowedArtists: GraphQLFieldConfig<
   args: pageable({
     sort: {
       type: ShowSorts,
+      defaultValue: "-created_at",
     },
     status: {
       type: EventStatus.type,
@@ -42,6 +43,7 @@ export const ShowsByFollowedArtists: GraphQLFieldConfig<
 
     const count = parseInt(headers["x-total-count"] || "0", 10)
 
+    debugger
     return {
       totalCount: count,
       ...connectionFromArraySlice(shows, options, {
