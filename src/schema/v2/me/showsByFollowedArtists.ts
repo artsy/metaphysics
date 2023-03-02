@@ -14,6 +14,7 @@ export const ShowsByFollowedArtists: GraphQLFieldConfig<
   args: pageable({
     sort: {
       type: ShowSorts,
+      defaultValue: "-created_at",
     },
     status: {
       type: EventStatus.type,

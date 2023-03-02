@@ -7,9 +7,8 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { compact, merge } from "lodash"
+import { compact, merge, uniq } from "lodash"
 import { pageable } from "relay-cursor-paging"
-import { params } from "schema/v2/home/add_generic_genes"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
@@ -18,9 +17,7 @@ import {
   AuctionResultSorts,
   AuctionResultsState,
 } from "../auction_result"
-
-const MAX_FOLLOWED_ARTISTS_PER_STEP = 100
-const MAX_STEPS = 2
+import { allFollowedArtistsLoader } from "lib/loaders/helpers"
 
 const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
   void,
@@ -70,27 +67,12 @@ const AuctionResultsByFollowedArtists: GraphQLFieldConfig<
     try {
       if (!followedArtistsLoader || !auctionLotsLoader) return null
 
-      let followedArtists: any[] = []
+      const followedArtists = await allFollowedArtistsLoader(
+        followedArtistsLoader
+      )
 
-      // Since we cannot query more than 100  artists at a time, we have to do this in several steps.
-      for (let step = 0; step < MAX_STEPS; step++) {
-        const gravityArgs = {
-          size: MAX_FOLLOWED_ARTISTS_PER_STEP,
-          offset: step,
-          total_count: false,
-          ...params,
-        }
-        const { body } = await followedArtistsLoader(gravityArgs)
-
-        followedArtists = [...followedArtists, ...body]
-
-        if (body.followedArtists < MAX_FOLLOWED_ARTISTS_PER_STEP) {
-          break
-        }
-      }
-
-      const followedArtistIds = compact(
-        followedArtists.map((artist) => artist?.artist?._id)
+      const followedArtistIds = uniq(
+        compact(followedArtists.map((artist) => artist?.artist?._id))
       )
 
       if (!followedArtistIds || followedArtistIds.length === 0) {

@@ -6,6 +6,8 @@ import { artworkConnection } from "schema/v2/artwork"
 import { ResolverContext } from "types/graphql"
 import { createPageCursors } from "../fields/pagination"
 
+const MAX_ARTWORKS = 50
+
 export const SimilarToRecentlyViewed: GraphQLFieldConfig<
   { recently_viewed_artwork_ids: string[] },
   ResolverContext
@@ -22,10 +24,13 @@ export const SimilarToRecentlyViewed: GraphQLFieldConfig<
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
+    // Fetching all artworks until the current page because `offset` isn't working for similarArtworksLoader
+    const numberOfArtworksToFetch = Math.min(size + offset, MAX_ARTWORKS)
+
     const artworks = await similarArtworksLoader({
       artwork_id: recentlyViewedIds,
       for_sale: true,
-      size: 50,
+      size: numberOfArtworksToFetch,
     })
 
     const totalCount = artworks.length

@@ -21,6 +21,7 @@ export const newWorksFromGalleriesYouFollow: GraphQLFieldConfig<
     const { body: artworks, headers } = await followedProfilesArtworksLoader({
       size,
       offset,
+      for_sale: true,
     })
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
