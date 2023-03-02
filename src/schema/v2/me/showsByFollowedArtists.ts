@@ -43,7 +43,6 @@ export const ShowsByFollowedArtists: GraphQLFieldConfig<
 
     const count = parseInt(headers["x-total-count"] || "0", 10)
 
-    debugger
     return {
       totalCount: count,
       ...connectionFromArraySlice(shows, options, {
