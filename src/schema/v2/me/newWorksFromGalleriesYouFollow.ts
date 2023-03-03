@@ -18,13 +18,17 @@ export const newWorksFromGalleriesYouFollow: GraphQLFieldConfig<
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const { body: artworks, headers } = await followedProfilesArtworksLoader({
+    const { body: artworks } = await followedProfilesArtworksLoader({
       size,
-      offset,
+      offset: 1,
       for_sale: true,
     })
 
-    const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+    // If the number of artworks is equal to the size, then there is a next page.
+    const totalCount = parseInt(
+      artworks.length >= size ? offset + size + 1 : offset + artworks.length,
+      10
+    )
 
     const connection = connectionFromArraySlice(artworks, args, {
       arrayLength: totalCount,
