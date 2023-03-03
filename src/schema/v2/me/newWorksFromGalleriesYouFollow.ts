@@ -46,12 +46,3 @@ export const newWorksFromGalleriesYouFollow: GraphQLFieldConfig<
     }
   },
 }
-
-// Because the loader doesn't return the total size, we use this way to calculate it for the connection.
-// If the number of artworks is equal to the size, then there is a next page.
-const calculateTotalCount = (artworks: any[], size: number, offset: number) => {
-  const hasNextPage = artworks.length === size
-  const currentCount = offset + artworks.length
-
-  return hasNextPage ? currentCount + 1 : currentCount
-}

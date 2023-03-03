@@ -104,7 +104,7 @@ describe("NewWorksFromGalleriesYouFollow", () => {
       Object {
         "edges": Array [],
         "pageInfo": Object {
-          "hasNextPage": false,
+          "hasNextPage": true,
         },
       }
     `)
