@@ -22,6 +22,7 @@ export const newWorksFromGalleriesYouFollow: GraphQLFieldConfig<
       size,
       offset,
       for_sale: true,
+      total_count: true,
     })
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
