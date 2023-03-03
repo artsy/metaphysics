@@ -20,15 +20,11 @@ export const newWorksFromGalleriesYouFollow: GraphQLFieldConfig<
 
     const { body: artworks } = await followedProfilesArtworksLoader({
       size,
-      offset: 1,
+      offset,
       for_sale: true,
     })
 
-    // If the number of artworks is equal to the size, then there is a next page.
-    const totalCount = parseInt(
-      artworks.length >= size ? offset + size + 1 : offset + artworks.length,
-      10
-    )
+    const totalCount = calculateTotalCount(artworks, size, offset)
 
     const connection = connectionFromArraySlice(artworks, args, {
       arrayLength: totalCount,
@@ -48,4 +44,12 @@ export const newWorksFromGalleriesYouFollow: GraphQLFieldConfig<
       },
     }
   },
+}
+
+// If the number of artworks is equal to the size, then there is a next page.
+const calculateTotalCount = (artworks: any[], size: number, offset: number) => {
+  const hasNextPage = artworks.length === size
+  const currentCount = offset + artworks.length
+
+  return hasNextPage ? currentCount + 1 : currentCount
 }
