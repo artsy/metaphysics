@@ -29,6 +29,11 @@ const ConsignmentInquiryType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString),
       description: "Email of inquirer",
     },
+    recipientEmail: {
+      type: GraphQLString,
+      description:
+        "an optional Collector services team memeber email who was sent the Inquiry",
+    },
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Name of the inquirer",
@@ -102,6 +107,9 @@ export const createConsignmentInquiryMutation = mutationWithClientMutationId<
     email: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    recipientEmail: {
+      type: GraphQLString,
+    },
     message: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -116,7 +124,7 @@ export const createConsignmentInquiryMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: (
-    { name, email, userId, phoneNumber, message },
+    { name, email, recipientEmail, userId, phoneNumber, message },
     { createConsignmentInquiryLoader }
   ) => {
     if (!createConsignmentInquiryLoader) {
@@ -126,6 +134,7 @@ export const createConsignmentInquiryMutation = mutationWithClientMutationId<
     return createConsignmentInquiryLoader({
       name,
       email,
+      recipient_email: recipientEmail,
       gravity_user_id: userId,
       message,
       phone_number: phoneNumber,
