@@ -235,15 +235,27 @@ export const exchangeStitchingEnvironment = ({
       }))
     )
 
-  const profileResolver = async (parent, _args, context, info) => {
-    return await info.mergeInfo.delegateToSchema({
-      schema: localSchema,
-      operation: "query",
-      fieldName: "collectorProfile",
-      args: { userID: parent.buyer.id },
-      context,
-      info,
-    })
+  const buyerProfileResolver = {
+    fragment: gql`
+        ... on CommerceOrder {
+          buyer {
+            __typename
+            ... on CommerceUser {
+              id
+            }
+          }
+        }
+        `,
+    resolve: async (parent, _args, context, info) => {
+      return await info.mergeInfo.delegateToSchema({
+        schema: localSchema,
+        operation: "query",
+        fieldName: "collectorProfile",
+        args: { userID: parent.buyer.id },
+        context,
+        info,
+      })
+    },
   }
 
   // Used to convert an array of `key: resolvers` to a single obj
@@ -392,17 +404,7 @@ export const exchangeStitchingEnvironment = ({
         // The money helper resolvers
         ...totalsResolvers("CommerceBuyOrder", orderTotals),
         buyerDetails: buyerDetailsResolver,
-        buyerProfile: {
-          fragment: gql`... on CommerceBuyOrder {
-            buyer {
-              __typename
-              ... on CommerceUser {
-                id
-              }
-            }
-          }`,
-          resolve: profileResolver,
-        },
+        buyerProfile: buyerProfileResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
         paymentMethodDetails: paymentMethodDetailsResolver,
@@ -410,17 +412,7 @@ export const exchangeStitchingEnvironment = ({
       CommerceOfferOrder: {
         ...totalsResolvers("CommerceOfferOrder", orderTotals),
         buyerDetails: buyerDetailsResolver,
-        buyerProfile: {
-          fragment: gql`... on CommerceOfferOrder {
-            buyer {
-              __typename
-              ... on CommerceUser {
-                id
-              }
-            }
-          }`,
-          resolve: profileResolver,
-        },
+        buyerProfile: buyerProfileResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
         paymentMethodDetails: paymentMethodDetailsResolver,
