@@ -32,7 +32,7 @@ const ConsignmentInquiryType = new GraphQLObjectType<any, ResolverContext>({
     recipientEmail: {
       type: GraphQLString,
       description:
-        "an optional Collector services team memeber email who was sent the Inquiry",
+        "An optional email from a member of the Collector Services team to whom the request was sent",
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
