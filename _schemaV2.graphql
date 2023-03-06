@@ -5809,7 +5809,7 @@ type ConsignmentInquiry {
   # Phone number of the inquirer
   phoneNumber: String
 
-  # an optional Collector services team memeber email who was sent the Inquiry
+  # An optional email from a member of the Collector Services team to whom the request was sent
   recipientEmail: String
 
   # gravity user id if user is logged in
