@@ -463,15 +463,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       contactMessage: {
         type: GraphQLString,
         description: "Pre-filled inquiry text",
-        resolve: ({ partner, availability_hidden, availability }) => {
+        resolve: ({ partner, availability }) => {
           if (partner && partner.type === "Auction") {
             return [
               "Hello, I am interested in placing a bid on this work.",
               "Please send me more information.",
             ].join(" ")
-          }
-          if (availability_hidden) {
-            return null
           }
           if (availability === "sold" || availability === "on loan") {
             return [
@@ -1361,12 +1358,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({
           sale_message,
           availability,
-          availability_hidden,
           price_cents,
           price_currency,
         }) => {
-          // Don't display anything if availability is hidden, or artwork is not for sale.
-          if (availability_hidden || availability === "not for sale") {
+          // Don't display anything if artwork is not for sale.
+          if (availability === "not for sale") {
             return null
           }
 

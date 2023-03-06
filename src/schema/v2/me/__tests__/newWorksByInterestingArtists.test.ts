@@ -227,7 +227,6 @@ const mockArtworksResponse = [
     price: "",
     series: "",
     availability: "sold",
-    availability_hidden: false,
     ecommerce: false,
     offer: false,
     tags: ["Pumpkin"],

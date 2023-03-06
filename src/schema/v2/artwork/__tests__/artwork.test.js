@@ -1134,21 +1134,6 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns null if work is marked with availability_hidden", () => {
-      artwork.sale_message = "for sale"
-      artwork.availability = "on loan"
-      artwork.availability_hidden = true
-
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            slug: "richard-prince-untitled-portrait",
-            saleMessage: null,
-          },
-        })
-      })
-    })
-
     it("returns Permanent Collection if work is part of permanent collection", () => {
       artwork.sale_message = "for sale"
       artwork.availability = "permanent collection"
@@ -1393,20 +1378,6 @@ describe("Artwork type", () => {
             slug: "richard-prince-untitled-portrait",
             contactMessage:
               "Hello, I am interested in placing a bid on this work. Please send me more information.", // eslint-disable-line max-len
-          },
-        })
-      })
-    })
-
-    it("returns null if work is marked with availability_hidden", () => {
-      artwork.availability = "sold"
-      artwork.availability_hidden = true
-
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            slug: "richard-prince-untitled-portrait",
-            contactMessage: null,
           },
         })
       })
