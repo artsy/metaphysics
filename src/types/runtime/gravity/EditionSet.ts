@@ -14,7 +14,6 @@ export const EditionSet = Record({
   editions: String,
   display_price_currency: String,
   availability: String,
-  availability_hidden: Boolean,
 })
 
 export type EditionSet = Static<typeof EditionSet>

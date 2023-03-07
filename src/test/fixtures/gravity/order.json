@@ -141,7 +141,6 @@
         },
         "price": "$2,000",
         "availability": "sold",
-        "availability_hidden": false,
         "ecommerce": false,
         "collecting_institution": "",
         "blurb": "",
@@ -172,8 +171,7 @@
         },
         "editions": "Edition 8/10",
         "display_price_currency": "USD (United States Dollar)",
-        "availability": "for sale",
-        "availability_hidden": false
+        "availability": "for sale"
       },
       "price_cents": 200000,
       "tax_cents": 0,
