@@ -239,7 +239,6 @@ export const exchangeStitchingEnvironment = ({
     fragment: gql`
         ... on CommerceOrder {
           buyer {
-            __typename
             ... on CommerceUser {
               id
             }
