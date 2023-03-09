@@ -84,6 +84,16 @@ export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
+
+    provenance: {
+      type: GraphQLString,
+      description: "Artwork provenance",
+    },
+
+    condition_description: {
+      type: GraphQLString,
+      description: "Artwork condition description",
+    },
   }),
 })
 
