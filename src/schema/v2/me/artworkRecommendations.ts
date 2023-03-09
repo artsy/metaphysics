@@ -74,7 +74,7 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
       )
     }
 
-    const totalCount = artworks.length
+    const totalCount = artworkRecommendations.length
 
     const connection = connectionFromArraySlice(artworks, args, {
       arrayLength: totalCount,
