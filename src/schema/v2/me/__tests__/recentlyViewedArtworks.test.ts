@@ -12,10 +12,10 @@ describe("RecentlyViewedArtworks", () => {
       recently_viewed_artwork_ids: ["percy", "matt", "paul"],
     }
     const artworks = [
-      { id: "percy", title: "Percy the Cat" },
-      { id: "matt", title: "Matt the Person" },
-      { id: "paul", title: "Paul the snail" },
-      { id: "paula", title: "Paula the butterfly" },
+      { id: "percy", title: "Percy the Cat", _id: "percy" },
+      { id: "matt", title: "Matt the Person", _id: "matt" },
+      { id: "paul", title: "Paul the snail", _id: "paul" },
+      { id: "paula", title: "Paula the butterfly", _id: "paula" },
     ]
     context = {
       meLoader: async () => me,
