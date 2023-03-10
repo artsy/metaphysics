@@ -19,7 +19,7 @@ it("extends the Order objects", async () => {
       mergedSchema
     )
 
-    expect(orderableFields).toContain("buyerDetails")
+    expect(orderableFields).toContain("buyerProfile")
     expect(orderableFields).toContain("sellerDetails")
     expect(orderableFields).toContain("creditCard")
     expect(orderableFields).toContain("paymentMethodDetails")
@@ -161,6 +161,23 @@ it("delegates to the local schema for an LineItem's artwork", async () => {
     args: { id: "ARTWORK-ID" },
     fieldName: "artwork",
 
+    operation: "query",
+    schema: expect.anything(),
+    context: expect.anything(),
+    info: expect.anything(),
+  })
+})
+
+it("delegates to the local schema for a CommerceOrder's buyerProfile", async () => {
+  const { resolvers } = await getExchangeStitchedSchema()
+  const buyerProfileResolver = resolvers.CommerceBuyOrder.buyerProfile.resolve
+  const mergeInfo = { delegateToSchema: jest.fn() }
+
+  buyerProfileResolver({ buyer: { id: "userid" } }, {}, {}, { mergeInfo })
+
+  expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+    args: { userID: "userid" },
+    fieldName: "collectorProfile",
     operation: "query",
     schema: expect.anything(),
     context: expect.anything(),

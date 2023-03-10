@@ -19,7 +19,7 @@ import date from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
 import { IDFields, NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
-import { CollectorProfile } from "../CollectorProfile/collectorProfile"
+import { MeCollectorProfile } from "../CollectorProfile/collectorProfile"
 import {
   IdentityVerification,
   PendingIdentityVerification,
@@ -142,7 +142,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return collector_level
       },
     },
-    collectorProfile: CollectorProfile,
+    collectorProfile: MeCollectorProfile,
     emailConfirmed: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: "User has confirmed their email address",

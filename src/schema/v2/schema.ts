@@ -190,6 +190,7 @@ import { UpdateFeaturedLinkMutation } from "./FeaturedLink/updateFeaturedLinkMut
 import { DeleteFeaturedLinkMutation } from "./FeaturedLink/deleteFeaturedLinkMutation"
 import { createUserSaleProfileMutation } from "./users/createUserSaleProfileMutation"
 import { MarkdownContent } from "./markdownContent"
+import { CollectorProfileForUser } from "./CollectorProfile/collectorProfile"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -238,6 +239,7 @@ const rootFields = {
   channel,
   cities,
   city: City,
+  collectorProfile: CollectorProfileForUser,
   conversation: Conversation,
   conversationsConnection: Conversations,
   creditCard: CreditCard,
