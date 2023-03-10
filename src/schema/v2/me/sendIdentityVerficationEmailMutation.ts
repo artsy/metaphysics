@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -109,6 +110,10 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
         "The name to be used for the user undergoing identity verification",
       type: GraphQLString,
     },
+    sendEmail: {
+      description: "Whether an automated identity verification is sent or not",
+      type: GraphQLBoolean,
+    },
   },
   outputFields: {
     confirmationOrError: {
@@ -117,7 +122,7 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
     },
   },
   mutateAndGetPayload: async (
-    { userID, email, name },
+    { userID, email, name, sendEmail },
     { sendIdentityVerificationEmailLoader }
   ) => {
     if (!sendIdentityVerificationEmailLoader) {
@@ -129,6 +134,7 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
         user_id: userID,
         email,
         name,
+        send_email: sendEmail,
       })
 
       return response
