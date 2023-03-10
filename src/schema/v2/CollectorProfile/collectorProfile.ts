@@ -35,14 +35,14 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
     resolve: ({ company_website }) => company_website,
   },
   confirmedBuyerAt: date,
-  email: { type: GraphQLString },
+  email: { type: GraphQLString, resolve: ({ owner: { email } }) => email },
   institutionalAffiliations: {
     type: GraphQLString,
     resolve: ({ institutional_affiliations }) => institutional_affiliations,
   },
   intents: { type: new GraphQLList(GraphQLString) },
   loyaltyApplicantAt: date,
-  name: { type: GraphQLString },
+  name: { type: GraphQLString, resolve: ({ owner: { name } }) => name },
   privacy: { type: GraphQLString },
   professionalBuyerAppliedAt: date,
   professionalBuyerAt: date,
@@ -58,7 +58,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   },
 
   // moved InquirerCollectorProfileFields here
-  location: { type: myLocationType },
+  location: { type: myLocationType, resolve: ({ owner }) => owner.location },
   artsyUserSince: dateFormatter(({ artsy_user_since }) => artsy_user_since),
   ownerID: {
     type: new GraphQLNonNull(GraphQLID),
@@ -72,7 +72,10 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   bio: {
     type: GraphQLString,
   },
-  profession: { type: GraphQLString },
+  profession: {
+    type: GraphQLString,
+    resolve: ({ owner: { profession } }) => profession,
+  },
   otherRelevantPositions: {
     type: GraphQLString,
     description: "Collector's position with relevant institutions",
