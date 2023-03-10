@@ -157,14 +157,23 @@ const moduleResults: HomePageArtworkModuleResolvers<any> = {
       })
     })
   },
-  recently_viewed_works: ({ meLoader, artworksLoader }) => {
+  recently_viewed_works: async ({ meLoader, artworksLoader }) => {
     if (!meLoader) return null
-    return meLoader().then(({ recently_viewed_artwork_ids }) => {
+    return meLoader().then(async ({ recently_viewed_artwork_ids }) => {
       if (recently_viewed_artwork_ids.length === 0) {
         return []
       }
       const ids = recently_viewed_artwork_ids.slice(0, RESULTS_SIZE)
-      return artworksLoader({ ids })
+      const artworks = await artworksLoader({
+        ids,
+      })
+
+      // sort artworks because artworksLoader does not guarantee order
+      const orderedArtworks = recently_viewed_artwork_ids.map((id) =>
+        artworks.find((a) => a?._id === id)
+      )
+
+      return orderedArtworks
     })
   },
 }

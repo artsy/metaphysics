@@ -29,9 +29,14 @@ export const RecentlyViewedArtworks: GraphQLFieldConfig<
       ? await artworksLoader({ ids: pageArtworkIDs })
       : []
 
+    // sort artworks because artworksLoader does not guarantee order
+    const orderedArtworks = pageArtworkIDs.map((id) =>
+      artworks.find((a) => a?._id === id)
+    )
+
     const totalCount = recently_viewed_artwork_ids.length
 
-    const connection = connectionFromArraySlice(artworks, args, {
+    const connection = connectionFromArraySlice(orderedArtworks, args, {
       arrayLength: totalCount,
       sliceStart: offset,
     })
