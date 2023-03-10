@@ -306,11 +306,7 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     followedProfileLoader: trackedEntityLoaderFactory(
-      gravityLoader(
-        "me/follow/profiles",
-        { total_count: true },
-        { headers: true }
-      ),
+      gravityLoader("me/follow/profiles"),
       {
         paramKey: "profiles",
         trackingKey: "is_followed",
