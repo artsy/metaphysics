@@ -35,6 +35,9 @@ describe("Me", () => {
         intents: ["buy art & design"],
         privacy: "public",
         owner: {
+          name: "Percy",
+          email: "percy@cat.com",
+          profession: "typer",
           location: {
             display: "Germany",
           },
