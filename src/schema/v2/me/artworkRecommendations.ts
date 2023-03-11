@@ -2,7 +2,6 @@ import { GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import gql from "lib/gql"
 import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
-import { compact, find } from "lodash"
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import { artworkConnection } from "schema/v2/artwork"
 import { createPageCursors } from "schema/v2/fields/pagination"
@@ -58,21 +57,11 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
 
     // Fetching artwork details from Gravity
 
-    let artworks: any[] = []
-
-    if (artworkIds?.length) {
-      artworks = await artworksLoader({
-        ids: pageArtworkIDs,
-      })
-
-      // Applying order from Vortex result (score ASC)
-
-      artworks = compact(
-        pageArtworkIDs.map((artworkId) => {
-          return find(artworks, { _id: artworkId })
+    const artworks = artworkIds?.length
+      ? await artworksLoader({
+          ids: pageArtworkIDs,
         })
-      )
-    }
+      : []
 
     const totalCount = artworkRecommendations.length
 
