@@ -6,7 +6,6 @@ import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import gql from "lib/gql"
 import { artistConnection } from "schema/v2/artist"
-import { compact, find } from "lodash"
 
 // This limits the maximum number of artists we receive from Vortex and is related to how we implement the Connection in this resolver.
 const MAX_ARTISTS = 50
@@ -53,23 +52,13 @@ export const ArtistRecommendations: GraphQLFieldConfig<
 
     // Fetch artist details from Gravity
 
-    let artists: any = []
-
-    if (artistIds?.length) {
-      artists = (
-        await artistsLoader({
-          ids: artistIds,
-        })
-      ).body
-
-      // Apply order from Vortex result (score ASC)
-
-      artists = compact(
-        artistIds.map((artistId) => {
-          return find(artists, { _id: artistId })
-        })
-      )
-    }
+    const artists = artistIds?.length
+      ? (
+          await artistsLoader({
+            ids: artistIds,
+          })
+        ).body
+      : []
 
     const count = artists.length
 
