@@ -235,6 +235,28 @@ export const exchangeStitchingEnvironment = ({
       }))
     )
 
+  const buyerProfileResolver = {
+    fragment: gql`
+        ... on CommerceOrder {
+          buyer {
+            ... on CommerceUser {
+              id
+            }
+          }
+        }
+        `,
+    resolve: async (parent, _args, context, info) => {
+      return await info.mergeInfo.delegateToSchema({
+        schema: localSchema,
+        operation: "query",
+        fieldName: "collectorProfile",
+        args: { userID: parent.buyer.id },
+        context,
+        info,
+      })
+    },
+  }
+
   // Used to convert an array of `key: resolvers` to a single obj
   const reduceToResolvers = (arr) => arr.reduce((a, b) => ({ ...a, ...b }))
 
@@ -269,6 +291,7 @@ export const exchangeStitchingEnvironment = ({
 
     extend type CommerceBuyOrder {
       buyerDetails: OrderParty
+      buyerProfile: CollectorProfileType
       sellerDetails: OrderParty
       creditCard: CreditCard
       paymentMethodDetails: PaymentMethodUnion
@@ -279,6 +302,7 @@ export const exchangeStitchingEnvironment = ({
 
     extend type CommerceOfferOrder {
       buyerDetails: OrderParty
+      buyerProfile: CollectorProfileType
       sellerDetails: OrderParty
       creditCard: CreditCard
       paymentMethodDetails: PaymentMethodUnion
@@ -291,6 +315,7 @@ export const exchangeStitchingEnvironment = ({
 
     extend interface CommerceOrder {
       buyerDetails: OrderParty
+      buyerProfile: CollectorProfileType
       sellerDetails: OrderParty
       creditCard: CreditCard
       paymentMethodDetails: PaymentMethodUnion
@@ -378,6 +403,7 @@ export const exchangeStitchingEnvironment = ({
         // The money helper resolvers
         ...totalsResolvers("CommerceBuyOrder", orderTotals),
         buyerDetails: buyerDetailsResolver,
+        buyerProfile: buyerProfileResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
         paymentMethodDetails: paymentMethodDetailsResolver,
@@ -385,6 +411,7 @@ export const exchangeStitchingEnvironment = ({
       CommerceOfferOrder: {
         ...totalsResolvers("CommerceOfferOrder", orderTotals),
         buyerDetails: buyerDetailsResolver,
+        buyerProfile: buyerProfileResolver,
         sellerDetails: sellerDetailsResolver,
         creditCard: creditCardResolver,
         paymentMethodDetails: paymentMethodDetailsResolver,

@@ -141,10 +141,31 @@ export const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>(
   }
 )
 
-export const CollectorProfile: GraphQLFieldConfig<void, ResolverContext> = {
+export const MeCollectorProfile: GraphQLFieldConfig<void, ResolverContext> = {
   type: CollectorProfileType,
-  description: "A collector profile.",
+  description: "Current user's collector profile.",
   resolve: (_root, _option, { meCollectorProfileLoader }) => {
     return meCollectorProfileLoader?.()
+  },
+}
+
+export const CollectorProfileForUser: GraphQLFieldConfig<
+  void,
+  ResolverContext
+> = {
+  type: CollectorProfileType,
+  description: "A collector profile.",
+  args: { userID: { type: GraphQLString! } },
+  resolve: async (_root, { userID }, { collectorProfilesLoader }) => {
+    if (!collectorProfilesLoader)
+      throw new Error(
+        "A X-Access-Token header is required to perform this action."
+      )
+
+    const { body: profiles } = await collectorProfilesLoader({
+      user_id: userID,
+    })
+
+    return profiles[0]
   },
 }
