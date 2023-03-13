@@ -142,7 +142,6 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
   const userID = req.headers["x-user-id"] as string | undefined
   const timezone = req.headers["x-timezone"] as string | undefined
   const userAgent = req.headers["user-agent"]
-  const imageService = req.headers["x-image-service"] as string | undefined
 
   const { requestIDs } = res.locals
   const requestID = requestIDs.requestID
@@ -174,7 +173,6 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     requestIDs,
     userAgent,
     appToken,
-    imageService,
   }
 
   const validationRules = [
