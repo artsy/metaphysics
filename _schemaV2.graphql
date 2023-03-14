@@ -6934,6 +6934,7 @@ type Conversation implements Node {
     after: String
     before: String
     first: Int
+    includeDeliveryPending: Boolean
     last: Int
     sort: sort
   ): MessageConnection @deprecated(reason: "Prefer messagesConnection")
@@ -6943,6 +6944,7 @@ type Conversation implements Node {
     after: String
     before: String
     first: Int
+    includeDeliveryPending: Boolean
     last: Int
     sort: sort
   ): MessageConnection
