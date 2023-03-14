@@ -507,6 +507,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       description: markdown(({ blurb }) => blurb),
       dimensions: Dimensions,
+      dominantColors: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(GraphQLString))
+        ),
+        resolve: ({ dominant_colors }) => {
+          return dominant_colors || []
+        },
+      },
       embed: {
         type: GraphQLString,
         description:
