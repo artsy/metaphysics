@@ -193,9 +193,6 @@ const messagesConnection = {
   type: MessageConnection,
   description: "A connection for all messages in a single conversation",
   args: pageable({
-    includeDeliveryPending: {
-      type: GraphQLBoolean,
-    },
     sort: {
       type: new GraphQLEnumType({
         name: "sort",
@@ -223,7 +220,6 @@ const messagesConnection = {
       conversation_id: id,
       "expand[]": "deliveries",
       sort: options.sort || "asc",
-      include_delivery_pending: options.includeDeliveryPending || false,
     }).then(({ total_count, message_details }) => {
       // Inject the convesation initiator's email into each message payload
       // so we can tell if the user sent a particular message.

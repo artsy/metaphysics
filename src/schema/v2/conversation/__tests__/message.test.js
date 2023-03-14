@@ -64,7 +64,7 @@ describe("Me", () => {
                 from {
                   email
                 }
-                messagesConnection(first: 10, includeDeliveryPending: true) {
+                messagesConnection(first: 10) {
                   totalCount
                   edges {
                     node {
