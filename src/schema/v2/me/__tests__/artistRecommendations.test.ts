@@ -39,14 +39,14 @@ describe("artistRecommendations", () => {
         "edges": Array [
           Object {
             "node": Object {
-              "internalID": "608a7417bdfbd1a789ba092a",
-              "slug": "1-plus-1-plus-1",
+              "internalID": "608a7416bdfbd1a789ba0911",
+              "slug": "banksy",
             },
           },
           Object {
             "node": Object {
-              "internalID": "608a7416bdfbd1a789ba0911",
-              "slug": "banksy",
+              "internalID": "608a7417bdfbd1a789ba092a",
+              "slug": "1-plus-1-plus-1",
             },
           },
         ],
@@ -70,7 +70,7 @@ describe("artistRecommendations", () => {
       `,
     })
     expect(artistsLoader).toHaveBeenCalledWith({
-      ids: ["608a7417bdfbd1a789ba092a", "608a7416bdfbd1a789ba0911"],
+      ids: ["608a7416bdfbd1a789ba0911", "608a7417bdfbd1a789ba092a"],
     })
   })
 
@@ -115,14 +115,14 @@ const mockVortexResponse = {
       edges: [
         {
           node: {
-            artistId: "608a7417bdfbd1a789ba092a",
-            score: 3.422242962512335,
+            artistId: "608a7416bdfbd1a789ba0911",
+            score: 3.2225049587839654,
           },
         },
         {
           node: {
-            artistId: "608a7416bdfbd1a789ba0911",
-            score: 3.2225049587839654,
+            artistId: "608a7417bdfbd1a789ba092a",
+            score: 3.422242962512335,
           },
         },
       ],
