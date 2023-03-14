@@ -71,17 +71,17 @@ export const ARTIST_INSIGHT_MAPPING = {
   RESIDENCIES: {
     getDescription: () => "Established artist residencies.",
     getEntities: (artist) => splitEntities(artist.residencies),
-    getLabel: () => "Residencies",
+    getLabel: () => "Participated in a notable artist residency",
   },
   PRIVATE_COLLECTIONS: {
     getDescription: () => "A list of collections they are part of.",
     getEntities: (artist) => splitEntities(artist.private_collections),
-    getLabel: () => "Private Collections",
+    getLabel: () => "Collected by a notable private collector",
   },
   AWARDS: {
     getDescription: () => "Awards and prizes the artist has won.",
     getEntities: (artist) => splitEntities(artist.awards),
-    getLabel: () => "Awards",
+    getLabel: () => "Winner of top industry award",
   },
 } as const
 
