@@ -5,6 +5,7 @@ import {
   compact,
   flow,
   includes,
+  isArray,
   isEmpty,
   isObject,
   isString,
@@ -12,6 +13,7 @@ import {
   pick,
   reject,
   trim,
+  values,
 } from "lodash"
 import moment, { LocaleSpecification } from "moment"
 import { performance } from "perf_hooks"
@@ -60,13 +62,18 @@ export const truncate = (string, length, append = "…") => {
   return x.length > limit ? x.slice(0, limit) + append : x
 }
 
-export const toQueryString = (options = {}) =>
+export const toQueryString = (options = {}) => {
+  const optionsIncludeArray = values(options).some(
+    (value) => isArray(value) && !isEmpty(value)
+  )
+
   /**
-   * In the case of batched requests we want to explicitly _not_ sort the
+   * In the case of batched requests or if the params include an array
+   * we want to explicitly _not_ sort the
    * params because the order matters to dataloader
    */
   // @ts-ignore
-  options.batched
+  return options.batched || optionsIncludeArray
     ? stringify(options, {
         arrayFormat: "brackets",
       })
@@ -74,6 +81,7 @@ export const toQueryString = (options = {}) =>
         arrayFormat: "brackets",
         sort: (a, b) => a.localeCompare(b),
       })
+}
 
 export const toKey = (path, options = {}) => `${path}?${toQueryString(options)}`
 

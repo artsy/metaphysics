@@ -57,7 +57,6 @@ export const getNewForYouArtworks = async (
 
   const artworkParams = {
     availability: "for sale",
-    batched: true,
     ids: artworkIds,
     offset,
     size,

@@ -101,7 +101,7 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
       args: pageable(),
       resolve: async ({ object_ids: ids }, args, { artworksLoader }) => {
         const { page, size } = convertConnectionArgsToGravityArgs(args)
-        return artworksLoader({ ids, batched: true }).then((body) => {
+        return artworksLoader({ ids }).then((body) => {
           const totalCount = body.length
           return {
             totalCount,
