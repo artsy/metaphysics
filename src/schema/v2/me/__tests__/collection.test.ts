@@ -61,6 +61,27 @@ it("returns collection attributes", async () => {
   })
 })
 
+describe("name field", () => {
+  it("should return `All Saves` when collection has `Saved Artwork` name", async () => {
+    context.collectionLoader = jest.fn(() => {
+      return Promise.resolve({
+        ...mockGravityCollection,
+        name: "Saved Artwork",
+      })
+    })
+
+    const response = await runAuthenticatedQuery(query, context)
+
+    expect(response.me.collection.name).toBe("All Saves")
+  })
+
+  it("should return name received from gravity", async () => {
+    const response = await runAuthenticatedQuery(query, context)
+
+    expect(response.me.collection.name).toBe("Works for dining room")
+  })
+})
+
 describe("isSavedArtwork field", () => {
   beforeEach(() => {
     query = gql`
