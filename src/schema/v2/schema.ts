@@ -70,6 +70,7 @@ import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
 import { deleteBankAccountMutation } from "./me/delete_bank_account_mutation"
 import { deleteCreditCardMutation } from "./me/delete_credit_card_mutation"
+import { deleteUserMutation } from "./users/deleteUserMutation"
 import { deleteUserRoleMutation } from "./users/deleteUserRoleMutation"
 import FollowArtist from "./me/follow_artist"
 import FollowGene from "./me/follow_gene"
@@ -356,6 +357,7 @@ export default new GraphQLSchema({
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       deleteOrderedSet: deleteOrderedSetMutation,
       deleteOrderedSetItem: deleteOrderedSetItemMutation,
+      deleteUser: deleteUserMutation,
       deleteUserAdminNote: deleteUserAdminNoteMutation,
       deleteUserInterest: deleteUserInterestMutation,
       deleteUserInterestForUser: deleteUserInterestForUser,

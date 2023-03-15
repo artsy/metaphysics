@@ -8027,6 +8027,10 @@ type deleteUserAdminNoteSuccess {
   adminNote: UserAdminNotes
 }
 
+type deleteUserFailure {
+  mutationError: GravityMutationError
+}
+
 input DeleteUserIconInput {
   clientMutationId: String
 }
@@ -8079,6 +8083,20 @@ type DeleteUserInterestMutationPayload {
   userInterest: UserInterest!
 }
 
+input deleteUserMutationInput {
+  clientMutationId: String
+  id: String!
+}
+
+type deleteUserMutationPayload {
+  clientMutationId: String
+
+  # On success: a deleted user
+  userOrError: deleteUserResponseOrError
+}
+
+union deleteUserResponseOrError = deleteUserFailure | deleteUserSuccess
+
 type deleteUserRoleFailure {
   mutationError: GravityMutationError
 }
@@ -8101,6 +8119,10 @@ union deleteUserRoleResponseOrError =
   | deleteUserRoleSuccess
 
 type deleteUserRoleSuccess {
+  user: User
+}
+
+type deleteUserSuccess {
   user: User
 }
 
@@ -11931,6 +11953,9 @@ type Mutation {
   deleteOrderedSetItem(
     input: deleteOrderedSetItemMutationInput!
   ): deleteOrderedSetItemMutationPayload
+
+  # Delete a user
+  deleteUser(input: deleteUserMutationInput!): deleteUserMutationPayload
   deleteUserAddress(input: DeleteUserAddressInput!): DeleteUserAddressPayload
 
   # delete an admin note for the user
