@@ -106,6 +106,9 @@ const IMPORT_SOURCES = {
 
 const ARTIST_IN_HIGH_DEMAND_RANK = 9
 
+const NON_REQUESTABLE_CATEGORIES = [artworkMediums.Posters.name]
+const NON_REQUESTABLE_ARTIST_IDS = ["salvador-dali"]
+
 export const ArtworkImportSourceEnum = new GraphQLEnumType({
   name: "ArtworkImportSource",
   values: IMPORT_SOURCES,
@@ -942,8 +945,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             artist.target_supply_priority === 1 &&
             !submission_id &&
             !consignmentSubmission?.id &&
-            category !== artworkMediums.Posters.name &&
-            artist.id !== "salvador-dali"
+            !NON_REQUESTABLE_CATEGORIES.includes(category) &&
+            !NON_REQUESTABLE_ARTIST_IDS.includes(artist.id)
 
           return isRequestable
         },
