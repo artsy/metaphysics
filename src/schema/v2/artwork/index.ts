@@ -930,6 +930,24 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ price, edition_sets }) =>
           has_price_range(price) && !has_multiple_editions(edition_sets),
       },
+      isPriceEstimateRequestable: {
+        type: GraphQLBoolean,
+        resolve: ({
+          artist,
+          submission_id,
+          consignmentSubmission,
+          category,
+        }) => {
+          const isRequestable =
+            artist.target_supply_priority === 1 &&
+            !submission_id &&
+            !consignmentSubmission?.id &&
+            category !== artworkMediums.Posters.name &&
+            artist.id !== "salvador-dali"
+
+          return isRequestable
+        },
+      },
       isSaved: {
         type: GraphQLBoolean,
         resolve: ({ _id }, {}, { savedArtworkLoader }) => {
