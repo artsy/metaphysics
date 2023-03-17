@@ -12,12 +12,12 @@ import {
 import { ResolverContext } from "types/graphql"
 import { UserType } from "../user"
 
-interface Input {
+interface DeleteUserMutationInputProps {
   id: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "deleteUserSuccess",
+  name: "DeleteUserSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
     user: {
@@ -28,7 +28,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "deleteUserFailure",
+  name: "DeleteUserFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -39,24 +39,24 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "deleteUserResponseOrError",
+  name: "DeleteUserResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const deleteUserMutation = mutationWithClientMutationId<
-  Input,
+export default mutationWithClientMutationId<
+  DeleteUserMutationInputProps,
   any | null,
   ResolverContext
 >({
-  name: "deleteUserMutation",
-  description: "Delete a user",
+  name: "DeleteUser",
+  description: "Delete a User",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
     userOrError: {
       type: ResponseOrErrorType,
-      description: "On success: a deleted user",
+      description: "On success: a deleted User",
       resolve: (result) => result,
     },
   },

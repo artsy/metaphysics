@@ -7,12 +7,12 @@ const mutation = gql`
     deleteUser(input: { id: "bats" }) {
       userOrError {
         __typename
-        ... on deleteUserSuccess {
+        ... on DeleteUserSuccess {
           user {
             internalID
           }
         }
-        ... on deleteUserFailure {
+        ... on DeleteUserFailure {
           mutationError {
             message
             statusCode
@@ -38,7 +38,7 @@ describe("Delete a user", () => {
       expect(data).toEqual({
         deleteUser: {
           userOrError: {
-            __typename: "deleteUserSuccess",
+            __typename: "DeleteUserSuccess",
             user: {
               internalID: "bats",
             },
@@ -66,7 +66,7 @@ describe("Delete a user", () => {
       expect(response).toEqual({
         deleteUser: {
           userOrError: {
-            __typename: "deleteUserFailure",
+            __typename: "DeleteUserFailure",
             mutationError: {
               statusCode: 404,
               message: "User Not Found",
@@ -95,7 +95,7 @@ describe("Delete a user", () => {
       expect(response).toEqual({
         deleteUser: {
           userOrError: {
-            __typename: "deleteUserFailure",
+            __typename: "DeleteUserFailure",
             mutationError: {
               statusCode: 400,
               message: "Some Op Error",
