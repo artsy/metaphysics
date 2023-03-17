@@ -3,69 +3,109 @@ import {
   GraphQLBoolean,
   GraphQLInt,
   GraphQLFieldConfig,
+  GraphQLNonNull,
 } from "graphql"
 import { totalViaLoader } from "lib/total"
 import { ResolverContext } from "types/graphql"
+import { biographyBlurbArgs, biographyBlurbResolver } from "./biographyBlurb"
 
 const ArtistStatusesType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistStatuses",
   fields: {
     artists: {
-      type: GraphQLBoolean,
-      resolve: ({ id }, _options, { relatedMainArtistsLoader }) =>
-        totalViaLoader(
-          relatedMainArtistsLoader,
-          {},
-          { exclude_artists_without_artworks: true, artist: [id] }
-        ).then((count) => count > 0),
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: async ({ id }, _options, { relatedMainArtistsLoader }) => {
+        try {
+          const count = totalViaLoader(
+            relatedMainArtistsLoader,
+            {},
+            { exclude_artists_without_artworks: true, artist: [id] }
+          )
+
+          return count > 0
+        } catch (error) {
+          return false
+        }
+      },
     },
     articles: {
-      type: GraphQLBoolean,
-      resolve: ({ _id }, _options, { articlesLoader }) =>
-        articlesLoader({
-          artist_id: _id,
-          published: true,
-          in_editorial_feed: true,
-          limit: 0,
-          count: true,
-        }).then(({ count }) => {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: async ({ _id }, _options, { articlesLoader }) => {
+        try {
+          const { count } = await articlesLoader({
+            artist_id: _id,
+            published: true,
+            in_editorial_feed: true,
+            limit: 0,
+            count: true,
+          })
+
           return count > 0
-        }),
+        } catch (error) {
+          return false
+        }
+      },
     },
     artworks: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ published_artworks_count }) => published_artworks_count > 0,
     },
     auctionLots: {
-      type: GraphQLBoolean,
-      resolve: ({ display_auction_link, hide_auction_link }) => {
-        return display_auction_link && !hide_auction_link
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ display_auction_link }) => {
+        return !!display_auction_link
       },
     },
     biography: {
-      type: GraphQLBoolean,
-      resolve: ({ _id }, _options, { articlesLoader }) =>
-        articlesLoader({
-          published: true,
-          biography_for_artist_id: _id,
-          limit: 0,
-        }).then(({ count }) => count > 0),
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: async ({ _id }, _options, { articlesLoader }) => {
+        try {
+          const { count } = await articlesLoader({
+            published: true,
+            biography_for_artist_id: _id,
+            limit: 0,
+          })
+
+          return count > 0
+        } catch (error) {
+          return false
+        }
+      },
+    },
+    biographyBlurb: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      args: biographyBlurbArgs,
+      resolve: async (...props) => {
+        try {
+          const res = await biographyBlurbResolver(...props)
+          return res.text.length > 0
+        } catch (error) {
+          return false
+        }
+      },
     },
     contemporary: {
-      type: GraphQLBoolean,
-      resolve: ({ id }, _options, { relatedContemporaryArtistsLoader }) => {
-        return totalViaLoader(
-          relatedContemporaryArtistsLoader,
-          {},
-          {
-            exclude_artists_without_artworks: true,
-            artist: [id],
-          }
-        ).then((total) => total > 0)
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: async (
+        { id },
+        _options,
+        { relatedContemporaryArtistsLoader }
+      ) => {
+        try {
+          const count = await totalViaLoader(
+            relatedContemporaryArtistsLoader,
+            {},
+            { exclude_artists_without_artworks: true, artist: [id] }
+          )
+
+          return count > 0
+        } catch (error) {
+          return false
+        }
       },
     },
     cv: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       args: {
         minShowCount: {
           type: GraphQLInt,
@@ -74,19 +114,21 @@ const ArtistStatusesType = new GraphQLObjectType<any, ResolverContext>({
           defaultValue: 15,
         },
       },
-      resolve: ({ partner_shows_count }, { minShowCount }) =>
-        partner_shows_count > minShowCount,
+      resolve: ({ partner_shows_count }, { minShowCount }) => {
+        return partner_shows_count > minShowCount
+      },
     },
     shows: {
-      type: GraphQLBoolean,
-      resolve: ({ displayable_partner_shows_count }) =>
-        displayable_partner_shows_count > 0,
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ displayable_partner_shows_count }) => {
+        return displayable_partner_shows_count > 0
+      },
     },
   },
 })
 
 const ArtistStatuses: GraphQLFieldConfig<any, ResolverContext> = {
-  type: ArtistStatusesType,
+  type: new GraphQLNonNull(ArtistStatusesType),
   resolve: (artist) => artist,
 }
 
