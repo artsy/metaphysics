@@ -39,15 +39,14 @@ export const CollectionsConnection: GraphQLFieldConfig<any, ResolverContext> = {
     saves: { type: GraphQLBoolean },
     sort: { type: CollectionSorts },
   }),
-  resolve: async (parent, args, context, _info) => {
-    const { id: meID } = parent
-    const { collectionsLoader } = context
+  resolve: async (_parent, args, context, _info) => {
+    const { collectionsLoader, userID } = context
     if (!collectionsLoader) return null
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     const { body, headers } = await collectionsLoader({
-      user_id: meID,
+      user_id: userID,
       private: true,
       default: args.default,
       saves: args.saves,
@@ -56,9 +55,6 @@ export const CollectionsConnection: GraphQLFieldConfig<any, ResolverContext> = {
       offset,
       total_count: true,
     })
-    const bodyWithMe = (body ?? []).map((obj) => {
-      return { ...obj, userID: meID }
-    })
     const totalCount = parseInt((headers ?? {})["x-total-count"] || "0", 10)
 
     return paginationResolver({
@@ -66,7 +62,7 @@ export const CollectionsConnection: GraphQLFieldConfig<any, ResolverContext> = {
       offset,
       page,
       size,
-      body: bodyWithMe,
+      body,
       args,
     })
   },

@@ -38,7 +38,8 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
         const { collectionArtworksLoader } = context
         if (!collectionArtworksLoader) return null
 
-        const { id, userID } = parent
+        const { id } = parent
+        const { userID } = context
         const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
         const gravityOptions = {
