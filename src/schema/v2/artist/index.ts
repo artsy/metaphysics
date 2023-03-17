@@ -57,6 +57,7 @@ import {
 } from "./shows"
 import ArtistStatuses from "./statuses"
 import { ArtistTargetSupply } from "./targetSupply"
+import { biographyBlurbArgs, biographyBlurbResolver } from "./biographyBlurb"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -327,14 +328,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           }).then((articles) => first(articles.results)),
       },
       biographyBlurb: {
-        args: {
-          partnerBio: {
-            type: GraphQLBoolean,
-            description: "If true, will return featured bio over Artsy one.",
-            defaultValue: false,
-          },
-          ...markdown().args,
-        },
+        args: biographyBlurbArgs,
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "ArtistBlurb",
           fields: {
@@ -360,31 +354,9 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             },
           },
         }),
-        resolve: (
-          { blurb, id },
-          { format, partnerBio: partner_bio },
-          { partnerArtistsForArtistLoader }
-        ) => {
-          if (!partner_bio && blurb && blurb.length) {
-            return { text: formatMarkdownValue(blurb, format) }
-          }
-          return partnerArtistsForArtistLoader(id, {
-            size: 1,
-            featured: true,
-          }).then((partner_artists) => {
-            if (partner_artists && partner_artists.length) {
-              const { biography, partner } = first(partner_artists) as any
-              return {
-                text: formatMarkdownValue(biography, format),
-                credit: `Submitted by ${partner.name}`,
-                partner_id: partner.id,
-                partner: partner,
-              }
-            }
-            return { text: formatMarkdownValue(blurb, format) }
-          })
-        },
+        resolve: biographyBlurbResolver,
       },
+
       birthday: { type: GraphQLString },
       blurb: {
         args: markdown().args,
