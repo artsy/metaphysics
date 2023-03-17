@@ -68,14 +68,19 @@ export const createCollectionMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
+    const { userID } = context
+
     try {
       const response = await context.createCollectionLoader({
         name: args.name,
-        user_id: context.userID,
+        user_id: userID,
         saves: true,
       })
 
-      return response
+      return {
+        ...response,
+        userID,
+      }
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
