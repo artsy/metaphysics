@@ -3982,4 +3982,79 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("isPriceEstimateRequestable", () => {
+    beforeEach(() => {
+      artwork.artist.target_supply_priority = 1
+      artwork.category = "Painting"
+    })
+
+    const query = `
+      {
+        artwork(id: "foo-bar") {
+          isPriceEstimateRequestable
+        }
+      }
+    `
+
+    it("returns true if the artist is P1 artist", async () => {
+      artwork.artist.target_supply_priority = 1
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          isPriceEstimateRequestable: true,
+        },
+      })
+    })
+
+    it("returns false if the artwork category is Posters", async () => {
+      artwork.category = "Posters"
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          isPriceEstimateRequestable: false,
+        },
+      })
+    })
+
+    it("returns false if the artist is Salvador Dali", async () => {
+      artwork.artist.id = "salvador-dali"
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          isPriceEstimateRequestable: false,
+        },
+      })
+    })
+
+    it("returns false if the artwork has a submission", async () => {
+      artwork.submission_id = "submission_id"
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          isPriceEstimateRequestable: false,
+        },
+      })
+    })
+
+    it("returns false if the artist is not P1 artist", async () => {
+      artwork.artist.target_supply_priority = 2
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          isPriceEstimateRequestable: false,
+        },
+      })
+    })
+  })
 })

@@ -272,11 +272,11 @@ export const gravityStitchingEnvironment = (
                 fieldName: "marketingCollections",
                 args: {
                   slugs: [
+                    "trending-now",
                     "top-auction-lots",
-                    "artists-on-the-rise",
-                    "iconic-prints",
-                    "finds-under-1000-dollars",
-                    "trending-this-week",
+                    "new-this-week",
+                    "curators-picks-blue-chip",
+                    "curators-picks-emerging",
                   ],
                 },
                 context,
@@ -810,11 +810,11 @@ export const gravityStitchingEnvironment = (
                 fieldName: "marketingCollections",
                 args: {
                   slugs: [
-                    "curators-picks-emerging",
-                    "trending-this-week",
-                    "artists-on-the-rise",
-                    "blue-chip-artists",
+                    "trending-now",
                     "top-auction-lots",
+                    "new-this-week",
+                    "curators-picks-blue-chip",
+                    "curators-picks-emerging",
                   ],
                   ...args,
                 },
