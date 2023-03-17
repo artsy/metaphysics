@@ -246,6 +246,33 @@ describe("AuctionResult type", () => {
       })
     })
   })
+
+  describe("artist", () => {
+    it("returns the artist name when requested", () => {
+      const auctionResult = {
+        ...mockAuctionResult,
+      }
+
+      const context = {
+        auctionLotLoader: jest.fn(() => Promise.resolve(auctionResult)),
+        artistLoader: jest.fn(() => Promise.resolve({ name: "Andy Warhol" })),
+      }
+
+      const query = `
+        {
+          auctionResult(id: "foo-bar") {
+            artist {
+              name
+            }
+          }
+        }
+      `
+
+      return runQuery(query, context).then((data) => {
+        expect(data.auctionResult.artist.name).toEqual("Andy Warhol")
+      })
+    })
+  })
 })
 
 const mockComparableAuctionResults = {

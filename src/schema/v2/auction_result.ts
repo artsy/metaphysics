@@ -81,7 +81,15 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
     },
     artist: {
       type: ArtistType,
-      resolve: ({ artist }) => artist,
+      resolve: async (res, _, { artistLoader }) => {
+        // In case we get artist already resolved from the main connection
+        if (res.artist) {
+          return res.artist
+        }
+
+        const artist = await artistLoader(res.artist_id)
+        return artist
+      },
     },
     date,
     dateText: {
