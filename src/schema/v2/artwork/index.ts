@@ -391,7 +391,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: async (parent, args, context, _info) => {
           const { id: artwork_id } = parent
-          const { collectionsLoader, userID: meID } = context
+          const { collectionsLoader, userID } = context
           if (!collectionsLoader) return null
 
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
@@ -400,7 +400,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
 
           const { body, headers } = await collectionsLoader({
             artwork_id,
-            user_id: meID,
+            user_id: userID,
             private: true,
             default: args.default,
             saves: args.saves,
@@ -409,9 +409,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             offset,
             total_count: true,
           })
-          const bodyWithMe = (body ?? []).map((obj) => {
-            return { ...obj, userID: meID }
-          })
           const totalCount = parseInt(headers?.["x-total-count"] || "0", 10)
 
           return paginationResolver({
@@ -419,7 +416,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             offset,
             page,
             size,
-            body: bodyWithMe,
+            body,
             args,
           })
         },
