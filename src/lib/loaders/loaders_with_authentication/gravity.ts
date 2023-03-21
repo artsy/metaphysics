@@ -172,7 +172,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
-    deleteUserAccountLoader: gravityLoader("me", {}, { method: "DELETE" }),
+    deleteUserLoader: gravityLoader(
+      (id) => `user/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     deleteUserAdminNoteLoader: gravityLoader<
       any,
       { id: string; admin_note_id: string }
@@ -398,6 +402,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    meDeleteUserAccountLoader: gravityLoader("me", {}, { method: "DELETE" }),
     meDeleteUserInterestLoader: gravityLoader(
       (id) => `me/user_interest/${id}`,
       {},
