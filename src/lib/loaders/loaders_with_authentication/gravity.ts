@@ -1,3 +1,4 @@
+import { gravityGraphQL } from "lib/apis/gravityGraphQL"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 import factories from "../api"
 
@@ -332,6 +333,7 @@ export default (accessToken, userID, opts) => {
       }
     ),
     followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
+    gravityGraphQLLoader: gravityGraphQL(accessToken),
     homepageModulesLoader: gravityLoader("me/modules"),
     homepageSuggestedArtworksLoader: gravityLoader(
       "me/suggested/artworks/homepage"
