@@ -72,12 +72,12 @@ export const deleteUserAccountMutation = mutationWithClientMutationId<
       resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: (args, { deleteUserAccountLoader }) => {
-    if (!deleteUserAccountLoader) {
+  mutateAndGetPayload: (args, { meDeleteUserAccountLoader }) => {
+    if (!meDeleteUserAccountLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
-    return deleteUserAccountLoader(args).catch((error) => {
+    return meDeleteUserAccountLoader(args).catch((error) => {
       const formattedErr = formatGravityError(error)
 
       if (formattedErr) {
