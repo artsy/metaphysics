@@ -109,7 +109,7 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
 
         const { headers } = await collectionArtworksLoader(parent.id, {
           artworks: [args.artworkID],
-          user_id: parent.userID,
+          user_id: context.userID,
           private: true,
           size: 0,
           total_count: true,
