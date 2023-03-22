@@ -177,20 +177,25 @@ export const gravityStitchingEnvironment = (
         algolia: Algolia
       }
 
+
       extend type CreateUserAddressPayload {
-        me : Me
+        me: Me
+      }
+
+      extend type CreateSavedSearchPayload {
+        me: Me
       }
 
       extend type UpdateUserAddressPayload {
-        me : Me
+        me: Me
       }
 
       extend type DeleteUserAddressPayload {
-        me : Me
+        me: Me
       }
 
       extend type UpdateUserDefaultAddressPayload {
-        me : Me
+        me: Me
       }
 
       extend type Fair {
@@ -960,6 +965,20 @@ export const gravityStitchingEnvironment = (
         },
       },
       CreateUserAddressPayload: {
+        me: {
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "me",
+              args,
+              context,
+              info,
+            })
+          },
+        },
+      },
+      CreateSavedSearchPayload: {
         me: {
           resolve: (_parent, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
