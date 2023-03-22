@@ -1,3 +1,4 @@
+import { gravityGraphQL } from "lib/apis/gravityGraphQL"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 import factories from "../api"
 
@@ -172,7 +173,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
-    deleteUserAccountLoader: gravityLoader("me", {}, { method: "DELETE" }),
+    deleteUserLoader: gravityLoader(
+      (id) => `user/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     deleteUserAdminNoteLoader: gravityLoader<
       any,
       { id: string; admin_note_id: string }
@@ -328,6 +333,7 @@ export default (accessToken, userID, opts) => {
       }
     ),
     followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
+    gravityGraphQLLoader: gravityGraphQL(accessToken),
     homepageModulesLoader: gravityLoader("me/modules"),
     homepageSuggestedArtworksLoader: gravityLoader(
       "me/suggested/artworks/homepage"
@@ -398,6 +404,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    meDeleteUserAccountLoader: gravityLoader("me", {}, { method: "DELETE" }),
     meDeleteUserInterestLoader: gravityLoader(
       (id) => `me/user_interest/${id}`,
       {},
