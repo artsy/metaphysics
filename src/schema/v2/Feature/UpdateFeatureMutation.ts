@@ -85,7 +85,7 @@ export const UpdateFeatureMutation = mutationWithClientMutationId<
   outputFields: {
     featureOrError: {
       type: ResponseOrErrorType,
-      description: "On success: the ordered set updated.",
+      description: "On success: the feature updated.",
       resolve: (result) => result,
     },
   },

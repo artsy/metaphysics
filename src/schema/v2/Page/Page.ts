@@ -7,10 +7,11 @@ import {
   GraphQLID,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { markdown } from "./fields/markdown"
-import { IDFields } from "./object_identification"
+import { markdown } from "../fields/markdown"
+import { connectionWithCursorInfo } from "../fields/pagination"
+import { IDFields } from "../object_identification"
 
-export interface Page {
+interface PageGravityResponse {
   _id: string
   content?: string
   created_at: string
@@ -19,7 +20,10 @@ export interface Page {
   published?: boolean
 }
 
-export const pageType = new GraphQLObjectType<Page, ResolverContext>({
+export const PageType = new GraphQLObjectType<
+  PageGravityResponse,
+  ResolverContext
+>({
   name: "Page",
   fields: {
     ...IDFields,
@@ -32,12 +36,16 @@ export const pageType = new GraphQLObjectType<Page, ResolverContext>({
   },
 })
 
-export const page: GraphQLFieldConfig<void, ResolverContext> = {
+export const Page: GraphQLFieldConfig<void, ResolverContext> = {
   args: {
     id: { type: new GraphQLNonNull(GraphQLID) },
   },
-  type: new GraphQLNonNull(pageType),
+  type: new GraphQLNonNull(PageType),
   resolve: (_source, { id }, { pageLoader }) => {
     return pageLoader(id)
   },
 }
+
+export const PageConnectionType = connectionWithCursorInfo({
+  nodeType: PageType,
+}).connectionType
