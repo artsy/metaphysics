@@ -420,6 +420,20 @@ export default (accessToken, userID, opts) => {
     meUserInterestsLoader: gravityLoader("me/user_interests"),
     notificationPreferencesLoader: gravityLoader("notification_preferences"),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
+    pageLoader: gravityLoader((id) => `page/${id}`),
+    pagesLoader: gravityLoader("pages", {}, { headers: true }),
+    createPageLoader: gravityLoader("page", {}, { method: "POST" }),
+    deletePageLoader: gravityLoader(
+      (id) => `page/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    updatePageLoader: gravityLoader(
+      (id) => `page/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    matchPagesLoader: gravityLoader("match/pages", {}, { headers: true }),
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
     partnerArtistDocumentsLoader: gravityLoader<
       any,

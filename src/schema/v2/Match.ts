@@ -19,7 +19,7 @@ import {
   paginationResolver,
 } from "schema/v2/fields/pagination"
 import { GeneType } from "./gene"
-import { pageType } from "./page"
+import { PageType } from "./Page/Page"
 import { ProfileType } from "./profile"
 import { SaleType } from "./sale"
 import { SearchMode } from "./search"
@@ -34,7 +34,7 @@ const MODELS = {
   Fair: { loader: "fairLoader", type: FairType },
   Feature: { loader: "featureLoader", type: FeatureType },
   Gene: { loader: "geneLoader", type: GeneType },
-  Page: { loader: "pageLoader", type: pageType },
+  Page: { loader: "pageLoader", type: PageType },
   Profile: { loader: "profileLoader", type: ProfileType },
   Sale: { loader: "saleLoader", type: SaleType },
   PartnerShow: { loader: "showLoader", type: ShowType },

@@ -135,7 +135,7 @@ import FairOrganizer from "./fair_organizer"
 import { externalField } from "./External/External"
 import { createUserInterestMutation } from "./me/createUserInterestMutation"
 import { createUserInterestForUser } from "./users/createUserInterestForUserMutation"
-import { page } from "./page"
+import { Page } from "./Page/Page"
 import { deleteUserInterestMutation } from "./me/deleteUserInterestMutation"
 import { deleteUserInterestForUser } from "./users/deleteUserInterestForUserMutation"
 import { PhoneNumber } from "./phoneNumber"
@@ -192,6 +192,10 @@ import { DeleteFeaturedLinkMutation } from "./FeaturedLink/deleteFeaturedLinkMut
 import { createUserSaleProfileMutation } from "./users/createUserSaleProfileMutation"
 import { MarkdownContent } from "./markdownContent"
 import { CollectorProfileForUser } from "./CollectorProfile/collectorProfile"
+import { PagesConnection } from "./Page/PagesConnection"
+import { CreatePageMutation } from "./Page/CreatePageMutation"
+import { DeletePageMutation } from "./Page/DeletePageMutation"
+import { UpdatePageMutation } from "./Page/UpdatePageMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -275,7 +279,8 @@ const rootFields = {
   orderedSet: OrderedSet,
   orderedSets: OrderedSets,
   orderedSetsConnection: OrderedSetsConnection,
-  page,
+  page: Page,
+  pagesConnection: PagesConnection,
   partner: Partner,
   partnerArtistDocumentsConnection: PartnerArtistDocumentsConnection,
   partnerArtworks: PartnerArtworks,
@@ -342,6 +347,7 @@ export default new GraphQLSchema({
       createFeaturedLink: CreateFeaturedLinkMutation,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createOrderedSet: createOrderedSetMutation,
+      createPage: CreatePageMutation,
       createUserAdminNote: createUserAdminNoteMutation,
       createUserInterest: createUserInterestMutation,
       createUserInterestForUser: createUserInterestForUser,
@@ -357,6 +363,7 @@ export default new GraphQLSchema({
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       deleteOrderedSet: deleteOrderedSetMutation,
       deleteOrderedSetItem: deleteOrderedSetItemMutation,
+      deletePage: DeletePageMutation,
       deleteUser: deleteUserMutation,
       deleteUserAdminNote: deleteUserAdminNoteMutation,
       deleteUserInterest: deleteUserInterestMutation,
@@ -400,6 +407,7 @@ export default new GraphQLSchema({
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateNotificationPreferences: updateNotificationPreferencesMutation,
       updateOrderedSet: updateOrderedSetMutation,
+      updatePage: UpdatePageMutation,
       updateUser: updateUserMutation,
       updateArtist: updateArtistMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
