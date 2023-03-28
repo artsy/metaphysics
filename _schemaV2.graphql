@@ -2873,7 +2873,7 @@ type AuctionResultsByArtistsEdge {
 }
 
 enum AuctionResultSorts {
-  DATE_ASc
+  DATE_ASC
   DATE_DESC
   ESTIMATE_AND_DATE_DESC
   PRICE_AND_DATE_DESC
