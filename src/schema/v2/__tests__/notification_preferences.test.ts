@@ -13,3 +13,31 @@ describe("convertSubGroups", () => {
     })
   })
 })
+
+describe("notificationPreferenceType", () => {
+  // test for each notification field
+  it("can update push notification preferences for recommendedByArtsy", () => {
+    const pushSubGroups = [
+      {
+        id: "abc",
+        name: "recommendedByArtsy",
+        channel: "push",
+        status: "Subscribed",
+      },
+    ]
+
+    expect(pushSubGroups).toBeTrue()
+  })
+  it("can update email notification preferences recommendedByArtsy", () => {
+    const pushSubGroups = [
+      {
+        id: "abc",
+        name: "recommendedByArtsy",
+        channel: "email",
+        status: "Subscribed",
+      },
+    ]
+
+    expect(pushSubGroups).toBeTrue()
+  })
+})
