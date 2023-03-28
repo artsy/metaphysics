@@ -247,6 +247,54 @@ describe("AuctionResult type", () => {
     })
   })
 
+  describe.only("isArtsyAuction", () => {
+    it("returns true when an auction is an Artsy auction", () => {
+      const auctionResult = {
+        ...mockAuctionResult,
+        organization: "Artsy Auction",
+      }
+
+      const context = {
+        auctionLotLoader: jest.fn(() => Promise.resolve(auctionResult)),
+      }
+
+      const query = `
+        {
+          auctionResult(id: "foo-bar") {
+            isArtsyAuction
+          }
+        }
+      `
+
+      return runQuery(query, context).then((data) => {
+        expect(data.auctionResult.isArtsyAuction).toEqual(true)
+      })
+    })
+
+    it("returns false when an auction is not an Artsy auction", () => {
+      const auctionResult = {
+        ...mockAuctionResult,
+        organization: "Sotheby's",
+      }
+
+      const context = {
+        auctionLotLoader: jest.fn(() => Promise.resolve(auctionResult)),
+      }
+
+      const query = `
+        {
+          auctionResult(id: "foo-bar") {
+            isArtsyAuction
+          }
+        }
+      `
+
+      return runQuery(query, context).then((data) => {
+        expect(data.auctionResult.isArtsyAuction).toEqual(false)
+      })
+    })
+  })
+
   describe("artist", () => {
     it("returns the artist name when requested", () => {
       const auctionResult = {
