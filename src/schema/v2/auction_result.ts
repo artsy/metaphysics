@@ -17,6 +17,7 @@ import {
   priceRangeDisplayText,
 } from "lib/moneyHelpers"
 import { isNil, merge } from "lodash"
+import moment from "moment-timezone"
 import { pageable } from "relay-cursor-paging"
 import {
   connectionWithCursorInfo,
@@ -112,7 +113,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ sale_date }) => {
         if (!sale_date) return null
 
-        return isSameOrAfterToday(sale_date)
+        return isUpcoming(sale_date)
       },
     },
     lotNumber: {
@@ -403,7 +404,10 @@ export const auctionResultConnection = connectionWithCursorInfo({
 })
 
 // Compare two dates and return true if the first date is after todoy's date (00:00:00)
-const isSameOrAfterToday = (date: string | number | Date): boolean => {
-  const utc = new Date().toJSON().slice(0, 10).replace(/-/g, "/")
-  return new Date(date) >= new Date(utc)
+const isUpcoming = (date: string | number | Date): boolean => {
+  // if (moment().isSameOrBefore(moment(date).endOf("day"))) {
+  if (moment(date).isSameOrBefore(moment().endOf("day"))) {
+    return false
+  }
+  return true
 }
