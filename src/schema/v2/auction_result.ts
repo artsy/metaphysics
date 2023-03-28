@@ -241,7 +241,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
-    isArtsyAuction: {
+    isInArtsyAuction: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ organization }) => {
         if (organization === "Artsy Auction") {

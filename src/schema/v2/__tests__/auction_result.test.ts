@@ -247,7 +247,7 @@ describe("AuctionResult type", () => {
     })
   })
 
-  describe.only("isArtsyAuction", () => {
+  describe("isInArtsyAuction", () => {
     it("returns true when an auction is an Artsy auction", () => {
       const auctionResult = {
         ...mockAuctionResult,
@@ -261,13 +261,13 @@ describe("AuctionResult type", () => {
       const query = `
         {
           auctionResult(id: "foo-bar") {
-            isArtsyAuction
+            isInArtsyAuction
           }
         }
       `
 
       return runQuery(query, context).then((data) => {
-        expect(data.auctionResult.isArtsyAuction).toEqual(true)
+        expect(data.auctionResult.isInArtsyAuction).toEqual(true)
       })
     })
 
@@ -284,13 +284,13 @@ describe("AuctionResult type", () => {
       const query = `
         {
           auctionResult(id: "foo-bar") {
-            isArtsyAuction
+            isInArtsyAuction
           }
         }
       `
 
       return runQuery(query, context).then((data) => {
-        expect(data.auctionResult.isArtsyAuction).toEqual(false)
+        expect(data.auctionResult.isInArtsyAuction).toEqual(false)
       })
     })
   })

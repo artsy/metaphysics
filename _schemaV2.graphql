@@ -2758,7 +2758,7 @@ type AuctionResult implements Node {
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
-  isArtsyAuction: Boolean!
+  isInArtsyAuction: Boolean!
   isUpcoming: Boolean
   location: String
   lotNumber: String
