@@ -11,10 +11,11 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 
 export const convertSubGroups = (subGroups) => {
-  const gravityGroups = subGroups.reduce((previous, current) => {
-    previous[current.name] = current.status.toLowerCase()
-    return previous
-  }, {})
+  const gravityGroups = subGroups.map((group) => ({
+    name: group.name,
+    status: group.status.toLowerCase(),
+    channel: group.channel.toLowerCase(),
+  }))
 
   const params = { subscription_groups: gravityGroups }
 
@@ -29,15 +30,23 @@ const subGroupFields = {
     type: new GraphQLNonNull(GraphQLString),
   },
   channel: {
-    type: new GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(
+      new GraphQLEnumType({
+        name: "NotificationChannel",
+        values: {
+          EMAIL: { value: "EMAIL" },
+          PUSH: { value: "PUSH" },
+        },
+      })
+    ),
   },
   status: {
     type: new GraphQLNonNull(
       new GraphQLEnumType({
         name: "SubGroupStatus",
         values: {
-          SUBSCRIBED: { value: "Subscribed" },
-          UNSUBSCRIBED: { value: "Unsubscribed" },
+          SUBSCRIBED: { value: "SUBSCRIBED" },
+          UNSUBSCRIBED: { value: "UNSUBSCRIBED" },
         },
       })
     ),
@@ -47,6 +56,17 @@ const subGroupFields = {
 const subGroupInputFields = {
   name: {
     type: new GraphQLNonNull(GraphQLString),
+  },
+  channel: {
+    type: new GraphQLNonNull(
+      new GraphQLEnumType({
+        name: "NotificationChannelInput",
+        values: {
+          EMAIL: { value: "Email" },
+          PUSH: { value: "Push" },
+        },
+      })
+    ),
   },
   status: {
     type: new GraphQLNonNull(
@@ -127,6 +147,7 @@ export const updateNotificationPreferencesMutation = mutationWithClientMutationI
     const subGroups = args.subscriptionGroups
     const params = convertSubGroups(subGroups)
 
+    // add error handling??
     if (updateNotificationPreferencesLoader) {
       return updateNotificationPreferencesLoader(params)
     }
