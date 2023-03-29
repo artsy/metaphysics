@@ -1,3 +1,4 @@
+import contentfulLoaders from "./contentful"
 import { convectionLoaders } from "./convection"
 import deltaLoaders from "./delta"
 import diffusionLoaders from "./diffusion"
@@ -11,6 +12,7 @@ import ipbaseLoaders from "./ipbase"
 import vortexLoaders from "./vortex"
 
 export const createLoadersWithoutAuthentication = (opts) => ({
+  ...contentfulLoaders(opts),
   ...convectionLoaders(opts),
   ...deltaLoaders(opts),
   ...diffusionLoaders(opts),

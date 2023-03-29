@@ -8,6 +8,7 @@ import geodata from "lib/apis/geodata"
 import gravity from "lib/apis/gravity"
 import impulse from "lib/apis/impulse"
 import positron from "lib/apis/positron"
+import { contentful } from "lib/apis/contentful"
 import { vortex } from "lib/apis/vortex"
 import { greenhouse } from "lib/apis/greenhouse"
 import { ipbase } from "lib/apis/ipbase"
@@ -43,6 +44,15 @@ export interface DataLoaderKey {
 
 export default (opts) => ({
   // Unauthenticated loaders
+
+  contentfulLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    contentful,
+    "contentful",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
+  ),
 
   /**
    * The Convection loaders produced by this factory _will_ cache all responses to memcache.

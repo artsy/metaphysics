@@ -9,6 +9,10 @@ import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { ResolverContext } from "types/graphql"
 // import Status from "./status"
 import Article from "./article"
+import {
+  ContentfulArticle,
+  ContentfulArticles,
+} from "./article/contentfulArticle"
 import Articles from "./articles"
 import ArticlesConnection from "./articlesConnection"
 import Artist from "./artist"
@@ -227,6 +231,8 @@ const rootFields = {
   },
   admin: AdminField,
   article: Article,
+  contentfulArticle: ContentfulArticle,
+  contentfulArticles: ContentfulArticles,
   articles: Articles,
   articlesConnection: ArticlesConnection,
   artist: Artist,
