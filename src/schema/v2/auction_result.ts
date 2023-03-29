@@ -85,6 +85,8 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
     },
     artist: {
       type: ArtistType,
+      description:
+        "Be careful when querying for artist data within a connection as it can lead to performance issues.",
       resolve: async (res, _, { artistLoader }) => {
         // In case we get artist already resolved from the main connection
         if (res.artist) {
