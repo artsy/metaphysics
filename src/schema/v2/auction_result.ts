@@ -113,7 +113,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ sale_date }) => {
         if (!sale_date) return null
 
-        return isUpcoming(sale_date)
+        return moment(sale_date).isAfter(moment())
       },
     },
     lotNumber: {
@@ -239,6 +239,15 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
           larger: normalizeImageData(images[0].larger),
           thumbnail: normalizeImageData(images[0].thumbnail),
         }
+      },
+    },
+    isInArtsyAuction: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ organization }) => {
+        if (organization === "Artsy Auction") {
+          return true
+        }
+        return false
       },
     },
     performance: {
@@ -402,12 +411,3 @@ export const auctionResultConnection = connectionWithCursorInfo({
     },
   },
 })
-
-// Compare two dates and return true if the first date is after todoy's date (00:00:00)
-const isUpcoming = (date: string | number | Date): boolean => {
-  // if (moment().isSameOrBefore(moment(date).endOf("day"))) {
-  if (moment(date).isSameOrBefore(moment().endOf("day"))) {
-    return false
-  }
-  return true
-}
