@@ -241,6 +241,15 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
+    isInArtsyAuction: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({ organization }) => {
+        if (organization === "Artsy Auction") {
+          return true
+        }
+        return false
+      },
+    },
     performance: {
       type: new GraphQLObjectType({
         name: "AuctionLotPerformance",
