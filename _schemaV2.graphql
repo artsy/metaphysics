@@ -3214,7 +3214,6 @@ type Author {
   # A type-specific ID.
   internalID: ID!
   name: String
-  twitterHandle: String
 }
 
 # Backup Two-Factor Authentication factor

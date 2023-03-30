@@ -21,10 +21,6 @@ const AuthorType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     bio: markdown(({ bio }) => bio),
-    twitterHandle: {
-      type: GraphQLString,
-      resolve: ({ twitter_handle }) => twitter_handle,
-    },
   },
 })
 
