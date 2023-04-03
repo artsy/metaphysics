@@ -39,7 +39,7 @@ export const AuctionResultSorts = {
         value: "-sale_date",
       },
       DATE_ASC: {
-        value: "-sale_date_asc",
+        value: "sale_date",
       },
       PRICE_AND_DATE_DESC: {
         value: "-price_realized_cents_usd,-sale_date",
