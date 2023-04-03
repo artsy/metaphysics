@@ -26,11 +26,13 @@ describe("notificationPreferenceType", () => {
       },
     ]
 
+    const params = convertSubGroups(pushSubGroups)
+
     expect(pushSubGroups).toBeTrue()
   })
 
   it("can update email notification preferences recommendedByArtsy", () => {
-    const pushSubGroups = [
+    const emailSubGroups = [
       {
         id: "abc",
         name: " recommendedByArtsyEmail",
@@ -39,7 +41,9 @@ describe("notificationPreferenceType", () => {
       },
     ]
 
-    expect(pushSubGroups).toBeTrue()
+    const params = convertSubGroups(emailSubGroups)
+
+    expect(emailSubGroups).toBeTrue()
   })
 
   // artWorldInsights
@@ -53,10 +57,12 @@ describe("notificationPreferenceType", () => {
       },
     ]
 
+    const params = convertSubGroups(pushSubGroups)
+
     expect(pushSubGroups).toBeTrue()
   })
   it("can update email notification preferences artWorldInsights", () => {
-    const pushSubGroups = [
+    const emailSubGroups = [
       {
         id: "abc",
         name: "artWorldInsightsEmail",
@@ -65,7 +71,9 @@ describe("notificationPreferenceType", () => {
       },
     ]
 
-    expect(pushSubGroups).toBeTrue()
+    const params = convertSubGroups(emailSubGroups)
+
+    expect(emailSubGroups).toBeTrue()
   })
 
   // productUpdates
@@ -79,10 +87,12 @@ describe("notificationPreferenceType", () => {
       },
     ]
 
+    const params = convertSubGroups(pushSubGroups)
+
     expect(pushSubGroups).toBeTrue()
   })
   it("can update email notification preferences productUpdates", () => {
-    const pushSubGroups = [
+    const emailSubGroups = [
       {
         id: "abc",
         name: "productUpdatesEmail",
@@ -91,7 +101,9 @@ describe("notificationPreferenceType", () => {
       },
     ]
 
-    expect(pushSubGroups).toBeTrue()
+    const params = convertSubGroups(emailSubGroups)
+
+    expect(emailSubGroups).toBeTrue()
   })
 
   // guidanceOnCollecting
@@ -105,10 +117,12 @@ describe("notificationPreferenceType", () => {
       },
     ]
 
+    const params = convertSubGroups(pushSubGroups)
+
     expect(pushSubGroups).toBeTrue()
   })
   it("can update email notification preferences guidanceOnCollecting", () => {
-    const pushSubGroups = [
+    const emailSubGroups = [
       {
         id: "abc",
         name: "guidanceOnCollectingEmail",
@@ -117,7 +131,9 @@ describe("notificationPreferenceType", () => {
       },
     ]
 
-    expect(pushSubGroups).toBeTrue()
+    const params = convertSubGroups(emailSubGroups)
+
+    expect(emailSubGroups).toBeTrue()
   })
 
   // customAlerts
@@ -131,10 +147,12 @@ describe("notificationPreferenceType", () => {
       },
     ]
 
+    const params = convertSubGroups(pushSubGroups)
+
     expect(pushSubGroups).toBeTrue()
   })
   it("can update email notification preferences customAlerts", () => {
-    const pushSubGroups = [
+    const emailSubGroups = [
       {
         id: "abc",
         name: "customAlertsEmail",
@@ -143,6 +161,8 @@ describe("notificationPreferenceType", () => {
       },
     ]
 
-    expect(pushSubGroups).toBeTrue()
+    const params = convertSubGroups(emailSubGroups)
+
+    expect(emailSubGroups).toBeTrue()
   })
 })
