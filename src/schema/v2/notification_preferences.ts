@@ -11,10 +11,11 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 
 export const convertSubGroups = (subGroups) => {
-  const gravityGroups = subGroups.reduce((previous, current) => {
-    previous[current.name] = current.status.toLowerCase()
-    return previous
-  }, {})
+  const gravityGroups = subGroups.map((group) => ({
+    name: group.name,
+    status: group.status.toLowerCase(),
+    channel: group.channel.toLowerCase(),
+  }))
 
   const params = { subscription_groups: gravityGroups }
 

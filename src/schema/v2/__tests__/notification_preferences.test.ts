@@ -3,28 +3,18 @@ import { convertSubGroups } from "../notification_preferences"
 import { runQuery } from "../test/utils"
 
 describe("convertSubGroups", () => {
-  it("converts to params for gravity", () => {
+  it("converts subGroups to params for gravity loader", () => {
     const subGroups = [
-      {
-        id: "abc",
-        name: "productUpdates",
-        channel: "email",
-        status: "Subscribed",
-      },
-      {
-        id: "abc",
-        name: "artWorldInsights",
-        channel: "push",
-        status: "Subscribed",
-      },
+      { id: "abc1", name: "GroupA", status: "Subscribed", channel: "Email" },
+      { id: "abc2", name: "GroupB", status: "Unsubscribed", channel: "Push" },
     ]
 
     const params = convertSubGroups(subGroups)
 
     expect(params).toEqual({
       subscription_groups: [
-        { productUpdates: "subscribed" },
-        { artWorldInsights: "subscribed" },
+        { name: "GroupA", status: "subscribed", channel: "email" },
+        { name: "GroupB", status: "unsubscribed", channel: "push" },
       ],
     })
   })
@@ -48,15 +38,15 @@ describe("notificationPreferences", () => {
     const notificationPreferences = [
       {
         id: "abc",
-        name: "recommendedByArtsy",
+        name: "GroupA",
         channel: "email",
-        status: "Subscribed",
+        status: "subscribed",
       },
       {
         id: "abc",
-        name: "artWorldInsights",
+        name: "GroupB",
         channel: "push",
-        status: "Unsubscribed",
+        status: "unsubscribed",
       },
     ]
 
