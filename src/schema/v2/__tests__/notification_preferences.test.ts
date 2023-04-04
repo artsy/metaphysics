@@ -1,168 +1,101 @@
+import gql from "lib/gql"
 import { convertSubGroups } from "../notification_preferences"
+import { runQuery } from "../test/utils"
 
 describe("convertSubGroups", () => {
   it("converts to params for gravity", () => {
     const subGroups = [
-      { id: "abc", name: "daily", channel: "email", status: "Subscribed" },
+      {
+        id: "abc",
+        name: "productUpdates",
+        channel: "email",
+        status: "Subscribed",
+      },
+      {
+        id: "abc",
+        name: "artWorldInsights",
+        channel: "push",
+        status: "Subscribed",
+      },
     ]
 
     const params = convertSubGroups(subGroups)
 
     expect(params).toEqual({
-      subscription_groups: { daily: "subscribed" },
+      subscription_groups: [
+        { productUpdates: "subscribed" },
+        { artWorldInsights: "subscribed" },
+      ],
     })
   })
 })
 
-describe("notificationPreferenceType", () => {
-  // recommendedByArtsy
-  it("can update push notification preferences for recommendedByArtsy", () => {
-    const pushSubGroups = [
+describe("notificationPreferences", () => {
+  it("returns notification preferences for authenticated user", async () => {
+    const query = gql`
+      {
+        me {
+          notificationPreferences {
+            id
+            name
+            channel
+            status
+          }
+        }
+      }
+    `
+
+    const notificationPreferences = [
       {
         id: "abc",
-        name: "recommendedByArtsyPush",
-        channel: "push",
-        status: "Subscribed",
-      },
-    ]
-
-    const params = convertSubGroups(pushSubGroups)
-
-    expect(pushSubGroups).toBeTrue()
-  })
-
-  it("can update email notification preferences recommendedByArtsy", () => {
-    const emailSubGroups = [
-      {
-        id: "abc",
-        name: " recommendedByArtsyEmail",
+        name: "recommendedByArtsy",
         channel: "email",
         status: "Subscribed",
       },
-    ]
-
-    const params = convertSubGroups(emailSubGroups)
-
-    expect(emailSubGroups).toBeTrue()
-  })
-
-  // artWorldInsights
-  it("can update push notification preferences for artWorldInsights", () => {
-    const pushSubGroups = [
       {
         id: "abc",
-        name: "artWorldInsightsPush",
+        name: "artWorldInsights",
         channel: "push",
-        status: "Subscribed",
+        status: "Unsubscribed",
       },
     ]
 
-    const params = convertSubGroups(pushSubGroups)
+    const context = {
+      notificationPreferencesLoader: () =>
+        Promise.resolve({
+          notification_preferences: notificationPreferences,
+        }),
+    }
 
-    expect(pushSubGroups).toBeTrue()
-  })
-  it("can update email notification preferences artWorldInsights", () => {
-    const emailSubGroups = [
-      {
-        id: "abc",
-        name: "artWorldInsightsEmail",
-        channel: "email",
-        status: "Subscribed",
-      },
-    ]
-
-    const params = convertSubGroups(emailSubGroups)
-
-    expect(emailSubGroups).toBeTrue()
+    const data = await runQuery(query, context)
+    expect(data!.me.notificationPreferences).toEqual(notificationPreferences)
   })
 
-  // productUpdates
-  it("can update push notification preferences for productUpdates", () => {
-    const pushSubGroups = [
-      {
-        id: "abc",
-        name: "productUpdatesPush",
-        channel: "push",
-        status: "Subscribed",
-      },
-    ]
+  it("returns notification preferences for unathenticated user", async () => {})
 
-    const params = convertSubGroups(pushSubGroups)
-
-    expect(pushSubGroups).toBeTrue()
-  })
-  it("can update email notification preferences productUpdates", () => {
-    const emailSubGroups = [
-      {
-        id: "abc",
-        name: "productUpdatesEmail",
-        channel: "email",
-        status: "Subscribed",
-      },
-    ]
-
-    const params = convertSubGroups(emailSubGroups)
-
-    expect(emailSubGroups).toBeTrue()
+  it("updates notification preferences when input is valid", async () => {
+    // update both email and push notys
   })
 
-  // guidanceOnCollecting
-  it("can update push notification preferences for guidanceOnCollecting", () => {
-    const pushSubGroups = [
-      {
-        id: "abc",
-        name: "guidanceOnCollectingPush",
-        channel: "push",
-        status: "Subscribed",
-      },
-    ]
-
-    const params = convertSubGroups(pushSubGroups)
-
-    expect(pushSubGroups).toBeTrue()
-  })
-  it("can update email notification preferences guidanceOnCollecting", () => {
-    const emailSubGroups = [
-      {
-        id: "abc",
-        name: "guidanceOnCollectingEmail",
-        channel: "email",
-        status: "Subscribed",
-      },
-    ]
-
-    const params = convertSubGroups(emailSubGroups)
-
-    expect(emailSubGroups).toBeTrue()
+  it("returns an error when input value is invalid", async () => {
+    // Invalid name
+    // Invalid status
+    // Invalid channel
   })
 
-  // customAlerts
-  it("can update push notification preferences for customAlerts", () => {
-    const pushSubGroups = [
-      {
-        id: "abc",
-        name: "customAlertsPush",
-        channel: "push",
-        status: "Subscribed",
-      },
-    ]
-
-    const params = convertSubGroups(pushSubGroups)
-
-    expect(pushSubGroups).toBeTrue()
+  it("returns an error when input value is missing", async () => {
+    //Missing name
+    // Missing status
+    // Missing channel
   })
-  it("can update email notification preferences customAlerts", () => {
-    const emailSubGroups = [
-      {
-        id: "abc",
-        name: "customAlertsEmail",
-        channel: "email",
-        status: "Subscribed",
-      },
-    ]
+})
 
-    const params = convertSubGroups(emailSubGroups)
+describe("Update notificationPreferences", () => {
+  it("updates email notification preferences to 'Subscribed' when input is valid", async () => {})
 
-    expect(emailSubGroups).toBeTrue()
-  })
+  it("updates email notification preferences to 'Unsubscribed' when input is valid", async () => {})
+
+  it("updates push notification preferences to 'Subscribed' when input is valid", async () => {})
+
+  it("updates push notification preferences to 'Unsubscribed' when input is valid", async () => {})
 })
