@@ -60,7 +60,7 @@ const subGroupInputFields = {
   channel: {
     type: new GraphQLNonNull(
       new GraphQLEnumType({
-        name: "NotificationChannel",
+        name: "NotificationChannelInput",
         values: {
           EMAIL: { value: "Email" },
           PUSH: { value: "Push" },
