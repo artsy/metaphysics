@@ -24,13 +24,11 @@ describe("notificationPreferences", () => {
   it("returns notification preferences for authenticated user", async () => {
     const query = gql`
       {
-        me {
-          notificationPreferences {
-            id
-            name
-            channel
-            status
-          }
+        notificationPreferences {
+          id
+          name
+          channel
+          status
         }
       }
     `
@@ -58,7 +56,7 @@ describe("notificationPreferences", () => {
     }
 
     const data = await runQuery(query, context)
-    expect(data!.me.notificationPreferences).toEqual(notificationPreferences)
+    expect(data!.notificationPreferences).toEqual(notificationPreferences)
   })
 
   it("returns notification preferences for unathenticated user", async () => {})
