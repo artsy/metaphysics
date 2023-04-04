@@ -29,7 +29,15 @@ const subGroupFields = {
     type: new GraphQLNonNull(GraphQLString),
   },
   channel: {
-    type: new GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(
+      new GraphQLEnumType({
+        name: "NotificationChannel",
+        values: {
+          EMAIL: { value: "Email" },
+          PUSH: { value: "Push" },
+        },
+      })
+    ),
   },
   status: {
     type: new GraphQLNonNull(
@@ -47,6 +55,17 @@ const subGroupFields = {
 const subGroupInputFields = {
   name: {
     type: new GraphQLNonNull(GraphQLString),
+  },
+  channel: {
+    type: new GraphQLNonNull(
+      new GraphQLEnumType({
+        name: "NotificationChannel",
+        values: {
+          EMAIL: { value: "Email" },
+          PUSH: { value: "Push" },
+        },
+      })
+    ),
   },
   status: {
     type: new GraphQLNonNull(
