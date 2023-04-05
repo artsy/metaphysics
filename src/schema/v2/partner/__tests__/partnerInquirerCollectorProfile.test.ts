@@ -16,14 +16,6 @@ describe("partnerInquirerCollectorProfile", () => {
     },
     profession: "Superhuman",
     bio: "I got snacks to the roof",
-    owner: {
-      name: "Some Collector",
-      location: {
-        city: "Around",
-        country: "The Globe",
-      },
-      profession: "Superhuman",
-    },
   }
 
   const context = {

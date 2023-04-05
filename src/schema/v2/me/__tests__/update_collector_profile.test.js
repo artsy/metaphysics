@@ -28,10 +28,6 @@ describe("UpdateCollectorProfile", () => {
         email: "percy@cat.com",
         self_reported_purchases: "treats",
         intents: ["buy art & design"],
-        owner: {
-          name: "Percy",
-          email: "percy@cat.com",
-        },
       })
     )
 
