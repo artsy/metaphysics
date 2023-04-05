@@ -34,8 +34,8 @@ const subGroupFields = {
       new GraphQLEnumType({
         name: "NotificationChannel",
         values: {
-          EMAIL: { value: "Email" },
-          PUSH: { value: "Push" },
+          EMAIL: { value: "EMAIL" },
+          PUSH: { value: "PUSH" },
         },
       })
     ),
@@ -45,8 +45,8 @@ const subGroupFields = {
       new GraphQLEnumType({
         name: "SubGroupStatus",
         values: {
-          SUBSCRIBED: { value: "Subscribed" },
-          UNSUBSCRIBED: { value: "Unsubscribed" },
+          SUBSCRIBED: { value: "SUBSCRIBED" },
+          UNSUBSCRIBED: { value: "UNSUBSCRIBED" },
         },
       })
     ),
@@ -147,6 +147,7 @@ export const updateNotificationPreferencesMutation = mutationWithClientMutationI
     const subGroups = args.subscriptionGroups
     const params = convertSubGroups(subGroups)
 
+    // add error handling??
     if (updateNotificationPreferencesLoader) {
       return updateNotificationPreferencesLoader(params)
     }
