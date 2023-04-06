@@ -281,7 +281,7 @@ export const gravityStitchingEnvironment = (
                     "top-auction-lots",
                     "new-this-week",
                     "curators-picks-blue-chip",
-                    "curators-picks-emerging",
+                    "finds-under-1000-dollars",
                   ],
                 },
                 context,
