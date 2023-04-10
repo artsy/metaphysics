@@ -4,8 +4,11 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 describe("Me", () => {
   describe("Conversation", () => {
     const context = {
-      userByIDLoader: () =>
-        Promise.resolve({ id: "user-id", email: "collector@example.com" }),
+      collectorProfilesLoader: ({ _user_id }) => {
+        return Promise.resolve({
+          body: [{ id: "profile-id", email: "collector@example.com" }],
+        })
+      },
       conversationLoader: () => {
         return Promise.resolve({
           id: "420",
@@ -128,7 +131,7 @@ describe("Me", () => {
               from {
                 email
               }
-              fromUser {
+              fromProfile {
                 email
               }
               lastMessage
