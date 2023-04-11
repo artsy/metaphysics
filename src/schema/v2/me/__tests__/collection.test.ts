@@ -22,6 +22,7 @@ const mockGravityCollection = {
   default: false,
   saves: true,
   artworks_count: 42,
+  visible_artworks_count: 39,
 }
 
 let context: Partial<ResolverContext>
@@ -132,6 +133,55 @@ describe("isSavedArtwork field", () => {
         },
       },
     })
+  })
+})
+
+describe("artworksCount field", () => {
+  it("should return visible_artworks_count if onlyVisible is true", async () => {
+    const countQuery = gql`
+      query {
+        me {
+          collection(id: "123-abc") {
+            artworksCount(onlyVisible: true)
+          }
+        }
+      }
+    `
+    const response = await runAuthenticatedQuery(countQuery, context)
+
+    expect(response.me.collection.artworksCount).toBe(
+      mockGravityCollection.visible_artworks_count
+    )
+  })
+
+  it("should return artworks_count if onlyVisible is false or not passed", async () => {
+    let countQuery = gql`
+      query {
+        me {
+          collection(id: "123-abc") {
+            artworksCount(onlyVisible: false)
+          }
+        }
+      }
+    `
+    let response = await runAuthenticatedQuery(countQuery, context)
+    expect(response.me.collection.artworksCount).toBe(
+      mockGravityCollection.artworks_count
+    )
+
+    countQuery = gql`
+      query {
+        me {
+          collection(id: "123-abc") {
+            artworksCount
+          }
+        }
+      }
+    `
+    response = await runAuthenticatedQuery(countQuery, context)
+    expect(response.me.collection.artworksCount).toBe(
+      mockGravityCollection.artworks_count
+    )
   })
 })
 
