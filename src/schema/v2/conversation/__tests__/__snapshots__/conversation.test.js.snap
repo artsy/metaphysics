@@ -79,7 +79,7 @@ Object {
     "from": Object {
       "email": "collector@example.com",
     },
-    "fromUser": Object {
+    "fromProfile": Object {
       "email": "collector@example.com",
     },
     "initialMessage": "Loved some of the works at your fair booth!",

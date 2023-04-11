@@ -28,6 +28,7 @@ import { MessageType } from "./message"
 import { ResolverContext } from "types/graphql"
 import { UserType } from "../user"
 import { InquiryRequestType } from "../partner/partnerInquiryRequest"
+import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -270,9 +271,28 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
+    fromProfile: {
+      description:
+        "The collector profile of the user who initiated the conversation",
+      type: CollectorProfileType,
+      resolve: async ({ from_id }, _options, { collectorProfilesLoader }) => {
+        if (!collectorProfilesLoader)
+          throw new Error(
+            "A X-Access-Token header is required to perform this action."
+          )
+
+        const { body: profiles } = await collectorProfilesLoader({
+          user_id: from_id,
+        })
+
+        return profiles[0]
+      },
+    },
     fromUser: {
       description: "The user who initiated the conversation",
       type: UserType,
+      deprecationReason:
+        "Will be inaccessible to partners in future versions. Prefer fromProfile.",
       resolve: async ({ from_id }, _options, { userByIDLoader }) => {
         if (!userByIDLoader) {
           return null
