@@ -11,11 +11,10 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 
 export const convertSubGroups = (subGroups) => {
-  const gravityGroups = subGroups.map((group) => ({
-    name: group.name,
-    status: group.status.toLowerCase(),
-    channel: group.channel.toLowerCase(),
-  }))
+  const gravityGroups = subGroups.reduce((previous, current) => {
+    previous[current.name] = current.status.toLowerCase()
+    return previous
+  }, {})
 
   const params = { subscription_groups: gravityGroups }
 
@@ -29,24 +28,19 @@ const subGroupFields = {
   name: {
     type: new GraphQLNonNull(GraphQLString),
   },
+  // NOTE: The 'channel' property is defined as a string instead of an enum because some frontend code relies on it being a string.
+  // Using an enum will cause type errors on the frontend.
   channel: {
-    type: new GraphQLNonNull(
-      new GraphQLEnumType({
-        name: "NotificationChannel",
-        values: {
-          EMAIL: { value: "EMAIL" },
-          PUSH: { value: "PUSH" },
-        },
-      })
-    ),
+    type: new GraphQLNonNull(GraphQLString),
+    description: " email | push ",
   },
   status: {
     type: new GraphQLNonNull(
       new GraphQLEnumType({
         name: "SubGroupStatus",
         values: {
-          SUBSCRIBED: { value: "SUBSCRIBED" },
-          UNSUBSCRIBED: { value: "UNSUBSCRIBED" },
+          SUBSCRIBED: { value: "Subscribed" },
+          UNSUBSCRIBED: { value: "Unsubscribed" },
         },
       })
     ),
@@ -57,16 +51,11 @@ const subGroupInputFields = {
   name: {
     type: new GraphQLNonNull(GraphQLString),
   },
+  // NOTE: The 'channel' property is defined as a string instead of an enum because some frontend code relies on it being a string.
+  // Using an enum will cause type errors on the frontend.
   channel: {
-    type: new GraphQLNonNull(
-      new GraphQLEnumType({
-        name: "NotificationChannelInput",
-        values: {
-          EMAIL: { value: "Email" },
-          PUSH: { value: "Push" },
-        },
-      })
-    ),
+    type: new GraphQLNonNull(GraphQLString),
+    description: " email | push ",
   },
   status: {
     type: new GraphQLNonNull(
@@ -147,7 +136,6 @@ export const updateNotificationPreferencesMutation = mutationWithClientMutationI
     const subGroups = args.subscriptionGroups
     const params = convertSubGroups(subGroups)
 
-    // add error handling??
     if (updateNotificationPreferencesLoader) {
       return updateNotificationPreferencesLoader(params)
     }

@@ -12561,16 +12561,6 @@ type Notification implements Node {
   title: String!
 }
 
-enum NotificationChannel {
-  EMAIL
-  PUSH
-}
-
-enum NotificationChannelInput {
-  EMAIL
-  PUSH
-}
-
 # A connection to a list of items.
 type NotificationConnection {
   counts: NotificationCounts
@@ -12612,14 +12602,16 @@ type NotificationEdge {
 }
 
 type NotificationPreference {
-  channel: NotificationChannel!
+  #  email | push
+  channel: String!
   id: String!
   name: String!
   status: SubGroupStatus!
 }
 
 input NotificationPreferenceInput {
-  channel: NotificationChannelInput!
+  #  email | push
+  channel: String!
   name: String!
   status: SubGroupInputStatus!
 }

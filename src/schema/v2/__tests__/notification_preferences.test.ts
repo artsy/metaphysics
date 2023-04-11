@@ -3,24 +3,50 @@ import { convertSubGroups } from "../notification_preferences"
 import { runQuery } from "../test/utils"
 
 describe("convertSubGroups", () => {
-  it("converts subGroups to params for gravity loader", () => {
+  it("converts to params for gravity", () => {
     const subGroups = [
-      { id: "abc", name: "GroupA", status: "Subscribed", channel: "Email" },
-      { id: "abc", name: "GroupB", status: "Unsubscribed", channel: "Push" },
+      { id: "abc", name: "daily", channel: "email", status: "Subscribed" },
     ]
 
     const params = convertSubGroups(subGroups)
 
     expect(params).toEqual({
-      subscription_groups: [
-        { name: "GroupA", status: "subscribed", channel: "email" },
-        { name: "GroupB", status: "unsubscribed", channel: "push" },
-      ],
+      subscription_groups: { daily: "subscribed" },
     })
   })
 })
 
 describe("notificationPreferences", () => {
+  const gravityNotificationPreferences = [
+    {
+      id: "abc",
+      name: "GroupA",
+      channel: "email",
+      status: "Subscribed",
+    },
+    {
+      id: "abc",
+      name: "GroupB",
+      channel: "push",
+      status: "Unsubscribed",
+    },
+  ]
+
+  const expectedNotificationPreferences = [
+    {
+      id: "abc",
+      name: "GroupA",
+      channel: "email",
+      status: "SUBSCRIBED",
+    },
+    {
+      id: "abc",
+      name: "GroupB",
+      channel: "push",
+      status: "UNSUBSCRIBED",
+    },
+  ]
+
   it("returns notification preferences for authenticated user", async () => {
     const query = gql`
       {
@@ -33,28 +59,15 @@ describe("notificationPreferences", () => {
       }
     `
 
-    const notificationPreferences = [
-      {
-        id: "abc",
-        name: "GroupA",
-        channel: "EMAIL",
-        status: "SUBSCRIBED",
-      },
-      {
-        id: "abc",
-        name: "GroupB",
-        channel: "PUSH",
-        status: "UNSUBSCRIBED",
-      },
-    ]
-
     const context = {
       notificationPreferencesLoader: () =>
-        Promise.resolve(notificationPreferences),
+        Promise.resolve(gravityNotificationPreferences),
     }
 
     const data = await runQuery(query, context)
-    expect(data!.notificationPreferences).toEqual(notificationPreferences)
+    expect(data!.notificationPreferences).toEqual(
+      expectedNotificationPreferences
+    )
   })
 
   it("returns notification preferences for unathenticated user", async () => {
@@ -69,54 +82,139 @@ describe("notificationPreferences", () => {
       }
     `
 
-    const notificationPreferences = [
-      {
-        id: "abc",
-        name: "GroupA",
-        channel: "EMAIL",
-        status: "SUBSCRIBED",
-      },
-      {
-        id: "abc",
-        name: "GroupB",
-        channel: "PUSH",
-        status: "UNSUBSCRIBED",
-      },
-    ]
-
     const context = {
       anonNotificationPreferencesLoader: () =>
-        Promise.resolve(notificationPreferences),
+        Promise.resolve(gravityNotificationPreferences),
     }
 
     const data = await runQuery(query, context)
-    expect(data!.notificationPreferences).toEqual(notificationPreferences)
-  })
-
-  it.skip("returns an error when there is a problem returning notification preferences", async () => {
-    // add error handling or is this backend?
+    expect(data!.notificationPreferences).toEqual(
+      expectedNotificationPreferences
+    )
   })
 })
 
-describe("Update notificationPreferences", () => {
-  it.skip("updates notification preferences when input is valid", async () => {})
-  it.skip("updates email notification preferences to 'Subscribed' when input is valid", async () => {})
+describe("updateNotificationPreferencesMutation", () => {
+  const gravityNotificationPreferences = [
+    {
+      id: "abc",
+      name: "GroupA",
+      channel: "email",
+      status: "Subscribed",
+    },
+    {
+      id: "abc",
+      name: "GroupB",
+      channel: "push",
+      status: "Unsubscribed",
+    },
+  ]
 
-  it.skip("updates email notification preferences to 'Unsubscribed' when input is valid", async () => {})
+  const expectedNotificationPreferences = [
+    {
+      id: "abc",
+      name: "GroupA",
+      channel: "email",
+      status: "SUBSCRIBED",
+    },
+    {
+      id: "abc",
+      name: "GroupB",
+      channel: "push",
+      status: "UNSUBSCRIBED",
+    },
+  ]
 
-  it.skip("updates push notification preferences to 'Subscribed' when input is valid", async () => {})
+  it("updates notification preferences for authenticated user", async () => {
+    const mutation = gql`
+      mutation UpdateNotificationPreferences(
+        $input: updateNotificationPreferencesMutationInput!
+      ) {
+        updateNotificationPreferences(input: $input) {
+          notificationPreferences {
+            id
+            name
+            channel
+            status
+          }
+        }
+      }
+    `
 
-  it.skip("updates push notification preferences to 'Unsubscribed' when input is valid", async () => {})
+    const input = {
+      subscriptionGroups: [
+        { name: "GroupA", status: "SUBSCRIBED", channel: "email" },
+        { name: "GroupB", status: "UNSUBSCRIBED", channel: "push" },
+      ],
+    }
 
-  it.skip("returns an error when input value is invalid", async () => {
-    // Invalid name
-    // Invalid status
-    // Invalid channel
+    const context = {
+      updateNotificationPreferencesLoader: jest
+        .fn()
+        .mockReturnValue(Promise.resolve(gravityNotificationPreferences)),
+      notificationPreferencesLoader: () =>
+        Promise.resolve(gravityNotificationPreferences),
+    }
+
+    const data = await runQuery(mutation, context, { input })
+
+    expect(context.updateNotificationPreferencesLoader).toHaveBeenCalledWith({
+      subscription_groups: {
+        GroupA: "subscribed",
+        GroupB: "unsubscribed",
+      },
+    })
+
+    expect(data!.updateNotificationPreferences.notificationPreferences).toEqual(
+      expectedNotificationPreferences
+    )
   })
 
-  it.skip("returns an error when input value is missing", async () => {
-    //Missing name
-    // Missing status
-    // Missing channel
+  it("updates notification preferences for unauthenticated user", async () => {
+    const mutation = gql`
+      mutation UpdateNotificationPreferences(
+        $input: updateNotificationPreferencesMutationInput!
+      ) {
+        updateNotificationPreferences(input: $input) {
+          notificationPreferences {
+            id
+            name
+            channel
+            status
+          }
+        }
+      }
+    `
+
+    const input = {
+      authenticationToken: "123",
+      subscriptionGroups: [
+        { name: "GroupA", status: "SUBSCRIBED", channel: "email" },
+        { name: "GroupB", status: "UNSUBSCRIBED", channel: "push" },
+      ],
+    }
+
+    const context = {
+      anonUpdateNotificationPreferencesLoader: jest
+        .fn()
+        .mockReturnValue(Promise.resolve(gravityNotificationPreferences)),
+      anonNotificationPreferencesLoader: () =>
+        Promise.resolve(gravityNotificationPreferences),
+    }
+
+    const data = await runQuery(mutation, context, { input })
+
+    expect(
+      context.anonUpdateNotificationPreferencesLoader
+    ).toHaveBeenCalledWith("123", {
+      subscription_groups: {
+        GroupA: "subscribed",
+        GroupB: "unsubscribed",
+      },
+    })
+
+    expect(data!.updateNotificationPreferences.notificationPreferences).toEqual(
+      expectedNotificationPreferences
+    )
   })
 })
