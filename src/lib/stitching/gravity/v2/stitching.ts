@@ -282,6 +282,7 @@ export const gravityStitchingEnvironment = (
                     "new-this-week",
                     "curators-picks-blue-chip",
                     "finds-under-1000-dollars",
+                    "best-of-prints-and-editions",
                   ],
                 },
                 context,
