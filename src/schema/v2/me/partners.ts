@@ -3,7 +3,7 @@ import { ResolverContext } from "types/graphql"
 import { Partners } from "schema/v2/partner/partners"
 import { GraphQLInt } from "graphql"
 
-export const ManagedPartners: GraphQLFieldConfig<any, ResolverContext> = {
+export const ManagedPartners: GraphQLFieldConfig<void, ResolverContext> = {
   type: Partners.type,
   description: "A list of the current user’s managed partners",
   args: {
