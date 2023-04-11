@@ -75,7 +75,19 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
     artworksCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: "Number of artworks associated with this collection.",
-      resolve: ({ artworks_count }) => artworks_count,
+      args: {
+        onlyVisible: {
+          type: GraphQLBoolean,
+          description: "Only count visible artworks",
+          defaultValue: false,
+        },
+      },
+      resolve: (
+        { artworks_count, visible_artworks_count },
+        { onlyVisible }
+      ) => {
+        return onlyVisible ? visible_artworks_count : artworks_count
+      },
     },
     default: {
       type: new GraphQLNonNull(GraphQLBoolean),
