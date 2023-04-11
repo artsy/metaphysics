@@ -1,7 +1,7 @@
 # ---------------------------------------------------------
 # Base build dependencies
 # ---------------------------------------------------------
-FROM node:14.17.5-alpine3.11 as builder-base
+FROM node:18.15-alpine as builder-base
 
 WORKDIR /app
 
@@ -9,8 +9,7 @@ RUN apk --no-cache --quiet add \
   bash \
   build-base \
   dumb-init \
-  git \
-  python
+  git
 
 # Copy files required to install application dependencies
 COPY package.json yarn.lock ./
@@ -34,7 +33,7 @@ RUN yarn build
 # Release stage. This stage creates the final docker iamge that will be
 # released. It contains only production dependencies and artifacts.
 #
-FROM node:14.17.5-alpine3.11 as production
+FROM node:18.15-alpine as production
 
 WORKDIR /app
 

@@ -221,7 +221,7 @@ if (ENABLE_GRAPHQL_UPLOAD) {
 //   - GETs:
 //     - requests to '/v2' (loads GraphiQL in non-prod mode)
 //     - requests to '/v2?query=...' (runs a query)
-export const supportedV2RouteHandler = (req, res, next) => {
+export const supportedV2RouteHandler = (req, res, next, server) => {
   if (req.method === "POST") {
     if (!["/", "/?"].includes(req.url)) return next()
   } else if (req.method === "GET") {
@@ -233,10 +233,12 @@ export const supportedV2RouteHandler = (req, res, next) => {
     return next()
   }
 
-  return graphqlServer(req, res, next)
+  return server(req, res, next)
 }
 
-app.use("/v2", supportedV2RouteHandler)
+app.use("/v2", (req, res, next) => {
+  supportedV2RouteHandler(req, res, next, graphqlServer)
+})
 
 app.use("*", (_req, res, _next) => {
   res.status(404).send("Please use /v2 for all queries.")
