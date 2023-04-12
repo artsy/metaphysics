@@ -302,21 +302,22 @@ export const gravityStitchingEnvironment = (
           fragment: gql`
           ... on MarketingCollection {
             image_url: thumbnail
-            representativeArtworkID
+            representativeArtworkId
           }
           `,
           resolve: async (
-            { representativeArtworkID, image_url },
+            { representativeArtworkId, image_url },
             _args,
             context,
             info
           ) => {
             let imageData: unknown
+
             if (image_url) {
               imageData = normalizeImageData(image_url)
-            } else if (representativeArtworkID) {
+            } else if (representativeArtworkId) {
               const { artworkLoader } = context
-              const { images } = await artworkLoader(representativeArtworkID)
+              const { images } = await artworkLoader(representativeArtworkId)
               imageData = normalizeImageData(getDefault(images))
             }
             return info.mergeInfo.delegateToSchema({

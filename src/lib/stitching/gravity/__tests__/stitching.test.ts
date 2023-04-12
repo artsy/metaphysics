@@ -1089,7 +1089,7 @@ describe("gravity/stitching", () => {
 
         const parent = {
           image_url: "https://www.example.com/image.jpg",
-          representativeArtworkID: "representativeArtworkID123",
+          representativeArtworkId: "representativeArtworkID123",
         }
         const args = {}
         const sharedContext = {}
@@ -1114,7 +1114,7 @@ describe("gravity/stitching", () => {
 
         const parent = {
           image_url: null,
-          representativeArtworkID: "representative-artwork-id",
+          representativeArtworkId: "representative-artwork-id",
         }
         const args = {}
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }
