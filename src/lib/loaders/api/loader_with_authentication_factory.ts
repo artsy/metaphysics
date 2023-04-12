@@ -58,7 +58,7 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
                         (response && response.headers["content-length"]) || 0
                       )
                       return extensionsLogger(
-                        globalAPIOptions.requestIDs.requestID,
+                        globalAPIOptions.requestIDs?.requestID,
                         apiName,
                         key,
                         { time, cache: false, length }
@@ -67,10 +67,9 @@ export const apiLoaderWithAuthenticationFactory = <T = any>(
                     .catch((error) => {
                       warn(path, error)
                       reject(error)
-
                       // Log failed requests
                       extensionsLogger(
-                        globalAPIOptions.requestIDs.requestID,
+                        globalAPIOptions.requestIDs?.requestID,
                         apiName,
                         key,
                         { failed: true, error }
