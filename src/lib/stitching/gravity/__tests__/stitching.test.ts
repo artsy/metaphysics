@@ -1080,12 +1080,17 @@ describe("gravity/stitching", () => {
           info: expect.anything(),
         })
       })
+    })
 
+    describe("Thumbnail Image", () => {
       it("resolves the thumbnailImage field with a copy of the request context", async () => {
         const { resolvers } = await getGravityStitchedSchema()
         const { thumbnailImage } = resolvers.MarketingCollection
 
-        const parent = { image_url: "https://www.example.com/image.jpg" }
+        const parent = {
+          image_url: "https://www.example.com/image.jpg",
+          representativeArtworkID: "representativeArtworkID123",
+        }
         const args = {}
         const sharedContext = {}
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }
@@ -1098,6 +1103,45 @@ describe("gravity/stitching", () => {
           expect.objectContaining({
             context: {
               imageData: { image_url: "https://www.example.com/image.jpg" },
+            },
+          })
+        )
+      })
+
+      it("resolves the thumbnailImage field with a fallback image from representative artwork ID if imageURL is empty", async () => {
+        const { resolvers } = await getGravityStitchedSchema()
+        const { thumbnailImage } = resolvers.MarketingCollection
+
+        const parent = {
+          image_url: null,
+          representativeArtworkID: "representative-artwork-id",
+        }
+        const args = {}
+        const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+        const artworkLoader = () =>
+          Promise.resolve({
+            thumbnailImage: {
+              image_url:
+                "https://www.example.com/representative-artwork-image.jpg",
+            },
+          })
+
+        const sharedContext = {
+          artworkLoader,
+        }
+
+        await thumbnailImage.resolve(parent, args, sharedContext, info)
+
+        expect(sharedContext).toHaveProperty("artworkLoader")
+
+        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+          expect.objectContaining({
+            context: {
+              imageData: {
+                image_url:
+                  "https://www.example.com/representative-artwork-image.jpg",
+              },
             },
           })
         )

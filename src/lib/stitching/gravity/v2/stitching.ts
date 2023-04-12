@@ -313,11 +313,8 @@ export const gravityStitchingEnvironment = (
           ) => {
             let imageData: unknown
             if (image_url) {
-              console.log("Coming here ", image_url)
               imageData = normalizeImageData(image_url)
             } else if (representativeArtworkID) {
-              console.log(" Not its Coming here ", representativeArtworkID)
-
               const { artworkLoader } = context
               const { images } = await artworkLoader(representativeArtworkID)
               imageData = normalizeImageData(getDefault(images))
