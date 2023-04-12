@@ -302,16 +302,33 @@ export const gravityStitchingEnvironment = (
           fragment: gql`
           ... on MarketingCollection {
             image_url: thumbnail
+            representativeArtworkID
           }
           `,
-          resolve: async ({ image_url }, _args, context, info) => {
+          resolve: async (
+            { representativeArtworkID, image_url },
+            _args,
+            context,
+            info
+          ) => {
+            let imageData: unknown
+            if (image_url) {
+              console.log("Coming here ", image_url)
+              imageData = normalizeImageData(image_url)
+            } else if (representativeArtworkID) {
+              console.log(" Not its Coming here ", representativeArtworkID)
+
+              const { artworkLoader } = context
+              const { images } = await artworkLoader(representativeArtworkID)
+              imageData = normalizeImageData(getDefault(images))
+            }
             return info.mergeInfo.delegateToSchema({
               schema: localSchema,
               operation: "query",
               fieldName: "_do_not_use_image",
               context: {
                 ...context,
-                imageData: normalizeImageData(image_url),
+                imageData,
               },
               info,
             })
@@ -809,6 +826,7 @@ export const gravityStitchingEnvironment = (
             }
           `,
           resolve: async (_parent, args, context, info) => {
+            console.log("[debug] :: I am here")
             try {
               return await info.mergeInfo.delegateToSchema({
                 schema: gravitySchema,
