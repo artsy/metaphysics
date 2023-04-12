@@ -123,4 +123,19 @@ describe("createPageCursors", () => {
 
     expect(pageCursors.last.page).toBe(100)
   })
+
+  it("does not cap the page number if cap number not provided", () => {
+    const size = 10
+    const totalPages = 200
+    const totalRecords = totalPages * size
+
+    const pageCursors = createPageCursors(
+      { page: 1, size },
+      totalRecords,
+      5,
+      null
+    )
+
+    expect(pageCursors.last.page).toBe(totalPages)
+  })
 })

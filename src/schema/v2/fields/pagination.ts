@@ -93,15 +93,21 @@ function pageCursorsToArray(start, end, currentPage, size) {
   return cursors
 }
 
-// Returns the total number of pagination results capped to PAGE_NUMBER_CAP.
-export function computeTotalPages(totalRecords, size) {
-  return Math.min(Math.ceil(totalRecords / size), PAGE_NUMBER_CAP)
+// Returns the total number of pagination results capped to PAGE_NUMBER_CAP if cap value provided.
+export function computeTotalPages(
+  totalRecords,
+  size,
+  pageNumberCap: number | null = PAGE_NUMBER_CAP
+) {
+  const totalPages = Math.ceil(totalRecords / size)
+  return pageNumberCap ? Math.min(totalPages, pageNumberCap) : totalPages
 }
 
 export function createPageCursors(
-  { page: currentPage, size },
-  totalRecords,
-  max = 5
+  { page: currentPage, size }: { page: number; size: number },
+  totalRecords: number,
+  max = 5,
+  pageNumberCap: number | null = PAGE_NUMBER_CAP
 ) {
   // If max is even, bump it up by 1, and log out a warning.
   if (max % 2 === 0) {
@@ -109,7 +115,7 @@ export function createPageCursors(
     max = max + 1
   }
 
-  const totalPages = computeTotalPages(totalRecords, size)
+  const totalPages = computeTotalPages(totalRecords, size, pageNumberCap)
 
   let pageCursors
   // Degenerate case of no records found.
