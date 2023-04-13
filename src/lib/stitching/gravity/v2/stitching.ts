@@ -307,12 +307,11 @@ export const gravityStitchingEnvironment = (
           `,
           resolve: async (
             { representativeArtworkId, image_url },
-            _args,
+            args,
             context,
             info
           ) => {
             let imageData: unknown
-
             if (image_url) {
               imageData = normalizeImageData(image_url)
             } else if (representativeArtworkId) {
@@ -321,6 +320,7 @@ export const gravityStitchingEnvironment = (
               imageData = normalizeImageData(getDefault(images))
             }
             return info.mergeInfo.delegateToSchema({
+              args,
               schema: localSchema,
               operation: "query",
               fieldName: "_do_not_use_image",
@@ -824,7 +824,6 @@ export const gravityStitchingEnvironment = (
             }
           `,
           resolve: async (_parent, args, context, info) => {
-            console.log("[debug] :: I am here")
             try {
               return await info.mergeInfo.delegateToSchema({
                 schema: gravitySchema,

@@ -1082,7 +1082,7 @@ describe("gravity/stitching", () => {
       })
     })
 
-    describe("Thumbnail Image", () => {
+    describe("#thumbnailImage", () => {
       it("resolves the thumbnailImage field with a copy of the request context", async () => {
         const { resolvers } = await getGravityStitchedSchema()
         const { thumbnailImage } = resolvers.MarketingCollection
@@ -1119,14 +1119,14 @@ describe("gravity/stitching", () => {
         const args = {}
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
+        const imageData = {
+          image_url: "cat.jpg",
+        }
+
         const artworkLoader = () =>
           Promise.resolve({
-            thumbnailImage: {
-              image_url:
-                "https://www.example.com/representative-artwork-image.jpg",
-            },
+            images: [imageData],
           })
-
         const sharedContext = {
           artworkLoader,
         }
@@ -1135,16 +1135,14 @@ describe("gravity/stitching", () => {
 
         expect(sharedContext).toHaveProperty("artworkLoader")
 
-        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
-          expect.objectContaining({
-            context: {
-              imageData: {
-                image_url:
-                  "https://www.example.com/representative-artwork-image.jpg",
-              },
-            },
-          })
-        )
+        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+          args: expect.anything(),
+          operation: "query",
+          fieldName: "_do_not_use_image",
+          schema: expect.anything(),
+          context: expect.objectContaining({ imageData }),
+          info: expect.anything(),
+        })
       })
     })
   })
