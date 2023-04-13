@@ -2,7 +2,7 @@ import { BodyAndHeaders, ResponseHeaders } from "."
 import { StaticPathLoader } from "./api/loader_interface"
 
 const MAX_FOLLOWED_ARTISTS_PER_STEP = 100
-const MAX_STEPS = 2
+const MAX_STEPS = 1
 
 /**
  * This is a helper function that loads all followed artists for a user.
