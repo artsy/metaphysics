@@ -235,13 +235,14 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           },
           sort: AuctionResultSorts,
           state: AuctionResultsState,
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
         }),
         resolve: async ({ _id }, options, { auctionLotsLoader }) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
             return null
           }
 
-          // Convert `after` cursors to page params
           const {
             categories,
             offset,
@@ -276,7 +277,9 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
                       page,
                       size,
                     },
-                    total_count
+                    total_count,
+                    5,
+                    null
                   ),
                 },
                 {
