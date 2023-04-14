@@ -1155,7 +1155,7 @@ type MarketingCollection {
   """
   ID of an artwork with highest merchandis ability
   """
-  representativeArtworkId: String
+  representativeArtworkID: String
 
   """
   Show featured artists section in header. Defaults to true
