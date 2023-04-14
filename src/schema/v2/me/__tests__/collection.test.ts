@@ -63,7 +63,7 @@ it("returns collection attributes", async () => {
 })
 
 describe("name field", () => {
-  it("should return `All Saves` when collection has `Saved Artwork` name", async () => {
+  it("should return `Saved Artworks` when collection has `Saved Artwork` name", async () => {
     context.collectionLoader = jest.fn(() => {
       return Promise.resolve({
         ...mockGravityCollection,
@@ -73,7 +73,7 @@ describe("name field", () => {
 
     const response = await runAuthenticatedQuery(query, context)
 
-    expect(response.me.collection.name).toBe("All Saves")
+    expect(response.me.collection.name).toBe("Saved Artworks")
   })
 
   it("should return name received from gravity", async () => {

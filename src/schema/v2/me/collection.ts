@@ -100,7 +100,7 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
         "Name of the collection. Has a predictable value for 'standard' collections such as Saved Artwork, My Collection, etc. Can be provided by user otherwise.",
       resolve: ({ name }) => {
         if (name === "Saved Artwork") {
-          return "All Saves"
+          return "Saved Artworks"
         }
 
         return name
