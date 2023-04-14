@@ -1080,12 +1080,17 @@ describe("gravity/stitching", () => {
           info: expect.anything(),
         })
       })
+    })
 
+    describe("#thumbnailImage", () => {
       it("resolves the thumbnailImage field with a copy of the request context", async () => {
         const { resolvers } = await getGravityStitchedSchema()
         const { thumbnailImage } = resolvers.MarketingCollection
 
-        const parent = { image_url: "https://www.example.com/image.jpg" }
+        const parent = {
+          image_url: "https://www.example.com/image.jpg",
+          representativeArtworkID: "representativeArtworkID123",
+        }
         const args = {}
         const sharedContext = {}
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }
@@ -1101,6 +1106,41 @@ describe("gravity/stitching", () => {
             },
           })
         )
+      })
+
+      it("resolves the thumbnailImage field with a fallback image from representative artwork ID if imageURL is empty", async () => {
+        const { resolvers } = await getGravityStitchedSchema()
+        const { thumbnailImage } = resolvers.MarketingCollection
+
+        const parent = {
+          image_url: null,
+          representativeArtworkID: "representative-artwork-id",
+        }
+        const args = {}
+        const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+        const imageData = {
+          image_url: "cat.jpg",
+        }
+
+        const artworkLoader = () =>
+          Promise.resolve({
+            images: [imageData],
+          })
+        const sharedContext = {
+          artworkLoader,
+        }
+
+        await thumbnailImage.resolve(parent, args, sharedContext, info)
+
+        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+          args: expect.anything(),
+          operation: "query",
+          fieldName: "_do_not_use_image",
+          schema: expect.anything(),
+          context: expect.objectContaining({ imageData }),
+          info: expect.anything(),
+        })
       })
     })
   })
