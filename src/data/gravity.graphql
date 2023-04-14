@@ -1153,6 +1153,11 @@ type MarketingCollection {
   relatedCollections(size: Int = 10): [MarketingCollection!]!
 
   """
+  ID of an artwork with highest merchandis ability
+  """
+  representativeArtworkID: String
+
+  """
   Show featured artists section in header. Defaults to true
   """
   showFeaturedArtists: Boolean!

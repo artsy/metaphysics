@@ -98,9 +98,10 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString),
       description:
         "Name of the collection. Has a predictable value for 'standard' collections such as Saved Artwork, My Collection, etc. Can be provided by user otherwise.",
-      resolve: ({ name }) => {
-        if (name === "Saved Artwork") {
-          return "All Saves"
+      resolve: ({ default: isDefault, saves, name }) => {
+        // Rename default collection
+        if (isDefault && saves) {
+          return "Saved Artworks"
         }
 
         return name
