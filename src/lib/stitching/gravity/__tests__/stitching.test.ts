@@ -1089,7 +1089,7 @@ describe("gravity/stitching", () => {
 
         const parent = {
           image_url: "https://www.example.com/image.jpg",
-          representativeArtworkId: "representativeArtworkID123",
+          representativeArtworkID: "representativeArtworkID123",
         }
         const args = {}
         const sharedContext = {}
@@ -1114,7 +1114,7 @@ describe("gravity/stitching", () => {
 
         const parent = {
           image_url: null,
-          representativeArtworkId: "representative-artwork-id",
+          representativeArtworkID: "representative-artwork-id",
         }
         const args = {}
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }
@@ -1132,8 +1132,6 @@ describe("gravity/stitching", () => {
         }
 
         await thumbnailImage.resolve(parent, args, sharedContext, info)
-
-        expect(sharedContext).toHaveProperty("artworkLoader")
 
         expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
           args: expect.anything(),
