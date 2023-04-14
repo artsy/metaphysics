@@ -63,11 +63,12 @@ it("returns collection attributes", async () => {
 })
 
 describe("name field", () => {
-  it("should return `Saved Artworks` when collection has `Saved Artwork` name", async () => {
+  it("should return `Saved Artworks` for default collection", async () => {
     context.collectionLoader = jest.fn(() => {
       return Promise.resolve({
         ...mockGravityCollection,
-        name: "Saved Artwork",
+        default: true,
+        saves: true,
       })
     })
 
