@@ -329,6 +329,13 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ from_last_viewed_message_id }) => from_last_viewed_message_id,
     },
+    toLastViewedMessageID: {
+      type: GraphQLString,
+      resolve: ({ from_last_viewed_message_id, ...rest }) => {
+        console.log("### rest", rest)
+        return from_last_viewed_message_id
+      },
+    },
     initialMessage: {
       deprecationReason:
         "This field is no longer required. Prefer the first message from the MessageConnection.",
@@ -463,7 +470,8 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     messagesConnection,
     unread: {
       type: GraphQLBoolean,
-      description: "True if there is an unread message by the user.",
+      description: "True if there is an unread message by the Collector(from).",
+      deprecationReason: "Use `unreadByCollector` instead",
       resolve: (conversation) => {
         const memoizedLastMessageId = lastMessageId(conversation)
         const { from_last_viewed_message_id } = conversation
@@ -471,6 +479,32 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
           !!from_last_viewed_message_id &&
           !!memoizedLastMessageId &&
           from_last_viewed_message_id < memoizedLastMessageId
+        )
+      },
+    },
+    unreadByCollector: {
+      type: GraphQLBoolean,
+      description: "True if there is an unread message by the Collector(from).",
+      resolve: (conversation) => {
+        const memoizedLastMessageId = lastMessageId(conversation)
+        const { from_last_viewed_message_id } = conversation
+        return (
+          !!from_last_viewed_message_id &&
+          !!memoizedLastMessageId &&
+          from_last_viewed_message_id < memoizedLastMessageId
+        )
+      },
+    },
+    unreadByPartner: {
+      type: GraphQLBoolean,
+      description: "True if there is an unread message by the Partner(to).",
+      resolve: (conversation) => {
+        const memoizedLastMessageId = lastMessageId(conversation)
+        const { to_last_viewed_message_id } = conversation
+        return (
+          !!to_last_viewed_message_id &&
+          !!memoizedLastMessageId &&
+          to_last_viewed_message_id < memoizedLastMessageId
         )
       },
     },

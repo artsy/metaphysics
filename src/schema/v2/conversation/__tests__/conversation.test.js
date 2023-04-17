@@ -25,6 +25,7 @@ describe("Me", () => {
             },
           },
           from_last_viewed_message_id: "20",
+          to_last_viewed_message_id: "20",
           items: [
             {
               item_type: "Artwork",
@@ -288,6 +289,7 @@ describe("Me", () => {
                 },
               },
               from_last_viewed_message_id: "20",
+              to_last_viewed_message_id: "20",
               items: [
                 {
                   item_type: "Artwork",
@@ -376,6 +378,7 @@ describe("Me", () => {
                 },
               },
               from_last_viewed_message_id: "20",
+              to_last_viewed_message_id: "20",
               items: [
                 {
                   item_type: "Artwork",
@@ -450,6 +453,7 @@ describe("Me", () => {
                 },
               },
               from_last_viewed_message_id: "20",
+              to_last_viewed_message_id: "20",
               items: [
                 {
                   item_type: "PartnerShow",
