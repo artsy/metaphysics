@@ -1,4 +1,5 @@
 import date, { date as dateFormatter } from "schema/v2/fields/date"
+
 import { InternalIDFields } from "schema/v2/object_identification"
 import {
   GraphQLID,
@@ -16,6 +17,7 @@ import Image, { normalizeImageData } from "schema/v2/image"
 
 import { userInterestType } from "../userInterests"
 import { myLocationType } from "../me/myLocation"
+import initials from "schema/v2/fields/initials"
 
 export const CollectorProfileFields: GraphQLFieldConfigMap<
   any,
@@ -43,6 +45,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   intents: { type: new GraphQLList(GraphQLString) },
   loyaltyApplicantAt: date,
   name: { type: GraphQLString },
+  initials: initials("name"),
   privacy: { type: GraphQLString },
   professionalBuyerAppliedAt: date,
   professionalBuyerAt: date,

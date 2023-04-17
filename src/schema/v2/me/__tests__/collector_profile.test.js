@@ -10,6 +10,7 @@ describe("Me", () => {
             collectorProfile {
               internalID
               name
+              initials
               email
               selfReportedPurchases
               intents
@@ -50,6 +51,7 @@ describe("Me", () => {
       const expectedProfileData = {
         internalID: "3",
         name: "Percy",
+        initials: "P",
         email: "percy@cat.com",
         selfReportedPurchases: "treats",
         intents: ["buy art & design"],
