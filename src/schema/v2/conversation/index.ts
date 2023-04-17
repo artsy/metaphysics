@@ -331,9 +331,8 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     },
     toLastViewedMessageID: {
       type: GraphQLString,
-      resolve: ({ from_last_viewed_message_id, ...rest }) => {
-        console.log("### rest", rest)
-        return from_last_viewed_message_id
+      resolve: ({ to_last_viewed_message_id }) => {
+        return to_last_viewed_message_id
       },
     },
     initialMessage: {
