@@ -85,21 +85,21 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
     type: GraphQLBoolean,
     deprecationReason:
       "emailConfirmed is going to be removed, use isEmailConfirmed instead",
-    resolve: ({ owner }) => !!owner.confirmed_at,
+    resolve: ({ email_confirmed_at }) => !!email_confirmed_at,
   },
   isEmailConfirmed: {
     type: GraphQLBoolean,
-    resolve: ({ owner }) => !!owner.confirmed_at,
+    resolve: ({ email_confirmed_at }) => !!email_confirmed_at,
   },
   identityVerified: {
     type: GraphQLBoolean,
     deprecationReason:
       "identityVerified is going to be removed, use isIdentityVerified instead",
-    resolve: ({ owner }) => owner.identity_verified,
+    resolve: ({ identity_verified }) => identity_verified,
   },
   isIdentityVerified: {
     type: GraphQLBoolean,
-    resolve: ({ owner }) => owner.identity_verified,
+    resolve: ({ identity_verified }) => identity_verified,
   },
   isActiveInquirer: {
     type: GraphQLBoolean,
