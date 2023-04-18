@@ -14,12 +14,10 @@ export interface ResolverContextValues {
   /** The schema used by the internal exchange graphql engine */
   exchangeSchema: GraphQLSchema
 
-  /**
-   * TODO: Why is this shaped like this, instead of a single ID?
-   */
   requestIDs: {
     requestID: string
     xForwardedFor: string
+    xOriginalSessionID: string
   }
 
   /** The user-agent of the HTTP client */

@@ -140,6 +140,9 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
   const accessToken = req.headers["x-access-token"] as string | undefined
   const appToken = req.headers["x-xapp-token"] as string | undefined
   const userID = req.headers["x-user-id"] as string | undefined
+  const xOriginalSessionID = req.headers["x-original-session-id"] as
+    | string
+    | undefined
   const timezone = req.headers["x-timezone"] as string | undefined
   const userAgent = req.headers["user-agent"]
 
@@ -161,6 +164,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     requestIDs,
     userAgent,
     appToken,
+    xOriginalSessionID,
   })
 
   const context: ResolverContext = {
