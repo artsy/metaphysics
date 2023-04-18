@@ -36,6 +36,8 @@ Object {
   "isLastMessageToUser": true,
   "lastMessageDeliveryID": "2",
   "unread": true,
+  "unreadByCollector": true,
+  "unreadByPartner": false,
 }
 `;
 

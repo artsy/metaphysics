@@ -189,6 +189,18 @@ const lastMessageId = (conversation) => {
   return get(conversation, "_embedded.last_message.id")
 }
 
+const unreadConversation = (
+  conversation: any,
+  lastViewedMessageId?: number
+) => {
+  const memoizedLastMessageId = lastMessageId(conversation)
+  return (
+    !!lastViewedMessageId &&
+    !!memoizedLastMessageId &&
+    lastViewedMessageId < memoizedLastMessageId
+  )
+}
+
 // TODO: Move back inside ConversationType after messages is removed
 const messagesConnection = {
   type: MessageConnection,
@@ -329,6 +341,12 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ from_last_viewed_message_id }) => from_last_viewed_message_id,
     },
+    toLastViewedMessageID: {
+      type: GraphQLString,
+      resolve: ({ to_last_viewed_message_id }) => {
+        return to_last_viewed_message_id
+      },
+    },
     initialMessage: {
       deprecationReason:
         "This field is no longer required. Prefer the first message from the MessageConnection.",
@@ -463,15 +481,27 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     messagesConnection,
     unread: {
       type: GraphQLBoolean,
-      description: "True if there is an unread message by the user.",
+      description: "True if there is an unread message by the Collector(from).",
+      deprecationReason: "Use `unreadByCollector` instead",
       resolve: (conversation) => {
-        const memoizedLastMessageId = lastMessageId(conversation)
         const { from_last_viewed_message_id } = conversation
-        return (
-          !!from_last_viewed_message_id &&
-          !!memoizedLastMessageId &&
-          from_last_viewed_message_id < memoizedLastMessageId
-        )
+        return unreadConversation(conversation, from_last_viewed_message_id)
+      },
+    },
+    unreadByCollector: {
+      type: GraphQLBoolean,
+      description: "True if there is an unread message by the Collector(from).",
+      resolve: (conversation) => {
+        const { from_last_viewed_message_id } = conversation
+        return unreadConversation(conversation, from_last_viewed_message_id)
+      },
+    },
+    unreadByPartner: {
+      type: GraphQLBoolean,
+      description: "True if there is an unread message by the Partner(to).",
+      resolve: (conversation) => {
+        const { to_last_viewed_message_id } = conversation
+        return unreadConversation(conversation, to_last_viewed_message_id)
       },
     },
   },
