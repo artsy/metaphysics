@@ -36,12 +36,10 @@ describe("Me", () => {
         intents: ["buy art & design"],
         privacy: "public",
         owner: {
-          location: {
-            display: "Germany",
-          },
-          confirmed_at: "2022-12-19",
-          identity_verified: true,
+          name: "Percy",
         },
+        email_confirmed_at: "2022-12-19",
+        identity_verified: true,
         profession: "typer",
         artwork_inquiry_requests_count: 25,
         previously_registered_for_auction: false,
