@@ -25,7 +25,7 @@ describe("Me", () => {
             },
           },
           from_last_viewed_message_id: "20",
-          to_last_viewed_message_id: "20",
+          to_last_viewed_message_id: "25",
           items: [
             {
               item_type: "Artwork",
@@ -181,6 +181,8 @@ describe("Me", () => {
               conversation(id: "420") {
                 isLastMessageToUser
                 unread
+                unreadByCollector
+                unreadByPartner
                 lastMessageDeliveryID
               }
             }
@@ -208,6 +210,8 @@ describe("Me", () => {
         return runAuthenticatedQuery(query, customRootValue).then(
           ({ me: { conversation } }) => {
             expect(conversation).toMatchSnapshot()
+            expect(conversation.unreadByCollector).toBe(true)
+            expect(conversation.unreadByPartner).toBe(false)
           }
         )
       })
