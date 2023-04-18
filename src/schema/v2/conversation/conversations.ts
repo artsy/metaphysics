@@ -91,7 +91,7 @@ const Conversations: GraphQLFieldConfig<
         to_type: "Partner",
         has_reply: args.hasReply ?? undefined,
         has_message: args.hasMessage ?? undefined,
-        dismissed: args.dismissed ?? undefined,
+        dismissed: !!args.dismissed,
         to_be_replied: args.toBeReplied ?? undefined,
       }
       // User
