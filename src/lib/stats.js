@@ -27,14 +27,21 @@ export function createStatsClient() {
 
   if (enableMetrics && isProd) {
     setInterval(() => {
-      statsClient.gauge(
-        "process.active_handles",
-        process._getActiveHandles().length
-      )
-      statsClient.gauge(
-        "process.active_requests",
-        process._getActiveRequests().length
-      )
+      if (process.getActiveResourcesInfo) {
+        statsClient.gauge(
+          "process.active_resources",
+          process.getActiveResourcesInfo().length
+        )
+      } else {
+        statsClient.gauge(
+          "process.active_handles",
+          process._getActiveHandles().length
+        )
+        statsClient.gauge(
+          "process.active_requests",
+          process._getActiveRequests().length
+        )
+      }
     }, 5000)
   }
 
