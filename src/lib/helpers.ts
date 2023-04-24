@@ -236,8 +236,9 @@ export const extractNodes = <Node extends object, T = Node>(
   )
 }
 
-export const isInteger = (str: string) => {
-  return Number.isInteger(parseFloat(str))
+export const isValidDate = (str: string) => {
+  const num = parseInt(str, 10)
+  return !isNaN(num) && str.trim() === num.toString() && Number.isInteger(num)
 }
 
 // For some users with no favourites, Gravity can return a 404 (which reflects the
