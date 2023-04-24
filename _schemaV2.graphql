@@ -14251,6 +14251,7 @@ type Query {
     first: Int
     includeBackfill: Boolean!
     last: Int
+    marketable: Boolean
     maxWorksPerArtist: Int
     page: Int
     userId: String
@@ -18690,6 +18691,7 @@ type Viewer {
     first: Int
     includeBackfill: Boolean!
     last: Int
+    marketable: Boolean
     maxWorksPerArtist: Int
     page: Int
     userId: String
