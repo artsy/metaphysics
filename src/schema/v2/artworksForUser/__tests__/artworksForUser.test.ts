@@ -6,10 +6,11 @@ const buildQuery = (args: any = {}) => {
   const first = args.first || 10
   const includeBackfill = args.includeBackfill || false
   const userId = args.userId || "abc123"
+  const marketable = args.marketable || false
 
   const query = gql`
       {
-        artworksForUser(first: ${first}, includeBackfill: ${includeBackfill}, userId: "${userId}") {
+        artworksForUser(first: ${first}, includeBackfill: ${includeBackfill}, userId: "${userId}", marketable: ${marketable}) {
           edges {
             node {
               title
@@ -26,6 +27,7 @@ const buildContext = (responses: any = {}) => {
   const {
     newForYouRecommendations,
     newForYouArtworks,
+    newForYouMarketableArtworks,
     sets,
     setItems,
   } = responses
@@ -35,12 +37,16 @@ const buildContext = (responses: any = {}) => {
   const mockVortexGraphqlLoader = jest.fn(() => () =>
     Promise.resolve({ data: { newForYouRecommendations } })
   )
+  const mockFilterArtworksLoader = jest.fn(() =>
+    Promise.resolve({ hits: newForYouMarketableArtworks })
+  )
 
   const context = {
     artworksLoader: mockArtworksLoader,
     setsLoader: mockSetsLoader,
     setItemsLoader: mockSetItemsLoader,
     vortexGraphqlLoader: mockVortexGraphqlLoader,
+    filterArtworksLoader: mockFilterArtworksLoader,
   }
 
   return context
@@ -185,6 +191,70 @@ describe("artworksForUser", () => {
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(1)
+    })
+  })
+
+  describe("marketable", () => {
+    it("doesn't filter marketable artworks when marketable is false", async () => {
+      const query = buildQuery({
+        first: 2,
+        includeBackfill: true,
+        marketable: false,
+      })
+      const newForYouRecommendations = {
+        edges: [{ node: { artworkId: "valid-id" } }],
+      }
+      const newForYouArtworks = [{}]
+      const context = buildContext({
+        newForYouRecommendations,
+        newForYouArtworks,
+      })
+
+      const { artworksForUser } = await runAuthenticatedQuery(query, context)
+      const artworks = extractNodes(artworksForUser)
+      expect(artworks.length).toEqual(1)
+    })
+
+    it("filters for marketable artworks when marketable is true", async () => {
+      const query = buildQuery({
+        first: 5,
+        includeBackfill: false,
+        marketable: true,
+      })
+
+      const allArtworks = [
+        { node: { _id: "valid-marketabke-id-1", title: "artwork-1" } },
+        { node: { _id: "valid-marketable-id-2", title: "artwork-2" } },
+        { node: { _id: "valid-non-marketabke-id-1", title: "artwork-3" } },
+      ]
+
+      const newForYouRecommendations = {
+        edges: allArtworks,
+      }
+
+      const newForYouArtworks = allArtworks.map((a) => a.node)
+
+      const newForYouMarketableArtworks = [
+        allArtworks[0].node,
+        allArtworks[1].node,
+      ]
+
+      const context = buildContext({
+        newForYouRecommendations,
+        newForYouArtworks,
+        newForYouMarketableArtworks,
+      })
+
+      const { artworksForUser } = await runAuthenticatedQuery(query, context)
+      const artworks = extractNodes(artworksForUser)
+      expect(artworks).toEqual([
+        {
+          title: "artwork-1",
+        },
+        {
+          title: "artwork-2",
+        },
+      ])
     })
   })
 })

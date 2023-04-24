@@ -52,20 +52,19 @@ export const getNewForYouArtworks = async (
 ): Promise<any[]> => {
   if (artworkIds.length === 0) return []
 
-  const { size, offset, marketable } = gravityArgs
-  const { filterArtworksLoader } = context
+  const { size, offset } = gravityArgs
+  const { artworksLoader } = context
 
   const artworkParams = {
     availability: "for sale",
     ids: artworkIds,
-    marketable,
     offset,
     size,
   }
 
-  const { hits } = await filterArtworksLoader(artworkParams)
+  const body = await artworksLoader(artworkParams)
 
-  return hits
+  return body
 }
 
 export const getBackfillArtworks = async (
@@ -88,4 +87,17 @@ export const getBackfillArtworks = async (
   const { body: itemsBody } = await setItemsLoader(backfillSetId)
 
   return (itemsBody || []).slice(0, remainingSize)
+}
+
+export const getMarketableArtworks = async (
+  artworkIds: string[],
+  context: ResolverContext
+): Promise<any[]> => {
+  const { filterArtworksLoader } = context
+  const { hits } = await filterArtworksLoader({
+    ids: artworkIds,
+    marketable: true,
+  })
+
+  return hits
 }

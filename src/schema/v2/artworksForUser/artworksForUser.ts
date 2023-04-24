@@ -13,6 +13,7 @@ import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "schema/v2/artwork"
 import {
   getBackfillArtworks,
+  getMarketableArtworks,
   getNewForYouArtworks,
   getNewForYouRecs,
 } from "./helpers"
@@ -28,7 +29,7 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     userId: { type: GraphQLString },
     version: { type: GraphQLString },
     maxWorksPerArtist: { type: GraphQLInt },
-    marketable: { type: GraphQLBoolean },
+    marketable: { type: GraphQLBoolean, defaultValue: false },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
     if (!context.artworksLoader) return
@@ -51,7 +52,16 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       context
     )
 
-    const artworks = [...newForYouArtworks, ...backfillArtworks]
+    const allArtworks = [...newForYouArtworks, ...backfillArtworks]
+
+    // Because we load the data from two different sources that do not support
+    // marketable flag, we need to apply the filtering at the end
+    const artworks = args.marketable
+      ? await getMarketableArtworks(
+          allArtworks.map((artwork) => artwork._id),
+          context
+        )
+      : allArtworks
 
     // TODO: get count from artworks loader to optimize pagination
     const count = artworks.length === 0 ? 0 : MAX_ARTWORKS
