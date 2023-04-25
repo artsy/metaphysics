@@ -418,7 +418,7 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     meUserInterestsLoader: gravityLoader("me/user_interests"),
-    myCollectionArtworksLoader: gravityLoader(
+    meMyCollectionArtworksLoader: gravityLoader(
       "me/my_collection_artworks",
       {},
       { headers: true }

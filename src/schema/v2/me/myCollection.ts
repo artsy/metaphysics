@@ -75,13 +75,13 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
     _args,
     options,
     {
-      myCollectionArtworksLoader,
+      meMyCollectionArtworksLoader,
       convectionGraphQLLoader,
       marketPriceInsightsBatchLoader,
     }
   ) => {
     if (
-      !myCollectionArtworksLoader ||
+      !meMyCollectionArtworksLoader ||
       !convectionGraphQLLoader ||
       !marketPriceInsightsBatchLoader
     ) {
@@ -107,7 +107,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
     try {
       // Fetch artworks from Gravity
 
-      const { body: artworks, headers } = await myCollectionArtworksLoader(
+      const { body: artworks, headers } = await meMyCollectionArtworksLoader(
         gravityOptions
       )
 
