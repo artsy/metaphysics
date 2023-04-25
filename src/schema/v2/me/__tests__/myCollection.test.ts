@@ -56,7 +56,7 @@ describe("me.myCollection", () => {
           id: "some-user-id",
         }),
 
-      collectionArtworksLoader: async () => mockCollectionArtworksResponse,
+      myCollectionArtworksLoader: async () => mockCollectionArtworksResponse,
       marketPriceInsightsBatchLoader,
       authenticatedArtistLoader: () =>
         Promise.resolve({
@@ -97,7 +97,7 @@ describe("me.myCollection", () => {
             id: "some-user-id",
           }),
 
-        collectionArtworksLoader: async () => mockCollectionArtworksResponse,
+        myCollectionArtworksLoader: async () => mockCollectionArtworksResponse,
         marketPriceInsightsBatchLoader: jest.fn(async () => mockVortexResponse),
         authenticatedArtistLoader: () =>
           Promise.resolve({
@@ -155,7 +155,7 @@ describe("me.myCollection", () => {
         Promise.resolve({
           id: "some-user-id",
         }),
-      collectionArtworksLoader: () =>
+      myCollectionArtworksLoader: () =>
         Promise.resolve({
           body: [
             {
@@ -261,7 +261,7 @@ describe("me.myCollection", () => {
         Promise.resolve({
           id: "some-user-id",
         }),
-      collectionArtworksLoader: () =>
+      myCollectionArtworksLoader: () =>
         Promise.resolve({
           body: [
             {
@@ -357,7 +357,7 @@ describe("me.myCollection", () => {
         Promise.resolve({
           id: "some-user-id",
         }),
-      collectionArtworksLoader: () =>
+      myCollectionArtworksLoader: () =>
         Promise.resolve({
           body: [
             {
@@ -434,7 +434,7 @@ describe("me.myCollection", () => {
         Promise.resolve({
           id: "some-user-id",
         }),
-      collectionArtworksLoader: () =>
+      myCollectionArtworksLoader: () =>
         Promise.reject(new Error("Collection Not Found")),
       marketPriceInsightsBatchLoader,
     }
@@ -464,7 +464,7 @@ describe("me.myCollection", () => {
         Promise.resolve({
           id: "some-user-id",
         }),
-      collectionArtworksLoader: () =>
+      myCollectionArtworksLoader: () =>
         Promise.reject(new Error("Some other error")),
       marketPriceInsightsBatchLoader,
     }
