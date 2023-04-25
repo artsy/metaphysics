@@ -11301,6 +11301,7 @@ type Me implements Node {
     saleSlug: String
     size: Int
     sort: String
+    userId: String
   ): SaleArtworksConnection
 
   # The current user's status relating to bids on artworks
@@ -14940,6 +14941,7 @@ type Query {
     saleSlug: String
     size: Int
     sort: String
+    userId: String
   ): SaleArtworksConnection
 
   # A list of Sales
@@ -19203,6 +19205,7 @@ type Viewer {
     saleSlug: String
     size: Int
     sort: String
+    userId: String
   ): SaleArtworksConnection
 
   # A list of Sales

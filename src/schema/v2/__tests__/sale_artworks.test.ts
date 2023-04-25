@@ -10,7 +10,7 @@ describe("Sale Artworks", () => {
     })
   }
 
-  it("pulls from /sale_artworks if `live_sale, include_lots_by_followed_artists, is_auction to true` ", async () => {
+  it("pulls from /sale_artworks if `live_sale, include_lots_by_followed_artists, is_auction to true`", async () => {
     const hits = _.fill(Array(10), { id: "foo" })
     const totalCount = hits.length * 2
     const gravityResponse = {
@@ -22,7 +22,11 @@ describe("Sale Artworks", () => {
     const query = gql`
       {
         me {
-          lotsByFollowedArtistsConnection(liveSale: true, isAuction: true) {
+          lotsByFollowedArtistsConnection(
+            liveSale: true
+            isAuction: true
+            userId: "test-user-id"
+          ) {
             counts {
               total
             }
@@ -161,7 +165,7 @@ describe("Sale Artworks", () => {
         },
       },
     } = await execute(gravityResponse, query)
-    const [first, last] = [_.first(edges), _.last(edges)]
+    const [first, last] = [_.first(edges), _.last(edges)] as any
     expect(first.cursor).toEqual(startCursor)
     expect(last.cursor).toEqual(endCursor)
     expect(hasNextPage).toEqual(true)
@@ -304,9 +308,7 @@ describe("Sale Artworks", () => {
       }
     `
     expect.hasAssertions()
-    const {
-      saleArtworksConnection: { edges },
-    } = await execute(gravityResponse, query, {
+    await execute(gravityResponse, query, {
       saleArtworksFilterLoader: ({
         include_artworks_by_followed_artists,
         sale_id,
