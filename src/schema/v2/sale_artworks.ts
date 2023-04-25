@@ -96,6 +96,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     },
     size: { type: GraphQLInt },
     sort: { type: GraphQLString },
+    userId: { type: GraphQLString },
   }),
   description: "Sale Artworks search results",
   type: SaleArtworksConnectionType,
@@ -111,6 +112,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       liveSale,
       saleID,
       saleSlug,
+      userId,
       ..._args
     },
     { saleArtworksFilterLoader, saleArtworksAllLoader },
@@ -140,6 +142,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       is_auction: isAuction,
       live_sale: liveSale,
       sale_id: saleID || saleSlug,
+      user_id: userId,
       ..._args,
     }
 
@@ -150,6 +153,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     if (saleArtworksAllLoader && args.live_sale) {
       // @ts-expect-error FIXME: Make `page` an optional parameter on `params`
       delete params.page
+
       const { body, headers } = await saleArtworksAllLoader({
         ...params,
         total_count: true,

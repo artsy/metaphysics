@@ -5,7 +5,7 @@ describe("UpdateConversationMutation", () => {
   it("sets from_last_viewed_message_id", async () => {
     const mutation = `
       mutation {
-        updateConversation(input: { conversationId: "25", fromLastViewedMessageId: "35", dismissed: true, sellerOutcome: "already_contacted", sellerOutcomeComment: "Outcome comment" }) {
+        updateConversation(input: { conversationId: "25", fromLastViewedMessageId: "35", toLastViewedMessageId: "36" dismissed: true, sellerOutcome: "already_contacted", sellerOutcomeComment: "Outcome comment" }) {
           conversation {
             initialMessage
           }
