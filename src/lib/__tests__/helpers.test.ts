@@ -308,7 +308,7 @@ describe("convertConnectionArgsToGravityArgs", () => {
   })
 })
 
-describe("isDateValid", () => {
+describe("isInteger", () => {
   it("only returns true if the input string is a valid integer", () => {
     expect(isInteger("0")).toEqual(true)
     expect(isInteger("1")).toEqual(true)
