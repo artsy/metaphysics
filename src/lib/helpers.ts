@@ -236,7 +236,7 @@ export const extractNodes = <Node extends object, T = Node>(
   )
 }
 
-export const isValidDate = (str: string) => {
+export const isInteger = (str: string) => {
   const num = parseInt(str, 10)
   return !isNaN(num) && str.trim() === num.toString() && Number.isInteger(num)
 }

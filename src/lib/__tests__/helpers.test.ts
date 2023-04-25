@@ -2,7 +2,7 @@ import {
   convertConnectionArgsToGravityArgs,
   exclude,
   isExisty,
-  isValidDate,
+  isInteger,
   markdownToText,
   removeEmptyValues,
   removeNulls,
@@ -310,18 +310,18 @@ describe("convertConnectionArgsToGravityArgs", () => {
 
 describe("isDateValid", () => {
   it("only returns true if the input string is a valid integer", () => {
-    expect(isValidDate("0")).toEqual(true)
-    expect(isValidDate("1")).toEqual(true)
-    expect(isValidDate("-1")).toEqual(true)
-    expect(isValidDate("1.5")).toEqual(false)
-    expect(isValidDate("test")).toEqual(false)
-    expect(isValidDate("")).toEqual(false)
-    expect(isValidDate("   ")).toEqual(false)
-    expect(isValidDate("1991-1993")).toEqual(false)
-    expect(isValidDate("1963/64")).toEqual(false)
-    expect(isValidDate("19th Century")).toEqual(false)
-    expect(isValidDate("2023, 4, 23")).toEqual(false)
-    expect(isValidDate("4th-5th Century AD")).toEqual(false)
-    expect(isValidDate("2000s")).toEqual(false)
+    expect(isInteger("0")).toEqual(true)
+    expect(isInteger("1")).toEqual(true)
+    expect(isInteger("-1")).toEqual(true)
+    expect(isInteger("1.5")).toEqual(false)
+    expect(isInteger("test")).toEqual(false)
+    expect(isInteger("")).toEqual(false)
+    expect(isInteger("   ")).toEqual(false)
+    expect(isInteger("1991-1993")).toEqual(false)
+    expect(isInteger("1963/64")).toEqual(false)
+    expect(isInteger("19th Century")).toEqual(false)
+    expect(isInteger("2023, 4, 23")).toEqual(false)
+    expect(isInteger("4th-5th Century AD")).toEqual(false)
+    expect(isInteger("2000s")).toEqual(false)
   })
 })
