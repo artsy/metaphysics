@@ -211,6 +211,11 @@ export default (opts) => {
       (id) => `sale/${id}/sale_artworks`,
       { headers: true }
     ),
+    saleArtworksAllLoader: gravityLoader(
+      "sale_artworks",
+      {},
+      { headers: true }
+    ),
     saleArtworksLoader: gravityLoader(
       (id) => `sale/${id}/sale_artworks`,
       {},
