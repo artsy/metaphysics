@@ -8,6 +8,7 @@ interface UpdateMessageMutationInputProps {
   conversationId: string
   dismissed: boolean
   fromLastViewedMessageId: string
+  toLastViewedMessageId: string
   sellerOutcome: string
   sellerOutcomeComment: string
 }
@@ -34,7 +35,11 @@ export default mutationWithClientMutationId<
     },
     fromLastViewedMessageId: {
       type: GraphQLString,
-      description: "The message id to mark as read.",
+      description: "The message id to mark as read as a collector (from).",
+    },
+    toLastViewedMessageId: {
+      type: GraphQLString,
+      description: "The message id to mark as read as a partner (to).",
     },
     sellerOutcome: {
       type: GraphQLString,
@@ -66,6 +71,7 @@ export default mutationWithClientMutationId<
         {
           dismissed: args.dismissed,
           from_last_viewed_message_id: args.fromLastViewedMessageId,
+          to_last_viewed_message_id: args.toLastViewedMessageId,
           seller_outcome: args.sellerOutcome,
           seller_outcome_comment: args.sellerOutcomeComment,
         }
