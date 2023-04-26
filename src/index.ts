@@ -34,6 +34,7 @@ import { optionalFieldsDirectiveExtension } from "directives/optionalField/optio
 import { principalFieldDirectiveExtension } from "directives/principleField/principalFieldDirectiveExtension"
 import { principalFieldDirectiveValidation } from "directives/principleField/principalFieldDirectiveValidation"
 import * as Sentry from "@sentry/node"
+import { bodyParserMiddleware } from "lib/bodyParserMiddleware"
 
 const {
   ENABLE_GRAPHQL_UPLOAD,
@@ -120,8 +121,9 @@ app.use(
     maxAge: 600,
   }),
   morgan,
-  // Gotta parse the JSON body before passing it to logQueryDetails/fetchPersistedQuery
-  bodyParser.json(),
+  // The body parser middleware is needed for integration tests that use this file directly,
+  // even though it is also included in the root index.js file.
+  bodyParserMiddleware,
   rateLimiterMiddleware,
   // Ensure this divider is logged before both fetchPersistedQuery and graphqlHTTP
   (_req, _res, next) => {
