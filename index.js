@@ -1,7 +1,7 @@
 import "moment-timezone"
 import xapp from "@artsy/xapp"
 import compression from "compression"
-import bodyParser from "body-parser"
+import { bodyParserMiddleware } from "./src/lib/bodyParserMiddleware"
 import { info, error } from "./src/lib/loggers"
 import config from "./src/config"
 import { init as initTracer } from "./src/lib/tracer"
@@ -85,7 +85,7 @@ function bootApp() {
     )
   }
 
-  app.use(bodyParser.json())
+  app.use(bodyParserMiddleware)
 
   app.get("/favicon.ico", (_req, res) => {
     res.status(200).set({ "Content-Type": "image/x-icon" }).end()
