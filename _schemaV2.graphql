@@ -12602,7 +12602,7 @@ type NotificationEdge {
 }
 
 type NotificationPreference {
-  #  email | push
+  # email | push
   channel: String!
   id: String!
   name: String!
@@ -12610,8 +12610,8 @@ type NotificationPreference {
 }
 
 input NotificationPreferenceInput {
-  #  email | push
-  channel: String!
+  # email | push
+  channel: String
   name: String!
   status: SubGroupInputStatus!
 }
