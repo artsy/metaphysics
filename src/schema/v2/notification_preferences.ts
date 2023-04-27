@@ -28,8 +28,11 @@ const subGroupFields = {
   name: {
     type: new GraphQLNonNull(GraphQLString),
   },
+  // NOTE: The 'channel' property is defined as a string instead of an enum because some frontend code relies on it being a string.
+  // Using an enum will cause type errors on the frontend.
   channel: {
     type: new GraphQLNonNull(GraphQLString),
+    description: "email | push",
   },
   status: {
     type: new GraphQLNonNull(
@@ -47,6 +50,12 @@ const subGroupFields = {
 const subGroupInputFields = {
   name: {
     type: new GraphQLNonNull(GraphQLString),
+  },
+  // NOTE: The 'channel' property is defined as a string instead of an enum because some frontend code relies on it being a string.
+  // Using an enum will cause type errors on the frontend.
+  channel: {
+    type: GraphQLString,
+    description: "email | push",
   },
   status: {
     type: new GraphQLNonNull(
