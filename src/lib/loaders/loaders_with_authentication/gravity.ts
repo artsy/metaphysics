@@ -418,6 +418,11 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     meUserInterestsLoader: gravityLoader("me/user_interests"),
+    meMyCollectionArtworksLoader: gravityLoader(
+      "me/my_collection_artworks",
+      {},
+      { headers: true }
+    ),
     notificationPreferencesLoader: gravityLoader("notification_preferences"),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     pageLoader: gravityLoader((id) => `page/${id}`),

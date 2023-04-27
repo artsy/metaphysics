@@ -1,10 +1,9 @@
 import "moment-timezone"
 import xapp from "@artsy/xapp"
 import compression from "compression"
-import bodyParser from "body-parser"
+import { bodyParserMiddleware } from "./src/lib/bodyParserMiddleware"
 import { info, error } from "./src/lib/loggers"
 import config from "./src/config"
-import cache from "./src/lib/cache"
 import { init as initTracer } from "./src/lib/tracer"
 import { IpFilter as ipfilter } from "express-ipfilter"
 import { errorHandler } from "./src/lib/errorHandler"
@@ -86,7 +85,7 @@ function bootApp() {
     )
   }
 
-  app.use(bodyParser.json())
+  app.use(bodyParserMiddleware)
 
   app.get("/favicon.ico", (_req, res) => {
     res.status(200).set({ "Content-Type": "image/x-icon" }).end()
@@ -96,14 +95,8 @@ function bootApp() {
     if (isShuttingDown) {
       return res.status(503).end()
     }
-    cache
-      .isAvailable()
-      .then((_stats) => {
-        return res.status(200).end()
-      })
-      .catch((_err) => {
-        return res.status(503).end()
-      })
+
+    return res.status(200).end()
   })
 
   app.all("/graphql", (_req, res) => res.redirect("/v2"))

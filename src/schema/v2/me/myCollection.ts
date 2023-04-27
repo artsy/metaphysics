@@ -72,16 +72,16 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
     },
   }),
   resolve: async (
-    { id: userId },
+    _args,
     options,
     {
-      collectionArtworksLoader,
+      meMyCollectionArtworksLoader,
       convectionGraphQLLoader,
       marketPriceInsightsBatchLoader,
     }
   ) => {
     if (
-      !collectionArtworksLoader ||
+      !meMyCollectionArtworksLoader ||
       !convectionGraphQLLoader ||
       !marketPriceInsightsBatchLoader
     ) {
@@ -96,9 +96,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
 
     const gravityOptions = {
       exclude_purchased_artworks: options.excludePurchasedArtworks,
-      private: true,
       total_count: true,
-      user_id: userId,
       ...paginationArgs,
     }
 
@@ -109,8 +107,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
     try {
       // Fetch artworks from Gravity
 
-      const { body: artworks, headers } = await collectionArtworksLoader(
-        "my-collection",
+      const { body: artworks, headers } = await meMyCollectionArtworksLoader(
         gravityOptions
       )
 

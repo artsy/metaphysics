@@ -193,17 +193,4 @@ export default {
   delete: (key: string) => {
     return cacheTracer.delete(_delete(key))
   },
-
-  isAvailable: () => {
-    return new Promise((resolve, reject) => {
-      client.stats((err, resp) => {
-        if (err) {
-          error(err)
-          reject(err)
-        } else {
-          resolve(resp)
-        }
-      })
-    })
-  },
 }
