@@ -28,6 +28,7 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     userId: { type: GraphQLString },
     version: { type: GraphQLString },
     maxWorksPerArtist: { type: GraphQLInt },
+    marketable: { type: GraphQLBoolean },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
     if (!context.artworksLoader) return
@@ -38,7 +39,10 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     const { page, size, offset } = gravityArgs
 
     const newForYouArtworks = await getNewForYouArtworks(
-      newForYouArtworkIds,
+      {
+        ids: newForYouArtworkIds,
+        marketable: args.marketable,
+      },
       gravityArgs,
       context
     )

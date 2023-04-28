@@ -46,20 +46,24 @@ export const getNewForYouRecs = async (
 }
 
 export const getNewForYouArtworks = async (
-  artworkIds: string[],
+  { ids, marketable }: { ids: string[]; marketable?: boolean },
   gravityArgs,
   context: ResolverContext
 ): Promise<any[]> => {
-  if (artworkIds.length === 0) return []
+  if (ids.length === 0) return []
 
   const { size, offset } = gravityArgs
   const { artworksLoader } = context
 
   const artworkParams = {
     availability: "for sale",
-    ids: artworkIds,
+    ids: ids,
     offset,
     size,
+  }
+
+  if (marketable) {
+    artworkParams["marketable"] = true
   }
 
   const body = await artworksLoader(artworkParams)
