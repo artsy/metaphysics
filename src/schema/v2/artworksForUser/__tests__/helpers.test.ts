@@ -49,7 +49,7 @@ describe("getNewForYouArtworks", () => {
     const context = {} as any
 
     const artworks = await getNewForYouArtworks(
-      artworkIds,
+      { ids: artworkIds },
       gravityArgs,
       context
     )
@@ -65,7 +65,7 @@ describe("getNewForYouArtworks", () => {
     } as any
 
     const artworks = await getNewForYouArtworks(
-      artworkIds,
+      { ids: artworkIds },
       gravityArgs,
       context
     )
