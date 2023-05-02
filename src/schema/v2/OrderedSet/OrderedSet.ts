@@ -21,6 +21,7 @@ import { markdown } from "../fields/markdown"
 import { OrderedSetLayoutsEnum } from "./OrderedSetLayoutsEnum"
 import { date } from "../fields/date"
 import { UserType } from "../user"
+import { allViaLoader } from "lib/all"
 
 export const OrderedSetType = new GraphQLObjectType<
   Gravity.OrderedSet & { cached: number; created_by: any },
@@ -63,7 +64,7 @@ export const OrderedSetType = new GraphQLObjectType<
     items: {
       type: new GraphQLList(OrderedSetItemType),
       resolve: ({ id, item_type }, _options, { setItemsLoader }) => {
-        return setItemsLoader(id).then(({ body: items }) => {
+        return allViaLoader(setItemsLoader, { path: id }).then((items) => {
           return items.map((item) => {
             return { ...item, item_type }
           })
