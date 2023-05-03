@@ -39,7 +39,7 @@ describe("OrderedSet type", () => {
               title: "Another Artwork",
             },
           ],
-          headers: {},
+          headers: { "x-total-count": 2 },
         })
       ),
     }

@@ -38,6 +38,7 @@ describe("OrderedSets type", () => {
             name: "Painting",
           },
         ],
+        headers: { "x-total-count": 1 },
       })
     ),
   }
