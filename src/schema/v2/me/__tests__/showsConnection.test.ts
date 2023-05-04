@@ -3,12 +3,12 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("Me", () => {
-  describe("ShowRecommendations", () => {
+  describe("ShowsConnection", () => {
     it("returns shows for you", async () => {
       const query = gql`
         {
           me {
-            showRecommendations(first: 2, sort: NAME_ASC, status: UPCOMING) {
+            showsConnection(first: 2, sort: NAME_ASC, status: UPCOMING) {
               totalCount
               edges {
                 node {
@@ -28,10 +28,10 @@ describe("Me", () => {
       }
 
       const {
-        me: { showRecommendations },
+        me: { showsConnection },
       } = await runAuthenticatedQuery(query, context)
 
-      expect(showRecommendations).toMatchInlineSnapshot(`
+      expect(showsConnection).toMatchInlineSnapshot(`
         Object {
           "edges": Array [
             Object {

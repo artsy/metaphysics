@@ -11510,8 +11510,8 @@ type Me implements Node {
   secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
   shareFollows: Boolean!
 
-  # A list of recommended shows for the user
-  showRecommendations(
+  # A list of shows by followed artists
+  showsByFollowedArtists(
     after: String
     before: String
     first: Int
@@ -11522,8 +11522,8 @@ type Me implements Node {
     status: EventStatus
   ): ShowConnection
 
-  # A list of shows by followed artists
-  showsByFollowedArtists(
+  # A list of shows for the user
+  showsConnection(
     after: String
     before: String
     first: Int

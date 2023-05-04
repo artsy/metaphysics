@@ -3,11 +3,11 @@ import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import EventStatus from "../input_fields/event_status"
 import ShowSorts from "../sorts/show_sorts"
-import { ShowsConnection } from "../show"
+import { ShowsConnection as ShowsConnectionType } from "../show"
 import { paginationResolver } from "../fields/pagination"
 
-export const ShowRecommendations: GraphQLFieldConfig<void, ResolverContext> = {
-  type: ShowsConnection.connectionType,
+export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
+  type: ShowsConnectionType.connectionType,
   args: pageable({
     sort: {
       type: ShowSorts,
@@ -19,7 +19,7 @@ export const ShowRecommendations: GraphQLFieldConfig<void, ResolverContext> = {
       description: "Filter shows by chronological event status",
     },
   }),
-  description: "A list of recommended shows for the user",
+  description: "A list of shows for the user",
   resolve: async (_root, args, { meShowsLoader }) => {
     if (!meShowsLoader) return null
 
