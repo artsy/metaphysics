@@ -19,7 +19,8 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
       description: "Filter shows by chronological event status",
     },
   }),
-  description: "A list of shows for the user",
+  description:
+    "A list of shows for the user (pagination logic might be broken)",
   resolve: async (_root, args, { meShowsLoader }) => {
     if (!meShowsLoader) return null
 

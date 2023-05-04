@@ -11522,7 +11522,7 @@ type Me implements Node {
     status: EventStatus
   ): ShowConnection
 
-  # A list of shows for the user
+  # A list of shows for the user (pagination logic might be broken)
   showsConnection(
     after: String
     before: String
