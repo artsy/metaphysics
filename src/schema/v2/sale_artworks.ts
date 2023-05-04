@@ -21,6 +21,7 @@ import {
 } from "./aggregations/filter_sale_artworks_aggregation"
 import { ArtworkType, ArtworkConnectionInterface } from "./artwork"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import SaleArtworksSorts from "./sorts/sale_artworks_sorts"
 
 const DEFAULTS = {
   aggregations: ["total"],
@@ -79,6 +80,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     artistIDs: { type: new GraphQLList(GraphQLString) },
     biddableSale: { type: GraphQLBoolean },
     estimateRange: { type: GraphQLString },
+    excludeClosedLots: { type: GraphQLBoolean },
     geneIDs: { type: new GraphQLList(GraphQLString) },
     includeArtworksByFollowedArtists: {
       type: GraphQLBoolean,
@@ -95,7 +97,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       type: GraphQLString,
     },
     size: { type: GraphQLInt },
-    sort: { type: GraphQLString },
+    sort: { type: SaleArtworksSorts.type },
     userId: { type: GraphQLString },
   }),
   description: "Sale Artworks search results",
@@ -106,6 +108,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       artistIDs,
       biddableSale,
       estimateRange,
+      excludeClosedLots,
       geneIDs,
       includeArtworksByFollowedArtists: requestIncludeArtworksByFollowedArtists,
       isAuction,
@@ -137,6 +140,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       artist_ids: artistIDs,
       biddable_sale: biddableSale,
       estimate_range: estimateRange,
+      exclude_closed_lots: excludeClosedLots,
       gene_ids: geneIDs,
       include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
       is_auction: isAuction,

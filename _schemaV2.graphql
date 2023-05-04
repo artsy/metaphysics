@@ -11286,6 +11286,7 @@ type Me implements Node {
     before: String
     biddableSale: Boolean
     estimateRange: String
+    excludeClosedLots: Boolean
     first: Int
     geneIDs: [String]
 
@@ -11300,7 +11301,7 @@ type Me implements Node {
     # Same as saleID argument, but matches the argument type of `sale(id: 'foo')` root field
     saleSlug: String
     size: Int
-    sort: String
+    sort: SaleArtworksSorts
     userId: String
   ): SaleArtworksConnection
 
@@ -14930,6 +14931,7 @@ type Query {
     before: String
     biddableSale: Boolean
     estimateRange: String
+    excludeClosedLots: Boolean
     first: Int
     geneIDs: [String]
 
@@ -14944,7 +14946,7 @@ type Query {
     # Same as saleID argument, but matches the argument type of `sale(id: 'foo')` root field
     saleSlug: String
     size: Int
-    sort: String
+    sort: SaleArtworksSorts
     userId: String
   ): SaleArtworksConnection
 
@@ -15864,6 +15866,12 @@ type SaleArtworksConnection implements ArtworkConnectionInterface {
   # Information to aid in pagination.
   pageInfo: PageInfo!
   totalCount: Int
+}
+
+enum SaleArtworksSorts {
+  END_AT_ASC
+  END_AT_DESC
+  POSITION_ASC
 }
 
 enum SaleArtworkStatus {
@@ -19195,6 +19203,7 @@ type Viewer {
     before: String
     biddableSale: Boolean
     estimateRange: String
+    excludeClosedLots: Boolean
     first: Int
     geneIDs: [String]
 
@@ -19209,7 +19218,7 @@ type Viewer {
     # Same as saleID argument, but matches the argument type of `sale(id: 'foo')` root field
     saleSlug: String
     size: Int
-    sort: String
+    sort: SaleArtworksSorts
     userId: String
   ): SaleArtworksConnection
 
