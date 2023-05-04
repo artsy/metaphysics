@@ -1,10 +1,10 @@
 import { GraphQLFieldConfig } from "graphql"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
-import { connectionFromArraySlice } from "graphql-relay"
 import EventStatus from "../input_fields/event_status"
 import ShowSorts from "../sorts/show_sorts"
 import { ShowsConnection } from "../show"
+import { paginationResolver } from "../fields/pagination"
 
 export const ShowRecommendations: GraphQLFieldConfig<void, ResolverContext> = {
   type: ShowsConnection.connectionType,
@@ -20,11 +20,11 @@ export const ShowRecommendations: GraphQLFieldConfig<void, ResolverContext> = {
     },
   }),
   description: "A list of recommended shows for the user",
-  resolve: async (_root, options, { meShowsLoader }) => {
+  resolve: async (_root, args, { meShowsLoader }) => {
     if (!meShowsLoader) return null
 
-    const { limit: size, offset } = getPagingParameters(options)
-    const { sort, status } = options
+    const { limit: size, offset } = getPagingParameters(args)
+    const { page, sort, status } = args
 
     const gravityArgs = {
       size,
@@ -34,16 +34,17 @@ export const ShowRecommendations: GraphQLFieldConfig<void, ResolverContext> = {
       status,
     }
 
-    const { body: shows, headers } = await meShowsLoader(gravityArgs)
+    const { body, headers } = await meShowsLoader(gravityArgs)
 
-    const count = parseInt(headers["x-total-count"] || "0", 10)
+    const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-    return {
-      totalCount: count,
-      ...connectionFromArraySlice(shows, options, {
-        arrayLength: count,
-        sliceStart: offset,
-      }),
-    }
+    return paginationResolver({
+      args,
+      body,
+      offset,
+      page,
+      size,
+      totalCount,
+    })
   },
 }
