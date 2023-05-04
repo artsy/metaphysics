@@ -11510,6 +11510,18 @@ type Me implements Node {
   secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
   shareFollows: Boolean!
 
+  # A list of recommended shows for the user
+  showRecommendations(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    sort: ShowSorts
+
+    # Filter shows by chronological event status
+    status: EventStatus
+  ): ShowConnection
+
   # A list of shows by followed artists
   showsByFollowedArtists(
     after: String

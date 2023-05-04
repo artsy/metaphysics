@@ -65,6 +65,7 @@ import { COLLECTION_ID, SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { SimilarToRecentlyViewed } from "./similarToRecentlyViewed"
 import { WatchedLotConnection } from "./watchedLotConnection"
+import { ShowRecommendations } from "./showRecommendations"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -481,6 +482,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     showsByFollowedArtists: ShowsByFollowedArtists,
+    showRecommendations: ShowRecommendations,
     unreadNotificationsCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: "A count of unread notifications.",
