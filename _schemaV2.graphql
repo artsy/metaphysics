@@ -11301,7 +11301,7 @@ type Me implements Node {
     # Same as saleID argument, but matches the argument type of `sale(id: 'foo')` root field
     saleSlug: String
     size: Int
-    sort: SaleArtworksSorts
+    sort: String
     userId: String
   ): SaleArtworksConnection
 
@@ -14946,7 +14946,7 @@ type Query {
     # Same as saleID argument, but matches the argument type of `sale(id: 'foo')` root field
     saleSlug: String
     size: Int
-    sort: SaleArtworksSorts
+    sort: String
     userId: String
   ): SaleArtworksConnection
 
@@ -15866,17 +15866,6 @@ type SaleArtworksConnection implements ArtworkConnectionInterface {
   # Information to aid in pagination.
   pageInfo: PageInfo!
   totalCount: Int
-}
-
-enum SaleArtworksSorts {
-  BIDDER_POSITIONS_COUNT_ASC
-  BIDDER_POSITIONS_COUNT_DESC
-  END_AT_ASC
-  END_AT_DESC
-  POSITION_ASC
-  POSITION_DESC
-  SEARCHABLE_ESTIMATE_ASC
-  SEARCHABLE_ESTIMATE_DESC
 }
 
 enum SaleArtworkStatus {
@@ -19223,7 +19212,7 @@ type Viewer {
     # Same as saleID argument, but matches the argument type of `sale(id: 'foo')` root field
     saleSlug: String
     size: Int
-    sort: SaleArtworksSorts
+    sort: String
     userId: String
   ): SaleArtworksConnection
 

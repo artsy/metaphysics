@@ -21,7 +21,6 @@ import {
 } from "./aggregations/filter_sale_artworks_aggregation"
 import { ArtworkType, ArtworkConnectionInterface } from "./artwork"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
-import SaleArtworksSorts from "./sorts/sale_artworks_sorts"
 
 const DEFAULTS = {
   aggregations: ["total"],
@@ -97,7 +96,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       type: GraphQLString,
     },
     size: { type: GraphQLInt },
-    sort: { type: SaleArtworksSorts.type },
+    sort: { type: GraphQLString },
     userId: { type: GraphQLString },
   }),
   description: "Sale Artworks search results",
