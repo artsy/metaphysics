@@ -27,6 +27,9 @@ export interface ResolverContextValues {
    * to the MP `Image` type
    */
   imageData?: ImageData
+
+  /** The IP address of the HTTP client */
+  requestIP?: string
 }
 
 export type ResolverContext = ResolverContextValues &

@@ -11527,7 +11527,11 @@ type Me implements Node {
     after: String
     before: String
     first: Int
+
+    # Include shows near to the user's location (falls back to IP-based location if `near` param is not provided)
+    includeShowsByLocation: Boolean = false
     last: Int
+    near: Near
     sort: ShowSorts
 
     # Filter shows by chronological event status

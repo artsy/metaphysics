@@ -139,6 +139,7 @@ const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
 
 const graphqlHTTP = require("express-graphql")
 const graphqlServer = graphqlHTTP((req, res, params) => {
+  const requestIP = req.ip as string | undefined
   const accessToken = req.headers["x-access-token"] as string | undefined
   const appToken = req.headers["x-xapp-token"] as string | undefined
   const userID = req.headers["x-user-id"] as string | undefined
@@ -179,6 +180,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     requestIDs,
     userAgent,
     appToken,
+    requestIP,
   }
 
   const validationRules = [
