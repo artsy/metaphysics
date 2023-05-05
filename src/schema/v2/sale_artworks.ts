@@ -79,6 +79,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     artistIDs: { type: new GraphQLList(GraphQLString) },
     biddableSale: { type: GraphQLBoolean },
     estimateRange: { type: GraphQLString },
+    excludeClosedLots: { type: GraphQLBoolean },
     geneIDs: { type: new GraphQLList(GraphQLString) },
     includeArtworksByFollowedArtists: {
       type: GraphQLBoolean,
@@ -106,6 +107,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       artistIDs,
       biddableSale,
       estimateRange,
+      excludeClosedLots,
       geneIDs,
       includeArtworksByFollowedArtists: requestIncludeArtworksByFollowedArtists,
       isAuction,
@@ -137,6 +139,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       artist_ids: artistIDs,
       biddable_sale: biddableSale,
       estimate_range: estimateRange,
+      exclude_closed_lots: excludeClosedLots,
       gene_ids: geneIDs,
       include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
       is_auction: isAuction,
