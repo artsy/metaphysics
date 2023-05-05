@@ -15869,9 +15869,14 @@ type SaleArtworksConnection implements ArtworkConnectionInterface {
 }
 
 enum SaleArtworksSorts {
+  BIDDER_POSITIONS_COUNT_ASC
+  BIDDER_POSITIONS_COUNT_DESC
   END_AT_ASC
   END_AT_DESC
   POSITION_ASC
+  POSITION_DESC
+  SEARCHABLE_ESTIMATE_ASC
+  SEARCHABLE_ESTIMATE_DESC
 }
 
 enum SaleArtworkStatus {
