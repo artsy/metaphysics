@@ -1395,6 +1395,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   blurb(format: Format): String
   cached: Int
   carousel: ArtistCarousel
+  collectedArtworksCount: Int
   collections: [String]
   contemporary(
     excludeArtistsWithoutArtworks: Boolean = true

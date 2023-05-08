@@ -399,6 +399,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       carousel: ArtistCarousel,
+      collectedArtworksCount: {
+        type: GraphQLInt,
+        resolve: ({ collected_artworks_count }) => collected_artworks_count,
+      },
       collections: {
         type: new GraphQLList(GraphQLString),
         resolve: ({ collections }) => {
