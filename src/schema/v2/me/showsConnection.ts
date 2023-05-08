@@ -1,4 +1,4 @@
-import { GraphQLBoolean, GraphQLFieldConfig } from "graphql"
+import { GraphQLFieldConfig, GraphQLString } from "graphql"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import EventStatus from "../input_fields/event_status"
@@ -18,14 +18,12 @@ interface Location {
 export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
   type: ShowsConnectionType.connectionType,
   args: pageable({
-    includeShowsByLocation: {
-      type: GraphQLBoolean,
-      defaultValue: false,
-      description:
-        "Include shows near to the user's location (falls back to IP-based location if `near` param is not provided)",
-    },
     near: {
       type: Near,
+    },
+    ip: {
+      type: GraphQLString,
+      description: "An IP address, will be used to lookup location",
     },
     sort: {
       type: ShowSorts,
@@ -39,19 +37,17 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
   }),
   description:
     "A list of shows for the user (pagination logic might be broken)",
-  resolve: async (
-    _root,
-    args,
-    { meShowsLoader, requestLocationLoader, requestIP }
-  ) => {
+  resolve: async (_root, args, { meShowsLoader, requestLocationLoader }) => {
     if (!meShowsLoader) return null
 
     const { limit: size, offset } = getPagingParameters(args)
-    const { page, sort, status } = args
+    const { near, ip, page, sort, status } = args
 
-    const locationArgs = args.includeShowsByLocation
-      ? await getLocationArgs(args.near, requestIP, requestLocationLoader)
-      : {}
+    if (ip && near) {
+      throw new Error('The "slug" and "ip" arguments are mutually exclusive.')
+    }
+
+    const locationArgs = await getLocationArgs(near, ip, requestLocationLoader)
 
     const gravityArgs = {
       size,
@@ -82,9 +78,10 @@ const getLocationArgs = async (
   requestIP: string | undefined,
   requestLocationLoader: any
 ) => {
+  if (!near && !requestIP) return {}
+
   let location: Location | undefined
 
-  // Fetch location by IP if it's not provided as an argument
   if (near) {
     location = near
   } else {

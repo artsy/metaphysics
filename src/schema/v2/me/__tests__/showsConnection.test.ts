@@ -5,7 +5,7 @@ import gql from "lib/gql"
 describe("Me", () => {
   describe("ShowsConnection", () => {
     describe("when including shows by location", () => {
-      describe("when near is provided", () => {
+      describe("when `near` param is provided", () => {
         it("passes near param to loader", async () => {
           const query = gql`
             {
@@ -14,7 +14,6 @@ describe("Me", () => {
                   first: 2
                   sort: NAME_ASC
                   status: UPCOMING
-                  includeShowsByLocation: true
                   near: { lat: 1, lng: 2, maxDistance: 3 }
                 ) {
                   totalCount
@@ -69,7 +68,7 @@ describe("Me", () => {
         })
       })
 
-      describe("when near is not provided", () => {
+      describe("when `ip` param is provided", () => {
         it("loads location and passes near param to loader", async () => {
           const query = gql`
             {
@@ -78,7 +77,7 @@ describe("Me", () => {
                   first: 2
                   sort: NAME_ASC
                   status: UPCOMING
-                  includeShowsByLocation: true
+                  ip: "my-ip"
                 ) {
                   totalCount
                   edges {
@@ -140,7 +139,7 @@ describe("Me", () => {
       })
     })
 
-    describe("when not including shows by location", () => {
+    describe("when neither `ip` nor `near` params are included", () => {
       it("returns shows for you", async () => {
         const query = gql`
           {
