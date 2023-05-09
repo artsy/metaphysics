@@ -25,7 +25,7 @@ describe("HomePageHeroUnits", () => {
       const params = { enabled: true }
       params[platform] = true
       const context = {
-        heroUnitsLoader: sinon
+        siteHeroUnitsLoader: sinon
           .stub()
           .withArgs("site_hero_units", params)
           .returns(Promise.resolve(payload)),
@@ -54,7 +54,7 @@ describe("HomePageHeroUnits", () => {
       const params = { enabled: true }
       params[platform] = true
       const context = {
-        heroUnitsLoader: sinon
+        siteHeroUnitsLoader: sinon
           .stub()
           .withArgs("site_hero_units", params)
           .returns(Promise.resolve(payload)),
@@ -93,7 +93,7 @@ describe("HomePageHeroUnits", () => {
 
   it("returns a specific background image version", () => {
     const context = {
-      heroUnitsLoader: sinon.stub().returns(Promise.resolve(payload)),
+      siteHeroUnitsLoader: sinon.stub().returns(Promise.resolve(payload)),
     }
 
     const query = `
@@ -117,7 +117,7 @@ describe("HomePageHeroUnits", () => {
 
   it("returns the correct wide image on 'mobile'", async () => {
     const context = {
-      heroUnitsLoader: sinon.stub().returns(Promise.resolve(payload)),
+      siteHeroUnitsLoader: sinon.stub().returns(Promise.resolve(payload)),
     }
 
     const backgroundImageWideResult = await runQuery(
@@ -140,7 +140,7 @@ describe("HomePageHeroUnits", () => {
 
   it("returns the correct narrow image on 'mobile'", async () => {
     const context = {
-      heroUnitsLoader: sinon.stub().returns(Promise.resolve(payload)),
+      siteHeroUnitsLoader: sinon.stub().returns(Promise.resolve(payload)),
     }
 
     const backgroundImageNarrowResult = await runQuery(
@@ -162,7 +162,7 @@ describe("HomePageHeroUnits", () => {
   })
   it("returns the correct title and subtitle on 'mobile'", async () => {
     const context = {
-      heroUnitsLoader: sinon.stub().returns(Promise.resolve(payload)),
+      siteHeroUnitsLoader: sinon.stub().returns(Promise.resolve(payload)),
     }
 
     const result = await runQuery(
