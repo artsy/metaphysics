@@ -105,3 +105,29 @@ describe("when trending artists are present", () => {
     })
   })
 })
+
+describe("when trending artists are missing", () => {
+  beforeEach(() => {
+    context = {
+      filterArtworksLoader: jest.fn(() =>
+        Promise.resolve({
+          hits: [],
+          aggregations: {
+            merchandisable_artists: {},
+          },
+        })
+      ),
+      artistsLoader: jest.fn(),
+    }
+  })
+
+  it("just returns an empty list", async () => {
+    const response = await runQuery(query, context)
+
+    expect(response).toEqual({
+      curatedTrendingArtists: {
+        edges: [],
+      },
+    })
+  })
+})
