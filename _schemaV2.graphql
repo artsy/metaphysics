@@ -12446,7 +12446,7 @@ type MyCollectionEdge {
   node: Artwork
 }
 
-type MyCollectionInfo {
+type MyCollectionInfo implements Node {
   # Insights for all collected artists
   artistInsights(
     # The type of insight.
