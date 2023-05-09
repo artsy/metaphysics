@@ -45,61 +45,63 @@ const mockArtistRecords = [
 
 let context: Partial<ResolverContext>
 
-beforeEach(() => {
-  context = {
-    filterArtworksLoader: jest.fn(() =>
-      Promise.resolve(mockFilterArtworksResponse)
-    ),
-    artistsLoader: jest.fn(
-      // mock implementation to filter over the array of artists above
-      ({ ids }) => {
-        const matchedRecords = mockArtistRecords.filter(({ _id }) =>
-          ids.includes(_id)
-        )
-        const sortedRecords = ids.map((id) =>
-          matchedRecords.find((a) => a._id === id)
-        )
-        const artistsLoaderResponse = {
-          body: sortedRecords,
-          headers: {},
+describe("when trending artists are present", () => {
+  beforeEach(() => {
+    context = {
+      filterArtworksLoader: jest.fn(() =>
+        Promise.resolve(mockFilterArtworksResponse)
+      ),
+      artistsLoader: jest.fn(
+        // mock implementation to filter over the array of artists above
+        ({ ids }) => {
+          const matchedRecords = mockArtistRecords.filter(({ _id }) =>
+            ids.includes(_id)
+          )
+          const sortedRecords = ids.map((id) =>
+            matchedRecords.find((a) => a._id === id)
+          )
+          const artistsLoaderResponse = {
+            body: sortedRecords,
+            headers: {},
+          }
+
+          return Promise.resolve(artistsLoaderResponse)
         }
+      ),
+    }
+  })
 
-        return Promise.resolve(artistsLoaderResponse)
-      }
-    ),
-  }
-})
+  describe("with no timezone provided", () => {
+    it("returns a sample of artists, shuffled according to UTC", async () => {
+      const response = await runQuery(query, context)
 
-describe("with no timezone provided", () => {
-  it("returns a sample of artists, shuffled according to UTC", async () => {
-    const response = await runQuery(query, context)
-
-    expect(response).toEqual({
-      curatedTrendingArtists: {
-        edges: [
-          { node: { slug: "david-hockney", name: "David Hockney" } },
-          { node: { slug: "chloe-wise", name: "Chloe Wise" } },
-          { node: { slug: "marc-chagall", name: "Marc Chagall" } },
-        ],
-      },
+      expect(response).toEqual({
+        curatedTrendingArtists: {
+          edges: [
+            { node: { slug: "david-hockney", name: "David Hockney" } },
+            { node: { slug: "chloe-wise", name: "Chloe Wise" } },
+            { node: { slug: "marc-chagall", name: "Marc Chagall" } },
+          ],
+        },
+      })
     })
   })
-})
 
-describe("with a user timezone provided", () => {
-  it("returns a sample of artists, shuffled for that timezone", async () => {
-    context.defaultTimezone = "America/New_York"
+  describe("with a user timezone provided", () => {
+    it("returns a sample of artists, shuffled for that timezone", async () => {
+      context.defaultTimezone = "America/New_York"
 
-    const response = await runQuery(query, context)
+      const response = await runQuery(query, context)
 
-    expect(response).toEqual({
-      curatedTrendingArtists: {
-        edges: [
-          { node: { slug: "chloe-wise", name: "Chloe Wise" } },
-          { node: { slug: "david-hockney", name: "David Hockney" } },
-          { node: { slug: "marc-chagall", name: "Marc Chagall" } },
-        ],
-      },
+      expect(response).toEqual({
+        curatedTrendingArtists: {
+          edges: [
+            { node: { slug: "chloe-wise", name: "Chloe Wise" } },
+            { node: { slug: "david-hockney", name: "David Hockney" } },
+            { node: { slug: "marc-chagall", name: "Marc Chagall" } },
+          ],
+        },
+      })
     })
   })
 })
