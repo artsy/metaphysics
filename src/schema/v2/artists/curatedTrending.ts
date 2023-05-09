@@ -18,6 +18,9 @@ export const getCuratedArtists = async (context): Promise<[typeof Artist]> => {
 
   const artists = artworks.aggregations.merchandisable_artists
   const artistIDs = Object.keys(artists)
+  if (artistIDs.length === 0) {
+    return [] as any
+  }
   const shuffledIDs = dailyShuffle(artistIDs, defaultTimezone)
   const { body: artistRecords } = await artistsLoader({
     ids: shuffledIDs,
