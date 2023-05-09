@@ -99,7 +99,6 @@ describe("Me", () => {
             meLoader: () => Promise.resolve({}),
             meShowsLoader,
             requestLocationLoader,
-            requestIP: "my-ip",
           }
 
           const {

@@ -7,7 +7,7 @@ import { ShowsConnection as ShowsConnectionType } from "../show"
 import { paginationResolver } from "../fields/pagination"
 import Near from "../input_fields/near"
 
-const DEFAULT_MAX_DISTANCE = 75
+const DEFAULT_MAX_DISTANCE_KM = 75
 
 interface Location {
   lat: number
@@ -44,7 +44,7 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
     const { near, ip, page, sort, status } = args
 
     if (ip && near) {
-      throw new Error('The "slug" and "ip" arguments are mutually exclusive.')
+      throw new Error('The "ip" and "near" arguments are mutually exclusive.')
     }
 
     const locationArgs = await getLocationArgs(near, ip, requestLocationLoader)
@@ -74,20 +74,16 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 const getLocationArgs = async (
-  near: Location,
-  requestIP: string | undefined,
+  near: Location | undefined,
+  ip: string | undefined,
   requestLocationLoader: any
 ) => {
-  if (!near && !requestIP) return {}
+  let location = near
 
-  let location: Location | undefined
-
-  if (near) {
-    location = near
-  } else {
+  if (ip) {
     const {
       body: { data: locationData },
-    } = await requestLocationLoader({ ip: requestIP })
+    } = await requestLocationLoader({ ip })
 
     if (locationData.location) {
       location = {
@@ -101,6 +97,6 @@ const getLocationArgs = async (
 
   return {
     near: `${location.lat},${location.lng}`,
-    max_distance: location.maxDistance || DEFAULT_MAX_DISTANCE,
+    max_distance: location.maxDistance || DEFAULT_MAX_DISTANCE_KM,
   }
 }
