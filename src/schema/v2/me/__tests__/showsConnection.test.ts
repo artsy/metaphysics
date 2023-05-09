@@ -4,34 +4,177 @@ import gql from "lib/gql"
 
 describe("Me", () => {
   describe("ShowsConnection", () => {
-    it("returns shows for you", async () => {
-      const query = gql`
-        {
-          me {
-            showsConnection(first: 2, sort: NAME_ASC, status: UPCOMING) {
-              totalCount
-              edges {
-                node {
-                  name
+    describe("when including shows by location", () => {
+      describe("when `near` param is provided", () => {
+        it("passes near param to loader", async () => {
+          const query = gql`
+            {
+              me {
+                showsConnection(
+                  first: 2
+                  sort: NAME_ASC
+                  status: UPCOMING
+                  near: { lat: 1, lng: 2, maxDistance: 3 }
+                ) {
+                  totalCount
+                  edges {
+                    node {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          `
+
+          const meShowsLoader = jest.fn(async () => mockShowsResponse)
+
+          const context = {
+            meLoader: () => Promise.resolve({}),
+            meShowsLoader,
+          }
+
+          const {
+            me: { showsConnection },
+          } = await runAuthenticatedQuery(query, context)
+
+          expect(meShowsLoader).toHaveBeenCalledWith({
+            offset: 0,
+            size: 2,
+            sort: "name",
+            status: "upcoming",
+            max_distance: 3,
+            near: "1,2",
+            total_count: true,
+          })
+
+          expect(showsConnection).toMatchInlineSnapshot(`
+          Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "name": "Design for a Garden",
+                },
+              },
+              Object {
+                "node": Object {
+                  "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                },
+              },
+            ],
+            "totalCount": 5084,
+          }
+        `)
+        })
+      })
+
+      describe("when `ip` param is provided", () => {
+        it("loads location and passes near param to loader", async () => {
+          const query = gql`
+            {
+              me {
+                showsConnection(
+                  first: 2
+                  sort: NAME_ASC
+                  status: UPCOMING
+                  ip: "my-ip"
+                ) {
+                  totalCount
+                  edges {
+                    node {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          `
+
+          const meShowsLoader = jest.fn(async () => mockShowsResponse)
+          const requestLocationLoader = jest.fn(
+            async () => mockLocationResponse
+          )
+
+          const context = {
+            meLoader: () => Promise.resolve({}),
+            meShowsLoader,
+            requestLocationLoader,
+          }
+
+          const {
+            me: { showsConnection },
+          } = await runAuthenticatedQuery(query, context)
+
+          expect(requestLocationLoader).toHaveBeenCalledWith({ ip: "my-ip" })
+
+          expect(meShowsLoader).toHaveBeenCalledWith({
+            offset: 0,
+            size: 2,
+            sort: "name",
+            status: "upcoming",
+            max_distance: 75,
+            near: "52.53627395629883,13.399658203125",
+            total_count: true,
+          })
+
+          expect(showsConnection).toMatchInlineSnapshot(`
+          Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "name": "Design for a Garden",
+                },
+              },
+              Object {
+                "node": Object {
+                  "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                },
+              },
+            ],
+            "totalCount": 5084,
+          }
+        `)
+        })
+      })
+    })
+
+    describe("when neither `ip` nor `near` params are included", () => {
+      it("returns shows for you", async () => {
+        const query = gql`
+          {
+            me {
+              showsConnection(first: 2, sort: NAME_ASC, status: UPCOMING) {
+                totalCount
+                edges {
+                  node {
+                    name
+                  }
                 }
               }
             }
           }
+        `
+
+        const meShowsLoader = jest.fn(async () => mockShowsResponse)
+
+        const context = {
+          meLoader: () => Promise.resolve({}),
+          meShowsLoader,
         }
-      `
 
-      const meShowsLoader = jest.fn(async () => mockShowsResponse)
+        const {
+          me: { showsConnection },
+        } = await runAuthenticatedQuery(query, context)
 
-      const context = {
-        meLoader: () => Promise.resolve({}),
-        meShowsLoader,
-      }
+        expect(meShowsLoader).toHaveBeenCalledWith({
+          offset: 0,
+          size: 2,
+          sort: "name",
+          status: "upcoming",
+          total_count: true,
+        })
 
-      const {
-        me: { showsConnection },
-      } = await runAuthenticatedQuery(query, context)
-
-      expect(showsConnection).toMatchInlineSnapshot(`
+        expect(showsConnection).toMatchInlineSnapshot(`
         Object {
           "edges": Array [
             Object {
@@ -48,13 +191,6 @@ describe("Me", () => {
           "totalCount": 5084,
         }
       `)
-
-      expect(meShowsLoader).toHaveBeenCalledWith({
-        offset: 0,
-        size: 2,
-        sort: "name",
-        status: "upcoming",
-        total_count: true,
       })
     })
   })
@@ -467,4 +603,73 @@ const mockShowsResponse = {
       reverse_image_search_enabled: false,
     },
   ],
+}
+
+const mockLocationResponse = {
+  headers: {},
+  body: {
+    data: {
+      location: {
+        geonames_id: 12324215,
+        latitude: 52.53627395629883,
+        longitude: 13.399658203125,
+        zip: "10115",
+        continent: {
+          code: "EU",
+          name: "Europe",
+          name_translated: "Europe",
+        },
+        country: {
+          alpha2: "DE",
+          alpha3: "DEU",
+          calling_codes: ["+49"],
+          currencies: [
+            {
+              symbol: "€",
+              name: "Euro",
+              symbol_native: "€",
+              decimal_digits: 2,
+              rounding: 0,
+              code: "EUR",
+              name_plural: "Euros",
+            },
+          ],
+          emoji: "🇩🇪",
+          ioc: "GER",
+          languages: [
+            {
+              name: "German",
+              name_native: "Deutsch",
+            },
+          ],
+          name: "Germany",
+          name_translated: "Germany",
+          timezones: ["Europe/Berlin", "Europe/Busingen"],
+          is_in_european_union: true,
+          fips: "GM",
+          geonames_id: 2921044,
+          hasc_id: "DE",
+          wikidata_id: "Q183",
+        },
+        city: {
+          fips: null,
+          alpha2: null,
+          geonames_id: null,
+          hasc_id: null,
+          wikidata_id: "Q64",
+          name: "Berlin",
+          name_translated: "Berlin",
+        },
+        region: {
+          fips: "GM16",
+          alpha2: "DE-BE",
+          geonames_id: 2950157,
+          hasc_id: "DE.BE",
+          wikidata_id: "Q64",
+          name: "Berlin",
+          name_translated: "Berlin",
+        },
+      },
+    },
+  },
 }
