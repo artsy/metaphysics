@@ -15,7 +15,7 @@ import { getArtistInsights } from "../artist/helpers"
 import { ArtistInsight, ArtistInsightKind } from "../artist/insights"
 import { paginationResolver } from "../fields/pagination"
 import ArtistSorts from "../sorts/artist_sorts"
-import { NodeInterface } from "../object_identification"
+import { GlobalIDField, NodeInterface } from "../object_identification"
 
 export const MAX_ARTISTS = 100
 
@@ -44,6 +44,7 @@ const artistInsightsCountType = new GraphQLObjectType({
 })
 
 export const myCollectionInfoFields = {
+  id: GlobalIDField,
   description: {
     type: new GraphQLNonNull(GraphQLString),
   },

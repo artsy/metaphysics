@@ -12378,6 +12378,9 @@ type MyCollectionConnection {
 
   # A list of edges.
   edges: [MyCollectionEdge]
+
+  # A globally unique ID.
+  id: ID!
   includesPurchasedArtworks: Boolean!
   name: String!
   pageCursors: PageCursors!
@@ -12471,6 +12474,9 @@ type MyCollectionInfo implements Node {
   ): ArtistConnection
   default: Boolean!
   description: String!
+
+  # A globally unique ID.
+  id: ID!
   includesPurchasedArtworks: Boolean!
   name: String!
   private: Boolean!
