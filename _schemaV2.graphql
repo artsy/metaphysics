@@ -12382,6 +12382,9 @@ type MyCollectionConnection {
   # A globally unique ID.
   id: ID!
   includesPurchasedArtworks: Boolean!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
   name: String!
   pageCursors: PageCursors!
 
@@ -12478,6 +12481,9 @@ type MyCollectionInfo implements Node {
   # A globally unique ID.
   id: ID!
   includesPurchasedArtworks: Boolean!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
   name: String!
   private: Boolean!
 }
