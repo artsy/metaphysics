@@ -399,6 +399,13 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       carousel: ArtistCarousel,
+      artworksCountWithinCollection: {
+        type: GraphQLInt,
+        resolve: ({ artworks_count_within_collection }) =>
+          artworks_count_within_collection,
+        description:
+          "The total number of artworks by this artist within the collection (this field will be `undefined` outside of the context of a collection).",
+      },
       collections: {
         type: new GraphQLList(GraphQLString),
         resolve: ({ collections }) => {

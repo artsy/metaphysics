@@ -194,7 +194,6 @@ export const myCollectionInfoFields = {
         size,
         page,
         sort,
-        all: true,
         total_count: true,
         user_id: userID,
         include_personal_artists: includePersonalArtists,

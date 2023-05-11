@@ -69,6 +69,7 @@ describe("me.myCollectionInfo", () => {
               name: "Artist 1",
               collections: "Collected by a major art publication",
               review_sources: "Reviewed by a major art publication",
+              artworks_count_within_collection: 3,
             },
             {
               name: "Artist 2",
@@ -203,6 +204,7 @@ describe("me.myCollectionInfo", () => {
                 edges {
                   node {
                     name
+                    artworksCountWithinCollection
                   }
                 }
               }
@@ -221,12 +223,15 @@ describe("me.myCollectionInfo", () => {
           body: [
             {
               name: "Artist 1",
+              artworks_count_within_collection: 1,
             },
             {
               name: "Artist 2",
+              artworks_count_within_collection: 2,
             },
             {
               name: "Artist 3",
+              artworks_count_within_collection: 3,
             },
           ],
         }),
@@ -234,7 +239,37 @@ describe("me.myCollectionInfo", () => {
 
       const data = await runAuthenticatedQuery(query, context)
 
-      expect(data).toEqual(collectedArtistsConnectionData)
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "myCollectionInfo": Object {
+              "collectedArtistsConnection": Object {
+                "edges": Array [
+                  Object {
+                    "node": Object {
+                      "artworksCountWithinCollection": 1,
+                      "name": "Artist 1",
+                    },
+                  },
+                  Object {
+                    "node": Object {
+                      "artworksCountWithinCollection": 2,
+                      "name": "Artist 2",
+                    },
+                  },
+                  Object {
+                    "node": Object {
+                      "artworksCountWithinCollection": 3,
+                      "name": "Artist 3",
+                    },
+                  },
+                ],
+                "totalCount": 3,
+              },
+            },
+          },
+        }
+      `)
 
       expect(data.me.myCollectionInfo.collectedArtistsConnection)
         .toMatchInlineSnapshot(`
@@ -242,16 +277,19 @@ describe("me.myCollectionInfo", () => {
           "edges": Array [
             Object {
               "node": Object {
+                "artworksCountWithinCollection": 1,
                 "name": "Artist 1",
               },
             },
             Object {
               "node": Object {
+                "artworksCountWithinCollection": 2,
                 "name": "Artist 2",
               },
             },
             Object {
               "node": Object {
+                "artworksCountWithinCollection": 3,
                 "name": "Artist 3",
               },
             },
@@ -262,30 +300,3 @@ describe("me.myCollectionInfo", () => {
     })
   })
 })
-
-const collectedArtistsConnectionData = {
-  me: {
-    myCollectionInfo: {
-      collectedArtistsConnection: {
-        totalCount: 3,
-        edges: [
-          {
-            node: {
-              name: "Artist 1",
-            },
-          },
-          {
-            node: {
-              name: "Artist 2",
-            },
-          },
-          {
-            node: {
-              name: "Artist 3",
-            },
-          },
-        ],
-      },
-    },
-  },
-}
