@@ -198,7 +198,6 @@ export const myCollectionInfoFields = {
         total_count: true,
         user_id: userID,
         include_personal_artists: includePersonalArtists,
-        include_artworks_count_within_collections: true,
       })
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
