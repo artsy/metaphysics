@@ -202,9 +202,9 @@ describe("me.myCollectionInfo", () => {
               collectedArtistsConnection(first: 5) {
                 totalCount
                 edges {
+                  artworksCount
                   node {
                     name
-                    artworksCountWithinCollection
                   }
                 }
               }
@@ -246,20 +246,20 @@ describe("me.myCollectionInfo", () => {
               "collectedArtistsConnection": Object {
                 "edges": Array [
                   Object {
+                    "artworksCount": 1,
                     "node": Object {
-                      "artworksCountWithinCollection": 1,
                       "name": "Artist 1",
                     },
                   },
                   Object {
+                    "artworksCount": 2,
                     "node": Object {
-                      "artworksCountWithinCollection": 2,
                       "name": "Artist 2",
                     },
                   },
                   Object {
+                    "artworksCount": 3,
                     "node": Object {
-                      "artworksCountWithinCollection": 3,
                       "name": "Artist 3",
                     },
                   },
@@ -276,20 +276,20 @@ describe("me.myCollectionInfo", () => {
         Object {
           "edges": Array [
             Object {
+              "artworksCount": 1,
               "node": Object {
-                "artworksCountWithinCollection": 1,
                 "name": "Artist 1",
               },
             },
             Object {
+              "artworksCount": 2,
               "node": Object {
-                "artworksCountWithinCollection": 2,
                 "name": "Artist 2",
               },
             },
             Object {
+              "artworksCount": 3,
               "node": Object {
-                "artworksCountWithinCollection": 3,
                 "name": "Artist 3",
               },
             },
