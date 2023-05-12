@@ -200,13 +200,23 @@ export const myCollectionInfoFields = {
       })
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
+      // Augment the Gravity response with an `artworksCount` field
+      // relevant to this connection.
+      const artists = body.map((artist) => {
+        return {
+          ...artist,
+          artworksCount: artist.artworks_count_within_collection,
+        }
+      })
+
       return paginationResolver({
         totalCount,
         offset,
         size,
         page,
-        body,
+        body: artists,
         args,
+        resolveNode: (artist) => artist,
       })
     },
   },
