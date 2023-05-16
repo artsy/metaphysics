@@ -7,16 +7,22 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { OrderedSetItemType } from "../item"
+import { OrderedSetType } from "./OrderedSet"
 
 interface Input {
   id: string
   itemId: string
+  setId: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "deleteOrderedSetItemSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
+    set: {
+      type: OrderedSetType,
+      resolve: ({ setId }, _options, { setLoader }) => setLoader(setId),
+    },
     setItem: {
       type: OrderedSetItemType,
       resolve: (orderedSetItem) => orderedSetItem,
@@ -52,7 +58,7 @@ export const deleteOrderedSetItemMutation = mutationWithClientMutationId<
     itemId: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
-    orderedSetItemOrError: {
+    deleteOrderedSetItemResponseOrError: {
       type: ResponseOrErrorType,
       description: "On success: the ordered set item deleted.",
       resolve: (result) => result,
@@ -73,7 +79,7 @@ export const deleteOrderedSetItemMutation = mutationWithClientMutationId<
 
       const { item_type } = await setLoader(id)
 
-      return { item_type, ...res }
+      return { item_type, setId: id, ...res }
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

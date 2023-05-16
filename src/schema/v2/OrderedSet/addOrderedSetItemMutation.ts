@@ -12,6 +12,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { OrderedSetItemType } from "../item"
+import { OrderedSetType } from "./OrderedSet"
 
 interface Input {
   geminiToken: string
@@ -24,6 +25,10 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "addOrderedSetItemSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
+    set: {
+      type: OrderedSetType,
+      resolve: ({ setId }, _options, { setLoader }) => setLoader(setId),
+    },
     setItem: {
       type: OrderedSetItemType,
       resolve: (orderedSetItem) => orderedSetItem,
@@ -61,7 +66,7 @@ export const addOrderedSetItemMutation = mutationWithClientMutationId<
     position: { type: GraphQLInt },
   },
   outputFields: {
-    orderedSetItemOrError: {
+    addOrderedSetItemResponseOrError: {
       type: ResponseOrErrorType,
       description: "On success: the ordered set item added.",
       resolve: (result) => result,
@@ -86,7 +91,7 @@ export const addOrderedSetItemMutation = mutationWithClientMutationId<
 
       const { item_type } = await setLoader(id)
 
-      return { item_type, ...res }
+      return { item_type, setId: id, ...res }
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
