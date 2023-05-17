@@ -92,7 +92,7 @@ input addOrderedSetItemMutationInput {
 }
 
 type addOrderedSetItemMutationPayload {
-  # On success: the ordered set item added.
+  # On success: the updated parent set or the set item added.
   addOrderedSetItemResponseOrError: addOrderedSetItemResponseOrError
   clientMutationId: String
 }
@@ -8005,7 +8005,7 @@ input deleteOrderedSetItemMutationInput {
 type deleteOrderedSetItemMutationPayload {
   clientMutationId: String
 
-  # On success: the ordered set item deleted.
+  # On success: the updated parent set or the set item deleted.
   deleteOrderedSetItemResponseOrError: deleteOrderedSetItemResponseOrError
 }
 

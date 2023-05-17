@@ -59,7 +59,8 @@ export const deleteOrderedSetItemMutation = mutationWithClientMutationId<
   outputFields: {
     deleteOrderedSetItemResponseOrError: {
       type: ResponseOrErrorType,
-      description: "On success: the ordered set item deleted.",
+      description:
+        "On success: the updated parent set or the set item deleted.",
       resolve: (result) => result,
     },
   },

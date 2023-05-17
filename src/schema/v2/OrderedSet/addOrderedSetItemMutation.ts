@@ -67,7 +67,7 @@ export const addOrderedSetItemMutation = mutationWithClientMutationId<
   outputFields: {
     addOrderedSetItemResponseOrError: {
       type: ResponseOrErrorType,
-      description: "On success: the ordered set item added.",
+      description: "On success: the updated parent set or the set item added.",
       resolve: (result) => result,
     },
   },
