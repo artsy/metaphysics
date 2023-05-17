@@ -343,7 +343,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             for_sale: boolean
             missing_priority_metadata?: boolean
             page: number
-            published: boolean
+            published?: boolean
             published_within?: number
             size: number
             sort: string
@@ -355,11 +355,15 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             missing_priority_metadata: args.missingPriorityMetadata,
             artist_id: args.artistID || undefined,
             page,
-            published: args.includeUnpublished ? false : true,
+            published: true,
             published_within: args.publishedWithin,
             size,
             sort: args.sort,
             total_count: true,
+          }
+
+          if (args.includeUnpublished) {
+            delete gravityArgs.published
           }
 
           if (args.exclude) {
