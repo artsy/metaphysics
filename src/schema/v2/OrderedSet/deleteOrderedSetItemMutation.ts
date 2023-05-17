@@ -21,7 +21,6 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     set: {
       type: OrderedSetType,
-      resolve: ({ setId }, _options, { setLoader }) => setLoader(setId),
     },
     setItem: {
       type: OrderedSetItemType,
@@ -77,9 +76,9 @@ export const deleteOrderedSetItemMutation = mutationWithClientMutationId<
     try {
       const res = await deleteSetItemLoader({ id, itemId })
 
-      const { item_type } = await setLoader(id)
+      const set = await setLoader(id)
 
-      return { item_type, setId: id, ...res }
+      return { item_type: set.item_type, set, ...res }
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
