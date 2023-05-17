@@ -4,7 +4,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 const mutation = gql`
   mutation {
     deleteOrderedSetItem(input: { id: "abc123", itemId: "xyz789" }) {
-      orderedSetItemOrError {
+      deleteOrderedSetItemResponseOrError {
         __typename
         ... on deleteOrderedSetItemSuccess {
           setItem {
@@ -12,6 +12,10 @@ const mutation = gql`
               name
               hometown
             }
+          }
+          set {
+            internalID
+            itemType
           }
         }
         ... on deleteOrderedSetItemFailure {
@@ -56,7 +60,7 @@ describe("deleteOrderedSetItemMutation", () => {
       mockDeleteSetItemLoader.mockReset()
     })
 
-    it("returns a Artist", async () => {
+    it("returns the set and item", async () => {
       const res = await runAuthenticatedQuery(mutation, context)
 
       expect(mockDeleteSetItemLoader).toBeCalledWith({
@@ -66,11 +70,15 @@ describe("deleteOrderedSetItemMutation", () => {
 
       expect(res).toEqual({
         deleteOrderedSetItem: {
-          orderedSetItemOrError: {
+          deleteOrderedSetItemResponseOrError: {
             __typename: "deleteOrderedSetItemSuccess",
             setItem: {
               name: "percy-z",
               hometown: "catville",
+            },
+            set: {
+              internalID: "abc123",
+              itemType: "Artist",
             },
           },
         },
@@ -93,7 +101,7 @@ describe("deleteOrderedSetItemMutation", () => {
 
       expect(res).toEqual({
         deleteOrderedSetItem: {
-          orderedSetItemOrError: {
+          deleteOrderedSetItemResponseOrError: {
             __typename: "deleteOrderedSetItemFailure",
             mutationError: {
               type: "error",
