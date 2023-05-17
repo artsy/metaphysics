@@ -11,7 +11,7 @@ const mutation = gql`
         position: 1
       }
     ) {
-      orderedSetItemOrError {
+      addOrderedSetItemResponseOrError {
         __typename
         ... on addOrderedSetItemSuccess {
           setItem {
@@ -19,6 +19,10 @@ const mutation = gql`
               name
               hometown
             }
+          }
+          set {
+            internalID
+            itemType
           }
         }
         ... on addOrderedSetItemFailure {
@@ -63,7 +67,7 @@ describe("addOrderedSetItemMutation", () => {
       mockAddSetItemLoader.mockReset()
     })
 
-    it("returns a Artist", async () => {
+    it("returns the set and item", async () => {
       const res = await runAuthenticatedQuery(mutation, context)
 
       expect(mockAddSetItemLoader).toBeCalledWith("abc123", {
@@ -74,11 +78,15 @@ describe("addOrderedSetItemMutation", () => {
 
       expect(res).toEqual({
         addOrderedSetItem: {
-          orderedSetItemOrError: {
+          addOrderedSetItemResponseOrError: {
             __typename: "addOrderedSetItemSuccess",
             setItem: {
               name: "percy-z",
               hometown: "catville",
+            },
+            set: {
+              internalID: "fgh456",
+              itemType: "Artist",
             },
           },
         },
@@ -101,7 +109,7 @@ describe("addOrderedSetItemMutation", () => {
 
       expect(res).toEqual({
         addOrderedSetItem: {
-          orderedSetItemOrError: {
+          addOrderedSetItemResponseOrError: {
             __typename: "addOrderedSetItemFailure",
             mutationError: {
               type: "error",
