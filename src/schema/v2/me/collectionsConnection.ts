@@ -10,6 +10,7 @@ import {
   GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -38,6 +39,7 @@ export const CollectionsConnection: GraphQLFieldConfig<any, ResolverContext> = {
     default: { type: GraphQLBoolean },
     saves: { type: GraphQLBoolean },
     sort: { type: CollectionSorts },
+    includesArtworkID: { type: GraphQLString },
   }),
   resolve: async (_parent, args, context, _info) => {
     const { collectionsLoader, userID } = context
@@ -54,6 +56,7 @@ export const CollectionsConnection: GraphQLFieldConfig<any, ResolverContext> = {
       size,
       offset,
       total_count: true,
+      artwork_id: args.includesArtworkID,
     })
     const totalCount = parseInt((headers ?? {})["x-total-count"] || "0", 10)
 
