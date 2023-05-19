@@ -32,51 +32,49 @@ describe("collectionsConnection", () => {
     }
   })
 
-  describe("passes correct args to Gravity", () => {
-    it("when `sort` arg is specified", async () => {
-      await runAuthenticatedQuery(query, context)
+  it("passes correct args to Gravity", async () => {
+    await runAuthenticatedQuery(query, context)
 
-      expect(context.collectionsLoader as jest.Mock).toHaveBeenCalledWith({
-        user_id: "user-42",
-        private: true,
-        saves: true,
-        sort: "-created_at",
-        offset: 0,
-        size: 1,
-        total_count: true,
-      })
+    expect(context.collectionsLoader as jest.Mock).toHaveBeenCalledWith({
+      user_id: "user-42",
+      private: true,
+      saves: true,
+      sort: "-created_at",
+      offset: 0,
+      size: 1,
+      total_count: true,
     })
+  })
 
-    it("when `includesArtworkID` arg is specified", async () => {
-      const query = gql`
-        query {
-          me {
-            collectionsConnection(
-              first: 1
-              saves: true
-              includesArtworkID: "123-abc"
-            ) {
-              edges {
-                node {
-                  internalID
-                }
+  it("passes correct args to Gravity when `includesArtworkID` arg is specified", async () => {
+    const query = gql`
+      query {
+        me {
+          collectionsConnection(
+            first: 1
+            saves: true
+            includesArtworkID: "123-abc"
+          ) {
+            edges {
+              node {
+                internalID
               }
             }
           }
         }
-      `
+      }
+    `
 
-      await runAuthenticatedQuery(query, context)
+    await runAuthenticatedQuery(query, context)
 
-      expect(context.collectionsLoader as jest.Mock).toHaveBeenCalledWith({
-        user_id: "user-42",
-        private: true,
-        saves: true,
-        offset: 0,
-        size: 1,
-        total_count: true,
-        artwork_id: "123-abc",
-      })
+    expect(context.collectionsLoader as jest.Mock).toHaveBeenCalledWith({
+      user_id: "user-42",
+      private: true,
+      saves: true,
+      offset: 0,
+      size: 1,
+      total_count: true,
+      artwork_id: "123-abc",
     })
   })
 
