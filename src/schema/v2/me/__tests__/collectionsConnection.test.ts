@@ -46,6 +46,38 @@ describe("collectionsConnection", () => {
     })
   })
 
+  it("passes correct args to Gravity when `includesArtworkID` arg is specified", async () => {
+    const query = gql`
+      query {
+        me {
+          collectionsConnection(
+            first: 1
+            saves: true
+            includesArtworkID: "123-abc"
+          ) {
+            edges {
+              node {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+
+    await runAuthenticatedQuery(query, context)
+
+    expect(context.collectionsLoader as jest.Mock).toHaveBeenCalledWith({
+      user_id: "user-42",
+      private: true,
+      saves: true,
+      offset: 0,
+      size: 1,
+      total_count: true,
+      artwork_id: "123-abc",
+    })
+  })
+
   it("returns correct data", async () => {
     const response = await runAuthenticatedQuery(query, context)
 
