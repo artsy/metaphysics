@@ -237,6 +237,7 @@ export const identityVerificationsConnection: GraphQLFieldConfig<
     size: { type: GraphQLInt },
     userId: { type: GraphQLString },
     email: { type: GraphQLString },
+    name: { type: GraphQLString },
   }),
   resolve: async (
     _root,
@@ -254,6 +255,7 @@ export const identityVerificationsConnection: GraphQLFieldConfig<
       size,
       user_id: args.userId,
       email: args.email,
+      name: args.name,
     })
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
