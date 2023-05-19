@@ -8,9 +8,48 @@ export const metaName = (artist) => {
   return "Unnamed Artist"
 }
 
+export const formatDescription = (description: string, blurb?: string) => {
+  return truncate(compact([description, blurb]).join("."), 157)
+}
+
 const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistMeta",
   fields: {
+    artworksDescription: {
+      type: GraphQLString,
+      resolve: (artist) => {
+        const blurb = artist.blurb.length
+          ? markdownToText(artist.blurb)
+          : undefined
+
+        return formatDescription(
+          `Discover and purchase ${metaName(
+            artist
+          )}’s artworks, available for sale. Browse our selection of paintings, prints, and sculptures by the artist, and find art you love.`,
+          blurb
+        )
+      },
+    },
+    artworksTitle: {
+      type: GraphQLString,
+      resolve: (artist) => {
+        return `${metaName(artist)} - Artworks for Sale & More | Artsy`
+      },
+    },
+    auctionDescription: {
+      type: GraphQLString,
+      resolve: (artist) => {
+        return `Find out about ${metaName(
+          artist
+        )}’s auction history, past sales, and current market value. Browse Artsy’s Price Database for recent auction results from the artist.`
+      },
+    },
+    auctionTitle: {
+      type: GraphQLString,
+      resolve: (artist) => {
+        return `${metaName(artist)} - Auction Results and Sales Data | Artsy`
+      },
+    },
     description: {
       type: GraphQLString,
       resolve: (artist) => {
@@ -18,20 +57,18 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
           ? markdownToText(artist.blurb)
           : undefined
 
-        const description = compact([
-          `Find the latest shows, biography, and artworks for sale by ${metaName(
+        return formatDescription(
+          `Explore ${metaName(
             artist
-          )}`,
-          blurb,
-        ]).join(". ")
-        return truncate(description, 157)
+          )}'s biography, achievements, artworks, auction results, and shows on Artsy.`,
+          blurb
+        )
       },
     },
     title: {
       type: GraphQLString,
       resolve: (artist) => {
-        const count = artist.published_artworks_count
-        return `${metaName(artist)} - ${count} Artworks, Bio & Shows on Artsy`
+        return `${metaName(artist)} - Biography, Shows, Articles & More | Artsy`
       },
     },
   },
