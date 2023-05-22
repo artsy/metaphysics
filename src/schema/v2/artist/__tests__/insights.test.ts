@@ -59,7 +59,7 @@ describe("ArtistInsights type", () => {
       expect(data!.artist.insights).toEqual([
         {
           type: "SOLO_SHOW",
-          label: "Solo show at a major institution",
+          label: "Solo show at 2 major institutions",
           entities: ["MoMA PS1", "Museum of Modern Art (MoMA)"],
         },
         {
@@ -116,7 +116,7 @@ describe("ArtistInsights type", () => {
       expect(data!.artist.insights).toEqual([
         {
           type: "SOLO_SHOW",
-          label: "Solo show at a major institution",
+          label: "Solo show at 2 major institutions",
           entities: ["MoMA PS1", "Museum of Modern Art (MoMA)"],
         },
       ])
@@ -148,7 +148,7 @@ describe("ArtistInsights type", () => {
       expect(data!.artist.insights).toEqual([
         {
           type: "SOLO_SHOW",
-          label: "Solo show at a major institution",
+          label: "Solo show at 2 major institutions",
           entities: ["MoMA PS1", "Museum of Modern Art (MoMA)"],
         },
         {
