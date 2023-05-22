@@ -8,7 +8,12 @@ describe("collectionsConnection", () => {
   const query = gql`
     query {
       me {
-        collectionsConnection(first: 1, saves: true, sort: CREATED_AT_DESC) {
+        collectionsConnection(
+          first: 1
+          saves: true
+          sort: CREATED_AT_DESC
+          includesArtworkID: "123-abc"
+        ) {
           edges {
             node {
               internalID
@@ -43,6 +48,7 @@ describe("collectionsConnection", () => {
       offset: 0,
       size: 1,
       total_count: true,
+      artwork_id: "123-abc",
     })
   })
 
