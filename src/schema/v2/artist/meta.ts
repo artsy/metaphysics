@@ -17,8 +17,8 @@ export const formatDescription = (description: string, blurb?: string) => {
   return truncate(compact([description, blurb]).join("."), 157)
 }
 
-const ArtistTabEnumType = new GraphQLEnumType({
-  name: "ArtistTab",
+const ArtistPageEnumType = new GraphQLEnumType({
+  name: "ArtistPage",
   values: {
     ABOUT: { value: "ABOUT" },
     ARTWORKS: { value: "ARTWORKS" },
@@ -31,12 +31,12 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     description: {
       type: GraphQLString,
-      resolve: ({ artist, tab }) => {
+      resolve: ({ artist, page }) => {
         const blurb = artist.blurb.length
           ? markdownToText(artist.blurb)
           : undefined
 
-        switch (tab) {
+        switch (page) {
           case "ABOUT":
             return formatDescription(
               `Explore ${metaName(
@@ -60,8 +60,8 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
     },
     title: {
       type: GraphQLString,
-      resolve: ({ artist, tab }) => {
-        switch (tab) {
+      resolve: ({ artist, page }) => {
+        switch (page) {
           case "ABOUT":
             return `${metaName(
               artist
@@ -81,10 +81,10 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
 const Meta: GraphQLFieldConfig<void, ResolverContext> = {
   type: ArtistMetaType,
   args: {
-    tab: { type: ArtistTabEnumType },
+    page: { type: ArtistPageEnumType },
   },
-  resolve: (artist, { tab }) => {
-    return { artist, tab }
+  resolve: (artist, { page }) => {
+    return { artist, page }
   },
 }
 
