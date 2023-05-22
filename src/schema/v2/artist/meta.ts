@@ -1,4 +1,4 @@
-import { stripTags, truncate, markdownToText } from "lib/helpers"
+import { stripTags, markdownToText } from "lib/helpers"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -27,25 +27,19 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
     description: {
       type: GraphQLString,
       resolve: ({ artist, page }) => {
-        const blurb = artist.blurb.length
-          ? markdownToText(artist.blurb)
-          : undefined
+        const blurb = artist.blurb?.length
+          ? ` ${markdownToText(artist.blurb)}`
+          : ""
 
         switch (page) {
           case "ABOUT":
-            return truncate(
-              `Explore ${metaName(
-                artist
-              )}'s biography, achievements, artworks, auction results, and shows on Artsy. ${blurb}`,
-              157
-            )
+            return `Explore ${metaName(
+              artist
+            )}’s biography, achievements, artworks, auction results, and shows on Artsy.${blurb}`
           case "ARTWORKS":
-            return truncate(
-              `Discover and purchase ${metaName(
-                artist
-              )}’s artworks, available for sale. Browse our selection of paintings, prints, and sculptures by the artist, and find art you love. ${blurb}`,
-              157
-            )
+            return `Discover and purchase ${metaName(
+              artist
+            )}’s artworks, available for sale. Browse our selection of paintings, prints, and sculptures by the artist, and find art you love.${blurb}`
           case "AUCTION_RESULTS":
             return `Find out about ${metaName(
               artist
