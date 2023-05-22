@@ -1544,7 +1544,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     size: Int
     slugs: [String!]
   ): [MarketingCollection]
-  meta(page: ArtistPage): ArtistMeta
+  meta(page: ArtistPage = ABOUT): ArtistMeta
   middle: String
   name: String
   nationality: String

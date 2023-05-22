@@ -1,5 +1,4 @@
 import { stripTags, truncate, markdownToText } from "lib/helpers"
-import { compact } from "lodash"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -11,10 +10,6 @@ import { ResolverContext } from "types/graphql"
 export const metaName = (artist) => {
   if (artist.name) return stripTags(artist.name)
   return "Unnamed Artist"
-}
-
-export const formatDescription = (description: string, blurb?: string) => {
-  return truncate(compact([description, blurb]).join("."), 157)
 }
 
 const ArtistPageEnumType = new GraphQLEnumType({
@@ -38,18 +33,18 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
 
         switch (page) {
           case "ABOUT":
-            return formatDescription(
+            return truncate(
               `Explore ${metaName(
                 artist
-              )}'s biography, achievements, artworks, auction results, and shows on Artsy.`,
-              blurb
+              )}'s biography, achievements, artworks, auction results, and shows on Artsy. ${blurb}`,
+              157
             )
           case "ARTWORKS":
-            return formatDescription(
+            return truncate(
               `Discover and purchase ${metaName(
                 artist
-              )}’s artworks, available for sale. Browse our selection of paintings, prints, and sculptures by the artist, and find art you love.`,
-              blurb
+              )}’s artworks, available for sale. Browse our selection of paintings, prints, and sculptures by the artist, and find art you love. ${blurb}`,
+              157
             )
           case "AUCTION_RESULTS":
             return `Find out about ${metaName(
@@ -81,7 +76,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
 const Meta: GraphQLFieldConfig<void, ResolverContext> = {
   type: ArtistMetaType,
   args: {
-    page: { type: ArtistPageEnumType },
+    page: { type: ArtistPageEnumType, defaultValue: "ABOUT" },
   },
   resolve: (artist, { page }) => {
     return { artist, page }
