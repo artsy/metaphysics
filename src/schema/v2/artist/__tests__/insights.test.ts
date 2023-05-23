@@ -58,6 +58,11 @@ describe("ArtistInsights type", () => {
     return runQuery(query, context).then((data) => {
       expect(data!.artist.insights).toEqual([
         {
+          type: "ACTIVE_SECONDARY_MARKET",
+          label: "Active Secondary Market",
+          entities: [],
+        },
+        {
           type: "SOLO_SHOW",
           label: "Solo show at 2 major institutions",
           entities: ["MoMA PS1", "Museum of Modern Art (MoMA)"],
@@ -68,6 +73,11 @@ describe("ArtistInsights type", () => {
           entities: ["Metropolitan Museum of Art"],
         },
         {
+          type: "BIENNIAL",
+          label: "Included in a major biennial",
+          entities: ["frieze"],
+        },
+        {
           type: "COLLECTED",
           label: "Collected by a major institution",
           entities: ["Museum of Modern Art (MoMA)"],
@@ -76,16 +86,6 @@ describe("ArtistInsights type", () => {
           type: "REVIEWED",
           label: "Reviewed by a major art publication",
           entities: ["Artforum International Magazine"],
-        },
-        {
-          type: "BIENNIAL",
-          label: "Included in a major biennial",
-          entities: ["frieze"],
-        },
-        {
-          type: "ACTIVE_SECONDARY_MARKET",
-          label: "Active Secondary Market",
-          entities: [],
         },
       ])
     })
@@ -135,7 +135,7 @@ describe("ArtistInsights type", () => {
           {
             artist(id: "foo-bar") {
               id
-              insights(kind: [SOLO_SHOW, GROUP_SHOW, REVIEWED]) {
+              insights(kind: [GROUP_SHOW, REVIEWED, SOLO_SHOW]) {
                 type
                 label
                 entities
