@@ -17,7 +17,9 @@ import {
 
 export const ArtistInsightKind = new GraphQLEnumType({
   name: "ArtistInsightKind",
-  values: ARTIST_INSIGHT_KINDS,
+  values: ARTIST_INSIGHT_KINDS.reduce((acc, kind) => {
+    return { ...acc, [kind]: { value: kind } }
+  }, {}),
 })
 
 export const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
@@ -53,16 +55,13 @@ export const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-// TODO:
-// return partnerArtistsLoader({ artist_id: artist.id, partner_category: ['blue-chip'], size: 1})
-
 export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ArtistInsight))),
   args: {
     kind: {
       type: new GraphQLList(ArtistInsightKind),
       description: "The specific insights to return.",
-      defaultValue: Object.keys(ARTIST_INSIGHT_KINDS),
+      defaultValue: ARTIST_INSIGHT_KINDS,
     },
   },
   resolve: async (artist, { kind }, { auctionLotsLoader }) => {

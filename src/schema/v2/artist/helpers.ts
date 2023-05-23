@@ -1,51 +1,80 @@
-import { compact } from "lodash"
+import { compact, sortBy } from "lodash"
 import { priceDisplayText } from "lib/moneyHelpers"
 
 const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
   .artists
 
-export const ARTIST_INSIGHT_KINDS = {
-  SOLO_SHOW: { value: "SOLO_SHOW" },
-  GROUP_SHOW: { value: "GROUP_SHOW" },
-  COLLECTED: { value: "COLLECTED" },
-  REVIEWED: { value: "REVIEWED" },
-  BIENNIAL: { value: "BIENNIAL" },
-  ACTIVE_SECONDARY_MARKET: { value: "ACTIVE_SECONDARY_MARKET" },
-  HIGH_AUCTION_RECORD: { value: "HIGH_AUCTION_RECORD" },
-  ARTSY_VANGUARD_YEAR: { value: "ARTSY_VANGUARD_YEAR" },
-  CRITICALLY_ACCLAIMED: { value: "CRITICALLY_ACCLAIMED" },
-  RESIDENCIES: { value: "RESIDENCIES" },
-  PRIVATE_COLLECTIONS: { value: "PRIVATE_COLLECTIONS" },
-  AWARDS: { value: "AWARDS" },
-} as const
+// In order of importance
+export const ARTIST_INSIGHT_KINDS = [
+  "HIGH_AUCTION_RECORD",
+  "ACTIVE_SECONDARY_MARKET",
+  "CRITICALLY_ACCLAIMED",
+  // "RECENT_CAREER_EVENT", // Missing
+  "ARTSY_VANGUARD_YEAR",
+  // "CURATORS_PICK_EMERGING", // Missing
+  // "TRENDING_NOW", // Missing
+  // "GAINING_FOLLOWERS", // Missing
+  "SOLO_SHOW",
+  "GROUP_SHOW",
+  "BIENNIAL",
+  "PRIVATE_COLLECTIONS",
+  "COLLECTED",
+  "REVIEWED",
+  "AWARDS", // Not ranked
+  "RESIDENCIES", // Not ranked
+] as const
 
-type ArtistInsightKind = keyof typeof ARTIST_INSIGHT_KINDS
+type ArtistInsightKind = typeof ARTIST_INSIGHT_KINDS[number]
 
-export const ARTIST_INSIGHT_MAPPING = {
+export const ARTIST_INSIGHT_MAPPING: Record<
+  ArtistInsightKind,
+  {
+    getDescription: (artist: any) => string | null
+    getEntities: (artist: any) => string[]
+    getLabel: (artist: any, count: number) => string
+  }
+> = {
   SOLO_SHOW: {
     getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.solo_show_institutions),
-    getLabel: () => "Solo show at a major institution",
+    getLabel: (_artist, count: number) =>
+      `Solo show at ${
+        count === 1 ? "a major institution" : `${count} major institutions`
+      }`,
   },
   GROUP_SHOW: {
     getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.group_show_institutions),
-    getLabel: () => "Group show at a major institution",
+    getLabel: (_artist, count: number) =>
+      `Group show at ${
+        count === 1 ? "a major institution" : `${count} major institutions`
+      }`,
   },
   COLLECTED: {
     getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.collections),
-    getLabel: () => "Collected by a major institution",
+    getLabel: (_artist, count: number) =>
+      `Collected by ${
+        count === 1 ? "a major institution" : `${count} major institutions`
+      }`,
   },
   REVIEWED: {
     getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.review_sources),
-    getLabel: () => "Reviewed by a major art publication",
+    getLabel: (_artist, count: number) =>
+      `Reviewed by ${
+        count === 1
+          ? "a major art publication"
+          : `${count} major art publications`
+      }`,
   },
   BIENNIAL: {
     getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.biennials),
-    getLabel: () => "Included in a major biennial",
+    getLabel: (_artist, count: number) =>
+      `Included in ${
+        count === 1 ? "a major biennial" : `${count} major biennials`
+      }`,
   },
   ACTIVE_SECONDARY_MARKET: {
     getDescription: () => "Recent auction results in the Artsy Price Database.",
@@ -71,19 +100,32 @@ export const ARTIST_INSIGHT_MAPPING = {
   RESIDENCIES: {
     getDescription: () => "Established artist residencies.",
     getEntities: (artist) => splitEntities(artist.residencies),
-    getLabel: () => "Participated in a notable artist residency",
+    getLabel: (_artist, count: number) =>
+      `Participated in ${
+        count === 1
+          ? "a notable artist residency"
+          : `${count} notable artist residencies`
+      }`,
   },
   PRIVATE_COLLECTIONS: {
     getDescription: () => "A list of collections they are part of.",
     getEntities: (artist) => splitEntities(artist.private_collections),
-    getLabel: () => "Collected by a notable private collector",
+    getLabel: (_artist, count: number) =>
+      `Collected by ${
+        count === 1
+          ? "a notable private collector"
+          : `${count} notable private collectors`
+      }`,
   },
   AWARDS: {
     getDescription: () => "Awards and prizes the artist has won.",
     getEntities: (artist) => splitEntities(artist.awards),
-    getLabel: () => "Winner of top industry award",
+    getLabel: (_artist, count: number) =>
+      `Winner of ${
+        count === 1 ? "a top industry award" : `${count} top industry awards`
+      }`,
   },
-} as const
+}
 
 const splitEntities = (value, delimiter = "|") => {
   if (!value) return null
@@ -109,7 +151,7 @@ export const getArtistInsights = (artist) => {
     if (!entities) return { artist }
 
     const description = getDescription(artist)
-    const label = getLabel(artist)
+    const label = getLabel(artist, entities.length)
 
     return {
       artist,
@@ -122,7 +164,10 @@ export const getArtistInsights = (artist) => {
     }
   })
 
-  return compact(insights)
+  return sortBy(compact(insights), ({ kind }) => {
+    if (!kind) return
+    return ARTIST_INSIGHT_KINDS.indexOf(kind)
+  })
 }
 
 export const getAuctionRecord = async (artist, auctionLotsLoader) => {

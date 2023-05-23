@@ -58,14 +58,24 @@ describe("ArtistInsights type", () => {
     return runQuery(query, context).then((data) => {
       expect(data!.artist.insights).toEqual([
         {
+          type: "ACTIVE_SECONDARY_MARKET",
+          label: "Active Secondary Market",
+          entities: [],
+        },
+        {
           type: "SOLO_SHOW",
-          label: "Solo show at a major institution",
+          label: "Solo show at 2 major institutions",
           entities: ["MoMA PS1", "Museum of Modern Art (MoMA)"],
         },
         {
           type: "GROUP_SHOW",
           label: "Group show at a major institution",
           entities: ["Metropolitan Museum of Art"],
+        },
+        {
+          type: "BIENNIAL",
+          label: "Included in a major biennial",
+          entities: ["frieze"],
         },
         {
           type: "COLLECTED",
@@ -76,16 +86,6 @@ describe("ArtistInsights type", () => {
           type: "REVIEWED",
           label: "Reviewed by a major art publication",
           entities: ["Artforum International Magazine"],
-        },
-        {
-          type: "BIENNIAL",
-          label: "Included in a major biennial",
-          entities: ["frieze"],
-        },
-        {
-          type: "ACTIVE_SECONDARY_MARKET",
-          label: "Active Secondary Market",
-          entities: [],
         },
       ])
     })
@@ -116,7 +116,7 @@ describe("ArtistInsights type", () => {
       expect(data!.artist.insights).toEqual([
         {
           type: "SOLO_SHOW",
-          label: "Solo show at a major institution",
+          label: "Solo show at 2 major institutions",
           entities: ["MoMA PS1", "Museum of Modern Art (MoMA)"],
         },
       ])
@@ -135,7 +135,7 @@ describe("ArtistInsights type", () => {
           {
             artist(id: "foo-bar") {
               id
-              insights(kind: [SOLO_SHOW, GROUP_SHOW, REVIEWED]) {
+              insights(kind: [GROUP_SHOW, REVIEWED, SOLO_SHOW]) {
                 type
                 label
                 entities
@@ -148,7 +148,7 @@ describe("ArtistInsights type", () => {
       expect(data!.artist.insights).toEqual([
         {
           type: "SOLO_SHOW",
-          label: "Solo show at a major institution",
+          label: "Solo show at 2 major institutions",
           entities: ["MoMA PS1", "Museum of Modern Art (MoMA)"],
         },
         {
