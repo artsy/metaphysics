@@ -2,7 +2,7 @@
 import { runQuery } from "schema/v2/test/utils"
 
 describe("ArtistMeta type", () => {
-  let context
+  let context, blurb
   const artist = {
     id: "foo-bar",
     name: "Foo Bar",
@@ -14,9 +14,11 @@ describe("ArtistMeta type", () => {
     context = {
       artistLoader: () => artist,
     }
+
+    blurb = artist.blurb.slice(0, 70)
   })
 
-  it("returns the default title and description", () => {
+  it("returns the default title and description when the page is not specified", () => {
     const query = `
       {
         artist(id: "foo-bar") {
@@ -33,8 +35,7 @@ describe("ArtistMeta type", () => {
         artist: {
           meta: {
             title: "Foo Bar - Biography, Shows, Articles & More | Artsy",
-            description:
-              "Explore Foo Bar’s biography, achievements, artworks, auction results, and shows on Artsy. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.",
+            description: `Explore Foo Bar’s biography, achievements, artworks, auction results, and shows on Artsy. ${blurb}`,
           },
         },
       })
@@ -59,8 +60,7 @@ describe("ArtistMeta type", () => {
           artist: {
             meta: {
               title: "Foo Bar - Biography, Shows, Articles & More | Artsy",
-              description:
-                "Explore Foo Bar’s biography, achievements, artworks, auction results, and shows on Artsy. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.",
+              description: `Explore Foo Bar’s biography, achievements, artworks, auction results, and shows on Artsy. ${blurb}`,
             },
           },
         })
@@ -85,7 +85,7 @@ describe("ArtistMeta type", () => {
             meta: {
               title: "Foo Bar - Artworks for Sale & More | Artsy",
               description:
-                "Discover and purchase Foo Bar’s artworks, available for sale. Browse our selection of paintings, prints, and sculptures by the artist, and find art you love. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.",
+                "Discover and purchase Foo Bar’s artworks, available for sale. Browse our selection of paintings, prints, and sculptures by the artist, and find art you love.",
             },
           },
         })

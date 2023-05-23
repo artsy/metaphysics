@@ -28,7 +28,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ artist, page }) => {
         const blurb = artist.blurb?.length
-          ? ` ${markdownToText(artist.blurb)}`
+          ? ` ${markdownToText(artist.blurb).slice(0, 70)}`
           : ""
 
         switch (page) {
@@ -39,7 +39,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
           case "ARTWORKS":
             return `Discover and purchase ${metaName(
               artist
-            )}’s artworks, available for sale. Browse our selection of paintings, prints, and sculptures by the artist, and find art you love.${blurb}`
+            )}’s artworks, available for sale. Browse our selection of paintings, prints, and sculptures by the artist, and find art you love.`
           case "AUCTION_RESULTS":
             return `Find out about ${metaName(
               artist
