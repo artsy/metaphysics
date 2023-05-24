@@ -20,6 +20,7 @@ interface ConversationsArguments extends CursorPageable {
   hasReply?: boolean
   partnerId?: string
   fromId?: string
+  artistId?: string
   type?: "Partner" | "User"
 }
 
@@ -66,6 +67,9 @@ const Conversations: GraphQLFieldConfig<
     fromId: {
       type: GraphQLString,
     },
+    artistId: {
+      type: GraphQLString,
+    },
     type: {
       type: ConversationsInputModeEnum,
       defaultValue: "USER",
@@ -95,6 +99,7 @@ const Conversations: GraphQLFieldConfig<
         from_id: args.fromId ?? undefined,
         from_type: args.fromId ? "User" : undefined,
         to_type: "Partner",
+        artistId: args.artistId,
         has_reply: args.hasReply ?? undefined,
         has_message: args.hasMessage ?? undefined,
         dismissed: !!args.dismissed,
