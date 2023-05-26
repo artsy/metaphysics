@@ -168,6 +168,17 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    createHeroUnitLoader: gravityLoader("hero_units", {}, { method: "POST" }),
+    updateHeroUnitLoader: gravityLoader(
+      (id) => `hero_units/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteHeroUnitLoader: gravityLoader(
+      (id) => `hero_units/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     deleteSetItemLoader: gravityLoader<any, { id: string; itemId: string }>(
       ({ id, itemId }) => `set/${id}/item/${itemId}`,
       {},
@@ -375,6 +386,21 @@ export default (accessToken, userID, opts) => {
     ),
     matchUsersLoader: gravityLoader("match/users", {}, { headers: true }),
     matchSetsLoader: gravityLoader("match/sets", {}, { headers: true }),
+    authenticatedHeroUnitsLoader: gravityLoader(
+      "hero_units",
+      {},
+      { headers: true }
+    ),
+    authenticatedHeroUnitLoader: gravityLoader(
+      (id) => `hero_units/${id}`,
+      {},
+      { headers: true }
+    ),
+    matchHeroUnitsLoader: gravityLoader(
+      "match/hero_units",
+      {},
+      { headers: true }
+    ),
     matchShowsLoader: gravityLoader(
       "match/partner_shows",
       {},

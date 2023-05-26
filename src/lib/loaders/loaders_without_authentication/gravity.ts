@@ -89,7 +89,13 @@ export default (opts) => {
     geneFamiliesLoader: gravityLoader("gene_families"),
     geneLoader: gravityLoader((id) => `gene/${id}`),
     genesLoader: gravityLoader("genes"),
-    heroUnitsLoader: gravityLoader("site_hero_units"),
+    siteHeroUnitsLoader: gravityLoader("site_hero_units"),
+    heroUnitsLoader: gravityLoader("hero_units", {}, { headers: true }),
+    heroUnitLoader: gravityLoader(
+      (id) => `hero_units/${id}`,
+      {},
+      { headers: true }
+    ),
     identityVerificationLoader: gravityUncachedLoader(
       (id) => `identity_verification/${id}`
     ),
