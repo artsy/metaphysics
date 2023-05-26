@@ -38,6 +38,11 @@ import { City } from "./city"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
 import { createCollectionMutation } from "./me/createCollectionMutation"
 import { deleteCollectionMutation } from "./me/deleteCollectionMutation"
+import { deleteHeroUnitMutation } from "./HeroUnit/deleteHeroUnitMutation"
+import { createHeroUnitMutation } from "./HeroUnit/createHeroUnitMutation"
+import { updateHeroUnitMutation } from "./HeroUnit/updateHeroUnitMutation"
+import { heroUnitsConnection } from "./HeroUnit/heroUnitsConnection"
+import { heroUnit } from "./HeroUnit/heroUnit"
 // import Collection from "./collection"
 import { CreditCard } from "./credit_card"
 import { DeleteArtworkImageMutation } from "./deleteArtworkImageMutation"
@@ -263,6 +268,8 @@ const rootFields = {
   gene: Gene,
   geneFamiliesConnection: GeneFamilies,
   genes: Genes,
+  heroUnitsConnection,
+  heroUnit,
   highlights: HighlightsField,
   homePage: HomePage,
   identityVerification: IdentityVerification,
@@ -359,6 +366,9 @@ export default new GraphQLSchema({
       deleteCreditCard: deleteCreditCardMutation,
       deleteFeature: DeleteFeatureMutation,
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
+      deleteHeroUnit: deleteHeroUnitMutation,
+      createHeroUnit: createHeroUnitMutation,
+      updateHeroUnit: updateHeroUnitMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       deleteOrderedSet: deleteOrderedSetMutation,
