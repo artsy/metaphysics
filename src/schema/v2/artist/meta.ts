@@ -1,6 +1,10 @@
-import { stripTags, truncate, markdownToText } from "lib/helpers"
-import { compact } from "lodash"
-import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
+import { stripTags, markdownToText } from "lib/helpers"
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLFieldConfig,
+  GraphQLEnumType,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 
 export const metaName = (artist) => {
@@ -8,30 +12,56 @@ export const metaName = (artist) => {
   return "Unnamed Artist"
 }
 
+const ArtistPageEnumType = new GraphQLEnumType({
+  name: "ArtistPage",
+  values: {
+    ABOUT: { value: "ABOUT" },
+    ARTWORKS: { value: "ARTWORKS" },
+    AUCTION_RESULTS: { value: "AUCTION_RESULTS" },
+  },
+})
+
 const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistMeta",
   fields: {
     description: {
       type: GraphQLString,
-      resolve: (artist) => {
-        const blurb = artist.blurb.length
-          ? markdownToText(artist.blurb)
-          : undefined
+      resolve: ({ artist, page }) => {
+        const blurb = artist.blurb?.length
+          ? ` ${markdownToText(artist.blurb).slice(0, 70)}`
+          : ""
 
-        const description = compact([
-          `Find the latest shows, biography, and artworks for sale by ${metaName(
-            artist
-          )}`,
-          blurb,
-        ]).join(". ")
-        return truncate(description, 157)
+        switch (page) {
+          case "ABOUT":
+            return `Explore ${metaName(
+              artist
+            )}’s biography, achievements, artworks, auction results, and shows on Artsy.${blurb}`
+          case "ARTWORKS":
+            return `Discover and purchase ${metaName(
+              artist
+            )}’s artworks, available for sale. Browse our selection of paintings, prints, and sculptures by the artist, and find art you love.`
+          case "AUCTION_RESULTS":
+            return `Find out about ${metaName(
+              artist
+            )}’s auction history, past sales, and current market value. Browse Artsy’s Price Database for recent auction results from the artist.`
+        }
       },
     },
     title: {
       type: GraphQLString,
-      resolve: (artist) => {
-        const count = artist.published_artworks_count
-        return `${metaName(artist)} - ${count} Artworks, Bio & Shows on Artsy`
+      resolve: ({ artist, page }) => {
+        switch (page) {
+          case "ABOUT":
+            return `${metaName(
+              artist
+            )} - Biography, Shows, Articles & More | Artsy`
+          case "ARTWORKS":
+            return `${metaName(artist)} - Artworks for Sale & More | Artsy`
+          case "AUCTION_RESULTS":
+            return `${metaName(
+              artist
+            )} - Auction Results and Sales Data | Artsy`
+        }
       },
     },
   },
@@ -39,7 +69,12 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
 
 const Meta: GraphQLFieldConfig<void, ResolverContext> = {
   type: ArtistMetaType,
-  resolve: (x) => x,
+  args: {
+    page: { type: ArtistPageEnumType, defaultValue: "ABOUT" },
+  },
+  resolve: (artist, { page }) => {
+    return { artist, page }
+  },
 }
 
 export default Meta
