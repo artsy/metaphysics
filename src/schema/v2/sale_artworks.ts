@@ -88,6 +88,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
     },
     isAuction: { type: GraphQLBoolean },
     liveSale: { type: GraphQLBoolean },
+    marketable: { type: GraphQLBoolean },
     page: { type: GraphQLInt },
     saleID: { type: GraphQLID },
     saleSlug: {
@@ -112,6 +113,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       includeArtworksByFollowedArtists: requestIncludeArtworksByFollowedArtists,
       isAuction,
       liveSale,
+      marketable,
       saleID,
       saleSlug,
       userId,
@@ -144,6 +146,7 @@ export const SaleArtworksConnectionField: GraphQLFieldConfig<
       include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
       is_auction: isAuction,
       live_sale: liveSale,
+      marketable: marketable,
       sale_id: saleID || saleSlug,
       user_id: userId,
       ..._args,
