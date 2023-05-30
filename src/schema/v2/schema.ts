@@ -201,6 +201,7 @@ import { PagesConnection } from "./Page/PagesConnection"
 import { CreatePageMutation } from "./Page/CreatePageMutation"
 import { DeletePageMutation } from "./Page/DeletePageMutation"
 import { UpdatePageMutation } from "./Page/UpdatePageMutation"
+import { CollectorProfilesConnection } from "./CollectorProfile/collectorProfiles"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -250,6 +251,7 @@ const rootFields = {
   cities,
   city: City,
   collectorProfile: CollectorProfileForUser,
+  collectorProfilesConnection: CollectorProfilesConnection,
   conversation: Conversation,
   conversationsConnection: Conversations,
   creditCard: CreditCard,
