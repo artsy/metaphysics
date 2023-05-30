@@ -9,7 +9,7 @@ import { snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { ArtistType } from "./index"
 
-interface CreateArtistInput {
+interface CreateArtistMutationInput {
   birthday: string
   deathday: string
   displayName: string
@@ -48,7 +48,7 @@ const SuccessOrErrorType = new GraphQLUnionType({
 })
 
 export const createArtistMutation = mutationWithClientMutationId<
-  CreateArtistInput,
+  CreateArtistMutationInput,
   any | null,
   ResolverContext
 >({
