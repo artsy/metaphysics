@@ -27,7 +27,9 @@ interface CreateArtistMutationInput {
 
 const CreateArtistSuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateArtistSuccess",
-  isTypeOf: (data) => data.id,
+  isTypeOf: (data) => {
+    return data._type !== "GravityMutationError"
+  },
   fields: () => ({
     artist: {
       type: ArtistType,
