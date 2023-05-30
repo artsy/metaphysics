@@ -7142,6 +7142,7 @@ input CreateArtistMutationInput {
   deathday: String
   displayName: String!
   first: String
+  isPersonalArtist: Boolean
   last: String
   middle: String
   nationality: String

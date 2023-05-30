@@ -1,4 +1,9 @@
-import { GraphQLNonNull, GraphQLString, GraphQLUnionType } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import { GraphQLObjectType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
@@ -59,6 +64,7 @@ export const createArtistMutation = mutationWithClientMutationId<
     deathday: { type: GraphQLString },
     displayName: { type: new GraphQLNonNull(GraphQLString) },
     first: { type: GraphQLString },
+    isPersonalArtist: { type: GraphQLBoolean },
     last: { type: GraphQLString },
     middle: { type: GraphQLString },
     nationality: { type: GraphQLString },
