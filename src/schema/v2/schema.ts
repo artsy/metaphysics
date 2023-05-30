@@ -201,6 +201,7 @@ import { PagesConnection } from "./Page/PagesConnection"
 import { CreatePageMutation } from "./Page/CreatePageMutation"
 import { DeletePageMutation } from "./Page/DeletePageMutation"
 import { UpdatePageMutation } from "./Page/UpdatePageMutation"
+import { createArtistMutation } from "./artist/createArtistMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -344,6 +345,7 @@ export default new GraphQLSchema({
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       createAccountRequest: createAccountRequestMutation,
+      createArtist: createArtistMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
