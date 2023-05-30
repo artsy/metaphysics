@@ -7,7 +7,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
-import { ArtistType } from "."
+import { ArtistType } from "./index"
 
 interface CreateArtistInput {
   birthday: string
