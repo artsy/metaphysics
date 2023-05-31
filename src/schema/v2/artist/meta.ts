@@ -4,6 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLFieldConfig,
   GraphQLEnumType,
+  GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -25,7 +26,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistMeta",
   fields: {
     description: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       resolve: ({ artist, page }) => {
         const blurb = artist.blurb?.length
           ? ` ${markdownToText(artist.blurb).slice(0, 70)}`
@@ -48,7 +49,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     title: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       resolve: ({ artist, page }) => {
         switch (page) {
           case "ABOUT":
@@ -68,7 +69,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const Meta: GraphQLFieldConfig<void, ResolverContext> = {
-  type: ArtistMetaType,
+  type: new GraphQLNonNull(ArtistMetaType),
   args: {
     page: { type: ArtistPageEnumType, defaultValue: "ABOUT" },
   },
