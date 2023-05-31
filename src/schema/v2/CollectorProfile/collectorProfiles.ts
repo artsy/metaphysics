@@ -21,7 +21,7 @@ export const CollectorProfilesConnection: GraphQLFieldConfig<
     },
     term: {
       type: GraphQLString,
-      description: "If present, will search by term",
+      description: "Term used for searching collector profiles",
     },
   }),
   description:
@@ -35,6 +35,10 @@ export const CollectorProfilesConnection: GraphQLFieldConfig<
       throw new Error(
         "A X-Access-Token header is required to perform this action."
       )
+
+    if (!partnerID || !term) {
+      throw new Error("Arguments `partnerID` and `term` are required.")
+    }
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
     const { body, headers } = await collectorProfilesLoader({

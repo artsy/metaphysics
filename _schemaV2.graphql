@@ -14574,7 +14574,7 @@ type Query {
     last: Int
     partnerID: ID
 
-    # If present, will search by term
+    # Term used for searching collector profiles
     term: String
   ): CollectorProfileTypeConnection
 
@@ -19073,7 +19073,7 @@ type Viewer {
     last: Int
     partnerID: ID
 
-    # If present, will search by term
+    # Term used for searching collector profiles
     term: String
   ): CollectorProfileTypeConnection
 
