@@ -129,7 +129,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
       resolve: async (
         parent,
         options,
-        { auctionResultComparableAuctionResultsLoader }
+        { auctionResultComparableAuctionResultsLoader, userID }
       ) => {
         if (!auctionResultComparableAuctionResultsLoader) {
           return null
@@ -142,7 +142,9 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
         const {
           _embedded: { items },
           total_count,
-        } = await auctionResultComparableAuctionResultsLoader(parent.id)
+        } = await auctionResultComparableAuctionResultsLoader(parent.id, {
+          user_id: userID,
+        })
 
         return merge(
           {
