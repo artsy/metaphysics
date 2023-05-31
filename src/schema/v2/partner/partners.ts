@@ -128,14 +128,22 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       eligibleForListing,
       eligibleForPrimaryBucket,
       eligibleForSecondaryBucket,
+      ip,
       excludeFollowedPartners,
       hasFullProfile,
       includePartnersWithFollowedArtists,
+      near,
       partnerCategories,
       ..._options
     },
-    { partnersLoader }
+    { partnersLoader, requestLocationLoader }
   ) => {
+    if (ip && near) {
+      throw new Error('The "ip" and "near" arguments are mutually exclusive.')
+    }
+
+    const locationArgs = await getLocationArgs(near, ip, requestLocationLoader)
+
     const options: any = {
       default_profile_public: defaultProfilePublic,
       eligible_for_carousel: eligibleForCarousel,
@@ -146,6 +154,7 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       has_full_profile: hasFullProfile,
       include_partners_with_followed_artists: includePartnersWithFollowedArtists,
       partner_categories: partnerCategories,
+      ...locationArgs,
       ..._options,
     }
 
