@@ -1,22 +1,23 @@
-import { clone, identity, pick, pickBy } from "lodash"
-import Partner, { PartnerType } from "schema/v2/partner/partner"
-import PartnerTypeType from "schema/v2/input_fields/partner_type_type"
 import {
-  GraphQLString,
-  GraphQLList,
   GraphQLBoolean,
-  GraphQLInt,
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLString,
 } from "graphql"
-import { ResolverContext } from "types/graphql"
+import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { getLocationArgs } from "lib/locationHelpers"
+import { clone, identity, pick, pickBy } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import {
   connectionWithCursorInfo,
   createPageCursors,
 } from "schema/v2/fields/pagination"
-import { connectionFromArraySlice } from "graphql-relay"
+import PartnerTypeType from "schema/v2/input_fields/partner_type_type"
+import Partner, { PartnerType } from "schema/v2/partner/partner"
+import { ResolverContext } from "types/graphql"
 
 export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Partner.type),
@@ -40,8 +41,22 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLBoolean,
       description: "Indicates tier 3/4 for gallery, 2 for institution",
     },
+    excludeFollowedPartners: {
+      type: GraphQLBoolean,
+      description:
+        "Exclude partners the user follows (only effective when `include_partners_with_followed_artists` is set to true).",
+    },
     ids: {
       type: new GraphQLList(GraphQLString),
+    },
+    includePartnersWithFollowedArtists: {
+      type: GraphQLBoolean,
+      description:
+        "If true, will only return partners that list artists that the user follows",
+    },
+    ip: {
+      type: GraphQLString,
+      description: "An IP address, will be used to lookup location",
     },
     hasFullProfile: {
       type: GraphQLBoolean,
@@ -72,6 +87,9 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
           },
           CREATED_AT_DESC: {
             value: "-created_at",
+          },
+          DISTANCE: {
+            value: "distance",
           },
           SORTABLE_ID_ASC: {
             value: "sortable_id",
@@ -110,7 +128,9 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       eligibleForListing,
       eligibleForPrimaryBucket,
       eligibleForSecondaryBucket,
+      excludeFollowedPartners,
       hasFullProfile,
+      includePartnersWithFollowedArtists,
       partnerCategories,
       ..._options
     },
@@ -122,7 +142,9 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       eligible_for_listing: eligibleForListing,
       eligible_for_primary_bucket: eligibleForPrimaryBucket,
       eligible_for_secondary_bucket: eligibleForSecondaryBucket,
+      exclude_followed_partners: excludeFollowedPartners,
       has_full_profile: hasFullProfile,
+      include_partners_with_followed_artists: includePartnersWithFollowedArtists,
       partner_categories: partnerCategories,
       ..._options,
     }
@@ -152,26 +174,42 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
       Partners.args,
       "defaultProfilePublic",
       "eligibleForListing",
+      "excludeFollowedPartners",
+      "includePartnersWithFollowedArtists",
+      "ip",
       "near",
       "partnerCategories",
       "sort",
       "type"
     ),
   }),
-  resolve: async (_root, args, { partnersLoader }) => {
+  resolve: async (_root, args, { partnersLoader, requestLocationLoader }) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    if (args.ip && args.near) {
+      throw new Error('The "ip" and "near" arguments are mutually exclusive.')
+    }
+
+    const locationArgs = await getLocationArgs(
+      args.near,
+      args.ip,
+      requestLocationLoader
+    )
 
     const options = {
       id: args.ids,
       page,
       size,
-      near: args.near,
       eligible_for_listing: args.eligibleForListing,
+      exclude_followed_partners: args.excludeFollowedPartners,
+      include_partners_with_followed_artists:
+        args.includePartnersWithFollowedArtists,
       default_profile_public: args.defaultProfilePublic,
       sort: args.sort,
       partner_categories: args.partnerCategories,
       type: args.type,
       total_count: true,
+      ...locationArgs,
     }
 
     // Removes null/undefined values from options
