@@ -543,6 +543,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnersLoader: gravityLoader("partners", {}, { headers: true }),
     popularArtistsLoader: gravityLoader("artists/popular"),
     purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
     recordArtworkViewLoader: gravityLoader(

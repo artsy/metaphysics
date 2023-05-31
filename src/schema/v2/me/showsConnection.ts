@@ -1,19 +1,12 @@
 import { GraphQLFieldConfig, GraphQLString } from "graphql"
+import { getLocationArgs } from "lib/locationHelpers"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
-import EventStatus from "../input_fields/event_status"
-import ShowSorts from "../sorts/show_sorts"
-import { ShowsConnection as ShowsConnectionType } from "../show"
 import { paginationResolver } from "../fields/pagination"
+import EventStatus from "../input_fields/event_status"
 import Near from "../input_fields/near"
-
-const DEFAULT_MAX_DISTANCE_KM = 75
-
-interface Location {
-  lat: number
-  lng: number
-  maxDistance?: number
-}
+import { ShowsConnection as ShowsConnectionType } from "../show"
+import ShowSorts from "../sorts/show_sorts"
 
 export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
   type: ShowsConnectionType.connectionType,
@@ -71,32 +64,4 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
       totalCount,
     })
   },
-}
-
-const getLocationArgs = async (
-  near: Location | undefined,
-  ip: string | undefined,
-  requestLocationLoader: any
-) => {
-  let location = near
-
-  if (ip) {
-    const {
-      body: { data: locationData },
-    } = await requestLocationLoader({ ip })
-
-    if (locationData.location) {
-      location = {
-        lat: locationData.location.latitude,
-        lng: locationData.location.longitude,
-      }
-    }
-  }
-
-  if (!location) return {}
-
-  return {
-    near: `${location.lat},${location.lng}`,
-    max_distance: location.maxDistance || DEFAULT_MAX_DISTANCE_KM,
-  }
 }
