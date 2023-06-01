@@ -18,17 +18,17 @@ interface CreateArtistMutationInput {
   birthday: string
   deathday: string
   displayName: string
-  first: string
+  firstName: string
   isPersonalArtist: boolean
-  last: string
-  middle: string
+  lastName: string
+  middleName: string
   nationality: string
 }
 
 const CreateArtistSuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreateArtistSuccess",
   isTypeOf: (data) => {
-    return data._type !== "GravityMutationError"
+    return data.id
   },
   fields: () => ({
     artist: {
@@ -83,10 +83,26 @@ export const createArtistMutation = mutationWithClientMutationId<
       throw new Error("You need to be logged in to perform this action")
     }
 
-    const gravityPayload = Object.keys(args).reduce(
-      (acc, key) => ({ ...acc, [snakeCase(key)]: args[key] }),
-      {} as any
+    const { firstName, middleName, lastName, ...otherArgs } = args
+
+    const names = {
+      first: firstName,
+      middle: middleName,
+      last: lastName,
+    }
+
+    const transformedOtherPayload = Object.keys(otherArgs).reduce(
+      (acc, key) => ({ ...acc, [snakeCase(key)]: otherArgs[key] }),
+      {} as Omit<
+        CreateArtistMutationInput,
+        "firstName" | "middleName" | "lastName"
+      >
     )
+
+    const gravityPayload = {
+      ...names,
+      ...transformedOtherPayload,
+    }
 
     try {
       return await createArtistLoader(gravityPayload)

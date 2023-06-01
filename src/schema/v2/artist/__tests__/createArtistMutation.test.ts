@@ -28,6 +28,7 @@ describe("createArtistMutation", () => {
   it("calls the expected loader with correctly formatted params", async () => {
     const mockCreateArtistLoader = jest.fn(() =>
       Promise.resolve({
+        id: "artistID",
         display_name: "Andy Manner",
       })
     )
