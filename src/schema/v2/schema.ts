@@ -202,6 +202,7 @@ import { CreatePageMutation } from "./Page/CreatePageMutation"
 import { DeletePageMutation } from "./Page/DeletePageMutation"
 import { UpdatePageMutation } from "./Page/UpdatePageMutation"
 import { CollectorProfilesConnection } from "./CollectorProfile/collectorProfiles"
+import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -361,6 +362,7 @@ export default new GraphQLSchema({
       createUserInterest: createUserInterestMutation,
       createUserInterestForUser: createUserInterestForUser,
       createUserSaleProfile: createUserSaleProfileMutation,
+      deleteArtist: deleteArtistMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
       deleteCollection: deleteCollectionMutation,
