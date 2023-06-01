@@ -99,7 +99,7 @@ const Conversations: GraphQLFieldConfig<
         from_id: args.fromId ?? undefined,
         from_type: args.fromId ? "User" : undefined,
         to_type: "Partner",
-        artist_id: args.artistId,
+        artist_id: args.artistId ?? undefined,
         has_reply: args.hasReply ?? undefined,
         has_message: args.hasMessage ?? undefined,
         dismissed: !!args.dismissed,
