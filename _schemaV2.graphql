@@ -7167,10 +7167,10 @@ input CreateArtistMutationInput {
   clientMutationId: String
   deathday: String
   displayName: String!
-  first: String
+  firstName: String
   isPersonalArtist: Boolean
-  last: String
-  middle: String
+  lastName: String
+  middleName: String
   nationality: String
 }
 

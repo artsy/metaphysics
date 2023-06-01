@@ -65,10 +65,10 @@ export const createArtistMutation = mutationWithClientMutationId<
     birthday: { type: GraphQLString },
     deathday: { type: GraphQLString },
     displayName: { type: new GraphQLNonNull(GraphQLString) },
-    first: { type: GraphQLString },
+    firstName: { type: GraphQLString },
     isPersonalArtist: { type: GraphQLBoolean },
-    last: { type: GraphQLString },
-    middle: { type: GraphQLString },
+    lastName: { type: GraphQLString },
+    middleName: { type: GraphQLString },
     nationality: { type: GraphQLString },
   },
   outputFields: {
