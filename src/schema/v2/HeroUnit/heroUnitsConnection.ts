@@ -19,22 +19,7 @@ export const heroUnitsConnection: GraphQLFieldConfig<void, ResolverContext> = {
     },
   }),
   resolve: async (_root, args, context) => {
-    const {
-      authenticatedHeroUnitsLoader,
-      heroUnitsLoader,
-      matchHeroUnitsLoader,
-    } = context
-
-    const { term } = args
-
-    if (term && !matchHeroUnitsLoader)
-      throw new Error(
-        "You need to pass a X-Access-Token header to perform this action"
-      )
-
-    const loader =
-      (term && matchHeroUnitsLoader) ||
-      (authenticatedHeroUnitsLoader ?? heroUnitsLoader)
+    const { heroUnitsLoader } = context
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
@@ -47,10 +32,9 @@ export const heroUnitsConnection: GraphQLFieldConfig<void, ResolverContext> = {
       page,
       size,
       total_count: true,
-      ...(term ? { term } : {}),
     }
 
-    const { body, headers } = await loader(gravityArgs)
+    const { body, headers } = await heroUnitsLoader(gravityArgs)
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
