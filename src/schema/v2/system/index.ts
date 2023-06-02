@@ -1,5 +1,9 @@
-import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
-
+import {
+  GraphQLObjectType,
+  GraphQLFieldConfig,
+  GraphQLNonNull,
+  GraphQLString,
+} from "graphql"
 import CausalityJWT from "./causality_jwt"
 import SystemTime from "./time"
 import Services from "./services"
@@ -11,6 +15,20 @@ const SystemType = new GraphQLObjectType<any, ResolverContext>({
     services: Services,
     time: SystemTime,
     causalityJWT: CausalityJWT,
+    request: {
+      type: new GraphQLObjectType<any, ResolverContext>({
+        name: "Request",
+        fields: {
+          ipAddress: {
+            type: new GraphQLNonNull(GraphQLString),
+            description:
+              "IP Address of the current request, useful for debugging",
+            resolve: (_root, _options, { ipAddress }) => ipAddress,
+          },
+        },
+      }),
+      resolve: () => ({}),
+    },
   },
 })
 
