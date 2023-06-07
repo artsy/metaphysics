@@ -61,7 +61,7 @@ export const CreateFeaturedLinkMutation = mutationWithClientMutationId<
   name: "CreateFeaturedLinkMutation",
   description: "Creates a featured link.",
   inputFields: {
-    description: { type: new GraphQLNonNull(GraphQLString) },
+    description: { type: GraphQLString },
     title: { type: new GraphQLNonNull(GraphQLString) },
     href: { type: new GraphQLNonNull(GraphQLString) },
     subtitle: { type: GraphQLString },
