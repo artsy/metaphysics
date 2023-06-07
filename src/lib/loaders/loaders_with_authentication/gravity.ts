@@ -758,5 +758,10 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    verifyAddressLoader: gravityLoader(
+      "address_verification",
+      {},
+      { method: "POST" }
+    ),
   }
 }

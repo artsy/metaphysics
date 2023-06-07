@@ -106,6 +106,16 @@ type addOrderedSetItemSuccess {
   setItem: OrderedSetItem
 }
 
+type AddressInput {
+  addressLine1: String!
+  addressLine2: String
+  city: String
+  country: String!
+  name: String!
+  postalCode: String!
+  region: String
+}
+
 type addUserRoleFailure {
   mutationError: GravityMutationError
 }
@@ -12583,6 +12593,11 @@ type Mutation {
   updateViewingRoomSubsections(
     input: UpdateViewingRoomSubsectionsInput!
   ): UpdateViewingRoomSubsectionsPayload
+
+  # Verify an address.
+  verifyAddress(
+    input: verifyAddressMutationInput!
+  ): verifyAddressMutationPayload
 }
 
 type MyBid {
@@ -18883,6 +18898,45 @@ enum UserSearchCriteriaFrequency {
 }
 
 union VanityURLEntityType = Fair | Partner
+
+enum VerificationStatuses {
+  NOT_FOUND
+  VERIFICATION_UNAVAILABLE
+  VERIFIED_NO_CHANGE
+  VERIFIED_WITH_CHANGES
+}
+
+type VerifyAddressMutationFailure {
+  message: String!
+  mutationError: GravityMutationError
+  statusCode: Int
+}
+
+input verifyAddressMutationInput {
+  addressLine1: String!
+  addressLine2: String
+  city: String
+  clientMutationId: String
+  country: String!
+  name: String!
+  postalCode: String!
+  region: String
+}
+
+type verifyAddressMutationPayload {
+  clientMutationId: String
+  successOrError: VerifyAddressMutationSuccessOrError
+}
+
+type VerifyAddressMutationSuccess {
+  inputAddress: AddressInput
+  suggestedAddresses: String!
+  verificationStatus: VerificationStatuses
+}
+
+union VerifyAddressMutationSuccessOrError =
+    VerifyAddressMutationFailure
+  | VerifyAddressMutationSuccess
 
 # An object containing video metadata
 type Video {
