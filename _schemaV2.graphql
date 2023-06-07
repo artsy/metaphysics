@@ -3639,6 +3639,17 @@ type CitySponsoredContent {
   ): ShowConnection
 }
 
+input CollectArtistsMutationInput {
+  artistIDs: [String]!
+  clientMutationId: String
+  userId: String!
+}
+
+type CollectArtistsMutationPayload {
+  clientMutationId: String
+  me: Me!
+}
+
 # A collection of artworks
 type Collection {
   artworksConnection(
@@ -11987,6 +11998,11 @@ type Mutation {
     input: BulkUpdatePartnerArtworksMutationInput!
   ): BulkUpdatePartnerArtworksMutationPayload
   captureHold(input: CaptureHoldInput!): CaptureHoldPayload
+
+  # Collect Multiple Artists
+  collectArtists(
+    input: CollectArtistsMutationInput!
+  ): CollectArtistsMutationPayload
 
   # Creates a pending offer on an pending order.
   commerceAddInitialOfferToOrder(
