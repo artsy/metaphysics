@@ -1,13 +1,16 @@
-import { GraphQLNonNull, GraphQLString } from "graphql"
+import {
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import { GraphQLObjectType } from "graphql"
 import { ArtistType } from "./index"
-import { GraphQLUnionType } from "graphql"
 
 const DeleteArtistSuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeleteArtistSuccess",
