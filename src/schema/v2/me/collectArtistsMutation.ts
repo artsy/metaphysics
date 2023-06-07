@@ -45,6 +45,7 @@ export const collectArtistsMutation = mutationWithClientMutationId<
           return meCreateUserInterestLoader(gravityPayload)
         })
       )
+      return {}
     } catch (err) {
       if ("body" in (err as any)) {
         const e = err as GravityError
