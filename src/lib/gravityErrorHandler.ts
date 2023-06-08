@@ -49,22 +49,28 @@ export const formatGravityError = (error) => {
       parsedError = JSON.parse(freeBody)
     } catch {}
 
+    const fieldErrors =
+      extractFieldErrors(parsedError) || extractFieldErrors(freeBody)
+
     if (isObject(parsedError)) {
       return {
         type: "error",
         error: freeBody,
         statusCode: error?.statusCode,
         message: parsedError.error || parsedError.message,
+        fieldErrors,
       }
     } else if (freeBody.error as string) {
       return {
         type: "error",
         message: freeBody.error,
+        fieldErrors,
       }
     } else if (freeBody as string) {
       return {
         type: "error",
         message: freeBody,
+        fieldErrors,
       }
     }
   }
@@ -135,4 +141,11 @@ const formatGravityErrorDetails = (
     })
   })
   return fieldErrors
+}
+
+const extractFieldErrors = (object) => {
+  if (!object || !object.detail) return
+  if (!Object.keys(pickBy(object.detail, isArray))?.length) return
+
+  return formatGravityErrorDetails(object.detail)
 }

@@ -33,7 +33,7 @@ const ErrorType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
-      resolve: (err) => (typeof err.message === "object" ? err.message : err),
+      resolve: (err) => err,
     },
   }),
 })
