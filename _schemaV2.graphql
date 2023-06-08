@@ -107,11 +107,11 @@ type addOrderedSetItemSuccess {
 }
 
 type AddressInput {
-  addressLine1: String!
-  addressLine2: String
-  city: String
+  address_line_1: String!
+  address_line_2: String
+  city: String!
   country: String!
-  postalCode: String!
+  postal_code: String!
   region: String
 }
 
@@ -15462,7 +15462,7 @@ type Query {
   verifyAddress(
     addressLine1: String!
     addressLine2: String
-    city: String
+    city: String!
     country: String!
     postalCode: String!
     region: String
@@ -18913,7 +18913,7 @@ enum VerificationStatuses {
 
 type VerifyAddressType {
   inputAddress: AddressInput
-  suggestedAddresses: String
+  suggestedAddresses: [String]
   verificationStatus: VerificationStatuses
 }
 
@@ -19812,7 +19812,7 @@ type Viewer {
   verifyAddress(
     addressLine1: String!
     addressLine2: String
-    city: String
+    city: String!
     country: String!
     postalCode: String!
     region: String

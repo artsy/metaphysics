@@ -4,29 +4,30 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLList,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 const addressInputFields = {
   addressLine1: { type: new GraphQLNonNull(GraphQLString) },
   addressLine2: { type: GraphQLString },
-  city: { type: GraphQLString },
+  city: { type: new GraphQLNonNull(GraphQLString) },
   country: { type: new GraphQLNonNull(GraphQLString) },
   postalCode: { type: new GraphQLNonNull(GraphQLString) },
   region: { type: GraphQLString },
 }
 
 interface VerifyAddressTypeSource {
-  verificationStatus: string
-  inputAddress: {
-    addressLine1: string
-    addressLine2: string
+  verification_status: string
+  input_address: {
+    address_line_1: string
+    address_line_2: string
     city: string
     country: string
-    postalCode: string
+    postal_code: string
     region: string
   }
-  suggestedAddresses: any
+  suggested_addresses: string[]
 }
 
 const VerificationStatuses = {
@@ -48,18 +49,25 @@ const VerifyAddressType: GraphQLObjectType<
         name: "VerificationStatuses",
         values: VerificationStatuses,
       }),
-      resolve: (result) => result.verificationStatus,
+      resolve: (result) => result.verification_status,
     },
     inputAddress: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "AddressInput",
-        fields: addressInputFields,
+        fields: {
+          address_line_1: { type: new GraphQLNonNull(GraphQLString) },
+          address_line_2: { type: GraphQLString },
+          city: { type: new GraphQLNonNull(GraphQLString) },
+          country: { type: new GraphQLNonNull(GraphQLString) },
+          postal_code: { type: new GraphQLNonNull(GraphQLString) },
+          region: { type: GraphQLString },
+        },
       }),
-      resolve: (result) => result.inputAddress,
+      resolve: (result) => result.input_address,
     },
     suggestedAddresses: {
-      type: GraphQLString,
-      resolve: (result) => result.suggestedAddresses,
+      type: new GraphQLList(GraphQLString),
+      resolve: (result) => result.suggested_addresses,
     },
   },
 })
