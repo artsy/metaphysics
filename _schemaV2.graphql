@@ -111,7 +111,6 @@ type AddressInput {
   addressLine2: String
   city: String
   country: String!
-  name: String!
   postalCode: String!
   region: String
 }
@@ -12593,11 +12592,6 @@ type Mutation {
   updateViewingRoomSubsections(
     input: UpdateViewingRoomSubsectionsInput!
   ): UpdateViewingRoomSubsectionsPayload
-
-  # Verify an address.
-  verifyAddress(
-    input: verifyAddressMutationInput!
-  ): verifyAddressMutationPayload
 }
 
 type MyBid {
@@ -15463,6 +15457,16 @@ type Query {
     # The slug or ID of the Profile to get a partner or fair for
     id: String!
   ): VanityURLEntityType
+
+  # Verify a given address.
+  verifyAddress(
+    addressLine1: String!
+    addressLine2: String
+    city: String
+    country: String!
+    postalCode: String!
+    region: String
+  ): VerifyAddressType
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
@@ -18901,42 +18905,17 @@ union VanityURLEntityType = Fair | Partner
 
 enum VerificationStatuses {
   NOT_FOUND
+  NOT_PERFORMED
   VERIFICATION_UNAVAILABLE
   VERIFIED_NO_CHANGE
   VERIFIED_WITH_CHANGES
 }
 
-type VerifyAddressMutationFailure {
-  message: String!
-  mutationError: GravityMutationError
-  statusCode: Int
-}
-
-input verifyAddressMutationInput {
-  addressLine1: String!
-  addressLine2: String
-  city: String
-  clientMutationId: String
-  country: String!
-  name: String!
-  postalCode: String!
-  region: String
-}
-
-type verifyAddressMutationPayload {
-  clientMutationId: String
-  successOrError: VerifyAddressMutationSuccessOrError
-}
-
-type VerifyAddressMutationSuccess {
+type VerifyAddressType {
   inputAddress: AddressInput
-  suggestedAddresses: String!
+  suggestedAddresses: String
   verificationStatus: VerificationStatuses
 }
-
-union VerifyAddressMutationSuccessOrError =
-    VerifyAddressMutationFailure
-  | VerifyAddressMutationSuccess
 
 # An object containing video metadata
 type Video {
@@ -19828,6 +19807,16 @@ type Viewer {
     # The slug or ID of the Profile to get a partner or fair for
     id: String!
   ): VanityURLEntityType
+
+  # Verify a given address.
+  verifyAddress(
+    addressLine1: String!
+    addressLine2: String
+    city: String
+    country: String!
+    postalCode: String!
+    region: String
+  ): VerifyAddressType
   viewingRoomsConnection(
     after: String
     first: Int

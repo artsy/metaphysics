@@ -203,7 +203,7 @@ import { DeletePageMutation } from "./Page/DeletePageMutation"
 import { UpdatePageMutation } from "./Page/UpdatePageMutation"
 import { createArtistMutation } from "./artist/createArtistMutation"
 import { CollectorProfilesConnection } from "./CollectorProfile/collectorProfiles"
-import { verifyAddressMutation } from "./verify_address"
+import { VerifyAddress } from "./verifyAddress"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -320,6 +320,7 @@ const rootFields = {
   user: UserField,
   usersConnection: Users,
   vanityURLEntity: VanityURLEntity,
+  verifyAddress: VerifyAddress,
 }
 
 // FIXME: Remove type once Reaction MPv2 migration is complete
@@ -427,7 +428,6 @@ export default new GraphQLSchema({
       updateArtist: updateArtistMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
       updateQuiz: updateQuizMutation,
-      verifyAddress: verifyAddressMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
