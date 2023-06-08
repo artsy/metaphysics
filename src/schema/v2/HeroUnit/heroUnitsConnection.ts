@@ -1,6 +1,6 @@
 import { connectionWithCursorInfo } from "../fields/pagination"
 import { HeroUnitType } from "./HeroUnitType"
-import { GraphQLString, GraphQLFieldConfig } from "graphql"
+import { GraphQLBoolean, GraphQLString, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -9,8 +9,13 @@ import { paginationResolver } from "schema/v2/fields/pagination"
 export const tokenRequiredMesage =
   "You need to pass a X-Access-Token header to perform this action"
 
+export const invalidArgsMessage =
+  "Invalid arguments - can't have both showAll and term"
+
 export const pickLoader = (args, context) => {
-  const { term } = args
+  const { showAll, term } = args
+
+  if (showAll && term) throw new Error(invalidArgsMessage)
 
   const {
     authenticatedHeroUnitsLoader,
@@ -22,7 +27,8 @@ export const pickLoader = (args, context) => {
 
   const loader =
     (term && matchHeroUnitsLoader) ||
-    (authenticatedHeroUnitsLoader ?? heroUnitsLoader)
+    (showAll && authenticatedHeroUnitsLoader) ||
+    heroUnitsLoader
 
   return loader
 }
@@ -34,9 +40,14 @@ const HeroUnitConnection = connectionWithCursorInfo({
 export const heroUnitsConnection: GraphQLFieldConfig<void, ResolverContext> = {
   type: HeroUnitConnection.connectionType,
   args: pageable({
+    showAll: {
+      type: GraphQLBoolean,
+      description: "If true will all hero units.",
+      defaultValue: false,
+    },
     term: {
       type: GraphQLString,
-      description: "If present, will search by term",
+      description: "If present, will search by term.",
     },
   }),
   resolve: async (_root, args, context) => {
