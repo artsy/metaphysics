@@ -1,4 +1,5 @@
 import { formatGravityError } from "../gravityErrorHandler"
+import { HTTPError } from "lib/HTTPError"
 
 describe("gravityErrorHandler", () => {
   describe("formatGravityError", () => {
@@ -59,6 +60,28 @@ describe("gravityErrorHandler", () => {
       }
 
       expect(formatGravityError(unrecognizableError)).toEqual(null)
+    })
+
+    describe("when the error is an HTTPError", () => {
+      it("returns a parsed error if of an expected format", () => {
+        const error = new HTTPError(
+          "Error message",
+          400,
+          JSON.stringify({
+            detail: { name: ["You already have a list with this name"] },
+          })
+        )
+
+        const formattedError = formatGravityError(error)
+
+        expect(formattedError.statusCode).toEqual(400)
+        expect(formattedError.fieldErrors).toEqual([
+          {
+            message: "You already have a list with this name",
+            name: "name",
+          },
+        ])
+      })
     })
   })
 })
