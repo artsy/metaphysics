@@ -14929,10 +14929,10 @@ type Query {
     first: Int
     last: Int
 
-    # If true will all hero units.
-    showAll: Boolean = false
+    # If true will include inactive hero units.
+    private: Boolean = false
 
-    # If present, will search by term.
+    # If present will search by term.
     term: String
   ): HeroUnitConnection
   highlights: Highlights
@@ -19350,10 +19350,10 @@ type Viewer {
     first: Int
     last: Int
 
-    # If true will all hero units.
-    showAll: Boolean = false
+    # If true will include inactive hero units.
+    private: Boolean = false
 
-    # If present, will search by term.
+    # If present will search by term.
     term: String
   ): HeroUnitConnection
   highlights: Highlights

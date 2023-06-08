@@ -10,12 +10,12 @@ export const tokenRequiredMesage =
   "You need to pass a X-Access-Token header to perform this action"
 
 export const invalidArgsMessage =
-  "Invalid arguments - can't have both showAll and term"
+  "Invalid arguments - can't have both private and term"
 
 export const pickLoader = (args, context) => {
-  const { showAll, term } = args
+  const { term } = args
 
-  if (showAll && term) throw new Error(invalidArgsMessage)
+  if (args.private && term) throw new Error(invalidArgsMessage)
 
   const {
     authenticatedHeroUnitsLoader,
@@ -27,7 +27,7 @@ export const pickLoader = (args, context) => {
 
   const loader =
     (term && matchHeroUnitsLoader) ||
-    (showAll && authenticatedHeroUnitsLoader) ||
+    (args.private && authenticatedHeroUnitsLoader) ||
     heroUnitsLoader
 
   return loader
@@ -40,14 +40,14 @@ const HeroUnitConnection = connectionWithCursorInfo({
 export const heroUnitsConnection: GraphQLFieldConfig<void, ResolverContext> = {
   type: HeroUnitConnection.connectionType,
   args: pageable({
-    showAll: {
+    private: {
       type: GraphQLBoolean,
-      description: "If true will all hero units.",
+      description: "If true will include inactive hero units.",
       defaultValue: false,
     },
     term: {
       type: GraphQLString,
-      description: "If present, will search by term.",
+      description: "If present will search by term.",
     },
   }),
   resolve: async (_root, args, context) => {

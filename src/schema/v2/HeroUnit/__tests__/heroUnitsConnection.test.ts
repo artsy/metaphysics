@@ -6,7 +6,7 @@ import {
 
 interface TestSetup {
   args: {
-    showAll?: boolean
+    private?: boolean
     term?: string
   }
 
@@ -19,7 +19,7 @@ interface TestSetup {
 
 describe("pickLoader", () => {
   const testSetup = (): TestSetup => {
-    const args = { showAll: false, term: undefined }
+    const args = { private: false, term: undefined }
 
     const context = {
       authenticatedHeroUnitsLoader: jest.fn(),
@@ -31,7 +31,7 @@ describe("pickLoader", () => {
   }
 
   describe("without an authenticated loader", () => {
-    describe("without the show all flag nor a term", () => {
+    describe("without the private flag nor a term", () => {
       it("returns the basic loader", () => {
         const { args, context } = testSetup()
         context.authenticatedHeroUnitsLoader = undefined
@@ -42,10 +42,10 @@ describe("pickLoader", () => {
       })
     })
 
-    describe("with the show all flag", () => {
+    describe("with the priavte flag", () => {
       it("returns the basic loader", () => {
         const { args, context } = testSetup()
-        args.showAll = true
+        args.private = true
         context.authenticatedHeroUnitsLoader = undefined
 
         const loader = pickLoader(args, context)
@@ -66,10 +66,10 @@ describe("pickLoader", () => {
       })
     })
 
-    describe("with the show all flag and a term", () => {
+    describe("with the private flag and a term", () => {
       it("throws an error", () => {
         const { args, context } = testSetup()
-        args.showAll = true
+        args.private = true
         args.term = "trending now"
         context.authenticatedHeroUnitsLoader = undefined
 
@@ -81,7 +81,7 @@ describe("pickLoader", () => {
   })
 
   describe("with an authenticated loader", () => {
-    describe("without the show all flag nor a term", () => {
+    describe("without the private flag nor a term", () => {
       it("returns the basic loader", () => {
         const { args, context } = testSetup()
         context.authenticatedHeroUnitsLoader = undefined
@@ -92,10 +92,10 @@ describe("pickLoader", () => {
       })
     })
 
-    describe("with the show all flag", () => {
+    describe("with the private flag", () => {
       it("returns the authenticated loader", () => {
         const { args, context } = testSetup()
-        args.showAll = true
+        args.private = true
 
         const loader = pickLoader(args, context)
 
@@ -114,10 +114,10 @@ describe("pickLoader", () => {
       })
     })
 
-    describe("with the show all flag and a term", () => {
+    describe("with the private flag and a term", () => {
       it("throws an error", () => {
         const { args, context } = testSetup()
-        args.showAll = true
+        args.private = true
         args.term = "trending now"
 
         expect(() => {
