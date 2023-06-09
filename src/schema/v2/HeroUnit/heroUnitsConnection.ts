@@ -1,10 +1,37 @@
 import { connectionWithCursorInfo } from "../fields/pagination"
 import { HeroUnitType } from "./HeroUnitType"
-import { GraphQLString, GraphQLFieldConfig } from "graphql"
+import { GraphQLBoolean, GraphQLString, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { paginationResolver } from "schema/v2/fields/pagination"
+
+export const tokenRequiredMesage =
+  "You need to pass a X-Access-Token header to perform this action"
+
+export const invalidArgsMessage =
+  "Invalid arguments - can't have both private and term"
+
+export const pickLoader = (args, context) => {
+  const { term } = args
+
+  if (args.private && term) throw new Error(invalidArgsMessage)
+
+  const {
+    authenticatedHeroUnitsLoader,
+    heroUnitsLoader,
+    matchHeroUnitsLoader,
+  } = context
+
+  if (term && !matchHeroUnitsLoader) throw new Error(tokenRequiredMesage)
+
+  const loader =
+    (term && matchHeroUnitsLoader) ||
+    (args.private && authenticatedHeroUnitsLoader) ||
+    heroUnitsLoader
+
+  return loader
+}
 
 const HeroUnitConnection = connectionWithCursorInfo({
   nodeType: HeroUnitType,
@@ -13,28 +40,20 @@ const HeroUnitConnection = connectionWithCursorInfo({
 export const heroUnitsConnection: GraphQLFieldConfig<void, ResolverContext> = {
   type: HeroUnitConnection.connectionType,
   args: pageable({
+    private: {
+      type: GraphQLBoolean,
+      description: "If true will include inactive hero units.",
+      defaultValue: false,
+    },
     term: {
       type: GraphQLString,
-      description: "If present, will search by term",
+      description: "If present will search by term.",
     },
   }),
   resolve: async (_root, args, context) => {
-    const {
-      authenticatedHeroUnitsLoader,
-      heroUnitsLoader,
-      matchHeroUnitsLoader,
-    } = context
-
     const { term } = args
 
-    if (term && !matchHeroUnitsLoader)
-      throw new Error(
-        "You need to pass a X-Access-Token header to perform this action"
-      )
-
-    const loader =
-      (term && matchHeroUnitsLoader) ||
-      (authenticatedHeroUnitsLoader ?? heroUnitsLoader)
+    const loader = pickLoader(args, context)
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
