@@ -127,7 +127,7 @@ describe("profilesConnection", () => {
     expect(profilesConnection.edges[1].node.name).toEqual("dog gallery")
   })
 
-  it("uses the features loader when not searching by term", async () => {
+  it("uses the profiles loader when not searching by term", async () => {
     const profilesLoader = jest.fn().mockReturnValue(
       Promise.resolve({
         body: PROFILES_FIXTURE,
