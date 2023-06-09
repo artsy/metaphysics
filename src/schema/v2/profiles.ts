@@ -51,8 +51,6 @@ export const Profiles: GraphQLFieldConfig<
 
       const { body, headers } = await matchProfilesLoader(gravityArgs)
 
-      console.log("body", body)
-
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
       return paginationResolver({
