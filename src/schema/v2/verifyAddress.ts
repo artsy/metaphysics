@@ -8,7 +8,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const addressInputFields = {
+const addressFields = {
   addressLine1: { type: new GraphQLNonNull(GraphQLString) },
   addressLine2: { type: GraphQLString },
   city: { type: new GraphQLNonNull(GraphQLString) },
@@ -27,7 +27,19 @@ interface VerifyAddressTypeSource {
     postal_code: string
     region: string
   }
-  suggested_addresses: string[]
+  suggested_addresses: SuggestedAddress[]
+}
+
+type SuggestedAddress = {
+  address: {
+    addressLine1: string
+    addressLine2: string
+    city: string
+    country: string
+    postalCode: string
+    region: string
+  }
+  lines: string[]
 }
 
 const VerificationStatuses = {
@@ -66,8 +78,39 @@ const VerifyAddressType: GraphQLObjectType<
       resolve: (result) => result.input_address,
     },
     suggestedAddresses: {
-      type: new GraphQLList(GraphQLString),
-      resolve: (result) => result.suggested_addresses,
+      type: new GraphQLList(
+        new GraphQLObjectType<any, ResolverContext>({
+          name: "SuggestedAddress",
+          fields: {
+            address: {
+              type: new GraphQLObjectType<any, ResolverContext>({
+                name: "Address",
+                fields: addressFields,
+              }),
+            },
+            lines: {
+              type: new GraphQLList(GraphQLString),
+            },
+          },
+        })
+      ),
+      resolve: (result) => {
+        if (result.suggested_addresses.length) {
+          return result.suggested_addresses.reduce(
+            (acc: SuggestedAddress[], cv: SuggestedAddress) => {
+              return [
+                ...acc,
+                {
+                  address: cv.address,
+                  lines: cv.lines,
+                },
+              ]
+            },
+            []
+          )
+        }
+        return []
+      },
     },
   },
 })
@@ -75,7 +118,7 @@ const VerifyAddressType: GraphQLObjectType<
 export const VerifyAddress: GraphQLFieldConfig<any, ResolverContext> = {
   type: VerifyAddressType,
   description: "Verify a given address.",
-  args: addressInputFields,
+  args: addressFields,
   resolve: async (
     _,
     { addressLine1, addressLine2, city, country, postalCode, region },
