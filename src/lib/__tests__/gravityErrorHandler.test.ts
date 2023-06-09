@@ -1,4 +1,8 @@
-import { formatGravityError } from "../gravityErrorHandler"
+import {
+  formatGravityError,
+  formatGravityHttpError,
+} from "../gravityErrorHandler"
+import { HTTPError } from "lib/HTTPError"
 
 describe("gravityErrorHandler", () => {
   describe("formatGravityError", () => {
@@ -59,6 +63,34 @@ describe("gravityErrorHandler", () => {
       }
 
       expect(formatGravityError(unrecognizableError)).toEqual(null)
+    })
+  })
+
+  describe("formatGravityHttpError", () => {
+    it("returns a parsed error", () => {
+      const gravityResponseBody = {
+        detail: {
+          name: ["You already have a list with this name"],
+        },
+        message: "Name You already have a list with this name.",
+        type: "param_error",
+      }
+      const error = new HTTPError(
+        "http://artsy.net - {}",
+        400,
+        JSON.stringify(gravityResponseBody)
+      )
+      const formattedError = formatGravityHttpError(error)
+
+      expect(formattedError.type).toEqual("param_error")
+      expect(formattedError.statusCode).toEqual(400)
+      expect(formattedError.message).toEqual(
+        "Name You already have a list with this name."
+      )
+      expect(formattedError.fieldErrors[0].name).toEqual("name")
+      expect(formattedError.fieldErrors[0].message).toEqual(
+        "You already have a list with this name"
+      )
     })
   })
 })
