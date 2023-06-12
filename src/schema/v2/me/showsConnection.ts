@@ -58,7 +58,8 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
       throw new Error('The "ip" and "near" arguments are mutually exclusive.')
     }
 
-    // Inlcude shows by IP either if `includeShowsNearIpBasedLocation` is set to true or `ip` is passed as an argument
+    // Include shows by IP either if `includeShowsNearIpBasedLocation` is set to true or `ip` is passed as an argument
+    // TODO: Only include shows by IP if `includeShowsNearIpBasedLocation` is set to true.
     const userIP = ip || (includeShowsNearIpBasedLocation && ipAddress) || null
 
     const locationArgs = await getLocationArgs(
