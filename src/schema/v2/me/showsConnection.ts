@@ -23,7 +23,8 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
     },
     ip: {
       type: GraphQLString,
-      description: "An IP address, will be used to lookup location",
+      description:
+        "When set, this IP address will be used to look up the location, instead of the request's IP address.",
     },
     sort: {
       type: ShowSorts,

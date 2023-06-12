@@ -11735,7 +11735,7 @@ type Me implements Node {
     # Include shows near the user's location based on the IP address
     includeShowsNearIpBasedLocation: Boolean = false
 
-    # An IP address, will be used to lookup location
+    # When set, this IP address will be used to look up the location, instead of the request's IP address.
     ip: String
     last: Int
 
