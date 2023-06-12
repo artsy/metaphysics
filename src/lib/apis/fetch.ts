@@ -1,4 +1,4 @@
-import { assign, clone, get, defaults, compact } from "lodash"
+import { assign, clone, get, defaults } from "lodash"
 import request from "request"
 import config from "config"
 import { HTTPError } from "lib/HTTPError"
@@ -78,12 +78,12 @@ export default (url, options = {}) => {
         response.statusCode &&
         (response.statusCode < 200 || response.statusCode >= 300)
       ) {
-        const message = compact([
-          get(response, "request.uri.href"),
-          response.body,
-        ]).join(" - ")
         return reject(
-          new HTTPError(message, response.statusCode || 500, response.body)
+          new HTTPError(
+            get(response, "request.uri.href"),
+            response.statusCode || 500,
+            response.body
+          )
         )
       }
 

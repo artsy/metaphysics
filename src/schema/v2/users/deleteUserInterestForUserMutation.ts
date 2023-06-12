@@ -52,7 +52,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
 
 export const deleteUserInterestForUser = mutationWithClientMutationId<
   Input,
-  UserInterest | null,
+  any,
   ResolverContext
 >({
   name: "DeleteUserInterestForUser",

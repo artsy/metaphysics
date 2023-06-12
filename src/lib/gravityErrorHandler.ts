@@ -5,9 +5,8 @@ import {
   GraphQLList,
   GraphQLInt,
 } from "graphql"
-import { isArray, isObject, omit, pickBy } from "lodash"
+import { isObject } from "lodash"
 import { ResolverContext } from "types/graphql"
-import { HTTPError } from "./HTTPError"
 
 export const GravityMutationErrorType = new GraphQLObjectType<
   any,
@@ -37,69 +36,41 @@ export const GravityMutationErrorType = new GraphQLObjectType<
 })
 
 export const formatGravityError = (error) => {
-  const errorSplit = error.message?.split(" - ")
+  const freeBody: any = error.body
 
-  if (error instanceof HTTPError) {
-    // gravity returns errors as HTTPErrors but the body is actually
-    // a json object and not a string as expected, this checks for both cases
-    const freeBody: any = error.body
+  let parsedError
+  try {
+    parsedError = JSON.parse(freeBody)
+  } catch {}
 
-    let parsedError
-    try {
-      parsedError = JSON.parse(freeBody)
-    } catch {}
-
-    if (isObject(parsedError)) {
-      return {
-        type: "error",
-        error: freeBody,
-        statusCode: error?.statusCode,
-        message: parsedError.error || parsedError.message,
-      }
-    } else if (freeBody.error as string) {
-      return {
-        type: "error",
-        message: freeBody.error,
-      }
-    } else if (freeBody as string) {
-      return {
-        type: "error",
-        message: freeBody,
-      }
+  if (isObject(parsedError)) {
+    return {
+      type: "error",
+      error: freeBody,
+      statusCode: error.statusCode,
+      message: parsedError.error || parsedError.message,
+    }
+  } else if (typeof freeBody.error === "string") {
+    return {
+      type: "error",
+      message: freeBody.error,
+    }
+  } else if (typeof freeBody === "string") {
+    return {
+      type: "error",
+      message: freeBody,
     }
   }
 
-  if (errorSplit && errorSplit.length > 1) {
-    try {
-      const parsedError = JSON.parse(errorSplit[1])
-      const { error, detail, text } = parsedError
-      // check if error message format is an array
-      // see https://github.com/artsy/gravity/blob/master/app/api/util/error_handlers.rb#L32
-      const fieldErrorResults =
-        detail && Object.keys(pickBy(detail, isArray))?.length
+  const fieldErrors = formatGravityErrorDetails(freeBody.detail || {})
+  const detail = typeof freeBody?.detail === "object" ? null : freeBody?.detail
 
-      if (fieldErrorResults) {
-        const fieldErrors = formatGravityErrorDetails(detail)
-        return {
-          fieldErrors,
-          ...omit(parsedError, "detail"),
-        }
-      }
-
-      if (error) {
-        return {
-          type: "error",
-          message: error,
-          detail: text,
-        }
-      } else {
-        return { ...parsedError }
-      }
-    } catch (e) {
-      return { message: errorSplit[1] }
-    }
-  } else {
-    return null
+  return {
+    type: "error",
+    statusCode: error.statusCode,
+    message: freeBody.message,
+    fieldErrors,
+    detail,
   }
 }
 
