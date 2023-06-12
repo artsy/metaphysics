@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLString } from "graphql"
+import { GraphQLBoolean, GraphQLFieldConfig, GraphQLString } from "graphql"
 import { getLocationArgs } from "lib/locationHelpers"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
@@ -13,6 +13,13 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
   args: pageable({
     near: {
       type: Near,
+      description: "Include shows within a radius of the provided location",
+    },
+    includeShowsNearIpBasedLocation: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+      description:
+        "Include shows near the user's location based on the IP address",
     },
     ip: {
       type: GraphQLString,
@@ -30,17 +37,35 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
   }),
   description:
     "A list of shows for the user (pagination logic might be broken)",
-  resolve: async (_root, args, { meShowsLoader, requestLocationLoader }) => {
+  resolve: async (
+    _root,
+    args,
+    { ipAddress, meShowsLoader, requestLocationLoader }
+  ) => {
     if (!meShowsLoader) return null
 
     const { limit: size, offset } = getPagingParameters(args)
-    const { near, ip, page, sort, status } = args
+    const {
+      near,
+      includeShowsNearIpBasedLocation,
+      ip,
+      page,
+      sort,
+      status,
+    } = args
 
     if (ip && near) {
       throw new Error('The "ip" and "near" arguments are mutually exclusive.')
     }
 
-    const locationArgs = await getLocationArgs(near, ip, requestLocationLoader)
+    // Inlcude shows by IP either if `includeShowsNearIpBasedLocation` is set to true or `ip` is passed as an argument
+    const userIP = ip || (includeShowsNearIpBasedLocation && ipAddress) || null
+
+    const locationArgs = await getLocationArgs(
+      near,
+      userIP,
+      requestLocationLoader
+    )
 
     const gravityArgs = {
       size,

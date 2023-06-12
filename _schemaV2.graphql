@@ -11732,9 +11732,14 @@ type Me implements Node {
     before: String
     first: Int
 
+    # Include shows near the user's location based on the IP address
+    includeShowsNearIpBasedLocation: Boolean = false
+
     # An IP address, will be used to lookup location
     ip: String
     last: Int
+
+    # Include shows within a radius of the provided location
     near: Near
     sort: ShowSorts
 
