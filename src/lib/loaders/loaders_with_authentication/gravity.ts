@@ -378,14 +378,11 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     lotStandingLoader: gravityLoader("me/lot_standings", { size: 100 }),
-    matchSalesLoader: gravityLoader("match/sales", {}, { headers: true }),
     markNotificationsAsSeenLoader: gravityLoader(
       "me/notifications/mark_as_seen",
       {},
       { method: "PUT" }
     ),
-    matchUsersLoader: gravityLoader("match/users", {}, { headers: true }),
-    matchSetsLoader: gravityLoader("match/sets", {}, { headers: true }),
     authenticatedHeroUnitsLoader: gravityLoader(
       "hero_units",
       {},
@@ -401,11 +398,15 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    matchProfilesLoader: gravityLoader("match/profiles", {}, { headers: true }),
+    matchSalesLoader: gravityLoader("match/sales", {}, { headers: true }),
+    matchSetsLoader: gravityLoader("match/sets", {}, { headers: true }),
     matchShowsLoader: gravityLoader(
       "match/partner_shows",
       {},
       { headers: true }
     ),
+    matchUsersLoader: gravityLoader("match/users", {}, { headers: true }),
     mergeArtistLoader: gravityLoader("artists/merge", {}, { method: "POST" }),
     meBankAccountsLoader: gravityLoader(
       "me/bank_accounts",
@@ -545,6 +546,7 @@ export default (accessToken, userID, opts) => {
     ),
     partnersLoader: gravityLoader("partners", {}, { headers: true }),
     popularArtistsLoader: gravityLoader("artists/popular"),
+    profilesLoader: gravityLoader("profiles", {}, { headers: true }),
     purchasesLoader: gravityLoader("purchases", {}, { headers: true }),
     recordArtworkViewLoader: gravityLoader(
       "me/Recently_viewed_artworks",
