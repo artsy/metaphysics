@@ -1,5 +1,6 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
+import { HTTPError } from "lib/HTTPError"
 
 const mutation = `
   mutation {
@@ -13,7 +14,10 @@ const mutation = `
 
         ... on CreateCollectionFailure {
           mutationError {
-            message
+            fieldErrors {
+              name
+              message
+            }
           }
         }
       }
@@ -66,8 +70,18 @@ describe("createCollection", () => {
   })
 
   it("returns failure when something went wrong", async () => {
-    const message = `https://stagingapi.artsy.net/api/v1/collection - {"error":"Name Already exists."}`
-    const error = new Error(message)
+    const gravityResponseBody = {
+      detail: {
+        name: ["You already have a list with this name"],
+      },
+      message: "Name You already have a list with this name.",
+      type: "param_error",
+    }
+    const error = new HTTPError(
+      "http://artsy.net - {}",
+      400,
+      JSON.stringify(gravityResponseBody)
+    )
     const context = {
       createCollectionLoader: jest.fn().mockRejectedValue(error),
     }
@@ -79,7 +93,12 @@ describe("createCollection", () => {
         "createCollection": Object {
           "responseOrError": Object {
             "mutationError": Object {
-              "message": "Name Already exists.",
+              "fieldErrors": Array [
+                Object {
+                  "message": "You already have a list with this name",
+                  "name": "name",
+                },
+              ],
             },
           },
         },
