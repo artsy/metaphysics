@@ -54,9 +54,11 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       description:
         "If true, will only return partners that list artists that the user follows",
     },
-    ip: {
-      type: GraphQLString,
-      description: "An IP address, will be used to lookup location",
+    includePartnersNearIpBasedLocation: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+      description:
+        "If true, will only return partners that are located near the user's location based on the IP address.",
     },
     hasFullProfile: {
       type: GraphQLBoolean,
@@ -128,7 +130,7 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       eligibleForListing,
       eligibleForPrimaryBucket,
       eligibleForSecondaryBucket,
-      ip,
+      includePartnersNearIpBasedLocation,
       excludeFollowedPartners,
       hasFullProfile,
       includePartnersWithFollowedArtists,
@@ -136,13 +138,19 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       partnerCategories,
       ..._options
     },
-    { partnersLoader, requestLocationLoader }
+    { ipAddress, partnersLoader, requestLocationLoader }
   ) => {
-    if (ip && near) {
-      throw new Error('The "ip" and "near" arguments are mutually exclusive.')
+    if (near && includePartnersNearIpBasedLocation) {
+      throw new Error(
+        'The "includePartnersNearIpBasedLocation" and "near" arguments are mutually exclusive.'
+      )
     }
 
-    const locationArgs = await getLocationArgs(near, ip, requestLocationLoader)
+    const locationArgs = await getLocationArgs(
+      near,
+      includePartnersNearIpBasedLocation && ipAddress,
+      requestLocationLoader
+    )
 
     const options: any = {
       default_profile_public: defaultProfilePublic,
@@ -185,23 +193,29 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
       "eligibleForListing",
       "excludeFollowedPartners",
       "includePartnersWithFollowedArtists",
-      "ip",
+      "includePartnersNearIpBasedLocation",
       "near",
       "partnerCategories",
       "sort",
       "type"
     ),
   }),
-  resolve: async (_root, args, { partnersLoader, requestLocationLoader }) => {
+  resolve: async (
+    _root,
+    args,
+    { ipAddress, partnersLoader, requestLocationLoader }
+  ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    if (args.ip && args.near) {
-      throw new Error('The "ip" and "near" arguments are mutually exclusive.')
+    if (args.near && args.includePartnersNearIpBasedLocation) {
+      throw new Error(
+        'The "includePartnersNearIpBasedLocation" and "near" arguments are mutually exclusive.'
+      )
     }
 
     const locationArgs = await getLocationArgs(
       args.near,
-      args.ip,
+      args.includePartnersNearIpBasedLocation && ipAddress,
       requestLocationLoader
     )
 
