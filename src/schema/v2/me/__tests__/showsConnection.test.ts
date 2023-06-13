@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("Me", () => {
   describe("ShowsConnection", () => {
@@ -136,9 +136,81 @@ describe("Me", () => {
         `)
         })
       })
+
+      describe("when `includeShowsNearIpBasedLocation` is set to true", () => {
+        it("loads location and passes near param to loader", async () => {
+          const query = gql`
+            {
+              me {
+                showsConnection(
+                  first: 2
+                  sort: NAME_ASC
+                  status: UPCOMING
+                  includeShowsNearIpBasedLocation: true
+                ) {
+                  totalCount
+                  edges {
+                    node {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          `
+
+          const meShowsLoader = jest.fn(async () => mockShowsResponse)
+          const requestLocationLoader = jest.fn(
+            async () => mockLocationResponse
+          )
+
+          const context = {
+            ipAddress: "context-ip",
+            meLoader: () => Promise.resolve({}),
+            meShowsLoader,
+            requestLocationLoader,
+          }
+
+          const {
+            me: { showsConnection },
+          } = await runAuthenticatedQuery(query, context)
+
+          expect(requestLocationLoader).toHaveBeenCalledWith({
+            ip: "context-ip",
+          })
+
+          expect(meShowsLoader).toHaveBeenCalledWith({
+            offset: 0,
+            size: 2,
+            sort: "name",
+            status: "upcoming",
+            max_distance: 75,
+            near: "52.53627395629883,13.399658203125",
+            total_count: true,
+          })
+
+          expect(showsConnection).toMatchInlineSnapshot(`
+          Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "name": "Design for a Garden",
+                },
+              },
+              Object {
+                "node": Object {
+                  "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                },
+              },
+            ],
+            "totalCount": 5084,
+          }
+        `)
+        })
+      })
     })
 
-    describe("when neither `ip` nor `near` params are included", () => {
+    describe("when no location param is passed", () => {
       it("returns shows for you", async () => {
         const query = gql`
           {
