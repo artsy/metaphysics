@@ -3653,6 +3653,17 @@ type CitySponsoredContent {
   ): ShowConnection
 }
 
+input CollectArtistsMutationInput {
+  artistIDs: [String]!
+  clientMutationId: String
+}
+
+type CollectArtistsMutationPayload {
+  clientMutationId: String
+  me: Me!
+  userInterests: [UserInterest]!
+}
+
 # A collection of artworks
 type Collection {
   artworksConnection(
@@ -8160,6 +8171,17 @@ type deleteHeroUnitSuccess {
   heroUnit: HeroUnit
 }
 
+input DeleteMultipleUserInterestsMutationInput {
+  clientMutationId: String
+  ids: [String]!
+}
+
+type DeleteMultipleUserInterestsMutationPayload {
+  clientMutationId: String
+  me: Me!
+  userInterests: [UserInterest]!
+}
+
 type deleteOrderedSetFailure {
   mutationError: GravityMutationError
 }
@@ -12079,6 +12101,11 @@ type Mutation {
   ): BulkUpdatePartnerArtworksMutationPayload
   captureHold(input: CaptureHoldInput!): CaptureHoldPayload
 
+  # Collect Multiple Artists
+  collectArtists(
+    input: CollectArtistsMutationInput!
+  ): CollectArtistsMutationPayload
+
   # Creates a pending offer on an pending order.
   commerceAddInitialOfferToOrder(
     # Parameters for AddInitialOfferToOrder
@@ -12395,6 +12422,11 @@ type Mutation {
   deleteHeroUnit(
     input: deleteHeroUnitMutationInput!
   ): deleteHeroUnitMutationPayload
+
+  # Deletes multiple UserInterests on the logged in User's CollectorProfile.
+  deleteMultipleUserInterests(
+    input: DeleteMultipleUserInterestsMutationInput!
+  ): DeleteMultipleUserInterestsMutationPayload
 
   # Delete User Artsy Account
   deleteMyAccountMutation(input: DeleteAccountInput!): DeleteAccountPayload

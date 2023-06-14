@@ -206,6 +206,8 @@ import { CollectorProfilesConnection } from "./CollectorProfile/collectorProfile
 import { VerifyAddress } from "./verifyAddress"
 import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { Profiles } from "./profiles"
+import { collectArtistsMutation } from "./me/collectArtistsMutation"
+import { deleteMultipleUserInterestsMutation } from "./me/deleteMultipleUserInterestsMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -351,6 +353,7 @@ export default new GraphQLSchema({
       adminUpdateFeatureFlag: updateFeatureFlagMutation,
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
+      collectArtists: collectArtistsMutation,
       createAccountRequest: createAccountRequestMutation,
       createArtist: createArtistMutation,
       createBidder: createBidderMutation,
@@ -379,6 +382,7 @@ export default new GraphQLSchema({
       deleteHeroUnit: deleteHeroUnitMutation,
       createHeroUnit: createHeroUnitMutation,
       updateHeroUnit: updateHeroUnitMutation,
+      deleteMultipleUserInterests: deleteMultipleUserInterestsMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       deleteOrderedSet: deleteOrderedSetMutation,
