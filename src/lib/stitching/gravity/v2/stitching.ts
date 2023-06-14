@@ -173,11 +173,6 @@ export const gravityStitchingEnvironment = (
         curatedMarketingCollections(size: Int): [MarketingCollection]
       }
 
-      extend type System {
-        algolia: Algolia
-      }
-
-
       extend type CreateUserAddressPayload {
         me: Me
       }
@@ -961,20 +956,6 @@ export const gravityStitchingEnvironment = (
                 ...context,
                 currentArtworkID: artworkID,
               },
-              info,
-            })
-          },
-        },
-      },
-      System: {
-        algolia: {
-          resolve: (_parent, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_algolia",
-              args: args,
-              context,
               info,
             })
           },
