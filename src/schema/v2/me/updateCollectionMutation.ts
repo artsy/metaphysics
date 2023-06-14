@@ -6,7 +6,7 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
-  formatGravityError,
+  formatGravityHttpError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
@@ -33,7 +33,7 @@ const ErrorType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
-      resolve: (err) => (typeof err.message === "object" ? err.message : err),
+      resolve: (err) => err,
     },
   }),
 })
@@ -81,7 +81,7 @@ export const updateCollectionMutation = mutationWithClientMutationId<
 
       return response
     } catch (error) {
-      const formattedErr = formatGravityError(error)
+      const formattedErr = formatGravityHttpError(error)
 
       if (formattedErr) {
         return { ...formattedErr, _type: "GravityMutationError" }

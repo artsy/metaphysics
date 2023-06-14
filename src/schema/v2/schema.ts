@@ -204,6 +204,7 @@ import { UpdatePageMutation } from "./Page/UpdatePageMutation"
 import { createArtistMutation } from "./artist/createArtistMutation"
 import { CollectorProfilesConnection } from "./CollectorProfile/collectorProfiles"
 import { VerifyAddress } from "./verifyAddress"
+import { Profiles } from "./profiles"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -302,6 +303,7 @@ const rootFields = {
   phoneNumber: PhoneNumber,
   previewSavedSearch: PreviewSavedSearchField,
   profile: Profile,
+  profilesConnection: Profiles,
   recentlySoldArtworks: RecentlySoldArtworks,
   requestLocation: RequestLocationField,
   reverseImageSearch: ReverseImageSearch,
