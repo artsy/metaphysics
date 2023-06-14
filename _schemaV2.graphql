@@ -106,24 +106,6 @@ type addOrderedSetItemSuccess {
   setItem: OrderedSetItem
 }
 
-type Address {
-  addressLine1: String!
-  addressLine2: String
-  city: String!
-  country: String!
-  postalCode: String!
-  region: String
-}
-
-type AddressInput {
-  address_line_1: String!
-  address_line_2: String
-  city: String!
-  country: String!
-  postal_code: String!
-  region: String
-}
-
 type addUserRoleFailure {
   mutationError: GravityMutationError
 }
@@ -10546,6 +10528,20 @@ type ImageURLs {
   normalized: String
 }
 
+type InputAddress {
+  addressLine1: String!
+  addressLine2: String
+  city: String!
+  country: String!
+  postalCode: String!
+  region: String
+}
+
+type InputAddressFields {
+  address: InputAddress
+  lines: [String]
+}
+
 type InquirerCollectorProfile {
   artsyUserSince(
     format: String
@@ -17270,7 +17266,16 @@ type SubmittedPriceEstimateParams {
 }
 
 type SuggestedAddress {
-  address: Address
+  addressLine1: String!
+  addressLine2: String
+  city: String!
+  country: String!
+  postalCode: String!
+  region: String
+}
+
+type SuggestedAddressFields {
+  address: SuggestedAddress
   lines: [String]
 }
 
@@ -18966,8 +18971,8 @@ enum VerificationStatuses {
 }
 
 type VerifyAddressType {
-  inputAddress: AddressInput
-  suggestedAddresses: [SuggestedAddress]
+  inputAddress: InputAddressFields
+  suggestedAddresses: [SuggestedAddressFields]
   verificationStatus: VerificationStatuses
 }
 
