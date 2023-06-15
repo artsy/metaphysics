@@ -63,6 +63,11 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
     hasFullProfile: {
       type: GraphQLBoolean,
     },
+    maxDistance: {
+      type: GraphQLInt,
+      description:
+        "Max distance to use when geo-locating partners, defaults to 75km.",
+    },
     near: {
       type: GraphQLString,
       description: "Coordinates to find partners closest to",
@@ -134,6 +139,7 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       excludeFollowedPartners,
       hasFullProfile,
       includePartnersWithFollowedArtists,
+      maxDistance,
       near,
       partnerCategories,
       ..._options
@@ -161,6 +167,7 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       exclude_followed_partners: excludeFollowedPartners,
       has_full_profile: hasFullProfile,
       include_partners_with_followed_artists: includePartnersWithFollowedArtists,
+      max_distance: maxDistance,
       partner_categories: partnerCategories,
       ...locationArgs,
       ..._options,
@@ -195,6 +202,7 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
       "includePartnersWithFollowedArtists",
       "includePartnersNearIpBasedLocation",
       "near",
+      "maxDistance",
       "partnerCategories",
       "sort",
       "type"
@@ -227,6 +235,7 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
       exclude_followed_partners: args.excludeFollowedPartners,
       include_partners_with_followed_artists:
         args.includePartnersWithFollowedArtists,
+      max_distance: args.maxDistance,
       default_profile_public: args.defaultProfilePublic,
       sort: args.sort,
       partner_categories: args.partnerCategories,
