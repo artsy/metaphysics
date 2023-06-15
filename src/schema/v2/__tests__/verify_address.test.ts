@@ -57,7 +57,12 @@ describe("verifyAddressQuery", () => {
           postal_code: "10999",
           country: "DE",
         },
-        lines: ["Kreuzberg"],
+        lines: [
+          "Lausitzer Str. 46",
+          "Hinterhaus",
+          "Berlin Berlin 10999",
+          "Germany",
+        ],
       },
       suggestedAddresses: [
         {
@@ -69,7 +74,12 @@ describe("verifyAddressQuery", () => {
             postal_code: "10999",
             country: "DE",
           },
-          lines: ["Kreuzberg"],
+          lines: [
+            "Lausitzer Str. 46",
+            "Hinterhaus",
+            "Berlin Berlin 10999",
+            "Germany",
+          ],
         },
       ],
     }
@@ -140,7 +150,11 @@ describe("verifyAddressQuery", () => {
           postal_code: "60426",
           country: "US",
         },
-        lines: [],
+        lines: [
+          "1251 John Calvin Drive",
+          "Havery Illinois 60426",
+          "United States",
+        ],
       },
       suggestedAddresses: [
         {
@@ -151,7 +165,11 @@ describe("verifyAddressQuery", () => {
             postal_code: "60426",
             country: "US",
           },
-          lines: [],
+          lines: [
+            "1251 John Calvin Drive",
+            "Havery Illinois 60426",
+            "United States",
+          ],
         },
       ],
     }
