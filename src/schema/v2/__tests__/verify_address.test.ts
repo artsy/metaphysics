@@ -4,57 +4,72 @@ import { runQuery } from "../test/utils"
 describe("verifyAddressQuery", () => {
   it("validates an international address", async () => {
     const query = gql`
-      query(
-        $addressLine1: String!
-        $addressLine2: String
-        $city: String!
-        $country: String!
-        $postalCode: String!
-        $region: String!
-      ) {
+      {
         verifyAddress(
-          addressLine1: $addressLine1
-          addressLine2: $addressLine2
-          city: $city
-          country: $country
-          postalCode: $postalCode
-          region: $region
+          addressLine1: "Lausitzer Str. 46"
+          city: "Berlin"
+          country: "DE"
+          postalCode: "10999"
+          region: "Berlin"
         ) {
           verificationStatus
+          inputAddress {
+            address {
+              city
+              country
+              region
+              postal_code
+              address_line1
+              address_line2
+            }
+            lines
+          }
           suggestedAddresses {
             address {
-              addressLine1
+              city
+              country
+              region
+              postal_code
+              address_line_1
+              address_line_2
             }
-          }
-          inputAddress {
-            city
-            country
-            region
-            postal_code
-            address_line_1
-            address_line_2
+            lines
           }
         }
       }
     `
 
     const validIntAddress = {
-      addressLine1: "Lausitzer Str. 46",
-      addressLine2: "Kreuzberg",
+      address_line_1: "Lausitzer Str. 46",
       city: "Berlin",
-      country: "Germany",
-      name: "home",
-      postalCode: "10999",
+      country: "DE",
+      postal_code: "10999",
       region: "Berlin",
     }
 
     const mockAddressVerificationResult = {
       verificationStatus: "VERIFIED_WITH_CHANGES",
-      inputAddress: validIntAddress,
+      inputAddress: {
+        address: {
+          address_line_1: "Lausitzer Straße 46",
+          city: "Berlin",
+          region: "Berlin",
+          postal_code: "10999",
+          country: "DE",
+        },
+        lines: ["Kreuzberg"],
+      },
       suggestedAddresses: [
         {
-          address: validIntAddress,
-          lines: ["Lausitzer Straße 46", "Kreuzberg", "10999 Berlin"],
+          address: {
+            address_line1: "Lausitzer Straße 46",
+            address_line2: "Kreuzberg",
+            city: "Berlin",
+            region: "Berlin",
+            postal_code: "10999",
+            country: "DE",
+          },
+          lines: ["Kreuzberg"],
         },
       ],
     }
@@ -66,66 +81,77 @@ describe("verifyAddressQuery", () => {
     }
 
     const data = await runQuery(query, context, { validIntAddress })
-
-    expect(context.verifyAddressLoader).toHaveBeenCalledWith({
-      input: validIntAddress,
-    })
-
+    expect(context.verifyAddressLoader).toHaveBeenCalledWith(validIntAddress)
     expect(data!.verifyAddress).toEqual(mockAddressVerificationResult)
   })
 
-  it("validates a US address", async () => {
+  it("validates a domestic -US- address", async () => {
     const query = gql`
-      query(
-        $addressLine1: String!
-        $addressLine2: String
-        $city: String!
-        $country: String!
-        $postalCode: String!
-        $region: String!
-      ) {
+      {
         verifyAddress(
-          addressLine1: $addressLine1
-          addressLine2: $addressLine2
-          city: $city
-          country: $country
-          postalCode: $postalCode
-          region: $region
+          addressLine1: "1251 John Calvin Drive"
+          city: "Harvey"
+          country: "US"
+          postalCode: "60426"
+          region: "Illinois"
         ) {
           verificationStatus
+          inputAddress {
+            address {
+              city
+              country
+              region
+              postal_code
+              address_line1
+              address_line2
+            }
+            lines
+          }
           suggestedAddresses {
             address {
-              addressLine1
+              city
+              country
+              region
+              postal_code
+              address_line_1
+              address_line_2
             }
-          }
-          inputAddress {
-            city
-            country
-            region
-            postal_code
-            address_line_1
-            address_line_2
+            lines
           }
         }
       }
     `
 
-    const validUsAddress = {
-      addressLine1: "1405 Randolph Street",
-      addressLine2: "2nd floor",
-      city: "Fall River",
+    const validUSAddress = {
+      address_line_1: "1251 John Calvin Drive",
+      city: "Harvey",
       country: "US",
-      name: "home",
-      postalCode: "02720",
-      region: "Massachusetts",
+      postal_code: "60426",
+      region: "Illinois",
     }
+
     const mockAddressVerificationResult = {
-      verificationStatus: "VERIFIED_WITH_CHANGES",
-      inputAddress: validUsAddress,
+      verificationStatus: "VERIFIED_NO_CHANGE",
+      inputAddress: {
+        address: {
+          address_line_1: "1251 John Calvin Drive",
+          city: "Harvey",
+          region: "Illinois",
+          postal_code: "60426",
+          country: "US",
+        },
+        lines: [],
+      },
       suggestedAddresses: [
         {
-          address: validUsAddress,
-          lines: ["Lausitzer Straße 46", "Kreuzberg", "10999 Berlin"],
+          address: {
+            address_line1: "1251 John Calvin Drive",
+            city: "Harvey",
+            region: "Illinois",
+            postal_code: "60426",
+            country: "US",
+          },
+          lines: [],
         },
       ],
     }
@@ -136,12 +162,8 @@ describe("verifyAddressQuery", () => {
         .mockReturnValue(Promise.resolve(mockAddressVerificationResult)),
     }
 
-    const data = await runQuery(query, context, { validUsAddress })
-
-    expect(context.verifyAddressLoader).toHaveBeenCalledWith({
-      input: validUsAddress,
-    })
-
+    const data = await runQuery(query, context, { validUSAddress })
+    expect(context.verifyAddressLoader).toHaveBeenCalledWith(validUSAddress)
     expect(data!.verifyAddress).toEqual(mockAddressVerificationResult)
   })
 })
