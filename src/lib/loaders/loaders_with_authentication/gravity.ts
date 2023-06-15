@@ -413,6 +413,11 @@ export default (accessToken, userID, opts) => {
     ),
     matchUsersLoader: gravityLoader("match/users", {}, { headers: true }),
     mergeArtistLoader: gravityLoader("artists/merge", {}, { method: "POST" }),
+    meArtistTypeUserInterestsLoader: gravityLoader(
+      "/me/user_interest/artists",
+      {},
+      { headers: true }
+    ),
     meBankAccountsLoader: gravityLoader(
       "me/bank_accounts",
       {},

@@ -11361,6 +11361,17 @@ type Me implements Node {
     last: Int
     page: Int
   ): ArtistConnection
+  artistTypeUserInterestsConnection(
+    after: String
+    before: String
+
+    # UserInterest category to select. 'collected_before' or 'interested_in_collecting' category
+    category: UserInterestCategory
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): UserInterestConnection
 
   # A list of the current user’s inquiry requests
   artworkInquiriesConnection(
