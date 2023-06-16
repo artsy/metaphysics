@@ -123,7 +123,7 @@ type FieldErrorType = {
   message: string
 }
 
-const formatGravityErrorDetails = (
+export const formatGravityErrorDetails = (
   detail: Record<string, string[]>
 ): FieldErrorType[] => {
   const fieldErrors: FieldErrorType[] = []

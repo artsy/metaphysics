@@ -1,5 +1,6 @@
 import uuid from "uuid/v1"
 import ip from "ip"
+import { error } from "./loggers"
 
 export function headers({ requestID, xForwardedFor, xOriginalSessionID }) {
   const headers = {
@@ -25,6 +26,20 @@ function resolveProxies(req) {
   } else {
     return ipAddress
   }
+}
+
+export const requestIPAddress = (req) => {
+  let ipAddress = resolveIPv4(req.connection.remoteAddress)
+  if (req.headers["x-forwarded-for"]) {
+    try {
+      const firstAddress = req.headers["x-forwarded-for"].split(",")[0]
+      ipAddress = resolveIPv4(firstAddress)
+    } catch (e) {
+      error(`Invalid X-Forwarded-For header: ${e}`)
+    }
+  }
+
+  return ipAddress
 }
 
 export function middleware(req, res, next) {

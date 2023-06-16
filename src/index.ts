@@ -21,7 +21,10 @@ import {
   executableExchangeSchema,
   legacyTransformsForExchange,
 } from "./lib/stitching/exchange/schema"
-import { middleware as requestIDsAdder } from "./lib/requestIDs"
+import {
+  middleware as requestIDsAdder,
+  requestIPAddress,
+} from "./lib/requestIDs"
 import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiterMiddleware } from "./lib/rateLimiter"
 import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
@@ -147,6 +150,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     | undefined
   const timezone = req.headers["x-timezone"] as string | undefined
   const userAgent = req.headers["user-agent"]
+  const ipAddress = requestIPAddress(req)
 
   const { requestIDs } = res.locals
   const requestID = requestIDs.requestID
@@ -179,6 +183,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     requestIDs,
     userAgent,
     appToken,
+    ipAddress,
   }
 
   const validationRules = [

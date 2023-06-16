@@ -15,7 +15,7 @@ export const getLocationArgs = async (
 ) => {
   let location = near
 
-  if (ip) {
+  if (!location && ip) {
     const {
       body: { data: locationData },
     } = await requestLocationLoader({ ip })
