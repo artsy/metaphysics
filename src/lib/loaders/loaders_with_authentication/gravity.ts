@@ -111,6 +111,11 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     creditCardLoader: gravityLoader((id) => `credit_card/${id}`),
+    deleteArtistLoader: gravityLoader(
+      (id) => `artist/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     deleteArtworkEditionSetLoader: gravityLoader<
       any,
       { artworkId: string; editionSetId: string }
