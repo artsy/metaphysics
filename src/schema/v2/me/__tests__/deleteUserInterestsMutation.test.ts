@@ -1,9 +1,9 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
-describe("deleteMultipleUserInterestsMutation", () => {
+describe("deleteUserInterestsMutation", () => {
   const mutation = `
     mutation {
-      deleteMultipleUserInterests(input: { ids: ["user_interest_id_1", "user_interest_id_2"] }) {
+      deleteUserInterests(input: { ids: ["user_interest_id_1", "user_interest_id_2"] }) {
         userInterests {
           category
           interest {
@@ -44,7 +44,7 @@ describe("deleteMultipleUserInterestsMutation", () => {
     const res = await runAuthenticatedQuery(mutation, context)
 
     expect(res).toEqual({
-      deleteMultipleUserInterests: {
+      deleteUserInterests: {
         userInterests: [
           { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },
           { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },

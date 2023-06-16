@@ -207,7 +207,7 @@ import { VerifyAddress } from "./verifyAddress"
 import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { Profiles } from "./profiles"
 import { collectArtistsMutation } from "./me/collectArtistsMutation"
-import { deleteMultipleUserInterestsMutation } from "./me/deleteMultipleUserInterestsMutation"
+import { deleteUserInterestsMutation } from "./me/deleteUserInterestsMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -382,7 +382,6 @@ export default new GraphQLSchema({
       deleteHeroUnit: deleteHeroUnitMutation,
       createHeroUnit: createHeroUnitMutation,
       updateHeroUnit: updateHeroUnitMutation,
-      deleteMultipleUserInterests: deleteMultipleUserInterestsMutation,
       deleteMyAccountMutation: deleteUserAccountMutation,
       deleteMyUserProfileIcon: deleteCollectorProfileIconMutation,
       deleteOrderedSet: deleteOrderedSetMutation,
@@ -392,6 +391,7 @@ export default new GraphQLSchema({
       deleteUserAdminNote: deleteUserAdminNoteMutation,
       deleteUserInterest: deleteUserInterestMutation,
       deleteUserInterestForUser: deleteUserInterestForUser,
+      deleteUserInterests: deleteUserInterestsMutation,
       deleteUserRole: deleteUserRoleMutation,
       dislikeArtwork: dislikeArtworkMutation,
       endSale: endSaleMutation,

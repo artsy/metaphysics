@@ -3654,7 +3654,7 @@ type CitySponsoredContent {
 }
 
 input CollectArtistsMutationInput {
-  artistIDs: [String]!
+  artistIDs: [String!]!
   clientMutationId: String
 }
 
@@ -8171,17 +8171,6 @@ type deleteHeroUnitSuccess {
   heroUnit: HeroUnit
 }
 
-input DeleteMultipleUserInterestsMutationInput {
-  clientMutationId: String
-  ids: [String]!
-}
-
-type DeleteMultipleUserInterestsMutationPayload {
-  clientMutationId: String
-  me: Me!
-  userInterests: [UserInterest]!
-}
-
 type deleteOrderedSetFailure {
   mutationError: GravityMutationError
 }
@@ -8350,6 +8339,17 @@ type DeleteUserInterestMutationPayload {
   clientMutationId: String
   me: Me!
   userInterest: UserInterest!
+}
+
+input DeleteUserInterestsMutationInput {
+  clientMutationId: String
+  ids: [String]!
+}
+
+type DeleteUserInterestsMutationPayload {
+  clientMutationId: String
+  me: Me!
+  userInterests: [UserInterest]!
 }
 
 type DeleteUserPayload {
@@ -11361,17 +11361,6 @@ type Me implements Node {
     last: Int
     page: Int
   ): ArtistConnection
-  artistTypeUserInterestsConnection(
-    after: String
-    before: String
-
-    # UserInterest category to select. 'collected_before' or 'interested_in_collecting' category
-    category: UserInterestCategory
-    first: Int
-    last: Int
-    page: Int
-    size: Int
-  ): UserInterestConnection
 
   # A list of the current user’s inquiry requests
   artworkInquiriesConnection(
@@ -11563,6 +11552,20 @@ type Me implements Node {
     )
   initials(length: Int = 3): String
   inquiryIntroduction: String
+  interestsConnection(
+    after: String
+    before: String
+
+    # UserInterest category to select. 'collected_before' or 'interested_in_collecting' category
+    category: UserInterestCategory
+    first: Int
+
+    # UserInterest InterestType to select. 'Artist' or 'Gene' type
+    interestType: UserInterestInterestType
+    last: Int
+    page: Int
+    size: Int
+  ): UserInterestConnection
 
   # A type-specific ID.
   internalID: ID!
@@ -12434,11 +12437,6 @@ type Mutation {
     input: deleteHeroUnitMutationInput!
   ): deleteHeroUnitMutationPayload
 
-  # Deletes multiple UserInterests on the logged in User's CollectorProfile.
-  deleteMultipleUserInterests(
-    input: DeleteMultipleUserInterestsMutationInput!
-  ): DeleteMultipleUserInterestsMutationPayload
-
   # Delete User Artsy Account
   deleteMyAccountMutation(input: DeleteAccountInput!): DeleteAccountPayload
 
@@ -12476,6 +12474,11 @@ type Mutation {
   deleteUserInterestForUser(
     input: DeleteUserInterestForUserInput!
   ): DeleteUserInterestForUserPayload
+
+  # Deletes multiple UserInterests on the logged in User's CollectorProfile.
+  deleteUserInterests(
+    input: DeleteUserInterestsMutationInput!
+  ): DeleteUserInterestsMutationPayload
 
   # Delete a role associated with a user
   deleteUserRole(

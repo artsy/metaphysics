@@ -9,12 +9,12 @@ interface Input {
   ids: [string]
 }
 
-export const deleteMultipleUserInterestsMutation = mutationWithClientMutationId<
+export const deleteUserInterestsMutation = mutationWithClientMutationId<
   Input,
   UserInterest[] | null,
   ResolverContext
 >({
-  name: "DeleteMultipleUserInterestsMutation",
+  name: "DeleteUserInterestsMutation",
   description:
     "Deletes multiple UserInterests on the logged in User's CollectorProfile.",
   inputFields: {

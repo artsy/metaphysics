@@ -17,7 +17,11 @@ export const collectArtistsMutation = mutationWithClientMutationId<
   name: "CollectArtistsMutation",
   description: "Collect Multiple Artists",
   inputFields: {
-    artistIDs: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+    artistIDs: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      ),
+    },
   },
   outputFields: {
     userInterests: {

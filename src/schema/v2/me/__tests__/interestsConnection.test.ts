@@ -2,13 +2,14 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("Me", () => {
-  describe("artistTypeUserInterests", () => {
+  describe("InterestsConnection", () => {
     const query = gql`
       {
         me {
           name
-          artistTypeUserInterestsConnection(
+          interestsConnection(
             category: COLLECTED_BEFORE
+            interestType: ARTIST
             first: 10
           ) {
             edges {
@@ -38,17 +39,17 @@ describe("Me", () => {
     }
 
     const mockMeLoader = jest.fn()
-    const mockMeArtistTypeUserInterestsLoader = jest.fn()
+    const mockMeUserInterestsLoader = jest.fn()
 
     const context = {
       meLoader: mockMeLoader,
-      meArtistTypeUserInterestsLoader: mockMeArtistTypeUserInterestsLoader,
+      meUserInterestsLoader: mockMeUserInterestsLoader,
     }
 
     beforeEach(() => {
       mockMeLoader.mockResolvedValue(Promise.resolve({ name: "Long John" }))
 
-      mockMeArtistTypeUserInterestsLoader.mockResolvedValue(
+      mockMeUserInterestsLoader.mockResolvedValue(
         Promise.resolve({
           headers: { "x-total-count": 3 },
           body: [userInterest1, userInterest2, userInterest3],
@@ -62,7 +63,7 @@ describe("Me", () => {
       expect(res).toEqual({
         me: {
           name: "Long John",
-          artistTypeUserInterestsConnection: {
+          interestsConnection: {
             edges: [
               {
                 category: "COLLECTED_BEFORE",

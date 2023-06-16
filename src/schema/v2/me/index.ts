@@ -30,7 +30,6 @@ import { PhoneNumber } from "../phoneNumber"
 import { quiz } from "../quiz"
 import { SaleArtworksConnectionField } from "../sale_artworks"
 import { ArtistRecommendations } from "./artistRecommendations"
-import { artistTypeUserInterests } from "./artistTypeUserInterests"
 import { ArtworkRecommendations } from "./artworkRecommendations"
 import ArtworkInquiries from "./artwork_inquiries"
 import AuctionResultsByFollowedArtists from "./auctionResultsByFollowedArtists"
@@ -50,6 +49,7 @@ import FollowedFairs from "./followed_fairs"
 import FollowedGalleries from "./followed_galleries"
 import FollowedGenes from "./followed_genes"
 import FollowedShows from "./followed_shows"
+import { InterestsConnection } from "./interestsConnection"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { MyBids } from "./myBids"
@@ -125,7 +125,6 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     ...IDFields,
     artistRecommendations: ArtistRecommendations,
-    artistTypeUserInterestsConnection: artistTypeUserInterests,
     artworkRecommendations: ArtworkRecommendations,
     artworkInquiriesConnection: ArtworkInquiries,
     auctionResultsByFollowedArtists: AuctionResultsByFollowedArtists,
@@ -343,6 +342,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return introduction
       },
     },
+    interestsConnection: InterestsConnection,
     isCollector: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ is_collector }) => {
