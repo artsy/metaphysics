@@ -8,10 +8,12 @@ import CausalityJWT from "./causality_jwt"
 import SystemTime from "./time"
 import Services from "./services"
 import { ResolverContext } from "types/graphql"
+import { Algolia } from "../algolia"
 
 const SystemType = new GraphQLObjectType<any, ResolverContext>({
   name: "System",
   fields: {
+    algolia: Algolia, // TODO: remove once older Android (<= 8.9.0 becomes negligible)
     services: Services,
     time: SystemTime,
     causalityJWT: CausalityJWT,
