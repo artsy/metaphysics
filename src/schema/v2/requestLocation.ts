@@ -1,3 +1,4 @@
+import config from "config"
 import {
   GraphQLFieldConfig,
   GraphQLID,
@@ -5,10 +6,9 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { ResolverContext } from "types/graphql"
-import cached from "schema/v2/fields/cached"
-import config from "config"
 import { base64 } from "lib/base64"
+import cached from "schema/v2/fields/cached"
+import { ResolverContext } from "types/graphql"
 
 const logRateHeaders = (headers) => {
   const headerKeys = [...Object.keys(headers)]
@@ -35,34 +35,38 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
   description: "A requested location",
   args: {
     ip: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
   },
-  resolve: async (_root, args, { requestLocationLoader }) => {
+  resolve: async (_root, args, { requestLocationLoader, ipAddress }) => {
+    const ip = args.ip || ipAddress
+
     try {
       const {
         body: { data },
         headers,
         cached,
-      } = await requestLocationLoader({ ip: args.ip })
+      } = await requestLocationLoader({ ip: args.ip || ipAddress })
 
       if (config.ENABLE_GEOLOCATION_LOGGING) {
         logRateHeaders(headers)
       }
 
+      debugger
+
       // Unspecified/unknown address
       if (!("location" in data)) {
-        return { id: base64(args.ip), cached }
+        return { id: base64(ip), cached }
       }
 
       const { alpha2: countryCode, name: country } = data.location.country
 
-      return { id: base64(args.ip), country, countryCode, cached }
+      return { id: base64(ip), country, countryCode, cached }
     } catch (error) {
       // Likely, an invalid IP address
       console.error(error)
 
-      return { id: base64(args.ip), cached: false }
+      return { id: base64(ip), cached: false }
     }
   },
 }
