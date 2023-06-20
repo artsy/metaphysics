@@ -1,11 +1,9 @@
-/* eslint-disable promise/always-return */
-
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("requestLocation", () => {
   describe("when ip param is not provided", () => {
-    it("returns location based request header IP", async () => {
+    it("returns location based on the IP address from the request", async () => {
       const query = gql`
         {
           requestLocation {
@@ -46,7 +44,7 @@ describe("requestLocation", () => {
   })
 
   describe("when `ip` param is provided", () => {
-    it("returns location based param IP", async () => {
+    it("returns location based on the `ip` param", async () => {
       const query = gql`
         {
           requestLocation(ip: "param-ip") {

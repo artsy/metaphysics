@@ -50,7 +50,7 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
         body: { data },
         headers,
         cached,
-      } = await requestLocationLoader({ ip: args.ip || ipAddress })
+      } = await requestLocationLoader({ ip })
 
       if (config.ENABLE_GEOLOCATION_LOGGING) {
         logRateHeaders(headers)
