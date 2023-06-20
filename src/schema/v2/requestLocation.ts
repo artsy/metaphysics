@@ -9,6 +9,7 @@ import {
 import { base64 } from "lib/base64"
 import cached from "schema/v2/fields/cached"
 import { ResolverContext } from "types/graphql"
+import { LatLngType } from "./location"
 
 const logRateHeaders = (headers) => {
   const headerKeys = [...Object.keys(headers)]
@@ -27,6 +28,9 @@ export const RequestLocationType = new GraphQLObjectType<any, ResolverContext>({
     id: { type: new GraphQLNonNull(GraphQLID) },
     country: { type: GraphQLString },
     countryCode: { type: GraphQLString },
+    coordinates: {
+      type: LatLngType,
+    },
   }),
 })
 
@@ -52,16 +56,21 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
         logRateHeaders(headers)
       }
 
-      debugger
-
       // Unspecified/unknown address
       if (!("location" in data)) {
         return { id: base64(ip), cached }
       }
 
       const { alpha2: countryCode, name: country } = data.location.country
+      const { latitude: lat, longitude: lng } = data.location
 
-      return { id: base64(ip), country, countryCode, cached }
+      return {
+        id: base64(ip),
+        country,
+        countryCode,
+        cached,
+        coordinates: { lat, lng },
+      }
     } catch (error) {
       // Likely, an invalid IP address
       console.error(error)
