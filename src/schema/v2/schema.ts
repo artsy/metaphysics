@@ -203,6 +203,7 @@ import { DeletePageMutation } from "./Page/DeletePageMutation"
 import { UpdatePageMutation } from "./Page/UpdatePageMutation"
 import { createArtistMutation } from "./artist/createArtistMutation"
 import { CollectorProfilesConnection } from "./CollectorProfile/collectorProfiles"
+import { VerifyAddress } from "./verifyAddress"
 import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { Profiles } from "./profiles"
 
@@ -322,6 +323,7 @@ const rootFields = {
   user: UserField,
   usersConnection: Users,
   vanityURLEntity: VanityURLEntity,
+  verifyAddress: VerifyAddress,
 }
 
 // FIXME: Remove type once Reaction MPv2 migration is complete
