@@ -1,8 +1,8 @@
 import gql from "lib/gql"
-import { runQuery } from "../test/utils"
+import { runAuthenticatedQuery } from "../test/utils"
 
 describe("verifyAddressQuery", () => {
-  it("validates an international address", async () => {
+  it("works with an international address", async () => {
     const query = gql`
       {
         verifyAddress(
@@ -84,18 +84,17 @@ describe("verifyAddressQuery", () => {
       ],
     }
 
-    const context = {
-      verifyAddressLoader: jest
-        .fn()
-        .mockReturnValue(Promise.resolve(mockAddressVerificationResult)),
-    }
+    const verifyAddressLoader = jest
+      .fn()
+      .mockReturnValue(Promise.resolve(mockAddressVerificationResult))
 
-    const data = await runQuery(query, context, { validIntAddress })
-    expect(context.verifyAddressLoader).toHaveBeenCalledWith(validIntAddress)
-    expect(data!.verifyAddress).toEqual(mockAddressVerificationResult)
+    await runAuthenticatedQuery(query, {
+      verifyAddressLoader,
+    })
+    expect(verifyAddressLoader).toHaveBeenCalledWith(validIntAddress)
   })
 
-  it("validates a domestic -US- address", async () => {
+  it("works with a domestic -US- address", async () => {
     const query = gql`
       {
         verifyAddress(
@@ -174,14 +173,11 @@ describe("verifyAddressQuery", () => {
       ],
     }
 
-    const context = {
-      verifyAddressLoader: jest
-        .fn()
-        .mockReturnValue(Promise.resolve(mockAddressVerificationResult)),
-    }
+    const verifyAddressLoader = jest
+      .fn()
+      .mockReturnValue(Promise.resolve(mockAddressVerificationResult))
 
-    const data = await runQuery(query, context, { validUSAddress })
-    expect(context.verifyAddressLoader).toHaveBeenCalledWith(validUSAddress)
-    expect(data!.verifyAddress).toEqual(mockAddressVerificationResult)
+    await runAuthenticatedQuery(query, { verifyAddressLoader })
+    expect(verifyAddressLoader).toHaveBeenCalledWith(validUSAddress)
   })
 })
