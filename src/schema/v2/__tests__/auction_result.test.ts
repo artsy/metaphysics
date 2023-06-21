@@ -321,6 +321,31 @@ describe("AuctionResult type", () => {
       })
     })
   })
+
+  describe("slug", () => {
+    it("returns the slug", () => {
+      const auctionResult = {
+        ...mockAuctionResult,
+        slug: "artist-title",
+      }
+
+      const context = {
+        auctionLotLoader: jest.fn(() => Promise.resolve(auctionResult)),
+      }
+
+      const query = `
+        {
+          auctionResult(id: "foo-bar") {
+            slug
+          }
+        }
+      `
+
+      return runQuery(query, context).then((data) => {
+        expect(data.auctionResult.slug).toEqual("artist-title")
+      })
+    })
+  })
 })
 
 const mockComparableAuctionResults = {
