@@ -76,6 +76,9 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: () => ({
     ...InternalIDFields,
+    slug: {
+      type: GraphQLString,
+    },
     title: {
       type: GraphQLString,
     },
@@ -387,7 +390,7 @@ export const AuctionResult: GraphQLFieldConfig<void, ResolverContext> = {
   description: "An auction result",
   args: {
     id: {
-      description: "The ID of the auction result",
+      description: "The ID or slug of the auction result",
       type: new GraphQLNonNull(GraphQLString),
     },
   },
