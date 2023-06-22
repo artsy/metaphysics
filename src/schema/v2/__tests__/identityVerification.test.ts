@@ -18,6 +18,9 @@ describe("IdentityVerification type", () => {
       created_at: "",
       name: "",
       email: "",
+      sale_id: null,
+      initiator_id: null,
+      order_id: "order-123",
     }
 
     const query = `
@@ -28,6 +31,9 @@ describe("IdentityVerification type", () => {
             state
             userID
             invitationExpiresAt
+            saleID
+            orderID
+            initiatorID
           }
         }
       }
@@ -45,6 +51,9 @@ describe("IdentityVerification type", () => {
         userID: "user1",
         invitationExpiresAt:
           "Mon Feb 10 2020 00:00:00 GMT-0500 (Eastern Standard Time)",
+        orderID: "order-123",
+        saleID: null,
+        initiatorID: null,
       },
     })
   })
@@ -59,6 +68,9 @@ describe("IdentityVerification type", () => {
       created_at: "",
       name: "",
       email: "",
+      sale_id: null,
+      initiator_id: "user-123",
+      order_id: null,
     }
 
     const gravityScanReference: IdentityVerificationScanReferenceGravityResponse = {
@@ -92,6 +104,9 @@ describe("IdentityVerification type", () => {
           edges {
             node {
               state
+              saleID
+              initiatorID
+              orderID
               scanReferences {
                 result
               }
@@ -127,6 +142,9 @@ describe("IdentityVerification type", () => {
       state: "pending",
       scanReferences: [{ result: "failed" }],
       overrides: [{ newState: "passed", creator: { email: "user1@foo.com" } }],
+      saleID: null,
+      initiatorID: "user-123",
+      orderID: null,
     })
   })
 
@@ -140,12 +158,18 @@ describe("IdentityVerification type", () => {
       created_at: "",
       name: "",
       email: "",
+      sale_id: "sale-123",
+      initiator_id: null,
+      order_id: null,
     }
 
     const query = gql`
       {
         identityVerification(id: "123") {
           state
+          saleID
+          initiatorID
+          orderID
         }
       }
     `
@@ -157,6 +181,9 @@ describe("IdentityVerification type", () => {
 
     expect(identityVerification).toEqual({
       state: "pending",
+      saleID: "sale-123",
+      initiatorID: null,
+      orderID: null,
     })
   })
 })

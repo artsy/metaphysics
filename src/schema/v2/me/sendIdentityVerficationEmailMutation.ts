@@ -114,6 +114,19 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
       description: "Whether an automated identity verification is sent or not",
       type: GraphQLBoolean,
     },
+    saleID: {
+      description: "The ID of the sale where the IDV process was initated",
+      type: GraphQLString,
+    },
+    initiatorID: {
+      description:
+        "The ID of the user (self or admin) who initiated the IDV process",
+      type: GraphQLString,
+    },
+    orderID: {
+      description: "The ID of the order where the IDV process was initated",
+      type: GraphQLString,
+    },
   },
   outputFields: {
     confirmationOrError: {
@@ -122,7 +135,7 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
     },
   },
   mutateAndGetPayload: async (
-    { userID, email, name, sendEmail },
+    { userID, email, name, sendEmail, saleID, initiatorID, orderID },
     { sendIdentityVerificationEmailLoader }
   ) => {
     if (!sendIdentityVerificationEmailLoader) {
@@ -135,6 +148,9 @@ export const sendIdentityVerificationEmailMutation = mutationWithClientMutationI
         email,
         name,
         send_email: sendEmail,
+        sale_id: saleID,
+        initiator_id: initiatorID,
+        order_id: orderID,
       })
 
       return response
