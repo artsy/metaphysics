@@ -26,6 +26,9 @@ export type IdentityVerificationGravityResponse = {
   created_at: string
   name: string
   email: string
+  sale_id: string | null
+  initiator_id: string | null
+  order_id: string | null
 }
 
 export type IdentityVerificationOverrideGravityResponse = {
@@ -147,6 +150,24 @@ export const IdentityVerificationType = new GraphQLObjectType<
       description: "User ID of the identity verification's owner",
       type: GraphQLString,
       resolve: ({ user_id }) => user_id,
+    },
+    saleID: {
+      description:
+        "ID of the auction the user was registering for when this IDV request was created",
+      type: GraphQLString,
+      resolve: ({ sale_id }) => sale_id,
+    },
+    initiatorID: {
+      description:
+        "ID of the admin or user (self) that initiated this IDV request",
+      type: GraphQLString,
+      resolve: ({ initiator_id }) => initiator_id,
+    },
+    orderID: {
+      description:
+        "ID of the order the user was placing when this IDV request was created",
+      type: GraphQLString,
+      resolve: ({ order_id }) => order_id,
     },
     name: {
       description: "Name of the identity verification's owner",

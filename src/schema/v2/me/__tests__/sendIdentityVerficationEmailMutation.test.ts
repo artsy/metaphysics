@@ -5,6 +5,7 @@ const identityVerificationDetails = {
   state: "pending",
   user_id: "id-123",
   id: "106",
+  sale_id: "sale-id",
 }
 
 const sendIdentityVerificationEmailMock = jest.fn().mockReturnValue(
@@ -12,6 +13,7 @@ const sendIdentityVerificationEmailMock = jest.fn().mockReturnValue(
     id: "106",
     state: "pending",
     user_id: "id-123",
+    sale_id: "sale-id",
   })
 )
 
@@ -24,7 +26,8 @@ const computeMutationInput = ({
     mutation {
       sendIdentityVerificationEmail(
         input: {
-          userID: ${JSON.stringify(userID)}
+          userID: ${JSON.stringify(userID)},
+          saleID: "sale-id",
         }
       ) {
         confirmationOrError{
@@ -34,6 +37,7 @@ const computeMutationInput = ({
 									pageURL
 									state
 									userID
+                  saleID
 								}
 							}
 							... on IdentityVerificationEmailMutationFailureType{
@@ -78,6 +82,7 @@ describe("Send identity verification email mutation", () => {
             state: "pending",
             userID: "id-123",
             pageURL: "https://staging.artsy.net/identity-verification/106",
+            saleID: "sale-id",
           },
         },
       },
