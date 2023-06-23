@@ -3,8 +3,9 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 describe("createUserInterestMutation", () => {
   const mutation = `
     mutation {
-      createUserInterest(input: {category: COLLECTED_BEFORE, interestId: "example", interestType: ARTIST}) {
+      createUserInterest(input: {category: COLLECTED_BEFORE, interestId: "example", interestType: ARTIST, private: false}) {
         userInterest {
+          private
           interest {
             ... on Artist {
               name
@@ -20,6 +21,7 @@ describe("createUserInterestMutation", () => {
       birthday: "", // Used to differentiate type
       name: "Example Name",
     },
+    private: false,
   }
 
   const mockMeCreateUserInterestLoader = jest.fn()
@@ -44,6 +46,7 @@ describe("createUserInterestMutation", () => {
     expect(res).toEqual({
       createUserInterest: {
         userInterest: {
+          private: false,
           interest: {
             name: "Example Name",
           },
@@ -56,6 +59,7 @@ describe("createUserInterestMutation", () => {
     await runAuthenticatedQuery(mutation, context)
 
     expect(mockMeCreateUserInterestLoader).toBeCalledWith({
+      private: false,
       category: "collected_before",
       interest_id: "example",
       interest_type: "Artist",

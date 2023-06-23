@@ -1,6 +1,6 @@
-import { GraphQLString } from "graphql"
+import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { GraphQLNonNull } from "graphql"
+import { snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
 import {
   UserInterest,
@@ -9,7 +9,6 @@ import {
   userInterestInterestTypeEnum,
   userInterestType,
 } from "../userInterests"
-import { snakeCase } from "lodash"
 import { meType } from "./index"
 
 interface Input {
@@ -18,6 +17,7 @@ interface Input {
   category: UserInterestCategory
   body?: string
   anonymousSessionId?: string
+  private?: boolean
   sessionId?: string
 }
 
@@ -35,6 +35,7 @@ export const createUserInterestMutation = mutationWithClientMutationId<
     category: { type: new GraphQLNonNull(userInterestCategoryEnum) },
     body: { type: GraphQLString, description: "Optional body for note" },
     anonymousSessionId: { type: GraphQLString },
+    private: { type: GraphQLBoolean },
     sessionID: { type: GraphQLString },
   },
   outputFields: {
