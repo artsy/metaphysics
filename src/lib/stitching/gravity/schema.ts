@@ -53,8 +53,6 @@ export const executableGravitySchema = () => {
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
   const unusedTypes = [
-    "Algolia", // TODO: remove after merging https://github.com/artsy/gravity/pull/16457
-    "AlgoliaIndex", // TODO: remove after merging https://github.com/artsy/gravity/pull/16457
     "DebitCommissionExemptionInput",
     "DebitCommissionExemptionPayload",
     "LotEvent",
