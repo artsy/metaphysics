@@ -147,6 +147,11 @@ type BuyOrder implements Order {
   orderUpdateState: String
   paymentMethod: PaymentMethodEnum
   requestedFulfillment: RequestedFulfillmentUnion
+
+  """
+  Whether the buyer needs to complete identity verification to make this purchase.
+  """
+  requireIdentityVerification: Boolean!
   seller: OrderPartyUnion!
   sellerTotalCents: Int
   shippingRadius: String
@@ -1286,6 +1291,11 @@ type OfferOrder implements Order {
   orderUpdateState: String
   paymentMethod: PaymentMethodEnum
   requestedFulfillment: RequestedFulfillmentUnion
+
+  """
+  Whether the buyer needs to complete identity verification to make this purchase.
+  """
+  requireIdentityVerification: Boolean!
   seller: OrderPartyUnion!
   sellerTotalCents: Int
   shippingRadius: String
@@ -1370,6 +1380,11 @@ interface Order {
   orderUpdateState: String
   paymentMethod: PaymentMethodEnum
   requestedFulfillment: RequestedFulfillmentUnion
+
+  """
+  Whether the buyer needs to complete identity verification to make this purchase.
+  """
+  requireIdentityVerification: Boolean!
   seller: OrderPartyUnion!
   sellerTotalCents: Int
   shippingRadius: String
