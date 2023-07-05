@@ -129,4 +129,58 @@ describe("getArtistInsights", () => {
       expect(insight).toBeUndefined()
     })
   })
+
+  describe("gaining followers insight", () => {
+    const fields = [
+      {
+        kind: "GAINING_FOLLOWERS",
+        artist: {
+          follow_count: 200,
+          last_year_follow_count: 40,
+        },
+        returnsInsight: true,
+      },
+      {
+        kind: "GAINING_FOLLOWERS",
+        artist: {
+          follow_count: 200,
+          last_year_follow_count: 10,
+        },
+        returnsInsight: false,
+      },
+      {
+        kind: "GAINING_FOLLOWERS",
+        artist: {
+          follow_count: 200,
+          last_year_follow_count: 200,
+        },
+        returnsInsight: false,
+      },
+      {
+        kind: "GAINING_FOLLOWERS",
+        artist: {
+          follow_count: 0,
+          last_year_follow_count: 0,
+        },
+        returnsInsight: false,
+      },
+    ]
+
+    fields.forEach((field) => {
+      it(`${
+        field.returnsInsight ? "returns" : "does not return"
+      } insight when the follow_count is ${
+        field.artist.follow_count
+      } and last_year_follow_count is ${
+        field.artist.last_year_follow_count
+      }`, () => {
+        const artist = field.artist
+
+        const insights = getArtistInsights(artist)
+        const insight = insights.find((insight) => insight.kind === field.kind)!
+
+        expect(!!insight).toEqual(field.returnsInsight)
+      })
+    })
+  })
 })

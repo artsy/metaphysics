@@ -13,7 +13,7 @@ export const ARTIST_INSIGHT_KINDS = [
   "ARTSY_VANGUARD_YEAR",
   // "CURATORS_PICK_EMERGING", // Missing
   // "TRENDING_NOW", // Missing
-  // "GAINING_FOLLOWERS", // Missing
+  "GAINING_FOLLOWERS",
   "SOLO_SHOW",
   "GROUP_SHOW",
   "BIENNIAL",
@@ -103,6 +103,15 @@ export const ARTIST_INSIGHT_MAPPING: Record<
     getEntities: (artist) => artist.vanguard_year && [],
     getLabel: (artist) => `The Artsy Vanguard ${artist.vanguard_year}`,
   },
+  GAINING_FOLLOWERS: {
+    getDescription: (artist) =>
+      `${artistNewFollowersPercentage(
+        artist
+      )}% increase in Artsy followers compared to same time last year.`,
+    getEntities: (artist) =>
+      artistNewFollowersPercentage(artist) >= 20 ? [] : null,
+    getLabel: () => `Gaining Followers`,
+  },
   CRITICALLY_ACCLAIMED: {
     getDescription: () => "Recognized by major institutions and publications",
     getEntities: (artist) => artist.critically_acclaimed && [],
@@ -150,6 +159,19 @@ const splitEntities = (
     .map((entity) => entity.trim())
 
   return entities
+}
+
+const artistNewFollowersPercentage = (artist) => {
+  if (
+    artist.follow_count === 0 ||
+    artist.follow_count - artist.last_year_follow_count === 0
+  )
+    return 0
+
+  return Math.floor(
+    (artist.last_year_follow_count * 100) /
+      (artist.follow_count - artist.last_year_follow_count)
+  )
 }
 
 export const getArtistInsights = (artist) => {
