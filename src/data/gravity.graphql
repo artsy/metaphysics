@@ -71,18 +71,6 @@ type Agreement {
   updatedAt: ISO8601DateTime!
 }
 
-type Algolia {
-  apiKey: String!
-  appID: String!
-  indices: [AlgoliaIndex!]!
-}
-
-type AlgoliaIndex {
-  displayName: String!
-  key: String!
-  name: String!
-}
-
 """
 App Authenticator Two-Factor Authentication factor
 """
@@ -1513,11 +1501,6 @@ type Query {
   Find an agreement by ID
   """
   agreement(id: ID!): Agreement
-
-  """
-  Get Algolia configuration
-  """
-  algolia: Algolia!
 
   """
   Find an artist by ID

@@ -260,15 +260,17 @@ type Agreement {
 }
 
 type Algolia {
-  apiKey: String!
-  appID: String!
+  apiKey: String! @deprecated(reason: "Algolia search is no longer supported")
+  appID: String! @deprecated(reason: "Algolia search is no longer supported")
   indices: [AlgoliaIndex!]!
+    @deprecated(reason: "Algolia search is no longer supported")
 }
 
 type AlgoliaIndex {
   displayName: String!
-  key: String!
-  name: String!
+    @deprecated(reason: "Algolia search is no longer supported")
+  key: String! @deprecated(reason: "Algolia search is no longer supported")
+  name: String! @deprecated(reason: "Algolia search is no longer supported")
 }
 
 type AnalyticsArtist {
@@ -4060,6 +4062,9 @@ type CommerceBuyOrder implements CommerceOrder {
   paymentMethod: CommercePaymentMethodEnum
   paymentMethodDetails: PaymentMethodUnion
   requestedFulfillment: CommerceRequestedFulfillmentUnion
+
+  # Whether the buyer needs to complete identity verification to make this purchase.
+  requireIdentityVerification: Boolean!
   seller: CommerceOrderPartyUnion!
   sellerDetails: OrderParty
   sellerTotal(
@@ -4824,6 +4829,9 @@ type CommerceOfferOrder implements CommerceOrder {
   paymentMethod: CommercePaymentMethodEnum
   paymentMethodDetails: PaymentMethodUnion
   requestedFulfillment: CommerceRequestedFulfillmentUnion
+
+  # Whether the buyer needs to complete identity verification to make this purchase.
+  requireIdentityVerification: Boolean!
   seller: CommerceOrderPartyUnion!
   sellerDetails: OrderParty
   sellerTotal(
@@ -5029,6 +5037,9 @@ interface CommerceOrder {
   paymentMethod: CommercePaymentMethodEnum
   paymentMethodDetails: PaymentMethodUnion
   requestedFulfillment: CommerceRequestedFulfillmentUnion
+
+  # Whether the buyer needs to complete identity verification to make this purchase.
+  requireIdentityVerification: Boolean!
   seller: CommerceOrderPartyUnion!
   sellerDetails: OrderParty
   sellerTotal(
@@ -14268,9 +14279,6 @@ type Query {
     last: Int
     userId: ID!
   ): AuctionsLotStandingConnection!
-
-  # Get Algolia configuration
-  _unused_gravity_algolia: Algolia!
   _unused_gravity_devices(userId: ID!): [Device!]!
 
   # Autocomplete resolvers.
@@ -17334,7 +17342,8 @@ type SuggestedAddressFields {
 }
 
 type System {
-  algolia: Algolia
+  # Deprecated Algolia fields, temporarily kept for legacy compatibility
+  algolia: Algolia @deprecated(reason: "Algolia search is no longer supported")
 
   # Creates, and authorizes, a JWT custom for Causality
   causalityJWT(
