@@ -1,18 +1,18 @@
-import { ResolverContext } from "types/graphql"
 import {
-  GraphQLString,
-  Thunk,
-  GraphQLFieldConfigMap,
-  GraphQLNonNull,
   GraphQLBoolean,
   GraphQLEnumType,
-  GraphQLUnionType,
+  GraphQLFieldConfigMap,
+  GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+  Thunk,
 } from "graphql"
-import { IDFields } from "./object_identification"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import { ResolverContext } from "types/graphql"
 import { ArtistType } from "./artist"
 import { GeneType } from "./gene"
+import { IDFields } from "./object_identification"
 
 export type UserInterestCategory =
   | "collected_before"
@@ -76,6 +76,9 @@ export const userInterestType = new GraphQLObjectType<
     ownerType: {
       type: userInterestOwnerTypeEnum,
       resolve: ({ owner_type }) => owner_type,
+    },
+    private: {
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
   },
 })
