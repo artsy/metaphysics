@@ -3653,6 +3653,10 @@ type CitySponsoredContent {
   ): ShowConnection
 }
 
+type collectArtistsFailure {
+  mutationError: String!
+}
+
 input CollectArtistsMutationInput {
   artistIDs: [String!]!
   clientMutationId: String
@@ -3660,7 +3664,16 @@ input CollectArtistsMutationInput {
 
 type CollectArtistsMutationPayload {
   clientMutationId: String
-  me: Me!
+
+  # on success: returns the user interest
+  userInterestsOrError: collectArtistsResponseOrError
+}
+
+union collectArtistsResponseOrError =
+    collectArtistsFailure
+  | collectArtistsSuccess
+
+type collectArtistsSuccess {
   userInterests: [UserInterest]!
 }
 
@@ -8341,6 +8354,10 @@ type DeleteUserInterestMutationPayload {
   userInterest: UserInterest!
 }
 
+type deleteUserInterestsFailure {
+  mutationError: String!
+}
+
 input DeleteUserInterestsMutationInput {
   clientMutationId: String
   ids: [String]!
@@ -8348,7 +8365,16 @@ input DeleteUserInterestsMutationInput {
 
 type DeleteUserInterestsMutationPayload {
   clientMutationId: String
-  me: Me!
+
+  # on success: returns the deleted user interests
+  userInterestsOrError: deleteUserInterestsResponseOrError
+}
+
+union deleteUserInterestsResponseOrError =
+    deleteUserInterestsFailure
+  | deleteUserInterestsSuccess
+
+type deleteUserInterestsSuccess {
   userInterests: [UserInterest]!
 }
 
