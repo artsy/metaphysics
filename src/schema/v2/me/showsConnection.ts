@@ -65,11 +65,11 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
     // TODO: Only include shows by IP if `includeShowsNearIpBasedLocation` is set to true.
     const userIP = ip || (includeShowsNearIpBasedLocation && ipAddress) || null
 
-    const locationArgs = await getLocationArgs(
+    const locationArgs = await getLocationArgs({
       near,
-      userIP,
-      requestLocationLoader
-    )
+      ip: userIP,
+      requestLocationLoader,
+    })
 
     const gravityArgs = {
       size,
