@@ -6,6 +6,7 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { uniq } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { UserInterest, userInterestType } from "../userInterests"
 
@@ -63,7 +64,7 @@ export const deleteUserInterestsMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    const uniqueIDs = Array.from(new Set(args.ids))
+    const uniqueIDs = uniq(args.ids)
     try {
       const userInterests = await Promise.all<Promise<UserInterest>>(
         uniqueIDs.map((userInterestId) =>

@@ -6,6 +6,7 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { uniq } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { UserInterest, userInterestType } from "../userInterests"
 
@@ -65,7 +66,7 @@ export const collectArtistsMutation = mutationWithClientMutationId<
     if (!meCreateUserInterestLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
-    const uniqueArtistIDs = Array.from(new Set(args.artistIDs))
+    const uniqueArtistIDs = uniq(args.artistIDs)
 
     try {
       const userInterests = await Promise.all(
