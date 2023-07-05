@@ -4,11 +4,15 @@ describe("deleteUserInterestsMutation", () => {
   const mutation = `
     mutation {
       deleteUserInterests(input: { ids: ["user_interest_id_1", "user_interest_id_2"] }) {
-        userInterests {
-          category
-          interest {
-            ... on Artist {
-              name
+        userInterestsOrError {
+          ... on deleteUserInterestsSuccess {
+            userInterests {
+              category
+              interest {
+                ... on Artist {
+                  name
+                }
+              }
             }
           }
         }
@@ -45,10 +49,12 @@ describe("deleteUserInterestsMutation", () => {
 
     expect(res).toEqual({
       deleteUserInterests: {
-        userInterests: [
-          { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },
-          { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },
-        ],
+        userInterestsOrError: {
+          userInterests: [
+            { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },
+            { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },
+          ],
+        },
       },
     })
   })

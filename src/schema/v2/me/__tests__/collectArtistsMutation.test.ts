@@ -2,21 +2,22 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("collectArtistsMutation", () => {
   const mutation = `
-    mutation {
-      collectArtists(input: { artistIDs: ["artist_id_1", "artist_id_2"]}) {
-        userInterests {
-          category
-          interest {
-            ... on Artist {
-              name
+  mutation {
+    collectArtists(input: { artistIDs: ["artist_id_1", "artist_id_2"] }) {
+      userInterestsOrError {
+        ... on collectArtistsSuccess {
+          userInterests {
+            category
+            interest {
+              ... on Artist {
+                name
+              }
             }
           }
         }
-        me {
-          name
-        }
       }
     }
+  }  
   `
 
   const userInterest = {
@@ -27,23 +28,16 @@ describe("collectArtistsMutation", () => {
     },
   }
 
-  const me = {
-    name: "Long John",
-  }
-
   const mockMeCreateUserInterestLoader = jest.fn()
-  const mockMeLoader = jest.fn()
 
   const context = {
     meCreateUserInterestLoader: mockMeCreateUserInterestLoader,
-    meLoader: mockMeLoader,
   }
 
   beforeEach(() => {
     mockMeCreateUserInterestLoader.mockResolvedValue(
       Promise.resolve(userInterest)
     )
-    mockMeLoader.mockResolvedValue(Promise.resolve(me))
   })
 
   afterEach(() => {
@@ -55,12 +49,11 @@ describe("collectArtistsMutation", () => {
 
     expect(res).toEqual({
       collectArtists: {
-        userInterests: [
-          { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },
-          { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },
-        ],
-        me: {
-          name: "Long John",
+        userInterestsOrError: {
+          userInterests: [
+            { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },
+            { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },
+          ],
         },
       },
     })

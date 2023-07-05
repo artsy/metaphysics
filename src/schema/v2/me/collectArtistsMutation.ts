@@ -1,13 +1,44 @@
-import { GraphQLList, GraphQLString } from "graphql"
+import {
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { meType } from "./index"
 import { UserInterest, userInterestType } from "../userInterests"
 
 interface Input {
   artistIDs: string[]
 }
+
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "collectArtistsSuccess",
+  fields: () => ({
+    userInterests: {
+      type: new GraphQLNonNull(new GraphQLList(userInterestType)),
+      resolve: (userInterests) => userInterests,
+    },
+  }),
+})
+
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "collectArtistsFailure",
+  fields: () => ({
+    mutationError: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const UserInterestsOrErrorType = new GraphQLUnionType({
+  name: "collectArtistsResponseOrError",
+  types: [SuccessType, FailureType],
+  resolveType: (data) =>
+    data._type === "GravityMutationError" ? FailureType : SuccessType,
+})
 
 export const collectArtistsMutation = mutationWithClientMutationId<
   Input,
@@ -24,15 +55,10 @@ export const collectArtistsMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    userInterests: {
-      type: new GraphQLNonNull(new GraphQLList(userInterestType)),
-      resolve: (userInterests) => userInterests,
-    },
-    me: {
-      type: new GraphQLNonNull(meType),
-      resolve: (_source, _args, { meLoader }) => {
-        return meLoader?.()
-      },
+    userInterestsOrError: {
+      type: UserInterestsOrErrorType,
+      description: "on success: returns the user interest",
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (args, { meCreateUserInterestLoader }) => {
@@ -40,6 +66,7 @@ export const collectArtistsMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
     const uniqueArtistIDs = Array.from(new Set(args.artistIDs))
+
     try {
       const userInterests = await Promise.all(
         uniqueArtistIDs.map((artistID) => {
@@ -51,19 +78,14 @@ export const collectArtistsMutation = mutationWithClientMutationId<
           return meCreateUserInterestLoader(gravityPayload)
         })
       )
+
       return userInterests
-    } catch (err) {
-      if ("body" in (err as any)) {
-        const e = err as GravityError
-        throw new Error(e.body.text ?? e.body.error)
+    } catch (error) {
+      if ("body" in (error as any)) {
+        return { ...error.body, _type: "GravityMutationError" }
       }
 
-      throw err
+      throw new Error(error)
     }
   },
 })
-
-interface GravityError {
-  statusCode: number
-  body: { error: string; text?: string }
-}

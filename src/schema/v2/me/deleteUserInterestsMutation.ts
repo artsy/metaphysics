@@ -1,13 +1,44 @@
-import { GraphQLList, GraphQLString } from "graphql"
+import {
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { UserInterest, userInterestType } from "../userInterests"
-import { meType } from "./index"
 
 interface Input {
   ids: [string]
 }
+
+const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+  name: "deleteUserInterestsSuccess",
+  fields: () => ({
+    userInterests: {
+      type: new GraphQLNonNull(new GraphQLList(userInterestType)),
+      resolve: (userInterests) => userInterests,
+    },
+  }),
+})
+
+const FailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "deleteUserInterestsFailure",
+  fields: () => ({
+    mutationError: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const UserInterestsOrErrorType = new GraphQLUnionType({
+  name: "deleteUserInterestsResponseOrError",
+  types: [SuccessType, FailureType],
+  resolveType: (data) =>
+    data._type === "GravityMutationError" ? FailureType : SuccessType,
+})
 
 export const deleteUserInterestsMutation = mutationWithClientMutationId<
   Input,
@@ -21,15 +52,10 @@ export const deleteUserInterestsMutation = mutationWithClientMutationId<
     ids: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
   },
   outputFields: {
-    userInterests: {
-      type: new GraphQLNonNull(new GraphQLList(userInterestType)),
+    userInterestsOrError: {
+      type: UserInterestsOrErrorType,
+      description: "on success: returns the deleted user interests",
       resolve: (userInterests) => userInterests,
-    },
-    me: {
-      type: new GraphQLNonNull(meType),
-      resolve: (_source, _args, { meLoader }) => {
-        return meLoader?.()
-      },
     },
   },
   mutateAndGetPayload: async (args, { meDeleteUserInterestLoader }) => {
@@ -44,19 +70,14 @@ export const deleteUserInterestsMutation = mutationWithClientMutationId<
           meDeleteUserInterestLoader(userInterestId)
         )
       )
+
       return userInterests
-    } catch (err) {
-      if ("body" in (err as any)) {
-        const e = err as GravityError
-        throw new Error(e.body.text ?? e.body.error)
+    } catch (error) {
+      if ("body" in (error as any)) {
+        return { ...error.body, _type: "GravityMutationError" }
       }
 
-      throw err
+      throw new Error(error)
     }
   },
 })
-
-interface GravityError {
-  statusCode: number
-  body: { error: string; text?: string }
-}
