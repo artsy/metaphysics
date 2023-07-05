@@ -152,11 +152,12 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       )
     }
 
-    const locationArgs = await getLocationArgs(
+    const locationArgs = await getLocationArgs({
+      maxDistance,
       near,
-      includePartnersNearIpBasedLocation && ipAddress,
-      requestLocationLoader
-    )
+      ip: includePartnersNearIpBasedLocation && ipAddress,
+      requestLocationLoader,
+    })
 
     const options: any = {
       default_profile_public: defaultProfilePublic,
@@ -167,7 +168,6 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       exclude_followed_partners: excludeFollowedPartners,
       has_full_profile: hasFullProfile,
       include_partners_with_followed_artists: includePartnersWithFollowedArtists,
-      max_distance: maxDistance,
       partner_categories: partnerCategories,
       ...locationArgs,
       ..._options,
@@ -221,11 +221,12 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
       )
     }
 
-    const locationArgs = await getLocationArgs(
-      args.near,
-      args.includePartnersNearIpBasedLocation && ipAddress,
-      requestLocationLoader
-    )
+    const locationArgs = await getLocationArgs({
+      ip: args.includePartnersNearIpBasedLocation && ipAddress,
+      maxDistance: args.maxDistance,
+      near: args.near,
+      requestLocationLoader,
+    })
 
     const options = {
       id: args.ids,
@@ -235,7 +236,6 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
       exclude_followed_partners: args.excludeFollowedPartners,
       include_partners_with_followed_artists:
         args.includePartnersWithFollowedArtists,
-      max_distance: args.maxDistance,
       default_profile_public: args.defaultProfilePublic,
       sort: args.sort,
       partner_categories: args.partnerCategories,
@@ -245,7 +245,10 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
     }
 
     // Removes null/undefined values from options
-    const cleanedOptions = pickBy(clone(options), identity)
+    const cleanedOptions = pickBy(
+      clone(options),
+      (option) => option !== null && option !== undefined
+    )
 
     const { body, headers } = await partnersLoader(cleanedOptions)
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)

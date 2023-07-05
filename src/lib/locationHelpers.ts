@@ -8,11 +8,17 @@ interface Location {
 
 const DEFAULT_MAX_DISTANCE_KM = 75
 
-export const getLocationArgs = async (
-  near: Location | undefined,
-  ip: string | undefined,
+export const getLocationArgs = async ({
+  ip,
+  maxDistance,
+  near,
+  requestLocationLoader,
+}: {
+  ip?: string
+  maxDistance?: number
+  near?: Location
   requestLocationLoader: any
-) => {
+}) => {
   let location = near
 
   if (!location && ip) {
@@ -32,6 +38,7 @@ export const getLocationArgs = async (
 
   return {
     near: isString(near) ? near : `${location.lat},${location.lng}`,
-    max_distance: location.maxDistance || DEFAULT_MAX_DISTANCE_KM,
+    max_distance:
+      maxDistance || location.maxDistance || DEFAULT_MAX_DISTANCE_KM,
   }
 }
