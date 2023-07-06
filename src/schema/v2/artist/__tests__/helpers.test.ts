@@ -157,4 +157,41 @@ describe("getArtistInsights", () => {
       expect(insight).toBeUndefined()
     })
   })
+
+  describe("recent career event insight", () => {
+    const fields = [
+      {
+        kind: "RECENT_CAREER_EVENT",
+        artist: {
+          recent_show: "2/2/2021|ai-weiwei|Solo|Gagosian Gallery",
+        },
+        value: "Gagosian Gallery",
+      },
+      {
+        kind: "RECENT_CAREER_EVENT",
+        artist: {
+          recent_show: "2/2/2003|ai-weiwei|Solo|Gagosian Gallery",
+        },
+        value: null,
+      },
+      {
+        kind: "RECENT_CAREER_EVENT",
+        artist: {
+          recent_show: null,
+        },
+        value: null,
+      },
+    ]
+
+    fields.forEach((field) => {
+      it("returns recent career event insights", () => {
+        const artist = field.artist
+
+        const insights = getArtistInsights(artist)
+        const insight = insights.find((insight) => insight.kind === field.kind)!
+
+        expect(insight).toEqual(field.value)
+      })
+    })
+  })
 })
