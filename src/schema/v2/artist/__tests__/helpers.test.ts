@@ -165,21 +165,21 @@ describe("getArtistInsights", () => {
         artist: {
           recent_show: "2/2/2021|ai-weiwei|Solo|Gagosian Gallery",
         },
-        value: "Gagosian Gallery",
+        value: ["Gagosian Gallery"],
       },
       {
         kind: "RECENT_CAREER_EVENT",
         artist: {
           recent_show: "2/2/2003|ai-weiwei|Solo|Gagosian Gallery",
         },
-        value: null,
+        value: [],
       },
       {
         kind: "RECENT_CAREER_EVENT",
         artist: {
           recent_show: null,
         },
-        value: null,
+        value: [],
       },
     ]
 
@@ -190,7 +190,7 @@ describe("getArtistInsights", () => {
         const insights = getArtistInsights(artist)
         const insight = insights.find((insight) => insight.kind === field.kind)!
 
-        expect(insight).toEqual(field.value)
+        expect(insight.entities).toEqual(field.value)
       })
     })
   })
