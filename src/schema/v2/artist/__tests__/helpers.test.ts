@@ -174,13 +174,6 @@ describe("getArtistInsights", () => {
         },
         value: [],
       },
-      {
-        kind: "RECENT_CAREER_EVENT",
-        artist: {
-          recent_show: null,
-        },
-        value: [],
-      },
     ]
 
     fields.forEach((field) => {
