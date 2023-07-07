@@ -168,7 +168,7 @@ describe("getArtistInsights", () => {
       artist: {
         recent_show: "2/2/2021|ai-weiwei|Solo|Gagosian Gallery",
       },
-      value: ["Gagosian Gallery"],
+      value: ["2021 Gagosian Gallery"],
     }
 
     it("returns recent career event insights", () => {
@@ -205,7 +205,7 @@ describe("getArtistInsights", () => {
       }
 
       const recentShow = getRecentShow(artist)
-      expect(recentShow).toEqual(["Gagosian Gallery"])
+      expect(recentShow).toEqual(["2021 Gagosian Gallery"])
     })
 
     it("returns empty array if there empty recent show", () => {

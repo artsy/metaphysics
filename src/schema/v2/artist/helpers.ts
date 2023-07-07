@@ -118,7 +118,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
     getLabel: () => "Critically acclaimed",
   },
   RECENT_CAREER_EVENT: {
-    getDescription: () => "Recent career milestones.",
+    getDescription: (artist) => artist.recent_show && getRecentShow(artist),
     getEntities: (artist) => artist.recent_show && getRecentShow(artist),
     getLabel: () => "Recent Career Event",
   },
@@ -237,5 +237,8 @@ export const getRecentShow = (artist): string[] | null => {
   threeYearsAgo.setFullYear(today.getFullYear() - 3)
 
   if (showDate < threeYearsAgo) return null
-  return [show]
+  const year = showDate.getFullYear()
+  const title = `${year} ${show}`
+
+  return [title]
 }
