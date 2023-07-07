@@ -118,7 +118,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
     getLabel: () => "Critically acclaimed",
   },
   RECENT_CAREER_EVENT: {
-    getDescription: () => null,
+    getDescription: () => "Recent career milestones.",
     getEntities: (artist) => artist.recent_show && getRecentShow(artist),
     getLabel: () => "Recent Career Event",
   },
