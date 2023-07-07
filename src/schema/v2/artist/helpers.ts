@@ -222,10 +222,10 @@ export const getAuctionRecord = async (artist, auctionLotsLoader) => {
   }
 }
 
-export const getRecentShow = (artist): string[] => {
+export const getRecentShow = (artist): string[] | null => {
   // dd/mm/yyy|slug|Group or Solo|Show Title
   const entities = splitEntities(artist.recent_show)
-  if (!entities) return []
+  if (!entities) return null
 
   const date = entities[0]
   const show = entities[entities.length - 1]
@@ -236,6 +236,6 @@ export const getRecentShow = (artist): string[] => {
 
   threeYearsAgo.setFullYear(today.getFullYear() - 3)
 
-  if (showDate < threeYearsAgo) return []
+  if (showDate < threeYearsAgo) return null
   return [show]
 }

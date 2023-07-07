@@ -163,32 +163,38 @@ describe("getArtistInsights", () => {
   })
 
   describe("recent career event insight", () => {
-    const fields = [
-      {
-        kind: "RECENT_CAREER_EVENT",
-        artist: {
-          recent_show: "2/2/2021|ai-weiwei|Solo|Gagosian Gallery",
-        },
-        value: ["Gagosian Gallery"],
+    const field = {
+      kind: "RECENT_CAREER_EVENT",
+      artist: {
+        recent_show: "2/2/2021|ai-weiwei|Solo|Gagosian Gallery",
       },
-      {
-        kind: "RECENT_CAREER_EVENT",
-        artist: {
-          recent_show: "2/2/2003|ai-weiwei|Solo|Gagosian Gallery",
-        },
-        value: [],
+      value: ["Gagosian Gallery"],
+    }
+
+    it("returns recent career event insights", () => {
+      const artist = field.artist
+
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === field.kind)!
+      expect(insight.entities).toEqual(field.value)
+    })
+  })
+
+  describe("empty recent career event insight", () => {
+    const field = {
+      kind: "RECENT_CAREER_EVENT",
+      artist: {
+        recent_show: null,
       },
-    ]
+      value: null,
+    }
 
-    fields.forEach((field) => {
-      it("returns recent career event insights", () => {
-        const artist = field.artist
+    it("returns recent career event insights", () => {
+      const artist = field.artist
 
-        const insights = getArtistInsights(artist)
-        const insight = insights.find((insight) => insight.kind === field.kind)!
-
-        expect(insight.entities).toEqual(field.value)
-      })
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === field.kind)!
+      expect(insight).toBeUndefined()
     })
   })
   describe("getRecentShow", () => {
@@ -207,7 +213,7 @@ describe("getArtistInsights", () => {
       }
 
       const recentShow = getRecentShow(artist)
-      expect(recentShow).toEqual([])
+      expect(recentShow).toEqual(null)
     })
 
     it("returns empty array if there is no recent show", () => {
@@ -216,7 +222,7 @@ describe("getArtistInsights", () => {
       }
 
       const recentShow = getRecentShow(artist)
-      expect(recentShow).toEqual([])
+      expect(recentShow).toEqual(null)
     })
   })
 })
