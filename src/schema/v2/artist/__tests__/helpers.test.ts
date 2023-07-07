@@ -1,4 +1,8 @@
-import { ARTIST_INSIGHT_MAPPING, getArtistInsights } from "../helpers"
+import {
+  ARTIST_INSIGHT_MAPPING,
+  getArtistInsights,
+  getRecentShow,
+} from "../helpers"
 
 describe("getArtistInsights", () => {
   it("returns artist objects with no other information for each insight kind", () => {
@@ -185,6 +189,34 @@ describe("getArtistInsights", () => {
 
         expect(insight.entities).toEqual(field.value)
       })
+    })
+  })
+  describe("getRecentShow", () => {
+    it("returns the most recent show", () => {
+      const artist = {
+        recent_show: "2/2/2021|ai-weiwei|Solo|Gagosian Gallery",
+      }
+
+      const recentShow = getRecentShow(artist)
+      expect(recentShow).toEqual(["Gagosian Gallery"])
+    })
+
+    it("returns empty array if there empty recent show", () => {
+      const artist = {
+        recent_show: "",
+      }
+
+      const recentShow = getRecentShow(artist)
+      expect(recentShow).toEqual([])
+    })
+
+    it("returns empty array if there is no recent show", () => {
+      const artist = {
+        recent_show: null,
+      }
+
+      const recentShow = getRecentShow(artist)
+      expect(recentShow).toEqual([])
     })
   })
 })

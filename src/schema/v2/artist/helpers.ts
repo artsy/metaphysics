@@ -222,7 +222,7 @@ export const getAuctionRecord = async (artist, auctionLotsLoader) => {
   }
 }
 
-const getRecentShow = (artist): string[] => {
+export const getRecentShow = (artist): string[] => {
   // dd/mm/yyy|slug|Group or Solo|Show Title
   const entities = splitEntities(artist.recent_show)
   if (!entities) return []
