@@ -197,6 +197,7 @@ describe("getArtistInsights", () => {
       expect(insight).toBeUndefined()
     })
   })
+
   describe("getRecentShow", () => {
     it("returns the most recent show", () => {
       const artist = {
