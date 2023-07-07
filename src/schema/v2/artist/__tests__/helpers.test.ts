@@ -176,7 +176,7 @@ describe("getArtistInsights", () => {
 
       const insights = getArtistInsights(artist)
       const insight = insights.find((insight) => insight.kind === field.kind)!
-      expect(insight.entities).toEqual(field.value)
+      expect(insight.description).toEqual(field.value)
     })
   })
 
