@@ -163,14 +163,17 @@ export const myCollectionInfoFields = {
     description: "A connection of artists in the users' collection",
     type: artistConnection.connectionType,
     args: pageable({
-      sort: ArtistSorts,
-      page: { type: GraphQLInt },
-      size: { type: GraphQLInt },
+      artistIDs: {
+        type: new GraphQLList(GraphQLString),
+      },
       includePersonalArtists: {
         type: GraphQLBoolean,
         defaultValue: false,
         description: "Include artists that have been created by the user.",
       },
+      page: { type: GraphQLInt },
+      size: { type: GraphQLInt },
+      sort: ArtistSorts,
     }),
     resolve: async (_root, args, context) => {
       const { collectionArtistsLoader, userID } = context
@@ -197,6 +200,7 @@ export const myCollectionInfoFields = {
         total_count: true,
         user_id: userID,
         include_personal_artists: includePersonalArtists,
+        artist_ids: args.artistIDs,
       })
       const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 

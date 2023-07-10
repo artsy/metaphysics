@@ -298,5 +298,59 @@ describe("me.myCollectionInfo", () => {
         }
       `)
     })
+    it("returns a connection of artists in the users' collection using provided artist ids", async () => {
+      const query = gql`
+        {
+          me {
+            myCollectionInfo {
+              collectedArtistsConnection(first: 1, artistIDs: ["id1"]) {
+                totalCount
+                edges {
+                  artworksCount
+                  node {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const mockCollectionArtistsLoader = jest.fn(() =>
+        Promise.resolve({
+          headers: { "x-total-count": "3" },
+          body: [
+            {
+              name: "Artist 1",
+              artworks_count_within_collection: 1,
+            },
+          ],
+        })
+      )
+
+      const context: Partial<ResolverContext> = {
+        collectionLoader: async () => ({}),
+        meLoader: async () => ({
+          id: "some-user-id",
+        }),
+        collectionArtistsLoader: mockCollectionArtistsLoader,
+      }
+
+      await runAuthenticatedQuery(query, context)
+
+      expect(mockCollectionArtistsLoader).toHaveBeenCalledWith(
+        "my-collection",
+        {
+          artist_ids: ["id1"],
+          include_personal_artists: false,
+          page: 1,
+          size: 1,
+          sort: undefined,
+          total_count: true,
+          user_id: "some-user-id",
+        }
+      )
+    })
   })
 })

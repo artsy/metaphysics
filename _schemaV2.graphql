@@ -12704,6 +12704,7 @@ type MyCollectionConnection {
   # A connection of artists in the users' collection
   collectedArtistsConnection(
     after: String
+    artistIDs: [String]
     before: String
     first: Int
 
@@ -12800,6 +12801,7 @@ type MyCollectionInfo {
   # A connection of artists in the users' collection
   collectedArtistsConnection(
     after: String
+    artistIDs: [String]
     before: String
     first: Int
 
