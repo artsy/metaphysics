@@ -1,6 +1,7 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
+import { CollectionSorts } from "../collectionsConnection"
 
 let context: Partial<ResolverContext>
 
@@ -269,6 +270,23 @@ describe("collectionsConnection with artworksConnection", () => {
         },
       },
     })
+  })
+})
+
+describe("CollectionSorts", () => {
+  it("correctly maps external sort values to sort options", () => {
+    expect(CollectionSorts.getValue("CREATED_AT_ASC")?.value).toEqual(
+      "created_at"
+    )
+    expect(CollectionSorts.getValue("CREATED_AT_DESC")?.value).toEqual(
+      "-created_at"
+    )
+    expect(CollectionSorts.getValue("UPDATED_AT_ASC")?.value).toEqual(
+      "updated_at"
+    )
+    expect(CollectionSorts.getValue("UPDATED_AT_DESC")?.value).toEqual(
+      "-updated_at"
+    )
   })
 })
 
