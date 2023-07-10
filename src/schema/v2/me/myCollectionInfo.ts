@@ -9,14 +9,30 @@ import {
 } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
-import { artistConnection } from "schema/v2/artist"
+import { ArtistType } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
 import { getArtistInsights } from "../artist/helpers"
 import { ArtistInsight, ArtistInsightKind } from "../artist/insights"
-import { paginationResolver } from "../fields/pagination"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "../fields/pagination"
 import ArtistSorts from "../sorts/artist_sorts"
 
 export const MAX_ARTISTS = 100
+
+const CollectedArtistConnectionType = connectionWithCursorInfo({
+  name: "CollectedArtists",
+  nodeType: ArtistType,
+  edgeFields: {
+    artworksCount: {
+      type: GraphQLInt,
+      description:
+        "When a relevant `artworksCount` field exists to augment a connection",
+      resolve: ({ artworksCount }) => artworksCount,
+    },
+  },
+}).connectionType
 
 const artistInsightsCountType = new GraphQLObjectType({
   name: "ArtistInsightsCount",
@@ -161,7 +177,7 @@ export const myCollectionInfoFields = {
   },
   collectedArtistsConnection: {
     description: "A connection of artists in the users' collection",
-    type: artistConnection.connectionType,
+    type: CollectedArtistConnectionType,
     args: pageable({
       sort: ArtistSorts,
       page: { type: GraphQLInt },

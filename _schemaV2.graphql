@@ -1685,9 +1685,6 @@ type ArtistCounts {
 
 # An edge in a connection.
 type ArtistEdge {
-  # When a relevant `artworksCount` field exists to augment a connection
-  artworksCount: Int
-
   # A cursor for use in pagination
   cursor: String!
 
@@ -3640,6 +3637,29 @@ type CitySponsoredContent {
     sort: ShowSorts
     status: EventStatus
   ): ShowConnection
+}
+
+# A connection to a list of items.
+type CollectedArtistsConnection {
+  # A list of edges.
+  edges: [CollectedArtistsEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type CollectedArtistsEdge {
+  # When a relevant `artworksCount` field exists to augment a connection
+  artworksCount: Int
+
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Artist
 }
 
 # A collection of artworks
@@ -12713,7 +12733,7 @@ type MyCollectionConnection {
     page: Int
     size: Int
     sort: ArtistSorts
-  ): ArtistConnection
+  ): CollectedArtistsConnection
   default: Boolean!
   description: String!
 
@@ -12809,7 +12829,7 @@ type MyCollectionInfo {
     page: Int
     size: Int
     sort: ArtistSorts
-  ): ArtistConnection
+  ): CollectedArtistsConnection
   default: Boolean!
   description: String!
   includesPurchasedArtworks: Boolean!
