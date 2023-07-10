@@ -45,6 +45,21 @@ const AddressVerificationInput: GraphQLFieldConfigArgumentMap = {
   },
 }
 
+const addressFieldsFromGravity = {
+  addressLine1: {
+    type: new GraphQLNonNull(GraphQLString),
+    resolve: (source) => source.address_line_1,
+  },
+  addressLine2: {
+    type: new GraphQLNonNull(GraphQLString),
+    resolve: (source) => source.address_line_2,
+  },
+  city: { type: new GraphQLNonNull(GraphQLString) },
+  country: { type: new GraphQLNonNull(GraphQLString) },
+  postalCode: { type: new GraphQLNonNull(GraphQLString) },
+  region: { type: GraphQLString },
+}
+
 const VerificationStatuses = {
   VERIFIED_NO_CHANGE: { value: "VERIFIED_NO_CHANGE" },
   VERIFIED_WITH_CHANGES: { value: "VERIFIED_WITH_CHANGES" },
@@ -73,20 +88,7 @@ const VerifyAddressType: GraphQLObjectType<
           address: {
             type: new GraphQLObjectType<any, ResolverContext>({
               name: "InputAddress",
-              fields: {
-                addressLine1: {
-                  type: new GraphQLNonNull(GraphQLString),
-                  resolve: (source) => source.address_line_1,
-                },
-                addressLine2: {
-                  type: new GraphQLNonNull(GraphQLString),
-                  resolve: (source) => source.address_line_2,
-                },
-                city: { type: new GraphQLNonNull(GraphQLString) },
-                country: { type: new GraphQLNonNull(GraphQLString) },
-                postalCode: { type: new GraphQLNonNull(GraphQLString) },
-                region: { type: GraphQLString },
-              },
+              fields: addressFieldsFromGravity,
             }),
           },
           lines: {
@@ -104,20 +106,7 @@ const VerifyAddressType: GraphQLObjectType<
             address: {
               type: new GraphQLObjectType<any, ResolverContext>({
                 name: "SuggestedAddress",
-                fields: {
-                  addressLine1: {
-                    type: new GraphQLNonNull(GraphQLString),
-                    resolve: (source) => source.address_line_1,
-                  },
-                  addressLine2: {
-                    type: new GraphQLNonNull(GraphQLString),
-                    resolve: (source) => source.address_line_2,
-                  },
-                  city: { type: new GraphQLNonNull(GraphQLString) },
-                  country: { type: new GraphQLNonNull(GraphQLString) },
-                  postalCode: { type: new GraphQLNonNull(GraphQLString) },
-                  region: { type: GraphQLString },
-                },
+                fields: addressFieldsFromGravity,
               }),
             },
             lines: {
