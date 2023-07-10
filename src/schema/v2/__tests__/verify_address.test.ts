@@ -20,9 +20,9 @@ describe("verifyAddressQuery", () => {
               city
               country
               region
-              postal_code
-              address_line_1
-              address_line_2
+              postalCode
+              addressLine1
+              addressLine2
             }
             lines
           }
@@ -31,9 +31,9 @@ describe("verifyAddressQuery", () => {
               city
               country
               region
-              postal_code
-              address_line_1
-              address_line_2
+              postalCode
+              addressLine1
+              addressLine2
             }
             lines
           }
@@ -53,10 +53,10 @@ describe("verifyAddressQuery", () => {
       verificationStatus: "VERIFIED_WITH_CHANGES",
       inputAddress: {
         address: {
-          address_line_1: "Lausitzer Straße 46",
+          addressLine1: "Lausitzer Straße 46",
           city: "Berlin",
           region: "Berlin",
-          postal_code: "10999",
+          postalCode: "10999",
           country: "DE",
         },
         lines: [
@@ -69,11 +69,11 @@ describe("verifyAddressQuery", () => {
       suggestedAddresses: [
         {
           address: {
-            address_line_1: "Lausitzer Straße 46",
-            address_line_2: "Kreuzberg",
+            addressLine1: "Lausitzer Straße 46",
+            addressLine2: "Kreuzberg",
             city: "Berlin",
             region: "Berlin",
-            postal_code: "10999",
+            postalCode: "10999",
             country: "DE",
           },
           lines: [
@@ -114,9 +114,9 @@ describe("verifyAddressQuery", () => {
               city
               country
               region
-              postal_code
-              address_line_1
-              address_line_2
+              postalCode
+              addressLine1
+              addressLine2
             }
             lines
           }
@@ -125,9 +125,9 @@ describe("verifyAddressQuery", () => {
               city
               country
               region
-              postal_code
-              address_line_1
-              address_line_2
+              postalCode
+              addressLine1
+              addressLine2
             }
             lines
           }

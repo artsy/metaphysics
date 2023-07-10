@@ -27,21 +27,19 @@ type AddressTypeSource = {
   lines: string[]
 }
 
-const addressFields = {
-  addressLine1: { type: new GraphQLNonNull(GraphQLString) },
-  addressLine2: { type: GraphQLString },
-  city: { type: GraphQLString },
-  country: { type: new GraphQLNonNull(GraphQLString) },
-  postalCode: { type: new GraphQLNonNull(GraphQLString) },
-  region: { type: GraphQLString },
-}
-
 const AddressVerificationInput: GraphQLFieldConfigArgumentMap = {
   address: {
     type: new GraphQLNonNull(
       new GraphQLInputObjectType({
         name: "AddressInput",
-        fields: addressFields,
+        fields: {
+          addressLine1: { type: new GraphQLNonNull(GraphQLString) },
+          addressLine2: { type: GraphQLString },
+          city: { type: GraphQLString },
+          country: { type: new GraphQLNonNull(GraphQLString) },
+          postalCode: { type: new GraphQLNonNull(GraphQLString) },
+          region: { type: GraphQLString },
+        },
       })
     ),
   },
@@ -76,11 +74,17 @@ const VerifyAddressType: GraphQLObjectType<
             type: new GraphQLObjectType<any, ResolverContext>({
               name: "InputAddress",
               fields: {
-                address_line_1: { type: new GraphQLNonNull(GraphQLString) },
-                address_line_2: { type: new GraphQLNonNull(GraphQLString) },
+                addressLine1: {
+                  type: new GraphQLNonNull(GraphQLString),
+                  resolve: (source) => source.address_line_1,
+                },
+                addressLine2: {
+                  type: new GraphQLNonNull(GraphQLString),
+                  resolve: (source) => source.address_line_2,
+                },
                 city: { type: new GraphQLNonNull(GraphQLString) },
                 country: { type: new GraphQLNonNull(GraphQLString) },
-                postal_code: { type: new GraphQLNonNull(GraphQLString) },
+                postalCode: { type: new GraphQLNonNull(GraphQLString) },
                 region: { type: GraphQLString },
               },
             }),
@@ -101,11 +105,17 @@ const VerifyAddressType: GraphQLObjectType<
               type: new GraphQLObjectType<any, ResolverContext>({
                 name: "SuggestedAddress",
                 fields: {
-                  address_line_1: { type: new GraphQLNonNull(GraphQLString) },
-                  address_line_2: { type: new GraphQLNonNull(GraphQLString) },
+                  addressLine1: {
+                    type: new GraphQLNonNull(GraphQLString),
+                    resolve: (source) => source.address_line_1,
+                  },
+                  addressLine2: {
+                    type: new GraphQLNonNull(GraphQLString),
+                    resolve: (source) => source.address_line_2,
+                  },
                   city: { type: new GraphQLNonNull(GraphQLString) },
                   country: { type: new GraphQLNonNull(GraphQLString) },
-                  postal_code: { type: new GraphQLNonNull(GraphQLString) },
+                  postalCode: { type: new GraphQLNonNull(GraphQLString) },
                   region: { type: GraphQLString },
                 },
               }),

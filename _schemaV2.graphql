@@ -10581,11 +10581,11 @@ type ImageURLs {
 }
 
 type InputAddress {
-  address_line_1: String!
-  address_line_2: String!
+  addressLine1: String!
+  addressLine2: String!
   city: String!
   country: String!
-  postal_code: String!
+  postalCode: String!
   region: String
 }
 
@@ -17330,11 +17330,11 @@ type SubmittedPriceEstimateParams {
 }
 
 type SuggestedAddress {
-  address_line_1: String!
-  address_line_2: String!
+  addressLine1: String!
+  addressLine2: String!
   city: String!
   country: String!
-  postal_code: String!
+  postalCode: String!
   region: String
 }
 
