@@ -75,7 +75,6 @@ export const Artwork = Record({
   price_hidden: Boolean,
   price_includes_tax: Boolean,
   price: String,
-  private: Boolean,
   provenance: String,
   published_at: String,
   published: Boolean,
