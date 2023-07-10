@@ -1,3 +1,4 @@
+import { GraphQLFieldConfigArgumentMap, GraphQLInputObjectType } from "graphql"
 import {
   GraphQLEnumType,
   GraphQLFieldConfig,
@@ -16,14 +17,34 @@ type VerifyAddressTypeSource = {
 
 type AddressTypeSource = {
   address: {
-    address_line1: string
-    address_line2: string
+    address_line_1: string
+    address_line_2: string
     city: string
     region: string
     postal_code: string
     country: string
   }
   lines: string[]
+}
+
+const addressFields = {
+  addressLine1: { type: new GraphQLNonNull(GraphQLString) },
+  addressLine2: { type: GraphQLString },
+  city: { type: GraphQLString },
+  country: { type: new GraphQLNonNull(GraphQLString) },
+  postalCode: { type: new GraphQLNonNull(GraphQLString) },
+  region: { type: GraphQLString },
+}
+
+const AddressVerificationInput: GraphQLFieldConfigArgumentMap = {
+  address: {
+    type: new GraphQLNonNull(
+      new GraphQLInputObjectType({
+        name: "AddressInput",
+        fields: addressFields,
+      })
+    ),
+  },
 }
 
 const VerificationStatuses = {
@@ -55,8 +76,8 @@ const VerifyAddressType: GraphQLObjectType<
             type: new GraphQLObjectType<any, ResolverContext>({
               name: "InputAddress",
               fields: {
-                address_line1: { type: new GraphQLNonNull(GraphQLString) },
-                address_line2: { type: new GraphQLNonNull(GraphQLString) },
+                address_line_1: { type: new GraphQLNonNull(GraphQLString) },
+                address_line_2: { type: new GraphQLNonNull(GraphQLString) },
                 city: { type: new GraphQLNonNull(GraphQLString) },
                 country: { type: new GraphQLNonNull(GraphQLString) },
                 postal_code: { type: new GraphQLNonNull(GraphQLString) },
@@ -103,17 +124,19 @@ const VerifyAddressType: GraphQLObjectType<
 export const VerifyAddress: GraphQLFieldConfig<any, ResolverContext> = {
   type: VerifyAddressType,
   description: "Verify a given address.",
-  args: {
-    addressLine1: { type: new GraphQLNonNull(GraphQLString) },
-    addressLine2: { type: GraphQLString },
-    city: { type: new GraphQLNonNull(GraphQLString) },
-    country: { type: new GraphQLNonNull(GraphQLString) },
-    postalCode: { type: new GraphQLNonNull(GraphQLString) },
-    region: { type: GraphQLString },
-  },
+  args: AddressVerificationInput,
   resolve: async (
     _,
-    { addressLine1, addressLine2, city, country, postalCode, region },
+    {
+      address: {
+        addressLine1,
+        addressLine2,
+        city,
+        country,
+        postalCode,
+        region,
+      },
+    },
     { verifyAddressLoader }
   ) => {
     if (!verifyAddressLoader) {
