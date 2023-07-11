@@ -6,11 +6,13 @@ describe("verifyAddressQuery", () => {
     const query = gql`
       {
         verifyAddress(
-          addressLine1: "Lausitzer Str. 46"
-          city: "Berlin"
-          country: "DE"
-          postalCode: "10999"
-          region: "Berlin"
+          address: {
+            addressLine1: "Lausitzer Str. 46"
+            city: "Berlin"
+            country: "DE"
+            postalCode: "10999"
+            region: "Berlin"
+          }
         ) {
           verificationStatus
           inputAddress {
@@ -18,9 +20,9 @@ describe("verifyAddressQuery", () => {
               city
               country
               region
-              postal_code
-              address_line1
-              address_line2
+              postalCode
+              addressLine1
+              addressLine2
             }
             lines
           }
@@ -29,9 +31,9 @@ describe("verifyAddressQuery", () => {
               city
               country
               region
-              postal_code
-              address_line_1
-              address_line_2
+              postalCode
+              addressLine1
+              addressLine2
             }
             lines
           }
@@ -51,10 +53,10 @@ describe("verifyAddressQuery", () => {
       verificationStatus: "VERIFIED_WITH_CHANGES",
       inputAddress: {
         address: {
-          address_line_1: "Lausitzer Straße 46",
+          addressLine1: "Lausitzer Straße 46",
           city: "Berlin",
           region: "Berlin",
-          postal_code: "10999",
+          postalCode: "10999",
           country: "DE",
         },
         lines: [
@@ -67,11 +69,11 @@ describe("verifyAddressQuery", () => {
       suggestedAddresses: [
         {
           address: {
-            address_line1: "Lausitzer Straße 46",
-            address_line2: "Kreuzberg",
+            addressLine1: "Lausitzer Straße 46",
+            addressLine2: "Kreuzberg",
             city: "Berlin",
             region: "Berlin",
-            postal_code: "10999",
+            postalCode: "10999",
             country: "DE",
           },
           lines: [
@@ -98,11 +100,13 @@ describe("verifyAddressQuery", () => {
     const query = gql`
       {
         verifyAddress(
-          addressLine1: "1251 John Calvin Drive"
-          city: "Harvey"
-          country: "US"
-          postalCode: "60426"
-          region: "Illinois"
+          address: {
+            addressLine1: "1251 John Calvin Drive"
+            city: "Harvey"
+            country: "US"
+            postalCode: "60426"
+            region: "Illinois"
+          }
         ) {
           verificationStatus
           inputAddress {
@@ -110,9 +114,9 @@ describe("verifyAddressQuery", () => {
               city
               country
               region
-              postal_code
-              address_line1
-              address_line2
+              postalCode
+              addressLine1
+              addressLine2
             }
             lines
           }
@@ -121,9 +125,9 @@ describe("verifyAddressQuery", () => {
               city
               country
               region
-              postal_code
-              address_line_1
-              address_line_2
+              postalCode
+              addressLine1
+              addressLine2
             }
             lines
           }
@@ -158,7 +162,7 @@ describe("verifyAddressQuery", () => {
       suggestedAddresses: [
         {
           address: {
-            address_line1: "1251 John Calvin Drive",
+            address_line_1: "1251 John Calvin Drive",
             city: "Harvey",
             region: "Illinois",
             postal_code: "60426",
