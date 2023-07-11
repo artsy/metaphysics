@@ -759,11 +759,15 @@ const Artist: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, { artistLoader }) => {
+  resolve: (_root, { id }, { authenticatedArtistLoader, artistLoader }) => {
     if (id.length === 0) {
       return null
     }
-    return artistLoader(id)
+
+    // use the authenticated artist loader to get custom artist data
+    const loader = authenticatedArtistLoader || artistLoader
+
+    return loader(id)
   },
 }
 export default Artist
