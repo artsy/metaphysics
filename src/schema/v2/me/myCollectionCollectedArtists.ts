@@ -42,6 +42,8 @@ export const MyCollectionCollectedArtists: GraphQLFieldConfig<
         ? true
         : args.includePersonalArtists
 
+    // Fetching the relvant artist user interests (collected_before) for the user (paginated).
+
     const {
       body: userInterests,
       headers: userInterestsheader,
@@ -52,6 +54,8 @@ export const MyCollectionCollectedArtists: GraphQLFieldConfig<
       page,
       total_count: true,
     })
+
+    // Fetching the artists for the user interests in the users collection to get the `artworksCount` metadata field (by artist ID).
 
     const { body: artists } = await collectionArtistsLoader("my-collection", {
       size: userInterests.length,
