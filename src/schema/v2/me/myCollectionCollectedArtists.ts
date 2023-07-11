@@ -63,8 +63,7 @@ export const MyCollectionCollectedArtists: GraphQLFieldConfig<
 
     const totalCount = parseInt(userInterestsheader["x-total-count"] || "0", 10)
 
-    // Augment the Gravity response with an `artworksCount` field
-    // relevant to this connection.
+    // Augmenting the response with metadata related to the collection and the user interests ()`artworksCount` and `private`).
     const artistsWithMetadata = userInterests.map((userInterest) => {
       return {
         ...userInterest.interest,
