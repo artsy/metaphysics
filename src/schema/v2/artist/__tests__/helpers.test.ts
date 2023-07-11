@@ -99,38 +99,34 @@ describe("getArtistInsights", () => {
   })
 
   describe("string insight fields", () => {
-    const fields = [
-      {
-        key: "highAuctionRecord",
-        kind: "HIGH_AUCTION_RECORD",
-        value: "£18.6m, Sotheby's, 2021",
-      } as any,
-    ]
+    it(`returns an empty array of entities when the HIGH_AUCTION_RECORD has a value and description`, () => {
+      const artist = {
+        highAuctionRecord: {
+          price: "£18.6m",
+          organization: "Sotheby's",
+          year: "2021",
+        },
+      }
 
-    fields.forEach((field) => {
-      it(`returns an empty array of entities when the ${field.key} has a value and sets the description`, () => {
-        const artist = {
-          [field.key]: field.value,
-        }
+      const insights = getArtistInsights(artist)
+      const insight = insights.find(
+        (insight) => insight.kind === "HIGH_AUCTION_RECORD"
+      )!
 
-        const insights = getArtistInsights(artist)
-        const insight = insights.find((insight) => insight.kind === field.kind)!
+      expect(insight.label).toEqual("High Auction Record (£18.6m)")
+      expect(insight.count).toEqual(0)
+      expect(insight.entities).toEqual([])
+      expect(insight.description).toEqual("Sotheby's, 2021")
+    })
 
-        expect(insight.count).toEqual(0)
-        expect(insight.entities).toEqual([])
-        expect(insight.description).toEqual(field.value)
-      })
+    it(`returns an empty artist object when the HIGH_AUCTION_RECORD has no value`, () => {
+      const artist = {}
+      const insights = getArtistInsights(artist)
+      const insight = insights.find(
+        (insight) => insight.kind === "HIGH_AUCTION_RECORD"
+      )
 
-      it(`returns an empty artist object when the ${field.key} has no value`, () => {
-        field.value = null
-        const artist = {
-          [field.key]: field.value,
-        }
-
-        const insights = getArtistInsights(artist)
-        const insight = insights.find((insight) => insight.kind === field.kind)
-        expect(insight).toBeUndefined()
-      })
+      expect(insight).toBeUndefined()
     })
   })
 })

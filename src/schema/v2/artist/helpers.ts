@@ -82,9 +82,18 @@ export const ARTIST_INSIGHT_MAPPING: Record<
     getLabel: () => "Active Secondary Market",
   },
   HIGH_AUCTION_RECORD: {
-    getDescription: (artist) => artist.highAuctionRecord,
+    getDescription: (artist) =>
+      artist.highAuctionRecord &&
+      [
+        artist.highAuctionRecord.organization,
+        artist.highAuctionRecord.year,
+      ].join(", "),
     getEntities: (artist) => artist.highAuctionRecord && [],
-    getLabel: () => "High Auction Record",
+    getLabel: (artist) => {
+      return artist.highAuctionRecord
+        ? `High Auction Record (${artist.highAuctionRecord.price})`
+        : "High Auction Record"
+    },
   },
   ARTSY_VANGUARD_YEAR: {
     getDescription: () =>
@@ -185,8 +194,11 @@ export const getAuctionRecord = async (artist, auctionLotsLoader) => {
 
   const { currency, price_realized_cents } = auctionLot
   const price = priceDisplayText(price_realized_cents, currency, "0.0a")
-  const year = auctionLot.sale_date.split("-")[0]
-  const highAuctionRecord = [price, auctionLot.organization, year].join(", ")
+  const [year] = auctionLot.sale_date.split("-")
 
-  return highAuctionRecord
+  return {
+    price,
+    organization: auctionLot.organization,
+    year,
+  }
 }

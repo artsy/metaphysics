@@ -256,7 +256,6 @@ const mockArtworksResponse = [
     price_hidden: false,
     edition_sets_count: 0,
     published: true,
-    private: false,
     feature_eligible: false,
     price_currency: "USD",
     price_includes_tax: false,
