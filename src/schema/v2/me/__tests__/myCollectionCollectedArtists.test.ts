@@ -161,8 +161,6 @@ const meUserInterestsLoaderResponse = {
         _id: "4d8b92bb4eb68a1b2c00044c",
         artworks_count: 2844,
         birthday: "1929",
-        blurb:
-          "Yayoi Kusama dazzles audiences worldwide with her immersive “Infinity Mirror Rooms” and an aesthetic that embraces light, polka dots, and pumpkins. The avant-garde artist first rose to prominence in 1960s New York, where she staged provocative [Happenings](https://www.artsy.net/gene/happenings) and exhibited hallucinatory paintings of loops and [dots](https://www.artsy.net/artist-series/yayoi-kusama-polka-dots) that she called “[Infinity Nets](https://www.artsy.net/artist-series/yayoi-kusama-infinity-nets).” Kusama also influenced [Andy Warhol](https://www.artsy.net/artist/andy-warhol) and augured the rise of feminist and [Pop art](https://www.artsy.net/gene/pop-art). She has been the subject of major exhibitions at the [Museum of Modern Art](https://www.artsy.net/museum-of-modern-art), [Centre Pompidou](https://www.artsy.net/centrepompidou), [Tate Modern](https://www.artsy.net/tate), and the [National Museum of Modern Art in Tokyo](https://www.artsy.net/the-national-museum-of-modern-art-tokyo). In 1993, Kusama represented Japan at the Venice Biennale. Today, her work regularly sells for seven figures on the secondary market. Throughout her disparate practice, Kusama has continued to explore her own obsessive-compulsive disorder, sexuality, freedom, and perception. In 1977, Kusama voluntarily checked herself into a psychiatric hospital in Tokyo, where she continues to live today. ",
         consignable: true,
         created_at: "2010-11-15T16:32:38+00:00",
         critically_acclaimed: true,
@@ -211,8 +209,6 @@ const meUserInterestsLoaderResponse = {
         _id: "578e58208b3b812f72004475",
         artworks_count: 33,
         birthday: "1862",
-        blurb:
-          "A groundbreaking pioneer of [abstract art](https://www.artsy.net/gene/abstract-art), Hilma af Klint created [esoteric, mystical paintings](https://www.artsy.net/artist/hilma-af-klint) that have found a wide audience since being repopularized in the 21st century. Trained at the Royal Swedish Academy of Fine Arts, the Stockholm-born artist developed her visual language before other abstract artists of her time, including [Wassily Kandinsky](https://www.artsy.net/artist/wassily-kandinsky), [Kasimir Malevich](https://www.artsy.net/artist/kasimir-severinovich-malevich), and [Piet Mondrian](https://www.artsy.net/artist/piet-mondrian). Klint achieved fame long after them, in part because she wanted her works kept private until after her death. Her cosmic paintings made their international debut in 1986, touring from Los Angeles to the Hague, and Stockholm’s Moderna Museet staged a major retrospective of 230 paintings in 2013. The artist’s renown has only grown: A 2018–2019 [Guggenheim Museum ](https://www.artsy.net/partner/guggenheim-museum)show broke attendance records for the museum, attracting more than 600,000 visitors. Often monumental, as exemplified by her striking series “[The Ten Largest](https://www.artsy.net/artwork/hilma-af-klint-group-iv-the-ten-largest-no-7-adulthood-grupp-iv-de-tio-storsta-nr-7-mannaaldern-from-untitled-series),” af Klint’s paintings are filled with biomorphic and [geometric](https://www.artsy.net/gene/geometric) forms that translate her understanding of an unseen but palpable spiritual world.",
         consignable: false,
         created_at: "2016-07-19T16:41:04+00:00",
         critically_acclaimed: true,
