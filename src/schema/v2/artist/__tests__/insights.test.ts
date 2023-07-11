@@ -59,7 +59,7 @@ describe("ArtistInsights type", () => {
       expect(data!.artist.insights).toEqual([
         {
           type: "ACTIVE_SECONDARY_MARKET",
-          label: "Active Secondary Market",
+          label: "Active secondary market",
           entities: [],
         },
         {
