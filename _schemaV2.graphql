@@ -18984,6 +18984,7 @@ type UserInterestEdge {
   # The item at the end of the edge
   node: UserInterestInterest
   ownerType: String
+  private: Boolean!
 }
 
 union UserInterestInterest = Artist | Gene
