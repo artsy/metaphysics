@@ -4,6 +4,8 @@ import { priceDisplayText } from "lib/moneyHelpers"
 const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
   .artists
 
+const FOLLOWER_GROWTH_MIN_VALUE = 20
+
 // In order of importance
 export const ARTIST_INSIGHT_KINDS = [
   "HIGH_AUCTION_RECORD",
@@ -105,11 +107,9 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   },
   GAINING_FOLLOWERS: {
     getDescription: (artist) =>
-      `${artistNewFollowersPercentage(
-        artist
-      )}% increase in Artsy followers compared to same time last year.`,
+      `${artist.follower_growth}% increase in Artsy followers compared to same time last year.`,
     getEntities: (artist) =>
-      artistNewFollowersPercentage(artist) >= 20 ? [] : null,
+      artist.follower_growth >= FOLLOWER_GROWTH_MIN_VALUE ? [] : null,
     getLabel: () => `Gaining Followers`,
   },
   CRITICALLY_ACCLAIMED: {
@@ -159,19 +159,6 @@ const splitEntities = (
     .map((entity) => entity.trim())
 
   return entities
-}
-
-const artistNewFollowersPercentage = (artist) => {
-  if (
-    artist.follow_count === 0 ||
-    artist.follow_count - artist.last_year_follow_count === 0
-  )
-    return 0
-
-  return Math.floor(
-    (artist.last_year_follow_count * 100) /
-      (artist.follow_count - artist.last_year_follow_count)
-  )
 }
 
 export const getArtistInsights = (artist) => {

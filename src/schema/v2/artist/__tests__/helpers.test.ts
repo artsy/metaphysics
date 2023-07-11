@@ -130,57 +130,31 @@ describe("getArtistInsights", () => {
     })
   })
 
-  describe("gaining followers insight", () => {
-    const fields = [
-      {
-        kind: "GAINING_FOLLOWERS",
-        artist: {
-          follow_count: 200,
-          last_year_follow_count: 40,
-        },
-        returnsInsight: true,
-      },
-      {
-        kind: "GAINING_FOLLOWERS",
-        artist: {
-          follow_count: 200,
-          last_year_follow_count: 10,
-        },
-        returnsInsight: false,
-      },
-      {
-        kind: "GAINING_FOLLOWERS",
-        artist: {
-          follow_count: 200,
-          last_year_follow_count: 200,
-        },
-        returnsInsight: false,
-      },
-      {
-        kind: "GAINING_FOLLOWERS",
-        artist: {
-          follow_count: 0,
-          last_year_follow_count: 0,
-        },
-        returnsInsight: false,
-      },
-    ]
+  describe("GAINING_FOLLOWERS insight", () => {
+    const kind = "GAINING_FOLLOWERS"
 
-    fields.forEach((field) => {
-      it(`${
-        field.returnsInsight ? "returns" : "does not return"
-      } insight when the follow_count is ${
-        field.artist.follow_count
-      } and last_year_follow_count is ${
-        field.artist.last_year_follow_count
-      }`, () => {
-        const artist = field.artist
+    it("returns insight when the follower_growth is more than 20", () => {
+      const artist = {
+        follower_growth: 40,
+      }
 
-        const insights = getArtistInsights(artist)
-        const insight = insights.find((insight) => insight.kind === field.kind)!
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === kind)!
 
-        expect(!!insight).toEqual(field.returnsInsight)
-      })
+      expect(insight.description).toEqual(
+        "40% increase in Artsy followers compared to same time last year."
+      )
+    })
+
+    it("does not return insight when the follower_growth is less than 20", () => {
+      const artist = {
+        follower_growth: 10,
+      }
+
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === kind)
+
+      expect(insight).toBeUndefined()
     })
   })
 })
