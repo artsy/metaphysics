@@ -7,14 +7,10 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { pageable } from "relay-cursor-paging"
-import { artistConnection } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
 import { getArtistInsights } from "../artist/helpers"
 import { ArtistInsight, ArtistInsightKind } from "../artist/insights"
-import { paginationResolver } from "../fields/pagination"
-import ArtistSorts from "../sorts/artist_sorts"
+import { MyCollectionCollectedArtists } from "./myCollectionCollectedArtists"
 
 export const MAX_ARTISTS = 100
 
@@ -159,67 +155,7 @@ export const myCollectionInfoFields = {
       return insights
     },
   },
-  collectedArtistsConnection: {
-    description: "A connection of artists in the users' collection",
-    type: artistConnection.connectionType,
-    args: pageable({
-      sort: ArtistSorts,
-      page: { type: GraphQLInt },
-      size: { type: GraphQLInt },
-      includePersonalArtists: {
-        type: GraphQLBoolean,
-        defaultValue: false,
-        description: "Include artists that have been created by the user.",
-      },
-    }),
-    resolve: async (_root, args, context) => {
-      const { collectionArtistsLoader, userID } = context
-
-      if (!collectionArtistsLoader) return
-
-      const { page, offset, size, sort } = convertConnectionArgsToGravityArgs(
-        args
-      )
-
-      // TODO: Remove this once all clients pass includePersonalArtists correctly
-      // This is a hack we need to return the correct results for older cleints that don't send the param `includePersonalArtists`.
-      // With this solution we are defaulting to true if the query comes from the My Collection artwork form (which is the only query that passes `first: 100`)
-      const SIZE_ARG_VALUE_FOR_MY_COLLECTION_ARTWORK_FORM = 100
-      const includePersonalArtists =
-        args.first === SIZE_ARG_VALUE_FOR_MY_COLLECTION_ARTWORK_FORM
-          ? true
-          : args.includePersonalArtists
-
-      const { body, headers } = await collectionArtistsLoader("my-collection", {
-        size,
-        page,
-        sort,
-        total_count: true,
-        user_id: userID,
-        include_personal_artists: includePersonalArtists,
-      })
-      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-      // Augment the Gravity response with an `artworksCount` field
-      // relevant to this connection.
-      const artists = body.map((artist) => {
-        return {
-          ...artist,
-          artworksCount: artist.artworks_count_within_collection,
-        }
-      })
-
-      return paginationResolver({
-        totalCount,
-        offset,
-        size,
-        page,
-        body: artists,
-        args,
-        resolveNode: (artist) => artist,
-      })
-    },
-  },
+  collectedArtistsConnection: MyCollectionCollectedArtists,
 }
 
 const MyCollectionInfoType = new GraphQLObjectType<any, ResolverContext>({

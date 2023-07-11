@@ -15,9 +15,9 @@ import { getPagingParameters, pageable } from "relay-cursor-paging"
 import Article, { articleConnection } from "schema/v2/article"
 import { artworkConnection } from "schema/v2/artwork"
 import {
-  auctionResultConnection,
   AuctionResultSorts,
   AuctionResultsState,
+  auctionResultConnection,
 } from "schema/v2/auction_result"
 import cached from "schema/v2/fields/cached"
 import { date } from "schema/v2/fields/date"
@@ -32,6 +32,7 @@ import {
 import Image, { getDefault } from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
+import { PartnerType } from "schema/v2/partner/partner"
 import PartnerArtist, {
   partnersForArtist,
 } from "schema/v2/partner/partner_artist"
@@ -43,7 +44,6 @@ import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
 import { GeneType } from "../gene"
-import { PartnerType } from "schema/v2/partner/partner"
 import ArtistArtworksFilters from "./artwork_filters"
 import ArtistCarousel from "./carousel"
 import { CurrentEvent } from "./current"
@@ -774,6 +774,11 @@ const edgeFields = {
     description:
       "When a relevant `artworksCount` field exists to augment a connection",
     resolve: ({ artworksCount }) => artworksCount,
+  },
+  private: {
+    type: GraphQLBoolean,
+    description: "Whether the collected artist is visible to partners.",
+    resolve: (userInterest) => userInterest.private,
   },
 }
 

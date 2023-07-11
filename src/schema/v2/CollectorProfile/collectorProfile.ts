@@ -1,23 +1,23 @@
 import date, { date as dateFormatter } from "schema/v2/fields/date"
 
-import { InternalIDFields } from "schema/v2/object_identification"
 import {
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLFieldConfigMap,
   GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
-  GraphQLBoolean,
-  GraphQLList,
-  GraphQLFieldConfigMap,
-  GraphQLNonNull,
-  GraphQLFieldConfig,
 } from "graphql"
-import { ResolverContext } from "types/graphql"
 import Image, { normalizeImageData } from "schema/v2/image"
+import { InternalIDFields } from "schema/v2/object_identification"
+import { ResolverContext } from "types/graphql"
 
-import { userInterestType } from "../userInterests"
-import { myLocationType } from "../me/myLocation"
 import initials from "schema/v2/fields/initials"
+import { myLocationType } from "../me/myLocation"
+import { userInterestType } from "../userInterests"
 
 export const CollectorProfileFields: GraphQLFieldConfigMap<
   any,
@@ -55,8 +55,10 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   },
   userInterests: {
     type: new GraphQLNonNull(new GraphQLList(userInterestType)),
-    resolve: (_collectorProfile, _args, { meUserInterestsLoader }) => {
-      return meUserInterestsLoader?.()
+    resolve: async (_collectorProfile, _args, { meUserInterestsLoader }) => {
+      const result = await meUserInterestsLoader?.()
+
+      return result?.body
     },
   },
 
