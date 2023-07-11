@@ -19,6 +19,7 @@ const ArtistPageEnumType = new GraphQLEnumType({
     ABOUT: { value: "ABOUT" },
     ARTWORKS: { value: "ARTWORKS" },
     AUCTION_RESULTS: { value: "AUCTION_RESULTS" },
+    ARTIST_SERIES: { value: "ARTIST_SERIES" },
   },
 })
 
@@ -45,6 +46,12 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
             return `Find out about ${metaName(
               artist
             )}’s auction history, past sales, and current market value. Browse Artsy’s Price Database for recent auction results from the artist.`
+          case "ARTIST_SERIES":
+            return `Explore ${metaName(
+              artist
+            )}’s series on Artsy and discover artworks available to collect. Browse the themes and artistic expressions that define ${metaName(
+              artist
+            )}’s career.`
         }
       },
     },
@@ -62,6 +69,8 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
             return `${metaName(
               artist
             )} - Auction Results and Sales Data | Artsy`
+          case "ARTIST_SERIES":
+            return `${metaName(artist)} - Series | Artsy`
         }
       },
     },
