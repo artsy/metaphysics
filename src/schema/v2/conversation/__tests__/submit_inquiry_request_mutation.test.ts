@@ -10,7 +10,7 @@ describe("SubmitInquiryRequestMutation", () => {
     })
   })
 
-  const authenticatedArtistLoader = jest.fn(() => {
+  const artistLoader = jest.fn(() => {
     return Promise.resolve({
       id: "bob-ross",
       name: "Bob Ross",
@@ -82,7 +82,7 @@ describe("SubmitInquiryRequestMutation", () => {
       const context = {
         submitArtworkInquiryRequestLoader,
         userByIDLoader,
-        authenticatedArtistLoader,
+        artistLoader,
       }
 
       expect.assertions(4)
@@ -98,7 +98,7 @@ describe("SubmitInquiryRequestMutation", () => {
         },
       })
       expect(userByIDLoader).toHaveBeenCalledWith("rob-ross")
-      expect(authenticatedArtistLoader).toHaveBeenCalledWith("bob-ross")
+      expect(artistLoader).toHaveBeenCalledWith("bob-ross")
       expect(submitInquiryRequestMutation).toMatchSnapshot()
     })
   })
@@ -156,7 +156,7 @@ describe("SubmitInquiryRequestMutation", () => {
       const context = {
         submitArtworkInquiryRequestLoader,
         userByIDLoader,
-        authenticatedArtistLoader,
+        artistLoader,
       }
 
       expect.assertions(4)
@@ -169,7 +169,7 @@ describe("SubmitInquiryRequestMutation", () => {
         message: "do you have sunset paintings?",
       })
       expect(userByIDLoader).toHaveBeenCalledWith("rob-ross")
-      expect(authenticatedArtistLoader).toHaveBeenCalledWith("bob-ross")
+      expect(artistLoader).toHaveBeenCalledWith("bob-ross")
       expect(submitInquiryRequestMutation).toMatchSnapshot()
     })
   })

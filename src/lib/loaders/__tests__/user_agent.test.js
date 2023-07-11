@@ -23,7 +23,7 @@ describe("User-Agent (with the real data loaders)", () => {
     expect.assertions(1)
     await runQuery(query, context)
 
-    expect(gravity).toBeCalledWith("artist/andy-warhol?", null, {
+    expect(gravity).toBeCalledWith("artist/andy-warhol?", "access-token", {
       userAgent,
     })
   })
