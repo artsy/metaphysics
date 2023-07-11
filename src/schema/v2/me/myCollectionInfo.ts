@@ -164,7 +164,8 @@ export const myCollectionInfoFields = {
     type: artistConnection.connectionType,
     args: pageable({
       artistIDs: {
-        type: new GraphQLList(GraphQLString),
+        description: "List of artist ids that is used to filter results",
+        type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       },
       includePersonalArtists: {
         type: GraphQLBoolean,
