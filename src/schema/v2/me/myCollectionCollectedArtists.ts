@@ -33,20 +33,11 @@ export const MyCollectionCollectedArtists: GraphQLFieldConfig<
       args
     )
 
-    // TODO: Remove this once all clients pass includePersonalArtists correctly
-    // This is a hack we need to return the correct results for older cleints that don't send the param `includePersonalArtists`.
-    // With this solution we are defaulting to true if the query comes from the My Collection artwork form (which is the only query that passes `first: 100`)
-    const SIZE_ARG_VALUE_FOR_MY_COLLECTION_ARTWORK_FORM = 100
-    const includePersonalArtists =
-      args.first === SIZE_ARG_VALUE_FOR_MY_COLLECTION_ARTWORK_FORM
-        ? true
-        : args.includePersonalArtists
-
     // Fetching the relvant artist user interests (collected_before) for the user (paginated).
 
     const {
       body: userInterests,
-      headers: userInterestsheader,
+      headers: userInterestsHeader,
     } = await meUserInterestsLoader({
       interest_type: "Artist",
       category: "collected_before",
@@ -61,13 +52,14 @@ export const MyCollectionCollectedArtists: GraphQLFieldConfig<
       size: userInterests.length,
       sort,
       user_id: userID,
-      include_personal_artists: includePersonalArtists,
+      include_personal_artists: true,
       artist_ids: userInterests.map((interest) => interest.internalID),
     })
 
-    const totalCount = parseInt(userInterestsheader["x-total-count"] || "0", 10)
+    const totalCount = parseInt(userInterestsHeader["x-total-count"] || "0", 10)
 
     // Augmenting the response with metadata related to the collection and the user interests ()`artworksCount` and `private`).
+
     const artistsWithMetadata = userInterests.map((userInterest) => {
       return {
         ...userInterest.interest,
