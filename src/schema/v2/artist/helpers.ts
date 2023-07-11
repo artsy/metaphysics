@@ -84,10 +84,10 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   HIGH_AUCTION_RECORD: {
     getDescription: (artist) =>
       artist.highAuctionRecord &&
-      [
+      `${[
         artist.highAuctionRecord.organization,
         artist.highAuctionRecord.year,
-      ].join(", "),
+      ].join(", ")}.`,
     getEntities: (artist) => artist.highAuctionRecord && [],
     getLabel: (artist) => {
       return artist.highAuctionRecord
