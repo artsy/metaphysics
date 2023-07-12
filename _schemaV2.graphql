@@ -3654,7 +3654,7 @@ type CitySponsoredContent {
 }
 
 type collectArtistsFailure {
-  mutationError: String!
+  mutationError: GravityMutationError
 }
 
 input CollectArtistsMutationInput {
@@ -8355,7 +8355,7 @@ type DeleteUserInterestMutationPayload {
 }
 
 type deleteUserInterestsFailure {
-  mutationError: String!
+  mutationError: GravityMutationError
 }
 
 input DeleteUserInterestsMutationInput {
