@@ -56,7 +56,10 @@ const addressFieldsFromGravity = {
   },
   city: { type: new GraphQLNonNull(GraphQLString) },
   country: { type: new GraphQLNonNull(GraphQLString) },
-  postalCode: { type: new GraphQLNonNull(GraphQLString) },
+  postalCode: {
+    type: new GraphQLNonNull(GraphQLString),
+    resolve: (source) => source.postal_code,
+  },
   region: { type: GraphQLString },
 }
 
