@@ -58,7 +58,7 @@ describe("me.myCollection", () => {
 
       meMyCollectionArtworksLoader: async () => mockCollectionArtworksResponse,
       marketPriceInsightsBatchLoader,
-      authenticatedArtistLoader: () =>
+      artistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
         }),
@@ -100,7 +100,7 @@ describe("me.myCollection", () => {
         meMyCollectionArtworksLoader: async () =>
           mockCollectionArtworksResponse,
         marketPriceInsightsBatchLoader: jest.fn(async () => mockVortexResponse),
-        authenticatedArtistLoader: () =>
+        artistLoader: () =>
           Promise.resolve({
             _id: "artist-id",
           }),
@@ -204,7 +204,7 @@ describe("me.myCollection", () => {
           } as any,
         }),
       marketPriceInsightsBatchLoader,
-      authenticatedArtistLoader: () =>
+      artistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
         }),
@@ -304,7 +304,7 @@ describe("me.myCollection", () => {
             edges: [],
           } as any,
         }),
-      authenticatedArtistLoader: () =>
+      artistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
         }),
@@ -376,7 +376,7 @@ describe("me.myCollection", () => {
           },
         }),
       marketPriceInsightsBatchLoader,
-      authenticatedArtistLoader: () =>
+      artistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
         }),

@@ -113,7 +113,7 @@ describe("getArtistInsights", () => {
         (insight) => insight.kind === "HIGH_AUCTION_RECORD"
       )!
 
-      expect(insight.label).toEqual("High Auction Record (£18.6m)")
+      expect(insight.label).toEqual("High auction record (£18.6m)")
       expect(insight.count).toEqual(0)
       expect(insight.entities).toEqual([])
       expect(insight.description).toEqual("Sotheby's, 2021")

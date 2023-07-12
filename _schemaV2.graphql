@@ -1775,6 +1775,7 @@ type ArtistMeta {
 
 enum ArtistPage {
   ABOUT
+  ARTIST_SERIES
   ARTWORKS
   AUCTION_RESULTS
 }
@@ -3718,6 +3719,8 @@ type CollectionsEdge {
 enum CollectionSorts {
   CREATED_AT_ASC
   CREATED_AT_DESC
+  UPDATED_AT_ASC
+  UPDATED_AT_DESC
 }
 
 type CollectorProfileArtists {

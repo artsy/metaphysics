@@ -28,6 +28,12 @@ export const CollectionSorts = new GraphQLEnumType({
     CREATED_AT_DESC: {
       value: "-created_at",
     },
+    UPDATED_AT_ASC: {
+      value: "updated_at",
+    },
+    UPDATED_AT_DESC: {
+      value: "-updated_at",
+    },
   },
 })
 

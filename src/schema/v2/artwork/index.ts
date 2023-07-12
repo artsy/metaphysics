@@ -264,16 +264,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               "Use whatever is in the original response instead of making a request",
           },
         },
-        resolve: (
-          { artist },
-          { shallow },
-          { artistLoader, authenticatedArtistLoader }
-        ) => {
-          const loader = authenticatedArtistLoader || artistLoader
-
+        resolve: ({ artist }, { shallow }, { artistLoader }) => {
           if (!artist) return null
           if (shallow) return artist
-          return loader(artist.id).catch(() => null)
+          return artistLoader(artist.id).catch(() => null)
         },
       },
       hasMarketPriceInsights: {
@@ -310,17 +304,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               "Use whatever is in the original response instead of making a request",
           },
         },
-        resolve: (
-          { artists },
-          { shallow },
-          { authenticatedArtistLoader, artistLoader }
-        ) => {
+        resolve: ({ artists }, { shallow }, { artistLoader }) => {
           if (shallow) return artists
 
-          const loader = authenticatedArtistLoader || artistLoader
-
           return Promise.all(
-            artists.map((artist) => loader(artist.id))
+            artists.map((artist) => artistLoader(artist.id))
           ).catch(() => [])
         },
       },

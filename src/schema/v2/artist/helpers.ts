@@ -29,8 +29,10 @@ type ArtistInsightKind = typeof ARTIST_INSIGHT_KINDS[number]
 export const ARTIST_INSIGHT_MAPPING: Record<
   ArtistInsightKind,
   {
+    // FIXME: There should be a function that determines visibility.
+    // Currently it uses `getEntities` but not empty array but an existential check.
     getDescription: (artist: any) => string | null
-    getEntities: (artist: any) => string[]
+    getEntities: (artist: any) => string[] | null
     getLabel: (artist: any, count: number) => string
   }
 > = {
@@ -77,37 +79,37 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       }`,
   },
   ACTIVE_SECONDARY_MARKET: {
-    getDescription: () => "Recent auction results in the Artsy Price Database.",
+    getDescription: () => "Recent auction results in the Artsy Price Database",
     getEntities: (artist) => artist.active_secondary_market && [],
-    getLabel: () => "Active Secondary Market",
+    getLabel: () => "Active secondary market",
   },
   HIGH_AUCTION_RECORD: {
     getDescription: (artist) =>
       artist.highAuctionRecord &&
-      [
+      `${[
         artist.highAuctionRecord.organization,
         artist.highAuctionRecord.year,
-      ].join(", "),
+      ].join(", ")}`,
     getEntities: (artist) => artist.highAuctionRecord && [],
     getLabel: (artist) => {
       return artist.highAuctionRecord
-        ? `High Auction Record (${artist.highAuctionRecord.price})`
-        : "High Auction Record"
+        ? `High auction record (${artist.highAuctionRecord.price})`
+        : "High auction record"
     },
   },
   ARTSY_VANGUARD_YEAR: {
     getDescription: () =>
-      "Featured in Artsy’s annual list of the most promising artists working today.",
+      "Featured in Artsy’s annual list of the most promising artists working today",
     getEntities: (artist) => artist.vanguard_year && [],
     getLabel: (artist) => `The Artsy Vanguard ${artist.vanguard_year}`,
   },
   CRITICALLY_ACCLAIMED: {
-    getDescription: () => "Recognized by major institutions and publications.",
+    getDescription: () => "Recognized by major institutions and publications",
     getEntities: (artist) => artist.critically_acclaimed && [],
-    getLabel: () => "Critically Acclaimed",
+    getLabel: () => "Critically acclaimed",
   },
   RESIDENCIES: {
-    getDescription: () => "Established artist residencies.",
+    getDescription: () => "Established artist residencies",
     getEntities: (artist) => splitEntities(artist.residencies),
     getLabel: (_artist, count: number) =>
       `Participated in ${
@@ -117,7 +119,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       }`,
   },
   PRIVATE_COLLECTIONS: {
-    getDescription: () => "A list of collections they are part of.",
+    getDescription: () => "A list of collections they are part of",
     getEntities: (artist) => splitEntities(artist.private_collections),
     getLabel: (_artist, count: number) =>
       `Collected by ${
@@ -127,7 +129,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       }`,
   },
   AWARDS: {
-    getDescription: () => "Awards and prizes the artist has won.",
+    getDescription: () => "Awards and prizes the artist has won",
     getEntities: (artist) => splitEntities(artist.awards),
     getLabel: (_artist, count: number) =>
       `Winner of ${
@@ -136,7 +138,10 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   },
 }
 
-const splitEntities = (value, delimiter = "|") => {
+const splitEntities = (
+  value: string | null,
+  delimiter = "|"
+): string[] | null => {
   if (!value) return null
 
   const entities = value
