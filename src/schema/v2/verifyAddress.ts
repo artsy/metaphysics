@@ -51,7 +51,7 @@ const addressFieldsFromGravity = {
     resolve: (source) => source.address_line_1,
   },
   addressLine2: {
-    type: new GraphQLNonNull(GraphQLString),
+    type: GraphQLString,
     resolve: (source) => source.address_line_2,
   },
   city: { type: new GraphQLNonNull(GraphQLString) },
@@ -146,7 +146,7 @@ export const VerifyAddress: GraphQLFieldConfig<any, ResolverContext> = {
     }
 
     try {
-      return await verifyAddressLoader({
+      const result = await verifyAddressLoader({
         address_line_1: addressLine1,
         address_line_2: addressLine2,
         postal_code: postalCode,
@@ -154,6 +154,7 @@ export const VerifyAddress: GraphQLFieldConfig<any, ResolverContext> = {
         region: region,
         country: country,
       })
+      return result
     } catch (error) {
       throw new Error(error)
     }
