@@ -41,7 +41,7 @@ describe("verifyAddressQuery", () => {
       }
     `
 
-    const validIntAddress = {
+    const expectedArgs = {
       address_line_1: "Lausitzer Str. 46",
       city: "Berlin",
       country: "DE",
@@ -53,10 +53,10 @@ describe("verifyAddressQuery", () => {
       verificationStatus: "VERIFIED_WITH_CHANGES",
       inputAddress: {
         address: {
-          addressLine1: "Lausitzer Straße 46",
+          address_line_1: "Lausitzer Straße 46",
           city: "Berlin",
           region: "Berlin",
-          postalCode: "10999",
+          postal_code: "10999",
           country: "DE",
         },
         lines: [
@@ -69,11 +69,11 @@ describe("verifyAddressQuery", () => {
       suggestedAddresses: [
         {
           address: {
-            addressLine1: "Lausitzer Straße 46",
-            addressLine2: "Kreuzberg",
+            address_line_1: "Lausitzer Straße 46",
+            address_line_2: "Kreuzberg",
             city: "Berlin",
             region: "Berlin",
-            postalCode: "10999",
+            postal_code: "10999",
             country: "DE",
           },
           lines: [
@@ -93,7 +93,7 @@ describe("verifyAddressQuery", () => {
     await runAuthenticatedQuery(query, {
       verifyAddressLoader,
     })
-    expect(verifyAddressLoader).toHaveBeenCalledWith(validIntAddress)
+    expect(verifyAddressLoader).toHaveBeenCalledWith(expectedArgs)
   })
 
   it("works with a domestic -US- address", async () => {
