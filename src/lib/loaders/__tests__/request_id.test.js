@@ -23,7 +23,7 @@ describe("requestID (with the real data loaders)", () => {
 
     await runQuery(query, context)
 
-    expect(gravity).toBeCalledWith("artist/andy-warhol?", null, {
+    expect(gravity).toBeCalledWith("artist/andy-warhol?", "access-token", {
       requestIDs,
     })
   })
