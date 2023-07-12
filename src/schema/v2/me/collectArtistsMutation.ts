@@ -6,6 +6,10 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import {
+  GravityMutationErrorType,
+  formatGravityError,
+} from "lib/gravityErrorHandler"
 import { uniq } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { UserInterest, userInterestType } from "../userInterests"
@@ -28,7 +32,7 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
   name: "collectArtistsFailure",
   fields: () => ({
     mutationError: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GravityMutationErrorType,
       resolve: (err) => err,
     },
   }),
@@ -82,11 +86,12 @@ export const collectArtistsMutation = mutationWithClientMutationId<
 
       return userInterests
     } catch (error) {
-      if ("body" in (error as any)) {
-        return { ...error.body, _type: "GravityMutationError" }
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
       }
-
-      throw new Error(error)
     }
   },
 })
