@@ -7,7 +7,7 @@ export default (key) => {
   return {
     start: () => {
       time = process.hrtime()
-      info(`Loading: ${key}`)
+      info(`Loading: ${decodeURIComponent(key)}`)
       return time
     },
 
@@ -17,7 +17,7 @@ export default (key) => {
       const end = process.hrtime(time)
       time = null
       const interval = `${end[0]}s ${round(end[1] / 1000000, 3)}ms`
-      info(`Elapsed: ${interval} - ${key}`)
+      info(`Elapsed: ${interval} - ${decodeURIComponent(key)}`)
       return interval
     },
   }
