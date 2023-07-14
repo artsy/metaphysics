@@ -14,19 +14,21 @@ import {
 } from "lib/gravityErrorHandler"
 
 interface Input {
-  displayName: string
-  first: string
+  coverArtworkId?: string
+  displayName?: string
+  first?: string
   id: string
-  last: string
-  middle: string
+  last?: string
+  middle?: string
 }
 
 interface GravityInput {
-  display_name: string
-  first: string
+  cover_artwork_id?: string
+  display_name?: string
+  first?: string
   id: string
-  last: string
-  middle: string
+  last?: string
+  middle?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -64,6 +66,7 @@ export const updateArtistMutation = mutationWithClientMutationId<
   name: "UpdateArtistMutation",
   description: "Update the artist",
   inputFields: {
+    coverArtworkId: { type: GraphQLString },
     displayName: { type: GraphQLString },
     first: { type: GraphQLString },
     id: { type: new GraphQLNonNull(GraphQLString) },
