@@ -50,8 +50,8 @@ describe("verifyAddressQuery", () => {
     }
 
     const mockAddressVerificationResult = {
-      verificationStatus: "VERIFIED_WITH_CHANGES",
-      inputAddress: {
+      verification_status: "VERIFIED_WITH_CHANGES",
+      input_address: {
         address: {
           address_line_1: "Lausitzer Straße 46",
           city: "Berlin",
@@ -66,7 +66,7 @@ describe("verifyAddressQuery", () => {
           "Germany",
         ],
       },
-      suggestedAddresses: [
+      suggested_addresses: [
         {
           address: {
             address_line_1: "Lausitzer Straße 46",
@@ -144,22 +144,22 @@ describe("verifyAddressQuery", () => {
     }
 
     const mockAddressVerificationResult = {
-      verificationStatus: "VERIFIED_NO_CHANGE",
-      inputAddress: {
+      verification_status: "VERIFIED_WITH_CHANGES",
+      input_address: {
         address: {
-          address_line_1: "1251 John Calvin Drive",
+          address_line_1: "1251 John Calvin Dr",
           city: "Harvey",
           region: "Illinois",
           postal_code: "60426",
           country: "US",
         },
         lines: [
-          "1251 John Calvin Drive",
+          "1251 John Calvin Dr",
           "Havery Illinois 60426",
           "United States",
         ],
       },
-      suggestedAddresses: [
+      suggested_addresses: [
         {
           address: {
             address_line_1: "1251 John Calvin Drive",
@@ -181,7 +181,45 @@ describe("verifyAddressQuery", () => {
       .fn()
       .mockReturnValue(Promise.resolve(mockAddressVerificationResult))
 
-    await runAuthenticatedQuery(query, { verifyAddressLoader })
+    const response = await runAuthenticatedQuery(query, { verifyAddressLoader })
+
+    expect(response).toEqual({
+      verifyAddress: {
+        inputAddress: {
+          address: {
+            addressLine1: "1251 John Calvin Dr",
+            addressLine2: null,
+            city: "Harvey",
+            country: "US",
+            postalCode: "60426",
+            region: "Illinois",
+          },
+          lines: [
+            "1251 John Calvin Dr",
+            "Havery Illinois 60426",
+            "United States",
+          ],
+        },
+        suggestedAddresses: [
+          {
+            address: {
+              addressLine1: "1251 John Calvin Drive",
+              addressLine2: null,
+              city: "Harvey",
+              country: "US",
+              postalCode: "60426",
+              region: "Illinois",
+            },
+            lines: [
+              "1251 John Calvin Drive",
+              "Havery Illinois 60426",
+              "United States",
+            ],
+          },
+        ],
+        verificationStatus: "VERIFIED_WITH_CHANGES",
+      },
+    })
     expect(verifyAddressLoader).toHaveBeenCalledWith(validUSAddress)
   })
 })
