@@ -14,6 +14,7 @@ import { snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { UserInterestCategory, userInterestType } from "../userInterests"
 import { userInterestInputFields } from "./createUserInterestMutation"
+import { meType } from "./index"
 
 interface UserInterestInput {
   category: UserInterestCategory
@@ -31,32 +32,6 @@ export const UserInterestInputType = new GraphQLInputObjectType({
   fields: userInterestInputFields,
 })
 
-const CreateUserInterestsSuccessType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "createUserInterestsSuccess",
-  fields: () => ({
-    userInterestsOrErrors: {
-      type: new GraphQLNonNull(new GraphQLList(UserInterestOrErrorType)),
-      resolve: (userInterests) => userInterests,
-    },
-  }),
-})
-
-const CreateUserInterestsFailureType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "createUserInterestsFailure",
-  fields: () => ({
-    mutationError: {
-      type: GravityMutationErrorType,
-      resolve: (err) => err,
-    },
-  }),
-})
-
 const CreateUserInterestFailureType = new GraphQLObjectType<
   any,
   ResolverContext
@@ -68,15 +43,6 @@ const CreateUserInterestFailureType = new GraphQLObjectType<
       resolve: (err) => err,
     },
   }),
-})
-
-const UserInterestsOrErrorType = new GraphQLUnionType({
-  name: "createUserInterestsResponseOrError",
-  types: [CreateUserInterestsSuccessType, CreateUserInterestsFailureType],
-  resolveType: (data) =>
-    data._type === "GravityMutationError"
-      ? CreateUserInterestsFailureType
-      : CreateUserInterestsSuccessType,
 })
 
 const UserInterestOrErrorType = new GraphQLUnionType({
@@ -103,10 +69,15 @@ export const createUserInterestsMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    userInterestsOrError: {
-      type: UserInterestsOrErrorType,
-      description: "on success: returns the user interest",
-      resolve: (result) => result,
+    userInterestsOrErrors: {
+      type: new GraphQLNonNull(new GraphQLList(UserInterestOrErrorType)),
+      resolve: (userInterests) => userInterests,
+    },
+    me: {
+      type: new GraphQLNonNull(meType),
+      resolve: (_source, _args, { meLoader }) => {
+        return meLoader?.()
+      },
     },
   },
   mutateAndGetPayload: async (args, { meCreateUserInterestLoader }) => {

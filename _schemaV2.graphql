@@ -7745,10 +7745,6 @@ type CreateUserInterestMutationPayload {
   userInterest: UserInterest!
 }
 
-type createUserInterestsFailure {
-  mutationError: GravityMutationError
-}
-
 input CreateUserInterestsMutationInput {
   clientMutationId: String
   userInterests: [UserInterestInput!]!
@@ -7756,16 +7752,7 @@ input CreateUserInterestsMutationInput {
 
 type CreateUserInterestsMutationPayload {
   clientMutationId: String
-
-  # on success: returns the user interest
-  userInterestsOrError: createUserInterestsResponseOrError
-}
-
-union createUserInterestsResponseOrError =
-    createUserInterestsFailure
-  | createUserInterestsSuccess
-
-type createUserInterestsSuccess {
+  me: Me!
   userInterestsOrErrors: [userInterestOrError]!
 }
 
