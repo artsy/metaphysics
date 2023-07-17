@@ -49,7 +49,6 @@ import FollowedFairs from "./followed_fairs"
 import FollowedGalleries from "./followed_galleries"
 import FollowedGenes from "./followed_genes"
 import FollowedShows from "./followed_shows"
-import { InterestsConnection } from "./interestsConnection"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { MyBids } from "./myBids"
@@ -67,6 +66,7 @@ import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { ShowsConnection } from "./showsConnection"
 import { SimilarToRecentlyViewed } from "./similarToRecentlyViewed"
 import { UserInterest } from "./userInterest"
+import { UserInterestsConnection } from "./userInterestsConnection"
 import { WatchedLotConnection } from "./watchedLotConnection"
 
 /**
@@ -342,7 +342,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return introduction
       },
     },
-    interestsConnection: InterestsConnection,
+    userInterestsConnection: UserInterestsConnection,
     isCollector: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ is_collector }) => {

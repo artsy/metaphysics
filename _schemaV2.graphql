@@ -11578,20 +11578,6 @@ type Me implements Node {
     )
   initials(length: Int = 3): String
   inquiryIntroduction: String
-  interestsConnection(
-    after: String
-    before: String
-
-    # UserInterest category to select. 'collected_before' or 'interested_in_collecting' category
-    category: UserInterestCategory
-    first: Int
-
-    # UserInterest InterestType to select. 'Artist' or 'Gene' type
-    interestType: UserInterestInterestType
-    last: Int
-    page: Int
-    size: Int
-  ): UserInterestConnection
 
   # A type-specific ID.
   internalID: ID!
@@ -11906,6 +11892,20 @@ type Me implements Node {
 
   # A count of unseen notifications.
   unseenNotificationsCount: Int!
+  userInterestsConnection(
+    after: String
+    before: String
+
+    # UserInterest category to select. 'collected_before' or 'interested_in_collecting' category
+    category: UserInterestCategory
+    first: Int
+
+    # UserInterest InterestType to select. 'Artist' or 'Gene' type
+    interestType: UserInterestInterestType
+    last: Int
+    page: Int
+    size: Int
+  ): UserInterestConnection
 
   # Get a user interest
   userInterest(

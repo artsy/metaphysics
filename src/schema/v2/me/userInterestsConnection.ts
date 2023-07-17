@@ -9,7 +9,10 @@ import {
   userInterestInterestTypeEnum,
 } from "../userInterests"
 
-export const InterestsConnection: GraphQLFieldConfig<void, ResolverContext> = {
+export const UserInterestsConnection: GraphQLFieldConfig<
+  void,
+  ResolverContext
+> = {
   type: UserInterestConnection,
   args: pageable({
     category: {
@@ -30,14 +33,11 @@ export const InterestsConnection: GraphQLFieldConfig<void, ResolverContext> = {
       throw new Error("You need to be signed in to perform this action")
     }
 
-    const { page, size, offset, ...rest } = convertConnectionArgsToGravityArgs(
-      args
-    )
-
-    const gravityArgs = { ...rest, interest_type: rest.interestType }
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     const { body, headers } = await meUserInterestsLoader({
-      ...gravityArgs,
+      category: args.category,
+      interest_type: args.interestType,
       page,
       size,
       total_count: true,
