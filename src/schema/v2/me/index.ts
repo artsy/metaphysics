@@ -35,10 +35,10 @@ import ArtworkInquiries from "./artwork_inquiries"
 import AuctionResultsByFollowedArtists from "./auctionResultsByFollowedArtists"
 import { authentications } from "./authentications"
 import { BankAccounts } from "./bank_accounts"
-import Bidders from "./bidders"
 import { BidderPosition } from "./bidder_position"
 import BidderPositions from "./bidder_positions"
 import BidderStatus from "./bidder_status"
+import Bidders from "./bidders"
 import { Collection } from "./collection"
 import { CollectionsConnection } from "./collectionsConnection"
 import { CreditCards } from "./credit_cards"
@@ -63,9 +63,10 @@ import { RecentlyViewedArtworks } from "./recentlyViewedArtworks"
 import { SaleRegistrationConnection } from "./sale_registrations"
 import { COLLECTION_ID, SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
-import { SimilarToRecentlyViewed } from "./similarToRecentlyViewed"
-import { WatchedLotConnection } from "./watchedLotConnection"
 import { ShowsConnection } from "./showsConnection"
+import { SimilarToRecentlyViewed } from "./similarToRecentlyViewed"
+import { UserInterest } from "./userInterest"
+import { WatchedLotConnection } from "./watchedLotConnection"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -523,6 +524,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         })
       },
     },
+    userInterest: UserInterest,
     watchedLotConnection: WatchedLotConnection,
   },
 })

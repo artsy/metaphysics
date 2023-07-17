@@ -83,7 +83,7 @@ export const userInterestType = new GraphQLObjectType<
   },
 })
 
-export const edgeFields: Thunk<GraphQLFieldConfigMap<
+export const userInterestFields: Thunk<GraphQLFieldConfigMap<
   UserInterest,
   ResolverContext
 >> = () => ({
@@ -102,5 +102,5 @@ export const edgeFields: Thunk<GraphQLFieldConfigMap<
 export const UserInterestConnection = connectionWithCursorInfo({
   name: "UserInterest",
   nodeType: userInterestInterestUnion,
-  edgeFields: edgeFields,
+  edgeFields: userInterestFields,
 }).connectionType
