@@ -10,13 +10,9 @@ import {
   GravityMutationErrorType,
   formatGravityError,
 } from "lib/gravityErrorHandler"
-import { compact, snakeCase } from "lodash"
+import { snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
-import {
-  UserInterest,
-  UserInterestCategory,
-  userInterestType,
-} from "../userInterests"
+import { UserInterestCategory, userInterestType } from "../userInterests"
 import { userInterestInputFields } from "./createUserInterestMutation"
 
 interface UserInterestInput {
@@ -35,18 +31,37 @@ export const UserInterestInputType = new GraphQLInputObjectType({
   fields: userInterestInputFields,
 })
 
-const SuccessType = new GraphQLObjectType<any, ResolverContext>({
+const CreateUserInterestsSuccessType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "createUserInterestsSuccess",
   fields: () => ({
-    userInterests: {
-      type: new GraphQLNonNull(new GraphQLList(userInterestType)),
+    userInterestsOrErrors: {
+      type: new GraphQLNonNull(new GraphQLList(UserInterestOrErrorType)),
       resolve: (userInterests) => userInterests,
     },
   }),
 })
 
-const FailureType = new GraphQLObjectType<any, ResolverContext>({
+const CreateUserInterestsFailureType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "createUserInterestsFailure",
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const CreateUserInterestFailureType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "createUserInterestFailure",
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
@@ -57,14 +72,25 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 
 const UserInterestsOrErrorType = new GraphQLUnionType({
   name: "createUserInterestsResponseOrError",
-  types: [SuccessType, FailureType],
+  types: [CreateUserInterestsSuccessType, CreateUserInterestsFailureType],
   resolveType: (data) =>
-    data._type === "GravityMutationError" ? FailureType : SuccessType,
+    data._type === "GravityMutationError"
+      ? CreateUserInterestsFailureType
+      : CreateUserInterestsSuccessType,
+})
+
+const UserInterestOrErrorType = new GraphQLUnionType({
+  name: "userInterestOrError",
+  types: [userInterestType, CreateUserInterestFailureType],
+  resolveType: (data) =>
+    data._type === "GravityMutationError"
+      ? CreateUserInterestFailureType
+      : userInterestType,
 })
 
 export const createUserInterestsMutation = mutationWithClientMutationId<
   Input,
-  UserInterest[] | null,
+  typeof UserInterestOrErrorType[] | null,
   ResolverContext
 >({
   name: "CreateUserInterestsMutation",
@@ -98,12 +124,18 @@ export const createUserInterestsMutation = mutationWithClientMutationId<
           try {
             return await meCreateUserInterestLoader(gravityPayload)
           } catch (error) {
-            return null
+            const formattedErr = formatGravityError(error)
+
+            if (formattedErr) {
+              return { ...formattedErr, _type: "GravityMutationError" }
+            } else {
+              throw new Error(error)
+            }
           }
         })
       )
 
-      return compact(userInterestResponses)
+      return userInterestResponses
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
