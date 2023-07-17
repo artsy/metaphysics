@@ -13,7 +13,7 @@ import { totalViaLoader } from "lib/total"
 import { compact, defaults, first, flatten, includes, merge } from "lodash"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import Article, { articleConnection } from "schema/v2/article"
-import { artworkConnection } from "schema/v2/artwork"
+import { ArtworkType, artworkConnection } from "schema/v2/artwork"
 import {
   auctionResultConnection,
   AuctionResultSorts,
@@ -506,6 +506,31 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           },
         }),
         resolve: (artist) => artist,
+      },
+      coverArtwork: {
+        type: ArtworkType,
+        resolve: async (
+          { id, cover_artwork_id },
+          _options,
+          { artistArtworksLoader, artworkLoader }
+        ) => {
+          try {
+            if (cover_artwork_id) {
+              return artworkLoader(cover_artwork_id)
+            }
+
+            const [fallbackArtwork] = await artistArtworksLoader(id, {
+              offset: 0,
+              size: 1,
+              sort: "-iconicity",
+              published: true,
+            })
+
+            return fallbackArtwork
+          } catch (error) {
+            return null
+          }
+        },
       },
       createdAt: date(),
       criticallyAcclaimed: {
