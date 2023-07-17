@@ -1,8 +1,8 @@
 import {
+  GraphQLInputObjectType,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
@@ -10,16 +10,28 @@ import {
   GravityMutationErrorType,
   formatGravityError,
 } from "lib/gravityErrorHandler"
-import { uniq } from "lodash"
+import { snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
-import { UserInterest, userInterestType } from "../userInterests"
+import {
+  UserInterest,
+  UserInterestCategory,
+  userInterestType,
+} from "../userInterests"
+import { userInterestInputFields } from "./createUserInterestMutation"
+
+interface UserInterestInput {
+  category: UserInterestCategory
+  interestID: string
+  interestType: "Artist" | "Gene"
+  private?: boolean
+}
 
 interface Input {
-  artistIDs: string[]
+  userInterests: UserInterestInput[]
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "collectArtistsSuccess",
+  name: "createUserInterestsSuccess",
   fields: () => ({
     userInterests: {
       type: new GraphQLNonNull(new GraphQLList(userInterestType)),
@@ -29,7 +41,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "collectArtistsFailure",
+  name: "createUserInterestsFailure",
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
@@ -38,24 +50,29 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
+export const UserInterestInputType = new GraphQLInputObjectType({
+  name: "UserInterestInput",
+  fields: userInterestInputFields,
+})
+
 const UserInterestsOrErrorType = new GraphQLUnionType({
-  name: "collectArtistsResponseOrError",
+  name: "createUserInterestsResponseOrError",
   types: [SuccessType, FailureType],
   resolveType: (data) =>
     data._type === "GravityMutationError" ? FailureType : SuccessType,
 })
 
-export const collectArtistsMutation = mutationWithClientMutationId<
+export const createUserInterestsMutation = mutationWithClientMutationId<
   Input,
   UserInterest[] | null,
   ResolverContext
 >({
-  name: "CollectArtistsMutation",
+  name: "CreateUserInterestsMutation",
   description: "Collect Multiple Artists",
   inputFields: {
-    artistIDs: {
+    userInterests: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(GraphQLString))
+        new GraphQLList(new GraphQLNonNull(UserInterestInputType))
       ),
     },
   },
@@ -70,23 +87,22 @@ export const collectArtistsMutation = mutationWithClientMutationId<
     if (!meCreateUserInterestLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
-    const uniqueArtistIDs = uniq(args.artistIDs)
 
     try {
-      const userInterests = await Promise.all(
-        uniqueArtistIDs.map((artistID) => {
-          const gravityPayload = {
-            interest_id: artistID,
-            interest_type: "Artist",
-            category: "collected_before",
-          }
+      const userInterestResponses = await Promise.all(
+        args.userInterests.map((userInterest) => {
+          const gravityPayload = Object.keys(userInterest).reduce(
+            (acc, key) => ({ ...acc, [snakeCase(key)]: userInterest[key] }),
+            {}
+          )
           return meCreateUserInterestLoader(gravityPayload)
         })
       )
 
-      return userInterests
+      return userInterestResponses
     } catch (error) {
       const formattedErr = formatGravityError(error)
+
       if (formattedErr) {
         return { ...formattedErr, _type: "GravityMutationError" }
       } else {

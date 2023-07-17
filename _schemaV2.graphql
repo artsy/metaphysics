@@ -3653,30 +3653,6 @@ type CitySponsoredContent {
   ): ShowConnection
 }
 
-type collectArtistsFailure {
-  mutationError: GravityMutationError
-}
-
-input CollectArtistsMutationInput {
-  artistIDs: [String!]!
-  clientMutationId: String
-}
-
-type CollectArtistsMutationPayload {
-  clientMutationId: String
-
-  # on success: returns the user interest
-  userInterestsOrError: collectArtistsResponseOrError
-}
-
-union collectArtistsResponseOrError =
-    collectArtistsFailure
-  | collectArtistsSuccess
-
-type collectArtistsSuccess {
-  userInterests: [UserInterest]!
-}
-
 # A collection of artworks
 type Collection {
   artworksConnection(
@@ -7763,6 +7739,30 @@ type CreateUserInterestMutationPayload {
   clientMutationId: String
   me: Me!
   userInterest: UserInterest!
+}
+
+type createUserInterestsFailure {
+  mutationError: GravityMutationError
+}
+
+input CreateUserInterestsMutationInput {
+  clientMutationId: String
+  userInterests: [UserInterestInput!]!
+}
+
+type CreateUserInterestsMutationPayload {
+  clientMutationId: String
+
+  # on success: returns the user interest
+  userInterestsOrError: createUserInterestsResponseOrError
+}
+
+union createUserInterestsResponseOrError =
+    createUserInterestsFailure
+  | createUserInterestsSuccess
+
+type createUserInterestsSuccess {
+  userInterests: [UserInterest]!
 }
 
 type CreateUserSaleProfileFailure {
@@ -12141,11 +12141,6 @@ type Mutation {
   ): BulkUpdatePartnerArtworksMutationPayload
   captureHold(input: CaptureHoldInput!): CaptureHoldPayload
 
-  # Collect Multiple Artists
-  collectArtists(
-    input: CollectArtistsMutationInput!
-  ): CollectArtistsMutationPayload
-
   # Creates a pending offer on an pending order.
   commerceAddInitialOfferToOrder(
     # Parameters for AddInitialOfferToOrder
@@ -12421,6 +12416,11 @@ type Mutation {
   createUserInterestForUser(
     input: CreateUserInterestForUserInput!
   ): CreateUserInterestForUserPayload
+
+  # Collect Multiple Artists
+  createUserInterests(
+    input: CreateUserInterestsMutationInput!
+  ): CreateUserInterestsMutationPayload
 
   # Create a sale profile for a user
   createUserSaleProfile(
@@ -18985,6 +18985,18 @@ type UserInterestEdge {
   node: UserInterestInterest
   ownerType: String
   private: Boolean!
+}
+
+input UserInterestInput {
+  anonymousSessionId: String
+
+  # Optional body for note
+  body: String
+  category: UserInterestCategory!
+  interestId: String!
+  interestType: UserInterestInterestType!
+  private: Boolean
+  sessionID: String
 }
 
 union UserInterestInterest = Artist | Gene
