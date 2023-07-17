@@ -10,7 +10,7 @@ import {
   GravityMutationErrorType,
   formatGravityError,
 } from "lib/gravityErrorHandler"
-import { snakeCase } from "lodash"
+import { compact, snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
 import {
   UserInterest,
@@ -30,6 +30,11 @@ interface Input {
   userInterests: UserInterestInput[]
 }
 
+export const UserInterestInputType = new GraphQLInputObjectType({
+  name: "UserInterestInput",
+  fields: userInterestInputFields,
+})
+
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "createUserInterestsSuccess",
   fields: () => ({
@@ -48,11 +53,6 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
       resolve: (err) => err,
     },
   }),
-})
-
-export const UserInterestInputType = new GraphQLInputObjectType({
-  name: "UserInterestInput",
-  fields: userInterestInputFields,
 })
 
 const UserInterestsOrErrorType = new GraphQLUnionType({
@@ -90,16 +90,20 @@ export const createUserInterestsMutation = mutationWithClientMutationId<
 
     try {
       const userInterestResponses = await Promise.all(
-        args.userInterests.map((userInterest) => {
+        args.userInterests.map(async (userInterest) => {
           const gravityPayload = Object.keys(userInterest).reduce(
             (acc, key) => ({ ...acc, [snakeCase(key)]: userInterest[key] }),
             {}
           )
-          return meCreateUserInterestLoader(gravityPayload)
+          try {
+            return await meCreateUserInterestLoader(gravityPayload)
+          } catch (error) {
+            return null
+          }
         })
       )
 
-      return userInterestResponses
+      return compact(userInterestResponses)
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
