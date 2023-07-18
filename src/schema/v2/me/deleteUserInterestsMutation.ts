@@ -66,23 +66,24 @@ export const deleteUserInterestsMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    try {
-      const uniqueIDs = uniq(args.ids)
+    const uniqueIDs = uniq(args.ids)
 
-      const userInterests = Promise.all(
-        uniqueIDs.map((userInterestId) => {
-          return meDeleteUserInterestLoader(userInterestId)
-        })
-      )
+    const userInterests = Promise.all(
+      uniqueIDs.map(async (userInterestId) => {
+        try {
+          return await meDeleteUserInterestLoader(userInterestId)
+        } catch (error) {
+          const formattedErr = formatGravityError(error)
 
-      return userInterests
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
-      }
-    }
+          if (formattedErr) {
+            return { ...formattedErr, _type: "GravityMutationError" }
+          } else {
+            return { message: error.message, _type: "GravityMutationError" }
+          }
+        }
+      })
+    )
+
+    return userInterests
   },
 })

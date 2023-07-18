@@ -85,36 +85,26 @@ export const createUserInterestsMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    try {
-      const userInterestResponses = Promise.all(
-        args.userInterests.map(async (userInterest) => {
-          const gravityPayload = Object.keys(userInterest).reduce(
-            (acc, key) => ({ ...acc, [snakeCase(key)]: userInterest[key] }),
-            {}
-          )
-          try {
-            return await meCreateUserInterestLoader(gravityPayload)
-          } catch (error) {
-            const formattedErr = formatGravityError(error)
+    const userInterestResponses = Promise.all(
+      args.userInterests.map(async (userInterest) => {
+        const gravityPayload = Object.keys(userInterest).reduce(
+          (acc, key) => ({ ...acc, [snakeCase(key)]: userInterest[key] }),
+          {}
+        )
+        try {
+          return await meCreateUserInterestLoader(gravityPayload)
+        } catch (error) {
+          const formattedErr = formatGravityError(error)
 
-            if (formattedErr) {
-              return { ...formattedErr, _type: "GravityMutationError" }
-            } else {
-              throw new Error(error)
-            }
+          if (formattedErr) {
+            return { ...formattedErr, _type: "GravityMutationError" }
+          } else {
+            return { message: error.message, _type: "GravityMutationError" }
           }
-        })
-      )
+        }
+      })
+    )
 
-      return userInterestResponses
-    } catch (error) {
-      const formattedErr = formatGravityError(error)
-
-      if (formattedErr) {
-        return { ...formattedErr, _type: "GravityMutationError" }
-      } else {
-        throw new Error(error)
-      }
-    }
+    return userInterestResponses
   },
 })
