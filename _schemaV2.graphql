@@ -11876,6 +11876,12 @@ type Me implements Node {
 
   # A count of unseen notifications.
   unseenNotificationsCount: Int!
+
+  # Get a user interest
+  userInterest(
+    # The ID of the UserInterest
+    id: String
+  ): UserInterest
   userInterestsConnection(
     after: String
     before: String
@@ -11890,12 +11896,6 @@ type Me implements Node {
     page: Int
     size: Int
   ): UserInterestConnection
-
-  # Get a user interest
-  userInterest(
-    # The ID of the UserInterest
-    id: String
-  ): UserInterest
 
   # A list of lots a user is watching.
   watchedLotConnection(
