@@ -18,8 +18,8 @@ interface Input {
   ids: [string]
 }
 
-const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "deleteUserInterestsSuccess",
+const deleteUserInterestsSuccess = new GraphQLObjectType<any, ResolverContext>({
+  name: "DeleteUserInterestsSuccess",
   fields: () => ({
     userInterests: {
       type: new GraphQLNonNull(new GraphQLList(userInterestType)),
@@ -28,8 +28,8 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "deleteUserInterestsFailure",
+const deleteUserInterestsFailure = new GraphQLObjectType<any, ResolverContext>({
+  name: "DeleteUserInterestsFailure",
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
@@ -38,11 +38,13 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-const UserInterestsOrErrorType = new GraphQLUnionType({
-  name: "deleteUserInterestsResponseOrError",
-  types: [SuccessType, FailureType],
+const deleteUserInterestOrErrorType = new GraphQLUnionType({
+  name: "DeleteUserInterestOrErrorType",
+  types: [deleteUserInterestsSuccess, deleteUserInterestsFailure],
   resolveType: (data) =>
-    data._type === "GravityMutationError" ? FailureType : SuccessType,
+    data._type === "GravityMutationError"
+      ? deleteUserInterestsFailure
+      : deleteUserInterestsSuccess,
 })
 
 export const deleteUserInterestsMutation = mutationWithClientMutationId<
@@ -58,7 +60,7 @@ export const deleteUserInterestsMutation = mutationWithClientMutationId<
   },
   outputFields: {
     userInterestsOrError: {
-      type: UserInterestsOrErrorType,
+      type: deleteUserInterestOrErrorType,
       description: "on success: returns the deleted user interests",
       resolve: (userInterests) => userInterests,
     },

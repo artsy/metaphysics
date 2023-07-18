@@ -8345,7 +8345,11 @@ type DeleteUserInterestMutationPayload {
   userInterest: UserInterest!
 }
 
-type deleteUserInterestsFailure {
+union DeleteUserInterestOrErrorType =
+    DeleteUserInterestsFailure
+  | DeleteUserInterestsSuccess
+
+type DeleteUserInterestsFailure {
   mutationError: GravityMutationError
 }
 
@@ -8358,14 +8362,10 @@ type DeleteUserInterestsMutationPayload {
   clientMutationId: String
 
   # on success: returns the deleted user interests
-  userInterestsOrError: deleteUserInterestsResponseOrError
+  userInterestsOrError: DeleteUserInterestOrErrorType
 }
 
-union deleteUserInterestsResponseOrError =
-    deleteUserInterestsFailure
-  | deleteUserInterestsSuccess
-
-type deleteUserInterestsSuccess {
+type DeleteUserInterestsSuccess {
   userInterests: [UserInterest]!
 }
 

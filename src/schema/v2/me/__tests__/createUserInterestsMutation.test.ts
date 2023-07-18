@@ -21,15 +21,22 @@ describe("createUserInterestsMutation", () => {
         ]
       }
     ) {
-      userInterestsOrError {
-        ... on createUserInterestsSuccess {
-          userInterests {
-            category
-            interest {
-              ... on Artist {
-                name
-              }
+      me {
+				name
+			}
+      userInterestsOrErrors {
+        ... on UserInterest {
+          category
+          interest {
+            ... on Artist {
+              name
             }
+          }
+        }
+        ... on CreateUserInterestFailure {
+          mutationError {
+            type
+            message
           }
         }
       }
@@ -37,46 +44,51 @@ describe("createUserInterestsMutation", () => {
   }
   `
 
-  const userInterest = {
+  const meCreateUserInterestLoader = jest.fn(async () => ({
     category: "collected_before",
     interest: {
       birthday: "10.10.2000", // without birthday it resolves to GeneType
       name: "Artist Name",
     },
-  }
-
-  const meCreateUserInterestLoader = jest.fn(async () => userInterest)
+  }))
+  const meLoader = jest.fn(async () => ({
+    id: "some-user-id",
+    name: "John Doe",
+  }))
 
   const context = {
     meCreateUserInterestLoader,
+    meLoader,
   }
 
   it("returns the list of all the created user_interests", async () => {
-    const res = await runAuthenticatedQuery(mutation, context)
+    const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(res).toMatchInlineSnapshot(`
+    expect(result).toMatchInlineSnapshot(`
       Object {
         "createUserInterests": Object {
-          "userInterestsOrError": Object {
-            "userInterests": Array [
-              Object {
-                "category": "COLLECTED_BEFORE",
-                "interest": Object {
-                  "name": "Artist Name",
-                },
-              },
-              Object {
-                "category": "COLLECTED_BEFORE",
-                "interest": Object {
-                  "name": "Artist Name",
-                },
-              },
-            ],
+          "me": Object {
+            "name": "John Doe",
           },
+          "userInterestsOrErrors": Array [
+            Object {
+              "category": "COLLECTED_BEFORE",
+              "interest": Object {
+                "name": "Artist Name",
+              },
+            },
+            Object {
+              "category": "COLLECTED_BEFORE",
+              "interest": Object {
+                "name": "Artist Name",
+              },
+            },
+          ],
         },
       }
     `)
 
+    expect(meLoader).toHaveBeenCalledWith()
     expect(meCreateUserInterestLoader).toHaveBeenCalledTimes(2)
     expect(meCreateUserInterestLoader).toHaveBeenCalledWith({
       category: "collected_before",
