@@ -11,11 +11,11 @@ export const UserInterest: GraphQLFieldConfig<any, ResolverContext> = {
     },
   },
   description: "Get a user interest",
-  resolve: async (_, { id }, { meUserInterestLoader }) => {
+  resolve: (_, { id }, { meUserInterestLoader }) => {
     if (!meUserInterestLoader) {
       return null
     }
 
-    return await meUserInterestLoader(id)
+    return meUserInterestLoader(id)
   },
 }
