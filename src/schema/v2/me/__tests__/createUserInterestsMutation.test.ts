@@ -89,7 +89,9 @@ describe("createUserInterestsMutation", () => {
     `)
 
     expect(meLoader).toHaveBeenCalledWith()
+
     expect(meCreateUserInterestLoader).toHaveBeenCalledTimes(2)
+
     expect(meCreateUserInterestLoader).toHaveBeenCalledWith({
       category: "collected_before",
       interest_id: "interest-id-1",

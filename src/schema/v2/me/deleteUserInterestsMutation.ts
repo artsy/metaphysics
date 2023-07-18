@@ -13,6 +13,7 @@ import {
 import { uniq } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { UserInterest, userInterestType } from "../userInterests"
+import { meType } from "./index"
 
 interface Input {
   ids: [string]
@@ -59,6 +60,12 @@ export const deleteUserInterestsMutation = mutationWithClientMutationId<
     ids: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
   },
   outputFields: {
+    me: {
+      type: new GraphQLNonNull(meType),
+      resolve: (_source, _args, { meLoader }) => {
+        return meLoader?.()
+      },
+    },
     userInterestsOrError: {
       type: deleteUserInterestOrErrorType,
       description: "on success: returns the deleted user interests",
@@ -70,12 +77,13 @@ export const deleteUserInterestsMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    const uniqueIDs = uniq(args.ids)
     try {
-      const userInterests = await Promise.all<Promise<UserInterest>>(
-        uniqueIDs.map((userInterestId) =>
-          meDeleteUserInterestLoader(userInterestId)
-        )
+      const uniqueIDs = uniq(args.ids)
+
+      const userInterests = Promise.all(
+        uniqueIDs.map((userInterestId) => {
+          return meDeleteUserInterestLoader(userInterestId)
+        })
       )
 
       return userInterests

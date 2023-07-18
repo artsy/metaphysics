@@ -4,8 +4,11 @@ describe("deleteUserInterestsMutation", () => {
   const mutation = `
     mutation {
       deleteUserInterests(input: { ids: ["user_interest_id_1", "user_interest_id_2"] }) {
+        me {
+          name
+        }
         userInterestsOrError {
-          ... on deleteUserInterestsSuccess {
+          ... on DeleteUserInterestsSuccess {
             userInterests {
               category
               interest {
@@ -31,6 +34,7 @@ describe("deleteUserInterestsMutation", () => {
   const mockMeDeleteUserInterestLoader = jest.fn()
 
   const context = {
+    meLoader: jest.fn(() => ({ name: "John Doe" })),
     meDeleteUserInterestLoader: mockMeDeleteUserInterestLoader,
   }
 
@@ -45,18 +49,33 @@ describe("deleteUserInterestsMutation", () => {
   })
 
   it("returns the list of all the deleted user_interests", async () => {
-    const res = await runAuthenticatedQuery(mutation, context)
+    const result = await runAuthenticatedQuery(mutation, context)
 
-    expect(res).toEqual({
-      deleteUserInterests: {
-        userInterestsOrError: {
-          userInterests: [
-            { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },
-            { category: "COLLECTED_BEFORE", interest: { name: "Artist Name" } },
-          ],
+    expect(result).toMatchInlineSnapshot(`
+      Object {
+        "deleteUserInterests": Object {
+          "me": Object {
+            "name": "John Doe",
+          },
+          "userInterestsOrError": Object {
+            "userInterests": Array [
+              Object {
+                "category": "COLLECTED_BEFORE",
+                "interest": Object {
+                  "name": "Artist Name",
+                },
+              },
+              Object {
+                "category": "COLLECTED_BEFORE",
+                "interest": Object {
+                  "name": "Artist Name",
+                },
+              },
+            ],
+          },
         },
-      },
-    })
+      }
+    `)
   })
 
   it("calls the loader with all the provided ids", async () => {

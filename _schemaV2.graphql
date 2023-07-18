@@ -8360,6 +8360,7 @@ input DeleteUserInterestsMutationInput {
 
 type DeleteUserInterestsMutationPayload {
   clientMutationId: String
+  me: Me!
 
   # on success: returns the deleted user interests
   userInterestsOrError: DeleteUserInterestOrErrorType

@@ -86,7 +86,7 @@ export const createUserInterestsMutation = mutationWithClientMutationId<
     }
 
     try {
-      const userInterestResponses = await Promise.all(
+      const userInterestResponses = Promise.all(
         args.userInterests.map(async (userInterest) => {
           const gravityPayload = Object.keys(userInterest).reduce(
             (acc, key) => ({ ...acc, [snakeCase(key)]: userInterest[key] }),
