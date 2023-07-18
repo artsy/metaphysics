@@ -45,8 +45,8 @@ const CreateUserInterestFailureType = new GraphQLObjectType<
   }),
 })
 
-const UserInterestOrErrorType = new GraphQLUnionType({
-  name: "userInterestOrError",
+const userInterestOrErrorType = new GraphQLUnionType({
+  name: "UserInterestOrError",
   types: [userInterestType, CreateUserInterestFailureType],
   resolveType: (data) =>
     data._type === "GravityMutationError"
@@ -56,7 +56,7 @@ const UserInterestOrErrorType = new GraphQLUnionType({
 
 export const createUserInterestsMutation = mutationWithClientMutationId<
   Input,
-  typeof UserInterestOrErrorType[] | null,
+  typeof userInterestOrErrorType[] | null,
   ResolverContext
 >({
   name: "CreateUserInterestsMutation",
@@ -70,7 +70,7 @@ export const createUserInterestsMutation = mutationWithClientMutationId<
   },
   outputFields: {
     userInterestsOrErrors: {
-      type: new GraphQLNonNull(new GraphQLList(UserInterestOrErrorType)),
+      type: new GraphQLNonNull(new GraphQLList(userInterestOrErrorType)),
       resolve: (userInterests) => userInterests,
     },
     me: {

@@ -7753,7 +7753,7 @@ input CreateUserInterestsMutationInput {
 type CreateUserInterestsMutationPayload {
   clientMutationId: String
   me: Me!
-  userInterestsOrErrors: [userInterestOrError]!
+  userInterestsOrErrors: [UserInterestOrError]!
 }
 
 type CreateUserSaleProfileFailure {
@@ -8302,6 +8302,10 @@ input DeleteUserInput {
   id: String!
 }
 
+type DeleteUserInterestFailure {
+  mutationError: GravityMutationError
+}
+
 type deleteUserInterestForUserFailure {
   mutationError: GravityMutationError
 }
@@ -8345,13 +8349,7 @@ type DeleteUserInterestMutationPayload {
   userInterest: UserInterest!
 }
 
-union DeleteUserInterestOrErrorType =
-    DeleteUserInterestsFailure
-  | DeleteUserInterestsSuccess
-
-type DeleteUserInterestsFailure {
-  mutationError: GravityMutationError
-}
+union DeleteUserInterestOrErrorType = DeleteUserInterestFailure | UserInterest
 
 input DeleteUserInterestsMutationInput {
   clientMutationId: String
@@ -8361,13 +8359,7 @@ input DeleteUserInterestsMutationInput {
 type DeleteUserInterestsMutationPayload {
   clientMutationId: String
   me: Me!
-
-  # on success: returns the deleted user interests
-  userInterestsOrError: DeleteUserInterestOrErrorType
-}
-
-type DeleteUserInterestsSuccess {
-  userInterests: [UserInterest]!
+  userInterestsOrErrors: [DeleteUserInterestOrErrorType]!
 }
 
 type DeleteUserPayload {
@@ -18998,7 +18990,7 @@ enum UserInterestInterestType {
   GENE
 }
 
-union userInterestOrError = CreateUserInterestFailure | UserInterest
+union UserInterestOrError = CreateUserInterestFailure | UserInterest
 
 enum UserInterestOwnerType {
   COLLECTOR_PROFILE

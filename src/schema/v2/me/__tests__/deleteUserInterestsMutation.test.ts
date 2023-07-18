@@ -7,15 +7,19 @@ describe("deleteUserInterestsMutation", () => {
         me {
           name
         }
-        userInterestsOrError {
-          ... on DeleteUserInterestsSuccess {
-            userInterests {
-              category
-              interest {
-                ... on Artist {
-                  name
-                }
+        userInterestsOrErrors {
+          ... on UserInterest {
+            category
+            interest {
+              ... on Artist {
+                name
               }
+            }
+          }
+          ... on DeleteUserInterestFailure {
+            mutationError {
+              type
+              message
             }
           }
         }
@@ -57,22 +61,20 @@ describe("deleteUserInterestsMutation", () => {
           "me": Object {
             "name": "John Doe",
           },
-          "userInterestsOrError": Object {
-            "userInterests": Array [
-              Object {
-                "category": "COLLECTED_BEFORE",
-                "interest": Object {
-                  "name": "Artist Name",
-                },
+          "userInterestsOrErrors": Array [
+            Object {
+              "category": "COLLECTED_BEFORE",
+              "interest": Object {
+                "name": "Artist Name",
               },
-              Object {
-                "category": "COLLECTED_BEFORE",
-                "interest": Object {
-                  "name": "Artist Name",
-                },
+            },
+            Object {
+              "category": "COLLECTED_BEFORE",
+              "interest": Object {
+                "name": "Artist Name",
               },
-            ],
-          },
+            },
+          ],
         },
       }
     `)
