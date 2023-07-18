@@ -1,6 +1,5 @@
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import { userInterestFixture } from "../userInterestFixture"
 
 describe("Me", () => {
   describe("UserInterestsConnection", () => {
@@ -15,9 +14,10 @@ describe("Me", () => {
             page: 2
           ) {
             edges {
-              category
+              internalID
               node {
                 ... on Artist {
+                  internalID
                   name
                 }
               }
@@ -32,7 +32,26 @@ describe("Me", () => {
     }))
     const meUserInterestsLoader = jest.fn(async () => ({
       headers: { "x-total-count": 30 },
-      body: [userInterestFixture, userInterestFixture],
+      body: [
+        {
+          interest: {
+            _id: "artist-id-1",
+            name: "Artist Name 1",
+            id: "yayoi-kusama",
+            birthday: "10.10.2002",
+          },
+          id: "user-interest-id-1",
+        },
+        {
+          interest: {
+            _id: "artist-id-2",
+            name: "Artist Name 2",
+            id: "yayoi-kusama",
+            birthday: "10.10.2002",
+          },
+          id: "user-interest-id-2",
+        },
+      ],
     }))
 
     const context = {
@@ -50,15 +69,17 @@ describe("Me", () => {
             "userInterestsConnection": Object {
               "edges": Array [
                 Object {
-                  "category": "COLLECTED_BEFORE",
+                  "internalID": "user-interest-id-1",
                   "node": Object {
-                    "name": "Yayoi Kusama",
+                    "internalID": "artist-id-1",
+                    "name": "Artist Name 1",
                   },
                 },
                 Object {
-                  "category": "COLLECTED_BEFORE",
+                  "internalID": "user-interest-id-2",
                   "node": Object {
-                    "name": "Yayoi Kusama",
+                    "internalID": "artist-id-2",
+                    "name": "Artist Name 2",
                   },
                 },
               ],

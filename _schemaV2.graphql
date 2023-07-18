@@ -7691,7 +7691,7 @@ type createUserAdminNoteSuccess {
   adminNote: UserAdminNotes
 }
 
-type createUserInterestFailure {
+type CreateUserInterestFailure {
   mutationError: GravityMutationError
 }
 
@@ -18997,7 +18997,7 @@ enum UserInterestInterestType {
   GENE
 }
 
-union userInterestOrError = createUserInterestFailure | UserInterest
+union userInterestOrError = CreateUserInterestFailure | UserInterest
 
 enum UserInterestOwnerType {
   COLLECTOR_PROFILE

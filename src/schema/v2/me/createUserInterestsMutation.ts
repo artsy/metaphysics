@@ -36,7 +36,7 @@ const CreateUserInterestFailureType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "createUserInterestFailure",
+  name: "CreateUserInterestFailure",
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
