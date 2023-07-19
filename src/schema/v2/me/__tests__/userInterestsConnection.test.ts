@@ -11,7 +11,6 @@ describe("Me", () => {
             category: COLLECTED_BEFORE
             interestType: ARTIST
             first: 10
-            page: 2
           ) {
             edges {
               internalID
@@ -91,7 +90,7 @@ describe("Me", () => {
       expect(meUserInterestsLoader).toHaveBeenCalledWith({
         category: "collected_before",
         interest_type: "Artist",
-        page: 2,
+        page: 1,
         size: 10,
         total_count: true,
       })
