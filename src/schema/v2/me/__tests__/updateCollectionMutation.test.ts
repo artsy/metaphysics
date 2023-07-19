@@ -80,9 +80,9 @@ describe("updateCollection", () => {
       type: "param_error",
     }
     const error = new HTTPError(
-      "http://artsy.net - {}",
+      "http://artsy.net - Bad Request",
       400,
-      JSON.stringify(gravityResponseBody)
+      gravityResponseBody
     )
     const context = {
       updateCollectionLoader: jest.fn().mockRejectedValue(error),

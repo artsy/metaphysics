@@ -56,7 +56,7 @@ describe("Delete a user", () => {
             new HTTPError(
               `https://stagingapi.artsy.net/api/v1/user/bats? - {"error":"User Not Found"}`,
               404,
-              `{"error":"User Not Found"}`
+              { error: "User Not Found" }
             )
           ),
       }
@@ -85,7 +85,7 @@ describe("Delete a user", () => {
             new HTTPError(
               `https://stagingapi.artsy.net/api/v1/user/bats? - {"type":"illegal_operation","message":"Some Op Error"}`,
               400,
-              `{"type":"illegal_operation","message":"Some Op Error"}`
+              { type: "illegal_operation", message: "Some Op Error" }
             )
           ),
       }

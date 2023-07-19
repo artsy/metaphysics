@@ -28,8 +28,13 @@ describe("gravityErrorHandler", () => {
 
     it("returns a parsed error with a field error array", () => {
       const expectedErrorFormat = {
-        message: `https://stagingapi.artsy.net/api/v1/me/credit_cards?provider=stripe&token=tok_chargeDeclinedExpiredCard - {"type":"param_error","message":"Email foo@artsymail.com is not an @artsy address.","detail":{"email":["foo@artsymail.com is not an @artsy address"]}}`,
-        statusCode: 404,
+        message: `https://stagingapi.artsy.net/api/v1/me/credit_cards?provider=stripe&token=tok_chargeDeclinedExpiredCard - 400`,
+        statusCode: 400,
+        body: {
+          type: "param_error",
+          message: "Email foo@artsymail.com is not an @artsy address.",
+          detail: { email: ["foo@artsymail.com is not an @artsy address"] },
+        },
       }
       expect(formatGravityError(expectedErrorFormat)).toEqual({
         detail: undefined,
@@ -41,6 +46,7 @@ describe("gravityErrorHandler", () => {
         ],
         message: "Email foo@artsymail.com is not an @artsy address.",
         type: "param_error",
+        statusCode: 400,
       })
     })
     it("returns an unparsed error if the format is different", () => {

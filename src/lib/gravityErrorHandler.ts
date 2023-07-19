@@ -37,11 +37,15 @@ export const GravityMutationErrorType = new GraphQLObjectType<
 })
 
 export const formatGravityError = (error) => {
-  const errorSplit = error.message?.split(" - ")
-
+  // First try to handle certain error formats.
+  // This includes `error.body` being a string,
+  // or `error.body.error` being present.
+  // In these cases, we return a more minimal object,
+  // without more details.
+  //
+  // TODO: Can we remove this section?
+  // TODO: Should Impulse mutations use this method?
   if (error instanceof HTTPError) {
-    // gravity returns errors as HTTPErrors but the body is actually
-    // a json object and not a string as expected, this checks for both cases
     const freeBody: any = error.body
 
     let parsedError
@@ -53,15 +57,16 @@ export const formatGravityError = (error) => {
       return {
         type: "error",
         error: freeBody,
-        statusCode: error?.statusCode,
+        statusCode: error.statusCode,
         message: parsedError.error || parsedError.message,
       }
-    } else if (freeBody.error as string) {
+    } else if (freeBody.error) {
       return {
         type: "error",
         message: freeBody.error,
+        statusCode: error.statusCode,
       }
-    } else if (freeBody as string) {
+    } else if (typeof freeBody === "string") {
       return {
         type: "error",
         message: freeBody,
@@ -69,12 +74,11 @@ export const formatGravityError = (error) => {
     }
   }
 
-  if (errorSplit && errorSplit.length > 1) {
+  if (error.body) {
     try {
-      const parsedError = JSON.parse(errorSplit[1])
-      const { error, detail, text } = parsedError
-      // check if error message format is an array
-      // see https://github.com/artsy/gravity/blob/master/app/api/util/error_handlers.rb#L32
+      const { error: humanReadableMessage, detail, type } = error.body
+      // check if there is a `detail` array, if so format as an object
+      // and we can return a richer error object
       const fieldErrorResults =
         detail && Object.keys(pickBy(detail, isArray))?.length
 
@@ -82,15 +86,38 @@ export const formatGravityError = (error) => {
         const fieldErrors = formatGravityErrorDetails(detail)
         return {
           fieldErrors,
-          ...omit(parsedError, "detail"),
+          ...omit(error.body, "detail"),
+          statusCode: error.statusCode,
         }
       }
+
+      // if there is a human readable message, return that
+      if (humanReadableMessage) {
+        return {
+          type: type || "error",
+          message: humanReadableMessage,
+          ...omit(error.body, "type", "message"),
+          statusCode: error.statusCode,
+        }
+      } else {
+        return { ...error.body, statusCode: error.statusCode }
+      }
+    } catch (e) {
+      return { message: error.message, statusCode: error.statusCode }
+    }
+  }
+
+  // Very legacy error handling (just in specs?)
+  const errorSplit = error.message?.split(" - ")
+  if (errorSplit && errorSplit.length > 1) {
+    try {
+      const parsedError = JSON.parse(errorSplit[1])
+      const { error } = parsedError
 
       if (error) {
         return {
           type: "error",
           message: error,
-          detail: text,
         }
       } else {
         return { ...parsedError }
@@ -98,9 +125,8 @@ export const formatGravityError = (error) => {
     } catch (e) {
       return { message: errorSplit[1] }
     }
-  } else {
-    return null
   }
+  return null
 }
 
 export const FieldErrorResultsType = new GraphQLObjectType<

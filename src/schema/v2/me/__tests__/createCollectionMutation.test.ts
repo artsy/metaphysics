@@ -80,7 +80,7 @@ describe("createCollection", () => {
     const error = new HTTPError(
       "http://artsy.net - {}",
       400,
-      JSON.stringify(gravityResponseBody)
+      gravityResponseBody
     )
     const context = {
       createCollectionLoader: jest.fn().mockRejectedValue(error),
