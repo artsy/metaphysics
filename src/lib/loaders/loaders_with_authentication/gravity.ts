@@ -449,6 +449,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    meUserInterestLoader: gravityLoader((id) => `me/user_interest/${id}`),
     meUserInterestsLoader: gravityLoader("me/user_interests"),
     meMyCollectionArtworksLoader: gravityLoader(
       "me/my_collection_artworks",
