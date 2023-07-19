@@ -74,14 +74,12 @@ describe("me.myCollection", () => {
     )
 
     expect(meMyCollectionArtworksLoader).toHaveBeenCalledWith({
-      artistIDs: ["artist-id"],
       artist_ids: ["artist-id"],
-      excludePurchasedArtworks: false,
       exclude_purchased_artworks: false,
       offset: 0,
       size: 10,
-      sortByLastAuctionResultDate: false,
       total_count: true,
+      sort_by_last_auction_result_date: false,
     })
   })
 

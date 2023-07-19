@@ -7,6 +7,7 @@ import {
   removeEmptyValues,
   removeNulls,
   resolveBlueGreen,
+  snakeCaseKeys,
   stripTags,
   toKey,
   toQueryString,
@@ -323,5 +324,41 @@ describe("isInteger", () => {
     expect(isInteger("2023, 4, 23")).toEqual(false)
     expect(isInteger("4th-5th Century AD")).toEqual(false)
     expect(isInteger("2000s")).toEqual(false)
+  })
+})
+
+describe("snakeCaseKeys", () => {
+  it("converts all object keys to snake case", () => {
+    const object = {
+      firstName: "John",
+      lastName: "Doe",
+      age: 42,
+      favorite_plant: "cactus",
+    }
+
+    expect(snakeCaseKeys(object)).toMatchInlineSnapshot(`
+      Object {
+        "age": 42,
+        "favorite_plant": "cactus",
+        "first_name": "John",
+        "last_name": "Doe",
+      }
+    `)
+  })
+
+  it("converts ID correctly to id", () => {
+    const object = {
+      ID: "123",
+      artistIDs: ["123"],
+    }
+
+    expect(snakeCaseKeys(object)).toMatchInlineSnapshot(`
+      Object {
+        "artist_ids": Array [
+          "123",
+        ],
+        "id": "123",
+      }
+    `)
   })
 })

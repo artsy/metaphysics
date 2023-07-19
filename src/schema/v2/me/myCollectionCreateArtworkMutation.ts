@@ -10,8 +10,8 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { formatGravityError } from "lib/gravityErrorHandler"
+import { snakeCaseKeys } from "lib/helpers"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
-import { mapKeys, snakeCase } from "lodash"
 import { ResolverContext } from "types/graphql"
 import { ArtworkImportSourceEnum } from "../artwork"
 import { MyCollectionArtworkMutationType } from "./myCollection"
@@ -260,7 +260,7 @@ const createArtists = async (
   const responses = await Promise.all(
     artists.map((artist) =>
       createArtistLoader({
-        ...mapKeys(artist, (_v, k) => snakeCase(k)),
+        ...snakeCaseKeys(artist),
         is_personal_artist: true,
       })
     )

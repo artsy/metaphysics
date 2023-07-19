@@ -9,9 +9,11 @@ import {
   isEmpty,
   isObject,
   isString,
+  mapKeys,
   omit,
   pick,
   reject,
+  snakeCase,
   trim,
   values,
 } from "lodash"
@@ -218,7 +220,7 @@ export const defineCustomLocale = (
 /**
  * Extracts nodes from a GraphQL connection.
  */
-export const extractNodes = <Node extends object, T = Node>(
+export const extractNodes = <Node extends Record<string, unknown>, T = Node>(
   connection:
     | {
         readonly edges?: ReadonlyArray<{
@@ -227,11 +229,11 @@ export const extractNodes = <Node extends object, T = Node>(
       }
     | undefined
     | null,
-  mapper?: (node: Node) => T
+  mapper?: (node?: Node | null) => T
 ): T[] => {
   return (
     connection?.edges
-      ?.map((edge) => (mapper ? (mapper(edge?.node!) as any) : edge?.node!))
+      ?.map((edge) => (mapper ? (mapper(edge?.node) as any) : edge?.node))
       .filter((x) => x != null) ?? []
   )
 }
@@ -248,4 +250,22 @@ export const CatchCollectionNotFoundException = (error) => {
   if (error.statusCode === 404) return emptyConnection
 
   throw error
+}
+
+/**
+ * Converts all object keys to snake case.
+ * @param object — The object to convert.
+ * @return — Returns the object with converted keys.
+ */
+export const snakeCaseKeys = (
+  obj: Record<string, any>
+): Record<string, any> => {
+  return mapKeys(obj, (_, key) => {
+    // Special case for ID to not be converted to I_D
+    if (key.includes("ID")) {
+      return snakeCase(key.replace(/ID/g, "_id"))
+    }
+
+    return snakeCase(key)
+  })
 }
