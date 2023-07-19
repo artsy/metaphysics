@@ -97,6 +97,9 @@ export const userInterestFields: Thunk<GraphQLFieldConfigMap<
   ownerType: {
     type: GraphQLString,
   },
+  private: {
+    type: new GraphQLNonNull(GraphQLBoolean),
+  },
 })
 
 export const UserInterestConnection = connectionWithCursorInfo({

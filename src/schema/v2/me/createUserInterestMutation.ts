@@ -21,6 +21,16 @@ interface Input {
   sessionId?: string
 }
 
+export const userInterestInputFields = {
+  interestId: { type: new GraphQLNonNull(GraphQLString) },
+  interestType: { type: new GraphQLNonNull(userInterestInterestTypeEnum) },
+  category: { type: new GraphQLNonNull(userInterestCategoryEnum) },
+  body: { type: GraphQLString, description: "Optional body for note" },
+  anonymousSessionId: { type: GraphQLString },
+  private: { type: GraphQLBoolean },
+  sessionID: { type: GraphQLString },
+}
+
 export const createUserInterestMutation = mutationWithClientMutationId<
   Input,
   UserInterest | null,
@@ -29,15 +39,7 @@ export const createUserInterestMutation = mutationWithClientMutationId<
   name: "CreateUserInterestMutation",
   description:
     "Creates a UserInterest on the logged in User's CollectorProfile.",
-  inputFields: {
-    interestId: { type: new GraphQLNonNull(GraphQLString) },
-    interestType: { type: new GraphQLNonNull(userInterestInterestTypeEnum) },
-    category: { type: new GraphQLNonNull(userInterestCategoryEnum) },
-    body: { type: GraphQLString, description: "Optional body for note" },
-    anonymousSessionId: { type: GraphQLString },
-    private: { type: GraphQLBoolean },
-    sessionID: { type: GraphQLString },
-  },
+  inputFields: userInterestInputFields,
   outputFields: {
     userInterest: {
       type: new GraphQLNonNull(userInterestType),
