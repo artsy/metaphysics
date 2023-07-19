@@ -3,7 +3,9 @@ import {
   GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLList,
   GraphQLObjectType,
+  GraphQLString,
   GraphQLUnionType,
 } from "graphql"
 import { connectionFromArray, cursorForObjectInConnection } from "graphql-relay"
@@ -58,6 +60,11 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         },
       }),
     },
+    artistIDs: {
+      type: new GraphQLList(GraphQLString),
+      description: "Filter by artist IDs",
+    },
+
     excludePurchasedArtworks: {
       type: GraphQLBoolean,
       defaultValue: false,
@@ -95,6 +102,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       : convertConnectionArgsToGravityArgs(options)
 
     const gravityOptions = {
+      artist_ids: options.artistIDs,
       exclude_purchased_artworks: options.excludePurchasedArtworks,
       total_count: true,
       ...paginationArgs,
