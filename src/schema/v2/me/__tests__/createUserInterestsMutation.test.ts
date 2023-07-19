@@ -22,8 +22,8 @@ describe("createUserInterestsMutation", () => {
       }
     ) {
       me {
-				name
-			}
+        name
+      }
       userInterestsOrErrors {
         ... on UserInterest {
           category

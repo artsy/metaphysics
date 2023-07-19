@@ -7753,7 +7753,7 @@ input CreateUserInterestsMutationInput {
 type CreateUserInterestsMutationPayload {
   clientMutationId: String
   me: Me!
-  userInterestsOrErrors: [UserInterestOrError]!
+  userInterestsOrErrors: [UserInterestOrError!]!
 }
 
 type CreateUserSaleProfileFailure {
@@ -8353,13 +8353,13 @@ union DeleteUserInterestOrErrorType = DeleteUserInterestFailure | UserInterest
 
 input DeleteUserInterestsMutationInput {
   clientMutationId: String
-  ids: [String]!
+  ids: [String!]!
 }
 
 type DeleteUserInterestsMutationPayload {
   clientMutationId: String
   me: Me!
-  userInterestsOrErrors: [DeleteUserInterestOrErrorType]!
+  userInterestsOrErrors: [DeleteUserInterestOrErrorType!]!
 }
 
 type DeleteUserPayload {
@@ -11893,8 +11893,6 @@ type Me implements Node {
     # UserInterest InterestType to select. 'Artist' or 'Gene' type
     interestType: UserInterestInterestType
     last: Int
-    page: Int
-    size: Int
   ): UserInterestConnection
 
   # A list of lots a user is watching.

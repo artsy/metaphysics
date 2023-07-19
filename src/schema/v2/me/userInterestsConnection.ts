@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLInt } from "graphql"
+import { GraphQLFieldConfig } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
@@ -25,8 +25,6 @@ export const UserInterestsConnection: GraphQLFieldConfig<
       description:
         "UserInterest InterestType to select. 'Artist' or 'Gene' type",
     },
-    page: { type: GraphQLInt },
-    size: { type: GraphQLInt },
   }),
   resolve: async (_, args, { meUserInterestsLoader }) => {
     if (!meUserInterestsLoader) {

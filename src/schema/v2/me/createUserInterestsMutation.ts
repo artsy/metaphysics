@@ -18,7 +18,7 @@ import { meType } from "./index"
 
 interface UserInterestInput {
   category: UserInterestCategory
-  interestID: string
+  interestId: string
   interestType: "Artist" | "Gene"
   private?: boolean
 }
@@ -70,7 +70,9 @@ export const createUserInterestsMutation = mutationWithClientMutationId<
   },
   outputFields: {
     userInterestsOrErrors: {
-      type: new GraphQLNonNull(new GraphQLList(userInterestOrErrorType)),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(userInterestOrErrorType))
+      ),
       resolve: (userInterests) => userInterests,
     },
     me: {

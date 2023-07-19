@@ -47,7 +47,11 @@ export const deleteUserInterestsMutation = mutationWithClientMutationId<
   description:
     "Deletes multiple UserInterests on the logged in User's CollectorProfile.",
   inputFields: {
-    ids: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+    ids: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString))
+      ),
+    },
   },
   outputFields: {
     me: {
@@ -57,7 +61,9 @@ export const deleteUserInterestsMutation = mutationWithClientMutationId<
       },
     },
     userInterestsOrErrors: {
-      type: new GraphQLNonNull(new GraphQLList(deleteUserInterestOrErrorType)),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(deleteUserInterestOrErrorType))
+      ),
       resolve: (userInterests) => userInterests,
     },
   },
