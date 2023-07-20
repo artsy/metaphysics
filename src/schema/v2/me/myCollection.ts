@@ -4,6 +4,7 @@ import {
   GraphQLFieldConfig,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
@@ -61,7 +62,7 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
       }),
     },
     artistIDs: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       description: "Filter by artist IDs",
     },
 
