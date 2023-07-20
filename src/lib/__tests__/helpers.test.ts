@@ -334,6 +334,7 @@ describe("snakeCaseKeys", () => {
       lastName: "Doe",
       age: 42,
       favorite_plant: "cactus",
+      ID: "123",
     }
 
     expect(snakeCaseKeys(object)).toMatchInlineSnapshot(`
@@ -341,6 +342,7 @@ describe("snakeCaseKeys", () => {
         "age": 42,
         "favorite_plant": "cactus",
         "first_name": "John",
+        "id": "123",
         "last_name": "Doe",
       }
     `)
