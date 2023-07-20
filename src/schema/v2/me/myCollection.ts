@@ -3,13 +3,16 @@ import {
   GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLString,
   GraphQLUnionType,
 } from "graphql"
 import { connectionFromArray, cursorForObjectInConnection } from "graphql-relay"
 import { enrichArtworksWithPriceInsights } from "lib/fillers/enrichArtworksWithPriceInsights"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, snakeCaseKeys } from "lib/helpers"
 import { compact, reverse, sortBy, uniqWith } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
@@ -58,6 +61,11 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
         },
       }),
     },
+    artistIDs: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      description: "Filter by artist IDs",
+    },
+
     excludePurchasedArtworks: {
       type: GraphQLBoolean,
       defaultValue: false,
@@ -90,14 +98,13 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
 
     // We're setting the size to 100 here because we're going to filter and sort these artworks later manualy.
     // The idea is to fetch (almost) all artworks and then filter/sort them in memory.
-    const paginationArgs = options.sortByLastAuctionResultDate
-      ? { size: MAX_COLLECTION_SIZE }
+    const optionsAndPaginationArgs = options.sortByLastAuctionResultDate
+      ? { size: MAX_COLLECTION_SIZE, ...options }
       : convertConnectionArgsToGravityArgs(options)
 
     const gravityOptions = {
-      exclude_purchased_artworks: options.excludePurchasedArtworks,
       total_count: true,
-      ...paginationArgs,
+      ...snakeCaseKeys(optionsAndPaginationArgs),
     }
 
     // This can't also be used with the offset in gravity
