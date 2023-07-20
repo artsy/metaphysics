@@ -66,6 +66,7 @@ import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { ShowsConnection } from "./showsConnection"
 import { SimilarToRecentlyViewed } from "./similarToRecentlyViewed"
 import { UserInterest } from "./userInterest"
+import { UserInterestsConnection } from "./userInterestsConnection"
 import { WatchedLotConnection } from "./watchedLotConnection"
 
 /**
@@ -341,6 +342,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return introduction
       },
     },
+    userInterestsConnection: UserInterestsConnection,
     isCollector: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ is_collector }) => {

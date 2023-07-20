@@ -56,7 +56,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   userInterests: {
     type: new GraphQLNonNull(new GraphQLList(userInterestType)),
     resolve: (_collectorProfile, _args, { meUserInterestsLoader }) => {
-      return meUserInterestsLoader?.()
+      return meUserInterestsLoader?.().then(({ body }) => body)
     },
   },
 

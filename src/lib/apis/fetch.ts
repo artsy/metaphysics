@@ -78,10 +78,15 @@ export default (url, options = {}) => {
         response.statusCode &&
         (response.statusCode < 200 || response.statusCode >= 300)
       ) {
-        const message = compact([
-          get(response, "request.uri.href"),
-          response.body,
-        ]).join(" - ")
+        // If `request.body` is a string, we can include it in the message.
+        const body =
+          typeof response.body === "string"
+            ? response.body
+            : response.statusMessage
+
+        const message = compact([get(response, "request.uri.href"), body]).join(
+          " - "
+        )
         return reject(
           new HTTPError(message, response.statusCode || 500, response.body)
         )

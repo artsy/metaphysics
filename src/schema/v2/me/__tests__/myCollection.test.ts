@@ -5,11 +5,11 @@ import { ResolverContext } from "types/graphql"
 describe("me.myCollection", () => {
   const marketPriceInsightsBatchLoader = jest.fn(async () => mockVortexResponse)
 
-  it("returns artworks for a collection and pagination fields", async () => {
+  it("returns artworks for a collection and passes params correctly", async () => {
     const query = gql`
       {
         me {
-          myCollectionConnection(first: 10) {
+          myCollectionConnection(first: 10, artistIDs: ["artist-id"]) {
             edges {
               node {
                 internalID
@@ -50,13 +50,17 @@ describe("me.myCollection", () => {
       }
     `
 
+    const meMyCollectionArtworksLoader = jest.fn(
+      async () => mockCollectionArtworksResponse
+    )
+
     const context: Partial<ResolverContext> = {
       meLoader: () =>
         Promise.resolve({
           id: "some-user-id",
         }),
 
-      meMyCollectionArtworksLoader: async () => mockCollectionArtworksResponse,
+      meMyCollectionArtworksLoader,
       marketPriceInsightsBatchLoader,
       artistLoader: () =>
         Promise.resolve({
@@ -68,6 +72,15 @@ describe("me.myCollection", () => {
     expect(data.me.myCollectionConnection.edges[0].node.title).toBe(
       "some title"
     )
+
+    expect(meMyCollectionArtworksLoader).toHaveBeenCalledWith({
+      artist_ids: ["artist-id"],
+      exclude_purchased_artworks: false,
+      offset: 0,
+      size: 10,
+      total_count: true,
+      sort_by_last_auction_result_date: false,
+    })
   })
 
   describe("when passing the argument sortByLastAuctionResultDate", () => {
