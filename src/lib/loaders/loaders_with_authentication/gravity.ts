@@ -780,5 +780,10 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    verifiedRepresentativesLoader: gravityLoader<any, { artist_id: string }>(
+      ({ artist_id }) => `verified_representatives?artist_id=${artist_id}`,
+      {},
+      { method: "GET" }
+    ),
   }
 }
