@@ -78,37 +78,22 @@ const VerifyAddressType: GraphQLObjectType<
   name: "VerifyAddressType",
   fields: {
     verificationStatus: {
-      type: new GraphQLEnumType({
-        name: "VerificationStatuses",
-        values: VerificationStatuses,
-      }),
+      type: new GraphQLNonNull(
+        new GraphQLEnumType({
+          name: "VerificationStatuses",
+          values: VerificationStatuses,
+        })
+      ),
       resolve: (result) => result.verification_status,
     },
     inputAddress: {
-      type: new GraphQLObjectType<any, ResolverContext>({
-        name: "InputAddressFields",
-        fields: {
-          address: {
-            type: new GraphQLObjectType<any, ResolverContext>({
-              name: "InputAddress",
-              fields: addressFieldsFromGravity,
-            }),
-          },
-          lines: {
-            type: new GraphQLList(GraphQLString),
-          },
-        },
-      }),
-      resolve: (result) => result.input_address,
-    },
-    suggestedAddresses: {
-      type: new GraphQLList(
+      type: new GraphQLNonNull(
         new GraphQLObjectType<any, ResolverContext>({
-          name: "SuggestedAddressFields",
+          name: "InputAddressFields",
           fields: {
             address: {
               type: new GraphQLObjectType<any, ResolverContext>({
-                name: "SuggestedAddress",
+                name: "InputAddress",
                 fields: addressFieldsFromGravity,
               }),
             },
@@ -117,6 +102,27 @@ const VerifyAddressType: GraphQLObjectType<
             },
           },
         })
+      ),
+      resolve: (result) => result.input_address,
+    },
+    suggestedAddresses: {
+      type: new GraphQLNonNull(
+        new GraphQLList(
+          new GraphQLObjectType<any, ResolverContext>({
+            name: "SuggestedAddressFields",
+            fields: {
+              address: {
+                type: new GraphQLObjectType<any, ResolverContext>({
+                  name: "SuggestedAddress",
+                  fields: addressFieldsFromGravity,
+                }),
+              },
+              lines: {
+                type: new GraphQLList(GraphQLString),
+              },
+            },
+          })
+        )
       ),
       resolve: (result) => result.suggested_addresses,
     },
