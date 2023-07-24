@@ -12,9 +12,6 @@ const VerifiedRepresentatives: GraphQLFieldConfig<
     options,
     { verifiedRepresentativesLoader, partnersLoader }
   ) => {
-    if (!verifiedRepresentativesLoader) {
-      throw new Error("You are not authorized to perform this action.")
-    }
     try {
       const verifiedRepresentatives = await verifiedRepresentativesLoader(
         { artist_id: _id },
@@ -33,7 +30,7 @@ const VerifiedRepresentatives: GraphQLFieldConfig<
         return []
       }
 
-      const response = await partnersLoader({ ids: partnerIds })
+      const response = await partnersLoader({ id: partnerIds })
 
       if (!response || !response.body || !Array.isArray(response.body)) {
         throw new Error("Invalid response from partnersLoader.")

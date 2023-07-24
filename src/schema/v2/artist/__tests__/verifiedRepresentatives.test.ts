@@ -68,7 +68,7 @@ describe("Artist verifiedRepresentatives", () => {
       })
     })
 
-    it("returns null when there are no partners", () => {
+    it("returns empty list when there are no partners", () => {
       const query = `
       {
         artist(id: "123456") {
