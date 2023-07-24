@@ -442,6 +442,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    meUpdateUserInterestLoader: gravityLoader(
+      (id) => `me/user_interest/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
     meUpdateCollectorProfileLoader: gravityLoader(
