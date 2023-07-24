@@ -10,7 +10,7 @@ describe("Artist verifiedRepresentatives", () => {
 
   const verifiedRepresentativesResponse = [
     {
-      partner_id: "123456",
+      partner_id: "654321",
     },
   ]
 
@@ -29,6 +29,10 @@ describe("Artist verifiedRepresentatives", () => {
     .fn()
     .mockReturnValue(Promise.resolve(verifiedRepresentativesResponse))
 
+  const verifiedRepresentativesWithoutResponseLoader = jest
+    .fn()
+    .mockReturnValue(Promise.resolve([]))
+
   const partnersLoader = jest
     .fn()
     .mockReturnValue(Promise.resolve(partnerDataResponse))
@@ -36,6 +40,12 @@ describe("Artist verifiedRepresentatives", () => {
   const context = {
     artistLoader,
     verifiedRepresentativesLoader,
+    partnersLoader,
+  }
+
+  const contextWithNotResponse = {
+    artistLoader,
+    verifiedRepresentativesLoader: verifiedRepresentativesWithoutResponseLoader,
     partnersLoader,
   }
 
@@ -55,6 +65,22 @@ describe("Artist verifiedRepresentatives", () => {
         const verifiedRepresentatives = response.verifiedRepresentatives
         expect(verifiedRepresentatives[0].name).toBe("Catty Partner")
         expect(verifiedRepresentatives[1].name).toBe("Yttac Partner")
+      })
+    })
+
+    it("returns null when there is no artist", () => {
+      const query = `
+      {
+        artist(id: "123456") {
+          verifiedRepresentatives {
+            name
+          }
+        }
+      }
+    `
+
+      return runQuery(query, contextWithNotResponse).then((data) => {
+        expect(data.artist.verifiedRepresentatives).toEqual([])
       })
     })
   })
