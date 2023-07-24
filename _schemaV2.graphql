@@ -18439,7 +18439,7 @@ type UpdateUserInterestFailure {
 input UpdateUserInterestMutationInput {
   clientMutationId: String
   id: String!
-  private: Boolean!
+  private: Boolean
 }
 
 type UpdateUserInterestMutationPayload {

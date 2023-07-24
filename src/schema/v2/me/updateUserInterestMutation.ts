@@ -12,7 +12,7 @@ import { UserInterest, userInterestType } from "../userInterests"
 
 interface Input {
   id: string
-  private: boolean
+  private?: boolean
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -56,7 +56,7 @@ export const updateUserInterestMutation = mutationWithClientMutationId<
     "Updates a UserInterest on the logged in User's CollectorProfile.",
   inputFields: {
     id: { type: new GraphQLNonNull(GraphQLString) },
-    private: { type: new GraphQLNonNull(GraphQLBoolean) },
+    private: { type: GraphQLBoolean },
   },
   outputFields: {
     userInterestOrError: {
@@ -76,7 +76,7 @@ export const updateUserInterestMutation = mutationWithClientMutationId<
     try {
       const userInterest: UserInterest = await meUpdateUserInterestLoader?.(
         id,
-        { private: isPrivate }
+        { private: !!isPrivate }
       )
 
       return userInterest
