@@ -6,7 +6,10 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { GravityMutationErrorType } from "lib/gravityErrorHandler"
+import {
+  GravityMutationErrorType,
+  formatGravityError,
+} from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { UserInterest, userInterestType } from "../userInterests"
 
@@ -21,7 +24,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     userInterest: {
       type: userInterestType,
-      resolve: async (response) => {
+      resolve: (response) => {
         return response
       },
     },
@@ -76,22 +79,18 @@ export const updateUserInterestMutation = mutationWithClientMutationId<
     try {
       const userInterest: UserInterest = await meUpdateUserInterestLoader?.(
         id,
-        { private: !!isPrivate }
+        { private: isPrivate }
       )
 
       return userInterest
-    } catch (err) {
-      if ("body" in (err as any)) {
-        const e = err as GravityError
-        throw new Error(e.body.text ?? e.body.error)
-      }
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
 
-      throw err
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
     }
   },
 })
-
-interface GravityError {
-  statusCode: number
-  body: { error: string; text?: string }
-}
