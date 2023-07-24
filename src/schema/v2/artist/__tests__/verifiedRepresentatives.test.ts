@@ -43,7 +43,7 @@ describe("Artist verifiedRepresentatives", () => {
     partnersLoader,
   }
 
-  const contextWithNotResponse = {
+  const contextWithEmptyResponse = {
     artistLoader,
     verifiedRepresentativesLoader: verifiedRepresentativesWithoutResponseLoader,
     partnersLoader,
@@ -79,7 +79,7 @@ describe("Artist verifiedRepresentatives", () => {
       }
     `
 
-      return runQuery(query, contextWithNotResponse).then((data) => {
+      return runQuery(query, contextWithEmptyResponse).then((data) => {
         expect(data.artist.verifiedRepresentatives).toEqual([])
       })
     })
