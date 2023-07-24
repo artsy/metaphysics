@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLList } from "graphql"
+import { GraphQLFieldConfig, GraphQLList, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerType } from "schema/v2/partner/partner"
 
@@ -6,7 +6,7 @@ const VerifiedRepresentatives: GraphQLFieldConfig<
   { _id: string },
   ResolverContext
 > = {
-  type: GraphQLList(PartnerType),
+  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PartnerType))),
   resolve: async (
     { _id },
     options,
