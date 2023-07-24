@@ -151,10 +151,11 @@ export default (opts) => {
     partnerCategoryLoader: gravityLoader((id) => `partner_category/${id}`),
     partnerLoader: gravityLoader((id) => `partner/${id}`),
     partnerLocationsLoader: gravityLoader((id) => `partner/${id}/locations`),
-    partnerLocationsConnectionLoader: gravityLoader<
-      any,
-      { page: number; published: boolean; size: number; total_count: boolean }
-    >((id) => `partner/${id}/locations`, {}, { headers: true }),
+    partnerLocationsConnectionLoader: gravityLoader(
+      (id) => `partner/${id}/locations`,
+      {},
+      { headers: true }
+    ),
     partnerShowArtworksLoader: gravityLoader<
       any,
       { partner_id: string; show_id: string }
