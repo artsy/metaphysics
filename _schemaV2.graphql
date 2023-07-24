@@ -11893,6 +11893,9 @@ type Me implements Node {
     category: UserInterestCategory
     first: Int
 
+    # Id of the user interests to return if found. Can be an 'Artist' Id or a 'Gene' Id
+    interestID: String
+
     # UserInterest InterestType to select. 'Artist' or 'Gene' type
     interestType: UserInterestInterestType
     last: Int
@@ -19131,9 +19134,9 @@ enum VerificationStatuses {
 }
 
 type VerifyAddressType {
-  inputAddress: InputAddressFields
-  suggestedAddresses: [SuggestedAddressFields]
-  verificationStatus: VerificationStatuses
+  inputAddress: InputAddressFields!
+  suggestedAddresses: [SuggestedAddressFields]!
+  verificationStatus: VerificationStatuses!
 }
 
 # An object containing video metadata
