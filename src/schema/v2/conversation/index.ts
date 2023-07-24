@@ -29,6 +29,7 @@ import { ResolverContext } from "types/graphql"
 import { UserType } from "../user"
 import { InquiryRequestType } from "../partner/partnerInquiryRequest"
 import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
+import { ConversationEventType } from "./conversationEvent"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -162,6 +163,34 @@ const ConversationItem = new GraphQLObjectType<any, ResolverContext>({
           return null
         }
       },
+    },
+  },
+})
+
+const MessageOrConversationEventType = new GraphQLUnionType({
+  name: "MessageOrConversationEventType",
+  types: [MessageType, ConversationEventType],
+  resolveType: ({ type }) => {
+    switch (type) {
+      case "message_detail":
+        return MessageType
+      case "conversation_event":
+        return ConversationEventType
+      default:
+        return null
+    }
+  },
+})
+
+export const {
+  connectionType: MessagesAndConversationEventsConnection,
+  edgeType: MessageOrConversationEventEdge,
+} = connectionDefinitions({
+  nodeType: MessageOrConversationEventType,
+  connectionFields: {
+    totalCount: {
+      resolve: ({ total_count }) => total_count,
+      type: GraphQLInt,
     },
   },
 })
@@ -479,6 +508,61 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     },
 
     messagesConnection,
+
+    messagesAndConversationEventsConnection: {
+      type: MessagesAndConversationEventsConnection,
+      description:
+        "A connection for all messages and events in a single conversation",
+      args: pageable(),
+      resolve: (
+        { id, from_email, initial_message, from_name, embedded },
+        options,
+        { conversationWithEventsLoader }
+      ) => {
+        if (!conversationWithEventsLoader) return null
+        const optionKeys = Object.keys(options)
+        if (optionKeys.includes("last") && !optionKeys.includes("before")) {
+          options.before = `${lastMessageId({ embedded })}`
+        }
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(
+          options
+        )
+        return conversationWithEventsLoader(id, { page, size }).then(
+          ({ total_count, messages_and_conversation_events }) => {
+            // Inject the convesation initiator's email into each message payload
+            // so we can tell if the user sent a particular message.
+            // Also inject the conversation id, since we need it in some message
+            // resolvers (invoices).
+            /* eslint-disable no-param-reassign */
+            messages_and_conversation_events = messages_and_conversation_events.map(
+              (messageOrEvent) => {
+                if (messageOrEvent.type === "message_detail") {
+                  return merge(messageOrEvent, {
+                    conversation_initial_message: initial_message,
+                    conversation_from_name: from_name,
+                    conversation_from_address: from_email,
+                    conversation_id: id,
+                  })
+                } else {
+                  return messageOrEvent
+                }
+              }
+            )
+            return {
+              ...connectionFromArraySlice(
+                messages_and_conversation_events,
+                options,
+                {
+                  arrayLength: total_count,
+                  sliceStart: offset,
+                }
+              ),
+              total_count,
+            }
+          }
+        )
+      },
+    },
     unread: {
       type: GraphQLBoolean,
       description: "True if there is an unread message by the Collector(from).",

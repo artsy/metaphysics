@@ -7082,7 +7082,7 @@ type ConversationEdge {
 
 # An event (such as a submitted offer) in a conversation.
 type ConversationEvent implements Node {
-  # Text for this event, formatted for the seller.
+  # Text for this event, formatted for the buyer.
   buyerBody: String
   eventKey: String!
 
