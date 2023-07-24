@@ -1,9 +1,4 @@
-import {
-  GraphQLFieldConfig,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLString,
-} from "graphql"
+import { GraphQLFieldConfig, GraphQLString } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
@@ -30,10 +25,10 @@ export const UserInterestsConnection: GraphQLFieldConfig<
       description:
         "UserInterest InterestType to select. 'Artist' or 'Gene' type",
     },
-    interestsIDs: {
-      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+    interestID: {
+      type: GraphQLString,
       description:
-        "Ids of the user interests to return if found. Can be an 'Artist' Id or a 'Gene' Id",
+        "Id of the user interests to return if found. Can be an 'Artist' Id or a 'Gene' Id",
     },
   }),
   resolve: async (_, args, { meUserInterestsLoader }) => {
@@ -46,7 +41,7 @@ export const UserInterestsConnection: GraphQLFieldConfig<
     const { body, headers } = await meUserInterestsLoader({
       category: args.category,
       interest_type: args.interestType,
-      interests_ids: args.interestsIDs,
+      interest_id: args.interestID,
       page,
       size,
       total_count: true,

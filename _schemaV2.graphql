@@ -11893,8 +11893,8 @@ type Me implements Node {
     category: UserInterestCategory
     first: Int
 
-    # Ids of the user interests to return if found. Can be an 'Artist' Id or a 'Gene' Id
-    interestsIDs: [String!]
+    # Id of the user interests to return if found. Can be an 'Artist' Id or a 'Gene' Id
+    interestID: String
 
     # UserInterest InterestType to select. 'Artist' or 'Gene' type
     interestType: UserInterestInterestType

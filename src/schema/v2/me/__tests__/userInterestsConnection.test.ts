@@ -96,7 +96,7 @@ describe("Me", () => {
       })
     })
 
-    it("uses interest ids when provided", async () => {
+    it("sends interest id when provided", async () => {
       const query = gql`
         {
           me {
@@ -105,7 +105,7 @@ describe("Me", () => {
               category: COLLECTED_BEFORE
               interestType: ARTIST
               first: 10
-              interestsIDs: ["artist-id-1", "artist-id-2"]
+              interestID: "artist-id-1"
             ) {
               edges {
                 internalID
@@ -136,15 +136,6 @@ describe("Me", () => {
             },
             id: "user-interest-id-1",
           },
-          {
-            interest: {
-              _id: "artist-id-2",
-              name: "Artist Name 2",
-              id: "yayoi-kusama",
-              birthday: "10.10.2002",
-            },
-            id: "user-interest-id-2",
-          },
         ],
       }))
 
@@ -153,38 +144,12 @@ describe("Me", () => {
         meUserInterestsLoader,
       }
 
-      const result = await runAuthenticatedQuery(query, context)
-
-      expect(result).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "name": "Long John",
-            "userInterestsConnection": Object {
-              "edges": Array [
-                Object {
-                  "internalID": "user-interest-id-1",
-                  "node": Object {
-                    "internalID": "artist-id-1",
-                    "name": "Artist Name 1",
-                  },
-                },
-                Object {
-                  "internalID": "user-interest-id-2",
-                  "node": Object {
-                    "internalID": "artist-id-2",
-                    "name": "Artist Name 2",
-                  },
-                },
-              ],
-            },
-          },
-        }
-      `)
+      await runAuthenticatedQuery(query, context)
 
       expect(meUserInterestsLoader).toHaveBeenCalledWith({
         category: "collected_before",
         interest_type: "Artist",
-        interests_ids: ["artist-id-1", "artist-id-2"],
+        interest_id: "artist-id-1",
         page: 1,
         size: 10,
         total_count: true,
