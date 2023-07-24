@@ -120,6 +120,65 @@ describe("Me", () => {
           message_details: messages,
         })
       },
+      conversationWithEventsLoader: () => {
+        const messagesAndEvents = [
+          {
+            id: "240",
+            raw_text: "this is a good message",
+            from_email_address: "fancy_german_person@posteo.de",
+            from_id: null,
+            attachments: [],
+            metadata: {
+              lewitt_invoice_id: "420i",
+            },
+            from: `"Percy Z" <percy@cat.com>`,
+            from_principal: true,
+            body: "I'm a cat",
+            type: "message_detail",
+          },
+          {
+            id: "241",
+            raw_text: "this is a good message",
+            from_email_address: "postman@posteo.de",
+            from_id: null,
+            attachments: [],
+            metadata: {},
+            from: `"Bitty Z" <Bitty@cat.com>`,
+            from_principal: false,
+            body: "",
+            type: "message_detail",
+          },
+          {
+            id: "980",
+            conversation_id: "420",
+            event_key: "offer_submitted",
+            buyer_body: "You submitted an offer",
+            seller_body: "You received an offer",
+            type: "conversation_event",
+          },
+          {
+            id: "243",
+            raw_text: "this is a good message",
+            from_email_address: "postman+wunderlich@posteo.de",
+            from_id: "user-21",
+            attachments: [],
+            metadata: {},
+            from: "<email@email.com>",
+            from_principal: null,
+            deliveries: [
+              {
+                opened_at: "2020-12-31T12:00:00+00:00",
+              },
+            ],
+            type: "message_detail",
+          },
+        ]
+
+        return Promise.resolve({
+          total_count: 4,
+          messages_and_conversation_events: messagesAndEvents,
+        })
+      },
     }
 
     it("returns a conversation", () => {
@@ -665,6 +724,63 @@ describe("Me", () => {
             expect(inquiryRequest.questions).toHaveLength(1)
             expect(inquiryRequest.shippingLocation).toBeNull()
             expect(inquiryRequest.formattedFirstMessage).toMatchSnapshot()
+          }
+        )
+      })
+    })
+    describe("mixed messages and conversation events", () => {
+      const getQuery = () => {
+        return `
+          {
+            me {
+              conversation(id: "420") {
+                messagesAndConversationEventsConnection(first: 50) {
+                  edges {
+                    node {
+                      __typename
+                      ... on Message {
+                        internalID
+                        isFromUser
+                        body
+                      }
+                      ... on ConversationEvent {
+                        buyerBody
+                        sellerBody
+                        eventKey
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `
+      }
+
+      it("returns messages and events", () => {
+        const query = getQuery()
+
+        return runAuthenticatedQuery(query, context).then(
+          ({
+            me: {
+              conversation: { messagesAndConversationEventsConnection },
+            },
+          }) => {
+            expect(
+              messagesAndConversationEventsConnection.edges.length
+            ).toEqual(4)
+            expect(
+              messagesAndConversationEventsConnection.edges[0].node.__typename
+            ).toEqual("Message")
+            expect(
+              messagesAndConversationEventsConnection.edges[1].node.__typename
+            ).toEqual("Message")
+            expect(
+              messagesAndConversationEventsConnection.edges[2].node.__typename
+            ).toEqual("ConversationEvent")
+            expect(
+              messagesAndConversationEventsConnection.edges[3].node.__typename
+            ).toEqual("Message")
           }
         )
       })
