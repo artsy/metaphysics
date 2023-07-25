@@ -1608,6 +1608,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   statuses: ArtistStatuses
   targetSupply: ArtistTargetSupply
   vanguardYear: String
+  verifiedRepresentatives: [Partner!]!
   years: String
 }
 
@@ -8339,6 +8340,8 @@ type deleteUserInterestForUserSuccess {
 input DeleteUserInterestMutationInput {
   anonymousSessionId: String
   clientMutationId: String
+
+  # Either the `id` or the `interest_id` of a user interest
   id: String!
   sessionID: String
 }
@@ -12731,6 +12734,11 @@ type Mutation {
   updateUserInterest(
     input: UpdateUserInterestMutationInput!
   ): UpdateUserInterestMutationPayload
+
+  # Update user interests for multiple artists
+  updateUserInterests(
+    input: UpdateUserInterestsMutationInput!
+  ): UpdateUserInterestsMutationPayload
 
   # Update the user sale profile
   updateUserSaleProfile(
@@ -18439,6 +18447,11 @@ type UpdateUserInterestFailure {
   mutationError: GravityMutationError
 }
 
+input UpdateUserInterestInput {
+  id: String!
+  private: Boolean
+}
+
 input UpdateUserInterestMutationInput {
   clientMutationId: String
   id: String!
@@ -18452,9 +18465,26 @@ type UpdateUserInterestMutationPayload {
   userInterestOrError: UpdateUserInterestResponseOrError
 }
 
+union UpdateUserInterestOrError = UpdateUserInterestsFailure | UserInterest
+
 union UpdateUserInterestResponseOrError =
     UpdateUserInterestFailure
   | UpdateUserInterestSuccess
+
+type UpdateUserInterestsFailure {
+  mutationError: GravityMutationError
+}
+
+input UpdateUserInterestsMutationInput {
+  clientMutationId: String
+  userInterests: [UpdateUserInterestInput!]!
+}
+
+type UpdateUserInterestsMutationPayload {
+  clientMutationId: String
+  me: Me!
+  userInterestsOrErrors: [UpdateUserInterestOrError!]!
+}
 
 type UpdateUserInterestSuccess {
   userInterest: UserInterest

@@ -57,6 +57,7 @@ import {
 } from "./shows"
 import ArtistStatuses from "./statuses"
 import { ArtistTargetSupply } from "./targetSupply"
+import VerifiedRepresentatives from "./verifiedRepresentatives"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -770,6 +771,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ vanguard_year }) => vanguard_year,
       },
+      verifiedRepresentatives: VerifiedRepresentatives,
       years: { type: GraphQLString },
     }
   },
