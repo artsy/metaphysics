@@ -70,7 +70,7 @@ export const gravityStitchingEnvironment = (
         savedSearchesConnection(
           first: Int
           last: Int
-      after: String
+          after: String
           before: String
           sort: SavedSearchesSortEnum
         ): SearchCriteriaConnection
