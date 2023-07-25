@@ -7026,6 +7026,8 @@ type Conversation implements Node {
     before: String
     first: Int
     last: Int
+    page: Int
+    size: Int
   ): MessageOrConversationEventTypeConnection
 
   # A connection for all messages in a single conversation
@@ -12077,6 +12079,7 @@ union MessageOrConversationEventType = ConversationEvent | Message
 type MessageOrConversationEventTypeConnection {
   # A list of edges.
   edges: [MessageOrConversationEventTypeEdge]
+  pageCursors: PageCursors!
 
   # Information to aid in pagination.
   pageInfo: PageInfo!

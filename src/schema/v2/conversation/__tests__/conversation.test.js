@@ -175,8 +175,10 @@ describe("Me", () => {
         ]
 
         return Promise.resolve({
-          total_count: 4,
-          messages_and_conversation_events: messagesAndEvents,
+          body: {
+            total_count: 4,
+            messages_and_conversation_events: messagesAndEvents,
+          },
         })
       },
     }

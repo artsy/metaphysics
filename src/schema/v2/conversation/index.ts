@@ -30,6 +30,10 @@ import { UserType } from "../user"
 import { InquiryRequestType } from "../partner/partnerInquiryRequest"
 import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
 import { ConversationEventType } from "./conversationEvent"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "../fields/pagination"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -179,19 +183,6 @@ const MessageOrConversationEventType = new GraphQLUnionType({
       default:
         return null
     }
-  },
-})
-
-export const {
-  connectionType: MessagesAndConversationEventsConnection,
-  edgeType: MessageOrConversationEventEdge,
-} = connectionDefinitions({
-  nodeType: MessageOrConversationEventType,
-  connectionFields: {
-    totalCount: {
-      resolve: ({ total_count }) => total_count,
-      type: GraphQLInt,
-    },
   },
 })
 
@@ -510,57 +501,61 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     messagesConnection,
 
     messagesAndConversationEventsConnection: {
-      type: MessagesAndConversationEventsConnection,
+      type: connectionWithCursorInfo({
+        nodeType: MessageOrConversationEventType,
+      }).connectionType,
       description:
         "A connection for all messages and events in a single conversation",
-      args: pageable(),
-      resolve: (
+      args: pageable({
+        page: { type: GraphQLInt },
+        size: { type: GraphQLInt },
+      }),
+      resolve: async (
         { id, from_email, initial_message, from_name, embedded },
-        options,
+        args,
         { conversationWithEventsLoader }
       ) => {
         if (!conversationWithEventsLoader) return null
-        const optionKeys = Object.keys(options)
-        if (optionKeys.includes("last") && !optionKeys.includes("before")) {
-          options.before = `${lastMessageId({ embedded })}`
+
+        const argKeys = Object.keys(args)
+        if (argKeys.includes("last") && !argKeys.includes("before")) {
+          args.before = `${lastMessageId({ embedded })}`
         }
-        const { page, size, offset } = convertConnectionArgsToGravityArgs(
-          options
-        )
-        return conversationWithEventsLoader(id, { page, size }).then(
-          ({ total_count, messages_and_conversation_events }) => {
-            // Inject the convesation initiator's email into each message payload
-            // so we can tell if the user sent a particular message.
-            // Also inject the conversation id, since we need it in some message
-            // resolvers (invoices).
-            /* eslint-disable no-param-reassign */
-            messages_and_conversation_events = messages_and_conversation_events.map(
-              (messageOrEvent) => {
-                if (messageOrEvent.type === "message_detail") {
-                  return merge(messageOrEvent, {
-                    conversation_initial_message: initial_message,
-                    conversation_from_name: from_name,
-                    conversation_from_address: from_email,
-                    conversation_id: id,
-                  })
-                } else {
-                  return messageOrEvent
-                }
-              }
-            )
-            return {
-              ...connectionFromArraySlice(
-                messages_and_conversation_events,
-                options,
-                {
-                  arrayLength: total_count,
-                  sliceStart: offset,
-                }
-              ),
-              total_count,
+
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        const { body } = await conversationWithEventsLoader(id, {
+          page,
+          size,
+        })
+
+        // Inject the convesation initiator's email into each message payload
+        // so we can tell if the user sent a particular message.
+        // Also inject the conversation id, since we need it in some message
+        // resolvers (invoices).
+        const messagesAndEvents = body.messages_and_conversation_events.map(
+          (messageOrEvent) => {
+            if (messageOrEvent.type === "message_detail") {
+              return merge(messageOrEvent, {
+                conversation_initial_message: initial_message,
+                conversation_from_name: from_name,
+                conversation_from_address: from_email,
+                conversation_id: id,
+              })
+            } else {
+              return messageOrEvent
             }
           }
         )
+
+        return paginationResolver({
+          args,
+          body: messagesAndEvents,
+          offset,
+          page,
+          size,
+          totalCount: body.total_count,
+        })
       },
     },
     unread: {
