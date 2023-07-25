@@ -21,7 +21,10 @@ export const deleteUserInterestMutation = mutationWithClientMutationId<
   description:
     "Deletes a UserInterest on the logged in User's CollectorProfile.",
   inputFields: {
-    id: { type: new GraphQLNonNull(GraphQLString) },
+    id: {
+      description: "Either the `id` or the `interest_id` of a user interest",
+      type: new GraphQLNonNull(GraphQLString),
+    },
     anonymousSessionId: { type: GraphQLString },
     sessionID: { type: GraphQLString },
   },
