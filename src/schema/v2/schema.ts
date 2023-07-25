@@ -209,6 +209,7 @@ import { deleteUserInterestForUser } from "./users/deleteUserInterestForUserMuta
 import VanityURLEntity from "./vanityURLEntity"
 import { VerifyAddress } from "./verifyAddress"
 import { updateUserInterestMutation } from "./me/updateUserInterestMutation"
+import { updateUserInterestsMutation } from "./me/updateUserInterestsMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -437,6 +438,7 @@ export default new GraphQLSchema({
       updateQuiz: updateQuizMutation,
       updateUser: updateUserMutation,
       updateUserInterest: updateUserInterestMutation,
+      updateUserInterests: updateUserInterestsMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
     },
   }),
