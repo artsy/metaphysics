@@ -29,6 +29,11 @@ import { ResolverContext } from "types/graphql"
 import { UserType } from "../user"
 import { InquiryRequestType } from "../partner/partnerInquiryRequest"
 import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
+import { ConversationEventType } from "./conversationEvent"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "../fields/pagination"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -163,6 +168,21 @@ const ConversationItem = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
+  },
+})
+
+const MessageOrConversationEventType = new GraphQLUnionType({
+  name: "MessageOrConversationEventType",
+  types: [MessageType, ConversationEventType],
+  resolveType: ({ type }) => {
+    switch (type) {
+      case "message_detail":
+        return MessageType
+      case "conversation_event":
+        return ConversationEventType
+      default:
+        return null
+    }
   },
 })
 
@@ -479,6 +499,65 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     },
 
     messagesConnection,
+
+    messagesAndConversationEventsConnection: {
+      type: connectionWithCursorInfo({
+        nodeType: MessageOrConversationEventType,
+      }).connectionType,
+      description:
+        "A connection for all messages and events in a single conversation",
+      args: pageable({
+        page: { type: GraphQLInt },
+        size: { type: GraphQLInt },
+      }),
+      resolve: async (
+        { id, from_email, initial_message, from_name, embedded },
+        args,
+        { conversationWithEventsLoader }
+      ) => {
+        if (!conversationWithEventsLoader) return null
+
+        const argKeys = Object.keys(args)
+        if (argKeys.includes("last") && !argKeys.includes("before")) {
+          args.before = `${lastMessageId({ embedded })}`
+        }
+
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        const { body } = await conversationWithEventsLoader(id, {
+          page,
+          size,
+        })
+
+        // Inject the convesation initiator's email into each message payload
+        // so we can tell if the user sent a particular message.
+        // Also inject the conversation id, since we need it in some message
+        // resolvers (invoices).
+        const messagesAndEvents = body.messages_and_conversation_events.map(
+          (messageOrEvent) => {
+            if (messageOrEvent.type === "message_detail") {
+              return merge(messageOrEvent, {
+                conversation_initial_message: initial_message,
+                conversation_from_name: from_name,
+                conversation_from_address: from_email,
+                conversation_id: id,
+              })
+            } else {
+              return messageOrEvent
+            }
+          }
+        )
+
+        return paginationResolver({
+          args,
+          body: messagesAndEvents,
+          offset,
+          page,
+          size,
+          totalCount: body.total_count,
+        })
+      },
+    },
     unread: {
       type: GraphQLBoolean,
       description: "True if there is an unread message by the Collector(from).",

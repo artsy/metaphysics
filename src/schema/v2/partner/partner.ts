@@ -35,6 +35,7 @@ import { fields as partnerArtistFields } from "./partner_artist"
 import {
   connectionWithCursorInfo,
   createPageCursors,
+  paginationResolver,
 } from "schema/v2/fields/pagination"
 import { deprecate } from "lib/deprecation"
 import { articleConnection } from "schema/v2/article"
@@ -639,31 +640,31 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       locationsConnection: {
         description: "A connection of locations from a Partner.",
         type: locationsConnection.connectionType,
-        args: pageable({}),
-        resolve: ({ id }, args, { partnerLocationsConnectionLoader }) => {
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+        }),
+        resolve: async ({ id }, args, { partnerLocationsConnectionLoader }) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )
 
-          const gravityArgs = {
-            published: true,
+          const { body, headers } = await partnerLocationsConnectionLoader(id, {
+            private: false,
             total_count: true,
+            offset,
+            size,
+          })
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            totalCount,
+            offset,
             page,
             size,
-          }
-
-          return partnerLocationsConnectionLoader(id, gravityArgs).then(
-            ({ body, headers }) => {
-              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-              return {
-                totalCount,
-                ...connectionFromArraySlice(body, args, {
-                  arrayLength: totalCount,
-                  sliceStart: offset,
-                }),
-              }
-            }
-          )
+            body,
+            args,
+          })
         },
       },
       name: {

@@ -30,6 +30,11 @@ export default (accessToken, _userID, opts) => {
   return {
     conversationsLoader: impulseLoader("conversations"),
     conversationLoader: impulseLoader((id) => `conversations/${id}`),
+    conversationWithEventsLoader: impulseLoader(
+      (id) => `conversations/${id}/messages_and_conversation_events`,
+      { include_delivery_pending: true },
+      { headers: true }
+    ),
     conversationUpdateLoader: impulseLoader(
       (id) => `conversations/${id}`,
       {},
