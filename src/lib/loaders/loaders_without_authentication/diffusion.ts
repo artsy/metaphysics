@@ -8,6 +8,11 @@ export default (opts) => {
     auctionLotsLoader: diffusionLoader("lots"),
     auctionLotLoader: diffusionLoader((id) => `lots/${id}`),
     auctionCreatedYearRangeLoader: diffusionLoader("lots/created_dates"),
+    auctionResultFilterLoader: diffusionLoader(
+      "filters/lots",
+      {},
+      { requestThrottleMs: 3600000 } // 1 hour
+    ),
     auctionResultComparableAuctionResultsLoader: diffusionLoader(
       (id) => `lots/${id}/comparable_lots`
     ),
