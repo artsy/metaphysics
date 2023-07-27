@@ -12,6 +12,7 @@ export type SearchItemRawResponse = {
   location: string
   model: string
   owner_type: string
+  owner_slug: string
   profile_id: string
   published_at: string
   start_at: string

@@ -42,12 +42,36 @@ export class SearchableItemPresenter {
   }
 
   href(): string {
-    const { href, label, id, profile_id, model } = this.item
+    const {
+      href,
+      label,
+      id,
+      profile_id,
+      model,
+      owner_type,
+      owner_slug,
+    } = this.item
 
     if (href) return href
+
     switch (label) {
       case "Profile":
-        return `/${id}`
+        switch (owner_type) {
+          case "Fair":
+          case "FairOrganizer":
+            return `/fair/${owner_slug}`
+          case "PartnerAuction":
+          case "PartnerBrand":
+          case "PartnerDemo":
+          case "PartnerGallery":
+          case "PartnerInstitution":
+          case "PartnerInstitutionalSeller":
+          case "PartnerPrivateCollector":
+          case "PartnerPrivateDealer":
+            return `/partner/${owner_slug}`
+          default:
+            return `/${id}`
+        }
       case "Fair":
         return `/${profile_id}`
       case "Sale":

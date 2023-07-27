@@ -18,6 +18,7 @@ describe("SearchableItemPresenter", () => {
     location: "",
     model: "",
     owner_type: "",
+    owner_slug: "",
     profile_id: "",
     published_at: "",
     start_at: "",
@@ -370,6 +371,268 @@ describe("SearchableItemPresenter", () => {
       const presenter = new SearchableItemPresenter(searchableItem)
       const imageUrl = presenter.imageUrl()
       expect(imageUrl).toBe("")
+    })
+  })
+
+  describe("#href", () => {
+    describe("for a Fair or FairOrganizer type", () => {
+      it("returns correct href", () => {
+        let searchableItem = {
+          ...BASE_ITEM,
+          label: "Profile",
+          owner_type: "Fair",
+          owner_slug: "fair-slug",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/fair/fair-slug"
+        )
+
+        searchableItem = {
+          ...BASE_ITEM,
+          label: "Profile",
+          owner_type: "FairOrganizer",
+          owner_slug: "default-fair-slug",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/fair/default-fair-slug"
+        )
+      })
+    })
+
+    describe("for Partner's types", () => {
+      it("returns correct href", () => {
+        let searchableItem = {
+          ...BASE_ITEM,
+          label: "Profile",
+          owner_type: "PartnerAuction",
+          owner_slug: "partner-auction-slug",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/partner/partner-auction-slug"
+        )
+
+        searchableItem = {
+          ...BASE_ITEM,
+          label: "Profile",
+          owner_type: "PartnerBrand",
+          owner_slug: "partner-brand-slug",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/partner/partner-brand-slug"
+        )
+
+        searchableItem = {
+          ...BASE_ITEM,
+          label: "Profile",
+          owner_type: "PartnerDemo",
+          owner_slug: "partner-demo-slug",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/partner/partner-demo-slug"
+        )
+
+        searchableItem = {
+          ...BASE_ITEM,
+          label: "Profile",
+          owner_type: "PartnerGallery",
+          owner_slug: "partner-gallery-slug",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/partner/partner-gallery-slug"
+        )
+
+        searchableItem = {
+          ...BASE_ITEM,
+          label: "Profile",
+          owner_type: "PartnerInstitution",
+          owner_slug: "partner-institution-slug",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/partner/partner-institution-slug"
+        )
+
+        searchableItem = {
+          ...BASE_ITEM,
+          label: "Profile",
+          owner_type: "PartnerInstitutionalSeller",
+          owner_slug: "partner-institutional-seller-slug",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/partner/partner-institutional-seller-slug"
+        )
+
+        searchableItem = {
+          ...BASE_ITEM,
+          label: "Profile",
+          owner_type: "PartnerPrivateCollector",
+          owner_slug: "partner-private-collector-slug",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/partner/partner-private-collector-slug"
+        )
+
+        searchableItem = {
+          ...BASE_ITEM,
+          label: "Profile",
+          owner_type: "PartnerPrivateDealer",
+          owner_slug: "partner-private-dealer-slug",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/partner/partner-private-dealer-slug"
+        )
+      })
+    })
+
+    describe("for other Profile types", () => {
+      it("returns correct href", () => {
+        const searchableItem = {
+          ...BASE_ITEM,
+          label: "Profile",
+          owner_type: "UnkonwnProfileType",
+          id: "partner-slug",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/partner-slug"
+        )
+      })
+    })
+
+    describe("for a Fair", () => {
+      it("returns correct href", () => {
+        const searchableItem = {
+          ...BASE_ITEM,
+          label: "Fair",
+          profile_id: "fair-profile-id",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/fair-profile-id"
+        )
+      })
+    })
+
+    describe("for a Sale", () => {
+      it("returns correct href", () => {
+        const searchableItem = {
+          ...BASE_ITEM,
+          label: "Sale",
+          id: "sale-id",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/auction/sale-id"
+        )
+      })
+    })
+
+    describe("for a City", () => {
+      it("returns correct href", () => {
+        const searchableItem = {
+          ...BASE_ITEM,
+          label: "City",
+          id: "city-id",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/shows/city-id"
+        )
+      })
+    })
+
+    describe("for a MarketingCollection", () => {
+      it("returns correct href", () => {
+        const searchableItem = {
+          ...BASE_ITEM,
+          label: "MarketingCollection",
+          id: "collection-id",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/collection/collection-id"
+        )
+      })
+    })
+
+    describe("for a Booth", () => {
+      it("returns correct href", () => {
+        const searchableItem = {
+          ...BASE_ITEM,
+          label: "Booth",
+          id: "show-id",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/show/show-id"
+        )
+      })
+    })
+
+    describe("for a PartnerShow", () => {
+      it("returns correct href", () => {
+        const searchableItem = {
+          ...BASE_ITEM,
+          label: "PartnerShow",
+          id: "show-id",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/show/show-id"
+        )
+      })
+    })
+
+    describe("for an ArtistSeries", () => {
+      it("returns correct href", () => {
+        const searchableItem = {
+          ...BASE_ITEM,
+          label: "ArtistSeries",
+          id: "artist-series-id",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/artist-series/artist-series-id"
+        )
+      })
+    })
+
+    describe("for a ViewingRoom", () => {
+      it("returns correct href", () => {
+        const searchableItem = {
+          ...BASE_ITEM,
+          label: "ViewingRoom",
+          id: "viewing-room-id",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/viewing-room/viewing-room-id"
+        )
+      })
+    })
+
+    describe("for other entities", () => {
+      it("returns correct href", () => {
+        const searchableItem = {
+          ...BASE_ITEM,
+          label: "SomeOtherEntityType",
+          model: "model",
+          id: "id",
+        }
+
+        expect(new SearchableItemPresenter(searchableItem).href()).toBe(
+          "/model/id"
+        )
+      })
     })
   })
 })
