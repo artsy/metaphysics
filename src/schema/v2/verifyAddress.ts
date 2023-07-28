@@ -1,48 +1,26 @@
-import { GraphQLFieldConfigArgumentMap, GraphQLInputObjectType } from "graphql"
 import {
   GraphQLEnumType,
-  GraphQLFieldConfig,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
   GraphQLList,
+  GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
+import { mutationWithClientMutationId } from "graphql-relay"
 
-type VerifyAddressTypeSource = {
-  verification_status: string
-  input_address: AddressTypeSource[]
-  suggested_addresses: AddressTypeSource[]
-}
-
-type AddressTypeSource = {
-  address: {
-    address_line_1: string
-    address_line_2: string
-    city: string
-    region: string
-    postal_code: string
-    country: string
-  }
+interface Input {
+  addressLine1: string
+  addressLine2: string
+  city: string
+  region: string
+  postalCode: string
+  country: string
   lines: string[]
-}
-
-const AddressVerificationInput: GraphQLFieldConfigArgumentMap = {
-  address: {
-    type: new GraphQLNonNull(
-      new GraphQLInputObjectType({
-        name: "AddressInput",
-        fields: {
-          addressLine1: { type: new GraphQLNonNull(GraphQLString) },
-          addressLine2: { type: GraphQLString },
-          city: { type: GraphQLString },
-          country: { type: new GraphQLNonNull(GraphQLString) },
-          postalCode: { type: new GraphQLNonNull(GraphQLString) },
-          region: { type: GraphQLString },
-        },
-      })
-    ),
-  },
 }
 
 const addressFieldsFromGravity = {
@@ -70,13 +48,10 @@ const VerificationStatuses = {
   NOT_FOUND: { value: "NOT_FOUND" },
   NOT_PERFORMED: { value: "NOT_PERFORMED" },
 }
-
-const VerifyAddressType: GraphQLObjectType<
-  VerifyAddressTypeSource,
-  ResolverContext
-> = new GraphQLObjectType<VerifyAddressTypeSource, ResolverContext>({
+// VerifyAddressMutationSuccessType
+const VerifyAddressType = new GraphQLObjectType<any, ResolverContext>({
   name: "VerifyAddressType",
-  fields: {
+  fields: () => ({
     verificationStatus: {
       type: new GraphQLNonNull(
         new GraphQLEnumType({
@@ -126,25 +101,56 @@ const VerifyAddressType: GraphQLObjectType<
       ),
       resolve: (result) => result.suggested_addresses,
     },
+  }),
+})
+
+const VerifyAddressFailureType = new GraphQLObjectType<any, ResolverContext>({
+  name: "VerifyAddressFailureType",
+  isTypeOf: (data) => {
+    return data._type === "GravityMutationError"
+  },
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const VerifyAddressMutationType = new GraphQLUnionType({
+  name: "VerifyAddressMutationType",
+  types: [VerifyAddressType, VerifyAddressFailureType],
+  resolveType: (object) => {
+    if (object._type === "GravityMutationError") {
+      return VerifyAddressFailureType
+    }
+    return VerifyAddressType
   },
 })
 
-export const VerifyAddress: GraphQLFieldConfig<any, ResolverContext> = {
-  type: VerifyAddressType,
+export const VerifyAddress = mutationWithClientMutationId<
+  Input,
+  any,
+  ResolverContext
+>({
+  name: "VerifyAddress",
   description: "Verify a given address.",
-  args: AddressVerificationInput,
-  resolve: async (
-    _,
-    {
-      address: {
-        addressLine1,
-        addressLine2,
-        city,
-        country,
-        postalCode,
-        region,
-      },
+  inputFields: {
+    addressLine1: { type: new GraphQLNonNull(GraphQLString) },
+    addressLine2: { type: GraphQLString },
+    city: { type: GraphQLString },
+    country: { type: new GraphQLNonNull(GraphQLString) },
+    postalCode: { type: new GraphQLNonNull(GraphQLString) },
+    region: { type: GraphQLString },
+  },
+  outputFields: {
+    verifyAddressOrError: {
+      type: VerifyAddressMutationType,
+      resolve: (result) => result,
     },
+  },
+  mutateAndGetPayload: async (
+    { addressLine1, addressLine2, postalCode, city, region, country },
     { verifyAddressLoader }
   ) => {
     if (!verifyAddressLoader) {
@@ -152,7 +158,7 @@ export const VerifyAddress: GraphQLFieldConfig<any, ResolverContext> = {
     }
 
     try {
-      const result = await verifyAddressLoader({
+      return await verifyAddressLoader({
         address_line_1: addressLine1,
         address_line_2: addressLine2,
         postal_code: postalCode,
@@ -160,9 +166,14 @@ export const VerifyAddress: GraphQLFieldConfig<any, ResolverContext> = {
         region: region,
         country: country,
       })
-      return result
     } catch (error) {
-      throw new Error(error)
+      console.error(error)
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
     }
   },
-}
+})
