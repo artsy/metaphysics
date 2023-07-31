@@ -1,6 +1,5 @@
 project-name: metaphysics
 git-remote: git@github.com:artsy/metaphysics.git
-post-deploy: .circleci/deploy_event.sh
 hokusai-required-version: ">=0.5.9"
 template-config-files:
   - s3://artsy-citadel/k8s/hokusai-vars.yml
