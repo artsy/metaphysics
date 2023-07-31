@@ -4,6 +4,8 @@ import { priceDisplayText } from "lib/moneyHelpers"
 const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
   .artists
 
+const FOLLOWER_GROWTH_MIN_VALUE = 20
+
 // In order of importance
 export const ARTIST_INSIGHT_KINDS = [
   "HIGH_AUCTION_RECORD",
@@ -13,7 +15,7 @@ export const ARTIST_INSIGHT_KINDS = [
   "ARTSY_VANGUARD_YEAR",
   // "CURATORS_PICK_EMERGING", // Missing
   // "TRENDING_NOW", // Missing
-  // "GAINING_FOLLOWERS", // Missing
+  "GAINING_FOLLOWERS",
   "SOLO_SHOW",
   "GROUP_SHOW",
   "BIENNIAL",
@@ -102,6 +104,13 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       "Featured in Artsy’s annual list of the most promising artists working today",
     getEntities: (artist) => artist.vanguard_year && [],
     getLabel: (artist) => `The Artsy Vanguard ${artist.vanguard_year}`,
+  },
+  GAINING_FOLLOWERS: {
+    getDescription: (artist) =>
+      `${artist.follower_growth}% increase in Artsy followers compared to same time last year.`,
+    getEntities: (artist) =>
+      artist.follower_growth >= FOLLOWER_GROWTH_MIN_VALUE ? [] : null,
+    getLabel: () => `Gaining Followers`,
   },
   CRITICALLY_ACCLAIMED: {
     getDescription: () => "Recognized by major institutions and publications",

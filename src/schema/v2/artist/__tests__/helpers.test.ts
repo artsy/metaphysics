@@ -129,4 +129,32 @@ describe("getArtistInsights", () => {
       expect(insight).toBeUndefined()
     })
   })
+
+  describe("GAINING_FOLLOWERS insight", () => {
+    const kind = "GAINING_FOLLOWERS"
+
+    it("returns insight when the follower_growth is more than 20", () => {
+      const artist = {
+        follower_growth: 40,
+      }
+
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === kind)!
+
+      expect(insight.description).toEqual(
+        "40% increase in Artsy followers compared to same time last year."
+      )
+    })
+
+    it("does not return insight when the follower_growth is less than 20", () => {
+      const artist = {
+        follower_growth: 10,
+      }
+
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === kind)
+
+      expect(insight).toBeUndefined()
+    })
+  })
 })

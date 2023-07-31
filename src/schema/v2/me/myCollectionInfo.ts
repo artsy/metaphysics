@@ -161,6 +161,7 @@ export const myCollectionInfoFields = {
   },
   collectedArtistsConnection: {
     description: "A connection of artists in the users' collection",
+    deprecationReason: "Please use `me.userInterestsConnection` instead",
     type: artistConnection.connectionType,
     args: pageable({
       sort: ArtistSorts,
