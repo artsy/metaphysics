@@ -1,4 +1,8 @@
-import { ARTIST_INSIGHT_MAPPING, getArtistInsights } from "../helpers"
+import {
+  ARTIST_INSIGHT_MAPPING,
+  getArtistInsights,
+  getRecentShow,
+} from "../helpers"
 
 describe("getArtistInsights", () => {
   it("returns artist objects with no other information for each insight kind", () => {
@@ -155,6 +159,71 @@ describe("getArtistInsights", () => {
       const insight = insights.find((insight) => insight.kind === kind)
 
       expect(insight).toBeUndefined()
+    })
+  })
+
+  describe("recent career event insight", () => {
+    const field = {
+      kind: "RECENT_CAREER_EVENT",
+      artist: {
+        recent_show: "2/2/2021|ai-weiwei|Solo|Gagosian Gallery",
+      },
+      value: ["2021 Gagosian Gallery"],
+    }
+
+    it("returns recent career event insights", () => {
+      const artist = field.artist
+
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === field.kind)!
+      expect(insight.description).toEqual(field.value)
+    })
+  })
+
+  describe("empty recent career event insight", () => {
+    const field = {
+      kind: "RECENT_CAREER_EVENT",
+      artist: {
+        recent_show: null,
+      },
+      value: null,
+    }
+
+    it("returns recent career event insights", () => {
+      const artist = field.artist
+
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === field.kind)!
+      expect(insight).toBeUndefined()
+    })
+  })
+
+  describe("getRecentShow", () => {
+    it("returns the most recent show", () => {
+      const artist = {
+        recent_show: "2/2/2021|ai-weiwei|Solo|Gagosian Gallery",
+      }
+
+      const recentShow = getRecentShow(artist)
+      expect(recentShow).toEqual(["2021 Gagosian Gallery"])
+    })
+
+    it("returns empty array if there empty recent show", () => {
+      const artist = {
+        recent_show: "",
+      }
+
+      const recentShow = getRecentShow(artist)
+      expect(recentShow).toEqual(null)
+    })
+
+    it("returns empty array if there is no recent show", () => {
+      const artist = {
+        recent_show: null,
+      }
+
+      const recentShow = getRecentShow(artist)
+      expect(recentShow).toEqual(null)
     })
   })
 })

@@ -11,7 +11,7 @@ export const ARTIST_INSIGHT_KINDS = [
   "HIGH_AUCTION_RECORD",
   "ACTIVE_SECONDARY_MARKET",
   "CRITICALLY_ACCLAIMED",
-  // "RECENT_CAREER_EVENT", // Missing
+  "RECENT_CAREER_EVENT",
   "ARTSY_VANGUARD_YEAR",
   // "CURATORS_PICK_EMERGING", // Missing
   // "TRENDING_NOW", // Missing
@@ -117,6 +117,11 @@ export const ARTIST_INSIGHT_MAPPING: Record<
     getEntities: (artist) => artist.critically_acclaimed && [],
     getLabel: () => "Critically acclaimed",
   },
+  RECENT_CAREER_EVENT: {
+    getDescription: (artist) => artist.recent_show && getRecentShow(artist),
+    getEntities: (artist) => artist.recent_show && [],
+    getLabel: () => "Recent Career Event",
+  },
   RESIDENCIES: {
     getDescription: () => "Established artist residencies",
     getEntities: (artist) => splitEntities(artist.residencies),
@@ -215,4 +220,25 @@ export const getAuctionRecord = async (artist, auctionLotsLoader) => {
     organization: auctionLot.organization,
     year,
   }
+}
+
+export const getRecentShow = (artist): string[] | null => {
+  // dd/mm/yyy|slug|Group or Solo|Show Title
+  const entities = splitEntities(artist.recent_show)
+  if (!entities) return null
+
+  const date = entities[0]
+  const show = entities[entities.length - 1]
+
+  const showDate = new Date(date)
+  const today = new Date()
+  const threeYearsAgo = new Date()
+
+  threeYearsAgo.setFullYear(today.getFullYear() - 3)
+
+  if (showDate < threeYearsAgo) return null
+  const year = showDate.getFullYear()
+  const title = `${year} ${show}`
+
+  return [title]
 }
