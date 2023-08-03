@@ -13,8 +13,8 @@ export const ARTIST_INSIGHT_KINDS = [
   "CRITICALLY_ACCLAIMED",
   "RECENT_CAREER_EVENT",
   "ARTSY_VANGUARD_YEAR",
-  // "CURATORS_PICK_EMERGING", // Missing
-  // "TRENDING_NOW", // Missing
+  "CURATORS_PICK_EMERGING",
+  "TRENDING_NOW",
   "GAINING_FOLLOWERS",
   "SOLO_SHOW",
   "GROUP_SHOW",
@@ -116,6 +116,18 @@ export const ARTIST_INSIGHT_MAPPING: Record<
     getDescription: () => "Recognized by major institutions and publications",
     getEntities: (artist) => artist.critically_acclaimed && [],
     getLabel: () => "Critically acclaimed",
+  },
+  TRENDING_NOW: {
+    getDescription: () =>
+      "Works by this artist are among the most searched, viewed, and asked-about pieces on Artsy.",
+    getEntities: (artist) => artist.curated_trending_weekly && [],
+    getLabel: () => "Featured in Trending Now",
+  },
+  CURATORS_PICK_EMERGING: {
+    getDescription: () =>
+      "Works by this artist were handpicked for this collection of rising talents to watch.",
+    getEntities: (artist) => artist.curated_emerging && [],
+    getLabel: () => "Featured in Curator’s Pick: Emerging",
   },
   RECENT_CAREER_EVENT: {
     getDescription: (artist) => artist.recent_show && getRecentShow(artist),
