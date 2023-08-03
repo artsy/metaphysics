@@ -13,7 +13,7 @@ export type StartIdentityVerificationGravityOutput = {
 export default (opts) => {
   const { gravityLoaderWithoutAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithoutAuthenticationFactory
-  const gravityUncachedLoader = uncachedLoaderFactory(gravity, "gravity")
+  const gravityUncachedLoader = uncachedLoaderFactory(gravity, "gravity", opts)
 
   const [batchSaleLoader, batchSalesLoader] = createBatchLoaders({
     singleLoader: gravityLoader((id) => `sale/${id}`),
@@ -85,6 +85,7 @@ export default (opts) => {
       {},
       { requestThrottleMs: 1000 * 60 * 60 }
     ),
+    filterArtworksUncachedLoader: gravityUncachedLoader("filter/artworks"),
     geneArtistsLoader: gravityLoader((id) => `gene/${id}/artists`),
     geneFamiliesLoader: gravityLoader("gene_families"),
     geneLoader: gravityLoader((id) => `gene/${id}`),
