@@ -41,6 +41,13 @@ const auctionResultResponse = (item = {}) => {
   }
 }
 
+const auctionResultFilterResponse = {
+  simple_price_histogram: {
+    0: { name: "0", count: 10 },
+    2000: { name: "2000", count: 20 },
+  },
+}
+
 describe("Artist type", () => {
   beforeEach(() => {
     context.auctionLotsLoader = jest
@@ -163,6 +170,41 @@ describe("Artist type", () => {
     )
   })
 
+  it("returns aggregations", () => {
+    context.auctionResultFilterLoader = jest
+      .fn()
+      .mockReturnValueOnce(Promise.resolve(auctionResultFilterResponse))
+
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResultsConnection(aggregations: [SIMPLE_PRICE_HISTOGRAM]) {
+            aggregations {
+              slice
+              counts {
+                name
+                value
+                count
+              }
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(
+      ({
+        artist: {
+          auctionResultsConnection: { aggregations },
+        },
+      }) => {
+        expect(aggregations).toHaveLength(1)
+        expect(aggregations[0].slice).toEqual("SIMPLE_PRICE_HISTOGRAM")
+        expect(aggregations[0].counts).toHaveLength(2)
+      }
+    )
+  })
+
   it("returns correct page info", () => {
     const query = `
       {
@@ -270,11 +312,15 @@ describe("Artist type", () => {
     describe("state", () => {
       const partialDefaultAuctionLotsArgs = {
         allow_empty_created_dates: true,
+        allow_unspecified_prices: true,
         artist_id: "4d8b92b34eb68a1b2c0003f4",
         categories: undefined,
         earliest_created_year: undefined,
+        include_estimate_range: false,
         keyword: undefined,
         latest_created_year: undefined,
+        max_realized_price: undefined,
+        min_realized_price: undefined,
         organizations: undefined,
         page: 1,
         size: 1,

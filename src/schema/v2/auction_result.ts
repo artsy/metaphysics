@@ -5,6 +5,7 @@ import {
   GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLFloat,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -16,7 +17,7 @@ import {
   priceDisplayText,
   priceRangeDisplayText,
 } from "lib/moneyHelpers"
-import { isNil, merge } from "lodash"
+import { isNil, map, merge, omit } from "lodash"
 import moment from "moment-timezone"
 import { pageable } from "relay-cursor-paging"
 import {
@@ -25,6 +26,7 @@ import {
 } from "schema/v2/fields/pagination"
 import Image, { normalizeImageData } from "schema/v2/image"
 import { ResolverContext } from "types/graphql"
+import { AuctionResultsAggregationType } from "./aggregations/filterAuctionResultsAggregation"
 import { ArtistType } from "./artist"
 import date from "./fields/date"
 import { InternalIDFields, NodeInterface } from "./object_identification"
@@ -413,6 +415,14 @@ export const auctionResultConnection = connectionWithCursorInfo({
         )
       },
       type: YearRange,
+    },
+    aggregations: {
+      type: new GraphQLList(AuctionResultsAggregationType),
+      resolve: ({ aggregations }) =>
+        map(omit(aggregations, "cached"), (counts, slice) => ({
+          counts,
+          slice,
+        })),
     },
   },
 })
