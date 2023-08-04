@@ -548,7 +548,8 @@ const filterArtworksConnectionTypeFactory = (
       const isSortingByPrice = ["-prices", "prices"].includes(
         gravityOptions.sort
       )
-      const isFilteringByPrice = !!gravityOptions.price_range
+      const isFilteringByPrice =
+        !!gravityOptions.price_range && gravityOptions.priceRange !== "*-*"
       const isFilteringBySale = !!gravityOptions.sale_id
       if ((isSortingByPrice || isFilteringByPrice) && isFilteringBySale) {
         loader = filterArtworksUncachedLoader
