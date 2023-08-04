@@ -413,7 +413,7 @@ describe("artworksConnection", () => {
     })
   })
 
-  describe(`When filtering on a sale and sorting by price`, () => {
+  describe(`When filtering on a sale and filtering/sorting by price`, () => {
     beforeEach(() => {
       context = {
         authenticatedLoaders: {},
@@ -448,10 +448,34 @@ describe("artworksConnection", () => {
       }
     })
 
-    it("returns results using the uncached loader", async () => {
+    it("returns results using the uncached loader when sorting", async () => {
       const query = gql`
         {
           artworksConnection(first: 1, saleID: "sale-id", sort: "prices") {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "uncached-loader-artwork-id" } },
+      ])
+    })
+
+    it("returns results using the uncached loader when filtering", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            first: 1
+            saleID: "sale-id"
+            priceRange: "*-1000"
+          ) {
             edges {
               node {
                 slug

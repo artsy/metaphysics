@@ -543,13 +543,14 @@ const filterArtworksConnectionTypeFactory = (
       }
       loader = filterArtworksAuthenticatedLoader
     } else {
-      // If filtering by sale and sorting by price,
+      // If filtering by sale and filtering/sorting by price,
       // use the uncached loader to avoid stale data.
       const isSortingByPrice = ["-prices", "prices"].includes(
         gravityOptions.sort
       )
+      const isFilteringByPrice = !!gravityOptions.price_range
       const isFilteringBySale = !!gravityOptions.sale_id
-      if (isSortingByPrice && isFilteringBySale) {
+      if ((isSortingByPrice || isFilteringByPrice) && isFilteringBySale) {
         loader = filterArtworksUncachedLoader
       } else {
         loader = filterArtworksUnauthenticatedLoader
