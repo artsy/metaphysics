@@ -492,6 +492,26 @@ describe("artworksConnection", () => {
       ])
     })
 
+    it("uses the unauthenticated loader when filtering with *-*", async () => {
+      const query = gql`
+        {
+          artworksConnection(first: 1, priceRange: "*-*") {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "unauthenticated-loader-artwork-id" } },
+      ])
+    })
+
     it("uses the unauthenticated loader otherwise", async () => {
       const query = gql`
         {
