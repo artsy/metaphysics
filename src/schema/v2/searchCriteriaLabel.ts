@@ -20,7 +20,18 @@ export type SearchCriteriaLabel = {
   field: string
 
   /** The human-friendly name of the filter facet */
-  name: string
+  name:
+    | "Artist"
+    | "Artwork Location"
+    | "Color"
+    | "Galleries and Institutions"
+    | "Material"
+    | "Medium"
+    | "Price"
+    | "Rarity"
+    | "Size"
+    | "Time Period"
+    | "Ways to Buy"
 
   /** The value of the filter facet */
   value: string
