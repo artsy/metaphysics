@@ -159,7 +159,7 @@ describe("previewSavedSearch", () => {
         })
 
         expect(previewSavedSearch.displayName).toEqual(
-          "KAWS — $100–$1,000, Print, Limited edition"
+          "KAWS — $100–$1,000, Print, Limited edition + 7 more"
         )
       })
 
