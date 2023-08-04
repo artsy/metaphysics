@@ -73,6 +73,16 @@ describe("getArtistInsights", () => {
         kind: "ACTIVE_SECONDARY_MARKET",
         value: true,
       },
+      {
+        key: "curated_emerging",
+        kind: "CURATORS_PICK_EMERGING",
+        value: true,
+      },
+      {
+        key: "curated_trending_weekly",
+        kind: "TRENDING_NOW",
+        value: true,
+      },
     ]
 
     fields.forEach((field) => {
@@ -168,7 +178,7 @@ describe("getArtistInsights", () => {
       artist: {
         recent_show: "2/2/2021|ai-weiwei|Solo|Gagosian Gallery",
       },
-      value: ["2021 Gagosian Gallery"],
+      value: "2021 Gagosian Gallery",
     }
 
     it("returns recent career event insights", () => {
@@ -205,7 +215,7 @@ describe("getArtistInsights", () => {
       }
 
       const recentShow = getRecentShow(artist)
-      expect(recentShow).toEqual(["2021 Gagosian Gallery"])
+      expect(recentShow).toEqual("2021 Gagosian Gallery")
     })
 
     it("returns empty array if there empty recent show", () => {

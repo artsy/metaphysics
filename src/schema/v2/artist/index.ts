@@ -58,6 +58,8 @@ import {
 import ArtistStatuses from "./statuses"
 import { ArtistTargetSupply } from "./targetSupply"
 import VerifiedRepresentatives from "./verifiedRepresentatives"
+import { AuctionResultsAggregation } from "../aggregations/filterAuctionResultsAggregation"
+import { parsePriceRangeValues } from "lib/moneyHelper"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -234,12 +236,35 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: new GraphQLList(ArtworkSizes),
             description: "Filter auction results by Artwork sizes",
           },
+          priceRange: {
+            type: GraphQLString,
+            description: "Filter auction results by price",
+          },
+          aggregations: {
+            type: new GraphQLList(AuctionResultsAggregation),
+            description: "Lits of aggregations fot auction results",
+          },
+          includeEstimateRange: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+            description:
+              "Includes auction results with suitable estimate ranges",
+          },
+          includeUnknownPrices: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+            description: "Includes auction results without price",
+          },
           sort: AuctionResultSorts,
           state: AuctionResultsState,
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
         }),
-        resolve: async ({ _id }, options, { auctionLotsLoader }) => {
+        resolve: async (
+          { _id },
+          options,
+          { auctionLotsLoader, auctionResultFilterLoader }
+        ) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
             return null
           }
@@ -253,6 +278,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             sizes,
           } = convertConnectionArgsToGravityArgs(options)
 
+          const [min, max] = parsePriceRangeValues(options.priceRange)
+
           const diffusionArgs = {
             allow_empty_created_dates: options.allowEmptyCreatedDates,
             artist_id: _id,
@@ -260,6 +287,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             earliest_created_year: options.earliestCreatedYear,
             keyword: options.keyword,
             latest_created_year: options.latestCreatedYear,
+            min_realized_price: min,
+            max_realized_price: max,
+            include_estimate_range: options.includeEstimateRange,
+            allow_unspecified_prices: options.includeUnknownPrices,
             organizations,
             page,
             size,
@@ -268,38 +299,48 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             state: options.state,
           }
 
-          return auctionLotsLoader(diffusionArgs).then(
-            ({ total_count, _embedded }) => {
-              const totalPages = Math.ceil(total_count / size)
-              return merge(
+          const requests = [auctionLotsLoader(diffusionArgs)]
+          if (options.aggregations) {
+            requests.push(
+              auctionResultFilterLoader({
+                artist_id: _id,
+                aggregations: options.aggregations,
+              })
+            )
+          }
+
+          const [{ total_count, _embedded }, aggregations] = await Promise.all(
+            requests
+          )
+          const totalPages = Math.ceil(total_count / size)
+          return merge(
+            {
+              pageCursors: createPageCursors(
                 {
-                  pageCursors: createPageCursors(
-                    {
-                      page,
-                      size,
-                    },
-                    total_count,
-                    5,
-                    null
-                  ),
+                  page,
+                  size,
                 },
-                {
-                  totalCount: total_count,
-                },
-                connectionFromArraySlice(_embedded.items, options, {
-                  arrayLength: total_count,
-                  sliceStart: offset,
-                }),
-                {
-                  pageInfo: {
-                    hasPreviousPage: page > 1,
-                    hasNextPage: page < totalPages,
-                  },
-                },
-                {
-                  artist_id: _id,
-                }
-              )
+                total_count,
+                5,
+                null
+              ),
+            },
+            {
+              totalCount: total_count,
+              aggregations,
+            },
+            connectionFromArraySlice(_embedded.items, options, {
+              arrayLength: total_count,
+              sliceStart: offset,
+            }),
+            {
+              pageInfo: {
+                hasPreviousPage: page > 1,
+                hasNextPage: page < totalPages,
+              },
+            },
+            {
+              artist_id: _id,
             }
           )
         },
