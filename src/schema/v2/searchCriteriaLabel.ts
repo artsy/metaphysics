@@ -15,12 +15,23 @@ export const SIZES = {
 
 const ONE_IN_TO_CM = 2.54
 
-type SearchCriteriaLabel = {
+export type SearchCriteriaLabel = {
   /** The GraphQL field name of the filter facet */
   field: string
 
   /** The human-friendly name of the filter facet */
-  name: string
+  name:
+    | "Artist"
+    | "Artwork Location"
+    | "Color"
+    | "Galleries and Institutions"
+    | "Material"
+    | "Medium"
+    | "Price"
+    | "Rarity"
+    | "Size"
+    | "Time Period"
+    | "Ways to Buy"
 
   /** The value of the filter facet */
   value: string
