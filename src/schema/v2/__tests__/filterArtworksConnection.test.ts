@@ -413,6 +413,126 @@ describe("artworksConnection", () => {
     })
   })
 
+  describe(`When filtering on a sale and filtering/sorting by price`, () => {
+    beforeEach(() => {
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: () =>
+            Promise.resolve({
+              hits: [
+                {
+                  id: "unauthenticated-loader-artwork-id",
+                },
+              ],
+              aggregations: {
+                total: {
+                  value: 303,
+                },
+              },
+            }),
+        },
+        filterArtworksUncachedLoader: () =>
+          Promise.resolve({
+            hits: [
+              {
+                id: "uncached-loader-artwork-id",
+              },
+            ],
+            aggregations: {
+              total: {
+                value: 303,
+              },
+            },
+          }),
+      }
+    })
+
+    it("returns results using the uncached loader when sorting", async () => {
+      const query = gql`
+        {
+          artworksConnection(first: 1, saleID: "sale-id", sort: "prices") {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "uncached-loader-artwork-id" } },
+      ])
+    })
+
+    it("returns results using the uncached loader when filtering", async () => {
+      const query = gql`
+        {
+          artworksConnection(
+            first: 1
+            saleID: "sale-id"
+            priceRange: "*-1000"
+          ) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "uncached-loader-artwork-id" } },
+      ])
+    })
+
+    it("uses the unauthenticated loader when filtering with *-*", async () => {
+      const query = gql`
+        {
+          artworksConnection(first: 1, priceRange: "*-*") {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "unauthenticated-loader-artwork-id" } },
+      ])
+    })
+
+    it("uses the unauthenticated loader otherwise", async () => {
+      const query = gql`
+        {
+          artworksConnection(first: 1, sort: "prices") {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      `
+
+      const { artworksConnection } = await runQuery(query, context)
+
+      expect(artworksConnection.edges).toEqual([
+        { node: { slug: "unauthenticated-loader-artwork-id" } },
+      ])
+    })
+  })
+
   describe("Merchandisable artists aggregation", () => {
     beforeEach(() => {
       const mockArtworkResults = {

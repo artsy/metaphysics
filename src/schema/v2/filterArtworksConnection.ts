@@ -475,8 +475,13 @@ const filterArtworksConnectionTypeFactory = (
     root,
     { input, ...rootArguments },
     {
-      unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
-      authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
+      unauthenticatedLoaders: {
+        filterArtworksLoader: filterArtworksUnauthenticatedLoader,
+      },
+      authenticatedLoaders: {
+        filterArtworksLoader: filterArtworksAuthenticatedLoader,
+      },
+      filterArtworksUncachedLoader,
     },
     info
   ) => {
@@ -533,12 +538,24 @@ const filterArtworksConnectionTypeFactory = (
       include_artworks_by_followed_artists ||
       requestedPersonalizedAggregation
     ) {
-      if (!loaderWithoutCache) {
+      if (!filterArtworksAuthenticatedLoader) {
         throw new Error("You must be logged in to request these params.")
       }
-      loader = loaderWithoutCache
+      loader = filterArtworksAuthenticatedLoader
     } else {
-      loader = loaderWithCache
+      // If filtering by sale and filtering/sorting by price,
+      // use the uncached loader to avoid stale data.
+      const isSortingByPrice = ["-prices", "prices"].includes(
+        gravityOptions.sort
+      )
+      const isFilteringByPrice =
+        !!gravityOptions.price_range && gravityOptions.priceRange !== "*-*"
+      const isFilteringBySale = !!gravityOptions.sale_id
+      if ((isSortingByPrice || isFilteringByPrice) && isFilteringBySale) {
+        loader = filterArtworksUncachedLoader
+      } else {
+        loader = filterArtworksUnauthenticatedLoader
+      }
     }
 
     // If only queried for id, can just return w/o fetching.
