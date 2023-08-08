@@ -9,6 +9,9 @@ export const AuctionResultsAggregation = new GraphQLEnumType({
     SIMPLE_PRICE_HISTOGRAM: {
       value: "simple_price_histogram",
     },
+    CURRENCIES_COUNT: {
+      value: "currencies_count",
+    },
   },
 })
 
