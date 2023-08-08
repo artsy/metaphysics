@@ -1367,7 +1367,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     categories: [String]
 
     # Currency code
-    currency: String!
+    currency: String
 
     # Filter auction results by earliest created at year
     earliestCreatedYear: Int

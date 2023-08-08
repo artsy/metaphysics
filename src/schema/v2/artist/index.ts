@@ -256,7 +256,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             description: "Includes auction results without price",
           },
           currency: {
-            type: new GraphQLNonNull(GraphQLString),
+            type: GraphQLString,
             description: "Currency code",
           },
           sort: AuctionResultSorts,
