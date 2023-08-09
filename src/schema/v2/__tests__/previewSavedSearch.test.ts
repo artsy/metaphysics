@@ -255,6 +255,26 @@ describe("previewSavedSearch", () => {
           "KAWS — New York, NY, USA, Foo Bar Gallery"
         )
       })
+
+      it("generates a name with only artist specified in the alert criteria", async () => {
+        const query = gql`
+          {
+            previewSavedSearch(attributes: { artistIDs: ["kaws"] }) {
+              displayName
+            }
+          }
+        `
+
+        const artistLoader = jest
+          .fn()
+          .mockReturnValueOnce(Promise.resolve({ name: "KAWS" }))
+
+        const { previewSavedSearch } = await runQuery(query, {
+          artistLoader,
+        })
+
+        expect(previewSavedSearch.displayName).toEqual("KAWS")
+      })
     })
   })
 })
