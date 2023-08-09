@@ -19,6 +19,8 @@ import PartnerTypeType from "schema/v2/input_fields/partner_type_type"
 import Partner, { PartnerType } from "schema/v2/partner/partner"
 import { ResolverContext } from "types/graphql"
 
+const DISTANCE_FALLBACK_SORT = "-created_at"
+
 export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Partner.type),
   description: "A list of Partners",
@@ -230,7 +232,9 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
 
     // Do not sort by distance if a location is not provided because it's not supported by Gravity
     const sort =
-      args.sort == "distance" && !locationArgs.near ? "-created_at" : args.sort
+      args.sort == "distance" && !locationArgs.near
+        ? DISTANCE_FALLBACK_SORT
+        : args.sort
 
     const options = {
       id: args.ids,
