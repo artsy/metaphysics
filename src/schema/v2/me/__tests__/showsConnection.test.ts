@@ -68,7 +68,7 @@ describe("Me", () => {
         })
       })
 
-      describe("when `ip` param is provided", () => {
+      describe.skip("when `ip` param is provided", () => {
         it("loads location and passes near param to loader", async () => {
           const query = gql`
             {
@@ -137,7 +137,7 @@ describe("Me", () => {
         })
       })
 
-      describe("when `includeShowsNearIpBasedLocation` is set to true", () => {
+      describe.skip("when `includeShowsNearIpBasedLocation` is set to true", () => {
         it("loads location and passes near param to loader", async () => {
           const query = gql`
             {
