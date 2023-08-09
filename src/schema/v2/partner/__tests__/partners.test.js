@@ -55,4 +55,61 @@ describe("PartnersConnection", () => {
       "5a958e8e7622dd49f4f4176d"
     )
   })
+
+  describe("when `near` param is not provided and ip based location lookup fails", () => {
+    it("returns a list of partners without sending `distance` param", async () => {
+      const partnersLoader = jest.fn(async () => {
+        return {
+          body: [{ _id: "test-id" }],
+          headers: { "x-total-count": 1 },
+        }
+      })
+
+      const query = gql`
+        {
+          partnersConnection(
+            maxDistance: 10
+            type: GALLERY
+            eligibleForListing: true
+            excludeFollowedPartners: false
+            defaultProfilePublic: false
+            sort: DISTANCE
+          ) {
+            edges {
+              node {
+                internalID
+              }
+            }
+          }
+        }
+      `
+      const { partnersConnection } = await runQuery(query, {
+        partnersLoader,
+        requestLocationLoader: () => null,
+        ipAddress: "ip-address",
+      })
+
+      expect(partnersLoader).toHaveBeenCalledWith({
+        default_profile_public: false,
+        page: 1,
+        total_count: true,
+        eligible_for_listing: true,
+        exclude_followed_partners: false,
+        sort: "-created_at",
+        type: ["PartnerGallery"],
+      })
+
+      expect(partnersConnection).toMatchInlineSnapshot(`
+        Object {
+          "edges": Array [
+            Object {
+              "node": Object {
+                "internalID": "test-id",
+              },
+            },
+          ],
+        }
+      `)
+    })
+  })
 })
