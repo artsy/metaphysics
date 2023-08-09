@@ -7,6 +7,7 @@ interface Location {
 }
 
 const DEFAULT_MAX_DISTANCE_KM = 75
+const DISABLE_IP_BASED_LOCATION = true
 
 export const getLocationArgs = async ({
   ip,
@@ -21,7 +22,7 @@ export const getLocationArgs = async ({
 }) => {
   let location = near
 
-  if (!location && ip) {
+  if (!DISABLE_IP_BASED_LOCATION && !location && ip) {
     const {
       body: { data: locationData },
     } = await requestLocationLoader({ ip })
