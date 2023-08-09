@@ -228,6 +228,10 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
       requestLocationLoader,
     })
 
+    // Do not sort by distance if a location is not provided because it's not supported by Gravity
+    const sort =
+      args.sort == "distance" && !locationArgs.near ? "-created_at" : args.sort
+
     const options = {
       id: args.ids,
       page,
@@ -237,7 +241,7 @@ export const PartnersConnection: GraphQLFieldConfig<void, ResolverContext> = {
       include_partners_with_followed_artists:
         args.includePartnersWithFollowedArtists,
       default_profile_public: args.defaultProfilePublic,
-      sort: args.sort,
+      sort,
       partner_categories: args.partnerCategories,
       type: args.type,
       total_count: true,
