@@ -176,9 +176,9 @@ describe("getArtistInsights", () => {
     const field = {
       kind: "RECENT_CAREER_EVENT",
       artist: {
-        recent_show: "2/2/2021|ai-weiwei|Solo|Gagosian Gallery",
+        recent_show: "2/2/2030|ai-weiwei|Solo|Gagosian Gallery",
       },
-      value: "2021 Gagosian Gallery",
+      value: "2030 Gagosian Gallery",
     }
 
     it("returns recent career event insights", () => {
@@ -210,12 +210,16 @@ describe("getArtistInsights", () => {
 
   describe("getRecentShow", () => {
     it("returns the most recent show", () => {
-      const artist = {
-        recent_show: "2/2/2021|ai-weiwei|Solo|Gagosian Gallery",
+      const artist1 = {
+        recent_show: "2/2/2030|ai-weiwei|Solo|Gagosian Gallery",
       }
 
-      const recentShow = getRecentShow(artist)
-      expect(recentShow).toEqual("2021 Gagosian Gallery")
+      const artist2 = {
+        recent_show: "2/2/2010|ai-weiwei|Solo|Gagosian Gallery",
+      }
+
+      expect(getRecentShow(artist1)).toEqual("2030 Gagosian Gallery")
+      expect(getRecentShow(artist2)).toEqual(null)
     })
 
     it("returns empty array if there empty recent show", () => {
