@@ -107,6 +107,8 @@ export const PreviewSavedSearchField: GraphQLFieldConfig<
 }
 
 export const generateDisplayName = async (parent, args, context, info) => {
+  if (parent?.userAlertSettings?.name) return parent?.userAlertSettings?.name
+
   const labels = await resolveSearchCriteriaLabels(parent, args, context, info)
 
   // artist always

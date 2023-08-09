@@ -10,6 +10,7 @@ import { toGlobalId } from "graphql-relay"
 import { printType } from "lib/stitching/lib/printType"
 import { dateRange } from "lib/date"
 import { resolveSearchCriteriaLabels } from "schema/v2/searchCriteriaLabel"
+import { generateDisplayName } from "schema/v2/previewSavedSearch"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -83,6 +84,7 @@ export const gravityStitchingEnvironment = (
         ): UserAddressConnection
       }
       extend type SearchCriteria {
+        displayName: String!
         labels: [SearchCriteriaLabel!]!
       }
       extend type UserAddress {
@@ -1033,6 +1035,34 @@ export const gravityStitchingEnvironment = (
         },
       },
       SearchCriteria: {
+        displayName: {
+          fragment: gql`
+            ... on SearchCriteria {
+              ... on SearchCriteria {
+                artistIDs
+                attributionClass
+                additionalGeneIDs
+                priceRange
+                sizes
+                width
+                height
+                acquireable
+                atAuction
+                inquireableOnly
+                offerable
+                materialsTerms
+                locationCities
+                majorPeriods
+                colors
+                partnerIDs
+              }
+              userAlertSettings {
+                name
+              }
+            }
+          `,
+          resolve: generateDisplayName,
+        },
         labels: {
           fragment: gql`
             ... on SearchCriteria {
