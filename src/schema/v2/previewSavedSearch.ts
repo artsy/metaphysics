@@ -106,7 +106,9 @@ export const PreviewSavedSearchField: GraphQLFieldConfig<
   },
 }
 
-const generateDisplayName = async (parent, args, context, info) => {
+export const generateDisplayName = async (parent, args, context, info) => {
+  if (parent?.userAlertSettings?.name) return parent?.userAlertSettings?.name
+
   const labels = await resolveSearchCriteriaLabels(parent, args, context, info)
 
   // artist always
@@ -167,7 +169,7 @@ const generateDisplayName = async (parent, args, context, info) => {
     return labels.map((label) => label.displayValue).join(" or ")
   })
   const [artist, ...others] = displayValues
-  let result = [artist, others.join(", ")].join(" — ")
+  let result = [artist, others.join(", ")].join(others.length > 0 ? " — " : "")
 
   const remainingCount = allLabels.length - useableLabels.length
   if (remainingCount > 0) result += ` + ${remainingCount} more`
