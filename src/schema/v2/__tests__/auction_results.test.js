@@ -41,10 +41,17 @@ const auctionResultResponse = (item = {}) => {
   }
 }
 
-const auctionResultFilterResponse = {
+const simplePriceHistogramFilterResponse = {
   simple_price_histogram: {
     0: { name: "0", count: 10 },
     2000: { name: "2000", count: 20 },
+  },
+}
+
+const currenciesCountFilterResponse = {
+  currencies_count: {
+    USD: { name: "USD", count: 101 },
+    EUR: { name: "EUR", count: 202 },
   },
 }
 
@@ -173,7 +180,7 @@ describe("Artist type", () => {
   it("returns aggregations", () => {
     context.auctionResultFilterLoader = jest
       .fn()
-      .mockReturnValueOnce(Promise.resolve(auctionResultFilterResponse))
+      .mockReturnValueOnce(Promise.resolve(simplePriceHistogramFilterResponse))
 
     const query = `
       {
@@ -200,6 +207,41 @@ describe("Artist type", () => {
       }) => {
         expect(aggregations).toHaveLength(1)
         expect(aggregations[0].slice).toEqual("SIMPLE_PRICE_HISTOGRAM")
+        expect(aggregations[0].counts).toHaveLength(2)
+      }
+    )
+  })
+
+  it("returns aggregated lot currencies", () => {
+    context.auctionResultFilterLoader = jest
+      .fn()
+      .mockReturnValueOnce(Promise.resolve(currenciesCountFilterResponse))
+
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResultsConnection(aggregations: [CURRENCIES_COUNT]) {
+            aggregations {
+              slice
+              counts {
+                name
+                value
+                count
+              }
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(
+      ({
+        artist: {
+          auctionResultsConnection: { aggregations },
+        },
+      }) => {
+        expect(aggregations).toHaveLength(1)
+        expect(aggregations[0].slice).toEqual("CURRENCIES_COUNT")
         expect(aggregations[0].counts).toHaveLength(2)
       }
     )

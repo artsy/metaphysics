@@ -1,4 +1,5 @@
 import gql from "lib/gql"
+import { HTTPError } from "lib/HTTPError"
 import { runAuthenticatedQuery } from "../test/utils"
 
 describe("verifyAddressQuery", () => {
@@ -6,7 +7,7 @@ describe("verifyAddressQuery", () => {
     const query = gql`
       {
         verifyAddress(
-          address: {
+          input: {
             addressLine1: "Lausitzer Str. 46"
             city: "Berlin"
             country: "DE"
@@ -14,28 +15,38 @@ describe("verifyAddressQuery", () => {
             region: "Berlin"
           }
         ) {
-          verificationStatus
-          inputAddress {
-            address {
-              city
-              country
-              region
-              postalCode
-              addressLine1
-              addressLine2
+          verifyAddressOrError {
+            ... on VerifyAddressType {
+              verificationStatus
+              inputAddress {
+                address {
+                  city
+                  country
+                  region
+                  postalCode
+                  addressLine1
+                  addressLine2
+                }
+                lines
+              }
+              suggestedAddresses {
+                address {
+                  city
+                  country
+                  region
+                  postalCode
+                  addressLine1
+                  addressLine2
+                }
+                lines
+              }
             }
-            lines
-          }
-          suggestedAddresses {
-            address {
-              city
-              country
-              region
-              postalCode
-              addressLine1
-              addressLine2
+            ... on VerifyAddressFailureType {
+              mutationError {
+                type
+                message
+              }
             }
-            lines
           }
         }
       }
@@ -52,7 +63,7 @@ describe("verifyAddressQuery", () => {
     const mockAddressVerificationResult = {
       verification_status: "VERIFIED_WITH_CHANGES",
       input_address: {
-        address: {
+        input: {
           address_line_1: "Lausitzer Straße 46",
           city: "Berlin",
           region: "Berlin",
@@ -90,9 +101,7 @@ describe("verifyAddressQuery", () => {
       .fn()
       .mockReturnValue(Promise.resolve(mockAddressVerificationResult))
 
-    await runAuthenticatedQuery(query, {
-      verifyAddressLoader,
-    })
+    await runAuthenticatedQuery(query, { verifyAddressLoader })
     expect(verifyAddressLoader).toHaveBeenCalledWith(expectedArgs)
   })
 
@@ -100,7 +109,7 @@ describe("verifyAddressQuery", () => {
     const query = gql`
       {
         verifyAddress(
-          address: {
+          input: {
             addressLine1: "1251 John Calvin Drive"
             city: "Harvey"
             country: "US"
@@ -108,28 +117,38 @@ describe("verifyAddressQuery", () => {
             region: "Illinois"
           }
         ) {
-          verificationStatus
-          inputAddress {
-            address {
-              city
-              country
-              region
-              postalCode
-              addressLine1
-              addressLine2
+          verifyAddressOrError {
+            ... on VerifyAddressType {
+              verificationStatus
+              inputAddress {
+                address {
+                  city
+                  country
+                  region
+                  postalCode
+                  addressLine1
+                  addressLine2
+                }
+                lines
+              }
+              suggestedAddresses {
+                address {
+                  city
+                  country
+                  region
+                  postalCode
+                  addressLine1
+                  addressLine2
+                }
+                lines
+              }
             }
-            lines
-          }
-          suggestedAddresses {
-            address {
-              city
-              country
-              region
-              postalCode
-              addressLine1
-              addressLine2
+            ... on VerifyAddressFailureType {
+              mutationError {
+                type
+                message
+              }
             }
-            lines
           }
         }
       }
@@ -185,25 +204,10 @@ describe("verifyAddressQuery", () => {
 
     expect(response).toEqual({
       verifyAddress: {
-        inputAddress: {
-          address: {
-            addressLine1: "1251 John Calvin Dr",
-            addressLine2: null,
-            city: "Harvey",
-            country: "US",
-            postalCode: "60426",
-            region: "Illinois",
-          },
-          lines: [
-            "1251 John Calvin Dr",
-            "Havery Illinois 60426",
-            "United States",
-          ],
-        },
-        suggestedAddresses: [
-          {
+        verifyAddressOrError: {
+          inputAddress: {
             address: {
-              addressLine1: "1251 John Calvin Drive",
+              addressLine1: "1251 John Calvin Dr",
               addressLine2: null,
               city: "Harvey",
               country: "US",
@@ -211,15 +215,87 @@ describe("verifyAddressQuery", () => {
               region: "Illinois",
             },
             lines: [
-              "1251 John Calvin Drive",
+              "1251 John Calvin Dr",
               "Havery Illinois 60426",
               "United States",
             ],
           },
-        ],
-        verificationStatus: "VERIFIED_WITH_CHANGES",
+          suggestedAddresses: [
+            {
+              address: {
+                addressLine1: "1251 John Calvin Drive",
+                addressLine2: null,
+                city: "Harvey",
+                country: "US",
+                postalCode: "60426",
+                region: "Illinois",
+              },
+              lines: [
+                "1251 John Calvin Drive",
+                "Havery Illinois 60426",
+                "United States",
+              ],
+            },
+          ],
+          verificationStatus: "VERIFIED_WITH_CHANGES",
+        },
       },
     })
     expect(verifyAddressLoader).toHaveBeenCalledWith(validUSAddress)
+  })
+
+  describe("when some exception is raised from Gravity", () => {
+    it("returns an error", async () => {
+      const context = {
+        verifyAddressLoader: () =>
+          Promise.reject(
+            new HTTPError(
+              `https://stagingapi.artsy.net/api/v1/address_verification - {"type":"internal_error","message":"Some Error"}`,
+              400,
+              { type: "internal_error", message: "Some Error" }
+            )
+          ),
+      }
+
+      const query = gql`
+        {
+          verifyAddress(
+            input: {
+              addressLine1: "Lausitzer Str. 46"
+              city: "Berlin"
+              country: "DE"
+              postalCode: "10999"
+              region: "Berlin"
+            }
+          ) {
+            verifyAddressOrError {
+              __typename
+              ... on VerifyAddressFailureType {
+                mutationError {
+                  statusCode
+                  type
+                  message
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const response = await runAuthenticatedQuery(query, context)
+
+      expect(response).toEqual({
+        verifyAddress: {
+          verifyAddressOrError: {
+            __typename: "VerifyAddressFailureType",
+            mutationError: {
+              statusCode: 400,
+              type: "internal_error",
+              message: "Some Error",
+            },
+          },
+        },
+      })
+    })
   })
 })
