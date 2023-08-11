@@ -242,7 +242,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           },
           aggregations: {
             type: new GraphQLList(AuctionResultsAggregation),
-            description: "Lits of aggregations fot auction results",
+            description: "List of aggregations for auction results",
           },
           includeEstimateRange: {
             type: GraphQLBoolean,
@@ -254,6 +254,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
             defaultValue: true,
             description: "Includes auction results without price",
+          },
+          currency: {
+            type: GraphQLString,
+            description: "Currency code",
           },
           sort: AuctionResultSorts,
           state: AuctionResultsState,
@@ -284,6 +288,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             allow_empty_created_dates: options.allowEmptyCreatedDates,
             artist_id: _id,
             categories,
+            currency: options.currency,
             earliest_created_year: options.earliestCreatedYear,
             keyword: options.keyword,
             latest_created_year: options.latestCreatedYear,
