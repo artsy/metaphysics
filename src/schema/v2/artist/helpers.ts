@@ -132,7 +132,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   RECENT_CAREER_EVENT: {
     getDescription: (artist) => artist.recent_show && getRecentShow(artist),
     getEntities: (artist) => artist.recent_show && getRecentShow(artist) && [],
-    getLabel: () => "Recent Career Event",
+    getLabel: () => "Recent career event",
   },
   RESIDENCIES: {
     getDescription: () => "Established artist residencies",
