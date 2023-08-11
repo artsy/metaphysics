@@ -288,6 +288,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             allow_empty_created_dates: options.allowEmptyCreatedDates,
             artist_id: _id,
             categories,
+            currency: options.currency,
             earliest_created_year: options.earliestCreatedYear,
             keyword: options.keyword,
             latest_created_year: options.latestCreatedYear,
