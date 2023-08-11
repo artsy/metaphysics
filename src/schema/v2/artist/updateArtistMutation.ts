@@ -41,6 +41,7 @@ const inputFields = {
   hometown: { type: GraphQLString },
   id: { type: new GraphQLNonNull(GraphQLString) },
   last: { type: GraphQLString },
+  location: { type: GraphQLString },
   middle: { type: GraphQLString },
   nationality: { type: GraphQLString },
 }
