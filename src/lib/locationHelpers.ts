@@ -24,15 +24,19 @@ export const getLocationArgs = async ({
   let location = near
 
   if (ENABLE_IP_BASED_LOCATION && !location && ip) {
-    const {
-      body: { data: locationData },
-    } = await requestLocationLoader({ ip })
+    try {
+      const {
+        body: { data: locationData },
+      } = await requestLocationLoader({ ip })
 
-    if (locationData.location) {
-      location = {
-        lat: locationData.location.latitude,
-        lng: locationData.location.longitude,
+      if (locationData.location) {
+        location = {
+          lat: locationData.location.latitude,
+          lng: locationData.location.longitude,
+        }
       }
+    } catch (error) {
+      console.error(error)
     }
   }
 
