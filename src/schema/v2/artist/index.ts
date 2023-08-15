@@ -259,6 +259,20 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLString,
             description: "Currency code",
           },
+          saleStartDate: {
+            type: GraphQLString,
+            description: "Filter auction results by sale date start",
+          },
+          saleEndDate: {
+            type: GraphQLString,
+            description: "Filter auction results by sale date end",
+          },
+          allowUnspecifiedCreatedDates: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+            description:
+              "Include auction results with unspecified created dates",
+          },
           sort: AuctionResultSorts,
           state: AuctionResultsState,
           page: { type: GraphQLInt },
@@ -302,6 +316,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             sizes,
             sort: options.sort,
             state: options.state,
+            sale_start_date: options.saleStartDate,
+            sale_end_date: options.saleEndDate,
+            allow_unspecified_created_dates:
+              options.allowUnspecifiedCreatedDates,
           }
 
           const requests = [auctionLotsLoader(diffusionArgs)]
