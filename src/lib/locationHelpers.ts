@@ -1,3 +1,4 @@
+import config from "config"
 import { isString } from "lodash"
 
 interface Location {
@@ -7,7 +8,7 @@ interface Location {
 }
 
 const DEFAULT_MAX_DISTANCE_KM = 75
-const DISABLE_IP_BASED_LOCATION = true
+const { ENABLE_IP_BASED_LOCATION } = config
 
 export const getLocationArgs = async ({
   ip,
@@ -22,16 +23,20 @@ export const getLocationArgs = async ({
 }) => {
   let location = near
 
-  if (!DISABLE_IP_BASED_LOCATION && !location && ip) {
-    const {
-      body: { data: locationData },
-    } = await requestLocationLoader({ ip })
+  if (ENABLE_IP_BASED_LOCATION && !location && ip) {
+    try {
+      const {
+        body: { data: locationData },
+      } = await requestLocationLoader({ ip })
 
-    if (locationData.location) {
-      location = {
-        lat: locationData.location.latitude,
-        lng: locationData.location.longitude,
+      if (locationData.location) {
+        location = {
+          lat: locationData.location.latitude,
+          lng: locationData.location.longitude,
+        }
       }
+    } catch (error) {
+      console.error(error)
     }
   }
 
