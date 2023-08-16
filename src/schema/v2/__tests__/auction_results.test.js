@@ -366,7 +366,7 @@ describe("Artist type", () => {
         organizations: undefined,
         sale_start_date: undefined,
         sale_end_date: undefined,
-        allowUnspecifiedCreatedDates: true,
+        allow_unspecified_created_dates: true,
         currency: undefined,
         page: 1,
         size: 1,
