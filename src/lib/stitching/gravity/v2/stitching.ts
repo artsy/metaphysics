@@ -1038,24 +1038,23 @@ export const gravityStitchingEnvironment = (
         displayName: {
           fragment: gql`
             ... on SearchCriteria {
-              ... on SearchCriteria {
-                artistIDs
-                attributionClass
-                additionalGeneIDs
-                priceRange
-                sizes
-                width
-                height
-                acquireable
-                atAuction
-                inquireableOnly
-                offerable
-                materialsTerms
-                locationCities
-                majorPeriods
-                colors
-                partnerIDs
-              }
+              artistIDs
+              attributionClass
+              additionalGeneIDs
+              priceRange
+              sizes
+              width
+              height
+              acquireable
+              atAuction
+              inquireableOnly
+              offerable
+              materialsTerms
+              locationCities
+              majorPeriods
+              colors
+              partnerIDs
+
               userAlertSettings {
                 name
               }
