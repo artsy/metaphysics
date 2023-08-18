@@ -74,7 +74,7 @@ describe("resolveSearchCriteriaLabels", () => {
   })
 
   describe("medium criteria", () => {
-    it("formats medium criteria", async () => {
+    it("formats medium criteria when used with slugs", async () => {
       const parent = {
         additionalGeneIDs: [
           "painting",
@@ -195,6 +195,22 @@ describe("resolveSearchCriteriaLabels", () => {
           name: "Medium",
           displayValue: "Other (watercolor)",
           value: "watercolor",
+          field: "additionalGeneIDs",
+        },
+      ])
+    })
+    it("formats medium criteria when used with an id", async () => {
+      const parent = {
+        additionalGeneIDs: ["4d90d18edcdd5f44a5000010"],
+      }
+
+      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Medium",
+          displayValue: "Painting",
+          value: "4d90d18edcdd5f44a5000010",
           field: "additionalGeneIDs",
         },
       ])
