@@ -158,13 +158,18 @@ function getRarityLabels(attributionClasses: string[]) {
 function getArtworkMediumByGene(geneID: string) {
   const mediums = Object.assign(
     {
-      drawing: { name: "Drawing", mediumFilterGeneSlug: "drawing" },
+      drawing: {
+        name: "Drawing",
+        mediumFilterGeneSlug: "drawing",
+        internalID: "4d90d18fdcdd5f44a5000016",
+      },
     },
     artworkMediums
   )
   const fallbackMedium = { name: `Other (${geneID})` }
   const artworkMedium = Object.values(mediums).find(
-    (entry) => entry.mediumFilterGeneSlug === geneID
+    (entry) =>
+      entry.mediumFilterGeneSlug === geneID || entry.internalID === geneID
   )
 
   return artworkMedium ?? fallbackMedium
