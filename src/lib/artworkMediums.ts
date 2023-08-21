@@ -1,10 +1,11 @@
-export default {
+const artworkCategories = {
   Architecture: {
     id: "Architecture",
     long_description:
       "Includes architectural models; buildings (e.g., house, temple).",
     name: "Architecture",
     mediumFilterGeneSlug: "architecture-1",
+    internalID: "4f99da92d8f65a0001000732",
   },
   "Books and Portfolios": {
     id: "Books and Portfolios",
@@ -12,6 +13,7 @@ export default {
       "Includes albums; artist books; illustrated manuscripts; portfolios (i.e., a group of works such as photographs or prints).",
     name: "Books and Portfolios",
     mediumFilterGeneSlug: "books-and-portfolios",
+    internalID: "55b7f49d726169038500018e",
   },
   "Design/Decorative Art": {
     id: "Design/Decorative Art",
@@ -21,6 +23,7 @@ export default {
     ].join(" "),
     name: "Design/Decorative Art",
     mediumFilterGeneSlug: "design",
+    internalID: "4ddbbd3c4027ac0001001962",
   },
   "Drawing, Collage or other Work on Paper": {
     id: "Drawing, Collage or other Work on Paper",
@@ -30,6 +33,7 @@ export default {
     ].join(" "),
     name: "Drawing, Collage or other Work on Paper",
     mediumFilterGeneSlug: "work-on-paper",
+    internalID: "4d90d18fdcdd5f44a5000016",
   },
   "Ephemera or Merchandise": {
     id: "Ephemera or Merchandise",
@@ -39,18 +43,21 @@ export default {
     ].join(" "),
     name: "Ephemera or Merchandise",
     mediumFilterGeneSlug: "ephemera-or-merchandise",
+    internalID: "601091be3cdb0b000649b1de",
   },
   "Fashion Design and Wearable Art": {
     id: "Fashion Design and Wearable Art",
     long_description: "Includes costumes; garments (e.g., dress, jacket).",
     name: "Fashion Design and Wearable Art",
     mediumFilterGeneSlug: "fashion-design-and-wearable-art",
+    internalID: "52d9a3c41a1e868f320000f5",
   },
   Installation: {
     id: "Installation",
     long_description: "Includes land art; installation art; site-specific art.",
     name: "Installation",
     mediumFilterGeneSlug: "installation",
+    internalID: "4d90d18edcdd5f44a500000e",
   },
   Jewelry: {
     id: "Jewelry",
@@ -58,6 +65,7 @@ export default {
       "Includes bracelets; brooches; earrings; necklaces; rings; costume accessories.",
     name: "Jewelry",
     mediumFilterGeneSlug: "jewelry",
+    internalID: "507c4d4ab5f0450002001b6b",
   },
   "Mixed Media": {
     id: "Mixed Media",
@@ -65,6 +73,7 @@ export default {
       "Intermedia; Multimedia work that does not fall into another category.",
     name: "Mixed Media",
     mediumFilterGeneSlug: "mixed-media",
+    internalID: "4d90d18edcdd5f44a500000f",
   },
   NFT: {
     id: "NFT",
@@ -72,6 +81,7 @@ export default {
       "Non-fungible token. Indicates that the primary medium of the work is the NFT.",
     name: "NFT",
     mediumFilterGeneSlug: "nft",
+    internalID: "61df19193df532000dc9c888",
   },
   Other: {
     id: "Other",
@@ -79,6 +89,7 @@ export default {
       "Includes items that do not fall into any other categories (e.g., armor; musical instruments; tools).",
     name: "Other",
     mediumFilterGeneSlug: null,
+    internalID: null,
   },
   Painting: {
     id: "Painting",
@@ -86,12 +97,14 @@ export default {
       "Includes gouache; fresco; ink and wash; oil painting; screen painting; scroll painting; tempera; watercolor.",
     name: "Painting",
     mediumFilterGeneSlug: "painting",
+    internalID: "4d90d18edcdd5f44a5000010",
   },
   "Performance Art": {
     id: "Performance Art",
     long_description: "Includes body art; endurance art; live performance.",
     name: "Performance Art",
     mediumFilterGeneSlug: "performance-art",
+    internalID: "4d90d18edcdd5f44a5000011",
   },
   Photography: {
     id: "Photography",
@@ -99,6 +112,7 @@ export default {
       "Includes chromogenic color prints (c-prints); polaroids; silver gelatin prints; photograms.",
     name: "Photography",
     mediumFilterGeneSlug: "photography",
+    internalID: "4d90d18edcdd5f44a5000012",
   },
   Posters: {
     id: "Posters",
@@ -108,6 +122,7 @@ export default {
     ].join(" "),
     name: "Posters",
     mediumFilterGeneSlug: "poster",
+    internalID: "507c6812f1a2ab0002000309",
   },
   Print: {
     id: "Print",
@@ -115,6 +130,7 @@ export default {
       "Includes etchings; engravings; lithographs; monoprints; screen prints; woodcuts.",
     name: "Print",
     mediumFilterGeneSlug: "prints",
+    internalID: "5058f057d0c2eb4f3200030d",
   },
   Reproduction: {
     id: "Reproduction",
@@ -125,6 +141,7 @@ export default {
     ].join(" "),
     name: "Reproduction",
     mediumFilterGeneSlug: "reproduction",
+    internalID: "601091813cdb0b000649b1db",
   },
   Sculpture: {
     id: "Sculpture",
@@ -134,6 +151,7 @@ export default {
     ].join(" "),
     name: "Sculpture",
     mediumFilterGeneSlug: "sculpture",
+    internalID: "4d90d18edcdd5f44a5000013",
   },
   "Textile Arts": {
     id: "Textile Arts",
@@ -141,6 +159,7 @@ export default {
       "Includes banners; carpets; rugs; samplers; tapestries; weavings.",
     name: "Textile Arts",
     mediumFilterGeneSlug: "textile-arts",
+    internalID: "509d1e40d0c2eb4507002a7c",
   },
   "Video/Film/Animation": {
     id: "Video/Film/Animation",
@@ -148,5 +167,8 @@ export default {
       "Includes 16mm film; computer animation; video recordings.",
     name: "Video/Film/Animation",
     mediumFilterGeneSlug: "film-slash-video",
+    internalID: "4e2480a52f6b870001007a10",
   },
 }
+
+export default artworkCategories
