@@ -466,6 +466,11 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     meShowsLoader: gravityLoader("me/shows", {}, { headers: true }),
+    myCollectionArtworksLoader: gravityLoader(
+      "collection/my-collection/artworks",
+      {},
+      { headers: true }
+    ),
     notificationPreferencesLoader: gravityLoader("notification_preferences"),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     pageLoader: gravityLoader((id) => `page/${id}`),

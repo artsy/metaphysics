@@ -1,39 +1,39 @@
 import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
   GraphQLBoolean,
   GraphQLFieldConfig,
-  GraphQLList,
   GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
-import cached from "./fields/cached"
-import { InternalIDFields, NodeInterface } from "./object_identification"
-import { LocationType } from "schema/v2/location"
-import { ResolverContext } from "types/graphql"
+import { connectionFromArraySlice } from "graphql-relay"
+import {
+  CatchCollectionNotFoundException,
+  convertConnectionArgsToGravityArgs,
+} from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
 import {
   connectionWithCursorInfo,
   createPageCursors,
   paginationResolver,
 } from "schema/v2/fields/pagination"
-import { date } from "./fields/date"
+import { LocationType } from "schema/v2/location"
+import { ResolverContext } from "types/graphql"
 import { CollectorProfileType } from "./CollectorProfile/collectorProfile"
-import { UserSaleProfile } from "./userSaleProfile"
-import { UserInterestConnection } from "./userInterests"
-import { pageable } from "relay-cursor-paging"
-import {
-  CatchCollectionNotFoundException,
-  convertConnectionArgsToGravityArgs,
-} from "lib/helpers"
-import { connectionFromArraySlice } from "graphql-relay"
-import { artworkConnection } from "./artwork"
 import { artistConnection } from "./artist"
+import { artworkConnection } from "./artwork"
+import cached from "./fields/cached"
+import { date } from "./fields/date"
+import initials from "./fields/initials"
 import { geneConnection } from "./gene"
+import { InternalIDFields, NodeInterface } from "./object_identification"
 import {
   UserAccessiblePropertiesConnectionType,
   UserAccessiblePropertiesModelInputType,
 } from "./userAccessibleProperties"
-import initials from "./fields/initials"
+import { UserInterestConnection } from "./userInterests"
+import { UserSaleProfile } from "./userSaleProfile"
 
 export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserAdminNotes",
@@ -397,6 +397,44 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (result) => result,
       },
       initials: initials("name"),
+      myCollectionArtworksConnection: {
+        type: artworkConnection.connectionType,
+        args: pageable({}),
+        resolve: async ({ id }, args, { myCollectionArtworksLoader }) => {
+          if (!myCollectionArtworksLoader) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const gravityOptions = {
+            page,
+            size,
+            user_id: id,
+            private: true,
+            total_count: true,
+            sort: "-position",
+          }
+
+          try {
+            const { body, headers } = await myCollectionArtworksLoader(
+              gravityOptions
+            )
+
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+            return paginationResolver({
+              totalCount,
+              offset,
+              page,
+              size,
+              body,
+              args,
+            })
+          } catch (error) {
+            return CatchCollectionNotFoundException(error)
+          }
+        },
+      },
       paddleNumber: {
         description: "The paddle number of the user",
         type: GraphQLString,
