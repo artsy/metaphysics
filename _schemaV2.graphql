@@ -1354,7 +1354,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     allowEmptyCreatedDates: Boolean = true
 
     # Include auction results with unspecified created dates
-    allowUnspecifiedCreatedDates: Boolean = true
+    allowUnspecifiedSaleDates: Boolean = true
     before: String
 
     # Filter auction results by category (medium)
@@ -1390,11 +1390,11 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     # When true, will only return records for allowed artists.
     recordsTrusted: Boolean = false
 
-    # Filter auction results by sale date end
-    saleEndDate: String
+    # Filter auction results by end sale date year
+    saleEndYear: Int
 
-    # Filter auction results by sale date start
-    saleStartDate: String
+    # Filter auction results by start sale end date
+    saleStartYear: Int
     size: Int
 
     # Filter auction results by Artwork sizes
