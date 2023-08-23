@@ -262,7 +262,7 @@ describe("Artist type", () => {
     const query = `
       {
         artist(id: "percy-z") {
-          auctionResultsConnection(aggregations: [LOT_BY_SALE_YEAR]) {
+          auctionResultsConnection(aggregations: [LOTS_BY_SALE_YEAR]) {
             aggregations {
               slice
               counts {
@@ -283,7 +283,7 @@ describe("Artist type", () => {
         },
       }) => {
         expect(aggregations).toHaveLength(1)
-        expect(aggregations[0].slice).toEqual("LOT_BY_SALE_YEAR")
+        expect(aggregations[0].slice).toEqual("LOTS_BY_SALE_YEAR")
         expect(aggregations[0].counts).toHaveLength(2)
       }
     )

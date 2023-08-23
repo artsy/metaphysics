@@ -2867,7 +2867,7 @@ type AuctionResultPriceRealized {
 
 enum AuctionResultsAggregation {
   CURRENCIES_COUNT
-  LOT_BY_SALE_YEAR
+  LOTS_BY_SALE_YEAR
   SIMPLE_PRICE_HISTOGRAM
 }
 
