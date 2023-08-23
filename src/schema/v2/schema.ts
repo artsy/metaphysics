@@ -31,6 +31,8 @@ import { AuctionResult } from "./auction_result"
 import { cities } from "./cities"
 import { City } from "./city"
 import { createAccountRequestMutation } from "./createAccountRequestMutation"
+import { createVerifiedRepresentativeMutation } from "./verifiedRepresentative/createVerifiedRepresentativeMutation"
+import { deleteVerifiedRepresentativeMutation } from "./verifiedRepresentative/deleteVerifiedRepresentativeMutation"
 import { createHeroUnitMutation } from "./HeroUnit/createHeroUnitMutation"
 import { deleteHeroUnitMutation } from "./HeroUnit/deleteHeroUnitMutation"
 import { heroUnit } from "./HeroUnit/heroUnit"
@@ -356,6 +358,8 @@ export default new GraphQLSchema({
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       createAccountRequest: createAccountRequestMutation,
+      createVerifiedRepresentative: createVerifiedRepresentativeMutation,
+      deleteVerifiedRepresentative: deleteVerifiedRepresentativeMutation,
       createArtist: createArtistMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
