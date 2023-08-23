@@ -12,6 +12,9 @@ export const AuctionResultsAggregation = new GraphQLEnumType({
     CURRENCIES_COUNT: {
       value: "currencies_count",
     },
+    LOTS_BY_SALE_YEAR: {
+      value: "lots_by_sale_year",
+    },
   },
 })
 
