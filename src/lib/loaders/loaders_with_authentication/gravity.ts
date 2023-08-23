@@ -67,6 +67,16 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     createArtistLoader: gravityLoader("artist", {}, { method: "POST" }),
+    createVerifiedRepresentativeLoader: gravityLoader(
+      "verified_representatives",
+      {},
+      { method: "POST" }
+    ),
+    deleteVerifiedRepresetativeLoader: gravityLoader(
+      (id) => `verified_representatives/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     createArtworkLoader: gravityLoader("artwork", {}, { method: "POST" }),
     createArtworkEditionSetLoader: gravityLoader(
       (artworkID) => `artwork/${artworkID}/edition_set`,
