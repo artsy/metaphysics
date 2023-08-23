@@ -55,6 +55,13 @@ const currenciesCountFilterResponse = {
   },
 }
 
+const lotsBySaleYearResponse = {
+  lots_by_sale_year: {
+    2020: { name: "2020", count: 5 },
+    2022: { name: "2022", count: 10 },
+  },
+}
+
 describe("Artist type", () => {
   beforeEach(() => {
     context.auctionLotsLoader = jest
@@ -247,6 +254,41 @@ describe("Artist type", () => {
     )
   })
 
+  it("returns aggregated lot sale_end_date counts", () => {
+    context.auctionResultFilterLoader = jest
+      .fn()
+      .mockReturnValueOnce(Promise.resolve(lotsBySaleYearResponse))
+
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResultsConnection(aggregations: [LOTS_BY_SALE_YEAR]) {
+            aggregations {
+              slice
+              counts {
+                name
+                value
+                count
+              }
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(
+      ({
+        artist: {
+          auctionResultsConnection: { aggregations },
+        },
+      }) => {
+        expect(aggregations).toHaveLength(1)
+        expect(aggregations[0].slice).toEqual("LOTS_BY_SALE_YEAR")
+        expect(aggregations[0].counts).toHaveLength(2)
+      }
+    )
+  })
+
   it("returns correct page info", () => {
     const query = `
       {
@@ -364,6 +406,10 @@ describe("Artist type", () => {
         max_realized_price: undefined,
         min_realized_price: undefined,
         organizations: undefined,
+        sale_start_year: undefined,
+        sale_end_year: undefined,
+        allow_unspecified_sale_dates: true,
+        currency: undefined,
         page: 1,
         size: 1,
         sizes: undefined,
