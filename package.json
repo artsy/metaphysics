@@ -27,7 +27,7 @@
     "start": "yarn run dev",
     "sync-env": "aws s3 cp s3://artsy-citadel/dev/.env.metaphysics .env.shared && echo 'ENV sync complete.'",
     "test": "yarn type-check && yarn lint && jest",
-    "test:jest": "yarn jest --config jest.config.js --maxWorkers 3",
+    "test:jest": "yarn jest --config jest.config.js --runInBand",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "test:validQueries": "babel-node --extensions '.ts,.js' src/integration/__tests__/runStoredQueryTests.ts",
     "type-check": "tsc --noEmit --pretty",
