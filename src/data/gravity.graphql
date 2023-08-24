@@ -1671,6 +1671,36 @@ type Query {
   ): SearchCriteriaConnection
 
   """
+  List of more general partner facing search criteria data
+  """
+  searchCriteriaConnection(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+    artistID: ID
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    highQuality: Boolean
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    partnerID: ID
+    previewByArtist: Boolean
+    since: Int
+  ): SearchCriteriaConnection
+
+  """
   List enabled Two-Factor Authentication factors
   """
   secondFactors(
@@ -2064,6 +2094,7 @@ type SearchCriteria {
   attributionClass: [String!]!
   colors: [String!]!
   dimensionRange: String
+  hasRecentlyEnabledUserSearchCriteria: Boolean!
   height: String
   href: String!
   inquireableOnly: Boolean
@@ -2076,7 +2107,12 @@ type SearchCriteria {
   partnerIDs: [String!]!
   priceRange: String
   sizes: [String!]!
+  totalUserSearchCriteriaCount: Int
+  totalWithAdditionalGeneIdsCount: Int
+  totalWithAttributionClassCount: Int
+  totalWithPriceRangeCount: Int
   userAlertSettings: SavedSearchUserAlertSettings!
+  userSearchCriteriaCount: Int!
   width: String
 }
 
