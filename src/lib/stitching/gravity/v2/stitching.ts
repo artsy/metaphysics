@@ -144,6 +144,18 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Partner {
+        searchCriteriaConnection(
+          first: Int,
+          last: Int,
+          before: String,
+          after: String,
+          artistID: ID,
+          highQuality: Boolean,
+          partnerID: String,
+          previewByArtist: Boolean
+          since: Int
+        ): SearchCriteriaConnection
+
         viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
       }
 
@@ -653,6 +665,26 @@ export const gravityStitchingEnvironment = (
         },
       },
       Partner: {
+        searchCriteriaConnection: {
+          fragment: gql`
+          ... on Partner {
+            internalID
+          }
+        `,
+          resolve: ({ internalID: partnerID }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_searchCriteriaConnection",
+              args: {
+                partnerID,
+                ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
         viewingRoomsConnection: {
           fragment: gql`
             ... on Partner {

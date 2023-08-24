@@ -13664,6 +13664,17 @@ type Partner implements Node {
   profile: Profile
   profileArtistsLayout: String
   profileBannerDisplay: String
+  searchCriteriaConnection(
+    after: String
+    artistID: ID
+    before: String
+    first: Int
+    highQuality: Boolean
+    last: Int
+    partnerID: String
+    previewByArtist: Boolean
+    since: Int
+  ): SearchCriteriaConnection
   showPromoted: Boolean
 
   # A connection of shows from a Partner.
@@ -14578,26 +14589,6 @@ type Query {
 
     # Returns saved searches sorted by input (default: by created date in descending order)
     sort: SavedSearchesSortEnum
-  ): SearchCriteriaConnection
-
-  # List of more general partner facing search criteria data
-  _unused_gravity_searchCriteriaConnection(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-    artistID: ID
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-    highQuality: Boolean
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-    partnerID: ID
-    previewByArtist: Boolean
-    since: Int
   ): SearchCriteriaConnection
 
   # List enabled Two-Factor Authentication factors
@@ -15731,6 +15722,26 @@ type Query {
     # Search query to perform. Required.
     query: String!
   ): SearchableConnection
+
+  # List of more general partner facing search criteria data
+  searchCriteriaConnection(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+    artistID: ID
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+    highQuality: Boolean
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    partnerID: ID
+    previewByArtist: Boolean
+    since: Int
+  ): SearchCriteriaConnection
   shortcut(id: ID!): Shortcut
 
   # A Show

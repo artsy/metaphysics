@@ -10,14 +10,14 @@ import { readFileSync } from "fs"
 
 const allowList = [
   "agreement",
-  "curatedMarketingCollections",
-  "viewingRoom",
-  "viewingRooms",
   "artistSeries",
   "artistSeriesConnection",
+  "curatedMarketingCollections",
+  "marketingCategories",
   "marketingCollection",
   "marketingCollections",
-  "marketingCategories",
+  "viewingRoom",
+  "viewingRooms",
 ]
 
 export const executableGravitySchema = () => {
