@@ -10,19 +10,19 @@ describe("Artist verifiedRepresentatives", () => {
 
   const verifiedRepresentativesResponse = [
     {
-      partner_id: "654321",
+      partner_id: "123",
+    },
+    {
+      partner_id: "456",
     },
   ]
 
-  const partnerDataResponse = {
-    body: [
-      {
-        name: "Catty Partner",
-      },
-      {
-        name: "Yttac Partner",
-      },
-    ],
+  const cattyPartnerDataResponse = {
+    name: "Catty Partner",
+  }
+
+  const yttacPartnerDataResponse = {
+    name: "Yttac Partner",
   }
 
   const verifiedRepresentativesLoader = jest
@@ -33,20 +33,21 @@ describe("Artist verifiedRepresentatives", () => {
     .fn()
     .mockReturnValue(Promise.resolve([]))
 
-  const partnersLoader = jest
+  const partnerLoader = jest
     .fn()
-    .mockReturnValue(Promise.resolve(partnerDataResponse))
+    .mockReturnValueOnce(Promise.resolve(cattyPartnerDataResponse))
+    .mockReturnValueOnce(Promise.resolve(yttacPartnerDataResponse))
 
   const context = {
     artistLoader,
     verifiedRepresentativesLoader,
-    partnersLoader,
+    partnerLoader,
   }
 
   const contextWithEmptyResponse = {
     artistLoader,
     verifiedRepresentativesLoader: verifiedRepresentativesWithoutResponseLoader,
-    partnersLoader,
+    partnerLoader,
   }
 
   describe("with a artist_id", () => {
@@ -55,7 +56,9 @@ describe("Artist verifiedRepresentatives", () => {
       {
         artist(id: "123456") {
           verifiedRepresentatives {
-            name
+            partner {
+              name
+            }
           }
         }
       }
@@ -63,8 +66,8 @@ describe("Artist verifiedRepresentatives", () => {
 
       return runQuery(query, context).then(({ artist: { ...response } }) => {
         const verifiedRepresentatives = response.verifiedRepresentatives
-        expect(verifiedRepresentatives[0].name).toBe("Catty Partner")
-        expect(verifiedRepresentatives[1].name).toBe("Yttac Partner")
+        expect(verifiedRepresentatives[0].partner.name).toBe("Catty Partner")
+        expect(verifiedRepresentatives[1].partner.name).toBe("Yttac Partner")
       })
     })
 
@@ -73,7 +76,9 @@ describe("Artist verifiedRepresentatives", () => {
       {
         artist(id: "123456") {
           verifiedRepresentatives {
-            name
+            partner {
+              name
+            }
           }
         }
       }
