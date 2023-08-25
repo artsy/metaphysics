@@ -1045,6 +1045,44 @@ describe("gravity/stitching", () => {
     })
   })
 
+  describe("SearchCriteria", () => {
+    it("extends the SearchCriteria type with an artistsConnection field", async () => {
+      const mergedSchema = await getGravityMergedSchema()
+      const searchCriteriaFields = await getFieldsForTypeFromSchema(
+        "SearchCriteria",
+        mergedSchema
+      )
+      expect(searchCriteriaFields).toContain("artistsConnection")
+    })
+
+    it("resolves the artistsConnection field", async () => {
+      const { resolvers } = await getGravityStitchedSchema()
+      const { artistsConnection } = resolvers.SearchCriteria
+      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+      artistsConnection.resolve(
+        { artistIDs: ["abc123", "foo"] },
+        { first: 2 },
+        {},
+        info
+      )
+
+      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+        expect.objectContaining({
+          args: {
+            ids: ["abc123", "foo"],
+            first: 2,
+          },
+          operation: "query",
+          fieldName: "artistsConnection",
+          schema: expect.anything(),
+          context: expect.anything(),
+          info: expect.anything(),
+        })
+      )
+    })
+  })
+
   describe("MarketingCollection", () => {
     describe("artworksConnection", () => {
       it("extends the MarketingCollection type with an artworksConnection field for the V2 schema", async () => {
