@@ -66,76 +66,6 @@ export const gravityStitchingEnvironment = (
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
-      extend type Me {
-        savedSearch(id: ID, criteria: SearchCriteriaAttributes): SearchCriteria
-        savedSearchesConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-          sort: SavedSearchesSortEnum
-        ): SearchCriteriaConnection
-        secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
-        addressConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-        ): UserAddressConnection
-      }
-      extend type SearchCriteria {
-        displayName: String!
-        labels: [SearchCriteriaLabel!]!
-      }
-      extend type UserAddress {
-        id: ID!
-      }
-      extend type User {
-        devices: [Device!]!
-      }
-      extend type ViewingRoom {
-        artworksConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-        ): ArtworkConnection
-        partnerArtworksConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-        ): ArtworkConnection
-        distanceToOpen(short: Boolean! = false): String
-        distanceToClose(short: Boolean! = false): String
-        partner: Partner
-        exhibitionPeriod: String
-      }
-
-      extend type ArtistSeries {
-        artists(page: Int, size: Int): [Artist]
-        image: Image
-        artworksConnection(first: Int, after: String): ArtworkConnection
-        filterArtworksConnection(${argsToSDL(
-          pageableFilterArtworksArgsWithInput
-        ).join("\n")}): FilterArtworksConnection
-
-        descriptionFormatted(format: Format): String
-        """
-        A formatted string that shows the number of available works or
-        (as a fallback) the number of works in general.
-        """
-        artworksCountMessage: String
-      }
-
-      extend type Partner {
-        viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
-      }
-
-      extend type Show {
-        viewingRoomsConnection: ViewingRoomsConnection
-      }
-
       extend type Artist {
         artistSeriesConnection(
           first: Int
@@ -160,6 +90,124 @@ export const gravityStitchingEnvironment = (
           ): ArtistSeriesConnection
       }
 
+      extend type ArtistSeries {
+        artists(page: Int, size: Int): [Artist]
+        image: Image
+        artworksConnection(first: Int, after: String): ArtworkConnection
+        filterArtworksConnection(${argsToSDL(
+          pageableFilterArtworksArgsWithInput
+        ).join("\n")}): FilterArtworksConnection
+
+        descriptionFormatted(format: Format): String
+        """
+        A formatted string that shows the number of available works or
+        (as a fallback) the number of works in general.
+        """
+        artworksCountMessage: String
+      }
+
+      extend type Fair {
+        marketingCollections(size: Int): [MarketingCollection]!
+      }
+
+      extend type HomePage {
+        marketingCollectionsModule: HomePageMarketingCollectionsModule
+      }
+
+      type HomePageMarketingCollectionsModule {
+        results: [MarketingCollection]!
+      }
+
+      extend type MarketingCollection {
+        thumbnailImage: Image
+        artworksConnection(${argsToSDL(
+          pageableFilterArtworksArgsWithInput
+        ).join("\n")}): FilterArtworksConnection
+      }
+
+      extend type Me {
+        savedSearch(id: ID, criteria: SearchCriteriaAttributes): SearchCriteria
+        savedSearchesConnection(
+          first: Int
+          last: Int
+          after: String
+          before: String
+          sort: SavedSearchesSortEnum
+        ): SearchCriteriaConnection
+        secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
+        addressConnection(
+          first: Int
+          last: Int
+          after: String
+          before: String
+        ): UserAddressConnection
+      }
+
+      extend type Partner {
+        searchCriteriaConnection(
+          first: Int,
+          last: Int,
+          before: String,
+          after: String,
+          artistID: ID,
+          highQuality: Boolean,
+          partnerID: String,
+          previewByArtist: Boolean
+          since: Int
+        ): SearchCriteriaConnection
+
+        viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
+      }
+
+      extend type Query {
+        curatedMarketingCollections(size: Int): [MarketingCollection]
+      }
+
+      extend type SearchCriteria {
+        artistsConnection(
+          first: Int,
+          last: Int,
+          before: String,
+          after: String,
+          ids: [String],
+          sort: ArtistSorts,
+          term: String
+        ): ArtistConnection
+        displayName: String!
+        labels: [SearchCriteriaLabel!]!
+      }
+
+      extend type Show {
+        viewingRoomsConnection: ViewingRoomsConnection
+      }
+
+      extend type UserAddress {
+        id: ID!
+      }
+
+      extend type User {
+        devices: [Device!]!
+      }
+
+      extend type ViewingRoom {
+        artworksConnection(
+          first: Int
+          last: Int
+          after: String
+          before: String
+        ): ArtworkConnection
+        partnerArtworksConnection(
+          first: Int
+          last: Int
+          after: String
+          before: String
+        ): ArtworkConnection
+        distanceToOpen(short: Boolean! = false): String
+        distanceToClose(short: Boolean! = false): String
+        partner: Partner
+        exhibitionPeriod: String
+      }
+
       extend type Viewer {
         viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!], partnerID: ID): ViewingRoomsConnection
         marketingCollections(
@@ -171,10 +219,7 @@ export const gravityStitchingEnvironment = (
         ): [MarketingCollection]
       }
 
-      extend type Query {
-        curatedMarketingCollections(size: Int): [MarketingCollection]
-      }
-
+      # Mutation Payloads
       extend type CreateUserAddressPayload {
         me: Me
       }
@@ -194,27 +239,245 @@ export const gravityStitchingEnvironment = (
       extend type UpdateUserDefaultAddressPayload {
         me: Me
       }
-
-      extend type Fair {
-        marketingCollections(size: Int): [MarketingCollection]!
-      }
-
-      type HomePageMarketingCollectionsModule {
-        results: [MarketingCollection]!
-      }
-
-      extend type HomePage {
-        marketingCollectionsModule: HomePageMarketingCollectionsModule
-      }
-
-      extend type MarketingCollection {
-        thumbnailImage: Image
-        artworksConnection(${argsToSDL(
-          pageableFilterArtworksArgsWithInput
-        ).join("\n")}): FilterArtworksConnection
-      }
     `,
     resolvers: {
+      Artist: {
+        artistSeriesConnection: {
+          fragment: gql`
+            ... on Artist {
+              internalID
+            }
+          `,
+          resolve: ({ internalID: artistID }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "artistSeriesConnection",
+              args: {
+                artistID,
+                ...args,
+                // Exclude the current artist series so that lists of
+                // artist series by the artist don't include the current series
+                // if there is one.
+                ...(!!context.currentArtistSeriesInternalID && {
+                  excludeIDs: [context.currentArtistSeriesInternalID],
+                }),
+              },
+              context,
+              info,
+            })
+          },
+        },
+        marketingCollections: {
+          fragment: `
+              ... on Artist {
+                internalID
+              }
+            `,
+          resolve: ({ internalID: artistID }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "marketingCollections",
+              args: {
+                artistID,
+                ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Artwork: {
+        artistSeriesConnection: {
+          fragment: gql`
+            ... on Artwork {
+              internalID
+            }
+            `,
+          resolve: ({ internalID: artworkID }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "artistSeriesConnection",
+              args: {
+                artworkID,
+                ...args,
+              },
+              context: {
+                ...context,
+                currentArtworkID: artworkID,
+              },
+              info,
+            })
+          },
+        },
+      },
+      ArtistSeries: {
+        artworksConnection: {
+          fragment: gql`
+          ... on ArtistSeries {
+            artworkIDs
+          }
+          `,
+          resolve: async ({ artworkIDs: ids }, _args, context, info) => {
+            // Exclude the current artwork in a series so that lists of
+            // other artworks in the same series don't show the artwork.
+            const filteredIDs = context.currentArtworkID
+              ? ids.filter((id) => id !== context.currentArtworkID)
+              : ids
+            return await info.mergeInfo.delegateToSchema({
+              args: {
+                ids: filteredIDs,
+                ..._args,
+              },
+              schema: localSchema,
+              operation: "query",
+              fieldName: "artworks",
+              context,
+              info,
+            })
+          },
+        },
+        descriptionFormatted: {
+          fragment: gql`
+            ... on ArtistSeries {
+              description
+            }
+          `,
+          resolve: async ({ description }, { format }) => {
+            if (!isExisty(description) || typeof description !== "string")
+              return null
+
+            const { type: formatType } = Format
+            const desiredFormat = formatType
+              ?.getValues()
+              ?.find((e) => e.name === format)?.value
+
+            return formatMarkdownValue(description, desiredFormat)
+          },
+        },
+        artworksCountMessage: {
+          fragment: gql`
+            ... on ArtistSeries {
+              forSaleArtworksCount
+              artworksCount
+            }
+          `,
+          resolve: async ({ forSaleArtworksCount, artworksCount }) => {
+            let artworksCountMessage
+
+            if (forSaleArtworksCount) {
+              artworksCountMessage = `${forSaleArtworksCount} available`
+            } else {
+              artworksCountMessage = `${artworksCount} ${
+                artworksCount === 1 ? "work" : "works"
+              }`
+            }
+
+            return artworksCountMessage
+          },
+        },
+        image: {
+          fragment: gql`
+          ... on ArtistSeries {
+            image_url: imageURL
+            original_height: imageHeight
+            original_width: imageWidth
+            representativeArtworkID
+          }
+          `,
+          resolve: async (
+            {
+              representativeArtworkID,
+              image_url,
+              original_height,
+              original_width,
+            },
+            args,
+            context,
+            info
+          ) => {
+            let imageData: unknown
+            if (image_url) {
+              imageData = {
+                image_url,
+                original_width,
+                original_height,
+              }
+            } else if (representativeArtworkID) {
+              const { artworkLoader } = context
+              const { images } = await artworkLoader(representativeArtworkID)
+              imageData = normalizeImageData(getDefault(images))
+            }
+
+            return info.mergeInfo.delegateToSchema({
+              args,
+              schema: localSchema,
+              operation: "query",
+              fieldName: "_do_not_use_image",
+              context: {
+                ...context,
+                imageData,
+              },
+              info,
+            })
+          },
+        },
+        artists: {
+          fragment: gql`
+          ... on ArtistSeries {
+            artistIDs
+            internalID
+          }
+        `,
+          resolve: ({ artistIDs: ids, internalID }, args, context, info) => {
+            if (ids.length === 0) {
+              return []
+            }
+
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "artists",
+              args: {
+                ids,
+                ...args,
+              },
+              context: {
+                ...context,
+                currentArtistSeriesInternalID: internalID,
+              },
+              info,
+            })
+          },
+        },
+
+        filterArtworksConnection: {
+          fragment: `
+          ... on ArtistSeries {
+            internalID
+          }
+        `,
+          resolve: ({ internalID: artistSeriesID }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "artworksConnection",
+              args: {
+                artistSeriesID,
+                ...(!!context.currentArtworkID && {
+                  excludeArtworkIDs: [context.currentArtworkID],
+                }),
+                ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
       Fair: {
         marketingCollections: {
           fragment: `
@@ -410,6 +673,177 @@ export const gravityStitchingEnvironment = (
           },
         },
       },
+      Partner: {
+        searchCriteriaConnection: {
+          fragment: gql`
+          ... on Partner {
+            internalID
+          }
+        `,
+          resolve: ({ internalID: partnerID }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_searchCriteriaConnection",
+              args: {
+                partnerID,
+                ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+        viewingRoomsConnection: {
+          fragment: gql`
+            ... on Partner {
+              internalID
+            }
+          `,
+          resolve: ({ internalID: partnerID }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_viewingRoomsConnection",
+              args: {
+                partnerID,
+                ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Query: {
+        curatedMarketingCollections: {
+          fragment: gql`
+            ...on Query {
+              __typename
+            }
+          `,
+          resolve: async (_parent, args, context, info) => {
+            try {
+              return await info.mergeInfo.delegateToSchema({
+                schema: gravitySchema,
+                operation: "query",
+                fieldName: "marketingCollections",
+                args: {
+                  slugs: [
+                    "trending-now",
+                    "top-auction-lots",
+                    "new-this-week",
+                    "curators-picks-blue-chip",
+                    "curators-picks-emerging",
+                  ],
+                  ...args,
+                },
+                context,
+                info,
+              })
+            } catch (error) {
+              return []
+            }
+          },
+        },
+      },
+      SearchCriteria: {
+        artistsConnection: {
+          fragment: gql`
+            ... on SearchCriteria {
+              artistIDs
+            }
+          `,
+          resolve: ({ artistIDs }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "artistsConnection",
+              args: {
+                ids: artistIDs,
+                ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+        displayName: {
+          fragment: gql`
+            ... on SearchCriteria {
+              artistIDs
+              attributionClass
+              additionalGeneIDs
+              priceRange
+              sizes
+              width
+              height
+              acquireable
+              atAuction
+              inquireableOnly
+              offerable
+              materialsTerms
+              locationCities
+              majorPeriods
+              colors
+              partnerIDs
+
+              userAlertSettings {
+                name
+              }
+            }
+          `,
+          resolve: generateDisplayName,
+        },
+        labels: {
+          fragment: gql`
+            ... on SearchCriteria {
+              artistIDs
+              attributionClass
+              additionalGeneIDs
+              priceRange
+              sizes
+              width
+              height
+              acquireable
+              atAuction
+              inquireableOnly
+              offerable
+              materialsTerms
+              locationCities
+              majorPeriods
+              colors
+              partnerIDs
+            }
+            `,
+          resolve: resolveSearchCriteriaLabels,
+          description:
+            "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
+        },
+      },
+      Show: {
+        viewingRoomsConnection: {
+          fragment: gql`
+            ... on Show {
+              viewingRoomIDs
+            }
+          `,
+          resolve: ({ viewingRoomIDs: ids }, _args, context, info) => {
+            if (ids.length === 0) return null
+
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_viewingRoomsConnection",
+              args: {
+                ids,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
       User: {
         devices: {
           fragment: gql`
@@ -439,170 +873,6 @@ export const gravityStitchingEnvironment = (
           resolve: (parent, _args, _context, _info) => {
             const internalID = parent.internalID
             return toGlobalId("UserAddress", internalID)
-          },
-        },
-      },
-      ArtistSeries: {
-        artworksConnection: {
-          fragment: gql`
-          ... on ArtistSeries {
-            artworkIDs
-          }
-          `,
-          resolve: async ({ artworkIDs: ids }, _args, context, info) => {
-            // Exclude the current artwork in a series so that lists of
-            // other artworks in the same series don't show the artwork.
-            const filteredIDs = context.currentArtworkID
-              ? ids.filter((id) => id !== context.currentArtworkID)
-              : ids
-            return await info.mergeInfo.delegateToSchema({
-              args: {
-                ids: filteredIDs,
-                ..._args,
-              },
-              schema: localSchema,
-              operation: "query",
-              fieldName: "artworks",
-              context,
-              info,
-            })
-          },
-        },
-        descriptionFormatted: {
-          fragment: gql`
-            ... on ArtistSeries {
-              description
-            }
-          `,
-          resolve: async ({ description }, { format }) => {
-            if (!isExisty(description) || typeof description !== "string")
-              return null
-
-            const { type: formatType } = Format
-            const desiredFormat = formatType
-              ?.getValues()
-              ?.find((e) => e.name === format)?.value
-
-            return formatMarkdownValue(description, desiredFormat)
-          },
-        },
-        artworksCountMessage: {
-          fragment: gql`
-            ... on ArtistSeries {
-              forSaleArtworksCount
-              artworksCount
-            }
-          `,
-          resolve: async ({ forSaleArtworksCount, artworksCount }) => {
-            let artworksCountMessage
-
-            if (forSaleArtworksCount) {
-              artworksCountMessage = `${forSaleArtworksCount} available`
-            } else {
-              artworksCountMessage = `${artworksCount} ${
-                artworksCount === 1 ? "work" : "works"
-              }`
-            }
-
-            return artworksCountMessage
-          },
-        },
-        image: {
-          fragment: gql`
-          ... on ArtistSeries {
-            image_url: imageURL
-            original_height: imageHeight
-            original_width: imageWidth
-            representativeArtworkID
-          }
-          `,
-          resolve: async (
-            {
-              representativeArtworkID,
-              image_url,
-              original_height,
-              original_width,
-            },
-            args,
-            context,
-            info
-          ) => {
-            let imageData: unknown
-            if (image_url) {
-              imageData = {
-                image_url,
-                original_width,
-                original_height,
-              }
-            } else if (representativeArtworkID) {
-              const { artworkLoader } = context
-              const { images } = await artworkLoader(representativeArtworkID)
-              imageData = normalizeImageData(getDefault(images))
-            }
-
-            return info.mergeInfo.delegateToSchema({
-              args,
-              schema: localSchema,
-              operation: "query",
-              fieldName: "_do_not_use_image",
-              context: {
-                ...context,
-                imageData,
-              },
-              info,
-            })
-          },
-        },
-        artists: {
-          fragment: gql`
-          ... on ArtistSeries {
-            artistIDs
-            internalID
-          }
-        `,
-          resolve: ({ artistIDs: ids, internalID }, args, context, info) => {
-            if (ids.length === 0) {
-              return []
-            }
-
-            return info.mergeInfo.delegateToSchema({
-              schema: localSchema,
-              operation: "query",
-              fieldName: "artists",
-              args: {
-                ids,
-                ...args,
-              },
-              context: {
-                ...context,
-                currentArtistSeriesInternalID: internalID,
-              },
-              info,
-            })
-          },
-        },
-
-        filterArtworksConnection: {
-          fragment: `
-          ... on ArtistSeries {
-            internalID
-          }
-        `,
-          resolve: ({ internalID: artistSeriesID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: localSchema,
-              operation: "query",
-              fieldName: "artworksConnection",
-              args: {
-                artistSeriesID,
-                ...(!!context.currentArtworkID && {
-                  excludeArtworkIDs: [context.currentArtworkID],
-                }),
-                ...args,
-              },
-              context,
-              info,
-            })
           },
         },
       },
@@ -813,156 +1083,8 @@ export const gravityStitchingEnvironment = (
           },
         },
       },
-      Query: {
-        curatedMarketingCollections: {
-          fragment: gql`
-            ...on Query {
-              __typename
-            }
-          `,
-          resolve: async (_parent, args, context, info) => {
-            try {
-              return await info.mergeInfo.delegateToSchema({
-                schema: gravitySchema,
-                operation: "query",
-                fieldName: "marketingCollections",
-                args: {
-                  slugs: [
-                    "trending-now",
-                    "top-auction-lots",
-                    "new-this-week",
-                    "curators-picks-blue-chip",
-                    "curators-picks-emerging",
-                  ],
-                  ...args,
-                },
-                context,
-                info,
-              })
-            } catch (error) {
-              return []
-            }
-          },
-        },
-      },
-      Partner: {
-        viewingRoomsConnection: {
-          fragment: gql`
-            ... on Partner {
-              internalID
-            }
-          `,
-          resolve: ({ internalID: partnerID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_viewingRoomsConnection",
-              args: {
-                partnerID,
-                ...args,
-              },
-              context,
-              info,
-            })
-          },
-        },
-      },
-      Show: {
-        viewingRoomsConnection: {
-          fragment: gql`
-            ... on Show {
-              viewingRoomIDs
-            }
-          `,
-          resolve: ({ viewingRoomIDs: ids }, _args, context, info) => {
-            if (ids.length === 0) return null
 
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_viewingRoomsConnection",
-              args: {
-                ids,
-              },
-              context,
-              info,
-            })
-          },
-        },
-      },
-      Artist: {
-        artistSeriesConnection: {
-          fragment: gql`
-            ... on Artist {
-              internalID
-            }
-          `,
-          resolve: ({ internalID: artistID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "artistSeriesConnection",
-              args: {
-                artistID,
-                ...args,
-                // Exclude the current artist series so that lists of
-                // artist series by the artist don't include the current series
-                // if there is one.
-                ...(!!context.currentArtistSeriesInternalID && {
-                  excludeIDs: [context.currentArtistSeriesInternalID],
-                }),
-              },
-              context,
-              info,
-            })
-          },
-        },
-        marketingCollections: {
-          fragment: `
-              ... on Artist {
-                internalID
-              }
-            `,
-          resolve: ({ internalID: artistID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "marketingCollections",
-              args: {
-                artistID,
-                ...args,
-              },
-              context,
-              info,
-            })
-          },
-        },
-      },
-      Artwork: {
-        artistSeriesConnection: {
-          fragment: gql`
-            ... on Artwork {
-              internalID
-            }
-            `,
-          resolve: ({ internalID: artworkID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "artistSeriesConnection",
-              args: {
-                artworkID,
-                ...args,
-              },
-              context: {
-                ...context,
-                currentArtworkID: artworkID,
-              },
-              info,
-            })
-          },
-        },
-      },
+      // Mutations
       CreateUserAddressPayload: {
         me: {
           resolve: (_parent, args, context, info) => {
@@ -1032,60 +1154,6 @@ export const gravityStitchingEnvironment = (
               info,
             })
           },
-        },
-      },
-      SearchCriteria: {
-        displayName: {
-          fragment: gql`
-            ... on SearchCriteria {
-              artistIDs
-              attributionClass
-              additionalGeneIDs
-              priceRange
-              sizes
-              width
-              height
-              acquireable
-              atAuction
-              inquireableOnly
-              offerable
-              materialsTerms
-              locationCities
-              majorPeriods
-              colors
-              partnerIDs
-
-              userAlertSettings {
-                name
-              }
-            }
-          `,
-          resolve: generateDisplayName,
-        },
-        labels: {
-          fragment: gql`
-            ... on SearchCriteria {
-              artistIDs
-              attributionClass
-              additionalGeneIDs
-              priceRange
-              sizes
-              width
-              height
-              acquireable
-              atAuction
-              inquireableOnly
-              offerable
-              materialsTerms
-              locationCities
-              majorPeriods
-              colors
-              partnerIDs
-            }
-            `,
-          resolve: resolveSearchCriteriaLabels,
-          description:
-            "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
         },
       },
     },

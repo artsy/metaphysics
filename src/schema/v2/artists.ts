@@ -62,7 +62,9 @@ const Artists: GraphQLFieldConfig<void, ResolverContext> = {
       )
     }
 
-    return artistsLoader(args).then(({ body }) => body)
+    return artistsLoader(args).then(({ body }) => {
+      return body
+    })
   },
 }
 
@@ -160,33 +162,47 @@ export const artistsConnection = {
       })
     }
 
-    const { body, headers } = args.letter
-      ? await artistsByLetterLoader(args.letter, {
-          total_count: true,
-          page: gravityArguments.page,
-          size: gravityArguments.size,
-          ...omit(args, ["first", "last", "before", "after", "letter"]),
-        })
-      : await artistsLoader({
-          total_count: true,
-          page: gravityArguments.page,
-          size: gravityArguments.size,
-          ...omit(args, ["first", "last", "before", "after", "letter"]),
-        })
+    if (args.letter) {
+      const { body, headers } = await artistsByLetterLoader(args.letter, {
+        total_count: true,
+        page: gravityArguments.page,
+        size: gravityArguments.size,
+        ...omit(args, ["first", "last", "before", "after", "letter"]),
+      })
 
-    const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-    return {
-      totalCount,
-      pageCursors: createPageCursors(
-        { page: gravityArguments.page, size: gravityArguments.size, ...args },
-        totalCount
-      ),
-      ...connectionFromArraySlice(body, connectionArguments, {
-        arrayLength: totalCount,
-        sliceStart: gravityArguments.offset ?? 0,
-      }),
+      return paginationResolver({
+        args,
+        body,
+        offset: gravityArguments.offset,
+        page: gravityArguments.page,
+        size: gravityArguments.size,
+        totalCount,
+      })
     }
+
+    // Default case
+    const { body, headers } = await artistsLoader({
+      total_count: true,
+      page: gravityArguments.page,
+      size: gravityArguments.size,
+      ...omit(args, ["first", "last", "before", "after", "letter"]),
+    })
+
+    const totalCount =
+      args.ids && args.ids.length > 0
+        ? body.length
+        : parseInt(headers["x-total-count"] || "0", 10)
+
+    return paginationResolver({
+      args,
+      body,
+      offset: gravityArguments.offset,
+      page: gravityArguments.page,
+      size: gravityArguments.size,
+      totalCount,
+    })
   },
 }
 
