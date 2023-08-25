@@ -224,18 +224,50 @@ describe("artistsConnection", () => {
     })
 
     expect(artistLoader).toBeCalledTimes(2)
-    expect(artistLoader).toHaveBeenNthCalledWith(
-      1,
-      "andy-warhol",
-      {},
-      { requestThrottleMs: 600000 }
+  })
+
+  it("returns a list of artists by mongo ids", async () => {
+    const query = gql`
+      {
+        artistsConnection(page: 1, size: 10, ids: ["foo", "bar"]) {
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+          totalCount
+          edges {
+            node {
+              name
+            }
+          }
+        }
+      }
+    `
+
+    const artistsLoader = jest.fn().mockReturnValue(
+      Promise.resolve({
+        body: ARTISTS_FIXTURE,
+        headers: {},
+      })
     )
-    expect(artistLoader).toHaveBeenNthCalledWith(
-      2,
-      "pablo-picasso",
-      {},
-      { requestThrottleMs: 600000 }
-    )
+
+    const { artistsConnection } = await runQuery(query, { artistsLoader })
+
+    expect(artistsConnection).toEqual({
+      pageInfo: { endCursor: "YXJyYXljb25uZWN0aW9uOjE=", hasNextPage: false },
+      totalCount: 2,
+      edges: [
+        { node: { name: "Andy Warhol" } },
+        { node: { name: "Pablo Picasso" } },
+      ],
+    })
+
+    expect(artistsLoader).toBeCalledWith({
+      page: 1,
+      size: 10,
+      total_count: true,
+      ids: ["foo", "bar"],
+    })
   })
 
   it("returns a list of artists from the alphabetical endpoint when a letter is passed", async () => {

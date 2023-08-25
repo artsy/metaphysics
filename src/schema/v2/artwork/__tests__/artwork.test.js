@@ -3272,6 +3272,89 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#savedSearch", () => {
+    describe("suggestedArtworksConnection", () => {
+      it("returns the correct connection", async () => {
+        const artwork = {
+          id: "portrait-of-cats",
+          artists: [
+            {
+              id: "bitty",
+            },
+            { id: "percy" },
+          ],
+          attribution_class: "unique",
+          category: "Painting",
+        }
+        const filterArtworksLoader = jest.fn().mockReturnValue(
+          Promise.resolve({
+            hits: [
+              {
+                id: "portrait-of-cats-playing-poker",
+              },
+            ],
+            aggregations: {
+              total: {
+                value: 1,
+              },
+            },
+          })
+        )
+        const context = {
+          artworkLoader: () => Promise.resolve(artwork),
+          unauthenticatedLoaders: {
+            filterArtworksLoader,
+          },
+        }
+        const query = `
+          {
+            artwork(id: "portrait-of-cats") {
+              savedSearch {
+                suggestedArtworksConnection(first: 1) {
+                  edges {
+                    node {
+                      slug
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          artwork: {
+            savedSearch: {
+              suggestedArtworksConnection: {
+                edges: [
+                  {
+                    node: {
+                      slug: "portrait-of-cats-playing-poker",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        })
+
+        expect(filterArtworksLoader).toHaveBeenCalledWith({
+          artist_ids: ["bitty", "percy"],
+          attribution_class: "unique",
+          additional_gene_ids: ["painting"],
+          exclude_ids: ["portrait-of-cats"],
+          for_sale: true,
+          size: 1,
+          offset: 0,
+          sort: "-published_at",
+          aggregations: ["total"],
+        })
+      })
+    })
+  })
+
   describe("#signatureInfo", () => {
     const query = `
       {

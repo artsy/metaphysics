@@ -1471,6 +1471,81 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       signature: markdown(({ signature }) =>
         signature.replace(/^signature:\s+/i, "")
       ),
+      savedSearch: {
+        description: "Schema related to saved searches based on this artwork",
+        type: new GraphQLObjectType({
+          name: "ArtworkSavedSearch",
+          fields: {
+            suggestedArtworksConnection: {
+              type: artworkConnection.connectionType,
+              description:
+                "Based on the artworks attributes (usually considered for saved searches).",
+              args: pageable(),
+              resolve: async (
+                artwork,
+                args,
+                { unauthenticatedLoaders: { filterArtworksLoader } }
+              ) => {
+                const {
+                  page,
+                  size,
+                  offset,
+                } = convertConnectionArgsToGravityArgs(args)
+
+                interface GravityArgs {
+                  artist_ids: string[]
+                  additional_gene_ids?: string[]
+                  attribution_class?: string
+                  for_sale: boolean
+                  sort: string
+                  size: number
+                  offset: number
+                  aggregations: string[]
+                  exclude_ids: string[]
+                }
+
+                const filterArtworksArgs: GravityArgs = {
+                  artist_ids: artwork.artists.map((a) => a.id),
+                  for_sale: true,
+                  sort: "-published_at",
+                  size,
+                  offset,
+                  aggregations: ["total"],
+                  exclude_ids: [artwork.id],
+                }
+
+                const mediumGene = artworkMediums[artwork.category]
+                if (mediumGene) {
+                  filterArtworksArgs.additional_gene_ids = [
+                    mediumGene.mediumFilterGeneSlug,
+                  ]
+                }
+
+                if (artwork.attribution_class) {
+                  filterArtworksArgs.attribution_class =
+                    artwork.attribution_class
+                }
+
+                const { hits: body, aggregations } = await filterArtworksLoader(
+                  filterArtworksArgs
+                )
+                const totalCount = aggregations?.total?.value ?? 0
+
+                return paginationResolver({
+                  totalCount,
+                  offset,
+                  page,
+                  size,
+                  body,
+                  args,
+                })
+              },
+            },
+          },
+        }),
+        resolve: (artwork) => artwork,
+      },
+
       title: {
         type: GraphQLString,
         resolve: ({ title }) => (_.isEmpty(title) ? "Untitled" : title),
