@@ -164,6 +164,15 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type SearchCriteria {
+        artistsConnection(
+          first: Int,
+          last: Int,
+          before: String,
+          after: String,
+          ids: [String],
+          sort: ArtistSorts,
+          term: String
+        ): ArtistConnection
         displayName: String!
         labels: [SearchCriteriaLabel!]!
       }
@@ -739,6 +748,26 @@ export const gravityStitchingEnvironment = (
         },
       },
       SearchCriteria: {
+        artistsConnection: {
+          fragment: gql`
+            ... on SearchCriteria {
+              artistIDs
+            }
+          `,
+          resolve: ({ artistIDs }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "artistsConnection",
+              args: {
+                ids: artistIDs,
+                ...args,
+              },
+              context,
+              info,
+            })
+          },
+        },
         displayName: {
           fragment: gql`
             ... on SearchCriteria {
