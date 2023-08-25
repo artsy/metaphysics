@@ -316,9 +316,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             sizes,
             sort: options.sort,
             state: options.state,
-            sale_start_year: options.saleStartYear,
-            sale_end_year: options.saleEndYear,
             allow_unspecified_sale_dates: options.allowUnspecifiedSaleDates,
+            ...(options.saleStartYear && {
+              sale_start_year: options.saleStartYear,
+            }),
+            ...(options.saleEndYear && { sale_end_year: options.saleEndYear }),
           }
 
           const requests = [auctionLotsLoader(diffusionArgs)]
