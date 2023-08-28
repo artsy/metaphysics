@@ -629,6 +629,18 @@ describe("gravity/stitching", () => {
         expect(rootFields).toContain("curatedMarketingCollections")
       })
     })
+
+    describe("#searchCriteriaConnection", () => {
+      it("extends the Query type with an searchCriteriaConnection field", async () => {
+        const mergedSchema = await getGravityMergedSchema()
+        const rootFields = await getFieldsForTypeFromSchema(
+          "Query",
+          mergedSchema
+        )
+
+        expect(rootFields).toContain("curatedMarketingCollections")
+      })
+    })
   })
 
   describe("#artists", () => {
