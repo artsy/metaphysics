@@ -34,6 +34,11 @@ export interface APIOptions {
 
   /** This only applies to caching loaders */
   requestThrottleMs?: number
+
+  // Is this loader being used during a request that includes a mutation?
+  // If so, loaders can skip the cache (even if they typically would cache).
+  // This is to ensure any fetched data in the mutation response is fresh.
+  isMutation?: boolean
 }
 
 export interface DataLoaderKey {
@@ -121,6 +126,7 @@ export default (opts) => ({
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
       appToken: opts.appToken,
+      isMutation: opts.isMutation,
     }
   ),
 

@@ -171,6 +171,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     userAgent,
     appToken,
     xOriginalSessionID,
+    isMutation: !!req.body?.query?.includes("mutation"),
   })
 
   const context: ResolverContext = {
