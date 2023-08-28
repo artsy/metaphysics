@@ -1,4 +1,4 @@
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, removeNulls } from "lib/helpers"
 import { createPageCursors, pageToCursor } from "schema/v2/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 import { GraphQLResolveInfo, visit } from "graphql"
@@ -78,12 +78,19 @@ export class SearchResolver {
 
   processSearchResultItem(searchResultItem) {
     if (this.shouldFetchEntityType(searchResultItem.label)) {
-      return this.fetch(searchResultItem).then((response) => {
-        return {
-          ...response,
-          __typename: searchResultItem.label,
-        }
-      })
+      return (
+        this.fetch(searchResultItem)
+          .then((response) => {
+            return {
+              ...response,
+              __typename: searchResultItem.label,
+            }
+          })
+          // Due to ElasticSearch indexing lag, it's possible for a search result
+          // item to be returned but the corresponding object to not be found.
+          // In this case, we return null and filter out the nulls in the resolver.
+          .catch(() => null)
+      )
     } else {
       return Promise.resolve({
         ...searchResultItem,
@@ -122,6 +129,9 @@ export class SearchResolver {
           this.processSearchResultItem(searchResultItem)
         )
       ).then((processedSearchResults) => {
+        // Filter out nulls due to a search result item being returned,
+        // but the item not being found.
+        removeNulls(processedSearchResults)
         const connection = connectionFromArraySlice(
           processedSearchResults,
           this.args,

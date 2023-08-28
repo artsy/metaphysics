@@ -275,6 +275,36 @@ describe("Search", () => {
     })
   })
 
+  it("doesn't include artist which return in search results but no longer exist", () => {
+    const query = `
+      {
+        searchConnection(query: "David Bowie", first: 10) {
+          edges {
+            node {
+              __typename
+
+              ... on Artist {
+                hometown
+              }
+            }
+          }
+        }
+      }
+    `
+    context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
+    context.artistLoader = jest
+      .fn()
+      .mockImplementation(() => Promise.reject("Artist not found"))
+
+    return runQuery(query, context).then((data) => {
+      expect(data!.searchConnection.edges.length).toBe(7) // 8 results, but one is an artist that doesn't exist
+      const typeNames = data!.searchConnection.edges.map(
+        (edge) => edge.node.__typename
+      )
+      expect(typeNames).not.toContain("Artist")
+    })
+  })
+
   it("fetches artwork if Artwork-specific attributes are requested", () => {
     const query = `
       {
