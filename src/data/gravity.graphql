@@ -1698,6 +1698,11 @@ type Query {
     partnerID: ID
     previewByArtist: Boolean
     since: Int
+
+    """
+    Returns search criteria sorted by input (default: by high quality and count desc)
+    """
+    sort: [SearchCriteriaSortEnum!] = [HIGH_QUALITY_DESC, COUNT_DESC]
   ): SearchCriteriaConnection
 
   """
@@ -2189,6 +2194,18 @@ type SearchCriteriaEdge {
 A search criteria or errors object
 """
 union SearchCriteriaOrErrorsUnion = Errors | SearchCriteria
+
+enum SearchCriteriaSortEnum {
+  """
+  Sort by most popular search criteria in descending order
+  """
+  COUNT_DESC
+
+  """
+  Sort by high quality priority listed first
+  """
+  HIGH_QUALITY_DESC
+}
 
 interface SecondFactor {
   createdAt: ISO8601DateTime!
