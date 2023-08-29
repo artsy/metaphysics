@@ -592,6 +592,18 @@ describe("gravity/stitching", () => {
   })
 
   describe("#Viewer", () => {
+    describe("#searchCriteriaConnection", () => {
+      it("extends the Query type with an searchCriteriaConnection field", async () => {
+        const mergedSchema = await getGravityMergedSchema()
+        const rootFields = await getFieldsForTypeFromSchema(
+          "Query",
+          mergedSchema
+        )
+
+        expect(rootFields).toContain("searchCriteriaConnection")
+      })
+    })
+
     describe("#viewingRoomsConnection in Viewer", () => {
       it("extends the Viewer type with a viewingRoomsConnection field", async () => {
         const mergedSchema = await getGravityMergedSchema()
@@ -627,6 +639,18 @@ describe("gravity/stitching", () => {
         )
 
         expect(rootFields).toContain("curatedMarketingCollections")
+      })
+    })
+
+    describe("#searchCriteriaConnection", () => {
+      it("extends the Query type with an searchCriteriaConnection field", async () => {
+        const mergedSchema = await getGravityMergedSchema()
+        const rootFields = await getFieldsForTypeFromSchema(
+          "Query",
+          mergedSchema
+        )
+
+        expect(rootFields).toContain("searchCriteriaConnection")
       })
     })
   })

@@ -161,6 +161,18 @@ export const gravityStitchingEnvironment = (
 
       extend type Query {
         curatedMarketingCollections(size: Int): [MarketingCollection]
+
+        searchCriteriaConnection(
+          first: Int,
+          last: Int,
+          before: String,
+          after: String,
+          artistID: ID,
+          highQuality: Boolean,
+          partnerID: String,
+          previewByArtist: Boolean
+          since: Int
+        ): SearchCriteriaConnection
       }
 
       extend type SearchCriteria {
@@ -209,6 +221,17 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Viewer {
+        searchCriteriaConnection(
+          first: Int,
+          last: Int,
+          before: String,
+          after: String,
+          artistID: ID,
+          highQuality: Boolean,
+          partnerID: String,
+          previewByArtist: Boolean
+          since: Int
+        ): SearchCriteriaConnection
         viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!], partnerID: ID): ViewingRoomsConnection
         marketingCollections(
           slugs: [String!]
@@ -746,6 +769,18 @@ export const gravityStitchingEnvironment = (
             }
           },
         },
+        searchCriteriaConnection: {
+          resolve: (_fragments, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_searchCriteriaConnection",
+              args,
+              context,
+              info,
+            })
+          },
+        },
       },
       SearchCriteria: {
         artistsConnection: {
@@ -1049,6 +1084,19 @@ export const gravityStitchingEnvironment = (
         },
       },
       Viewer: {
+        searchCriteriaConnection: {
+          resolve: (_fragments, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_searchCriteriaConnection",
+              args,
+              context,
+              info,
+            })
+          },
+        },
+
         viewingRoomsConnection: {
           fragment: `
           ... on Viewer {
