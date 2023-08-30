@@ -550,6 +550,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             ),
             auctionResults: {
               type: GraphQLInt,
+              deprecationReason: "Favor `statuses#auctionLots`",
               resolve: ({ _id }, _options, { auctionLotsLoader }) =>
                 auctionLotsLoader({
                   artist_id: _id,

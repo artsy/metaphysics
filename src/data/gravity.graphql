@@ -1698,6 +1698,11 @@ type Query {
     partnerID: ID
     previewByArtist: Boolean
     since: Int
+
+    """
+    Returns search criteria sorted by input (default: by high quality and count desc)
+    """
+    sort: [SearchCriteriaSortEnum!] = [HIGH_QUALITY_DESC, COUNT_DESC]
   ): SearchCriteriaConnection
 
   """
@@ -2158,16 +2163,14 @@ type SearchCriteriaConnection {
   A list of nodes.
   """
   nodes: [SearchCriteria]
+  pageCursors: PageCursors
 
   """
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
-
-  """
-  Total count of matching nodes, before pagination
-  """
-  totalCount: Int!
+  totalCount: Int
+  totalPages: Int
 }
 
 """
@@ -2189,6 +2192,18 @@ type SearchCriteriaEdge {
 A search criteria or errors object
 """
 union SearchCriteriaOrErrorsUnion = Errors | SearchCriteria
+
+enum SearchCriteriaSortEnum {
+  """
+  Sort by most popular search criteria in descending order
+  """
+  COUNT_DESC
+
+  """
+  Sort by high quality priority listed first
+  """
+  HIGH_QUALITY_DESC
+}
 
 interface SecondFactor {
   createdAt: ISO8601DateTime!
