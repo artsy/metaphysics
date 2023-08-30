@@ -49,6 +49,7 @@ commands:
             pip install awscli --upgrade
             pip install hokusai
       - hokusai/configure-hokusai
+
   yarn_install:
     steps:
       - yarn/load_dependencies
@@ -80,22 +81,21 @@ jobs:
 workflows:
   default:
     jobs:
-      # for PRs
-      - yarn/update-cache:
-          <<: *only_development
-
-      - yarn/type-check:
+      - node/test:
           <<: *not_staging_or_release
+          name: test-jest
+          pkg-manager: yarn
+          test-results-for: jest
+
+      - node/run:
+          <<: *not_staging_or_release
+          name: type-check
+          pkg-manager: yarn
+          yarn-run: type-check
 
       - ensure-schema-update:
           context: hokusai
           <<: *only_development
-
-      # pre-staging
-      - yarn/run:
-          name: test-jest
-          <<: *not_staging_or_release
-          script: "test:jest"
 
       # staging
       - hokusai/push:
