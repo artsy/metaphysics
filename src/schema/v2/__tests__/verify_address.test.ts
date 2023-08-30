@@ -17,6 +17,7 @@ describe("verifyAddressQuery", () => {
         ) {
           verifyAddressOrError {
             ... on VerifyAddressType {
+              addressVerificationId
               verificationStatus
               inputAddress {
                 address {
@@ -61,6 +62,7 @@ describe("verifyAddressQuery", () => {
     }
 
     const mockAddressVerificationResult = {
+      address_verification_id: "1234",
       verification_status: "VERIFIED_WITH_CHANGES",
       input_address: {
         input: {
@@ -119,6 +121,7 @@ describe("verifyAddressQuery", () => {
         ) {
           verifyAddressOrError {
             ... on VerifyAddressType {
+              addressVerificationId
               verificationStatus
               inputAddress {
                 address {
@@ -163,6 +166,7 @@ describe("verifyAddressQuery", () => {
     }
 
     const mockAddressVerificationResult = {
+      address_verification_id: "1234",
       verification_status: "VERIFIED_WITH_CHANGES",
       input_address: {
         address: {
@@ -237,6 +241,7 @@ describe("verifyAddressQuery", () => {
               ],
             },
           ],
+          addressVerificationId: "1234",
           verificationStatus: "VERIFIED_WITH_CHANGES",
         },
       },

@@ -19471,6 +19471,7 @@ type VerifyAddressPayload {
 }
 
 type VerifyAddressType {
+  addressVerificationId: String!
   inputAddress: InputAddressFields!
   suggestedAddresses: [SuggestedAddressFields]!
   verificationStatus: VerificationStatuses!
