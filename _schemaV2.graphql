@@ -1523,6 +1523,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
 
   # A list of genes associated with an artist
   genes: [Gene]
+  groupIndicator: ArtistGroupIndicator
   hasMetadata: Boolean
   highlights: ArtistHighlights
   hometown: String
@@ -1731,6 +1732,13 @@ type ArtistGroup {
 
   # Letter artists group belongs to
   letter: String
+}
+
+enum ArtistGroupIndicator {
+  DUO
+  GROUP
+  INDIVIDUAL
+  N_A
 }
 
 type ArtistHighlights {

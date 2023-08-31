@@ -60,6 +60,7 @@ import { ArtistTargetSupply } from "./targetSupply"
 import VerifiedRepresentatives from "./verifiedRepresentatives"
 import { AuctionResultsAggregation } from "../aggregations/filterAuctionResultsAggregation"
 import { parsePriceRangeValues } from "lib/moneyHelper"
+import { GraphQLEnumType } from "graphql"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -687,6 +688,18 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       gender: { type: GraphQLString },
+      groupIndicator: {
+        type: new GraphQLEnumType({
+          name: "ArtistGroupIndicator",
+          values: {
+            INDIVIDUAL: { value: "individual" },
+            DUO: { value: "duo" },
+            GROUP: { value: "group" },
+            N_A: { value: "n/a" },
+          },
+        }),
+        resolve: ({ group_indicator }) => group_indicator,
+      },
       hasMetadata: {
         type: GraphQLBoolean,
         resolve: ({ blurb, nationality, years, hometown, location }) => {
