@@ -8,6 +8,7 @@ describe("requestLocation", () => {
         {
           requestLocation {
             id
+            city
             country
             countryCode
             coordinates {
@@ -31,6 +32,7 @@ describe("requestLocation", () => {
 
       expect(requestLocation).toMatchInlineSnapshot(`
         Object {
+          "city": "Frankfurt",
           "coordinates": Object {
             "lat": 50.11207962036133,
             "lng": 8.683409690856934,
@@ -49,6 +51,7 @@ describe("requestLocation", () => {
         {
           requestLocation(ip: "param-ip") {
             id
+            city
             country
             countryCode
             coordinates {
@@ -72,6 +75,7 @@ describe("requestLocation", () => {
 
       expect(requestLocation).toMatchInlineSnapshot(`
         Object {
+          "city": "Frankfurt",
           "coordinates": Object {
             "lat": 50.11207962036133,
             "lng": 8.683409690856934,
