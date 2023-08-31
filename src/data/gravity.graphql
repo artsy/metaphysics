@@ -1696,7 +1696,6 @@ type Query {
     """
     last: Int
     partnerID: ID
-    previewByArtist: Boolean
     since: SearchCriteriaSinceEnum
 
     """
