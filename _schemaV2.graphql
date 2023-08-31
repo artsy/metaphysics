@@ -2014,11 +2014,13 @@ type ArtistTargetSupply {
   isInMicrofunnel: Boolean
 
   # True if an artist is a P1 artist.
-  isP1: Boolean
+  isP1: Boolean @deprecated(reason: "Use \"priority\" field instead.")
 
   # True if artist is in target supply list.
   isTargetSupply: Boolean
   microfunnel: ArtistTargetSupplyMicrofunnel
+  priority: ArtistTargetSupplyPriorityEnum
+  type: ArtistTargetSupplyTypeEnum
 }
 
 type ArtistTargetSupplyMicrofunnel {
@@ -2033,6 +2035,20 @@ type ArtistTargetSupplyMicrofunnel {
     randomize: Boolean
   ): ArtworkConnection
   metadata: TargetSupplyMicrofunnelMetadata
+}
+
+enum ArtistTargetSupplyPriorityEnum {
+  P1
+  P2
+}
+
+enum ArtistTargetSupplyTypeEnum {
+  BLUE_CHIP
+  CRITICALLY_ACCLAIMED
+  NEW_AND_NOTEWORTHY
+  STREET_AND_URBAN
+  TRENDING_EMERGING
+  ULTRA_HIGH_DEMAND
 }
 
 type Artwork implements Node & Searchable & Sellable {

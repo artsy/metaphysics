@@ -1,18 +1,52 @@
-import { GraphQLBoolean, GraphQLFieldConfig, GraphQLObjectType } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLEnumType,
+  GraphQLFieldConfig,
+  GraphQLObjectType,
+} from "graphql"
 import { getRecentlySoldArtworksConnection } from "schema/v2/types/targetSupply/recentlySoldArtworksConnection"
 import { TargetSupplyMicrofunnelMetadata } from "schema/v2/types/targetSupply/targetSupplyMicrofunnelMetadata"
 import { ResolverContext } from "types/graphql"
 import { getArtistMicrofunnelMetadata } from "./utils/getMicrofunnelData"
 
+export const ArtistTargetSupplyPriorityEnum = new GraphQLEnumType({
+  name: "ArtistTargetSupplyPriorityEnum",
+  values: {
+    P1: { value: 1 },
+    P2: { value: 2 },
+  },
+})
+
+export const ArtistTargetSupplyTypeEnum = new GraphQLEnumType({
+  name: "ArtistTargetSupplyTypeEnum",
+  values: {
+    BLUE_CHIP: { value: "Blue-Chip" },
+    CRITICALLY_ACCLAIMED: { value: "Critically-Acclaimed" },
+    NEW_AND_NOTEWORTHY: { value: "New & Noteworthy" },
+    STREET_AND_URBAN: { value: "Street & Urban" },
+    TRENDING_EMERGING: { value: "Trending Emerging" },
+    ULTRA_HIGH_DEMAND: { value: "Ultra High Demand" },
+  },
+})
+
 const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistTargetSupply",
   fields: {
+    priority: {
+      type: ArtistTargetSupplyPriorityEnum,
+      resolve: (artist) => artist.target_supply_priority,
+    },
+    type: {
+      type: ArtistTargetSupplyTypeEnum,
+      resolve: (artist) => artist.target_supply_type,
+    },
     isTargetSupply: {
       description: "True if artist is in target supply list.",
       type: GraphQLBoolean,
       resolve: (artist) => artist.target_supply,
     },
     isP1: {
+      deprecationReason: 'Use "priority" field instead.',
       description: "True if an artist is a P1 artist.",
       type: GraphQLBoolean,
       resolve: (artist) => artist.target_supply_priority === 1,
