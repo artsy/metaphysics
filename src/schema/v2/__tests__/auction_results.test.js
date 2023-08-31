@@ -62,6 +62,14 @@ const lotsBySaleYearResponse = {
   },
 }
 
+const lotsByCreatedYearResponse = {
+  lots_by_created_year: {
+    1900: { name: "1900", count: 5 },
+    2022: { name: "2022", count: 10 },
+    2023: { name: "2022", count: 15 },
+  },
+}
+
 describe("Artist type", () => {
   beforeEach(() => {
     context.auctionLotsLoader = jest
@@ -285,6 +293,41 @@ describe("Artist type", () => {
         expect(aggregations).toHaveLength(1)
         expect(aggregations[0].slice).toEqual("LOTS_BY_SALE_YEAR")
         expect(aggregations[0].counts).toHaveLength(2)
+      }
+    )
+  })
+
+  it("returns aggregated lots by created year response", () => {
+    context.auctionResultFilterLoader = jest
+      .fn()
+      .mockReturnValueOnce(Promise.resolve(lotsByCreatedYearResponse))
+
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResultsConnection(aggregations: [LOTS_BY_CREATED_YEAR]) {
+            aggregations {
+              slice
+              counts {
+                name
+                value
+                count
+              }
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(
+      ({
+        artist: {
+          auctionResultsConnection: { aggregations },
+        },
+      }) => {
+        expect(aggregations).toHaveLength(1)
+        expect(aggregations[0].slice).toEqual("LOTS_BY_CREATED_YEAR")
+        expect(aggregations[0].counts).toHaveLength(3)
       }
     )
   })

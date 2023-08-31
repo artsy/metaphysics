@@ -15,6 +15,9 @@ export const AuctionResultsAggregation = new GraphQLEnumType({
     LOTS_BY_SALE_YEAR: {
       value: "lots_by_sale_year",
     },
+    LOTS_BY_CREATED_YEAR: {
+      value: "lots_by_created_year",
+    },
   },
 })
 
