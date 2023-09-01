@@ -27,6 +27,7 @@ export const RequestLocationType = new GraphQLObjectType<any, ResolverContext>({
     cached,
     id: { type: new GraphQLNonNull(GraphQLID) },
     country: { type: GraphQLString },
+    city: { type: GraphQLString },
     countryCode: { type: GraphQLString },
     coordinates: {
       type: LatLngType,
@@ -62,6 +63,7 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
       }
 
       const { alpha2: countryCode, name: country } = data.location.country
+      const { name: city } = data.location.city
       const { latitude: lat, longitude: lng } = data.location
 
       return {
@@ -69,6 +71,7 @@ export const RequestLocationField: GraphQLFieldConfig<void, ResolverContext> = {
         country,
         countryCode,
         cached,
+        city,
         coordinates: { lat, lng },
       }
     } catch (error) {
