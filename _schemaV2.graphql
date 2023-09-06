@@ -1626,7 +1626,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   # Use this attribute to sort by when sorting a collection of Artists
   sortableID: String
   statuses: ArtistStatuses
-  targetSupply: ArtistTargetSupply
+  targetSupply: ArtistTargetSupply!
   vanguardYear: String
   verifiedRepresentatives: [VerifiedRepresentative!]!
   years: String

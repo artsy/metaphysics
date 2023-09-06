@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLNonNull,
   GraphQLObjectType,
 } from "graphql"
 import { getRecentlySoldArtworksConnection } from "schema/v2/types/targetSupply/recentlySoldArtworksConnection"
@@ -91,6 +92,6 @@ const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 export const ArtistTargetSupply: GraphQLFieldConfig<void, ResolverContext> = {
-  type: ArtistTargetSupplyType,
+  type: new GraphQLNonNull(ArtistTargetSupplyType),
   resolve: (artist) => artist,
 }
