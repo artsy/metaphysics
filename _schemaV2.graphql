@@ -17985,12 +17985,15 @@ input UpdateArtistMutationInput {
   displayName: String
   first: String
   gender: String
+  groupIndicator: ArtistGroupIndicator
   hometown: String
   id: String!
   last: String
   location: String
   middle: String
   nationality: String
+  targetSupplyPriority: ArtistTargetSupplyPriorityEnum
+  targetSupplyType: ArtistTargetSupplyTypeEnum
 }
 
 type UpdateArtistMutationPayload {

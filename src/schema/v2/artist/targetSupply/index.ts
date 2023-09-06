@@ -9,24 +9,32 @@ import { TargetSupplyMicrofunnelMetadata } from "schema/v2/types/targetSupply/ta
 import { ResolverContext } from "types/graphql"
 import { getArtistMicrofunnelMetadata } from "./utils/getMicrofunnelData"
 
+const ARTIST_TARGET_SUPPLY_PRIORITIES = {
+  P1: { value: 1 },
+  P2: { value: 2 },
+} as const
+
+export type ArtistTargetSupplyPriority = typeof ARTIST_TARGET_SUPPLY_PRIORITIES[keyof typeof ARTIST_TARGET_SUPPLY_PRIORITIES]["value"]
+
 export const ArtistTargetSupplyPriorityEnum = new GraphQLEnumType({
   name: "ArtistTargetSupplyPriorityEnum",
-  values: {
-    P1: { value: 1 },
-    P2: { value: 2 },
-  },
+  values: ARTIST_TARGET_SUPPLY_PRIORITIES,
 })
+
+const ARTIST_TARGET_SUPPLY_TYPES = {
+  BLUE_CHIP: { value: "Blue-Chip" },
+  CRITICALLY_ACCLAIMED: { value: "Critically-Acclaimed" },
+  NEW_AND_NOTEWORTHY: { value: "New & Noteworthy" },
+  STREET_AND_URBAN: { value: "Street & Urban" },
+  TRENDING_EMERGING: { value: "Trending Emerging" },
+  ULTRA_HIGH_DEMAND: { value: "Ultra High Demand" },
+} as const
+
+export type ArtistTargetSupplyType = typeof ARTIST_TARGET_SUPPLY_TYPES[keyof typeof ARTIST_TARGET_SUPPLY_TYPES]["value"]
 
 export const ArtistTargetSupplyTypeEnum = new GraphQLEnumType({
   name: "ArtistTargetSupplyTypeEnum",
-  values: {
-    BLUE_CHIP: { value: "Blue-Chip" },
-    CRITICALLY_ACCLAIMED: { value: "Critically-Acclaimed" },
-    NEW_AND_NOTEWORTHY: { value: "New & Noteworthy" },
-    STREET_AND_URBAN: { value: "Street & Urban" },
-    TRENDING_EMERGING: { value: "Trending Emerging" },
-    ULTRA_HIGH_DEMAND: { value: "Ultra High Demand" },
-  },
+  values: ARTIST_TARGET_SUPPLY_TYPES,
 })
 
 const ArtistTargetSupplyType = new GraphQLObjectType<any, ResolverContext>({
