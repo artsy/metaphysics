@@ -54,7 +54,7 @@ const VerifyAddressType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     addressVerificationId: {
       type: GraphQLNonNull(GraphQLString),
-      resolve: (result) => result.address_verification_id,
+      resolve: (result) => result.id,
     },
     verificationStatus: {
       type: new GraphQLNonNull(

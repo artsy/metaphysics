@@ -62,7 +62,7 @@ describe("verifyAddressQuery", () => {
     }
 
     const mockAddressVerificationResult = {
-      address_verification_id: "1234",
+      id: "1234",
       verification_status: "VERIFIED_WITH_CHANGES",
       input_address: {
         input: {
@@ -166,7 +166,7 @@ describe("verifyAddressQuery", () => {
     }
 
     const mockAddressVerificationResult = {
-      address_verification_id: "1234",
+      id: "1234",
       verification_status: "VERIFIED_WITH_CHANGES",
       input_address: {
         address: {
