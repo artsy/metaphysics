@@ -18,7 +18,7 @@ const ARTIST_TARGET_SUPPLY_PRIORITIES = {
 export type ArtistTargetSupplyPriority = typeof ARTIST_TARGET_SUPPLY_PRIORITIES[keyof typeof ARTIST_TARGET_SUPPLY_PRIORITIES]["value"]
 
 export const ArtistTargetSupplyPriorityEnum = new GraphQLEnumType({
-  name: "ArtistTargetSupplyPriorityEnum",
+  name: "ArtistTargetSupplyPriority",
   values: ARTIST_TARGET_SUPPLY_PRIORITIES,
 })
 
@@ -34,7 +34,7 @@ const ARTIST_TARGET_SUPPLY_TYPES = {
 export type ArtistTargetSupplyType = typeof ARTIST_TARGET_SUPPLY_TYPES[keyof typeof ARTIST_TARGET_SUPPLY_TYPES]["value"]
 
 export const ArtistTargetSupplyTypeEnum = new GraphQLEnumType({
-  name: "ArtistTargetSupplyTypeEnum",
+  name: "ArtistTargetSupplyType",
   values: ARTIST_TARGET_SUPPLY_TYPES,
 })
 

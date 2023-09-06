@@ -2027,8 +2027,8 @@ type ArtistTargetSupply {
   # True if artist is in target supply list.
   isTargetSupply: Boolean
   microfunnel: ArtistTargetSupplyMicrofunnel
-  priority: ArtistTargetSupplyPriorityEnum
-  type: ArtistTargetSupplyTypeEnum
+  priority: ArtistTargetSupplyPriority
+  type: ArtistTargetSupplyType
 }
 
 type ArtistTargetSupplyMicrofunnel {
@@ -2045,12 +2045,12 @@ type ArtistTargetSupplyMicrofunnel {
   metadata: TargetSupplyMicrofunnelMetadata
 }
 
-enum ArtistTargetSupplyPriorityEnum {
+enum ArtistTargetSupplyPriority {
   P1
   P2
 }
 
-enum ArtistTargetSupplyTypeEnum {
+enum ArtistTargetSupplyType {
   BLUE_CHIP
   CRITICALLY_ACCLAIMED
   NEW_AND_NOTEWORTHY
@@ -17992,8 +17992,8 @@ input UpdateArtistMutationInput {
   location: String
   middle: String
   nationality: String
-  targetSupplyPriority: ArtistTargetSupplyPriorityEnum
-  targetSupplyType: ArtistTargetSupplyTypeEnum
+  targetSupplyPriority: ArtistTargetSupplyPriority
+  targetSupplyType: ArtistTargetSupplyType
 }
 
 type UpdateArtistMutationPayload {
