@@ -377,6 +377,9 @@ const mockComparableAuctionResults = {
     ],
   },
 }
+const mockEmptyComparableAuctionResults = {
+  error: "Lot not comparable",
+}
 
 describe("Comparable Auction Results", () => {
   it("fetches comparable auction results", () => {
@@ -438,6 +441,42 @@ describe("Comparable Auction Results", () => {
           },
         ],
       })
+    })
+  })
+
+  it("fetches not comparable auction results", () => {
+    const query = `
+    {
+      auctionResult(id: "foo-bar") {
+        saleDateText
+        saleTitle
+        comparableAuctionResults(first:25) {
+          totalCount
+          edges {
+            node {
+              saleDateText
+              currency
+              images {
+                thumbnail {
+                  imageURL
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    `
+
+    const context = {
+      auctionLotLoader: jest.fn(() => Promise.resolve(mockAuctionResult)),
+      auctionResultComparableAuctionResultsLoader: jest.fn(() =>
+        Promise.resolve(mockEmptyComparableAuctionResults)
+      ),
+    }
+
+    return runQuery(query, context!).then((data) => {
+      expect(data.auctionResult.comparableAuctionResults).toEqual(null)
     })
   })
 })
