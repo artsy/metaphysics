@@ -13,6 +13,16 @@ import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
+import {
+  ArtistTargetSupplyPriorityEnum,
+  ArtistTargetSupplyPriority,
+  ArtistTargetSupplyType,
+  ArtistTargetSupplyTypeEnum,
+} from "./targetSupply/index"
+import {
+  ArtistGroupIndicator,
+  ArtistGroupIndicatorEnum,
+} from "schema/v2/artist/groupIndicator"
 
 interface Input {
   alternateNames: string[]
@@ -22,12 +32,15 @@ interface Input {
   displayName?: string
   first?: string
   gender?: string
+  groupIndicator?: ArtistGroupIndicator
   hometown?: string
   id: string
   last?: string
   location?: string
   middle?: string
   nationality?: string
+  targetSupplyPriority?: ArtistTargetSupplyPriority
+  targetSupplyType?: ArtistTargetSupplyType
 }
 
 const inputFields = {
@@ -38,12 +51,15 @@ const inputFields = {
   displayName: { type: GraphQLString },
   first: { type: GraphQLString },
   gender: { type: GraphQLString },
+  groupIndicator: { type: ArtistGroupIndicatorEnum },
   hometown: { type: GraphQLString },
   id: { type: new GraphQLNonNull(GraphQLString) },
   last: { type: GraphQLString },
   location: { type: GraphQLString },
   middle: { type: GraphQLString },
   nationality: { type: GraphQLString },
+  targetSupplyPriority: { type: ArtistTargetSupplyPriorityEnum },
+  targetSupplyType: { type: ArtistTargetSupplyTypeEnum },
 }
 
 interface GravityInput {
@@ -54,12 +70,15 @@ interface GravityInput {
   display_name?: string
   first?: string
   gender?: string
+  group_indicator?: string
   hometown?: string
   id: string
   last?: string
   location?: string
   middle?: string
   nationality?: string
+  target_supply_priority?: string
+  target_supply_type?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
