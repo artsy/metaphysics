@@ -144,10 +144,18 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
           options
         )
 
+        const response = await auctionResultComparableAuctionResultsLoader(
+          parent.id
+        )
+
+        if (response.error) {
+          return null
+        }
+
         const {
           _embedded: { items },
           total_count,
-        } = await auctionResultComparableAuctionResultsLoader(parent.id)
+        } = response
 
         return merge(
           {
