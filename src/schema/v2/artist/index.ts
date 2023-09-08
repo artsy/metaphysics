@@ -60,6 +60,7 @@ import { ArtistTargetSupply } from "./targetSupply"
 import VerifiedRepresentatives from "./verifiedRepresentatives"
 import { AuctionResultsAggregation } from "../aggregations/filterAuctionResultsAggregation"
 import { parsePriceRangeValues } from "lib/moneyHelper"
+import { ArtistGroupIndicatorEnum } from "schema/v2/artist/groupIndicator"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -687,6 +688,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       gender: { type: GraphQLString },
+      groupIndicator: {
+        type: ArtistGroupIndicatorEnum,
+        resolve: ({ group_indicator }) => group_indicator,
+      },
       hasMetadata: {
         type: GraphQLBoolean,
         resolve: ({ blurb, nationality, years, hometown, location }) => {
@@ -736,7 +741,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         description: "Whether the artist has been created by a user.",
         resolve: ({ is_personal_artist }) => is_personal_artist,
       },
-      isPublic: { type: GraphQLBoolean, resolve: (artist) => artist.public },
+      isPublic: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: (artist) => !!artist.public,
+      },
       isShareable: {
         type: GraphQLBoolean,
         resolve: (artist) => artist.published_artworks_count > 0,
