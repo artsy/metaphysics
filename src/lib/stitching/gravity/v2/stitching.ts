@@ -11,6 +11,8 @@ import { printType } from "lib/stitching/lib/printType"
 import { dateRange } from "lib/date"
 import { resolveSearchCriteriaLabels } from "schema/v2/searchCriteriaLabel"
 import { generateDisplayName } from "schema/v2/previewSavedSearch"
+import { amount, amountSDL } from "schema/v2/fields/money"
+import { isNumber } from "lodash"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -185,6 +187,8 @@ export const gravityStitchingEnvironment = (
         ): ArtistConnection
         displayName: String!
         labels: [SearchCriteriaLabel!]!
+        ${amountSDL("lowPriceAmount")}
+        ${amountSDL("highPriceAmount")}
       }
 
       extend type Show {
@@ -852,6 +856,42 @@ export const gravityStitchingEnvironment = (
           description:
             "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
         },
+        lowPriceAmount: {
+          fragment: gql`
+            ... on SearchCriteria {
+              priceArray
+            }
+          `,
+          resolve: (parent, args) => {
+            if (!isNumber(parent.priceArray?.[0])) {
+              return "*"
+            }
+
+            const formattedAmount = formatSearchCriteriaAmount(
+              parent.priceArray[0] * 100,
+              args
+            )
+            return formattedAmount
+          },
+        },
+        highPriceAmount: {
+          fragment: gql`
+            ... on SearchCriteria {
+              priceArray
+            }
+          `,
+          resolve: (parent, args) => {
+            if (!isNumber(parent.priceArray?.[1])) {
+              return "*"
+            }
+
+            const formattedAmount = formatSearchCriteriaAmount(
+              parent.priceArray[1] * 100,
+              args
+            )
+            return formattedAmount
+          },
+        },
       },
       Show: {
         viewingRoomsConnection: {
@@ -1203,4 +1243,14 @@ export const gravityStitchingEnvironment = (
       },
     },
   }
+}
+
+export const formatSearchCriteriaAmount = (amountInCents: number, args) => {
+  const formattedAmount = amount((_) => amountInCents).resolve(
+    {
+      currencyCode: "usd",
+    },
+    args
+  )
+  return formattedAmount
 }
