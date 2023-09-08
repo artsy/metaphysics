@@ -741,7 +741,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         description: "Whether the artist has been created by a user.",
         resolve: ({ is_personal_artist }) => is_personal_artist,
       },
-      isPublic: { type: GraphQLBoolean, resolve: (artist) => artist.public },
+      isPublic: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: (artist) => !!artist.public,
+      },
       isShareable: {
         type: GraphQLBoolean,
         resolve: (artist) => artist.published_artworks_count > 0,

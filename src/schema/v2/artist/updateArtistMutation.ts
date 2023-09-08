@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -27,6 +28,7 @@ import {
 interface Input {
   alternateNames: string[]
   birthday?: string
+  blurb?: string
   coverArtworkId?: string
   deathday?: string
   displayName?: string
@@ -39,6 +41,7 @@ interface Input {
   location?: string
   middle?: string
   nationality?: string
+  public?: boolean
   targetSupplyPriority?: ArtistTargetSupplyPriority
   targetSupplyType?: ArtistTargetSupplyType
 }
@@ -46,6 +49,7 @@ interface Input {
 const inputFields = {
   alternateNames: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
   birthday: { type: GraphQLString },
+  blurb: { type: GraphQLString },
   coverArtworkId: { type: GraphQLString },
   deathday: { type: GraphQLString },
   displayName: { type: GraphQLString },
@@ -58,6 +62,7 @@ const inputFields = {
   location: { type: GraphQLString },
   middle: { type: GraphQLString },
   nationality: { type: GraphQLString },
+  public: { type: GraphQLBoolean },
   targetSupplyPriority: { type: ArtistTargetSupplyPriorityEnum },
   targetSupplyType: { type: ArtistTargetSupplyTypeEnum },
 }
@@ -65,6 +70,7 @@ const inputFields = {
 interface GravityInput {
   alternate_names: string[]
   birthday?: string
+  blurb?: string
   cover_artwork_id?: string
   deathday?: string
   display_name?: string
@@ -77,6 +83,7 @@ interface GravityInput {
   location?: string
   middle?: string
   nationality?: string
+  public?: boolean
   target_supply_priority?: string
   target_supply_type?: string
 }
