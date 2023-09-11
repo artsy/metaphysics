@@ -1070,40 +1070,102 @@ describe("gravity/stitching", () => {
   })
 
   describe("SearchCriteria", () => {
-    it("extends the SearchCriteria type with an artistsConnection field", async () => {
-      const mergedSchema = await getGravityMergedSchema()
-      const searchCriteriaFields = await getFieldsForTypeFromSchema(
-        "SearchCriteria",
-        mergedSchema
-      )
-      expect(searchCriteriaFields).toContain("artistsConnection")
+    describe("#artistsConnection", () => {
+      it("extends the SearchCriteria type with an artistsConnection field", async () => {
+        const mergedSchema = await getGravityMergedSchema()
+        const searchCriteriaFields = await getFieldsForTypeFromSchema(
+          "SearchCriteria",
+          mergedSchema
+        )
+        expect(searchCriteriaFields).toContain("artistsConnection")
+      })
+
+      it("resolves the artistsConnection field", async () => {
+        const { resolvers } = await getGravityStitchedSchema()
+        const { artistsConnection } = resolvers.SearchCriteria
+        const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+        artistsConnection.resolve(
+          { artistIDs: ["abc123", "foo"] },
+          { first: 2 },
+          {},
+          info
+        )
+
+        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+          expect.objectContaining({
+            args: {
+              ids: ["abc123", "foo"],
+              first: 2,
+            },
+            operation: "query",
+            fieldName: "artistsConnection",
+            schema: expect.anything(),
+            context: expect.anything(),
+            info: expect.anything(),
+          })
+        )
+      })
     })
 
-    it("resolves the artistsConnection field", async () => {
-      const { resolvers } = await getGravityStitchedSchema()
-      const { artistsConnection } = resolvers.SearchCriteria
-      const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+    describe("#lowPriceAmount", () => {
+      it("extends the SearchCriteria type with a lowPriceAmount field", async () => {
+        const mergedSchema = await getGravityMergedSchema()
+        const searchCriteriaFields = await getFieldsForTypeFromSchema(
+          "SearchCriteria",
+          mergedSchema
+        )
+        expect(searchCriteriaFields).toContain("lowPriceAmount")
+      })
 
-      artistsConnection.resolve(
-        { artistIDs: ["abc123", "foo"] },
-        { first: 2 },
-        {},
-        info
-      )
+      it("resolves the lowPriceAmount field", async () => {
+        const { resolvers } = await getGravityStitchedSchema()
+        const { lowPriceAmount } = resolvers.SearchCriteria
 
-      expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
-        expect.objectContaining({
-          args: {
-            ids: ["abc123", "foo"],
-            first: 2,
-          },
-          operation: "query",
-          fieldName: "artistsConnection",
-          schema: expect.anything(),
-          context: expect.anything(),
-          info: expect.anything(),
-        })
-      )
+        let formattedAmount = lowPriceAmount.resolve(
+          { priceArray: [1000, 10000] },
+          {}
+        )
+
+        expect(formattedAmount).toEqual("$1,000.00")
+
+        formattedAmount = lowPriceAmount.resolve(
+          { priceArray: [null, 10000] },
+          {}
+        )
+
+        expect(formattedAmount).toEqual("*")
+      })
+    })
+
+    describe("#highPriceAmount", () => {
+      it("extends the SearchCriteria type with a highPriceAmount field", async () => {
+        const mergedSchema = await getGravityMergedSchema()
+        const searchCriteriaFields = await getFieldsForTypeFromSchema(
+          "SearchCriteria",
+          mergedSchema
+        )
+        expect(searchCriteriaFields).toContain("highPriceAmount")
+      })
+
+      it("resolves the highPriceAmount field", async () => {
+        const { resolvers } = await getGravityStitchedSchema()
+        const { highPriceAmount } = resolvers.SearchCriteria
+
+        let formattedAmount = highPriceAmount.resolve(
+          { priceArray: [1000, 10000] },
+          {}
+        )
+
+        expect(formattedAmount).toEqual("$10,000.00")
+
+        formattedAmount = highPriceAmount.resolve(
+          { priceArray: [1000, null] },
+          {}
+        )
+
+        expect(formattedAmount).toEqual("*")
+      })
     })
   })
 

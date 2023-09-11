@@ -2109,7 +2109,7 @@ type SearchCriteria {
   materialsTerms: [String!]!
   offerable: Boolean
   partnerIDs: [String!]!
-  priceArray: [Float!]!
+  priceArray: [Float]
   priceRange: String
   sizes: [String!]!
 
