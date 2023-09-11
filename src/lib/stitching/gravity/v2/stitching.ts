@@ -154,7 +154,7 @@ export const gravityStitchingEnvironment = (
           artistID: ID,
           highQuality: Boolean,
           partnerID: String,
-          since: Int
+          since: SearchCriteriaSinceEnum
         ): SearchCriteriaConnection
 
         viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
@@ -171,7 +171,7 @@ export const gravityStitchingEnvironment = (
           artistID: ID,
           highQuality: Boolean,
           partnerID: String,
-          since: Int
+          since: SearchCriteriaSinceEnum
         ): SearchCriteriaConnection
       }
 
@@ -231,7 +231,7 @@ export const gravityStitchingEnvironment = (
           artistID: ID,
           highQuality: Boolean,
           partnerID: String,
-          since: Int
+          since: SearchCriteriaSinceEnum
         ): SearchCriteriaConnection
         viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!], partnerID: ID): ViewingRoomsConnection
         marketingCollections(
