@@ -8,7 +8,7 @@ import {
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
-const allowList = [
+const rootFieldsAllowList = [
   "agreement",
   "artistSeries",
   "artistSeriesConnection",
@@ -84,7 +84,7 @@ export const executableGravitySchema = () => {
     // We have the same restrictions for root, so let's prefix
     // for now
     new RenameRootFields((type, name, _field) => {
-      if (type === "Query" && !allowList.includes(name)) {
+      if (type === "Query" && !rootFieldsAllowList.includes(name)) {
         return `_unused_gravity_${name}`
       } else {
         return name

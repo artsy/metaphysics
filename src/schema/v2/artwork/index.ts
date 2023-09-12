@@ -90,6 +90,7 @@ import {
 } from "./utilities"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { error } from "lib/loggers"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -378,35 +379,40 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           sort: { type: CollectionSorts },
         }),
         resolve: async (parent, args, context, _info) => {
-          const { id: artwork_id } = parent
-          const { collectionsLoader, userID } = context
-          if (!collectionsLoader) return null
+          try {
+            const { id: artwork_id } = parent
+            const { collectionsLoader, userID } = context
+            if (!collectionsLoader) return null
 
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            args
-          )
+            const { page, size, offset } = convertConnectionArgsToGravityArgs(
+              args
+            )
 
-          const { body, headers } = await collectionsLoader({
-            artwork_id,
-            user_id: userID,
-            private: true,
-            default: args.default,
-            saves: args.saves,
-            sort: args.sort,
-            size,
-            offset,
-            total_count: true,
-          })
-          const totalCount = parseInt(headers?.["x-total-count"] || "0", 10)
+            const { body, headers } = await collectionsLoader({
+              artwork_id,
+              user_id: userID,
+              private: true,
+              default: args.default,
+              saves: args.saves,
+              sort: args.sort,
+              size,
+              offset,
+              total_count: true,
+            })
+            const totalCount = parseInt(headers?.["x-total-count"] || "0", 10)
 
-          return paginationResolver({
-            totalCount,
-            offset,
-            page,
-            size,
-            body,
-            args,
-          })
+            return paginationResolver({
+              totalCount,
+              offset,
+              page,
+              size,
+              body,
+              args,
+            })
+          } catch (e) {
+            error(e)
+            return null
+          }
         },
       },
       collectingInstitution: {
@@ -941,6 +947,55 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ _id }, {}, { savedArtworkLoader }) => {
           if (!savedArtworkLoader) return false
           return savedArtworkLoader(_id).then(({ is_saved }) => is_saved)
+        },
+      },
+      isSavedToList: {
+        description: "Checks if artwork is saved to user's lists",
+        args: {
+          default: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+          },
+          saves: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+          },
+        },
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: async (
+          { _id },
+          args,
+          { savedArtworkLoader, collectionsLoader, userID }
+        ) => {
+          try {
+            const { default: isDefault, saves } = args
+
+            // For the default saved artworks list, we can use a different loader
+            // that is more performant.
+            if (isDefault && saves) {
+              if (!savedArtworkLoader) return false
+
+              const { is_saved: isSaved } = await savedArtworkLoader(_id)
+              return isSaved
+            }
+
+            if (!collectionsLoader || !userID) return false
+            const { headers } = await collectionsLoader({
+              artwork_id: _id,
+              user_id: userID,
+              private: true,
+              size: 0,
+              total_count: true,
+              default: isDefault,
+              saves,
+            })
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+            return totalCount > 0
+          } catch (e) {
+            error(e)
+            return false
+          }
         },
       },
       isDisliked: {
