@@ -943,6 +943,50 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return savedArtworkLoader(_id).then(({ is_saved }) => is_saved)
         },
       },
+      isSavedToList: {
+        description: "Checks if artwork is saved to user's lists",
+        args: {
+          default: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+          },
+          saves: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+          },
+        },
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: async (
+          { _id },
+          args,
+          { savedArtworkLoader, collectionsLoader, userID }
+        ) => {
+          const { default: isDefault, saves } = args
+
+          // For the default saved artworks list, we can use a different loader
+          // that is more performant.
+          if (isDefault && saves) {
+            if (!savedArtworkLoader) return false
+
+            const { is_saved: isSaved } = await savedArtworkLoader(_id)
+            return isSaved
+          }
+
+          if (!collectionsLoader || !userID) return null
+          const { headers } = await collectionsLoader({
+            artwork_id: _id,
+            user_id: userID,
+            private: true,
+            size: 0,
+            total_count: true,
+            default: isDefault,
+            saves,
+          })
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return totalCount > 0
+        },
+      },
       isDisliked: {
         type: new GraphQLNonNull(GraphQLBoolean),
         resolve: ({ _id }, {}, { dislikedArtworkLoader }) => {
