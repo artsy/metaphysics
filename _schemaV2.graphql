@@ -14206,7 +14206,7 @@ type PreviewSavedSearch {
   # A suggestion for a name that describes a set of saved search criteria in a conventional format
   displayName: String!
 
-  # The URL for the user to view the search results
+  # URL for a user to view the artwork grid with applied filters matching saved search criteria attributes
   href: String
 
   # Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity

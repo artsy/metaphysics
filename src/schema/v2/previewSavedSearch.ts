@@ -86,7 +86,8 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
     },
     href: {
       type: GraphQLString,
-      description: "The URL for the user to view the search results",
+      description:
+        "URL for a user to view the artwork grid with applied filters matching saved search criteria attributes",
       resolve: resolveHref,
     },
   }),
