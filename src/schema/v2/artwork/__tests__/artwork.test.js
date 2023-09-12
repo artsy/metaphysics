@@ -1274,6 +1274,20 @@ describe("Artwork type", () => {
         },
       })
     })
+
+    it("returns null if the fetch returned an error (artwork unpublished)", async () => {
+      context.collectionsLoader = jest.fn(() => {
+        throw new Error("Artwork Not Published")
+      })
+
+      const response = await runAuthenticatedQuery(query, context)
+
+      expect(response).toEqual({
+        artwork: {
+          collectionsConnection: null,
+        },
+      })
+    })
   })
 
   describe("#consignmentSubmission", () => {
@@ -1695,9 +1709,6 @@ describe("Artwork type", () => {
     }
 
     beforeEach(() => {
-      context.collectionsLoader = jest.fn(() =>
-        Promise.resolve(collectionsMock)
-      )
       context.artworkLoader = jest.fn(() =>
         Promise.resolve({ _id: "catty-artwork-id" })
       )
@@ -1705,6 +1716,10 @@ describe("Artwork type", () => {
     })
 
     it("passes the correct args and resolves properly", async () => {
+      context.collectionsLoader = jest.fn(() =>
+        Promise.resolve(collectionsMock)
+      )
+
       const response = await runAuthenticatedQuery(query, context)
 
       expect(context.collectionsLoader).toHaveBeenCalledWith({
@@ -1720,6 +1735,20 @@ describe("Artwork type", () => {
       expect(response).toEqual({
         artwork: {
           isSavedToList: true,
+        },
+      })
+    })
+
+    it("returns false if the fetch returned an error (artwork unpublished)", async () => {
+      context.collectionsLoader = jest.fn(() => {
+        throw new Error("Artwork Not Published")
+      })
+
+      const response = await runAuthenticatedQuery(query, context)
+
+      expect(response).toEqual({
+        artwork: {
+          isSavedToList: false,
         },
       })
     })
