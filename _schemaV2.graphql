@@ -11976,6 +11976,9 @@ type Me implements Node {
   savedSearch(criteria: SearchCriteriaAttributes, id: ID): SearchCriteria
   savedSearchesConnection(
     after: String
+
+    # Returns saved searches associated with the provided artist IDs
+    artistIDs: [ID!]
     before: String
     first: Int
     last: Int
@@ -14617,6 +14620,9 @@ type Query {
   _unused_gravity_savedSearchesConnection(
     # Returns the elements in the list that come after the specified cursor.
     after: String
+
+    # Returns saved searches associated with the provided artist IDs
+    artistIDs: [ID!]
 
     # Returns the elements in the list that come before the specified cursor.
     before: String
