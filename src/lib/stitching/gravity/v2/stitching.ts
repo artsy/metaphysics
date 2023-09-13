@@ -139,6 +139,10 @@ export const gravityStitchingEnvironment = (
           Returns saved searches associated with the provided artist IDs
           """
           artistIDs: [ID!]
+          """
+          Returns saved searches associated with the provided artist slugs
+          """
+          artistSlugs: [ID!]
         ): SearchCriteriaConnection
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
         addressConnection(
