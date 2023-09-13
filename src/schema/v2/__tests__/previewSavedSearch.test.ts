@@ -277,4 +277,63 @@ describe("previewSavedSearch", () => {
       })
     })
   })
+
+  describe("href", () => {
+    describe("when no artistIDs are present", () => {
+      it("returns null", async () => {
+        const query = gql`
+          {
+            previewSavedSearch(
+              attributes: {
+                additionalGeneIDs: "prints"
+                attributionClass: "limited edition"
+                priceRange: "100-1000"
+              }
+            ) {
+              href
+            }
+          }
+        `
+
+        const { previewSavedSearch } = await runQuery(query)
+
+        expect(previewSavedSearch.href).toEqual(null)
+      })
+    })
+
+    describe("when artistIDs are present", () => {
+      it("builds correct href based on passed attributes", async () => {
+        const query = gql`
+          {
+            previewSavedSearch(
+              attributes: {
+                acquireable: true
+                additionalGeneIDs: "prints"
+                artistIDs: ["kaws"]
+                atAuction: true
+                attributionClass: ["limited edition", "unique"]
+                colors: ["yellow", "red"]
+                inquireableOnly: true
+                locationCities: ["New York, NY, USA"]
+                majorPeriods: ["1990", "2000"]
+                materialsTerms: ["acrylic", "aluminium"]
+                offerable: true
+                partnerIDs: ["foo-bar-gallery"]
+                priceRange: "100-1000"
+                sizes: [SMALL, MEDIUM]
+              }
+            ) {
+              href
+            }
+          }
+        `
+
+        const { previewSavedSearch } = await runQuery(query)
+
+        expect(previewSavedSearch.href).toEqual(
+          "/artist/kaws?acquireable=true&additional_gene_ids%5B0%5D=prints&at_auction=true&attribution_class%5B0%5D=limited%20edition&attribution_class%5B1%5D=unique&colors%5B0%5D=yellow&colors%5B1%5D=red&inquireable_only=true&location_cities%5B0%5D=New%20York%2C%20NY%2C%20USA&major_periods%5B0%5D=1990&major_periods%5B1%5D=2000&materials_terms%5B0%5D=acrylic&materials_terms%5B1%5D=aluminium&offerable=true&partner_ids%5B0%5D=foo-bar-gallery&price_range=100-1000&sizes%5B0%5D=small&sizes%5B1%5D=medium&for_sale=true"
+        )
+      })
+    })
+  })
 })
