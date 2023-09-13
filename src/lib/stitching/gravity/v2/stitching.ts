@@ -135,6 +135,10 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
           sort: SavedSearchesSortEnum
+          """
+          Returns saved searches associated with the provided artist IDs
+          """
+          artistIDs: [ID!]
         ): SearchCriteriaConnection
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
         addressConnection(
@@ -864,7 +868,7 @@ export const gravityStitchingEnvironment = (
           `,
           resolve: (parent, args) => {
             if (!isNumber(parent.priceArray?.[0])) {
-              return "*"
+              return 0
             }
 
             const formattedAmount = formatSearchCriteriaAmount(
@@ -882,7 +886,7 @@ export const gravityStitchingEnvironment = (
           `,
           resolve: (parent, args) => {
             if (!isNumber(parent.priceArray?.[1])) {
-              return "*"
+              return "+"
             }
 
             const formattedAmount = formatSearchCriteriaAmount(

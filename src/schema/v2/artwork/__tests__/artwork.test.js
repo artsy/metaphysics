@@ -1274,6 +1274,20 @@ describe("Artwork type", () => {
         },
       })
     })
+
+    it("returns null if the fetch returned an error (artwork unpublished)", async () => {
+      context.collectionsLoader = jest.fn(() => {
+        throw new Error("Artwork Not Published")
+      })
+
+      const response = await runAuthenticatedQuery(query, context)
+
+      expect(response).toEqual({
+        artwork: {
+          collectionsConnection: null,
+        },
+      })
+    })
   })
 
   describe("#consignmentSubmission", () => {
@@ -1675,6 +1689,67 @@ describe("Artwork type", () => {
             isBuyNowable: false,
           },
         })
+      })
+    })
+  })
+
+  describe("#isSavedToList", () => {
+    const query = gql`
+      query {
+        artwork(id: "catty-artwork-slug") {
+          isSavedToList
+        }
+      }
+    `
+
+    const collectionsMock = {
+      headers: {
+        "x-total-count": 1,
+      },
+    }
+
+    beforeEach(() => {
+      context.artworkLoader = jest.fn(() =>
+        Promise.resolve({ _id: "catty-artwork-id" })
+      )
+      context.userID = "percy-z"
+    })
+
+    it("passes the correct args and resolves properly", async () => {
+      context.collectionsLoader = jest.fn(() =>
+        Promise.resolve(collectionsMock)
+      )
+
+      const response = await runAuthenticatedQuery(query, context)
+
+      expect(context.collectionsLoader).toHaveBeenCalledWith({
+        artwork_id: "catty-artwork-id",
+        user_id: "percy-z",
+        private: true,
+        saves: true,
+        size: 0,
+        default: false,
+        total_count: true,
+      })
+
+      expect(response).toEqual({
+        artwork: {
+          isSavedToList: true,
+        },
+      })
+    })
+
+    it("returns false if the fetch returned an error (artwork unpublished)", async () => {
+      context.collectionsLoader = jest.fn(() => {
+        throw new Error("Artwork Not Published")
+      })
+
+      const response = await runAuthenticatedQuery(query, context)
+
+      expect(response).toEqual({
+        artwork: {
+          isSavedToList: false,
+        },
       })
     })
   })

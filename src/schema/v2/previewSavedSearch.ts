@@ -14,6 +14,8 @@ import {
   resolveSearchCriteriaLabels,
   SearchCriteriaLabel,
 } from "./searchCriteriaLabel"
+import { snakeCaseKeys } from "lib/helpers"
+import { stringify } from "qs"
 
 const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   acquireable: {
@@ -81,6 +83,12 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
       resolve: resolveSearchCriteriaLabels,
       description:
         "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
+    },
+    href: {
+      type: GraphQLString,
+      description:
+        "URL for a user to view the artwork grid with applied filters matching saved search criteria attributes",
+      resolve: resolveHref,
     },
   }),
 })
@@ -175,4 +183,17 @@ export const generateDisplayName = async (parent, args, context, info) => {
   if (remainingCount > 0) result += ` + ${remainingCount} more`
 
   return result
+}
+
+const resolveHref = async (parent, _args, _context, _info) => {
+  const primaryArtist = parent.artistIDs?.[0]
+
+  if (!primaryArtist) return null
+
+  // Filter out artistIDs and snake_case the rest of the attributes
+  const criteriaAttributesWithoutArtistIds = (({ artistIDs, ...o }) =>
+    snakeCaseKeys(o))(parent)
+  const queryParams = stringify(criteriaAttributesWithoutArtistIds)
+
+  return `/artist/${primaryArtist}?${queryParams}&for_sale=true`
 }
