@@ -1134,7 +1134,7 @@ describe("gravity/stitching", () => {
           {}
         )
 
-        expect(formattedAmount).toEqual(0)
+        expect(formattedAmount).toEqual("$0.00")
       })
     })
 
