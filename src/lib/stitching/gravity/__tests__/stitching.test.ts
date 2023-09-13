@@ -1134,7 +1134,7 @@ describe("gravity/stitching", () => {
           {}
         )
 
-        expect(formattedAmount).toEqual("*")
+        expect(formattedAmount).toEqual(0)
       })
     })
 
@@ -1164,7 +1164,7 @@ describe("gravity/stitching", () => {
           {}
         )
 
-        expect(formattedAmount).toEqual("*")
+        expect(formattedAmount).toEqual("+")
       })
     })
   })
