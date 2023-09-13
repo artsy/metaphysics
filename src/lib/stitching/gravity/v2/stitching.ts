@@ -864,7 +864,7 @@ export const gravityStitchingEnvironment = (
           `,
           resolve: (parent, args) => {
             if (!isNumber(parent.priceArray?.[0])) {
-              return "*"
+              return 0
             }
 
             const formattedAmount = formatSearchCriteriaAmount(
@@ -882,7 +882,7 @@ export const gravityStitchingEnvironment = (
           `,
           resolve: (parent, args) => {
             if (!isNumber(parent.priceArray?.[1])) {
-              return "*"
+              return "+"
             }
 
             const formattedAmount = formatSearchCriteriaAmount(
