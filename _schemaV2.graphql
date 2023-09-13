@@ -11976,6 +11976,7 @@ type Me implements Node {
   savedSearch(criteria: SearchCriteriaAttributes, id: ID): SearchCriteria
   savedSearchesConnection(
     after: String
+    artistIDs: [String!]
     before: String
     first: Int
     last: Int

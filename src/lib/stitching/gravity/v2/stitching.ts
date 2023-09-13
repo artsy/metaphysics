@@ -135,6 +135,7 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
           sort: SavedSearchesSortEnum
+          artistIDs: [String!]
         ): SearchCriteriaConnection
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
         addressConnection(
