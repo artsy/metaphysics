@@ -1650,9 +1650,9 @@ type Query {
     after: String
 
     """
-    Returns saved searches associated with the provided artist IDs
+    Returns saved searches associated with the provided artist IDs (or slugs)
     """
-    artistIDs: [ID!]
+    artistIDs: [String!]
 
     """
     Returns the elements in the list that come before the specified cursor.
