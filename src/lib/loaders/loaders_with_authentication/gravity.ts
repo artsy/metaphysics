@@ -457,6 +457,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    meNotificationLoader: gravityLoader((id) => `me/notifications/${id}`),
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
     meUpdateCollectorProfileLoader: gravityLoader(
