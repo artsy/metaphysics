@@ -3,6 +3,7 @@ import qs from "querystring"
 import { Artwork } from "types/runtime/gravity"
 import { parse } from "url"
 import { normalizeImageData } from "../image"
+import mediums from "lib/artworkMediums"
 
 export const isTwoDimensional = ({
   width_cm,
@@ -124,4 +125,20 @@ export const isEligibleForOnPlatformTransaction = ({
   }
 
   return false
+}
+
+export const isEligibleToCreateAlert = (artwork: {
+  artists: { id: string }[]
+  category: string | null
+}) => {
+  const { artists, category } = artwork
+
+  // an alert must be associated with at least one valid artist
+  if (artists.length == 0) return false
+
+  // an alert should be associated with a real medium, and not just "Other"
+  if (!category) return false
+  if (category == mediums.Other.name) return false
+
+  return true
 }

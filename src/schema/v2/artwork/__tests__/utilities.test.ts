@@ -1,5 +1,10 @@
 import { Artwork } from "types/runtime/gravity"
-import { getFigures, isTooBig, isTwoDimensional } from "../utilities"
+import {
+  getFigures,
+  isTooBig,
+  isTwoDimensional,
+  isEligibleToCreateAlert,
+} from "../utilities"
 
 describe("isTwoDimensional", () => {
   let artwork: Artwork
@@ -236,5 +241,31 @@ describe("getFigures", () => {
       { image_url: "foo", type: "Image" },
       { image_url: "bar", type: "Image" },
     ])
+  })
+})
+
+describe("isEligibleToCreateAlert", () => {
+  const artwork = {
+    artists: [{ id: "foo" }],
+    category: "Painting",
+    attribution_class: "unique",
+  }
+
+  it("returns true if basic criteria are met", () => {
+    expect(isEligibleToCreateAlert(artwork)).toBe(true)
+  })
+
+  it("returns false if artwork has no artists", () => {
+    expect(isEligibleToCreateAlert({ ...artwork, artists: [] })).toBe(false)
+  })
+
+  it("returns false if artwork has no medium", () => {
+    expect(isEligibleToCreateAlert({ ...artwork, category: null })).toBe(false)
+  })
+
+  it("returns false if artwork has medium 'Other'", () => {
+    expect(isEligibleToCreateAlert({ ...artwork, category: "Other" })).toBe(
+      false
+    )
   })
 })
