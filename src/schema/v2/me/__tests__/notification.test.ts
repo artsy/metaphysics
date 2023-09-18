@@ -30,9 +30,6 @@ describe("me.notification", () => {
     expect(meLoader).toHaveBeenCalled()
     expect(meNotificationLoader).toHaveBeenCalledWith("user-notification-id")
 
-    console.log("[Debug] data")
-    console.log(data)
-
     expect(data).toMatchInlineSnapshot(`
       Object {
         "me": Object {
