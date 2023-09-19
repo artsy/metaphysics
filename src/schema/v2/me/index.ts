@@ -68,6 +68,7 @@ import { SimilarToRecentlyViewed } from "./similarToRecentlyViewed"
 import { UserInterest } from "./userInterest"
 import { UserInterestsConnection } from "./userInterestsConnection"
 import { WatchedLotConnection } from "./watchedLotConnection"
+import { NotificationType } from "../notifications"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -367,6 +368,22 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     newWorksByInterestingArtists: NewWorksByInterestingArtists,
+    notification: {
+      type: NotificationType,
+      description: "Retrieve one user's notification by notification ID",
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLString),
+          description: "The ID of the Notification",
+        },
+      },
+      resolve: (_root, { id }, { meNotificationLoader }) => {
+        if (!meNotificationLoader)
+          throw new Error("You need to be signed in to perform this action")
+
+        return meNotificationLoader(id)
+      },
+    },
     initials: initials("name"),
     paddleNumber: {
       type: GraphQLString,
