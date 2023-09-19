@@ -545,6 +545,7 @@ input CreateSavedSearchInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
+  contactRequest: SavedSearchContactRequestInput
   userAlertSettings: UserAlertSettingsInput
 }
 
@@ -2070,6 +2071,29 @@ type SaleArtworkEdge {
 }
 
 """
+Saved search contact request details
+"""
+type SavedSearchContactRequest {
+  message: String
+  phoneNumber: String!
+}
+
+"""
+Contact request details
+"""
+input SavedSearchContactRequestInput {
+  """
+  Message to an advisor.
+  """
+  message: String
+
+  """
+  Phone number.
+  """
+  phoneNumber: String!
+}
+
+"""
 Saved Search User Alert Settings
 """
 type SavedSearchUserAlertSettings {
@@ -2111,6 +2135,7 @@ type SearchCriteria {
   atAuction: Boolean
   attributionClass: [String!]!
   colors: [String!]!
+  contactRequest: SavedSearchContactRequest
   dimensionRange: String
   hasRecentlyEnabledUserSearchCriteria: Boolean!
   height: String
