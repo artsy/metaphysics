@@ -2112,6 +2112,11 @@ type SearchCriteria {
   attributionClass: [String!]!
   colors: [String!]!
   dimensionRange: String
+
+  """
+  Human readable price range value
+  """
+  formattedPriceRange: String
   hasRecentlyEnabledUserSearchCriteria: Boolean!
   height: String
   href: String!
