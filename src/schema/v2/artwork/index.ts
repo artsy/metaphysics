@@ -83,6 +83,7 @@ import { TaxInfo } from "./taxInfo"
 import {
   embed,
   getFigures,
+  isEligibleToCreateAlert,
   isEligibleForOnPlatformTransaction,
   isEmbeddedVideo,
   isTooBig,
@@ -751,6 +752,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
           return false
         },
+      },
+      isEligibleToCreateAlert: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description:
+          "Artwork meets minimum metadata criteria to have an alert created from it",
+        resolve: isEligibleToCreateAlert,
       },
       isEligibleForArtsyGuarantee: {
         type: new GraphQLNonNull(GraphQLBoolean),

@@ -4215,4 +4215,41 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("isEligibleToCreateAlert", () => {
+    beforeEach(() => {
+      artwork.artists = [{ id: "foo" }]
+      artwork.category = "Painting"
+    })
+
+    const query = `
+      {
+        artwork(id: "foo-bar") {
+          isEligibleToCreateAlert
+        }
+      }
+    `
+
+    it("returns true if criteria are met", async () => {
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          isEligibleToCreateAlert: true,
+        },
+      })
+    })
+
+    it("returns false if any criteria are not met", async () => {
+      artwork.category = null
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          isEligibleToCreateAlert: false,
+        },
+      })
+    })
+  })
 })
