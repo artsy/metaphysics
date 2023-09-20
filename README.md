@@ -28,7 +28,6 @@ It is currently used in production all over the place in
   - [DataDog Monitoring - NodeJS VM / Custom Metrics](https://app.datadoghq.com/dash/635153/metaphysics-queries)
   - [Sentry error reporting](https://sentry.io/artsynet/metaphysics-production/)
   - [Papertrail logs](https://papertrailapp.com/groups/3675843/events?q=host%3Ametaphysics-web)
-  - [When Disaster Strikes](https://joe.artsy.net/job/refresh-metaphysics-production/)
 - **Staging:**
   - [Endpoint](https://metaphysics-staging.artsy.net/v2)
   - [Kubernetes deployment dashboard](https://kubernetes.stg.artsy.systems/#!/deployment/default/metaphysics-web?namespace=default)
