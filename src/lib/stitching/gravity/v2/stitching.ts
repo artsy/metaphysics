@@ -12,7 +12,6 @@ import { dateRange } from "lib/date"
 import { resolveSearchCriteriaLabels } from "schema/v2/searchCriteriaLabel"
 import { generateDisplayName } from "schema/v2/previewSavedSearch"
 import { amount, amountSDL } from "schema/v2/fields/money"
-import { isNumber } from "lodash"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -859,42 +858,6 @@ export const gravityStitchingEnvironment = (
           resolve: resolveSearchCriteriaLabels,
           description:
             "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
-        },
-        lowPriceAmount: {
-          fragment: gql`
-            ... on SearchCriteria {
-              priceArray
-            }
-          `,
-          resolve: (parent, args) => {
-            const price = !isNumber(parent.priceArray?.[0])
-              ? 0
-              : parent.priceArray[0]
-
-            const formattedAmount = formatSearchCriteriaAmount(
-              price * 100,
-              args
-            )
-            return formattedAmount
-          },
-        },
-        highPriceAmount: {
-          fragment: gql`
-            ... on SearchCriteria {
-              priceArray
-            }
-          `,
-          resolve: (parent, args) => {
-            if (!isNumber(parent.priceArray?.[1])) {
-              return "+"
-            }
-
-            const formattedAmount = formatSearchCriteriaAmount(
-              parent.priceArray[1] * 100,
-              args
-            )
-            return formattedAmount
-          },
         },
       },
       Show: {
