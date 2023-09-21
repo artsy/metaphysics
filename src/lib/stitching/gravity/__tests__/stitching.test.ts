@@ -1107,66 +1107,6 @@ describe("gravity/stitching", () => {
         )
       })
     })
-
-    describe("#lowPriceAmount", () => {
-      it("extends the SearchCriteria type with a lowPriceAmount field", async () => {
-        const mergedSchema = await getGravityMergedSchema()
-        const searchCriteriaFields = await getFieldsForTypeFromSchema(
-          "SearchCriteria",
-          mergedSchema
-        )
-        expect(searchCriteriaFields).toContain("lowPriceAmount")
-      })
-
-      it("resolves the lowPriceAmount field", async () => {
-        const { resolvers } = await getGravityStitchedSchema()
-        const { lowPriceAmount } = resolvers.SearchCriteria
-
-        let formattedAmount = lowPriceAmount.resolve(
-          { priceArray: [1000, 10000] },
-          {}
-        )
-
-        expect(formattedAmount).toEqual("$1,000.00")
-
-        formattedAmount = lowPriceAmount.resolve(
-          { priceArray: [null, 10000] },
-          {}
-        )
-
-        expect(formattedAmount).toEqual("$0.00")
-      })
-    })
-
-    describe("#highPriceAmount", () => {
-      it("extends the SearchCriteria type with a highPriceAmount field", async () => {
-        const mergedSchema = await getGravityMergedSchema()
-        const searchCriteriaFields = await getFieldsForTypeFromSchema(
-          "SearchCriteria",
-          mergedSchema
-        )
-        expect(searchCriteriaFields).toContain("highPriceAmount")
-      })
-
-      it("resolves the highPriceAmount field", async () => {
-        const { resolvers } = await getGravityStitchedSchema()
-        const { highPriceAmount } = resolvers.SearchCriteria
-
-        let formattedAmount = highPriceAmount.resolve(
-          { priceArray: [1000, 10000] },
-          {}
-        )
-
-        expect(formattedAmount).toEqual("$10,000.00")
-
-        formattedAmount = highPriceAmount.resolve(
-          { priceArray: [1000, null] },
-          {}
-        )
-
-        expect(formattedAmount).toEqual("+")
-      })
-    })
   })
 
   describe("MarketingCollection", () => {
