@@ -432,12 +432,17 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: (
           { blurb, id },
-          { format, partnerBio: partner_bio },
+          { format, partnerBio },
           { partnerArtistsForArtistLoader }
         ) => {
-          if (!partner_bio && blurb && blurb.length) {
+          if (!partnerBio && blurb && blurb.length) {
             return { text: formatMarkdownValue(blurb, format) }
           }
+
+          if (!partnerBio) {
+            return null
+          }
+
           return partnerArtistsForArtistLoader(id, {
             size: 1,
             featured: true,
