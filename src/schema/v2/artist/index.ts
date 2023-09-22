@@ -401,7 +401,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           partnerBio: {
             type: GraphQLBoolean,
             description: "If true, will return featured bio over Artsy one.",
-            defaultValue: false,
+            defaultValue: true,
           },
           ...markdown().args,
         },
