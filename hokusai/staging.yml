@@ -127,7 +127,7 @@ spec:
     component: web
   type: ClusterIP
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: metaphysics
@@ -142,5 +142,7 @@ spec:
       - path: /
         pathType: Prefix
         backend:
-          serviceName: metaphysics-web-internal
-          servicePort: mp-http
+          service:
+            name: metaphysics-web-internal
+            port:
+              name: mp-http
