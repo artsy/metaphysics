@@ -131,9 +131,7 @@ describe("getArtistInsights", () => {
       expect(insight.label).toEqual("High auction record (£18.6m)")
       expect(insight.count).toEqual(0)
       expect(insight.entities).toEqual([])
-      expect(insight.description).toEqual(
-        '<a href="auction-result/123">Sotheby\'s, 2021</a>'
-      )
+      expect(insight.description).toEqual("Sotheby's, 2021")
     })
 
     it(`returns an empty artist object when the HIGH_AUCTION_RECORD has no value`, () => {
