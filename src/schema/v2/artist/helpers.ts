@@ -208,7 +208,7 @@ export const getArtistInsights = (artist) => {
 
     const description = getDescription(artist)
     const label = getLabel(artist, entities.length)
-    console.log(description)
+
     return {
       artist,
       count: entities.length,
