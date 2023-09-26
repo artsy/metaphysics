@@ -1763,6 +1763,9 @@ type ArtistInsight {
   # List of entities relevant to the insight.
   entities: [String!]!
 
+  # HTML string of insight.
+  html: String
+
   # The type of insight.
   kind: ArtistInsightKind
 

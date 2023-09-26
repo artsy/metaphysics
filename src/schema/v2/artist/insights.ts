@@ -52,6 +52,10 @@ export const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
     artist: {
       type: ArtistType,
     },
+    html: {
+      type: GraphQLString,
+      description: "HTML string of insight.",
+    },
   }),
 })
 
