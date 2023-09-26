@@ -190,4 +190,44 @@ describe("ArtistInsights type", () => {
       expect(data!.artist.insights).toEqual([])
     })
   })
+
+  it("returns formatted insights", () => {
+    artist.active_secondary_market = true
+    artist.curated_trending_weekly = true
+    artist.curated_emerging = true
+    artist.vanguard_year = 2019
+    artist.highAuctionRecord = true
+
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          id
+          insights(kind: [ACTIVE_SECONDARY_MARKET, CURATORS_PICK_EMERGING, TRENDING_NOW, ARTSY_VANGUARD_YEAR]) {
+            description(format: HTML)
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then((data) => {
+      expect(data!.artist.insights).toEqual([
+        {
+          description:
+            '<p>Recent <a href="/artist/foo-bar/auction-results">auction results</a> in the Artsy Price Database</p>',
+        },
+        {
+          description:
+            '<p>Featured in Artsy’s <a href="/collection/the-artsy-vanguard">annual list</a> of the most promising artists working today</p>',
+        },
+        {
+          description:
+            '<p>Works by this artist were handpicked for <a href="/collection/curators-picks-emerging">this collection</a> of rising talents to watch.</p>',
+        },
+        {
+          description:
+            '<p><a href="/collection/trending-now">Works by this artist</a> are among the most searched, viewed, and asked-about pieces on Artsy.</p>',
+        },
+      ])
+    })
+  })
 })
