@@ -80,7 +80,7 @@ interface AvailableLoaders extends AllLoaders {
 export const createLoaders = (accessToken, userID, opts): AvailableLoaders => {
   const unauthenticatedLoaders = createLoadersWithoutAuthentication(opts)
   let authenticatedLoaders = {}
-  if (accessToken) {
+  if (accessToken || opts.xImpersonateUserID) {
     authenticatedLoaders = createLoadersWithAuthentication(
       accessToken,
       userID,
