@@ -36,7 +36,6 @@ export const ARTIST_INSIGHT_MAPPING: Record<
     getDescription: (artist: any) => string | null
     getEntities: (artist: any) => string[] | null
     getLabel: (artist: any, count: number) => string
-    getHtml: (artist: any) => string | null
   }
 > = {
   SOLO_SHOW: {
@@ -46,7 +45,6 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       `Solo show at ${
         count === 1 ? "a major institution" : `${count} major institutions`
       }`,
-    getHtml: () => null,
   },
   GROUP_SHOW: {
     getDescription: () => null,
@@ -55,7 +53,6 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       `Group show at ${
         count === 1 ? "a major institution" : `${count} major institutions`
       }`,
-    getHtml: () => null,
   },
   COLLECTED: {
     getDescription: () => null,
@@ -64,7 +61,6 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       `Collected by ${
         count === 1 ? "a major institution" : `${count} major institutions`
       }`,
-    getHtml: () => null,
   },
   REVIEWED: {
     getDescription: () => null,
@@ -75,7 +71,6 @@ export const ARTIST_INSIGHT_MAPPING: Record<
           ? "a major art publication"
           : `${count} major art publications`
       }`,
-    getHtml: () => null,
   },
   BIENNIAL: {
     getDescription: () => null,
@@ -84,51 +79,41 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       `Included in ${
         count === 1 ? "a major biennial" : `${count} major biennials`
       }`,
-    getHtml: () => null,
   },
   ACTIVE_SECONDARY_MARKET: {
-    getDescription: () => `Recent auction results in the Artsy Price Database`,
-    getEntities: (artist) => artist.active_secondary_market && [],
-    getLabel: () => "Active secondary market",
-    getHtml: (artist) =>
-      `Recent ${embedInUrl(
+    getDescription: (artist) =>
+      `Recent ${toMarkDownUrl(
         `/artist/${artist.id}/auction-results`,
         "auction results"
       )} in the Artsy Price Database`,
+    getEntities: (artist) => artist.active_secondary_market && [],
+    getLabel: () => "Active secondary market",
   },
   HIGH_AUCTION_RECORD: {
     getDescription: (artist) =>
       artist.highAuctionRecord &&
-      [
-        artist.highAuctionRecord.organization,
-        artist.highAuctionRecord.year,
-      ].join(", "),
-    getEntities: (artist) => artist.highAuctionRecord && [],
-    getLabel: (artist) => {
-      return artist.highAuctionRecord
-        ? `High auction record (${artist.highAuctionRecord.price})`
-        : "High auction record"
-    },
-    getHtml: (artist) =>
-      embedInUrl(
+      toMarkDownUrl(
         artist.highAuctionRecord.url,
         `${[
           artist.highAuctionRecord.organization,
           artist.highAuctionRecord.year,
         ].join(", ")}`
       ),
+    getEntities: (artist) => artist.highAuctionRecord && [],
+    getLabel: (artist) => {
+      return artist.highAuctionRecord
+        ? `High auction record (${artist.highAuctionRecord.price})`
+        : "High auction record"
+    },
   },
   ARTSY_VANGUARD_YEAR: {
     getDescription: () =>
-      `Featured in Artsy’s annual list of the most promising artists working today`,
-    getEntities: (artist) => artist.vanguard_year && [],
-    getLabel: (artist) => `The Artsy Vanguard ${artist.vanguard_year}`,
-    getHtml: (artist) =>
-      artist &&
-      `Featured in Artsy’s ${embedInUrl(
+      `Featured in Artsy’s ${toMarkDownUrl(
         "/collection/the-artsy-vanguard",
         "annual list"
       )} of the most promising artists working today`,
+    getEntities: (artist) => artist.vanguard_year && [],
+    getLabel: (artist) => `The Artsy Vanguard ${artist.vanguard_year}`,
   },
   GAINING_FOLLOWERS: {
     getDescription: (artist) =>
@@ -136,41 +121,34 @@ export const ARTIST_INSIGHT_MAPPING: Record<
     getEntities: (artist) =>
       artist.follower_growth >= FOLLOWER_GROWTH_MIN_VALUE ? [] : null,
     getLabel: () => `Gaining Followers`,
-    getHtml: () => null,
   },
   CRITICALLY_ACCLAIMED: {
     getDescription: () => "Recognized by major institutions and publications",
     getEntities: (artist) => artist.critically_acclaimed && [],
     getLabel: () => "Critically acclaimed",
-    getHtml: () => null,
   },
   TRENDING_NOW: {
     getDescription: () =>
-      "Works by this artist are among the most searched, viewed, and asked-about pieces on Artsy.",
-    getEntities: (artist) => artist.curated_trending_weekly && [],
-    getLabel: () => "Featured in Trending Now",
-    getHtml: () =>
-      `${embedInUrl(
+      `${toMarkDownUrl(
         "/collection/trending-now",
         "Works by this artist"
       )} are among the most searched, viewed, and asked-about pieces on Artsy.`,
+    getEntities: (artist) => artist.curated_trending_weekly && [],
+    getLabel: () => "Featured in Trending Now",
   },
   CURATORS_PICK_EMERGING: {
     getDescription: () =>
-      "Works by this artist were handpicked for of rising talents to watch.",
-    getEntities: (artist) => artist.curated_emerging && [],
-    getLabel: () => "Featured in Curator’s Pick: Emerging",
-    getHtml: () =>
-      `Works by this artist were handpicked for ${embedInUrl(
+      `Works by this artist were handpicked for ${toMarkDownUrl(
         "/collection/curators-picks-emerging",
         "this collection"
       )} of rising talents to watch.`,
+    getEntities: (artist) => artist.curated_emerging && [],
+    getLabel: () => "Featured in Curator’s Pick: Emerging",
   },
   RECENT_CAREER_EVENT: {
     getDescription: (artist) => artist.recent_show && getRecentShow(artist),
     getEntities: (artist) => artist.recent_show && getRecentShow(artist) && [],
     getLabel: () => "Recent career event",
-    getHtml: () => null,
   },
   RESIDENCIES: {
     getDescription: () => "Established artist residencies",
@@ -181,7 +159,6 @@ export const ARTIST_INSIGHT_MAPPING: Record<
           ? "a notable artist residency"
           : `${count} notable artist residencies`
       }`,
-    getHtml: () => null,
   },
   PRIVATE_COLLECTIONS: {
     getDescription: () => "A list of collections they are part of",
@@ -192,7 +169,6 @@ export const ARTIST_INSIGHT_MAPPING: Record<
           ? "a notable private collector"
           : `${count} notable private collectors`
       }`,
-    getHtml: () => null,
   },
   AWARDS: {
     getDescription: () => "Awards and prizes the artist has won",
@@ -201,7 +177,6 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       `Winner of ${
         count === 1 ? "a top industry award" : `${count} top industry awards`
       }`,
-    getHtml: () => null,
   },
 }
 
@@ -226,15 +201,14 @@ export const getArtistInsights = (artist) => {
   ][]
 
   const insights = mappings.map((mapping) => {
-    const [kind, { getDescription, getEntities, getLabel, getHtml }] = mapping
+    const [kind, { getDescription, getEntities, getLabel }] = mapping
 
     const entities = getEntities(artist)
     if (!entities) return { artist }
 
     const description = getDescription(artist)
     const label = getLabel(artist, entities.length)
-    const html = getHtml(artist)
-
+    console.log(description)
     return {
       artist,
       count: entities.length,
@@ -242,7 +216,6 @@ export const getArtistInsights = (artist) => {
       entities,
       kind,
       label,
-      html,
       type: kind,
     }
   })
@@ -300,6 +273,6 @@ export const getRecentShow = (artist): string | null => {
   return title
 }
 
-export const embedInUrl = (url: string, text: string) => {
-  return `<a href="${url}">${text}</a>`
+export const toMarkDownUrl = (url: string, text: string) => {
+  return `[${text}](${url})`
 }

@@ -14,6 +14,7 @@ import {
   getArtistInsights,
   getAuctionRecord,
 } from "./helpers"
+import { markdown, formatMarkdownValue } from "schema/v2/fields/markdown"
 
 export const ArtistInsightKind = new GraphQLEnumType({
   name: "ArtistInsightKind",
@@ -36,6 +37,12 @@ export const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
     },
     description: {
       type: GraphQLString,
+      args: {
+        ...markdown().args,
+      },
+      resolve: ({ description }, { format }) => {
+        return formatMarkdownValue(description, format)
+      },
     },
     entities: {
       type: new GraphQLNonNull(GraphQLList(new GraphQLNonNull(GraphQLString))),
@@ -51,10 +58,6 @@ export const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
     },
     artist: {
       type: ArtistType,
-    },
-    html: {
-      type: GraphQLString,
-      description: "HTML string of insight.",
     },
   }),
 })
