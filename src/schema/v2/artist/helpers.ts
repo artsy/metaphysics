@@ -82,23 +82,17 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   },
   ACTIVE_SECONDARY_MARKET: {
     getDescription: (artist) =>
-      `Recent ${toMarkDownUrl(
-        `/artist/${artist.id}/auction-results`,
-        "auction results"
-      )} in the Artsy Price Database`,
+      `Recent [auction results](/artist/${artist.id}/auction-results) in the Artsy Price Database`,
     getEntities: (artist) => artist.active_secondary_market && [],
     getLabel: () => "Active secondary market",
   },
   HIGH_AUCTION_RECORD: {
     getDescription: (artist) =>
       artist.highAuctionRecord &&
-      toMarkDownUrl(
-        artist.highAuctionRecord.url,
-        `${[
-          artist.highAuctionRecord.organization,
-          artist.highAuctionRecord.year,
-        ].join(", ")}`
-      ),
+      `[${[
+        artist.highAuctionRecord.organization,
+        artist.highAuctionRecord.year,
+      ].join(", ")}](${artist.highAuctionRecord.url})`,
     getEntities: (artist) => artist.highAuctionRecord && [],
     getLabel: (artist) => {
       return artist.highAuctionRecord
@@ -108,10 +102,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   },
   ARTSY_VANGUARD_YEAR: {
     getDescription: () =>
-      `Featured in Artsy’s ${toMarkDownUrl(
-        "/collection/the-artsy-vanguard",
-        "annual list"
-      )} of the most promising artists working today`,
+      `Featured in Artsy’s [annual list](/collection/the-artsy-vanguard) of the most promising artists working today`,
     getEntities: (artist) => artist.vanguard_year && [],
     getLabel: (artist) => `The Artsy Vanguard ${artist.vanguard_year}`,
   },
@@ -129,19 +120,13 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   },
   TRENDING_NOW: {
     getDescription: () =>
-      `${toMarkDownUrl(
-        "/collection/trending-now",
-        "Works by this artist"
-      )} are among the most searched, viewed, and asked-about pieces on Artsy.`,
+      `[Works by this artist](/collection/trending-now) are among the most searched, viewed, and asked-about pieces on Artsy.`,
     getEntities: (artist) => artist.curated_trending_weekly && [],
     getLabel: () => "Featured in Trending Now",
   },
   CURATORS_PICK_EMERGING: {
     getDescription: () =>
-      `Works by this artist were handpicked for ${toMarkDownUrl(
-        "/collection/curators-picks-emerging",
-        "this collection"
-      )} of rising talents to watch.`,
+      `Works by this artist were handpicked for [this collection](/collection/curators-picks-emerging) of rising talents to watch.`,
     getEntities: (artist) => artist.curated_emerging && [],
     getLabel: () => "Featured in Curator’s Pick: Emerging",
   },
