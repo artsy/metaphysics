@@ -257,7 +257,3 @@ export const getRecentShow = (artist): string | null => {
 
   return title
 }
-
-export const toMarkDownUrl = (url: string, text: string) => {
-  return `[${text}](${url})`
-}
