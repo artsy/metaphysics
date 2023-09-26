@@ -45,7 +45,6 @@ export const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       resolve: ({ description }, { format }) => {
-        if (!format) return formatMarkdownValue(description, "plain").trim()
         return formatMarkdownValue(description, format).trim()
       },
     },
