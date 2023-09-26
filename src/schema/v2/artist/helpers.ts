@@ -81,17 +81,24 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       }`,
   },
   ACTIVE_SECONDARY_MARKET: {
-    getDescription: () => "Recent auction results in the Artsy Price Database",
+    getDescription: (artist) =>
+      `Recent ${embedInUrl(
+        `/artist/${artist.id}/auction-results`,
+        "auction results"
+      )} in the Artsy Price Database`,
     getEntities: (artist) => artist.active_secondary_market && [],
     getLabel: () => "Active secondary market",
   },
   HIGH_AUCTION_RECORD: {
     getDescription: (artist) =>
       artist.highAuctionRecord &&
-      `${[
-        artist.highAuctionRecord.organization,
-        artist.highAuctionRecord.year,
-      ].join(", ")}`,
+      embedInUrl(
+        artist.highAuctionRecord.url,
+        `${[
+          artist.highAuctionRecord.organization,
+          artist.highAuctionRecord.year,
+        ].join(", ")}`
+      ),
     getEntities: (artist) => artist.highAuctionRecord && [],
     getLabel: (artist) => {
       return artist.highAuctionRecord
@@ -101,7 +108,10 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   },
   ARTSY_VANGUARD_YEAR: {
     getDescription: () =>
-      "Featured in Artsy’s annual list of the most promising artists working today",
+      `Featured in Artsy’s ${embedInUrl(
+        "/collection/the-artsy-vanguard",
+        "annual list"
+      )} of the most promising artists working today`,
     getEntities: (artist) => artist.vanguard_year && [],
     getLabel: (artist) => `The Artsy Vanguard ${artist.vanguard_year}`,
   },
@@ -119,13 +129,19 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   },
   TRENDING_NOW: {
     getDescription: () =>
-      "Works by this artist are among the most searched, viewed, and asked-about pieces on Artsy.",
+      `${embedInUrl(
+        "/collection/trending-now",
+        "Works by this artist"
+      )} are among the most searched, viewed, and asked-about pieces on Artsy.`,
     getEntities: (artist) => artist.curated_trending_weekly && [],
     getLabel: () => "Featured in Trending Now",
   },
   CURATORS_PICK_EMERGING: {
     getDescription: () =>
-      "Works by this artist were handpicked for this collection of rising talents to watch.",
+      `Works by this artist were handpicked for ${embedInUrl(
+        "/collection/curators-picks-emerging",
+        "this collection"
+      )} of rising talents to watch.`,
     getEntities: (artist) => artist.curated_emerging && [],
     getLabel: () => "Featured in Curator’s Pick: Emerging",
   },
@@ -226,11 +242,13 @@ export const getAuctionRecord = async (artist, auctionLotsLoader) => {
   const { currency, price_realized_cents } = auctionLot
   const price = priceDisplayText(price_realized_cents, currency, "0.0a")
   const [year] = auctionLot.sale_date.split("-")
+  const url = `/auction-result/${auctionLot.id}`
 
   return {
     price,
     organization: auctionLot.organization,
     year,
+    url,
   }
 }
 
@@ -253,4 +271,8 @@ export const getRecentShow = (artist): string | null => {
   const title = `${year} ${show}`
 
   return title
+}
+
+export const embedInUrl = (url: string, text: string) => {
+  return `<a href="${url}">${text}</a>`
 }

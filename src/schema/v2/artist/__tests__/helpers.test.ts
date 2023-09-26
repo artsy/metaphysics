@@ -119,6 +119,7 @@ describe("getArtistInsights", () => {
           price: "£18.6m",
           organization: "Sotheby's",
           year: "2021",
+          url: "auction-result/123",
         },
       }
 
@@ -130,7 +131,9 @@ describe("getArtistInsights", () => {
       expect(insight.label).toEqual("High auction record (£18.6m)")
       expect(insight.count).toEqual(0)
       expect(insight.entities).toEqual([])
-      expect(insight.description).toEqual("Sotheby's, 2021")
+      expect(insight.description).toEqual(
+        '<a href="auction-result/123">Sotheby\'s, 2021</a>'
+      )
     })
 
     it(`returns an empty artist object when the HIGH_AUCTION_RECORD has no value`, () => {
@@ -238,6 +241,63 @@ describe("getArtistInsights", () => {
 
       const recentShow = getRecentShow(artist)
       expect(recentShow).toEqual(null)
+    })
+  })
+
+  describe("trending now insight field", () => {
+    const field = {
+      kind: "TRENDING_NOW",
+      artist: {
+        curated_trending_weekly: true,
+      },
+      value:
+        '<a href="/collection/trending-now">Works by this artist</a> are among the most searched, viewed, and asked-about pieces on Artsy.',
+    }
+
+    it("returns trending now insight", () => {
+      const artist = field.artist
+
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === field.kind)!
+      expect(insight.description).toEqual(field.value)
+    })
+  })
+
+  describe("curators pick emerging insight field", () => {
+    const field = {
+      kind: "CURATORS_PICK_EMERGING",
+      artist: {
+        curated_emerging: true,
+      },
+      value:
+        'Works by this artist were handpicked for <a href="/collection/curators-picks-emerging">this collection</a> of rising talents to watch.',
+    }
+
+    it("returns curators pick emerging insight", () => {
+      const artist = field.artist
+
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === field.kind)!
+      expect(insight.description).toEqual(field.value)
+    })
+  })
+
+  describe("artsy vanguard year insight field", () => {
+    const field = {
+      kind: "ARTSY_VANGUARD_YEAR",
+      artist: {
+        vanguard_year: 2022,
+      },
+      value:
+        'Featured in Artsy’s <a href="/collection/the-artsy-vanguard">annual list</a> of the most promising artists working today',
+    }
+
+    it("returns artsy vanguard year insight", () => {
+      const artist = field.artist
+
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === field.kind)!
+      expect(insight.description).toEqual(field.value)
     })
   })
 })
