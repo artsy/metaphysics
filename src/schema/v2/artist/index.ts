@@ -401,7 +401,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           partnerBio: {
             type: GraphQLBoolean,
             description: "If true, will return featured bio over Artsy one.",
-            defaultValue: false,
+            defaultValue: true,
           },
           ...markdown().args,
         },
@@ -430,29 +430,39 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             },
           },
         }),
-        resolve: (
+        resolve: async (
           { blurb, id },
-          { format, partnerBio: partner_bio },
+          { format, partnerBio },
           { partnerArtistsForArtistLoader }
         ) => {
-          if (!partner_bio && blurb && blurb.length) {
+          if (!partnerBio && blurb && blurb.length) {
             return { text: formatMarkdownValue(blurb, format) }
           }
-          return partnerArtistsForArtistLoader(id, {
+
+          if (!partnerBio) {
+            return null
+          }
+
+          // Favor partner bio...
+          const partnerArtists = await partnerArtistsForArtistLoader(id, {
             size: 1,
             featured: true,
-          }).then((partner_artists) => {
-            if (partner_artists && partner_artists.length) {
-              const { biography, partner } = first(partner_artists) as any
-              return {
-                text: formatMarkdownValue(biography, format),
-                credit: `Submitted by ${partner.name}`,
-                partner_id: partner.id,
-                partner: partner,
-              }
-            }
-            return { text: formatMarkdownValue(blurb, format) }
           })
+
+          // ...if available
+          if (partnerArtists && partnerArtists.length) {
+            const { biography, partner } = first(partnerArtists) as any
+
+            return {
+              text: formatMarkdownValue(biography, format),
+              credit: `Submitted by ${partner.name}`,
+              partner_id: partner.id,
+              partner: partner,
+            }
+          }
+
+          // Fall back to the default bio
+          return { text: formatMarkdownValue(blurb, format) }
         },
       },
       birthday: { type: GraphQLString },
