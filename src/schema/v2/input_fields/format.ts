@@ -1,6 +1,6 @@
 import { GraphQLEnumType } from "graphql"
 
-const FORMATS = {
+export const FORMATS = {
   HTML: { value: "html" },
   PLAIN: { value: "plain" },
   MARKDOWN: { value: "markdown" },
