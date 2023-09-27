@@ -150,6 +150,10 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     | undefined
   const timezone = req.headers["x-timezone"] as string | undefined
   const userAgent = req.headers["user-agent"]
+  const xImpersonateUserID = req.headers["x-impersonate-user-id"] as
+    | string
+    | undefined
+
   const ipAddress = requestIPAddress(req)
 
   const { requestIDs } = res.locals
@@ -172,6 +176,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     appToken,
     xOriginalSessionID,
     isMutation: !!req.body?.query?.includes("mutation"),
+    xImpersonateUserID,
   })
 
   const context: ResolverContext = {

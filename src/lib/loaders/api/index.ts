@@ -199,10 +199,7 @@ export default (opts) => ({
   gravityLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
     gravity,
     "gravity",
-    {
-      requestIDs: opts.requestIDs,
-      userAgent: opts.userAgent,
-    }
+    opts
   ),
 
   /**
