@@ -29,6 +29,11 @@ export default function gravity(
 
   if (accessToken) assign(headers, { "X-ACCESS-TOKEN": accessToken })
 
+  const xImpersonateUserID = fetchOptions.xImpersonateUserID
+  if (xImpersonateUserID) {
+    assign(headers, { "X-IMPERSONATE-USER-ID": xImpersonateUserID })
+  }
+
   return fetch(
     urljoin(
       resolveBlueGreen(

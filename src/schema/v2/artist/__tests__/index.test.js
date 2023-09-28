@@ -512,7 +512,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            biographyBlurb {
+            biographyBlurb(partnerBio: false) {
               text
               credit
               partnerID
