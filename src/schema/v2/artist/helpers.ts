@@ -82,7 +82,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   },
   ACTIVE_SECONDARY_MARKET: {
     getDescription: (artist) =>
-      `Recent [auction results](/artist/${artist.id}/auction-results) in the Artsy Price Database`,
+      `Recent auction results in the [Artsy Price Database](/artist/${artist.id}/auction-results)`,
     getEntities: (artist) => artist.active_secondary_market && [],
     getLabel: () => "Active secondary market",
   },

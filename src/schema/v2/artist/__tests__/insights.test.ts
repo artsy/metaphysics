@@ -213,7 +213,7 @@ describe("ArtistInsights type", () => {
       expect(data!.artist.insights).toEqual([
         {
           description:
-            '<p>Recent <a href="/artist/foo-bar/auction-results">auction results</a> in the Artsy Price Database</p>',
+            '<p>Recent auction results in the <a href="/artist/foo-bar/auction-results">Artsy Price Database</a></p>',
         },
         {
           description:
