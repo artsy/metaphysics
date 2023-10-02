@@ -4,7 +4,12 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 const mutation = gql`
   mutation {
     createAdvisoryOpportunity(
-      input: { message: "im a cat", searchCriteriaID: "search-criteria-id" }
+      input: {
+        message: "im a cat"
+        searchCriteriaID: "search-criteria-id"
+        phoneCountryCode: "DE"
+        phoneNumber: "123456789"
+      }
     ) {
       advisoryOpportunityOrError {
         __typename
@@ -46,6 +51,8 @@ describe("createAdvisoryOpportunityMutation", () => {
     expect(mockCreateAdvisoryOpportunityLoader).toBeCalledWith({
       message: "im a cat",
       search_criteria_id: "search-criteria-id",
+      phone_country_code: "DE",
+      phone_number: "123456789",
     })
 
     expect(res).toEqual({
