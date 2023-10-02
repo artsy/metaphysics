@@ -65,6 +65,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createAdvisoryOpportunityLoader: gravityLoader(
+      "advisory_opportunity",
+      {},
+      { method: "POST" }
+    ),
     createArtistLoader: gravityLoader("artist", {}, { method: "POST" }),
     createVerifiedRepresentativeLoader: gravityLoader(
       "verified_representatives",
