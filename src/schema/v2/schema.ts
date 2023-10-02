@@ -212,6 +212,7 @@ import VanityURLEntity from "./vanityURLEntity"
 import { VerifyAddress } from "./verifyAddress"
 import { updateUserInterestMutation } from "./me/updateUserInterestMutation"
 import { updateUserInterestsMutation } from "./me/updateUserInterestsMutation"
+import { createAdvisoryOpportunityMutation } from "./createAdvisoryOpportunity"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -358,6 +359,7 @@ export default new GraphQLSchema({
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       createAccountRequest: createAccountRequestMutation,
+      createAdvisoryOpportunity: createAdvisoryOpportunityMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,
       deleteVerifiedRepresentative: deleteVerifiedRepresentativeMutation,
       createArtist: createArtistMutation,
