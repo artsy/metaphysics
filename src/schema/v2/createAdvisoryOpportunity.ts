@@ -43,6 +43,8 @@ export const createAdvisoryOpportunityMutation = mutationWithClientMutationId<
   {
     message: string
     searchCriteriaID: string
+    phoneCountryCode?: string
+    phoneNumber?: string
   },
   any | null,
   ResolverContext
@@ -52,6 +54,8 @@ export const createAdvisoryOpportunityMutation = mutationWithClientMutationId<
   inputFields: {
     searchCriteriaID: { type: new GraphQLNonNull(GraphQLString) },
     message: { type: GraphQLString },
+    phoneCountryCode: { type: GraphQLString },
+    phoneNumber: { type: GraphQLString },
   },
   outputFields: {
     advisoryOpportunityOrError: {
@@ -61,7 +65,12 @@ export const createAdvisoryOpportunityMutation = mutationWithClientMutationId<
     },
   },
   mutateAndGetPayload: async (
-    { message, searchCriteriaID: search_criteria_id },
+    {
+      message,
+      searchCriteriaID: search_criteria_id,
+      phoneCountryCode: phone_country_code,
+      phoneNumber: phone_number,
+    },
     { createAdvisoryOpportunityLoader, userID }
   ) => {
     if (!createAdvisoryOpportunityLoader) {
@@ -80,6 +89,8 @@ export const createAdvisoryOpportunityMutation = mutationWithClientMutationId<
       return await createAdvisoryOpportunityLoader?.({
         message,
         search_criteria_id,
+        phone_country_code,
+        phone_number,
       })
     } catch (error) {
       const formattedErr = formatGravityError(error)
