@@ -405,39 +405,6 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       resolve: (conversation) => isLastMessageToUser(conversation),
     },
 
-    // If the user is a recipient of the last message, return the relevant delivery id.
-    // This can be used to mark the message as read, or log other events.
-    lastMessageDeliveryID: {
-      type: GraphQLString,
-      description:
-        "Delivery id if the user is a recipient of the last message, null otherwise.",
-      resolve: (conversation, _options, { conversationMessagesLoader }) => {
-        if (!conversationMessagesLoader || !isLastMessageToUser(conversation)) {
-          return null
-        }
-        const radiationMessageId = get(
-          conversation,
-          "_embedded.last_message.radiation_message_id"
-        )
-        return conversationMessagesLoader({
-          conversation_id: conversation.id,
-          radiation_message_id: radiationMessageId,
-          "expand[]": "deliveries",
-        }).then(({ message_details }) => {
-          if (message_details.length === 0) {
-            return null
-          }
-          const relevantDelivery = message_details[0].deliveries.find(
-            (d) => d.email === conversation.from_email
-          )
-          if (!relevantDelivery) {
-            return null
-          }
-          return relevantDelivery.id
-        })
-      },
-    },
-
     artworks: {
       type: new GraphQLList(ArtworkType),
       description: "Only the artworks discussed in the conversation.",

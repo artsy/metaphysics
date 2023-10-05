@@ -244,7 +244,6 @@ describe("Me", () => {
                 unread
                 unreadByCollector
                 unreadByPartner
-                lastMessageDeliveryID
               }
             }
           }

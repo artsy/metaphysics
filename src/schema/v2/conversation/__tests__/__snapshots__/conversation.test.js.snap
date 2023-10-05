@@ -34,7 +34,6 @@ Array [
 exports[`Me Conversation concerning unread indicator returns the right unread status 1`] = `
 Object {
   "isLastMessageToUser": true,
-  "lastMessageDeliveryID": "2",
   "unread": true,
   "unreadByCollector": true,
   "unreadByPartner": false,
