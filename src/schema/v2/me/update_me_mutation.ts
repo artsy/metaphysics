@@ -161,6 +161,8 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       description: "The given phone number of the user.",
       type: GraphQLString,
     },
+    phoneCountryCode: { type: GraphQLString },
+    phoneNumber: { type: GraphQLString },
     priceRangeMax: {
       description: "The maximum price collector has selected",
       type: GraphQLFloat,
