@@ -442,13 +442,12 @@ export const auctionResultConnection = connectionWithCursorInfo({
               }
             }
           }
+          return {
+            startAt: null,
+            endAt: null,
+          }
         } catch (error) {
           throw new GraphQLError(`createdYearRange resolver error: ${error}`)
-        }
-
-        return {
-          startAt: null,
-          endAt: null,
         }
       },
       type: YearRange,
