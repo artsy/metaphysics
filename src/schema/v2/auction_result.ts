@@ -32,6 +32,7 @@ import date from "./fields/date"
 import { InternalIDFields, NodeInterface } from "./object_identification"
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 import { YearRange } from "./types/yearRange"
+import { GraphQLError } from "graphql"
 
 export const AuctionResultSorts = {
   type: new GraphQLEnumType({
@@ -414,13 +415,41 @@ export const auctionResultConnection = connectionWithCursorInfo({
   nodeType: AuctionResultType,
   connectionFields: {
     createdYearRange: {
-      resolve: ({ artist_id }, _, { auctionCreatedYearRangeLoader }) => {
-        return auctionCreatedYearRangeLoader({ artist_id }).then(
-          ({ earliest_created_year, latest_created_year }) => ({
-            startAt: earliest_created_year,
-            endAt: latest_created_year,
+      resolve: async ({ artist_id }, _, { auctionResultFilterLoader }) => {
+        if (!auctionResultFilterLoader) {
+          return null
+        }
+
+        try {
+          const aggregations = await auctionResultFilterLoader({
+            artist_id,
+            aggregations: ["lots_by_created_year"],
           })
-        )
+
+          if (
+            aggregations &&
+            aggregations["lots_by_created_year"] &&
+            Object.keys(aggregations["lots_by_created_year"]).length > 0
+          ) {
+            const createdYearRange = Object.keys(
+              aggregations["lots_by_created_year"]
+            )
+
+            if (createdYearRange.length > 0) {
+              return {
+                startAt: createdYearRange[0],
+                endAt: createdYearRange[createdYearRange.length - 1],
+              }
+            }
+          }
+        } catch (error) {
+          throw new GraphQLError(`createdYearRange resolver error: ${error}`)
+        }
+
+        return {
+          startAt: null,
+          endAt: null,
+        }
       },
       type: YearRange,
     },
