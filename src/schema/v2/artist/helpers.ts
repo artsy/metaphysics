@@ -136,7 +136,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
     getLabel: () => "Recent career event",
   },
   RESIDENCIES: {
-    getDescription: () => "Established artist residencies",
+    getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.residencies),
     getLabel: (_artist, count: number) =>
       `Participated in ${
@@ -146,7 +146,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       }`,
   },
   PRIVATE_COLLECTIONS: {
-    getDescription: () => "A list of collections they are part of",
+    getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.private_collections),
     getLabel: (_artist, count: number) =>
       `Collected by ${
@@ -156,7 +156,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       }`,
   },
   AWARDS: {
-    getDescription: () => "Awards and prizes the artist has won",
+    getDescription: () => null,
     getEntities: (artist) => splitEntities(artist.awards),
     getLabel: (_artist, count: number) =>
       `Winner of ${
