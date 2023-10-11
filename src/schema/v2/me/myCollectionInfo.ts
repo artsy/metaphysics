@@ -231,15 +231,13 @@ const MyCollectionInfoType = new GraphQLObjectType<any, ResolverContext>({
 export const MyCollectionInfo: GraphQLFieldConfig<any, ResolverContext> = {
   type: MyCollectionInfoType,
   description: "Info about the current user's my-collection",
-  resolve: async ({ id }, _options, context) => {
-    if (!context.collectionLoader) {
+  resolve: async (_parent, _options, { userID, collectionLoader }) => {
+    if (!(collectionLoader && userID)) {
       return null
     }
 
-    context.userID = id
-
-    const collectionResponse = await context.collectionLoader("my-collection", {
-      user_id: id,
+    const collectionResponse = await collectionLoader("my-collection", {
+      user_id: userID,
       private: true,
     })
 
