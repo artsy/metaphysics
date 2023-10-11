@@ -184,6 +184,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     userID,
     defaultTimezone,
     ...loaders,
+    xImpersonateUserID,
     // For stitching purposes
     exchangeSchema,
     requestIDs,

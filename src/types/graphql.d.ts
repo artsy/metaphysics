@@ -29,6 +29,8 @@ export interface ResolverContextValues {
   imageData?: ImageData
 
   ipAddress: string
+
+  xImpersonateUserID?: string
 }
 
 export type ResolverContext = ResolverContextValues &
