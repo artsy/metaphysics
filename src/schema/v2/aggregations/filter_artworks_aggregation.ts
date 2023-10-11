@@ -12,6 +12,9 @@ export const ArtworksAggregation = new GraphQLEnumType({
     ARTIST_NATIONALITY: {
       value: "artist_nationality",
     },
+    ARTIST_SERIES: {
+      value: "artist_series",
+    },
     ATTRIBUTION_CLASS: {
       value: "attribution_class",
     },

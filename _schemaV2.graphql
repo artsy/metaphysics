@@ -2418,6 +2418,7 @@ type Artwork implements Node & Searchable & Sellable {
 enum ArtworkAggregation {
   ARTIST
   ARTIST_NATIONALITY
+  ARTIST_SERIES
   ATTRIBUTION_CLASS
   COLOR
   DIMENSION_RANGE
