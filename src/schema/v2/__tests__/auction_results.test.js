@@ -332,6 +332,111 @@ describe("Artist type", () => {
     )
   })
 
+  it("returns created date range", () => {
+    context.auctionResultFilterLoader = jest
+      .fn()
+      .mockReturnValueOnce(Promise.resolve(lotsByCreatedYearResponse))
+
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResultsConnection {
+            createdYearRange {
+              startAt
+              endAt
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(
+      ({
+        artist: {
+          auctionResultsConnection: { createdYearRange },
+        },
+      }) => {
+        expect(createdYearRange).toEqual({
+          startAt: 1900,
+          endAt: 2023,
+        })
+      }
+    )
+  })
+
+  it("does not return the created date range", () => {
+    const lotsByCreatedYearResponse = {
+      lots_by_created_year: {},
+    }
+    context.auctionResultFilterLoader = jest
+      .fn()
+      .mockReturnValueOnce(Promise.resolve(lotsByCreatedYearResponse))
+
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResultsConnection {
+            createdYearRange {
+              startAt
+              endAt
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(
+      ({
+        artist: {
+          auctionResultsConnection: { createdYearRange },
+        },
+      }) => {
+        expect(createdYearRange).toEqual({
+          startAt: null,
+          endAt: null,
+        })
+      }
+    )
+  })
+
+  it("returns empty created date range", () => {
+    const lotsByCreatedYearResponse = {
+      lots_by_created_year: {
+        2002: { name: "2002", count: 10 },
+      },
+    }
+
+    context.auctionResultFilterLoader = jest
+      .fn()
+      .mockReturnValueOnce(Promise.resolve(lotsByCreatedYearResponse))
+
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResultsConnection {
+            createdYearRange {
+              startAt
+              endAt
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(
+      ({
+        artist: {
+          auctionResultsConnection: { createdYearRange },
+        },
+      }) => {
+        expect(createdYearRange).toEqual({
+          startAt: 2002,
+          endAt: 2002,
+        })
+      }
+    )
+  })
+
   it("returns correct page info", () => {
     const query = `
       {
