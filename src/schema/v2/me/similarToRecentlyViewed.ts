@@ -20,7 +20,7 @@ export const SimilarToRecentlyViewed: GraphQLFieldConfig<
     args,
     { similarArtworksLoader }
   ) => {
-    const recentlyViewedIds = recently_viewed_artwork_ids.slice(0, 7)
+    const recentlyViewedIds = recently_viewed_artwork_ids?.slice(0, 7) || []
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
