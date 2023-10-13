@@ -1701,6 +1701,13 @@ type Query {
     """
     last: Int
     partnerID: ID
+
+    """
+    Only works if partnerID is also passed and artistID is not. Return search
+    criteria by artists this partner does/does not represent. Not passing will
+    return all criteria.
+    """
+    represented: Boolean
     since: SearchCriteriaSinceEnum
 
     """
