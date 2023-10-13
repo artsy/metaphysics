@@ -574,6 +574,10 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "identityVerification",
       "unreadNotificationsCount",
       "unseenNotificationsCount",
+      "similarToRecentlyViewedConnection",
+      "showsByFollowedArtists",
+      "newWorksFromGalleriesYouFollowConnection",
+      "myCollectionInfo",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader()
