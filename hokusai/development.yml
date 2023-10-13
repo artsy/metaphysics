@@ -2,16 +2,18 @@ version: "2"
 services:
   metaphysics:
 {% include 'templates/docker-compose-service.yml.j2' %}
-    environment:
-      - MEMCACHED_URL=metaphysics-memcached:11211
+    command: ["yarn", "start"]
     env_file:
+      - ../.env.development
       - ../.env.shared
       - ../.env
-    ports:
-      - 3000:3000
     depends_on:
       - metaphysics-memcached
+    ports:
+      - 5001:5001
+    volumes:
+      - ../:/app
   metaphysics-memcached:
-    image: memcached
+    image: memcached:1.4.34-alpine
     ports:
       - 11211:11211
