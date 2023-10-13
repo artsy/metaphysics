@@ -1,7 +1,7 @@
 version: "2"
 services:
   metaphysics:
-{% include 'templates/docker-compose-service.yml.j2' %}
+{% include 'templates/docker-compose-service-dev.yml.j2' %}
     command: ["yarn", "start"]
     env_file:
       - ../.env.development
