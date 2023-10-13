@@ -22,4 +22,4 @@ services:
   metaphysics-memcached:
     image: memcached:1.4.34-alpine
     ports:
-      - 11212:11211
+      - 11211:11211
