@@ -99,14 +99,35 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     artworksConnection: {
       type: artworkConnection.connectionType,
       args: pageable(),
-      resolve: async ({ object_ids: ids }, args, { artworksLoader }) => {
+      resolve: async (
+        { activity_type, object_ids },
+        args,
+        { filterArtworksLoader }
+      ) => {
+        let loaderArgs = {}
+
+        switch (activity_type) {
+          case "PartnerShowOpenedActivity":
+            loaderArgs = { partner_show_id: object_ids[0] }
+            break
+          default: {
+            loaderArgs = { ids: object_ids }
+            break
+          }
+        }
+
         const { page, size } = convertConnectionArgsToGravityArgs(args)
-        return artworksLoader({ ids }).then((body) => {
-          const totalCount = body.length
+        return filterArtworksLoader({
+          page,
+          size,
+          total_count: true,
+          ...loaderArgs,
+        }).then(({ hits }) => {
+          const totalCount = hits.length
           return {
             totalCount,
             pageCursors: createPageCursors({ page, size }, totalCount),
-            ...connectionFromArray(body, args),
+            ...connectionFromArray(hits, args),
           }
         })
       },
