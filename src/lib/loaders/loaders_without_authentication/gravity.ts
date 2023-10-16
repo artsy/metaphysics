@@ -261,8 +261,8 @@ export default (opts) => {
     showsLoader: gravityLoader("shows"),
     showsWithHeadersLoader: gravityLoader("shows", {}, { headers: true }),
     similarArtworksLoader: gravityLoader("related/artworks"),
-    meFieldsLoader: gravityLoader(
-      (id) => `me/fields?user_id=${id}`,
+    recentlyViewedArtworkIdsLoader: gravityLoader(
+      (id) => `user/${id}/recently_viewed_artworks_ids`,
       {},
       { headers: true }
     ),

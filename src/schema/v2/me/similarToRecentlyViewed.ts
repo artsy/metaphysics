@@ -19,7 +19,7 @@ export const SimilarToRecentlyViewed: GraphQLFieldConfig<
   resolve: async (
     { recently_viewed_artwork_ids },
     args,
-    { similarArtworksLoader, meFieldsLoader, userID }
+    { similarArtworksLoader, recentlyViewedArtworkIdsLoader, userID }
   ) => {
     if (!userID) return null
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
@@ -31,9 +31,10 @@ export const SimilarToRecentlyViewed: GraphQLFieldConfig<
       let recentlyViewedIds = (recently_viewed_artwork_ids || [])?.slice(0, 7)
 
       if (!!recentlyViewedIds) {
-        const meFieldsBody = (await meFieldsLoader(userID))?.body
-        const bodyRecentIds = meFieldsBody?.recently_viewed_artwork_ids || []
-        recentlyViewedIds = bodyRecentIds.slice(0, 7)
+        const recentlyViewedArtworksBody = (
+          await recentlyViewedArtworkIdsLoader(userID)
+        )?.body
+        recentlyViewedIds = (recentlyViewedArtworksBody || []).slice(0, 7)
       }
 
       const artworks = await similarArtworksLoader({
