@@ -144,7 +144,7 @@ const graphqlHTTP = require("express-graphql")
 const graphqlServer = graphqlHTTP((req, res, params) => {
   const accessToken = req.headers["x-access-token"] as string | undefined
   const appToken = req.headers["x-xapp-token"] as string | undefined
-  const userID = req.headers["x-user-id"] as string | undefined
+  const xUserID = req.headers["x-user-id"] as string | undefined
   const xOriginalSessionID = req.headers["x-original-session-id"] as
     | string
     | undefined
@@ -169,6 +169,9 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
   if (timezone && moment.tz.zone(timezone)) {
     defaultTimezone = timezone
   }
+
+  // Currently the xImpersonateUserID is only used for Braze purposes
+  const userID = xUserID || xImpersonateUserID
 
   const loaders = createLoaders(accessToken, userID, {
     requestIDs,
