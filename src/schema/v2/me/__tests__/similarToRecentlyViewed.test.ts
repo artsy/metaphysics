@@ -127,7 +127,6 @@ describe("SimilarToRecentlyViewed", () => {
 
     const ids = ["x", "y", "z"]
 
-    context.meLoader = async () => jest.fn().mockResolvedValue(null)
     context.recentlyViewedArtworkIdsLoader = async () => ids
     context.similarArtworksLoader = async () => artworks
     context.userID = "user-200"
