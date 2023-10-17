@@ -16,21 +16,27 @@ COPY package.json yarn.lock ./
 COPY patches ./patches
 
 # Install packages
-RUN yarn install --production --frozen-lockfile --quiet && \
-  mv node_modules /opt/node_modules.prod && \
-  yarn install --frozen-lockfile --quiet && \
+RUN yarn install --frozen-lockfile --quiet && \
   yarn cache clean --force
 
 # Copy application code
 COPY  . ./
 
+# ---------------------------------------------------------
+# Production build dependencies and artifacts
+# ---------------------------------------------------------
+FROM builder-base as builder
+
 RUN yarn build
+
+# Install packages for production
+RUN yarn install --production --frozen-lockfile --quiet
 
 # ---------------------------------------------------------
 # Release image
 # ---------------------------------------------------------
 #
-# Release stage. This stage creates the final docker iamge that will be
+# Release stage. This stage creates the final docker image that will be
 # released. It contains only production dependencies and artifacts.
 #
 FROM node:18.15-alpine as production
@@ -48,10 +54,10 @@ RUN chown deploy:deploy $(pwd)
 # Switch to deploy user
 USER deploy
 
-COPY --chown=deploy:deploy --from=builder-base /app/.circleci ./.circleci
-COPY --chown=deploy:deploy --from=builder-base /app/build ./build
-COPY --chown=deploy:deploy --from=builder-base /app/src/data ./src/data
-COPY --chown=deploy:deploy --from=builder-base /opt/node_modules.prod ./node_modules
+COPY --chown=deploy:deploy --from=builder /app/.circleci ./.circleci
+COPY --chown=deploy:deploy --from=builder /app/build ./build
+COPY --chown=deploy:deploy --from=builder /app/src/data ./src/data
+COPY --chown=deploy:deploy --from=builder /app/node_modules ./node_modules
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["node", "--heapsnapshot-signal=SIGUSR2", "build/index.js"]
