@@ -2080,6 +2080,7 @@ type SaleArtworkEdge {
 Saved Search User Alert Settings
 """
 type SavedSearchUserAlertSettings {
+  details: String
   email: Boolean!
   frequency: UserSearchCriteriaFrequency!
   name: String
@@ -2772,6 +2773,7 @@ union UserAddressOrErrorsUnion = Errors | UserAddress
 Settings for user saved search
 """
 input UserAlertSettingsInput {
+  details: String
   email: Boolean
   frequency: UserSearchCriteriaFrequency
   name: String
