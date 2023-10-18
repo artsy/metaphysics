@@ -9,6 +9,7 @@ import SystemTime from "./time"
 import Services from "./services"
 import { ResolverContext } from "types/graphql"
 import { Algolia } from "../algolia"
+import { UserRoles } from "./userRoles"
 
 const SystemType = new GraphQLObjectType<any, ResolverContext>({
   name: "System",
@@ -31,6 +32,7 @@ const SystemType = new GraphQLObjectType<any, ResolverContext>({
       }),
       resolve: () => ({}),
     },
+    userRoles: UserRoles,
   },
 })
 
