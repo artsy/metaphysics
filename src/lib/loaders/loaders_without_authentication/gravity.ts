@@ -261,6 +261,11 @@ export default (opts) => {
     showsLoader: gravityLoader("shows"),
     showsWithHeadersLoader: gravityLoader("shows", {}, { headers: true }),
     similarArtworksLoader: gravityLoader("related/artworks"),
+    recentlyViewedArtworkIdsLoader: gravityLoader(
+      (id) => `user/${id}/recently_viewed_artwork_ids`,
+      {},
+      { headers: true }
+    ),
     similarGenesLoader: gravityLoader(
       (id) => `gene/${id}/similar`,
       {},
