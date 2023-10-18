@@ -28,9 +28,9 @@ export const SimilarToRecentlyViewed: GraphQLFieldConfig<
     const numberOfArtworksToFetch = Math.min(size + offset, MAX_ARTWORKS)
 
     try {
-      let recentlyViewedIds = (recently_viewed_artwork_ids || [])?.slice(0, 7)
+      let recentlyViewedIds = (recently_viewed_artwork_ids || []).slice(0, 7)
 
-      if (!!recentlyViewedIds) {
+      if (!recentlyViewedIds.length) {
         const recentlyViewedArtworksBody = (
           await recentlyViewedArtworkIdsLoader(userID)
         )?.body
