@@ -71,7 +71,6 @@ async function main() {
     const reposToUpdate = [
       { repo: "eigen", body: `${defaultBody} #nochangelog` },
       { repo: "energy" },
-      { repo: "prediction" },
       { repo: "force" },
       { repo: "forque" },
       { repo: "volt-v2" },
