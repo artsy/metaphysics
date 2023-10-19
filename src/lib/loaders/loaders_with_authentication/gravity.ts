@@ -594,6 +594,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    userRolesLoader: gravityLoader("system/roles"),
     saleArtworksAllLoader: gravityLoader(
       "sale_artworks",
       {},
