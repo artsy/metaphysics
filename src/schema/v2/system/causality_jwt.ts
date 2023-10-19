@@ -29,7 +29,7 @@ const CausalityJWT: GraphQLFieldConfig<void, ResolverContext> = {
   args: {
     role: {
       type: new GraphQLEnumType({
-        name: "LiveAuctionRole",
+        name: "Role",
         values: {
           PARTICIPANT: { value: "PARTICIPANT" },
           OPERATOR: { value: "OPERATOR" },
@@ -53,7 +53,7 @@ const CausalityJWT: GraphQLFieldConfig<void, ResolverContext> = {
     }
     // Observer role for logged out users
     if (!meLoader || !meBiddersLoader || !mePartnersLoader) {
-      return saleLoader(options.sale_id).then((sale) =>
+      return saleLoader(options.sale_id).then(sale =>
         causalityJwt({
           role: "observer",
           userId: null,
@@ -99,7 +99,7 @@ const CausalityJWT: GraphQLFieldConfig<void, ResolverContext> = {
 
           if (sale.partner) {
             return mePartnersLoader({ "partner_ids[]": sale.partner._id }).then(
-              (mePartners) => {
+              mePartners => {
                 // Check if current user has access to partner running the sale
                 if (mePartners.length === 0) {
                   throw new Error("Unauthorized to be operator")
