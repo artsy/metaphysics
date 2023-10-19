@@ -57,6 +57,7 @@ describe("Me", () => {
       const context = {
         meLoader,
         meUserInterestsLoader,
+        userID: "user-404",
       }
 
       const result = await runAuthenticatedQuery(query, context)
@@ -93,7 +94,7 @@ describe("Me", () => {
         page: 1,
         size: 10,
         total_count: true,
-        user_id: "user-42",
+        user_id: "user-404",
       })
     })
 
@@ -143,6 +144,7 @@ describe("Me", () => {
       const context = {
         meLoader,
         meUserInterestsLoader,
+        userID: "user-404",
       }
 
       await runAuthenticatedQuery(query, context)
@@ -154,7 +156,7 @@ describe("Me", () => {
         page: 1,
         size: 10,
         total_count: true,
-        user_id: "user-42",
+        user_id: "user-404",
       })
     })
   })
