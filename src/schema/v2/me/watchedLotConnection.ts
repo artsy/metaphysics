@@ -12,7 +12,7 @@ export const WatchedLotConnection: GraphQLFieldConfig<void, ResolverContext> = {
     nodeType: Lot,
   }).connectionType,
   args: pageable(),
-  resolve: async (_parent, args, { saleArtworksAllLoader }) => {
+  resolve: async (_parent, args, { saleArtworksAllLoader, userID }) => {
     if (!saleArtworksAllLoader) {
       return null
     }
@@ -24,6 +24,7 @@ export const WatchedLotConnection: GraphQLFieldConfig<void, ResolverContext> = {
       total_count: true,
       first,
       ...rest,
+      ...(userID && { user_id: userID }),
     })
 
     // @ts-expect-error FIXME: Make `page` is an optional param of `gravityOptions`

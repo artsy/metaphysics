@@ -31,7 +31,7 @@ export const UserInterestsConnection: GraphQLFieldConfig<
         "Id of the user interests to return if found. Can be an 'Artist' Id or a 'Gene' Id",
     },
   }),
-  resolve: async (_, args, { meUserInterestsLoader }) => {
+  resolve: async (_, args, { meUserInterestsLoader, userID }) => {
     if (!meUserInterestsLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
@@ -45,6 +45,7 @@ export const UserInterestsConnection: GraphQLFieldConfig<
       page,
       size,
       total_count: true,
+      ...(userID && { user_id: userID }),
     })
 
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
