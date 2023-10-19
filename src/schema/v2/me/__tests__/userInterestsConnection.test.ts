@@ -93,6 +93,7 @@ describe("Me", () => {
         page: 1,
         size: 10,
         total_count: true,
+        user_id: "user-42",
       })
     })
 
@@ -153,6 +154,7 @@ describe("Me", () => {
         page: 1,
         size: 10,
         total_count: true,
+        user_id: "user-42",
       })
     })
   })
