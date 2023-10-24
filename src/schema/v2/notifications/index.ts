@@ -40,6 +40,14 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: () => ({
     ...IDFields,
+    actorIDs: {
+      type: new GraphQLList(GraphQLString),
+      resolve: ({ actor_ids }) => actor_ids,
+    },
+    actorType: {
+      type: GraphQLString,
+      resolve: ({ actor_type }) => actor_type,
+    },
     title: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ actors }) => actors,

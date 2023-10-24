@@ -148,6 +148,10 @@ export const gravityStitchingEnvironment = (
         ): UserAddressConnection
       }
 
+      extend type Notification {
+        searchCriteria: SearchCriteria
+      }
+
       extend type Partner {
         searchCriteriaConnection(
           first: Int,
@@ -694,6 +698,32 @@ export const gravityStitchingEnvironment = (
               operation: "query",
               fieldName: "_unused_gravity_userAddressConnection",
               args: { ...args, userId: context.userID },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Notification: {
+        searchCriteria: {
+          fragment: gql`
+          ... on Notification {
+            actorIDs
+            actorType
+          }
+          `,
+          resolve: ({ actorIDs, actorType }, _args, context, info) => {
+            if (actorType !== "SearchCriteria") {
+              return null
+            }
+
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_savedSearch",
+              args: {
+                id: actorIDs[0],
+              },
               context,
               info,
             })

@@ -13238,6 +13238,8 @@ interface Node {
 }
 
 type Notification implements Node {
+  actorIDs: [String]
+  actorType: String
   artworksConnection(
     after: String
     before: String
@@ -13266,6 +13268,7 @@ type Notification implements Node {
     # pass `RELATIVE` to display the human-friendly date (e.g. "Today", "Yesterday", "5 days ago")
     format: String
   ): String!
+  searchCriteria: SearchCriteria
   targetHref: String!
   title: String!
 }
