@@ -11,16 +11,20 @@ describe("RecentlyViewedArtworks", () => {
     const me = {
       recently_viewed_artwork_ids: ["percy", "matt", "paul"],
     }
+
     const artworks = [
       { id: "percy", title: "Percy the Cat" },
       { id: "matt", title: "Matt the Person" },
       { id: "paul", title: "Paul the snail" },
       { id: "paula", title: "Paula the butterfly" },
     ]
+
     context = {
       meLoader: async () => me,
       artworksLoader: async () => artworks,
       recordArtworkViewLoader: jest.fn(async () => me),
+      recentlyViewedArtworkIdsLoader: async () =>
+        Promise.resolve({ body: me.recently_viewed_artwork_ids }),
     }
   })
 
@@ -89,6 +93,8 @@ describe("RecentlyViewedArtworks", () => {
     `
     context.meLoader = () =>
       Promise.resolve({ recently_viewed_artwork_ids: [] })
+
+    context.recentlyViewedArtworkIdsLoader = () => Promise.resolve({ body: [] })
 
     const data = await runAuthenticatedQuery(query, context)
     const recentlyViewedArtworks = data!.me.recentlyViewedArtworksConnection
