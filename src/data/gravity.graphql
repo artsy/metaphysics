@@ -2262,9 +2262,9 @@ enum SearchCriteriaSortEnum {
   COUNT_DESC
 
   """
-  Sort by high quality priority listed first
+  Sort by search criteria with price presence on top
   """
-  HIGH_QUALITY_DESC
+  PRICE_PRESENCE
 }
 
 interface SecondFactor {
