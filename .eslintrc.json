@@ -16,6 +16,11 @@
   ],
   "parser": "@typescript-eslint/parser",
   "rules": {
+    "sort-keys": [
+      "warn",
+      "asc",
+      { "caseSensitive": true, "natural": false, "minKeys": 2 }
+    ],
     "import/first": 0,
     "import/named": 0,
     "import/default": 0,
