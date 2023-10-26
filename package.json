@@ -156,7 +156,7 @@
       "yarn prettier --write",
       "git add"
     ],
-    "*.@(js)": [
+    "*.@(js|ts)": [
       "eslint --fix",
       "yarn prettier --write",
       "git add"
