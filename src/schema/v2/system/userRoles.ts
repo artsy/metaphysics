@@ -3,6 +3,7 @@ import {
   GraphQLFieldConfig,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -11,7 +12,7 @@ const UserRoleType = new GraphQLObjectType<any, ResolverContext>({
   description: "Fields corresponding to a given product privilege",
   fields: {
     name: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: "unique label for this role",
     },
   },
