@@ -1,6 +1,7 @@
 import { GraphQLFieldConfig } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { formatGravityError } from "lib/gravityErrorHandler"
 import { pageable } from "relay-cursor-paging"
 import { artworkConnection } from "schema/v2/artwork"
 import { ResolverContext } from "types/graphql"
@@ -16,37 +17,53 @@ export const RecentlyViewedArtworks: GraphQLFieldConfig<
   resolve: async (
     { recently_viewed_artwork_ids },
     args,
-    { artworksLoader }
+    { artworksLoader, recentlyViewedArtworkIdsLoader, userID }
   ) => {
+    if (!userID) return null
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const pageArtworkIDs = recently_viewed_artwork_ids?.slice(
-      offset,
-      offset + size
-    )
+    try {
+      let recentlyViewedIds = recently_viewed_artwork_ids || []
+      if (!recentlyViewedIds.length) {
+        const recentlyViewedArtworksBody = (
+          await recentlyViewedArtworkIdsLoader(userID)
+        )?.body
+        recentlyViewedIds = recentlyViewedArtworksBody || []
+      }
 
-    const artworks = recently_viewed_artwork_ids?.length
-      ? await artworksLoader({ ids: pageArtworkIDs })
-      : []
+      const pageArtworkIDs = recentlyViewedIds.slice(offset, offset + size)
 
-    const totalCount = recently_viewed_artwork_ids.length
+      const artworks = recentlyViewedIds?.length
+        ? await artworksLoader({ ids: pageArtworkIDs })
+        : []
 
-    const connection = connectionFromArraySlice(artworks, args, {
-      arrayLength: totalCount,
-      sliceStart: offset,
-    })
+      const totalCount = recentlyViewedIds.length
 
-    const totalPages = Math.ceil(totalCount / size)
+      const connection = connectionFromArraySlice(artworks, args, {
+        arrayLength: totalCount,
+        sliceStart: offset,
+      })
 
-    return {
-      totalCount,
-      pageCursors: createPageCursors({ ...args, page, size }, totalCount),
-      ...connection,
-      pageInfo: {
-        ...connection.pageInfo,
-        hasPreviousPage: page > 1,
-        hasNextPage: page < totalPages,
-      },
+      const totalPages = Math.ceil(totalCount / size)
+
+      return {
+        totalCount,
+        pageCursors: createPageCursors({ ...args, page, size }, totalCount),
+        ...connection,
+        pageInfo: {
+          ...connection.pageInfo,
+          hasPreviousPage: page > 1,
+          hasNextPage: page < totalPages,
+        },
+      }
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        console.error(
+          `[metaphysics @ recentlyViewedArtworks] ${formattedErr.message}]`
+        )
+      }
+      return null
     }
   },
 }

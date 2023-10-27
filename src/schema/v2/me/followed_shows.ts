@@ -30,7 +30,7 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (
     _root,
     options,
-    { followedShowsLoader, geodataCitiesLoader }
+    { followedShowsLoader, geodataCitiesLoader, userID }
   ) => {
     if (!followedShowsLoader) return null
 
@@ -58,6 +58,7 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
       status: options.status,
       day_threshold: options.dayThreshold,
       ...locationArgs,
+      ...(userID && { user_id: userID }),
     }
 
     return followedShowsLoader(gravityArgs).then(({ body, headers }) => {

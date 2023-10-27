@@ -578,6 +578,15 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "showsByFollowedArtists",
       "newWorksFromGalleriesYouFollowConnection",
       "myCollectionInfo",
+      "watchedLotConnection",
+      "userInterestsConnection",
+      "recentlyViewedArtworksConnection",
+      "myCollectionConnection",
+      "artworkInquiriesConnection",
+      "collectionsConnection",
+      "auctionResultsByFollowedArtists",
+      "myCollectionAuctionResults",
+      "newWorksByInterestingArtists",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader()

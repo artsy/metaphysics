@@ -37,6 +37,7 @@ describe("returns followed shows for a user", () => {
       size: 10,
       offset: 0,
       total_count: true,
+      user_id: "user-42",
     })
   })
 
@@ -51,6 +52,7 @@ describe("returns followed shows for a user", () => {
         offset: 0,
         total_count: true,
         status: status,
+        user_id: "user-42",
       })
     }
 
@@ -98,6 +100,7 @@ describe("returns followed shows for a user", () => {
         total_count: true,
         near: `${nyc.coords[0]},${nyc.coords[1]}`,
         max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+        user_id: "user-42",
       })
     })
 
