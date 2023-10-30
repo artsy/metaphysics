@@ -106,10 +106,7 @@ export const MyBids: GraphQLFieldConfig<void, ResolverContext> = {
       !(
         causalityGraphQLLoader &&
         meLoader &&
-        saleArtworksLoader &&
         saleArtworksAllLoader &&
-        salesLoaderWithHeaders &&
-        saleLoader &&
         lotStandingLoader
       )
     ) {
