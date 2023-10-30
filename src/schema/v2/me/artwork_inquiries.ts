@@ -30,7 +30,7 @@ const ArtworkInquiries: GraphQLFieldConfig<void, ResolverContext> = {
   type: connectionDefinitions({ nodeType: ArtworkInquiryType }).connectionType,
   args: pageable({}),
   description: "A list of the current user’s inquiry requests",
-  resolve: (_root, options, { inquiryRequestsLoader }) => {
+  resolve: (_root, options, { inquiryRequestsLoader, userID }) => {
     if (!inquiryRequestsLoader) return null
     const { limit: size, offset } = getPagingParameters(options)
     const gravityArgs = {
@@ -38,6 +38,7 @@ const ArtworkInquiries: GraphQLFieldConfig<void, ResolverContext> = {
       offset,
       inquireable_type: "artwork",
       total_count: true,
+      ...(userID && { user_id: userID }),
     }
     return inquiryRequestsLoader(gravityArgs).then(({ body, headers }) => {
       return connectionFromArraySlice(body, options, {
