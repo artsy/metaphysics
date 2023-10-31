@@ -157,6 +157,7 @@ export const gravityStitchingEnvironment = (
           artistID: ID,
           highQuality: Boolean,
           partnerID: String,
+          represented: Boolean,
           since: SearchCriteriaSinceEnum
           sort: SearchCriteriaSortEnum
         ): SearchCriteriaConnection
@@ -174,6 +175,7 @@ export const gravityStitchingEnvironment = (
           after: String,
           artistID: ID,
           highQuality: Boolean,
+          represented: Boolean,
           partnerID: String,
           since: SearchCriteriaSinceEnum
           sort: SearchCriteriaSortEnum
@@ -236,6 +238,7 @@ export const gravityStitchingEnvironment = (
           artistID: ID,
           highQuality: Boolean,
           partnerID: String,
+          represented: Boolean,
           since: SearchCriteriaSinceEnum
           sort: SearchCriteriaSortEnum
         ): SearchCriteriaConnection
