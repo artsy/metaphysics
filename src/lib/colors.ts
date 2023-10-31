@@ -1,91 +1,128 @@
 // TODO: delete after all artworks are reindexed to use new colors only
 export const OLD_COLORS = [
   {
+    value: "black-and-white",
+    name: "Black and White",
     backgroundColor: "#000",
     foregroundColor: "#fff",
-    name: "Black and White",
-    value: "black-and-white",
   },
   {
+    value: "red",
+    name: "Red",
     backgroundColor: "#FF0000",
     foregroundColor: "#fff",
-    name: "Red",
-    value: "red",
   },
   {
+    value: "yellow",
+    name: "Yellow",
     backgroundColor: "#FBE854",
     foregroundColor: "#000",
-    name: "Yellow",
-    value: "yellow",
   },
   {
+    value: "pink",
+    name: "Pink",
     backgroundColor: "#FB81CD",
     foregroundColor: "#000",
-    name: "Pink",
-    value: "pink",
   },
   {
+    value: "violet",
+    name: "Violet",
     backgroundColor: "#B82C83",
     foregroundColor: "#fff",
-    name: "Violet",
-    value: "violet",
   },
   {
+    value: "gold",
+    name: "Gold",
     backgroundColor: "#DAA520",
     foregroundColor: "#000",
-    name: "Gold",
-    value: "gold",
   },
   {
+    value: "orange",
+    name: "Orange",
     backgroundColor: "#F7923A",
     foregroundColor: "#000",
-    name: "Orange",
-    value: "orange",
   },
   {
+    value: "darkviolet",
+    name: "Dark Violet",
     backgroundColor: "#642B7F",
     foregroundColor: "#fff",
-    name: "Dark Violet",
-    value: "darkviolet",
   },
   {
+    value: "lightgreen",
+    name: "Light Green",
     backgroundColor: "#BCCC46",
     foregroundColor: "#000",
-    name: "Light Green",
-    value: "lightgreen",
   },
   {
+    value: "lightblue",
+    name: "Light Blue",
     backgroundColor: "#C2D5F1",
     foregroundColor: "#000",
-    name: "Light Blue",
-    value: "lightblue",
   },
   {
+    value: "darkblue",
+    name: "Dark Blue",
     backgroundColor: "#0A1AB4",
     foregroundColor: "#fff",
-    name: "Dark Blue",
-    value: "darkblue",
   },
   {
+    value: "darkorange",
+    name: "Dark Orange",
     backgroundColor: "#612A00",
     foregroundColor: "#fff",
-    name: "Dark Orange",
-    value: "darkorange",
   },
   {
+    value: "darkgreen",
+    name: "Dark Green",
     backgroundColor: "#004600",
     foregroundColor: "#fff",
-    name: "Dark Green",
-    value: "darkgreen",
   },
 ]
 
-export const COLORS: {
-  backgroundColor: string
-  foregroundColor: string
-  name: string
-  value: string
-}[] = [
+export const COLORS = [
+  {
+    value: "red",
+    name: "Red",
+    backgroundColor: "#BB392D",
+    foregroundColor: "#fff",
+  },
+  {
+    value: "orange",
+    name: "Orange",
+    backgroundColor: "#EA6B1F",
+    foregroundColor: "#000",
+  },
+  {
+    value: "yellow",
+    name: "Yellow",
+    backgroundColor: "#E2B929",
+    foregroundColor: "#000",
+  },
+  {
+    value: "green",
+    name: "Green",
+    backgroundColor: "#00674A",
+    foregroundColor: "#fff",
+  },
+  {
+    value: "blue",
+    name: "Blue",
+    backgroundColor: "#0A1AB4",
+    foregroundColor: "#fff",
+  },
+  {
+    value: "purple",
+    name: "Purple",
+    backgroundColor: "#7B3D91",
+    foregroundColor: "#fff",
+  },
+  {
+    value: "black-and-white",
+    name: "Black and White",
+    backgroundColor: "#000",
+    foregroundColor: "#f00",
+  },
   {
     backgroundColor: "#7B5927",
     foregroundColor: "#fff",
@@ -93,57 +130,15 @@ export const COLORS: {
     value: "brown",
   },
   {
-    backgroundColor: "#BB392D",
-    foregroundColor: "#fff",
-    name: "Red",
-    value: "red",
-  },
-  {
-    backgroundColor: "#EA6B1F",
-    foregroundColor: "#000",
-    name: "Orange",
-    value: "orange",
-  },
-  {
-    backgroundColor: "#E2B929",
-    foregroundColor: "#000",
-    name: "Yellow",
-    value: "yellow",
-  },
-  {
-    backgroundColor: "#00674A",
-    foregroundColor: "#fff",
-    name: "Green",
-    value: "green",
-  },
-  {
-    backgroundColor: "#0A1AB4",
-    foregroundColor: "#fff",
-    name: "Blue",
-    value: "blue",
-  },
-  {
-    backgroundColor: "#7B3D91",
-    foregroundColor: "#fff",
-    name: "Purple",
-    value: "purple",
-  },
-  {
-    backgroundColor: "#000",
-    foregroundColor: "#f00",
-    name: "Black and White",
-    value: "black-and-white",
-  },
-  {
+    value: "gray",
+    name: "Gray",
     backgroundColor: "#C2C2C2",
     foregroundColor: "#000",
-    name: "Gray",
-    value: "gray",
   },
   {
+    value: "pink",
+    name: "Pink",
     backgroundColor: "#E1ADCD",
     foregroundColor: "#000",
-    name: "Pink",
-    value: "pink",
   },
 ]
