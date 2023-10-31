@@ -5,6 +5,7 @@ import { toTitleCase } from "@artsy/to-title-case"
 import artworkMediums from "lib/artworkMediums"
 import allAttributionClasses from "lib/attributionClasses"
 import { COLORS, OLD_COLORS } from "lib/colors"
+import compact from "lodash/compact"
 
 // Taken from Force's SizeFilter component
 export const SIZES = {
@@ -384,9 +385,9 @@ function getPeriodLabels(majorPeriods: string[]) {
 function getColorLabels(colors: string[]) {
   if (!colors?.length) return []
 
-  return colors.map((value) => {
+  const colorLabels = colors.map((value) => {
     const color = [...COLORS, ...OLD_COLORS].find((c) => value === c.value)
-    if (!color) throw new Error(`Color not found: ${value}`)
+    if (!color) return null
 
     return {
       name: "Color",
@@ -395,6 +396,8 @@ function getColorLabels(colors: string[]) {
       field: "colors",
     }
   })
+
+  return compact(colorLabels)
 }
 
 async function getPartnerLabels(partnerIDs: string[], partnerLoader) {
