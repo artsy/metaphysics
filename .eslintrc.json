@@ -17,7 +17,8 @@
   "parser": "@typescript-eslint/parser",
   "rules": {
     "sort-keys": [
-      "warn",
+      // TODO: Reenable this with "warn" after we auto-fix whole codebase
+      "off",
       "asc",
       { "caseSensitive": true, "natural": false, "minKeys": 2 }
     ],
