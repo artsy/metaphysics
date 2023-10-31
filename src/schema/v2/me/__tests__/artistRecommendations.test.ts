@@ -25,9 +25,70 @@ describe("artistRecommendations", () => {
     const artistsLoader = jest.fn(async () => mockArtistsResponse)
 
     const context = {
-      meLoader: () => Promise.resolve({}),
-      vortexGraphqlLoader,
       artistsLoader,
+      meLoader: () => Promise.resolve({}),
+      userID: "vortex-user-id",
+      vortexGraphqlLoader,
+    }
+
+    const {
+      me: { artistRecommendations },
+    } = await runAuthenticatedQuery(query, context)
+    expect(artistRecommendations).toMatchInlineSnapshot(`
+      Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "internalID": "608a7416bdfbd1a789ba0911",
+              "slug": "banksy",
+            },
+          },
+          Object {
+            "node": Object {
+              "internalID": "608a7417bdfbd1a789ba092a",
+              "slug": "1-plus-1-plus-1",
+            },
+          },
+        ],
+        "totalCount": 2,
+      }
+    `)
+
+    expect(vortexGraphqlLoader).toHaveBeenCalledWith({
+      query: gql`
+        query artistRecommendationsQuery {
+          artistRecommendations(first: 50, userId: "vortex-user-id") {
+            totalCount
+            edges {
+              node {
+                artistId
+                score
+              }
+            }
+          }
+        }
+      `,
+    })
+    expect(artistsLoader).toHaveBeenCalledWith({
+      ids: ["608a7416bdfbd1a789ba0911", "608a7417bdfbd1a789ba092a"],
+    })
+  })
+
+  it("returns impersonated artist recommendations from Vortex", async () => {
+    const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
+    const vortexGraphqlImpersonationLoader = jest.fn(
+      async () => mockVortexResponse
+    )
+
+    const artistsLoader = jest.fn(async () => mockArtistsResponse)
+
+    const context = {
+      artistsLoader,
+      meLoader: () => Promise.resolve({}),
+      userID: "vortex-user-id",
+      vortexGraphqlImpersonationLoader,
+      vortexGraphqlLoader,
+      xImpersonateUserID: "x-imperonate-user-id",
     }
 
     const {
@@ -54,10 +115,10 @@ describe("artistRecommendations", () => {
       }
     `)
 
-    expect(vortexGraphqlLoader).toHaveBeenCalledWith({
+    expect(vortexGraphqlImpersonationLoader).toHaveBeenCalledWith({
       query: gql`
         query artistRecommendationsQuery {
-          artistRecommendations(first: 50) {
+          artistRecommendations(first: 50, userId: "vortex-user-id") {
             totalCount
             edges {
               node {
@@ -78,8 +139,8 @@ describe("artistRecommendations", () => {
     const vortexGraphqlLoader = jest.fn(() => async () => ({
       data: {
         artistRecommendations: {
-          totalCount: 0,
           edges: [],
+          totalCount: 0,
         },
       },
     }))
@@ -87,9 +148,9 @@ describe("artistRecommendations", () => {
     const artistsLoader = jest.fn(async () => mockArtistsResponse)
 
     const context = {
+      artistsLoader,
       meLoader: () => Promise.resolve({}),
       vortexGraphqlLoader,
-      artistsLoader,
     }
 
     const {
@@ -111,7 +172,6 @@ describe("artistRecommendations", () => {
 const mockVortexResponse = {
   data: {
     artistRecommendations: {
-      totalCount: 2,
       edges: [
         {
           node: {
@@ -126,6 +186,7 @@ const mockVortexResponse = {
           },
         },
       ],
+      totalCount: 2,
     },
   },
 }
@@ -145,12 +206,12 @@ const mockArtistsResponse = {
       image_url:
         "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/:version.jpg",
       image_urls: {
-        square:
-          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/square.jpg",
         four_thirds:
           "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/four_thirds.jpg",
         large:
           "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/large.jpg",
+        square:
+          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/square.jpg",
         tall:
           "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/tall.jpg",
       },
@@ -181,12 +242,12 @@ const mockArtistsResponse = {
       image_url:
         "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/:version.jpg",
       image_urls: {
-        square:
-          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/square.jpg",
         four_thirds:
           "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/four_thirds.jpg",
         large:
           "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/large.jpg",
+        square:
+          "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/square.jpg",
         tall:
           "https://d32dm0rphc51dk.cloudfront.net/jS7hjyXq3OKxNqWZPJeLPg/tall.jpg",
       },

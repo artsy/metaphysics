@@ -192,6 +192,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     requestIDs,
     userAgent,
     appToken,
+    xImpersonateUserID,
     ipAddress,
     xImpersonateUserID,
   }

@@ -22,7 +22,13 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
   resolve: async (
     _root,
     args: CursorPageable,
-    { vortexGraphqlLoader, artworksLoader }
+    {
+      vortexGraphqlLoader,
+      artworksLoader,
+      vortexGraphqlImpersonationLoader,
+      xImpersonateUserID,
+      userID,
+    }
   ) => {
     if (!vortexGraphqlLoader || !artworksLoader) return
 
@@ -30,10 +36,10 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
 
     // Fetching artwork IDs from Vortex
 
-    const vortexResult = await vortexGraphqlLoader({
+    const query = {
       query: gql`
         query artworkRecommendationsQuery {
-          artworkRecommendations(first: ${MAX_ARTWORKS}) {
+          artworkRecommendations(first: ${MAX_ARTWORKS}, userId: "${userID}") {
             totalCount
             edges {
               node {
@@ -44,11 +50,16 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
           }
         }
       `,
-    })()
+    }
+
+    const vortexResult = xImpersonateUserID
+      ? await vortexGraphqlImpersonationLoader(query)
+      : await vortexGraphqlLoader(query)()
 
     const artworkRecommendations = extractNodes(
       vortexResult.data?.artworkRecommendations
     )
+
     const artworkIds = artworkRecommendations.map(
       (node: any) => node?.artworkId
     )

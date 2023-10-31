@@ -25,9 +25,10 @@ describe("artworkRecommendations", () => {
     const artworksLoader = jest.fn(async () => artworksResponse)
 
     const context = {
-      meLoader: () => Promise.resolve({}),
-      vortexGraphqlLoader,
       artworksLoader,
+      meLoader: () => Promise.resolve({}),
+      userID: "vortex-user-id",
+      vortexGraphqlLoader,
     }
 
     const {
@@ -37,7 +38,67 @@ describe("artworkRecommendations", () => {
     expect(vortexGraphqlLoader).toHaveBeenCalledWith({
       query: gql`
         query artworkRecommendationsQuery {
-          artworkRecommendations(first: 50) {
+          artworkRecommendations(first: 50, userId: "vortex-user-id") {
+            totalCount
+            edges {
+              node {
+                artworkId
+                score
+              }
+            }
+          }
+        }
+      `,
+    })
+
+    expect(artworksLoader).toHaveBeenCalledWith({
+      ids: ["608a7417bdfbd1a789ba092a", "308a7416bdfbd1a789ba0911"],
+    })
+
+    expect(artworkRecommendations).toMatchInlineSnapshot(`
+      Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "internalID": "608a7417bdfbd1a789ba092a",
+              "slug": "gerhard-richter-abendstimmung-evening-calm-2",
+            },
+          },
+          Object {
+            "node": Object {
+              "internalID": "308a7416bdfbd1a789ba0911",
+              "slug": "pablo-picasso-deux-femmes-nues-dans-un-arbre-2",
+            },
+          },
+        ],
+        "totalCount": 4,
+      }
+    `)
+  })
+
+  it("returns impersonated artwork recommendations with order from Vortex", async () => {
+    const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+    const vortexGraphqlImpersonationLoader = jest.fn(async () => vortexResponse)
+
+    const artworksLoader = jest.fn(async () => artworksResponse)
+
+    const context = {
+      artworksLoader,
+      meLoader: () => Promise.resolve({}),
+      userID: "vortex-user-id",
+      vortexGraphqlImpersonationLoader,
+      vortexGraphqlLoader,
+      xImpersonateUserID: "x-imperonate-user-id",
+    }
+
+    const {
+      me: { artworkRecommendations },
+    } = await runAuthenticatedQuery(query, context)
+
+    expect(vortexGraphqlImpersonationLoader).toHaveBeenCalledWith({
+      query: gql`
+        query artworkRecommendationsQuery {
+          artworkRecommendations(first: 50, userId: "vortex-user-id") {
             totalCount
             edges {
               node {
@@ -79,8 +140,8 @@ describe("artworkRecommendations", () => {
     const vortexGraphqlLoader = jest.fn(() => async () => ({
       data: {
         artworkRecommendations: {
-          totalCount: 0,
           edges: [],
+          totalCount: 0,
         },
       },
     }))
@@ -88,9 +149,9 @@ describe("artworkRecommendations", () => {
     const artworksLoader = jest.fn(async () => artworksResponse)
 
     const context = {
+      artworksLoader,
       meLoader: () => Promise.resolve({}),
       vortexGraphqlLoader,
-      artworksLoader,
     }
 
     const {
@@ -112,7 +173,6 @@ describe("artworkRecommendations", () => {
 const vortexResponse = {
   data: {
     artworkRecommendations: {
-      totalCount: 4,
       edges: [
         {
           node: {
@@ -139,6 +199,7 @@ const vortexResponse = {
           },
         },
       ],
+      totalCount: 4,
     },
   },
 }

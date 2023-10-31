@@ -590,6 +590,8 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "auctionResultsByFollowedArtists",
       "myCollectionAuctionResults",
       "newWorksByInterestingArtists",
+      "artistRecommendations",
+      "artworkRecommendations",
     ]
 
     if (xImpersonateUserID) {
