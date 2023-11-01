@@ -24,7 +24,13 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
   resolve: async (
     _root,
     args: CursorPageable,
-    { vortexGraphqlLoader, artworksLoader }
+    {
+      vortexGraphqlLoader,
+      artworksLoader,
+      vortexGraphqlImpersonationLoader,
+      xImpersonateUserID,
+      userID,
+    }
   ) => {
     if (!vortexGraphqlLoader || !artworksLoader) return
 
@@ -32,10 +38,10 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
 
     // Fetch artist IDs from Vortex
 
-    const vortexResult = await vortexGraphqlLoader({
+    const query = {
       query: gql`
         query artistAffinitiesQuery {
-          artistAffinities(first: ${MAX_ARTISTS}, minScore: ${MIN_AFFINITY_SCORE}) {
+          artistAffinities(first: ${MAX_ARTISTS}, minScore: ${MIN_AFFINITY_SCORE}, userId: "${userID}") {
             totalCount
             edges {
               node {
@@ -46,7 +52,11 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
           }
         }
       `,
-    })()
+    }
+
+    const vortexResult = xImpersonateUserID
+      ? await vortexGraphqlImpersonationLoader(query)
+      : await vortexGraphqlLoader(query)()
 
     const artistIds = extractNodes(vortexResult.data?.artistAffinities).map(
       (node: any) => node?.artistId
