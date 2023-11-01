@@ -11,7 +11,7 @@ import { printSchema } from "graphql/utilities"
 import path from "path"
 import { schema } from "../src/schema/v2"
 import prettier from "prettier"
-import { graphql, introspectionQuery } from "graphql"
+import { getIntrospectionQuery, graphql } from "graphql"
 
 const message =
   "Usage: dump-schema.js /path/to/output/directory or /path/to/filename.graphql or /path/to/schema.json"
@@ -30,7 +30,7 @@ const schemaPath =
 
 if (schemaPath.endsWith("json")) {
   console.log(`Dumping JSON to ${schemaPath}`)
-  graphql(schema, introspectionQuery).then(
+  graphql(schema, getIntrospectionQuery()).then(
     (result) => {
       const prettierResult = prettier.format(JSON.stringify(result), {
         parser: "json",

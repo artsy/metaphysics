@@ -63,7 +63,7 @@
     "express-rate-limit": "3.2.0",
     "form-data": "^4.0.0",
     "google-libphonenumber": "^3.2.25",
-    "graphql": "14.7.0",
+    "graphql": "15.8.0",
     "graphql-depth-limit": "1.1.0",
     "graphql-middleware": "1.2.6",
     "graphql-parse-resolve-info": "^4.12.3",
