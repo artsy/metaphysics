@@ -116,6 +116,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           },
           inEditorialFeed: {
             type: GraphQLBoolean,
+            defaultValue: false,
             description:
               "Get only articles with 'standard', 'feature', 'series' or 'video' layouts.",
           },
