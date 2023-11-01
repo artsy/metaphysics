@@ -17,22 +17,21 @@ export const RecentlyViewedArtworks: GraphQLFieldConfig<
   resolve: async (
     { recently_viewed_artwork_ids },
     args,
-    { artworksLoader, recentlyViewedArtworkIdsLoader, userID }
+    { artworksLoader, recentlyViewedArtworkIdsLoader, xImpersonateUserID }
   ) => {
-    if (!userID) return null
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     try {
       let recentlyViewedIds = recently_viewed_artwork_ids || []
-      if (!recentlyViewedIds.length) {
+
+      if (xImpersonateUserID) {
         const recentlyViewedArtworksBody = (
-          await recentlyViewedArtworkIdsLoader(userID)
+          await recentlyViewedArtworkIdsLoader(xImpersonateUserID)
         )?.body
         recentlyViewedIds = recentlyViewedArtworksBody || []
       }
 
       const pageArtworkIDs = recentlyViewedIds.slice(offset, offset + size)
-
       const artworks = recentlyViewedIds?.length
         ? await artworksLoader({ ids: pageArtworkIDs })
         : []

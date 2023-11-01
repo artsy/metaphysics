@@ -19,9 +19,12 @@ export const SimilarToRecentlyViewed: GraphQLFieldConfig<
   resolve: async (
     { recently_viewed_artwork_ids },
     args,
-    { similarArtworksLoader, recentlyViewedArtworkIdsLoader, userID }
+    {
+      similarArtworksLoader,
+      recentlyViewedArtworkIdsLoader,
+      xImpersonateUserID,
+    }
   ) => {
-    if (!userID) return null
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     // Fetching all artworks until the current page because `offset` isn't working for similarArtworksLoader
@@ -30,9 +33,9 @@ export const SimilarToRecentlyViewed: GraphQLFieldConfig<
     try {
       let recentlyViewedIds = (recently_viewed_artwork_ids || []).slice(0, 7)
 
-      if (!recentlyViewedIds.length) {
+      if (xImpersonateUserID) {
         const recentlyViewedArtworksBody = (
-          await recentlyViewedArtworkIdsLoader(userID)
+          await recentlyViewedArtworkIdsLoader(xImpersonateUserID)
         )?.body
         recentlyViewedIds = (recentlyViewedArtworksBody || []).slice(0, 7)
       }

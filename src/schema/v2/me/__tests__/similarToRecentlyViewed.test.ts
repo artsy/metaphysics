@@ -129,7 +129,7 @@ describe("SimilarToRecentlyViewed", () => {
 
     context.recentlyViewedArtworkIdsLoader = async () => ids
     context.similarArtworksLoader = async () => artworks
-    context.userID = "user-200"
+    context.xImpersonateUserID = "some-user-id"
 
     const data = await runQuery(query, context)
     const similarToRecentlyViewed = data!.me.similarToRecentlyViewedConnection
