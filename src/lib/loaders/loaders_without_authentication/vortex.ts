@@ -22,7 +22,7 @@ export default (opts) => {
     const response = await fetch(urljoin(VORTEX_API_BASE, "graphql"), {
       body,
       headers: {
-        Authorization: `${opts.appToken}`,
+        Authorization: `Bearer ${opts.appToken}`,
         "Content-Type": "application/json",
       },
       method: "POST",
