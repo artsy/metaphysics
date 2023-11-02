@@ -246,4 +246,16 @@ export default (opts) => ({
       userAgent: opts.userAgent,
     }
   ),
+
+  // Loaders created by this factory are used by an email provider to fetch some user-specific data,
+  // and depend on the xapp token instead of the user's access token.
+  // For this reason, we can't use the standard apiLoaderWithAuthenticationFactory as that is access-token based.
+  // Additionally, we do want to skip the cache for these loaders, and so `uncachedLoaderFactory` would be more
+  // appropriate, but that is too brittle to use w/o more refactoring.
+  // We can take advantage of the fact that GraphQL requests are POSTs and so skip the cache anyway.
+  vortexLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    vortex,
+    "vortex",
+    opts
+  ),
 })

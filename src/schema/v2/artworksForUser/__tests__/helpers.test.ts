@@ -29,17 +29,6 @@ describe("getNewForYouRecs", () => {
 
     expect(artworkIds).toEqual(["banksy"])
   })
-
-  it("falls back to the app loader when there is no user loader", async () => {
-    const context = {
-      vortexGraphqlLoader: null,
-      vortexGraphqlLoaderFactory: () => () => appLoader,
-    } as any
-
-    const artworkIds = await getNewForYouRecs({}, context)
-
-    expect(artworkIds).toEqual(["warhol"])
-  })
 })
 
 describe("getNewForYouArtworks", () => {
