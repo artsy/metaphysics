@@ -124,6 +124,12 @@ export const COLORS = [
     foregroundColor: "#f00",
   },
   {
+    backgroundColor: "#7B5927",
+    foregroundColor: "#fff",
+    name: "Brown",
+    value: "brown",
+  },
+  {
     value: "gray",
     name: "Gray",
     backgroundColor: "#C2C2C2",
