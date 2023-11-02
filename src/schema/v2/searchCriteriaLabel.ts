@@ -4,7 +4,7 @@ import { toTitleCase } from "@artsy/to-title-case"
 
 import artworkMediums from "lib/artworkMediums"
 import allAttributionClasses from "lib/attributionClasses"
-import { COLORS, OLD_COLORS } from "lib/colors"
+import { COLORS } from "lib/colors"
 
 // Taken from Force's SizeFilter component
 export const SIZES = {
@@ -385,7 +385,7 @@ function getColorLabels(colors: string[]) {
   if (!colors?.length) return []
 
   return colors.map((value) => {
-    const color = [...COLORS, ...OLD_COLORS].find((c) => value === c.value)
+    const color = COLORS.find((c) => value === c.value)
     if (!color) throw new Error(`Color not found: ${value}`)
 
     return {
