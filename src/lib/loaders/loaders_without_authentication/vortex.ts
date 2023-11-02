@@ -6,25 +6,17 @@ interface LoaderArgs {
 }
 
 export default (opts) => {
-  const { vortexLoaderWithAuthenticationFactory } = factories(opts)
-
-  const setup = (appToken) => {
-    return vortexLoaderWithAuthenticationFactory(() =>
-      Promise.resolve(appToken)
-    )
-  }
+  const { vortexLoaderWithoutAuthenticationFactory } = factories(opts)
 
   return {
-    vortexGraphqlLoaderFactory: (appToken) => {
-      return ({ query, variables }: LoaderArgs) => {
-        return setup(appToken)(
-          "/graphql",
-          { query, variables: JSON.stringify(variables) },
-          {
-            method: "POST",
-          }
-        )
-      }
+    vortexGraphqlLoader: ({ query, variables }: LoaderArgs) => {
+      return vortexLoaderWithoutAuthenticationFactory(
+        "/graphql",
+        { query, variables: JSON.stringify(variables) },
+        {
+          method: "POST",
+        }
+      )
     },
   }
 }
