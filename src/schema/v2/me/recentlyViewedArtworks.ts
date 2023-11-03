@@ -15,23 +15,20 @@ export const RecentlyViewedArtworks: GraphQLFieldConfig<
   args: pageable({}),
   description: "A list of the current user’s recently viewed artworks.",
   resolve: async (
-    { recently_viewed_artwork_ids },
+    _me,
     args,
-    { artworksLoader, recentlyViewedArtworkIdsLoader, xImpersonateUserID }
+    { artworksLoader, recentlyViewedArtworkIdsLoader, userID }
   ) => {
+    if (!userID) return null
+
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-
     try {
-      let recentlyViewedIds = recently_viewed_artwork_ids || []
+      const recentlyViewedArtworksBody =
+        (await recentlyViewedArtworkIdsLoader(userID))?.body || []
 
-      if (xImpersonateUserID) {
-        const recentlyViewedArtworksBody = (
-          await recentlyViewedArtworkIdsLoader(xImpersonateUserID)
-        )?.body
-        recentlyViewedIds = recentlyViewedArtworksBody || []
-      }
-
+      const recentlyViewedIds = recentlyViewedArtworksBody
       const pageArtworkIDs = recentlyViewedIds.slice(offset, offset + size)
+
       const artworks = recentlyViewedIds?.length
         ? await artworksLoader({ ids: pageArtworkIDs })
         : []

@@ -17,28 +17,22 @@ export const SimilarToRecentlyViewed: GraphQLFieldConfig<
   args: pageable({}),
   description: "A list of artworks similar to recently viewed artworks.",
   resolve: async (
-    { recently_viewed_artwork_ids },
+    _me,
     args,
-    {
-      similarArtworksLoader,
-      recentlyViewedArtworkIdsLoader,
-      xImpersonateUserID,
-    }
+    { similarArtworksLoader, recentlyViewedArtworkIdsLoader, userID }
   ) => {
+    if (!userID) return null
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     // Fetching all artworks until the current page because `offset` isn't working for similarArtworksLoader
     const numberOfArtworksToFetch = Math.min(size + offset, MAX_ARTWORKS)
 
     try {
-      let recentlyViewedIds = (recently_viewed_artwork_ids || []).slice(0, 7)
+      const recentlyViewedArtworksBody = (
+        await recentlyViewedArtworkIdsLoader(userID)
+      )?.body
 
-      if (xImpersonateUserID) {
-        const recentlyViewedArtworksBody = (
-          await recentlyViewedArtworkIdsLoader(xImpersonateUserID)
-        )?.body
-        recentlyViewedIds = (recentlyViewedArtworksBody || []).slice(0, 7)
-      }
+      const recentlyViewedIds = (recentlyViewedArtworksBody || []).slice(0, 7)
 
       const artworks = await similarArtworksLoader({
         artwork_id: recentlyViewedIds,
