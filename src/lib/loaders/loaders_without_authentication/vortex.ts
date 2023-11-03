@@ -9,10 +9,7 @@ export default (opts) => {
   const { vortexLoaderWithoutAuthenticationFactory } = factories(opts)
 
   return {
-    vortexGraphqlLoaderWithoutAuthentication: ({
-      query,
-      variables,
-    }: GraphQLArgs) => {
+    vortexGraphqlLoader: ({ query, variables }: GraphQLArgs) => {
       return vortexLoaderWithoutAuthenticationFactory(
         "/graphql",
         { query, variables: JSON.stringify(variables) },
