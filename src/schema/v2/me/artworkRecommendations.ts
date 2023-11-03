@@ -22,13 +22,7 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
   resolve: async (
     _root,
     args: CursorPageable,
-    {
-      vortexGraphqlLoader,
-      artworksLoader,
-      vortexGraphqlImpersonationLoader,
-      xImpersonateUserID,
-      userID,
-    }
+    { vortexGraphqlLoader, artworksLoader, userID }
   ) => {
     if (!vortexGraphqlLoader || !artworksLoader) return
 
@@ -52,9 +46,7 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
       `,
     }
 
-    const vortexResult = xImpersonateUserID
-      ? await vortexGraphqlImpersonationLoader(query)
-      : await vortexGraphqlLoader(query)()
+    const vortexResult = await vortexGraphqlLoader(query)()
 
     const artworkRecommendations = extractNodes(
       vortexResult.data?.artworkRecommendations

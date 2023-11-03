@@ -24,13 +24,7 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
   resolve: async (
     _root,
     args: CursorPageable,
-    {
-      vortexGraphqlLoader,
-      artworksLoader,
-      vortexGraphqlImpersonationLoader,
-      xImpersonateUserID,
-      userID,
-    }
+    { vortexGraphqlLoader, artworksLoader, userID }
   ) => {
     if (!vortexGraphqlLoader || !artworksLoader) return
 
@@ -54,9 +48,7 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
       `,
     }
 
-    const vortexResult = xImpersonateUserID
-      ? await vortexGraphqlImpersonationLoader(query)
-      : await vortexGraphqlLoader(query)()
+    const vortexResult = await vortexGraphqlLoader(query)()
 
     const artistIds = extractNodes(vortexResult.data?.artistAffinities).map(
       (node: any) => node?.artistId
