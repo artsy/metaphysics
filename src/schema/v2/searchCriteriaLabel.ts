@@ -5,6 +5,7 @@ import { toTitleCase } from "@artsy/to-title-case"
 import artworkMediums from "lib/artworkMediums"
 import allAttributionClasses from "lib/attributionClasses"
 import { COLORS } from "lib/colors"
+import { round } from "lodash"
 
 // Taken from Force's SizeFilter component
 export const SIZES = {
@@ -101,7 +102,9 @@ export const resolveSearchCriteriaLabels = async (
     partnerIDs,
   } = parent
 
-  const { artistLoader, partnerLoader } = context
+  const { artistLoader, meLoader, partnerLoader } = context
+
+  const { length_unit_preference } = await meLoader()
 
   const labels: any[] = []
 
@@ -110,7 +113,9 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(getMediumLabels(additionalGeneIDs))
   labels.push(getPriceLabel(priceRange))
   labels.push(getSizeLabels(sizes))
-  labels.push(getCustomSizeLabels({ width, height }))
+  labels.push(
+    getCustomSizeLabels({ height, metric: length_unit_preference, width })
+  )
   labels.push(
     getWaysToBuyLabels({
       acquireable,
@@ -232,15 +237,17 @@ const convertToCentimeters = (element: number) => {
   return Math.round(element * ONE_IN_TO_CM)
 }
 
-const parseRange = (range = ""): (number | "*")[] => {
+const parseRange = (range = "", metric: string): (number | "*")[] => {
   return range.split("-").map((s) => {
     if (s === "*") return s
-    return convertToCentimeters(parseFloat(s))
+    return metric === "cm"
+      ? convertToCentimeters(parseFloat(s))
+      : round(parseFloat(s), 2)
   })
 }
 
-const extractSizeLabel = (prefix: string, value: string) => {
-  const [min, max] = parseRange(value)
+const extractSizeLabel = (prefix: string, value: string, metric: string) => {
+  const [min, max] = parseRange(value, metric)
 
   let label
   if (max === "*") {
@@ -251,22 +258,24 @@ const extractSizeLabel = (prefix: string, value: string) => {
     label = `${min}–${max}`
   }
 
-  return `${prefix}: ${label} cm`
+  return `${prefix}: ${label} ${metric}`
 }
 
 function getCustomSizeLabels({
   height,
   width,
+  metric,
 }: {
   height: string
   width: string
+  metric: string
 }) {
   const labels: SearchCriteriaLabel[] = []
 
   if (width) {
     labels.push({
       name: "Size",
-      displayValue: extractSizeLabel("w", width),
+      displayValue: extractSizeLabel("w", width, metric),
       value: width,
       field: "width",
     })
@@ -275,7 +284,7 @@ function getCustomSizeLabels({
   if (height) {
     labels.push({
       name: "Size",
-      displayValue: extractSizeLabel("h", height),
+      displayValue: extractSizeLabel("h", height, metric),
       value: height,
       field: "height",
     })
