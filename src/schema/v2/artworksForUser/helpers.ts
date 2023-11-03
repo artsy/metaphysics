@@ -7,7 +7,7 @@ export const getNewForYouRecs = async (
   args: CursorPageable,
   context: ResolverContext
 ): Promise<string[]> => {
-  const { vortexGraphqlLoader } = context
+  const { vortexGraphqlLoaderWithoutAuthentication } = context
 
   const userIdArgument = args.userId ? `userId: "${args.userId}"` : ""
   const versionArgument = args.version ? `version: "${args.version}"` : ""
@@ -15,7 +15,7 @@ export const getNewForYouRecs = async (
     ? `maxWorksPerArtist: ${args.maxWorksPerArtist}`
     : ""
 
-  const vortexResult = await vortexGraphqlLoader({
+  const vortexResult = await vortexGraphqlLoaderWithoutAuthentication({
     query: gql`
         query newForYouRecommendationsQuery {
           newForYouRecommendations(
