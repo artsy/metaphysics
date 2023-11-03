@@ -17,28 +17,44 @@ export const SimilarToRecentlyViewed: GraphQLFieldConfig<
   args: pageable({}),
   description: "A list of artworks similar to recently viewed artworks.",
   resolve: async (
-    _me,
+    { recently_viewed_artwork_ids },
     args,
-    { similarArtworksLoader, recentlyViewedArtworkIdsLoader, userID }
+    {
+      similarArtworksLoader,
+      recentlyViewedArtworkIdsLoader,
+      userID,
+      xImpersonateUserID,
+    }
   ) => {
-    if (!userID) return null
+    if (!userID && !xImpersonateUserID) return null
+
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     // Fetching all artworks until the current page because `offset` isn't working for similarArtworksLoader
     const numberOfArtworksToFetch = Math.min(size + offset, MAX_ARTWORKS)
 
     try {
-      const recentlyViewedArtworksBody = (
-        await recentlyViewedArtworkIdsLoader(userID)
-      )?.body
+      let artworkIDs
 
-      const recentlyViewedIds = (recentlyViewedArtworksBody || []).slice(0, 7)
+      // If `recently_viewed_artwork_ids` exists, use those
+      if (!!recently_viewed_artwork_ids) {
+        artworkIDs = recently_viewed_artwork_ids
+      } else if (!!xImpersonateUserID) {
+        // Otherwise, we are impersonating and use special loader to fetch
+        const {
+          body: recentlyViewedArtworkIds,
+        } = await recentlyViewedArtworkIdsLoader(xImpersonateUserID)
+        artworkIDs = recentlyViewedArtworkIds
+      }
 
-      const artworks = await similarArtworksLoader({
-        artwork_id: recentlyViewedIds,
-        for_sale: true,
-        size: numberOfArtworksToFetch,
-      })
+      const artworks =
+        artworkIDs?.length > 0
+          ? await similarArtworksLoader({
+              artwork_id: artworkIDs,
+              for_sale: true,
+              size: numberOfArtworksToFetch,
+            })
+          : []
 
       const totalCount = artworks.length
 

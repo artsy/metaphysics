@@ -20,10 +20,9 @@ describe("RecentlyViewedArtworks", () => {
     ]
 
     context = {
+      meLoader: async () => me,
       artworksLoader: async () => artworks,
       recordArtworkViewLoader: jest.fn(async () => me),
-      recentlyViewedArtworkIdsLoader: async () =>
-        Promise.resolve({ body: me.recently_viewed_artwork_ids }),
     }
   })
 
@@ -71,7 +70,12 @@ describe("RecentlyViewedArtworks", () => {
     `)
   })
 
-  it("does not return artwork connection without userID", async () => {
+  it("works for a request using impersonation", async () => {
+    context.meLoader = () => Promise.reject("This should not be called")
+    context.xImpersonateUserID = "some-user-id"
+    context.recentlyViewedArtworkIdsLoader = async () =>
+      Promise.resolve({ body: ["percy", "matt", "paul"] })
+
     const query = gql`
       {
         me {
@@ -89,11 +93,30 @@ describe("RecentlyViewedArtworks", () => {
         }
       }
     `
-
     const data = await runQuery(query, context)
-    const recentlyViewedArtworks = data!.me?.recentlyViewedArtworksConnection
+    const recentlyViewedArtworks = data!.me.recentlyViewedArtworksConnection
 
-    expect(recentlyViewedArtworks).toBeUndefined()
+    expect(recentlyViewedArtworks).toMatchInlineSnapshot(`
+      Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "slug": "percy",
+              "title": "Percy the Cat",
+            },
+          },
+          Object {
+            "node": Object {
+              "slug": "matt",
+              "title": "Matt the Person",
+            },
+          },
+        ],
+        "pageInfo": Object {
+          "hasNextPage": true,
+        },
+      }
+    `)
   })
 
   it("can return an empty connection", async () => {
