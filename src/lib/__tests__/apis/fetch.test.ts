@@ -40,7 +40,7 @@ it("tries to parse the response when there is a String and resolves with it (2)"
     callback(null, reqResponse)
   })
 
-  expectPromiseRejectionToMatch(fetch("foo/bar"), /Unexpected token/)
+  return expectPromiseRejectionToMatch(fetch("foo/bar"), /Unexpected token/)
 })
 
 it("tries to parse the response when there is a String and resolves with it (3)", () => {
