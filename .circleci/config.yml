@@ -9,7 +9,7 @@ orbs:
 executors:
   node-default:
     docker:
-      - image: circleci/node:18.15
+      - image: cimg/node:18.15.0
 
 not_staging_or_release: &not_staging_or_release
   filters:
