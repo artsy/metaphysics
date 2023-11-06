@@ -19,10 +19,14 @@ describe("getNewForYouRecs", () => {
   const userLoader = mockLoaderFactory([{ artworkId: "banksy" }])
   const appLoader = mockLoaderFactory([{ artworkId: "warhol" }])
 
-  it("prefers the user loader when available", async () => {
+  it("prefers the authenticatedLoaders when available", async () => {
     const context = {
-      vortexGraphqlLoader: () => userLoader,
-      vortexGraphqlLoaderFactory: () => () => appLoader,
+      authenticatedLoaders: {
+        vortexGraphqlLoader: () => userLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: appLoader,
+      },
     } as any
 
     const artworkIds = await getNewForYouRecs({}, context)

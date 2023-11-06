@@ -40,8 +40,14 @@ const buildContext = (responses: any = {}) => {
     artworksLoader: mockArtworksLoader,
     setsLoader: mockSetsLoader,
     setItemsLoader: mockSetItemsLoader,
-    vortexGraphqlLoader: mockVortexGraphqlLoader,
-  }
+    userID: "vortex-user-id",
+    authenticatedLoaders: {
+      vortexGraphqlLoader: mockVortexGraphqlLoader,
+    },
+    unauthenticatedLoaders: {
+      vortexGraphqlLoader: null,
+    },
+  } as any
 
   return context
 }
