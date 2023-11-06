@@ -86,6 +86,7 @@ workflows:
           name: test-jest
           pkg-manager: yarn
           test-results-for: jest
+          version: "18.15"
 
       - node/run:
           <<: *not_staging_or_release
