@@ -20,22 +20,29 @@ describe("artworkRecommendations", () => {
   `
 
   it("returns artwork recommendations with order from Vortex", async () => {
-    const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+    const vortexGraphQLAuthenticatedLoader = jest.fn(() => async () =>
+      vortexResponse
+    )
 
     const artworksLoader = jest.fn(async () => artworksResponse)
 
-    const context = {
+    const context: any = {
       artworksLoader,
       meLoader: () => Promise.resolve({}),
       userID: "vortex-user-id",
-      vortexGraphqlLoader,
+      authenticatedLoaders: {
+        vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: null,
+      },
     }
 
     const {
       me: { artworkRecommendations },
     } = await runAuthenticatedQuery(query, context)
 
-    expect(vortexGraphqlLoader).toHaveBeenCalledWith({
+    expect(vortexGraphQLAuthenticatedLoader).toHaveBeenCalledWith({
       query: gql`
         query artworkRecommendationsQuery {
           artworkRecommendations(first: 50, userId: "vortex-user-id") {
@@ -88,10 +95,15 @@ describe("artworkRecommendations", () => {
 
     const artworksLoader = jest.fn(async () => artworksResponse)
 
-    const context = {
+    const context: any = {
       artworksLoader,
       meLoader: () => Promise.resolve({}),
-      vortexGraphqlLoader,
+      authenticatedLoaders: {
+        vortexGraphqlLoader: vortexGraphqlLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: null,
+      },
     }
 
     const {

@@ -20,20 +20,29 @@ describe("artistRecommendations", () => {
   `
 
   it("returns artist recommendations from Vortex", async () => {
-    const vortexGraphqlLoader = jest.fn(() => async () => mockVortexResponse)
+    const vortexGraphQLAuthenticatedLoader = jest.fn(() => async () =>
+      mockVortexResponse
+    )
+    const vortexGraphQLUnauthenticatedLoader = jest.fn(() => async () => [])
 
     const artistsLoader = jest.fn(async () => mockArtistsResponse)
 
-    const context = {
+    const context: any = {
       artistsLoader,
       meLoader: () => Promise.resolve({}),
       userID: "vortex-user-id",
-      vortexGraphqlLoader,
+      authenticatedLoaders: {
+        vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
+      },
     }
 
     const {
       me: { artistRecommendations },
     } = await runAuthenticatedQuery(query, context)
+
     expect(artistRecommendations).toMatchInlineSnapshot(`
       Object {
         "edges": Array [
@@ -54,7 +63,7 @@ describe("artistRecommendations", () => {
       }
     `)
 
-    expect(vortexGraphqlLoader).toHaveBeenCalledWith({
+    expect(vortexGraphQLAuthenticatedLoader).toHaveBeenCalledWith({
       query: gql`
         query artistRecommendationsQuery {
           artistRecommendations(first: 50, userId: "vortex-user-id") {
@@ -86,10 +95,15 @@ describe("artistRecommendations", () => {
 
     const artistsLoader = jest.fn(async () => mockArtistsResponse)
 
-    const context = {
+    const context: any = {
       artistsLoader,
       meLoader: () => Promise.resolve({}),
-      vortexGraphqlLoader,
+      authenticatedLoaders: {
+        vortexGraphqlLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: null,
+      },
     }
 
     const {
@@ -105,6 +119,65 @@ describe("artistRecommendations", () => {
 
     expect(vortexGraphqlLoader).toHaveBeenCalled()
     expect(artistsLoader).not.toHaveBeenCalled()
+  })
+
+  it("prefers non authenticated vortex loader", async () => {
+    const vortexGraphQLUnauthenticatedLoader = jest.fn(() => async () =>
+      mockVortexResponse
+    )
+
+    const artistsLoader = jest.fn(async () => mockArtistsResponse)
+
+    const context: any = {
+      artistsLoader,
+      authenticatedLoaders: {
+        vortexGraphqlLoader: undefined,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
+      },
+      userID: "impersonated-user-id",
+    }
+
+    const {
+      me: { artistRecommendations },
+    } = await runAuthenticatedQuery(query, context)
+
+    expect(artistRecommendations).toMatchInlineSnapshot(`
+      Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "internalID": "608a7416bdfbd1a789ba0911",
+              "slug": "banksy",
+            },
+          },
+          Object {
+            "node": Object {
+              "internalID": "608a7417bdfbd1a789ba092a",
+              "slug": "1-plus-1-plus-1",
+            },
+          },
+        ],
+        "totalCount": 2,
+      }
+    `)
+
+    expect(vortexGraphQLUnauthenticatedLoader).toHaveBeenCalledWith({
+      query: gql`
+        query artistRecommendationsQuery {
+          artistRecommendations(first: 50, userId: "impersonated-user-id") {
+            totalCount
+            edges {
+              node {
+                artistId
+                score
+              }
+            }
+          }
+        }
+      `,
+    })
   })
 })
 

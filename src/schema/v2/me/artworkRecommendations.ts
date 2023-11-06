@@ -23,23 +23,27 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
     _root,
     args: CursorPageable,
     {
-      vortexGraphqlLoader,
       artworksLoader,
-      vortexGraphqlLoaderWithoutAuthentication,
+      authenticatedLoaders: {
+        vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
+      },
       xImpersonateUserID,
       userID,
     }
   ) => {
-    if (!vortexGraphqlLoader || !artworksLoader) return
+    if (!artworksLoader) return
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
+    const userId = userID || xImpersonateUserID
     // Fetching artwork IDs from Vortex
-
     const query = {
       query: gql`
         query artworkRecommendationsQuery {
-          artworkRecommendations(first: ${MAX_ARTWORKS}, userId: "${userID}") {
+          artworkRecommendations(first: ${MAX_ARTWORKS}, userId: "${userId}") {
             totalCount
             edges {
               node {
@@ -52,9 +56,11 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
       `,
     }
 
-    const vortexResult = xImpersonateUserID
-      ? await vortexGraphqlLoaderWithoutAuthentication(query)()
-      : await vortexGraphqlLoader(query)()
+    const isAuthenticatedRequest = !!vortexGraphQLAuthenticatedLoader
+
+    const vortexResult = isAuthenticatedRequest
+      ? await vortexGraphQLAuthenticatedLoader(query)()
+      : await vortexGraphQLUnauthenticatedLoader(query)()
 
     const artworkRecommendations = extractNodes(
       vortexResult.data?.artworkRecommendations

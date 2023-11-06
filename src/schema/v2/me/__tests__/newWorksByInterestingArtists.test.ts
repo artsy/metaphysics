@@ -25,11 +25,16 @@ describe("newWorksByInterestingArtists", () => {
 
     const artworksLoader = jest.fn(async () => mockArtworksResponse)
 
-    const context = {
+    const context: any = {
       artworksLoader,
       meLoader: () => Promise.resolve({}),
       userID: "vortex-id",
-      vortexGraphqlLoader,
+      authenticatedLoaders: {
+        vortexGraphqlLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: null,
+      },
     }
 
     const {
@@ -87,9 +92,14 @@ describe("newWorksByInterestingArtists", () => {
 
     const artworksLoader = jest.fn(async () => mockArtworksResponse)
 
-    const context = {
+    const context: any = {
       meLoader: () => Promise.resolve({}),
-      vortexGraphqlLoader,
+      authenticatedLoaders: {
+        vortexGraphqlLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: null,
+      },
       artworksLoader,
     }
 
