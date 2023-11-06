@@ -12,6 +12,8 @@ not_staging_or_release: &not_staging_or_release
       ignore:
         - staging
         - release
+  docker:
+    - image: circleci/node:18.15.0
 
 only_main: &only_main
   context: hokusai
