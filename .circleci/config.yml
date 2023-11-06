@@ -6,14 +6,17 @@ orbs:
   node: circleci/node@5.1.0
   yarn: artsy/yarn@6.5.0
 
+executors:
+  node-default:
+    docker:
+      - image: circleci/node:18.15
+
 not_staging_or_release: &not_staging_or_release
   filters:
     branches:
       ignore:
         - staging
         - release
-  docker:
-    - image: circleci/node:18.15.0
 
 only_main: &only_main
   context: hokusai
@@ -59,19 +62,33 @@ commands:
       - yarn/save_dependencies
 
 jobs:
+  node/test:
+    executor: node-default
+    steps:
+      - checkout
+      - setup_hokusai
+      - yarn_install
+      - run:
+          name: test-jest
+          command: yarn test-jest
+  node/run:
+    executor: node-default
+    steps:
+      - checkout
+      - setup_hokusai
+      - yarn_install
+      - run:
+          name: test-jest
+          command: yarn test-jest
   ensure-schema-update:
-    executor:
-      name: node/default
-      tag: "18.15"
+    executor: node-default
     steps:
       - checkout
       - setup_hokusai
       - yarn_install
       - run: scripts/ensure-schema-update.sh
   push-schema-changes:
-    executor:
-      name: node/default
-      tag: "18.15"
+    executor: node-default
     steps:
       - checkout
       - setup_hokusai
