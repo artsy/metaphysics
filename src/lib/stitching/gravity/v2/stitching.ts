@@ -174,7 +174,6 @@ export const gravityStitchingEnvironment = (
           before: String,
           after: String,
           artistID: ID,
-          highQuality: Boolean,
           represented: Boolean,
           partnerID: String,
           since: SearchCriteriaSinceEnum

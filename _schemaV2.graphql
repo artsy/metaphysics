@@ -15866,7 +15866,6 @@ type Query {
     artistID: ID
     before: String
     first: Int
-    highQuality: Boolean
     last: Int
     partnerID: String
     represented: Boolean
