@@ -193,6 +193,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     userAgent,
     appToken,
     ipAddress,
+    xImpersonateUserID,
   }
 
   const validationRules = [
