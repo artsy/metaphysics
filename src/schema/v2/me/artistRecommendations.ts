@@ -57,11 +57,9 @@ export const ArtistRecommendations: GraphQLFieldConfig<
       `,
     }
 
-    const isAuthenticatedRequest = !!vortexGraphQLAuthenticatedLoader
-
-    const vortexResult = isAuthenticatedRequest
-      ? await vortexGraphQLAuthenticatedLoader(query)()
-      : await vortexGraphQLUnauthenticatedLoader(query)()
+    const vortexResult = xImpersonateUserID
+      ? await vortexGraphQLUnauthenticatedLoader(query)()
+      : await vortexGraphQLAuthenticatedLoader!(query)()
 
     const artistIds = extractNodes(
       vortexResult.data?.artistRecommendations

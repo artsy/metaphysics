@@ -137,6 +137,7 @@ describe("artistRecommendations", () => {
         vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
       },
       userID: "impersonated-user-id",
+      xImpersonateUserID: "impersonated-user-id",
     }
 
     const {
