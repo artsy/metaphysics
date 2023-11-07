@@ -1694,7 +1694,7 @@ type Query {
     Returns the first _n_ elements from the list.
     """
     first: Int
-    highQuality: Boolean
+    highQuality: Boolean @deprecated(reason: "(Deprecated) No longer supported")
 
     """
     Returns the last _n_ elements from the list.
