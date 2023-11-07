@@ -17,9 +17,9 @@ export const getNewForYouRecs = async (
     xImpersonateUserID,
   } = context
 
-  const userIdArgument = args.userId
-    ? `userId: "${xImpersonateUserID || args.userId}"`
-    : ""
+  const userID = args.userId || xImpersonateUserID
+
+  const userIdArgument = userID ? `userId: "${userID}"` : ""
   const versionArgument = args.version ? `version: "${args.version}"` : ""
   const maxWorksPerArtistArgument = args.maxWorksPerArtist
     ? `maxWorksPerArtist: ${args.maxWorksPerArtist}`
@@ -45,11 +45,9 @@ export const getNewForYouRecs = async (
       `,
   }
 
-  const isAuthenticatedRequest = !!vortexGraphQLAuthenticatedLoader
-
-  const vortexResult = isAuthenticatedRequest
-    ? await vortexGraphQLAuthenticatedLoader(query)()
-    : await vortexGraphQLUnauthenticatedLoader(query)()
+  const vortexResult = xImpersonateUserID
+    ? await vortexGraphQLUnauthenticatedLoader(query)()
+    : await vortexGraphQLAuthenticatedLoader!(query)()
 
   const artworkIds = extractNodes(
     vortexResult.data?.newForYouRecommendations
