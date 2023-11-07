@@ -17,27 +17,35 @@ export const RecentlyViewedArtworks: GraphQLFieldConfig<
   resolve: async (
     { recently_viewed_artwork_ids },
     args,
-    { artworksLoader, recentlyViewedArtworkIdsLoader, userID }
+    {
+      artworksLoader,
+      recentlyViewedArtworkIdsLoader,
+      userID,
+      xImpersonateUserID,
+    }
   ) => {
-    if (!userID) return null
+    if (!userID && !xImpersonateUserID) return null
+
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
     try {
-      let recentlyViewedIds = recently_viewed_artwork_ids || []
-      if (!recentlyViewedIds.length) {
-        const recentlyViewedArtworksBody = (
-          await recentlyViewedArtworkIdsLoader(userID)
-        )?.body
-        recentlyViewedIds = recentlyViewedArtworksBody || []
+      let artworkIDs
+
+      // If `recently_viewed_artwork_ids` exists, use those
+      if (!!recently_viewed_artwork_ids) {
+        artworkIDs = recently_viewed_artwork_ids
+      } else if (!!xImpersonateUserID) {
+        // Otherwise, we are impersonating and use special loader to fetch
+        const {
+          body: recentlyViewedArtworkIds,
+        } = await recentlyViewedArtworkIdsLoader(xImpersonateUserID)
+        artworkIDs = recentlyViewedArtworkIds
       }
 
-      const pageArtworkIDs = recentlyViewedIds.slice(offset, offset + size)
+      const artworks =
+        artworkIDs?.length > 0 ? await artworksLoader({ ids: artworkIDs }) : []
 
-      const artworks = recentlyViewedIds?.length
-        ? await artworksLoader({ ids: pageArtworkIDs })
-        : []
-
-      const totalCount = recentlyViewedIds.length
+      const totalCount = artworks.length
 
       const connection = connectionFromArraySlice(artworks, args, {
         arrayLength: totalCount,

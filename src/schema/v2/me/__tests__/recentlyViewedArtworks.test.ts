@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 jest.mock("node-fetch", () => jest.fn())
@@ -23,8 +23,6 @@ describe("RecentlyViewedArtworks", () => {
       meLoader: async () => me,
       artworksLoader: async () => artworks,
       recordArtworkViewLoader: jest.fn(async () => me),
-      recentlyViewedArtworkIdsLoader: async () =>
-        Promise.resolve({ body: me.recently_viewed_artwork_ids }),
     }
   })
 
@@ -46,8 +44,56 @@ describe("RecentlyViewedArtworks", () => {
         }
       }
     `
-
     const data = await runAuthenticatedQuery(query, context)
+    const recentlyViewedArtworks = data!.me.recentlyViewedArtworksConnection
+
+    expect(recentlyViewedArtworks).toMatchInlineSnapshot(`
+      Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "slug": "percy",
+              "title": "Percy the Cat",
+            },
+          },
+          Object {
+            "node": Object {
+              "slug": "matt",
+              "title": "Matt the Person",
+            },
+          },
+        ],
+        "pageInfo": Object {
+          "hasNextPage": true,
+        },
+      }
+    `)
+  })
+
+  it("works for a request using impersonation", async () => {
+    context.meLoader = () => Promise.reject("This should not be called")
+    context.xImpersonateUserID = "some-user-id"
+    context.recentlyViewedArtworkIdsLoader = async () =>
+      Promise.resolve({ body: ["percy", "matt", "paul"] })
+
+    const query = gql`
+      {
+        me {
+          recentlyViewedArtworksConnection(first: 2) {
+            edges {
+              node {
+                slug
+                title
+              }
+            }
+            pageInfo {
+              hasNextPage
+            }
+          }
+        }
+      }
+    `
+    const data = await runQuery(query, context)
     const recentlyViewedArtworks = data!.me.recentlyViewedArtworksConnection
 
     expect(recentlyViewedArtworks).toMatchInlineSnapshot(`

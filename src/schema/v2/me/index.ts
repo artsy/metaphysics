@@ -550,7 +550,12 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
 
 const MeField: GraphQLFieldConfig<void, ResolverContext> = {
   type: meType,
-  resolve: (_root, _options, { userID, meLoader }, info) => {
+  resolve: (
+    _root,
+    _options,
+    { userID, meLoader, xImpersonateUserID },
+    info
+  ) => {
     if (!meLoader) return null
     const fieldsNotRequireLoader = [
       "id",
@@ -574,13 +579,11 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "identityVerification",
       "unreadNotificationsCount",
       "unseenNotificationsCount",
-      "similarToRecentlyViewedConnection",
       "showsByFollowedArtists",
       "newWorksFromGalleriesYouFollowConnection",
       "myCollectionInfo",
       "watchedLotConnection",
       "userInterestsConnection",
-      "recentlyViewedArtworksConnection",
       "myCollectionConnection",
       "artworkInquiriesConnection",
       "collectionsConnection",
@@ -588,6 +591,11 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "myCollectionAuctionResults",
       "newWorksByInterestingArtists",
     ]
+
+    if (xImpersonateUserID) {
+      return {}
+    }
+
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader()
     }
