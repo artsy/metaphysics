@@ -25,10 +25,16 @@ describe("newWorksByInterestingArtists", () => {
 
     const artworksLoader = jest.fn(async () => mockArtworksResponse)
 
-    const context = {
-      meLoader: () => Promise.resolve({}),
-      vortexGraphqlLoader,
+    const context: any = {
       artworksLoader,
+      meLoader: () => Promise.resolve({}),
+      userID: "vortex-id",
+      authenticatedLoaders: {
+        vortexGraphqlLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: null,
+      },
     }
 
     const {
@@ -53,7 +59,7 @@ describe("newWorksByInterestingArtists", () => {
     expect(vortexGraphqlLoader).toHaveBeenCalledWith({
       query: gql`
         query artistAffinitiesQuery {
-          artistAffinities(first: 50, minScore: 0.5) {
+          artistAffinities(first: 50, minScore: 0.5, userId: "vortex-id") {
             totalCount
             edges {
               node {
@@ -86,9 +92,14 @@ describe("newWorksByInterestingArtists", () => {
 
     const artworksLoader = jest.fn(async () => mockArtworksResponse)
 
-    const context = {
+    const context: any = {
       meLoader: () => Promise.resolve({}),
-      vortexGraphqlLoader,
+      authenticatedLoaders: {
+        vortexGraphqlLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: null,
+      },
       artworksLoader,
     }
 

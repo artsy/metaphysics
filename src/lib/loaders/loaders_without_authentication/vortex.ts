@@ -1,6 +1,6 @@
 import factories from "../api"
 
-interface LoaderArgs {
+interface GraphQLArgs {
   query: string
   variables?: any
 }
@@ -9,7 +9,7 @@ export default (opts) => {
   const { vortexLoaderWithoutAuthenticationFactory } = factories(opts)
 
   return {
-    vortexGraphqlLoader: ({ query, variables }: LoaderArgs) => {
+    vortexGraphqlLoader: ({ query, variables }: GraphQLArgs) => {
       return vortexLoaderWithoutAuthenticationFactory(
         "/graphql",
         { query, variables: JSON.stringify(variables) },

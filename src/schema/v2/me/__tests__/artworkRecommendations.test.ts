@@ -20,24 +20,32 @@ describe("artworkRecommendations", () => {
   `
 
   it("returns artwork recommendations with order from Vortex", async () => {
-    const vortexGraphqlLoader = jest.fn(() => async () => vortexResponse)
+    const vortexGraphQLAuthenticatedLoader = jest.fn(() => async () =>
+      vortexResponse
+    )
 
     const artworksLoader = jest.fn(async () => artworksResponse)
 
-    const context = {
-      meLoader: () => Promise.resolve({}),
-      vortexGraphqlLoader,
+    const context: any = {
       artworksLoader,
+      meLoader: () => Promise.resolve({}),
+      userID: "vortex-user-id",
+      authenticatedLoaders: {
+        vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: null,
+      },
     }
 
     const {
       me: { artworkRecommendations },
     } = await runAuthenticatedQuery(query, context)
 
-    expect(vortexGraphqlLoader).toHaveBeenCalledWith({
+    expect(vortexGraphQLAuthenticatedLoader).toHaveBeenCalledWith({
       query: gql`
         query artworkRecommendationsQuery {
-          artworkRecommendations(first: 50) {
+          artworkRecommendations(first: 50, userId: "vortex-user-id") {
             totalCount
             edges {
               node {
@@ -79,18 +87,23 @@ describe("artworkRecommendations", () => {
     const vortexGraphqlLoader = jest.fn(() => async () => ({
       data: {
         artworkRecommendations: {
-          totalCount: 0,
           edges: [],
+          totalCount: 0,
         },
       },
     }))
 
     const artworksLoader = jest.fn(async () => artworksResponse)
 
-    const context = {
-      meLoader: () => Promise.resolve({}),
-      vortexGraphqlLoader,
+    const context: any = {
       artworksLoader,
+      meLoader: () => Promise.resolve({}),
+      authenticatedLoaders: {
+        vortexGraphqlLoader: vortexGraphqlLoader,
+      },
+      unauthenticatedLoaders: {
+        vortexGraphqlLoader: null,
+      },
     }
 
     const {
@@ -112,7 +125,6 @@ describe("artworkRecommendations", () => {
 const vortexResponse = {
   data: {
     artworkRecommendations: {
-      totalCount: 4,
       edges: [
         {
           node: {
@@ -139,6 +151,7 @@ const vortexResponse = {
           },
         },
       ],
+      totalCount: 4,
     },
   },
 }
