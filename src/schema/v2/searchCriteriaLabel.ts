@@ -7,13 +7,11 @@ import allAttributionClasses from "lib/attributionClasses"
 import { COLORS } from "lib/colors"
 import { round } from "lodash"
 
-// Taken from Force's SizeFilter component
 export const SIZES_IN_CM = {
   SMALL: "Small (under 40cm)",
   MEDIUM: "Medium (40 – 100cm)",
   LARGE: "Large (over 100cm)",
 }
-
 export const SIZES_IN_INCHES = {
   SMALL: "Small (under 16in)",
   MEDIUM: "Medium (16in – 40in)",
@@ -21,6 +19,8 @@ export const SIZES_IN_INCHES = {
 }
 
 const ONE_IN_TO_CM = 2.54
+
+const DEFAULT_METRIC = "in"
 
 export type SearchCriteriaLabel = {
   /** The GraphQL field name of the filter facet */
@@ -110,7 +110,7 @@ export const resolveSearchCriteriaLabels = async (
 
   const { artistLoader, meLoader, partnerLoader } = context
 
-  const { length_unit_preference: metric } = await meLoader()
+  const metric = await getPreferredMetric(meLoader)
 
   const labels: any[] = []
 
@@ -411,6 +411,14 @@ function getColorLabels(colors: string[]) {
       field: "colors",
     }
   })
+}
+
+const getPreferredMetric = async (meLoader) => {
+  if (!meLoader) return DEFAULT_METRIC
+
+  const { length_unit_preference } = await meLoader()
+
+  return length_unit_preference
 }
 
 async function getPartnerLabels(partnerIDs: string[], partnerLoader) {
