@@ -249,7 +249,7 @@ const parseRange = (range = "", metric: string): (number | "*")[] => {
     if (s === "*") return s
     return metric === "cm"
       ? convertToCentimeters(parseFloat(s))
-      : round(parseFloat(s), 2)
+      : round(parseFloat(s), 1)
   })
 }
 
