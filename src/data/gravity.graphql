@@ -2116,6 +2116,7 @@ type SearchCriteria {
   additionalGeneNames: [String!]!
   artistID: String @deprecated(reason: "Deprecated in favor of artistIDs array")
   artistIDs: [String!]
+  artistSeriesIDs: [String!]!
   atAuction: Boolean
   attributionClass: [String!]!
   colors: [String!]!
@@ -2166,6 +2167,7 @@ input SearchCriteriaAttributes {
   """
   artistID: String = null
   artistIDs: [String!] = []
+  artistSeriesIDs: [String!] = []
   atAuction: Boolean = null
   attributionClass: [String!] = []
   colors: [String!] = []
