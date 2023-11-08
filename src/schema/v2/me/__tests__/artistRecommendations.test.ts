@@ -131,7 +131,7 @@ describe("artistRecommendations", () => {
     const context: any = {
       artistsLoader,
       authenticatedLoaders: {
-        vortexGraphqlLoader: undefined,
+        vortexGraphqlLoader: () => ({}),
       },
       unauthenticatedLoaders: {
         vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
