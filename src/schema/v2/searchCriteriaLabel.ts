@@ -8,10 +8,16 @@ import { COLORS } from "lib/colors"
 import { round } from "lodash"
 
 // Taken from Force's SizeFilter component
-export const SIZES = {
+export const SIZES_IN_CM = {
   SMALL: "Small (under 40cm)",
   MEDIUM: "Medium (40 – 100cm)",
   LARGE: "Large (over 100cm)",
+}
+
+export const SIZES_IN_INCHES = {
+  SMALL: "Small (under 16in)",
+  MEDIUM: "Medium (16in – 40in)",
+  LARGE: "Large (over 40in)",
 }
 
 const ONE_IN_TO_CM = 2.54
@@ -104,7 +110,7 @@ export const resolveSearchCriteriaLabels = async (
 
   const { artistLoader, meLoader, partnerLoader } = context
 
-  const { length_unit_preference } = await meLoader()
+  const { length_unit_preference: metric } = await meLoader()
 
   const labels: any[] = []
 
@@ -112,10 +118,8 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(getRarityLabels(attributionClass))
   labels.push(getMediumLabels(additionalGeneIDs))
   labels.push(getPriceLabel(priceRange))
-  labels.push(getSizeLabels(sizes))
-  labels.push(
-    getCustomSizeLabels({ height, metric: length_unit_preference, width })
-  )
+  labels.push(getSizeLabels(sizes, metric))
+  labels.push(getCustomSizeLabels({ height, metric, width }))
   labels.push(
     getWaysToBuyLabels({
       acquireable,
@@ -218,7 +222,7 @@ function getPriceLabel(priceRange: string): SearchCriteriaLabel | undefined {
   }
 }
 
-function getSizeLabels(sizes: string[]) {
+function getSizeLabels(sizes: string[], metric) {
   if (!sizes?.length) return []
 
   return sizes.map((size) => {
@@ -226,7 +230,10 @@ function getSizeLabels(sizes: string[]) {
 
     return {
       name: "Size",
-      displayValue: SIZES[sizeInUppercase],
+      displayValue:
+        metric === "cm"
+          ? SIZES_IN_CM[sizeInUppercase]
+          : SIZES_IN_INCHES[sizeInUppercase],
       value: sizeInUppercase,
       field: "sizes",
     }

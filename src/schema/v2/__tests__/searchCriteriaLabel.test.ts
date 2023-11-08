@@ -3,6 +3,8 @@ import { resolveSearchCriteriaLabels } from "../searchCriteriaLabel"
 const _ = {}
 
 describe("resolveSearchCriteriaLabels", () => {
+  const meLoader = async () => ({ length_unit_preference: "cm" })
+
   it("formats artist criteria", async () => {
     const parent = {
       artistIDs: ["foo-bar", "baz-qux"],
@@ -13,6 +15,7 @@ describe("resolveSearchCriteriaLabels", () => {
         .fn()
         .mockReturnValueOnce(Promise.resolve({ name: "Foo Bar" }))
         .mockReturnValueOnce(Promise.resolve({ name: "Baz Qux" })),
+      meLoader,
     }
 
     const labels = await resolveSearchCriteriaLabels(parent, _, context, _)
@@ -43,7 +46,7 @@ describe("resolveSearchCriteriaLabels", () => {
       ],
     }
 
-    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+    const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
 
     expect(labels).toIncludeAllMembers([
       {
@@ -94,7 +97,12 @@ describe("resolveSearchCriteriaLabels", () => {
         ],
       }
 
-      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(
+        parent,
+        _,
+        { meLoader },
+        _
+      )
 
       expect(labels).toIncludeAllMembers([
         {
@@ -188,7 +196,12 @@ describe("resolveSearchCriteriaLabels", () => {
         additionalGeneIDs: ["watercolor"],
       }
 
-      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(
+        parent,
+        _,
+        { meLoader },
+        _
+      )
 
       expect(labels).toIncludeAllMembers([
         {
@@ -204,7 +217,12 @@ describe("resolveSearchCriteriaLabels", () => {
         additionalGeneIDs: ["4d90d18edcdd5f44a5000010"],
       }
 
-      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(
+        parent,
+        _,
+        { meLoader },
+        _
+      )
 
       expect(labels).toIncludeAllMembers([
         {
@@ -223,7 +241,12 @@ describe("resolveSearchCriteriaLabels", () => {
         const parent = {
           priceRange: "42-420",
         }
-        const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+        const labels = await resolveSearchCriteriaLabels(
+          parent,
+          _,
+          { meLoader },
+          _
+        )
 
         expect(labels).toIncludeAllMembers([
           {
@@ -241,7 +264,12 @@ describe("resolveSearchCriteriaLabels", () => {
         const parent = {
           priceRange: "42-*",
         }
-        const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+        const labels = await resolveSearchCriteriaLabels(
+          parent,
+          _,
+          { meLoader },
+          _
+        )
 
         expect(labels).toIncludeAllMembers([
           {
@@ -259,7 +287,12 @@ describe("resolveSearchCriteriaLabels", () => {
         const parent = {
           priceRange: "*-420",
         }
-        const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+        const labels = await resolveSearchCriteriaLabels(
+          parent,
+          _,
+          { meLoader },
+          _
+        )
 
         expect(labels).toIncludeAllMembers([
           {
@@ -278,7 +311,7 @@ describe("resolveSearchCriteriaLabels", () => {
       sizes: ["LARGE", "MEDIUM", "SMALL"],
     }
 
-    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+    const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
 
     expect(labels).toIncludeAllMembers([
       {
@@ -308,7 +341,12 @@ describe("resolveSearchCriteriaLabels", () => {
         height: "0.39370078740157477-*",
       }
 
-      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(
+        parent,
+        _,
+        { meLoader },
+        _
+      )
 
       expect(labels).toIncludeAllMembers([
         {
@@ -324,7 +362,12 @@ describe("resolveSearchCriteriaLabels", () => {
         height: "*-3.937007874015748",
       }
 
-      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(
+        parent,
+        _,
+        { meLoader },
+        _
+      )
 
       expect(labels).toIncludeAllMembers([
         {
@@ -340,7 +383,12 @@ describe("resolveSearchCriteriaLabels", () => {
         height: "0.39370078740157477-3.937007874015748",
       }
 
-      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(
+        parent,
+        _,
+        { meLoader },
+        _
+      )
 
       expect(labels).toIncludeAllMembers([
         {
@@ -356,7 +404,12 @@ describe("resolveSearchCriteriaLabels", () => {
         width: "0.39370078740157477-*",
       }
 
-      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(
+        parent,
+        _,
+        { meLoader },
+        _
+      )
 
       expect(labels).toIncludeAllMembers([
         {
@@ -372,7 +425,12 @@ describe("resolveSearchCriteriaLabels", () => {
         width: "*-3.937007874015748",
       }
 
-      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(
+        parent,
+        _,
+        { meLoader },
+        _
+      )
 
       expect(labels).toIncludeAllMembers([
         {
@@ -388,7 +446,12 @@ describe("resolveSearchCriteriaLabels", () => {
         width: "0.39370078740157477-3.937007874015748",
       }
 
-      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(
+        parent,
+        _,
+        { meLoader },
+        _
+      )
 
       expect(labels).toIncludeAllMembers([
         {
@@ -405,7 +468,12 @@ describe("resolveSearchCriteriaLabels", () => {
         width: "*-20",
       }
 
-      const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+      const labels = await resolveSearchCriteriaLabels(
+        parent,
+        _,
+        { meLoader },
+        _
+      )
 
       expect(labels).toIncludeAllMembers([
         {
@@ -432,7 +500,7 @@ describe("resolveSearchCriteriaLabels", () => {
       offerable: true,
     }
 
-    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+    const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
 
     expect(labels).toIncludeAllMembers([
       {
@@ -467,7 +535,7 @@ describe("resolveSearchCriteriaLabels", () => {
       materialsTerms: ["acrylic", "c-print"],
     }
 
-    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+    const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
 
     expect(labels).toIncludeAllMembers([
       {
@@ -490,7 +558,7 @@ describe("resolveSearchCriteriaLabels", () => {
       locationCities: ["Durham, PA, USA", "New York, NY, USA"],
     }
 
-    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+    const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
 
     expect(labels).toIncludeAllMembers([
       {
@@ -513,7 +581,7 @@ describe("resolveSearchCriteriaLabels", () => {
       majorPeriods: ["1990", "Early 19th Century"],
     }
 
-    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+    const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
 
     expect(labels).toIncludeAllMembers([
       {
@@ -536,7 +604,7 @@ describe("resolveSearchCriteriaLabels", () => {
       colors: ["blue", "yellow"],
     }
 
-    const labels = await resolveSearchCriteriaLabels(parent, _, _, _)
+    const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
 
     expect(labels).toIncludeAllMembers([
       {
@@ -564,6 +632,7 @@ describe("resolveSearchCriteriaLabels", () => {
         .fn()
         .mockReturnValueOnce(Promise.resolve({ name: "Foo Bar Gallery" }))
         .mockReturnValueOnce(Promise.resolve({ name: "Baz Qux Gallery" })),
+      meLoader,
     }
 
     const labels = await resolveSearchCriteriaLabels(parent, _, context, _)
