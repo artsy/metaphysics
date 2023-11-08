@@ -7,15 +7,25 @@ export const getNewForYouRecs = async (
   args: CursorPageable,
   context: ResolverContext
 ): Promise<string[]> => {
-  const { vortexGraphqlLoader } = context
+  const {
+    authenticatedLoaders: {
+      vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+    },
+    unauthenticatedLoaders: {
+      vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
+    },
+    xImpersonateUserID,
+  } = context
 
-  const userIdArgument = args.userId ? `userId: "${args.userId}"` : ""
+  const userID = args.userId || xImpersonateUserID
+
+  const userIdArgument = userID ? `userId: "${userID}"` : ""
   const versionArgument = args.version ? `version: "${args.version}"` : ""
   const maxWorksPerArtistArgument = args.maxWorksPerArtist
     ? `maxWorksPerArtist: ${args.maxWorksPerArtist}`
     : ""
 
-  const vortexResult = await vortexGraphqlLoader({
+  const query = {
     query: gql`
         query newForYouRecommendationsQuery {
           newForYouRecommendations(
@@ -33,7 +43,11 @@ export const getNewForYouRecs = async (
           }
         }
       `,
-  })()
+  }
+
+  const vortexResult = xImpersonateUserID
+    ? await vortexGraphQLUnauthenticatedLoader(query)()
+    : await vortexGraphQLAuthenticatedLoader!(query)()
 
   const artworkIds = extractNodes(
     vortexResult.data?.newForYouRecommendations
