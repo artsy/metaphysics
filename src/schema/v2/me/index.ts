@@ -91,7 +91,7 @@ const collectorProfileResolver = (field: string) => async (
 // These default values are only necessary due to caching issues in Gravity.
 // Normally Gravity should always send values for these preferences.
 const DEFAULT_CURRENCY_PREFERENCE = "USD"
-const DEFAULT_LENGTH_UNIT_PREFERENCE = "in"
+export const DEFAULT_LENGTH_UNIT_PREFERENCE = "in"
 
 export const CurrencyPreference = new GraphQLEnumType({
   name: "CurrencyPreference",

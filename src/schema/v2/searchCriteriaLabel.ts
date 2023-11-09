@@ -6,6 +6,7 @@ import artworkMediums from "lib/artworkMediums"
 import allAttributionClasses from "lib/attributionClasses"
 import { COLORS } from "lib/colors"
 import { round } from "lodash"
+import { DEFAULT_LENGTH_UNIT_PREFERENCE } from "./me"
 
 export const SIZES_IN_CM = {
   SMALL: "Small (under 40cm)",
@@ -19,8 +20,6 @@ export const SIZES_IN_INCHES = {
 }
 
 const ONE_IN_TO_CM = 2.54
-
-const DEFAULT_METRIC = "in"
 
 export type SearchCriteriaLabel = {
   /** The GraphQL field name of the filter facet */
@@ -414,11 +413,11 @@ function getColorLabels(colors: string[]) {
 }
 
 const getPreferredMetric = async (meLoader) => {
-  if (!meLoader) return DEFAULT_METRIC
+  if (!meLoader) return DEFAULT_LENGTH_UNIT_PREFERENCE
 
   const { length_unit_preference } = await meLoader()
 
-  return length_unit_preference
+  return length_unit_preference || DEFAULT_LENGTH_UNIT_PREFERENCE
 }
 
 async function getPartnerLabels(partnerIDs: string[], partnerLoader) {
