@@ -5,12 +5,18 @@ import { toTitleCase } from "@artsy/to-title-case"
 import artworkMediums from "lib/artworkMediums"
 import allAttributionClasses from "lib/attributionClasses"
 import { COLORS } from "lib/colors"
+import { round } from "lodash"
+import { DEFAULT_LENGTH_UNIT_PREFERENCE } from "./me"
 
-// Taken from Force's SizeFilter component
-export const SIZES = {
+export const SIZES_IN_CM = {
   SMALL: "Small (under 40cm)",
   MEDIUM: "Medium (40 – 100cm)",
   LARGE: "Large (over 100cm)",
+}
+export const SIZES_IN_INCHES = {
+  SMALL: "Small (under 16in)",
+  MEDIUM: "Medium (16in – 40in)",
+  LARGE: "Large (over 40in)",
 }
 
 const ONE_IN_TO_CM = 2.54
@@ -101,7 +107,9 @@ export const resolveSearchCriteriaLabels = async (
     partnerIDs,
   } = parent
 
-  const { artistLoader, partnerLoader } = context
+  const { artistLoader, meLoader, partnerLoader } = context
+
+  const metric = await getPreferredMetric(meLoader)
 
   const labels: any[] = []
 
@@ -109,8 +117,8 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(getRarityLabels(attributionClass))
   labels.push(getMediumLabels(additionalGeneIDs))
   labels.push(getPriceLabel(priceRange))
-  labels.push(getSizeLabels(sizes))
-  labels.push(getCustomSizeLabels({ width, height }))
+  labels.push(getSizeLabels(sizes, metric))
+  labels.push(getCustomSizeLabels({ height, metric, width }))
   labels.push(
     getWaysToBuyLabels({
       acquireable,
@@ -213,7 +221,7 @@ function getPriceLabel(priceRange: string): SearchCriteriaLabel | undefined {
   }
 }
 
-function getSizeLabels(sizes: string[]) {
+function getSizeLabels(sizes: string[], metric) {
   if (!sizes?.length) return []
 
   return sizes.map((size) => {
@@ -221,7 +229,10 @@ function getSizeLabels(sizes: string[]) {
 
     return {
       name: "Size",
-      displayValue: SIZES[sizeInUppercase],
+      displayValue:
+        metric === "cm"
+          ? SIZES_IN_CM[sizeInUppercase]
+          : SIZES_IN_INCHES[sizeInUppercase],
       value: sizeInUppercase,
       field: "sizes",
     }
@@ -232,15 +243,17 @@ const convertToCentimeters = (element: number) => {
   return Math.round(element * ONE_IN_TO_CM)
 }
 
-const parseRange = (range = ""): (number | "*")[] => {
+const parseRange = (range = "", metric: string): (number | "*")[] => {
   return range.split("-").map((s) => {
     if (s === "*") return s
-    return convertToCentimeters(parseFloat(s))
+    return metric === "cm"
+      ? convertToCentimeters(parseFloat(s))
+      : round(parseFloat(s), 1)
   })
 }
 
-const extractSizeLabel = (prefix: string, value: string) => {
-  const [min, max] = parseRange(value)
+const extractSizeLabel = (prefix: string, value: string, metric: string) => {
+  const [min, max] = parseRange(value, metric)
 
   let label
   if (max === "*") {
@@ -251,22 +264,24 @@ const extractSizeLabel = (prefix: string, value: string) => {
     label = `${min}–${max}`
   }
 
-  return `${prefix}: ${label} cm`
+  return `${prefix}: ${label} ${metric}`
 }
 
 function getCustomSizeLabels({
   height,
   width,
+  metric,
 }: {
   height: string
   width: string
+  metric: string
 }) {
   const labels: SearchCriteriaLabel[] = []
 
   if (width) {
     labels.push({
       name: "Size",
-      displayValue: extractSizeLabel("w", width),
+      displayValue: extractSizeLabel("w", width, metric),
       value: width,
       field: "width",
     })
@@ -275,7 +290,7 @@ function getCustomSizeLabels({
   if (height) {
     labels.push({
       name: "Size",
-      displayValue: extractSizeLabel("h", height),
+      displayValue: extractSizeLabel("h", height, metric),
       value: height,
       field: "height",
     })
@@ -395,6 +410,14 @@ function getColorLabels(colors: string[]) {
       field: "colors",
     }
   })
+}
+
+const getPreferredMetric = async (meLoader) => {
+  if (!meLoader) return DEFAULT_LENGTH_UNIT_PREFERENCE
+
+  const { length_unit_preference } = await meLoader()
+
+  return length_unit_preference || DEFAULT_LENGTH_UNIT_PREFERENCE
 }
 
 async function getPartnerLabels(partnerIDs: string[], partnerLoader) {

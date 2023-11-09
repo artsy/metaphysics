@@ -36,7 +36,7 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
       userID,
     }
   ) => {
-    if (!artworksLoader) return
+    if (!artworksLoader || !vortexGraphQLAuthenticatedLoader) return
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
@@ -61,7 +61,7 @@ export const NewWorksByInterestingArtists: GraphQLFieldConfig<
 
     const vortexResult = xImpersonateUserID
       ? await vortexGraphQLUnauthenticatedLoader(query)()
-      : await vortexGraphQLAuthenticatedLoader!(query)()
+      : await vortexGraphQLAuthenticatedLoader(query)()
 
     const artistIds = extractNodes(vortexResult.data?.artistAffinities).map(
       (node: any) => node?.artistId

@@ -34,7 +34,7 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
       userID,
     }
   ) => {
-    if (!artworksLoader) return
+    if (!artworksLoader || !vortexGraphQLAuthenticatedLoader) return
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
@@ -58,7 +58,7 @@ export const ArtworkRecommendations: GraphQLFieldConfig<
 
     const vortexResult = xImpersonateUserID
       ? await vortexGraphQLUnauthenticatedLoader(query)()
-      : await vortexGraphQLAuthenticatedLoader!(query)()
+      : await vortexGraphQLAuthenticatedLoader(query)()
 
     const artworkRecommendations = extractNodes(
       vortexResult.data?.artworkRecommendations

@@ -16,6 +16,8 @@ export const getNewForYouRecs = async (
     },
     xImpersonateUserID,
   } = context
+  if (!vortexGraphQLAuthenticatedLoader)
+    throw new Error("Authentication failed: User is not authenticated.")
 
   const userID = args.userId || xImpersonateUserID
 
@@ -47,7 +49,7 @@ export const getNewForYouRecs = async (
 
   const vortexResult = xImpersonateUserID
     ? await vortexGraphQLUnauthenticatedLoader(query)()
-    : await vortexGraphQLAuthenticatedLoader!(query)()
+    : await vortexGraphQLAuthenticatedLoader(query)()
 
   const artworkIds = extractNodes(
     vortexResult.data?.newForYouRecommendations

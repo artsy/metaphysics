@@ -15,8 +15,10 @@ describe("previewSavedSearch", () => {
     }
   `
 
+  const meLoader = async () => ({ length_unit_preference: "in" })
+
   it("returns a previewed saved search", async () => {
-    const { previewSavedSearch } = await runQuery(query)
+    const { previewSavedSearch } = await runQuery(query, { meLoader })
 
     expect(previewSavedSearch.labels).toEqual([
       {
@@ -28,41 +30,83 @@ describe("previewSavedSearch", () => {
     ])
   })
 
-  it("returns a previewed saved search for sizes", async () => {
-    const query = gql`
-      {
-        previewSavedSearch(attributes: { sizes: [SMALL, MEDIUM, LARGE] }) {
-          labels {
-            field
-            name
-            displayValue
-            value
+  describe("size labels", () => {
+    it("returns a previewed saved search for sizes in inches", async () => {
+      const query = gql`
+        {
+          previewSavedSearch(attributes: { sizes: [SMALL, MEDIUM, LARGE] }) {
+            labels {
+              field
+              name
+              displayValue
+              value
+            }
           }
         }
-      }
-    `
-    const { previewSavedSearch } = await runQuery(query)
+      `
+      const { previewSavedSearch } = await runQuery(query, { meLoader })
 
-    expect(previewSavedSearch.labels).toEqual([
-      {
-        field: "sizes",
-        name: "Size",
-        displayValue: "Small (under 40cm)",
-        value: "SMALL",
-      },
-      {
-        field: "sizes",
-        name: "Size",
-        displayValue: "Medium (40 – 100cm)",
-        value: "MEDIUM",
-      },
-      {
-        field: "sizes",
-        name: "Size",
-        displayValue: "Large (over 100cm)",
-        value: "LARGE",
-      },
-    ])
+      expect(previewSavedSearch.labels).toEqual([
+        {
+          field: "sizes",
+          name: "Size",
+          displayValue: "Small (under 16in)",
+          value: "SMALL",
+        },
+        {
+          field: "sizes",
+          name: "Size",
+          displayValue: "Medium (16in – 40in)",
+          value: "MEDIUM",
+        },
+        {
+          field: "sizes",
+          name: "Size",
+          displayValue: "Large (over 40in)",
+          value: "LARGE",
+        },
+      ])
+    })
+
+    it("returns a previewed saved search for sizes in cm", async () => {
+      const query = gql`
+        {
+          previewSavedSearch(attributes: { sizes: [SMALL, MEDIUM, LARGE] }) {
+            labels {
+              field
+              name
+              displayValue
+              value
+            }
+          }
+        }
+      `
+
+      const { previewSavedSearch } = await runQuery(query, {
+        meLoader: async () => ({ length_unit_preference: "cm" }),
+      })
+
+      expect(previewSavedSearch.labels).toEqual([
+        {
+          field: "sizes",
+          name: "Size",
+          displayValue: "Small (under 40cm)",
+          value: "SMALL",
+        },
+        {
+          field: "sizes",
+          name: "Size",
+          displayValue: "Medium (40 – 100cm)",
+          value: "MEDIUM",
+        },
+        {
+          field: "sizes",
+          name: "Size",
+          displayValue: "Large (over 100cm)",
+          value: "LARGE",
+        },
+      ])
+    })
   })
 
   describe("displayName", () => {
@@ -84,7 +128,10 @@ describe("previewSavedSearch", () => {
 
       const artistLoader = () => Promise.resolve({ name: "KAWS" })
 
-      const { previewSavedSearch } = await runQuery(query, { artistLoader })
+      const { previewSavedSearch } = await runQuery(query, {
+        artistLoader,
+        meLoader,
+      })
 
       expect(previewSavedSearch.displayName).toEqual(
         "KAWS — $100–$1,000, Print, Limited edition"
@@ -111,7 +158,10 @@ describe("previewSavedSearch", () => {
         .mockReturnValueOnce(Promise.resolve({ name: "KAWS" }))
         .mockReturnValueOnce(Promise.resolve({ name: "Banksy" }))
 
-      const { previewSavedSearch } = await runQuery(query, { artistLoader })
+      const { previewSavedSearch } = await runQuery(query, {
+        artistLoader,
+        meLoader,
+      })
 
       expect(previewSavedSearch.displayName).toEqual(
         "KAWS or Banksy — Painting or Print, Limited edition or Unique"
@@ -156,6 +206,7 @@ describe("previewSavedSearch", () => {
         const { previewSavedSearch } = await runQuery(query, {
           artistLoader,
           partnerLoader,
+          meLoader,
         })
 
         expect(previewSavedSearch.displayName).toEqual(
@@ -163,7 +214,7 @@ describe("previewSavedSearch", () => {
         )
       })
 
-      it("can use size; ways to buy; material", async () => {
+      it("can use size; ways to buy; material in inches", async () => {
         const query = gql`
           {
             previewSavedSearch(
@@ -188,6 +239,40 @@ describe("previewSavedSearch", () => {
 
         const { previewSavedSearch } = await runQuery(query, {
           artistLoader,
+          meLoader,
+        })
+
+        expect(previewSavedSearch.displayName).toEqual(
+          "KAWS — Small (under 16in), Buy Now or Bid or Inquire or Make Offer, Acrylic"
+        )
+      })
+
+      it("can use size; ways to buy; material in centimeters", async () => {
+        const query = gql`
+          {
+            previewSavedSearch(
+              attributes: {
+                acquireable: true
+                artistIDs: ["kaws"]
+                atAuction: true
+                inquireableOnly: true
+                materialsTerms: ["acrylic"]
+                offerable: true
+                sizes: [SMALL]
+              }
+            ) {
+              displayName
+            }
+          }
+        `
+
+        const artistLoader = jest
+          .fn()
+          .mockReturnValueOnce(Promise.resolve({ name: "KAWS" }))
+
+        const { previewSavedSearch } = await runQuery(query, {
+          artistLoader,
+          meLoader: async () => ({ length_unit_preference: "cm" }),
         })
 
         expect(previewSavedSearch.displayName).toEqual(
@@ -216,6 +301,7 @@ describe("previewSavedSearch", () => {
 
         const { previewSavedSearch } = await runQuery(query, {
           artistLoader,
+          meLoader,
         })
 
         expect(previewSavedSearch.displayName).toEqual(
@@ -249,6 +335,7 @@ describe("previewSavedSearch", () => {
         const { previewSavedSearch } = await runQuery(query, {
           artistLoader,
           partnerLoader,
+          meLoader,
         })
 
         expect(previewSavedSearch.displayName).toEqual(
@@ -271,6 +358,7 @@ describe("previewSavedSearch", () => {
 
         const { previewSavedSearch } = await runQuery(query, {
           artistLoader,
+          meLoader,
         })
 
         expect(previewSavedSearch.displayName).toEqual("KAWS")
