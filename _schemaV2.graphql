@@ -13773,7 +13773,6 @@ type Partner implements Node {
     artistID: ID
     before: String
     first: Int
-    highQuality: Boolean
     last: Int
     partnerID: String
     represented: Boolean
@@ -15868,7 +15867,6 @@ type Query {
     artistID: ID
     before: String
     first: Int
-    highQuality: Boolean
     last: Int
     partnerID: String
     represented: Boolean
@@ -20502,7 +20500,6 @@ type Viewer {
     artistID: ID
     before: String
     first: Int
-    highQuality: Boolean
     last: Int
     partnerID: String
     represented: Boolean
