@@ -1694,6 +1694,10 @@ type Query {
     Returns the first _n_ elements from the list.
     """
     first: Int
+
+    """
+    (Deprecated) No longer supported
+    """
     highQuality: Boolean
 
     """
