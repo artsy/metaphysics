@@ -25,7 +25,7 @@
     "prettier-project": "prettier --write 'src/**/*.{js,ts,tsx,md,graphql}'",
     "schema-drift": "babel-node --no-warnings --extensions '.ts,.js' ./scripts/schema-drift.ts",
     "start": "yarn run dev",
-    "sync-env": "aws s3 cp s3://artsy-citadel/dev/.env.metaphysics .env.shared && echo 'ENV sync complete.'",
+    "sync-env": "aws s3 cp s3://artsy-citadel/metaphysics/.env.shared ./ && echo 'ENV sync complete.'",
     "test": "yarn jest --config jest.config.js --maxWorkers 3",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "test:validQueries": "babel-node --extensions '.ts,.js' src/integration/__tests__/runStoredQueryTests.ts",
