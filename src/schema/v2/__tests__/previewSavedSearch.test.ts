@@ -24,7 +24,7 @@ describe("previewSavedSearch", () => {
       {
         field: "acquireable",
         name: "Ways to Buy",
-        displayValue: "Buy Now",
+        displayValue: "Purchase",
         value: "true",
       },
     ])
@@ -243,7 +243,7 @@ describe("previewSavedSearch", () => {
         })
 
         expect(previewSavedSearch.displayName).toEqual(
-          "KAWS — Small (under 16in), Buy Now or Bid or Inquire or Make Offer, Acrylic"
+          "KAWS — Small (under 16in), Purchase or Bid or Contact Gallery or Make Offer, Acrylic"
         )
       })
 
@@ -276,7 +276,7 @@ describe("previewSavedSearch", () => {
         })
 
         expect(previewSavedSearch.displayName).toEqual(
-          "KAWS — Small (under 40cm), Buy Now or Bid or Inquire or Make Offer, Acrylic"
+          "KAWS — Small (under 40cm), Purchase or Bid or Contact Gallery or Make Offer, Acrylic"
         )
       })
 

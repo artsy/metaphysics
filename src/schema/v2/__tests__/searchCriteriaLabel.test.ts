@@ -505,7 +505,7 @@ describe("resolveSearchCriteriaLabels", () => {
     expect(labels).toIncludeAllMembers([
       {
         name: "Ways to Buy",
-        displayValue: "Buy Now",
+        displayValue: "Purchase",
         value: "true",
         field: "acquireable",
       },
@@ -517,7 +517,7 @@ describe("resolveSearchCriteriaLabels", () => {
       },
       {
         name: "Ways to Buy",
-        displayValue: "Inquire",
+        displayValue: "Contact Gallery",
         value: "true",
         field: "inquireableOnly",
       },
