@@ -311,7 +311,7 @@ function getWaysToBuyLabels(waysToBuy: {
   if (acquireable)
     labels.push({
       name: "Ways to Buy",
-      displayValue: "Buy Now",
+      displayValue: "Purchase",
       value: "true",
       field: "acquireable",
     })
@@ -327,7 +327,7 @@ function getWaysToBuyLabels(waysToBuy: {
   if (inquireableOnly)
     labels.push({
       name: "Ways to Buy",
-      displayValue: "Inquire",
+      displayValue: "Contact Gallery",
       value: "true",
       field: "inquireableOnly",
     })
