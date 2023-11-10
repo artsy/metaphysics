@@ -166,6 +166,9 @@ export const generateDisplayName = async (parent, args, context, info) => {
   )
   if (partner) otherLabels.push(partner)
 
+  const artistSeries = labels.filter(({ name }) => name === "Artist Series")
+  if (artistSeries) otherLabels.push(artistSeries)
+
   // concatenate, compact, and trim
 
   const allLabels = [artistLabels, ...prioritizedLabels, ...otherLabels].filter(

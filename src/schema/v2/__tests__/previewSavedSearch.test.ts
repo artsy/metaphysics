@@ -335,12 +335,49 @@ describe("previewSavedSearch", () => {
         const { previewSavedSearch } = await runQuery(query, {
           artistLoader,
           partnerLoader,
-          meLoader,
         })
 
         expect(previewSavedSearch.displayName).toEqual(
           "KAWS — New York, NY, USA, Foo Bar Gallery"
         )
+      })
+
+      it("can use artist series", async () => {
+        const query = gql`
+          {
+            previewSavedSearch(
+              attributes: {
+                artistIDs: ["kaws"]
+                artistSeriesIDs: ["kaws-astroboy"]
+              }
+            ) {
+              displayName
+            }
+          }
+        `
+
+        const artistLoader = jest
+          .fn()
+          .mockReturnValueOnce(Promise.resolve({ name: "KAWS" }))
+
+        const gravityGraphQLLoader = jest.fn().mockReturnValueOnce(
+          Promise.resolve({
+            artistSeries: {
+              internalID: "abc-123",
+              title: "Astroboy",
+            },
+          })
+        )
+
+        const context = {
+          artistLoader,
+          gravityGraphQLLoader,
+          meLoader,
+        }
+
+        const { previewSavedSearch } = await runQuery(query, context)
+
+        expect(previewSavedSearch.displayName).toEqual("KAWS — Astroboy")
       })
 
       it("generates a name with only artist specified in the alert criteria", async () => {
