@@ -7,6 +7,7 @@ import allAttributionClasses from "lib/attributionClasses"
 import { COLORS } from "lib/colors"
 import { round } from "lodash"
 import { DEFAULT_LENGTH_UNIT_PREFERENCE } from "./me"
+import gql from "lib/gql"
 
 export const SIZES_IN_CM = {
   SMALL: "Small (under 40cm)",
@@ -28,6 +29,7 @@ export type SearchCriteriaLabel = {
   /** The human-friendly name of the filter facet */
   name:
     | "Artist"
+    | "Artist Series"
     | "Artwork Location"
     | "Color"
     | "Galleries and Institutions"
@@ -90,6 +92,7 @@ export const resolveSearchCriteriaLabels = async (
 ) => {
   const {
     artistIDs,
+    artistSeriesIDs,
     attributionClass,
     additionalGeneIDs,
     priceRange,
@@ -107,7 +110,12 @@ export const resolveSearchCriteriaLabels = async (
     partnerIDs,
   } = parent
 
-  const { artistLoader, meLoader, partnerLoader } = context
+  const {
+    artistLoader,
+    gravityGraphQLLoader,
+    meLoader,
+    partnerLoader,
+  } = context
 
   const metric = await getPreferredMetric(meLoader)
 
@@ -132,6 +140,9 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(getPeriodLabels(majorPeriods))
   labels.push(getColorLabels(colors))
   labels.push(await getPartnerLabels(partnerIDs, partnerLoader))
+  labels.push(
+    await getArtistSeriesLabels(artistSeriesIDs, gravityGraphQLLoader)
+  )
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
 }
@@ -431,6 +442,39 @@ async function getPartnerLabels(partnerIDs: string[], partnerLoader) {
         displayValue: partner.name,
         value: id,
         field: "partnerIDs",
+      }
+    })
+  )
+}
+
+async function getArtistSeriesLabels(
+  artistSeriesIDs: string[],
+  gravityGraphQLLoader
+) {
+  if (!gravityGraphQLLoader || !artistSeriesIDs?.length) return []
+
+  return Promise.all(
+    artistSeriesIDs.map(async (id) => {
+      const data = await gravityGraphQLLoader({
+        query: gql`
+          query GetArtistSeriesLabelsQuery($id: ID!) {
+            artistSeries(id: $id) {
+              internalID
+              title
+            }
+          }
+        `,
+        variables: { id },
+      })
+      const {
+        artistSeries: { internalID, title },
+      } = data
+
+      return {
+        name: "Artist Series",
+        displayValue: title,
+        field: "artistSeriesIDs",
+        value: internalID,
       }
     })
   )
