@@ -27,6 +27,9 @@ const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   artistIDs: {
     type: new GraphQLList(GraphQLString),
   },
+  artistSeriesIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
   atAuction: {
     type: GraphQLBoolean,
   },
