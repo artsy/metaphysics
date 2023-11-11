@@ -69,3 +69,47 @@ export const AlertsConnectionType = connectionWithCursorInfo({
   name: "Alert",
   nodeType: AlertType,
 }).connectionType
+
+export const AlertsSummaryFields = {
+  topHit: {
+    type: AlertType,
+    resolve: ({ top_hit }) => top_hit,
+  },
+  isRecentlyEnabled: {
+    type: GraphQLBoolean,
+    resolve: ({ total_user_search_criteria_enabled_within_last_7d }) =>
+      total_user_search_criteria_enabled_within_last_7d > 0,
+  },
+  counts: {
+    type: new GraphQLObjectType({
+      name: "AlertsSummaryCounts",
+      fields: {
+        totalUserSearchCriteriaCount: {
+          type: GraphQLInt,
+          resolve: ({ total_user_search_criteria_count }) =>
+            total_user_search_criteria_count,
+        },
+        totalWithAdditionalGeneIdsCount: {
+          type: GraphQLInt,
+          resolve: ({ total_with_additional_gene_ids_count }) =>
+            total_with_additional_gene_ids_count,
+        },
+        totalWithAttributionClassCount: {
+          type: GraphQLInt,
+          resolve: ({ total_with_attribution_class_count }) =>
+            total_with_attribution_class_count,
+        },
+        totalWithPriceRangeCount: {
+          type: GraphQLInt,
+          resolve: ({ total_with_price_range_count }) =>
+            total_with_price_range_count,
+        },
+        totalWithOtherMetadataCount: {
+          type: GraphQLInt,
+          resolve: ({ total_with_other_metadata_count }) =>
+            total_with_other_metadata_count,
+        },
+      },
+    }),
+  },
+}
