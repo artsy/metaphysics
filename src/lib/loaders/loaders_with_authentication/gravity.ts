@@ -20,6 +20,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    artistAlertsLoader: gravityLoader(
+      (id) => `artist/${id}/alerts`,
+      {},
+      { headers: true }
+    ),
     artistDuplicatesLoader: gravityLoader(
       (id) => `artist/${id}/duplicates`,
       {},
