@@ -122,12 +122,14 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             args
           )
 
-          const { body, headers } = await artistAlertsLoader(_id, {
+          const {
+            alerts_json: body,
+            total_count: totalCount,
+          } = await artistAlertsLoader(_id, {
             page,
             size,
             sort: args.sort,
           })
-          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
           return paginationResolver({
             totalCount,
