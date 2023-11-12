@@ -269,8 +269,8 @@ type Agreement {
 }
 
 type Alert {
-  additionalGeneNames: String
-  attributionClass: String
+  additionalGeneNames: [String]
+  attributionClass: [String]
   formattedPriceRange: String
   hasRecentlyEnabledUserSearchCriteria: Boolean
 
@@ -279,7 +279,7 @@ type Alert {
 
   # A type-specific ID.
   internalID: ID!
-  materialsTerms: String
+  materialsTerms: [String]
   priceRange: String
   summary: JSON
   totalUserSearchCriteriaCount: Int
