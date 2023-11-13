@@ -27,6 +27,9 @@ const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   artistIDs: {
     type: new GraphQLList(GraphQLString),
   },
+  artistSeriesIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
   atAuction: {
     type: GraphQLBoolean,
   },
@@ -162,6 +165,9 @@ export const generateDisplayName = async (parent, args, context, info) => {
     ({ name }) => name === "Galleries and Institutions"
   )
   if (partner) otherLabels.push(partner)
+
+  const artistSeries = labels.filter(({ name }) => name === "Artist Series")
+  if (artistSeries) otherLabels.push(artistSeries)
 
   // concatenate, compact, and trim
 

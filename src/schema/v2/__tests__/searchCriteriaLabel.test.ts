@@ -652,4 +652,49 @@ describe("resolveSearchCriteriaLabels", () => {
       },
     ])
   })
+
+  it("formats artist series criteria", async () => {
+    const parent = {
+      artistSeriesIDs: ["kaws-astroboy", "kaws-companions"],
+    }
+
+    const context = {
+      gravityGraphQLLoader: jest
+        .fn()
+        .mockReturnValueOnce(
+          Promise.resolve({
+            artistSeries: {
+              internalID: "abc-123",
+              title: "Astroboy",
+            },
+          })
+        )
+        .mockReturnValueOnce(
+          Promise.resolve({
+            artistSeries: {
+              internalID: "def-456",
+              title: "Companions",
+            },
+          })
+        ),
+      meLoader,
+    }
+
+    const labels = await resolveSearchCriteriaLabels(parent, _, context, _)
+
+    expect(labels).toIncludeAllMembers([
+      {
+        name: "Artist Series",
+        field: "artistSeriesIDs",
+        value: "abc-123",
+        displayValue: "Astroboy",
+      },
+      {
+        name: "Artist Series",
+        field: "artistSeriesIDs",
+        value: "def-456",
+        displayValue: "Companions",
+      },
+    ])
+  })
 })
