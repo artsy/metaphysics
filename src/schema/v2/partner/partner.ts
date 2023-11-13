@@ -146,7 +146,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       cached,
       alertsSummaryArtistsConnection: {
         type: AlertsSummaryArtistConnectionType,
-        args: pageable({}),
+        args: pageable({
+          represented: {
+            type: GraphQLBoolean,
+          },
+        }),
         resolve: async ({ _id }, args, { partnerAlertsSummaryLoader }) => {
           if (!partnerAlertsSummaryLoader) return null
 
@@ -154,13 +158,19 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             args
           )
 
+          type GravityArgs = {
+            page: number
+            size: number
+            represented?: boolean
+          }
+
+          const gravityArgs: GravityArgs = { page, size }
+          if (args.represented) gravityArgs.represented = true
+
           const {
             summary: body,
             total_count: totalCount,
-          } = await partnerAlertsSummaryLoader(_id, {
-            page,
-            size,
-          })
+          } = await partnerAlertsSummaryLoader(_id, gravityArgs)
 
           return paginationResolver({
             totalCount,
