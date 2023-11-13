@@ -3734,6 +3734,7 @@ type City {
 
 type CitySponsoredContent {
   artGuideUrl: String
+  coverImage: Image
   featuredShows: [Show]
   imageUrl: String
   introText: String

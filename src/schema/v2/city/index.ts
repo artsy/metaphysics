@@ -144,6 +144,16 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
               imageUrl: {
                 type: GraphQLString,
               },
+              coverImage: {
+                type: ImageType,
+                resolve: ({ imageUrl }) => {
+                  if (!imageUrl) return null
+
+                  return {
+                    image_url: imageUrl,
+                  }
+                },
+              },
               artGuideUrl: {
                 type: GraphQLString,
               },
