@@ -505,7 +505,7 @@ export default (accessToken, userID, opts) => {
     ),
     matchPagesLoader: gravityLoader("match/pages", {}, { headers: true }),
     partnerAlertsSummaryLoader: gravityLoader(
-      (id) => `partner/${id}/alerts_summary`
+      (id) => `partner/${id}/alert_summary`
     ),
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
     partnerArtistDocumentsLoader: gravityLoader<

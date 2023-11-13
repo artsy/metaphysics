@@ -111,5 +111,6 @@ export const AlertsSummaryFields = {
         },
       },
     }),
+    resolve: (resp) => resp,
   },
 }

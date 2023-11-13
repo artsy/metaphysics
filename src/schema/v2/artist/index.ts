@@ -123,7 +123,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
 
           const {
-            alerts_json: body,
+            alerts: body,
             total_count: totalCount,
           } = await artistAlertsLoader(_id, {
             page,

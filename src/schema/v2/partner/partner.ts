@@ -155,9 +155,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           )
 
           const {
-            summary_json: body,
+            summary: body,
             total_count: totalCount,
-          } = await partnerAlertsSummaryLoader(_id)
+          } = await partnerAlertsSummaryLoader(_id, {
+            page,
+            size,
+          })
 
           return paginationResolver({
             totalCount,
