@@ -2,6 +2,7 @@
   "cities": {
     "new-york-ny-usa": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in New York.",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/47/New_york_times_square-terabass.jpg",
       "artGuideUrl": "https://emt.bmw-arts-design.com/bmw-art-guide?partner=q73iAFGdha",
       "featuredShowIds": [
         "5c8857f2702b1d000691f4f7",
@@ -16,6 +17,7 @@
     },
     "london-united-kingdom": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in London.",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/82/London_Big_Ben_Phone_box.jpg",
       "artGuideUrl": "https://emt.bmw-arts-design.com/bmw-art-guide?partner=q73iAFGdha",
       "featuredShowIds": [
         "5c8857f6702b1d000691f50e",
@@ -30,6 +32,7 @@
     },
     "los-angeles-ca-usa": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Los Angeles.",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/32/Hollywood_Sign_%28Zuschnitt%29_%28cropped%29.jpg",
       "artGuideUrl": "https://emt.bmw-arts-design.com/bmw-art-guide?partner=q73iAFGdha",
       "featuredShowIds": [
         "5c8857f4702b1d000691f502",

@@ -4,6 +4,9 @@ interface CitySponsoredContent {
   /** Prose content for city */
   introText: string
 
+  /** Link to image */
+  imageUrl: string
+
   /** Link to external guide */
   artGuideUrl: string
 

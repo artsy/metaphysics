@@ -28,6 +28,7 @@ import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
 import { createPageCursors } from "../fields/pagination"
 import { HTTPError } from "lib/HTTPError"
+import { ImageType } from "../image"
 
 export interface TCity {
   slug: string
@@ -138,6 +139,9 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
             const { ShowType, ShowsConnection } = require("../show")
             return {
               introText: {
+                type: GraphQLString,
+              },
+              imageUrl: {
                 type: GraphQLString,
               },
               artGuideUrl: {
