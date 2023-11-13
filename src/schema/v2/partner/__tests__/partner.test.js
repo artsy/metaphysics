@@ -1328,6 +1328,85 @@ describe("Partner type", () => {
     })
   })
 
+  describe("#alertsSummaryArtistsConnection", () => {
+    it("returns the summary of artists with recently enabled user search criteria", async () => {
+      const summaryResponse = {
+        summary: [
+          {
+            artist: { name: "Percy Z" },
+            top_hit: {
+              formatted_price_range: "Under $1,000,000",
+              count_7d: 1,
+            },
+            total_user_search_criteria_enabled_within_last_7d: 3,
+            total_user_search_criteria_count: 59,
+            total_with_additional_gene_ids_count: 55,
+            total_with_attribution_class_count: 33,
+            total_with_price_range_count: 31,
+            total_with_other_metadata_count: 0,
+          },
+        ],
+        total_count: 1,
+      }
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            alertsSummaryArtistsConnection(first: 10) {
+              edges {
+                isRecentlyEnabled
+                counts {
+                  totalWithAdditionalGeneIdsCount
+                  totalWithPriceRangeCount
+                  totalWithAttributionClassCount
+                  totalWithOtherMetadataCount
+                  totalUserSearchCriteriaCount
+                }
+                topHit {
+                  formattedPriceRange
+                  hasRecentlyEnabledUserSearchCriteria
+                }
+                node {
+                  name
+                }
+              }
+            }
+          }
+        }
+      `
+      const partnerAlertsSummaryLoader = () => Promise.resolve(summaryResponse)
+      const data = await runAuthenticatedQuery(query, {
+        ...context,
+        partnerAlertsSummaryLoader,
+      })
+
+      expect(data).toEqual({
+        partner: {
+          alertsSummaryArtistsConnection: {
+            edges: [
+              {
+                isRecentlyEnabled: true,
+                counts: {
+                  totalWithAdditionalGeneIdsCount: 55,
+                  totalWithAttributionClassCount: 33,
+                  totalWithOtherMetadataCount: 0,
+                  totalWithPriceRangeCount: 31,
+                  totalUserSearchCriteriaCount: 59,
+                },
+                topHit: {
+                  formattedPriceRange: "Under $1,000,000",
+                  hasRecentlyEnabledUserSearchCriteria: true,
+                },
+                node: {
+                  name: "Percy Z",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
+
   describe("#articlesConnection", () => {
     let articlesResponse
 

@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "schema/v2/test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
 
 describe("Artist type", () => {
   let artist = null
@@ -737,6 +737,41 @@ describe("Artist type", () => {
         expect(data).toEqual({
           artist: {
             formattedArtworksCount: "1 work",
+          },
+        })
+      })
+    })
+  })
+
+  describe("alertsConnection", () => {
+    const artistAlertsLoader = () =>
+      Promise.resolve({
+        total_count: 1,
+        alerts: [{ id: "percy-z-alert", count_7d: 1 }],
+      })
+    it("returns a connection of the artist's alerts", () => {
+      const query = `
+        {
+          artist(id: "percy-z") {
+            alertsConnection(first: 10) {
+              edges {
+                node {
+                  hasRecentlyEnabledUserSearchCriteria
+                }
+              }
+            }
+          }
+        }
+      `
+      return runAuthenticatedQuery(query, {
+        ...context,
+        artistAlertsLoader,
+      }).then((data) => {
+        expect(data).toEqual({
+          artist: {
+            alertsConnection: {
+              edges: [{ node: { hasRecentlyEnabledUserSearchCriteria: true } }],
+            },
           },
         })
       })
