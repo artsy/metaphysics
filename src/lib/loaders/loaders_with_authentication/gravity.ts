@@ -20,6 +20,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    artistAlertsLoader: gravityLoader((id) => `artist/${id}/alerts`),
     artistDuplicatesLoader: gravityLoader(
       (id) => `artist/${id}/duplicates`,
       {},
@@ -503,6 +504,9 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     matchPagesLoader: gravityLoader("match/pages", {}, { headers: true }),
+    partnerAlertsSummaryLoader: gravityLoader(
+      (id) => `partner/${id}/alert_summary`
+    ),
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
     partnerArtistDocumentsLoader: gravityLoader<
       any,

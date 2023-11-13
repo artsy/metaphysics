@@ -47,6 +47,7 @@ import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
+import { AlertsSummaryFields } from "../alerts"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -117,7 +118,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
   fields: () => {
-    // This avoids a circular require
+    // These avoids a circular require
     const ArtistPartnerConnection = connectionWithCursorInfo({
       name: "ArtistPartner",
       nodeType: ArtistType,
@@ -134,9 +135,44 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       partnerShowsMatchConnection,
     } = require("./PartnerMatch")
 
+    const AlertsSummaryArtistConnectionType = connectionWithCursorInfo({
+      name: "AlertsSummaryArtist",
+      edgeFields: AlertsSummaryFields,
+      nodeType: ArtistType,
+    }).connectionType
+
     return {
       ...SlugAndInternalIDFields,
       cached,
+      alertsSummaryArtistsConnection: {
+        type: AlertsSummaryArtistConnectionType,
+        args: pageable({}),
+        resolve: async ({ _id }, args, { partnerAlertsSummaryLoader }) => {
+          if (!partnerAlertsSummaryLoader) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const {
+            summary: body,
+            total_count: totalCount,
+          } = await partnerAlertsSummaryLoader(_id, {
+            page,
+            size,
+          })
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+            resolveNode: ({ artist }) => artist,
+          })
+        },
+      },
       articlesConnection: {
         description: "A connection of articles related to a partner.",
         type: articleConnection.connectionType,
