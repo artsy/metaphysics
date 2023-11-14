@@ -18,6 +18,7 @@ import {
   SearchCriteriaLabel,
   resolveSearchCriteriaLabels,
 } from "./searchCriteriaLabel"
+import artworkMediums from "lib/artworkMediums"
 
 const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   acquireable: {
@@ -119,24 +120,55 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
 
 const getMostPopularField = (aggregation: {
   [key: string]: { name: string; count: number }
-}): string => {
-  return Object.values(aggregation).reduce((acc, curr) => {
-    return curr.count > acc.count ? curr : acc
-  }).name
+}): {
+  value: string
+  data: { name: string; count: number }
+} => {
+  const fieldValueArray = Object.entries(aggregation).reduce((acc, curr) => {
+    return curr[1].count > acc[1].count ? curr : acc
+  })
+
+  return {
+    value: fieldValueArray[0],
+    data: fieldValueArray[1],
+  }
 }
 
 const getRaritySearchCriteriaLabel = (
-  name: string | undefined
+  value: string | undefined
 ): SearchCriteriaLabel | null => {
-  if (!name || name === "unknown edition") {
+  if (!value || value === "unknown edition") {
     return null
   }
 
   return {
-    displayValue: attributionClasses[name].name,
+    displayValue: attributionClasses[value].name,
     field: "attributionClass",
-    value: name,
+    value,
     name: "Rarity",
+  }
+}
+
+const getMediumSearchCriteriaLabel = (
+  value: string | undefined
+): SearchCriteriaLabel | null => {
+  if (!value) {
+    return null
+  }
+
+  const mediumData = Object.values(artworkMediums).find((artworkMedium) => {
+    return artworkMedium.mediumFilterGeneSlug === value
+  })
+
+  if (!mediumData || !mediumData.mediumFilterGeneSlug) {
+    return null
+  }
+
+  return {
+    displayValue: mediumData.name,
+    field: "additionalGeneIDs",
+    value: mediumData.mediumFilterGeneSlug,
+    name: "Medium",
   }
 }
 
@@ -146,7 +178,7 @@ const getSuggestedFiltersByArtistSlug = async (
 ): Promise<SearchCriteriaLabel[]> => {
   const gravityArgs = {
     published: true,
-    aggregations: ["attribution_class"],
+    aggregations: ["attribution_class", "medium"],
     artist_id: artistSlug,
   }
 
@@ -155,11 +187,19 @@ const getSuggestedFiltersByArtistSlug = async (
   const suggestedFilters: SearchCriteriaLabel[] = []
 
   const rarity = getRaritySearchCriteriaLabel(
-    getMostPopularField(aggregations["attribution_class"])
+    getMostPopularField(aggregations["attribution_class"]).value
   )
 
   if (rarity) {
     suggestedFilters.push(rarity)
+  }
+
+  const medium = getMediumSearchCriteriaLabel(
+    getMostPopularField(aggregations["medium"]).value
+  )
+
+  if (medium) {
+    suggestedFilters.push(medium)
   }
 
   return suggestedFilters
