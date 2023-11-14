@@ -14364,7 +14364,7 @@ type PreviewSavedSearch {
   labels: [SearchCriteriaLabel]!
 
   # Suggested filters for the user to use based on their search criteria
-  suggestedFilters: [SearchCriteriaLabel!]
+  suggestedFilters: [SearchCriteriaLabel!]!
 }
 
 input PreviewSavedSearchAttributes {

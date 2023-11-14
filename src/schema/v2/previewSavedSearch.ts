@@ -96,7 +96,9 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
     suggestedFilters: {
       description:
         "Suggested filters for the user to use based on their search criteria",
-      type: new GraphQLList(new GraphQLNonNull(SearchCriteriaLabel)),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(SearchCriteriaLabel))
+      ),
       resolve: (_) => {
         return mockSuggestedFilters
       },
