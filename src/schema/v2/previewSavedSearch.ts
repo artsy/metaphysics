@@ -93,6 +93,14 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
         "URL for a user to view the artwork grid with applied filters matching saved search criteria attributes",
       resolve: resolveHref,
     },
+    suggestedFilters: {
+      description:
+        "Suggested filters for the user to use based on their search criteria",
+      type: new GraphQLList(new GraphQLNonNull(SearchCriteriaLabel)),
+      resolve: (_) => {
+        return mockSuggestedFilters
+      },
+    },
   }),
 })
 
@@ -203,3 +211,24 @@ const resolveHref = async (parent, _args, _context, _info) => {
 
   return `/artist/${primaryArtist}?${queryParams}&for_sale=true`
 }
+
+export const mockSuggestedFilters: SearchCriteriaLabel[] = [
+  {
+    displayValue: "Painting",
+    field: "additionalGeneIDs",
+    value: "painting",
+    name: "Medium",
+  },
+  {
+    displayValue: "Unique",
+    field: "attributionClass",
+    value: "unique",
+    name: "Rarity",
+  },
+  {
+    displayValue: "$0-$10,000",
+    field: "priceRange",
+    value: "*-10000",
+    name: "Price",
+  },
+]
