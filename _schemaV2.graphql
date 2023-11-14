@@ -14364,11 +14364,7 @@ type PreviewSavedSearch {
   labels: [SearchCriteriaLabel]!
 
   # Suggested filters for the user to use based on their search criteria
-<<<<<<< HEAD
   suggestedFilters: [SearchCriteriaLabel!]!
-=======
-  suggestedFilters: [SearchCriteriaLabel!]
->>>>>>> 10133ae5 (feat: introduce mock structure for suggested filters)
 }
 
 input PreviewSavedSearchAttributes {
