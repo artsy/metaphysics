@@ -1,5 +1,6 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import { mockSuggestedFilters } from "../previewSavedSearch"
 
 describe("previewSavedSearch", () => {
   const query = gql`
@@ -459,6 +460,32 @@ describe("previewSavedSearch", () => {
           "/artist/kaws?acquireable=true&additional_gene_ids%5B0%5D=prints&at_auction=true&attribution_class%5B0%5D=limited%20edition&attribution_class%5B1%5D=unique&colors%5B0%5D=yellow&colors%5B1%5D=red&inquireable_only=true&location_cities%5B0%5D=New%20York%2C%20NY%2C%20USA&major_periods%5B0%5D=1990&major_periods%5B1%5D=2000&materials_terms%5B0%5D=acrylic&materials_terms%5B1%5D=aluminium&offerable=true&partner_ids%5B0%5D=foo-bar-gallery&price_range=100-1000&sizes%5B0%5D=small&sizes%5B1%5D=medium&for_sale=true"
         )
       })
+    })
+  })
+
+  describe("suggestedFilters", () => {
+    it("returns a list of suggested filters", async () => {
+      const query = gql`
+        {
+          previewSavedSearch(attributes: { artistIDs: ["banksy"] }) {
+            suggestedFilters {
+              displayValue
+              field
+              value
+              name
+            }
+          }
+        }
+      `
+
+      const artistLoader = () => Promise.resolve({})
+
+      const { previewSavedSearch } = await runQuery(query, {
+        artistLoader,
+        meLoader,
+      })
+
+      expect(previewSavedSearch.suggestedFilters).toEqual(mockSuggestedFilters)
     })
   })
 })
