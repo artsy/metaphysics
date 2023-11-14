@@ -109,10 +109,17 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
           )
         )
 
-        return _.chain(suggestedFiltersByArtist)
-          .flatten()
-          .uniqBy((searchCriteria) => JSON.stringify(searchCriteria))
-          .value()
+        return (
+          _.chain(suggestedFiltersByArtist)
+            .flatten()
+            // Remove duplicates
+            .uniqBy((searchCriteria) => JSON.stringify(searchCriteria))
+            // Group by search criteria type
+            .groupBy((searchCriteria) => searchCriteria.field)
+            .values()
+            .flatten()
+            .value()
+        )
       },
     },
   }),

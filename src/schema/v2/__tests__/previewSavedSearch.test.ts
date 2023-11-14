@@ -584,16 +584,16 @@ describe("previewSavedSearch", () => {
           value: "limited edition",
         },
         {
-          displayValue: "Print",
-          field: "additionalGeneIDs",
-          name: "Medium",
-          value: "prints",
-        },
-        {
           displayValue: "Open edition",
           field: "attributionClass",
           name: "Rarity",
           value: "open edition",
+        },
+        {
+          displayValue: "Print",
+          field: "additionalGeneIDs",
+          name: "Medium",
+          value: "prints",
         },
         {
           displayValue: "Ephemera or Merchandise",
