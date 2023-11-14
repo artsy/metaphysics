@@ -103,8 +103,12 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
       ),
       resolve: async (_root, _args, { filterArtworksLoader }) => {
         const suggestedFiltersByArtist: SearchCriteriaLabel[][] = await Promise.all(
-          _root.artistIDs.map((artistSlug) =>
-            getSuggestedFiltersByArtistSlug(artistSlug, filterArtworksLoader)
+          _root.artistIDs.map(
+            async (artistSlug) =>
+              await getSuggestedFiltersByArtistSlug(
+                artistSlug,
+                filterArtworksLoader
+              )
           )
         )
 
