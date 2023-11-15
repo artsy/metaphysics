@@ -756,6 +756,7 @@ describe("Artist type", () => {
             alertsConnection(first: 10) {
               edges {
                 totalUserSearchCriteriaCount
+                isRecentlyEnabled
                 node {
                   hasRecentlyEnabledUserSearchCriteria
                 }
@@ -774,6 +775,7 @@ describe("Artist type", () => {
               "alertsConnection": Object {
                 "edges": Array [
                   Object {
+                    "isRecentlyEnabled": true,
                     "node": Object {
                       "hasRecentlyEnabledUserSearchCriteria": true,
                     },

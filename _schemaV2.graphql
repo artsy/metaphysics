@@ -300,6 +300,7 @@ type AlertConnection {
 type AlertEdge {
   # A cursor for use in pagination
   cursor: String!
+  isRecentlyEnabled: Boolean
 
   # The item at the end of the edge
   node: Alert

@@ -70,6 +70,10 @@ const AlertsEdgeFields = {
     type: GraphQLInt,
     resolve: ({ count_30d }) => count_30d,
   },
+  isRecentlyEnabled: {
+    type: GraphQLBoolean,
+    resolve: ({ count_7d }) => count_7d > 0,
+  },
 }
 
 export const AlertsConnectionType = connectionWithCursorInfo({
