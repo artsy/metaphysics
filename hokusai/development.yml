@@ -4,8 +4,8 @@ services:
 {% include 'templates/docker-compose-service-dev.yml.j2' %}
     command: ["yarn", "start"]
     env_file:
-      - ../.env.development
       - ../.env.shared
+      - ../.env.development
       - ../.env
     depends_on:
       - metaphysics-memcached
@@ -15,5 +15,3 @@ services:
       - ../:/app
   metaphysics-memcached:
     image: memcached:1.4.34-alpine
-    ports:
-      - 11211:11211

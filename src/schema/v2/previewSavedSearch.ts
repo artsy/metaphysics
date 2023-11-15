@@ -8,14 +8,17 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import attributionClasses from "lib/attributionClasses"
+import { snakeCaseKeys } from "lib/helpers"
+import _ from "lodash"
+import { stringify } from "qs"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "./artwork/artworkSizes"
 import {
-  resolveSearchCriteriaLabels,
   SearchCriteriaLabel,
+  resolveSearchCriteriaLabels,
 } from "./searchCriteriaLabel"
-import { snakeCaseKeys } from "lib/helpers"
-import { stringify } from "qs"
+import artworkMediums from "lib/artworkMediums"
 
 const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   acquireable: {
@@ -99,12 +102,115 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(SearchCriteriaLabel))
       ),
-      resolve: (_) => {
-        return mockSuggestedFilters
+      resolve: async (_root, _args, { filterArtworksLoader }) => {
+        const suggestedFiltersByArtist: SearchCriteriaLabel[][] = await Promise.all(
+          _root.artistIDs.map((artistSlug) =>
+            getSuggestedFiltersByArtistSlug(artistSlug, filterArtworksLoader)
+          )
+        )
+
+        return (
+          _.chain(suggestedFiltersByArtist)
+            .flatten()
+            // Remove duplicates
+            .uniqBy((searchCriteria) => JSON.stringify(searchCriteria))
+            // Group by search criteria type
+            .groupBy((searchCriteria) => searchCriteria.field)
+            .values()
+            .flatten()
+            .value()
+        )
       },
     },
   }),
 })
+
+const getMostPopularField = (aggregation: {
+  [key: string]: { name: string; count: number }
+}): {
+  value: string
+  data: { name: string; count: number }
+} => {
+  const fieldValueArray = Object.entries(aggregation).reduce((acc, curr) => {
+    return curr[1].count > acc[1].count ? curr : acc
+  })
+
+  return {
+    value: fieldValueArray[0],
+    data: fieldValueArray[1],
+  }
+}
+
+const getRaritySearchCriteriaLabel = (
+  value: string | undefined
+): SearchCriteriaLabel | null => {
+  if (!value || value === "unknown edition") {
+    return null
+  }
+
+  return {
+    displayValue: attributionClasses[value].name,
+    field: "attributionClass",
+    value,
+    name: "Rarity",
+  }
+}
+
+const getMediumSearchCriteriaLabel = (
+  value: string | undefined
+): SearchCriteriaLabel | null => {
+  if (!value) {
+    return null
+  }
+
+  const mediumData = Object.values(artworkMediums).find((artworkMedium) => {
+    return artworkMedium.mediumFilterGeneSlug === value
+  })
+
+  if (!mediumData || !mediumData.mediumFilterGeneSlug) {
+    return null
+  }
+
+  return {
+    displayValue: mediumData.name,
+    field: "additionalGeneIDs",
+    value: mediumData.mediumFilterGeneSlug,
+    name: "Medium",
+  }
+}
+
+const getSuggestedFiltersByArtistSlug = async (
+  artistSlug: string,
+  filterArtworksLoader
+): Promise<SearchCriteriaLabel[]> => {
+  const gravityArgs = {
+    published: true,
+    aggregations: ["attribution_class", "medium"],
+    artist_id: artistSlug,
+  }
+
+  const { aggregations } = await filterArtworksLoader(gravityArgs)
+
+  const suggestedFilters: SearchCriteriaLabel[] = []
+
+  const rarity = getRaritySearchCriteriaLabel(
+    getMostPopularField(aggregations["attribution_class"]).value
+  )
+
+  if (rarity) {
+    suggestedFilters.push(rarity)
+  }
+
+  const medium = getMediumSearchCriteriaLabel(
+    getMostPopularField(aggregations["medium"]).value
+  )
+
+  if (medium) {
+    suggestedFilters.push(medium)
+  }
+
+  return suggestedFilters
+}
 
 const PreviewSavedSearchAttributesType = new GraphQLInputObjectType({
   name: "PreviewSavedSearchAttributes",
@@ -213,24 +319,3 @@ const resolveHref = async (parent, _args, _context, _info) => {
 
   return `/artist/${primaryArtist}?${queryParams}&for_sale=true`
 }
-
-export const mockSuggestedFilters: SearchCriteriaLabel[] = [
-  {
-    displayValue: "Painting",
-    field: "additionalGeneIDs",
-    value: "painting",
-    name: "Medium",
-  },
-  {
-    displayValue: "Unique",
-    field: "attributionClass",
-    value: "unique",
-    name: "Rarity",
-  },
-  {
-    displayValue: "$0-$10,000",
-    field: "priceRange",
-    value: "*-10000",
-    name: "Price",
-  },
-]
