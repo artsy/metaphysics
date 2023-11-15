@@ -492,6 +492,21 @@ describe("previewSavedSearch", () => {
               "unknown edition": { name: "unknown edition", count: 1186 },
               "open edition": { name: "open edition", count: 115 },
             },
+            medium: {
+              prints: { name: "Prints", count: 2945 },
+              photography: { name: "Photography", count: 1816 },
+              "ephemera-or-merchandise": {
+                name: "Ephemera or Merchandise",
+                count: 698,
+              },
+              sculpture: { name: "Sculpture", count: 116 },
+              painting: { name: "Painting", count: 50 },
+              "work-on-paper": { name: "Work on Paper", count: 14 },
+              installation: { name: "Installation", count: 11 },
+              design: { name: "Design", count: 10 },
+              reproduction: { name: "Reproduction", count: 3 },
+              "performance-art": { name: "Performance Art", count: 2 },
+            },
           },
         })
       )
@@ -505,6 +520,24 @@ describe("previewSavedSearch", () => {
               "unknown edition": { name: "unknown edition", count: 491 },
               unique: { name: "unique", count: 78 },
             },
+            medium: {
+              prints: { name: "Prints", count: 5075 },
+              photography: { name: "Photography", count: 1341 },
+              "work-on-paper": { name: "Work on Paper", count: 435 },
+              "ephemera-or-merchandise": {
+                name: "Ephemera or Merchandise",
+                count: 434,
+              },
+              painting: { name: "Painting", count: 263 },
+              drawing: { name: "Drawing", count: 162 },
+              sculpture: { name: "Sculpture", count: 120 },
+              design: { name: "Design", count: 65 },
+              reproduction: { name: "Reproduction", count: 35 },
+              "film-slash-video": { name: "Film/Video", count: 13 },
+              installation: { name: "Installation", count: 9 },
+              "performance-art": { name: "Performance Art", count: 7 },
+              jewelry: { name: "Jewelry", count: 1 },
+            },
           },
         })
       )
@@ -515,8 +548,23 @@ describe("previewSavedSearch", () => {
             attribution_class: {
               "limited edition": { name: "limited edition", count: 2000 },
               "open edition": { name: "open edition", count: 1518 },
-              "unknown edition": { name: "unknown edition", count: 491 },
+              "unknown edition": { name: "unknown edition", count: 4910 },
               unique: { name: "unique", count: 78 },
+            },
+            medium: {
+              prints: { name: "Prints", count: 245 },
+              photography: { name: "Photography", count: 116 },
+              "ephemera-or-merchandise": {
+                name: "Ephemera or Merchandise",
+                count: 2698,
+              },
+              sculpture: { name: "Sculpture", count: 1162 },
+              painting: { name: "Painting", count: 501 },
+              "work-on-paper": { name: "Work on Paper", count: 14 },
+              installation: { name: "Installation", count: 11 },
+              design: { name: "Design", count: 10 },
+              reproduction: { name: "Reproduction", count: 3 },
+              "performance-art": { name: "Performance Art", count: 2 },
             },
           },
         })
@@ -540,6 +588,18 @@ describe("previewSavedSearch", () => {
           field: "attributionClass",
           name: "Rarity",
           value: "open edition",
+        },
+        {
+          displayValue: "Print",
+          field: "additionalGeneIDs",
+          name: "Medium",
+          value: "prints",
+        },
+        {
+          displayValue: "Ephemera or Merchandise",
+          field: "additionalGeneIDs",
+          name: "Medium",
+          value: "ephemera-or-merchandise",
         },
       ])
     })
