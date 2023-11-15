@@ -303,6 +303,7 @@ type AlertEdge {
 
   # The item at the end of the edge
   node: Alert
+  totalUserSearchCriteriaCount: Int
 }
 
 # A connection to a list of items.

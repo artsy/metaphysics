@@ -138,6 +138,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             size,
             body,
             args,
+            resolveNode: (node) => node,
           })
         },
       },
