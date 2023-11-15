@@ -127,15 +127,11 @@ const getMostPopularField = (aggregation: {
 
 const getRaritySearchCriteriaLabel = (
   name: string | undefined
-): SearchCriteriaLabel => {
-  if (!name) {
-    return {
-      displayValue: "Unique",
-      field: "attributionClass",
-      value: "unique",
-      name: "Rarity",
-    }
+): SearchCriteriaLabel | null => {
+  if (!name || name === "unknown edition") {
+    return null
   }
+
   return {
     displayValue: attributionClasses[name].name,
     field: "attributionClass",
@@ -156,11 +152,17 @@ const getSuggestedFiltersByArtistSlug = async (
 
   const { aggregations } = await filterArtworksLoader(gravityArgs)
 
+  const suggestedFilters: SearchCriteriaLabel[] = []
+
   const rarity = getRaritySearchCriteriaLabel(
     getMostPopularField(aggregations["attribution_class"])
   )
 
-  return [rarity]
+  if (rarity) {
+    suggestedFilters.push(rarity)
+  }
+
+  return suggestedFilters
 }
 
 const PreviewSavedSearchAttributesType = new GraphQLInputObjectType({
