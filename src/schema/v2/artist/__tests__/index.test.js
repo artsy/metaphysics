@@ -747,7 +747,7 @@ describe("Artist type", () => {
     const artistAlertsLoader = () =>
       Promise.resolve({
         total_count: 1,
-        alerts: [{ id: "percy-z-alert", count_7d: 1 }],
+        alerts: [{ id: "percy-z-alert", count_7d: 1, count_30d: 420 }],
       })
     it("returns a connection of the artist's alerts", () => {
       const query = `
@@ -755,6 +755,8 @@ describe("Artist type", () => {
           artist(id: "percy-z") {
             alertsConnection(first: 10) {
               edges {
+                totalUserSearchCriteriaCount
+                isRecentlyEnabled
                 node {
                   hasRecentlyEnabledUserSearchCriteria
                 }
@@ -767,13 +769,23 @@ describe("Artist type", () => {
         ...context,
         artistAlertsLoader,
       }).then((data) => {
-        expect(data).toEqual({
-          artist: {
-            alertsConnection: {
-              edges: [{ node: { hasRecentlyEnabledUserSearchCriteria: true } }],
+        expect(data).toMatchInlineSnapshot(`
+          Object {
+            "artist": Object {
+              "alertsConnection": Object {
+                "edges": Array [
+                  Object {
+                    "isRecentlyEnabled": true,
+                    "node": Object {
+                      "hasRecentlyEnabledUserSearchCriteria": true,
+                    },
+                    "totalUserSearchCriteriaCount": 420,
+                  },
+                ],
+              },
             },
-          },
-        })
+          }
+        `)
       })
     })
   })

@@ -65,9 +65,21 @@ const AlertType = new GraphQLObjectType<
   },
 })
 
+const AlertsEdgeFields = {
+  totalUserSearchCriteriaCount: {
+    type: GraphQLInt,
+    resolve: ({ count_30d }) => count_30d,
+  },
+  isRecentlyEnabled: {
+    type: GraphQLBoolean,
+    resolve: ({ count_7d }) => count_7d > 0,
+  },
+}
+
 export const AlertsConnectionType = connectionWithCursorInfo({
   name: "Alert",
   nodeType: AlertType,
+  edgeFields: AlertsEdgeFields,
 }).connectionType
 
 export const AlertsSummaryFields = {
