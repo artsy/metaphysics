@@ -8,14 +8,16 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import attributionClasses from "lib/attributionClasses"
+import { snakeCaseKeys } from "lib/helpers"
+import _ from "lodash"
+import { stringify } from "qs"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "./artwork/artworkSizes"
 import {
-  resolveSearchCriteriaLabels,
   SearchCriteriaLabel,
+  resolveSearchCriteriaLabels,
 } from "./searchCriteriaLabel"
-import { snakeCaseKeys } from "lib/helpers"
-import { stringify } from "qs"
 
 const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   acquireable: {
@@ -99,12 +101,69 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(SearchCriteriaLabel))
       ),
-      resolve: (_) => {
-        return mockSuggestedFilters
+      resolve: async (_root, _args, { filterArtworksLoader }) => {
+        const suggestedFiltersByArtist: SearchCriteriaLabel[][] = await Promise.all(
+          _root.artistIDs.map((artistSlug) =>
+            getSuggestedFiltersByArtistSlug(artistSlug, filterArtworksLoader)
+          )
+        )
+
+        return _.chain(suggestedFiltersByArtist)
+          .flatten()
+          .uniqBy((searchCriteria) => JSON.stringify(searchCriteria))
+          .value()
       },
     },
   }),
 })
+
+const getMostPopularField = (aggregation: {
+  [key: string]: { name: string; count: number }
+}): string => {
+  return Object.values(aggregation).reduce((acc, curr) => {
+    return curr.count > acc.count ? curr : acc
+  }).name
+}
+
+const getRaritySearchCriteriaLabel = (
+  name: string | undefined
+): SearchCriteriaLabel | null => {
+  if (!name || name === "unknown edition") {
+    return null
+  }
+
+  return {
+    displayValue: attributionClasses[name].name,
+    field: "attributionClass",
+    value: name,
+    name: "Rarity",
+  }
+}
+
+const getSuggestedFiltersByArtistSlug = async (
+  artistSlug: string,
+  filterArtworksLoader
+): Promise<SearchCriteriaLabel[]> => {
+  const gravityArgs = {
+    published: true,
+    aggregations: ["attribution_class"],
+    artist_id: artistSlug,
+  }
+
+  const { aggregations } = await filterArtworksLoader(gravityArgs)
+
+  const suggestedFilters: SearchCriteriaLabel[] = []
+
+  const rarity = getRaritySearchCriteriaLabel(
+    getMostPopularField(aggregations["attribution_class"])
+  )
+
+  if (rarity) {
+    suggestedFilters.push(rarity)
+  }
+
+  return suggestedFilters
+}
 
 const PreviewSavedSearchAttributesType = new GraphQLInputObjectType({
   name: "PreviewSavedSearchAttributes",
@@ -213,24 +272,3 @@ const resolveHref = async (parent, _args, _context, _info) => {
 
   return `/artist/${primaryArtist}?${queryParams}&for_sale=true`
 }
-
-export const mockSuggestedFilters: SearchCriteriaLabel[] = [
-  {
-    displayValue: "Painting",
-    field: "additionalGeneIDs",
-    value: "painting",
-    name: "Medium",
-  },
-  {
-    displayValue: "Unique",
-    field: "attributionClass",
-    value: "unique",
-    name: "Rarity",
-  },
-  {
-    displayValue: "$0-$10,000",
-    field: "priceRange",
-    value: "*-10000",
-    name: "Price",
-  },
-]
