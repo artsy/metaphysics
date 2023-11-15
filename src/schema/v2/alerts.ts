@@ -66,9 +66,17 @@ const AlertType = new GraphQLObjectType<
 })
 
 const AlertsEdgeFields = {
-  totalUserSearchCriteriaCount: {
-    type: GraphQLInt,
-    resolve: ({ count_30d }) => count_30d,
+  counts: {
+    type: new GraphQLObjectType({
+      name: "AlertsCounts",
+      fields: {
+        totalUserSearchCriteriaCount: {
+          type: GraphQLInt,
+          resolve: ({ count_30d }) => count_30d,
+        },
+      },
+    }),
+    resolve: (x) => x,
   },
   isRecentlyEnabled: {
     type: GraphQLBoolean,

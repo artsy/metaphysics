@@ -749,14 +749,17 @@ describe("Artist type", () => {
         total_count: 1,
         alerts: [{ id: "percy-z-alert", count_7d: 1, count_30d: 420 }],
       })
+
     it("returns a connection of the artist's alerts", () => {
       const query = `
         {
           artist(id: "percy-z") {
             alertsConnection(first: 10) {
               edges {
-                totalUserSearchCriteriaCount
                 isRecentlyEnabled
+                counts {
+                  totalUserSearchCriteriaCount
+                }
                 node {
                   hasRecentlyEnabledUserSearchCriteria
                 }
@@ -775,11 +778,13 @@ describe("Artist type", () => {
               "alertsConnection": Object {
                 "edges": Array [
                   Object {
+                    "counts": Object {
+                      "totalUserSearchCriteriaCount": 420,
+                    },
                     "isRecentlyEnabled": true,
                     "node": Object {
                       "hasRecentlyEnabledUserSearchCriteria": true,
                     },
-                    "totalUserSearchCriteriaCount": 420,
                   },
                 ],
               },
