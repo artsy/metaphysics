@@ -213,6 +213,7 @@ import { VerifyAddress } from "./verifyAddress"
 import { updateUserInterestMutation } from "./me/updateUserInterestMutation"
 import { updateUserInterestsMutation } from "./me/updateUserInterestsMutation"
 import { createAdvisoryOpportunityMutation } from "./createAdvisoryOpportunity"
+import { createPartnerOfferMutation } from "./createPartnerOfferMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -375,6 +376,7 @@ export default new GraphQLSchema({
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
       createOrderedSet: createOrderedSetMutation,
       createPage: CreatePageMutation,
+      createPartnerOffer: createPartnerOfferMutation,
       createUserAdminNote: createUserAdminNoteMutation,
       createUserInterest: createUserInterestMutation,
       createUserInterestForUser: createUserInterestForUser,

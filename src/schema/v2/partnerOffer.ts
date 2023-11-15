@@ -3,7 +3,7 @@ import { GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields } from "./object_identification"
 
-const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
+export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerOffer",
   fields: () => ({
     ...IDFields,

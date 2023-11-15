@@ -110,6 +110,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createPartnerOfferLoader: gravityLoader(
+      "partner_offer",
+      {},
+      { method: "POST" }
+    ),
     createSetLoader: gravityLoader("set", {}, { method: "POST" }),
     createUserAdminNoteLoader: gravityLoader(
       (id) => `/user/${id}/admin_note`,
