@@ -1,25 +1,22 @@
 import {
-  GraphQLString,
+  GraphQLBoolean,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLBoolean,
+  GraphQLString,
 } from "graphql"
-import { Array } from "runtypes"
-import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
-import { Gravity } from "types/runtime"
-import { ResolverContext } from "types/graphql"
-import { SlugAndInternalIDFields } from "schema/v2/object_identification"
-import { markdown } from "schema/v2/fields/markdown"
-import { OrderedSetConnection } from "../OrderedSet"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import {
-  OrderedSetSortsEnum,
-  ORDERED_SET_SORTS,
-} from "../OrderedSet/OrderedSetSortsEnum"
+import { pageable } from "relay-cursor-paging"
+import { Array } from "runtypes"
+import { markdown } from "schema/v2/fields/markdown"
+import { SlugAndInternalIDFields } from "schema/v2/object_identification"
+import { ResolverContext } from "types/graphql"
+import { Gravity } from "types/runtime"
+import { OrderedSetConnection } from "../OrderedSet"
+import { OrderedSetSortsEnum } from "../OrderedSet/OrderedSetSortsEnum"
 import Image from "../image"
-import { FeatureMetaType } from "./FeatureMeta"
 import { FeatureLayoutsEnum } from "./FeatureLayoutsEnum"
+import { FeatureMetaType } from "./FeatureMeta"
 
 export const FeatureType = new GraphQLObjectType<
   Gravity.Feature,
@@ -52,7 +49,7 @@ export const FeatureType = new GraphQLObjectType<
       args: pageable({
         sort: {
           type: OrderedSetSortsEnum,
-          defaultValue: ORDERED_SET_SORTS.KEY_ASC.value,
+          defaultValue: "KEY_ASC",
         },
       }),
       description:

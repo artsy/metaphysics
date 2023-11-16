@@ -776,7 +776,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           },
           status: {
             type: EventStatus.type,
-            defaultValue: "current",
+            defaultValue: "CURRENT",
             description: "Filter shows by chronological event status",
           },
           isDisplayable: {
