@@ -1,0 +1,90 @@
+diff --git a/node_modules/graphql-relay/connection/arrayConnection.js b/node_modules/graphql-relay/connection/arrayConnection.js
+index 5a42ae5..bec0ba9 100644
+--- a/node_modules/graphql-relay/connection/arrayConnection.js
++++ b/node_modules/graphql-relay/connection/arrayConnection.js
+@@ -80,10 +80,22 @@ function connectionFromArraySlice(arraySlice, args, meta) {
+ 
+ 
+   const slice = arraySlice.slice(Math.max(startOffset - sliceStart, 0), arraySlice.length - (sliceEnd - endOffset));
+-  const edges = slice.map((value, index) => ({
+-    cursor: offsetToCursor(startOffset + index),
+-    node: value
+-  }));
++  const edges = slice.map((value, index) => {
++    const newEdge = meta.useValueAsEdge ? {
++        ...value,
++        cursor: offsetToCursor(startOffset + index),
++      }:
++      {
++        cursor: offsetToCursor(startOffset + index),
++        node: !!meta.resolveNode ? meta.resolveNode(value) : value,
++      };
++
++    if (meta.resolveNode) {
++      return { ...value, ...newEdge };
++    }
++    
++    return newEdge;
++  });
+   const firstEdge = edges[0];
+   const lastEdge = edges[edges.length - 1];
+   const lowerBound = after != null ? afterOffset + 1 : 0;
+diff --git a/node_modules/graphql-relay/connection/connection.js b/node_modules/graphql-relay/connection/connection.js
+index 23c916f..081f3b3 100644
+--- a/node_modules/graphql-relay/connection/connection.js
++++ b/node_modules/graphql-relay/connection/connection.js
+@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
+   value: true
+ });
+ exports.connectionDefinitions = connectionDefinitions;
+-exports.connectionArgs = exports.backwardConnectionArgs = exports.forwardConnectionArgs = void 0;
++exports.connectionArgs = exports.backwardConnectionArgs = exports.forwardConnectionArgs = exports.PageInfoType =  void 0;
+ 
+ var _graphql = require("graphql");
+ 
+@@ -70,9 +70,10 @@ function connectionDefinitions(config) {
+     nodeType
+   } = config;
+   const name = (_config$name = config.name) !== null && _config$name !== void 0 ? _config$name : (0, _graphql.getNamedType)(nodeType).name;
+-  const edgeType = new _graphql.GraphQLObjectType({
++  const edgeType = config.edgeType || new _graphql.GraphQLObjectType({
+     name: name + 'Edge',
+     description: 'An edge in a connection.',
++    interfaces: config.edgeInterfaces,
+     fields: () => {
+       var _config$edgeFields;
+ 
+@@ -94,6 +95,7 @@ function connectionDefinitions(config) {
+   const connectionType = new _graphql.GraphQLObjectType({
+     name: name + 'Connection',
+     description: 'A connection to a list of items.',
++    interfaces: config.connectionInterfaces,
+     fields: () => {
+       var _config$connectionFie;
+ 
+@@ -123,7 +125,7 @@ function connectionDefinitions(config) {
+ /**
+  * The common page info type used by all connections.
+  */
+-const pageInfoType = new _graphql.GraphQLObjectType({
++const pageInfoType = exports.PageInfoType = new _graphql.GraphQLObjectType({
+   name: 'PageInfo',
+   description: 'Information about pagination in a connection.',
+   fields: () => ({
+diff --git a/node_modules/graphql-relay/index.js b/node_modules/graphql-relay/index.js
+index 670c089..77a49e6 100644
+--- a/node_modules/graphql-relay/index.js
++++ b/node_modules/graphql-relay/index.js
+@@ -27,6 +27,12 @@ Object.defineProperty(exports, "forwardConnectionArgs", {
+     return _connection.forwardConnectionArgs;
+   }
+ });
++Object.defineProperty(exports, 'PageInfoType', {
++  enumerable: true,
++  get: function get() {
++    return _connection.PageInfoType;
++  }
++});
+ Object.defineProperty(exports, "connectionFromArray", {
+   enumerable: true,
+   get: function () {
