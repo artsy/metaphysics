@@ -14,6 +14,7 @@ import { PartnerOfferType } from "./partnerOffer"
 
 interface Input {
   artwork_id: string
+  currency: string
   price_minor: string
 }
 
@@ -53,6 +54,7 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
   description: "Create a partner offer for the users",
   inputFields: {
     artwork_id: { type: new GraphQLNonNull(GraphQLString) },
+    currency: { type: GraphQLString },
     price_minor: { type: new GraphQLNonNull(GraphQLString) },
   },
   outputFields: {
@@ -72,6 +74,7 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
     try {
       return await createPartnerOfferLoader?.({
         artwork_id: args.artwork_id,
+        currency: args.currency,
         price_minor: args.price_minor,
       })
     } catch (error) {

@@ -7820,6 +7820,7 @@ type createPartnerOfferFailure {
 input createPartnerOfferMutationInput {
   artwork_id: String!
   clientMutationId: String
+  currency: String
   price_minor: String!
 }
 
