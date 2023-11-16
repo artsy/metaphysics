@@ -102,9 +102,9 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(SearchCriteriaLabel))
       ),
-      resolve: async (_root, _args, { filterArtworksLoader }) => {
+      resolve: async ({ artistIDs }, _args, { filterArtworksLoader }) => {
         const suggestedFiltersByArtist: SearchCriteriaLabel[][] = await Promise.all(
-          _root.artistIDs.map((artistSlug) =>
+          artistIDs.map((artistSlug) =>
             getSuggestedFiltersByArtistSlug(artistSlug, filterArtworksLoader)
           )
         )
@@ -125,7 +125,7 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-const getMostPopularField = (aggregation: {
+const getMostPopularOption = (aggregation: {
   [key: string]: { name: string; count: number }
 }): {
   value: string
@@ -184,6 +184,7 @@ const getSuggestedFiltersByArtistSlug = async (
   filterArtworksLoader
 ): Promise<SearchCriteriaLabel[]> => {
   const gravityArgs = {
+    size: 0,
     published: true,
     aggregations: ["attribution_class", "medium"],
     artist_id: artistSlug,
@@ -194,7 +195,7 @@ const getSuggestedFiltersByArtistSlug = async (
   const suggestedFilters: SearchCriteriaLabel[] = []
 
   const rarity = getRaritySearchCriteriaLabel(
-    getMostPopularField(aggregations["attribution_class"]).value
+    getMostPopularOption(aggregations["attribution_class"]).value
   )
 
   if (rarity) {
@@ -202,7 +203,7 @@ const getSuggestedFiltersByArtistSlug = async (
   }
 
   const medium = getMediumSearchCriteriaLabel(
-    getMostPopularField(aggregations["medium"]).value
+    getMostPopularOption(aggregations["medium"]).value
   )
 
   if (medium) {
