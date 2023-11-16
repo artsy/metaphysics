@@ -26,9 +26,11 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
     },
     priceMinor: {
       type: GraphQLString,
+      resolve: ({ price_minor }) => price_minor,
     },
     userIds: {
       type: new GraphQLList(GraphQLString),
+      resolve: ({ user_ids }) => user_ids,
     },
   }),
 })

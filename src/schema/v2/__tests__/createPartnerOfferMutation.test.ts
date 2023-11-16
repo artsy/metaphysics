@@ -13,6 +13,7 @@ const mutation = gql`
             createdAt
             currency
             endAt
+            id
             partnerId
             priceMinor
             userIds
@@ -32,8 +33,13 @@ describe("Create a partner offer for users", () => {
   describe("when succesfull", () => {
     const partnerOffer = {
       id: "xyz321",
-      body: "Still a great collector",
+      artwork_id: "artwork_id",
       created_at: "2022-09-30T12:00:00+00:00",
+      currency: "USD",
+      end_at: "2022-10-29T12:00:00+00:00",
+      partner_id: "partner_id",
+      price_minor: "4000",
+      user_ids: ["user_id1", "user_id2"],
     }
 
     const context = {
@@ -47,8 +53,14 @@ describe("Create a partner offer for users", () => {
           partnerOfferOrError: {
             __typename: "createPartnerOfferSuccess",
             partnerOffer: {
-              body: "Still a great collector",
+              artworkId: "artwork_id",
               createdAt: "2022-09-30T12:00:00+00:00",
+              currency: "USD",
+              endAt: "2022-10-29T12:00:00+00:00",
+              id: "xyz321",
+              partnerId: "partner_id",
+              priceMinor: "4000",
+              userIds: ["user_id1", "user_id2"],
             },
           },
         },
