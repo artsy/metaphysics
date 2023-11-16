@@ -36,6 +36,7 @@
   "author": "Art.sy Inc",
   "license": "MIT",
   "dependencies": {
+    "@ardatan/aggregate-error": "^0.0.6",
     "@artsy/img": "1.0.3",
     "@artsy/morgan": "^1.0.2",
     "@artsy/multienv": "^1.2.0",
@@ -65,7 +66,7 @@
     "google-libphonenumber": "^3.2.25",
     "graphql": "15.8.0",
     "graphql-depth-limit": "1.1.0",
-    "graphql-middleware": "1.2.6",
+    "graphql-middleware": "6.1.32",
     "graphql-parse-resolve-info": "^4.12.3",
     "graphql-relay": "0.5.4",
     "graphql-tools": "4.0.7",
