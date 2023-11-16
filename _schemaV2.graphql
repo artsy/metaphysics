@@ -147,7 +147,7 @@ type Admin {
   # A list of feature flags
   featureFlags(
     # The sort order of the results
-    sortBy: FeatureFlagsSortBy = NAME
+    sortBy: FeatureFlagsSortBy
   ): [FeatureFlag]
 }
 
@@ -167,7 +167,7 @@ type AdminCreateFeatureFlagPayload {
   # A list of feature flags
   featureFlags(
     # The sort order of the results
-    sortBy: FeatureFlagsSortBy = NAME
+    sortBy: FeatureFlagsSortBy
   ): [FeatureFlag]
 }
 
@@ -182,7 +182,7 @@ type AdminDeleteFeatureFlagPayload {
   # A list of feature flags
   featureFlags(
     # The sort order of the results
-    sortBy: FeatureFlagsSortBy = NAME
+    sortBy: FeatureFlagsSortBy
   ): [FeatureFlag]
   success: Boolean
 }
@@ -205,7 +205,7 @@ type AdminToggleFeatureFlagPayload {
   # A list of feature flags
   featureFlags(
     # The sort order of the results
-    sortBy: FeatureFlagsSortBy = NAME
+    sortBy: FeatureFlagsSortBy
   ): [FeatureFlag]
   success: Boolean
 }
@@ -224,7 +224,7 @@ type AdminUpdateFeatureFlagPayload {
   # A list of feature flags
   featureFlags(
     # The sort order of the results
-    sortBy: FeatureFlagsSortBy = NAME
+    sortBy: FeatureFlagsSortBy
   ): [FeatureFlag]
 }
 
@@ -1531,7 +1531,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     sort: AuctionResultSorts
 
     # State of the returned auction results (can be past, upcoming, or all)
-    state: AuctionResultsState = ALL
+    state: AuctionResultsState
   ): AuctionResultConnection
 
   # In applicable contexts, this is what the artist (as a suggestion) is based on.
@@ -1888,7 +1888,7 @@ type ArtistInsight {
 
   # Number of entities relevant to the insight.
   count: Int!
-  description(format: Format = PLAIN): String
+  description(format: Format): String
 
   # List of entities relevant to the insight.
   entities: [String!]!
@@ -3888,7 +3888,7 @@ type Collection {
     first: Int
     last: Int
     page: Int
-    sort: CollectionArtworkSorts = SAVED_AT_DESC
+    sort: CollectionArtworkSorts
   ): ArtworkConnection
 
   # Number of artworks associated with this collection.
@@ -9276,7 +9276,7 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
   # A formatted description of the start to end dates
   exhibitionPeriod(
     # Formatting option to apply to exhibition period
-    format: ExhibitionPeriodFormat = LONG
+    format: ExhibitionPeriodFormat
   ): String
 
   # The exhibitors with booths in this fair with letter.
@@ -9557,7 +9557,7 @@ type Feature {
     before: String
     first: Int
     last: Int
-    sort: OrderedSetSorts = KEY_ASC
+    sort: OrderedSetSorts
   ): OrderedSetConnection
 
   # A slug ID.
@@ -10139,7 +10139,7 @@ type FollowsAndSaves {
     page: Int
     private: Boolean = false
     size: Int
-    sort: CollectionArtworkSorts = POSITION_DESC
+    sort: CollectionArtworkSorts
   ): SavedArtworksConnection
 
   # A list of published artworks by followed artists (grouped by date and artists).
@@ -11811,7 +11811,7 @@ type Me implements Node {
     sort: AuctionResultSorts
 
     # State of the returned auction results (can be past, upcoming, or all)
-    state: AuctionResultsState = ALL
+    state: AuctionResultsState
   ): AuctionResultConnection
   auctionsLotStandingConnection(
     after: String
@@ -12066,7 +12066,7 @@ type Me implements Node {
     sort: AuctionResultSorts
 
     # State of the returned auction results (can be past, upcoming, or all)
-    state: AuctionResultsState = ALL
+    state: AuctionResultsState
   ): AuctionResultConnection
   myCollectionConnection(
     after: String
@@ -12239,10 +12239,10 @@ type Me implements Node {
     before: String
     first: Int
     last: Int
-    sort: ShowSorts = CREATED_AT_DESC
+    sort: ShowSorts
 
     # Filter shows by chronological event status
-    status: EventStatus = CURRENT
+    status: EventStatus
   ): ShowConnection
 
   # A list of shows for the user (pagination logic might be broken)
@@ -12260,10 +12260,10 @@ type Me implements Node {
 
     # Include shows within a radius of the provided location
     near: Near
-    sort: ShowSorts = CREATED_AT_DESC
+    sort: ShowSorts
 
     # Filter shows by chronological event status
-    status: EventStatus = CURRENT
+    status: EventStatus
   ): ShowConnection
 
   # A list of artworks similar to recently viewed artworks.
@@ -14017,7 +14017,7 @@ type Partner implements Node {
     sort: ShowSorts
 
     # Filter shows by chronological event status
-    status: EventStatus = CURRENT
+    status: EventStatus
   ): ShowConnection
   showsSearchConnection(
     after: String
@@ -17546,7 +17546,7 @@ type Show implements EntityWithFilterArtworksConnectionInterface & Node {
   # A formatted description of the start to end dates
   exhibitionPeriod(
     # Formatting option to apply to exhibition period
-    format: ExhibitionPeriodFormat = LONG
+    format: ExhibitionPeriodFormat
   ): String
 
   # If the show is in a Fair, then that fair
@@ -17798,7 +17798,7 @@ type ShowEventType {
   # A formatted description of the start to end dates
   exhibitionPeriod(
     # Formatting option to apply to exhibition period
-    format: ExhibitionPeriodFormat = LONG
+    format: ExhibitionPeriodFormat
   ): String
   startAt(
     format: String
@@ -17844,7 +17844,6 @@ type ShowOpenedNotificationItem {
 }
 
 enum ShowSorts {
-  CREATED_AT_DESC
   END_AT_ASC
   END_AT_DESC
   FEATURED_ASC

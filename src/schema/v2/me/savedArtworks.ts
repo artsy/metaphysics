@@ -48,7 +48,7 @@ export const SavedArtworks: GraphQLFieldConfig<any, ResolverContext> = {
     },
     sort: {
       type: CollectionArtworkSorts,
-      defaultValue: "POSITION_DESC",
+      defaultValue: "-position",
     },
     page: { type: GraphQLInt },
     size: { type: GraphQLInt },
