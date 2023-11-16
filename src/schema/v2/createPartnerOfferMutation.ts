@@ -66,9 +66,7 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (args, { createPartnerOfferLoader }) => {
     if (!createPartnerOfferLoader) {
-      throw new Error(
-        "You need to pass a X-Access-Token header to perform this action"
-      )
+      throw new Error("You need to be signed in to perform this action")
     }
 
     try {

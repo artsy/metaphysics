@@ -74,7 +74,7 @@ describe("Create a partner offer for users", () => {
         createPartnerOfferLoader: () =>
           Promise.reject(
             new Error(
-              `https://stagingapi.artsy.net/api/v1/user/abc123/admin_notes - {"type":"error","message":"User not found"}`
+              `https://stagingapi.artsy.net/api/v1/partner_offer - {"type":"error","message":"Artwork not found"}`
             )
           ),
       }
@@ -86,7 +86,7 @@ describe("Create a partner offer for users", () => {
           partnerOfferOrError: {
             __typename: "createPartnerOfferFailure",
             mutationError: {
-              message: "User not found",
+              message: "Artwork not found",
             },
           },
         },
