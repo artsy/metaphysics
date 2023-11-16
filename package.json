@@ -68,7 +68,7 @@
     "graphql-depth-limit": "1.1.0",
     "graphql-middleware": "6.1.32",
     "graphql-parse-resolve-info": "^4.12.3",
-    "graphql-relay": "0.5.4",
+    "graphql-relay": "0.6.0",
     "graphql-tools": "4.0.7",
     "graphql-type-json": "0.1.4",
     "graphql-upload": "^13.0.0",
