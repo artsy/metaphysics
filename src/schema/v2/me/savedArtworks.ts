@@ -1,22 +1,22 @@
 import {
+  GraphQLBoolean,
   GraphQLFieldConfig,
+  GraphQLInt,
   GraphQLNonNull,
   GraphQLString,
-  GraphQLBoolean,
-  GraphQLInt,
 } from "graphql"
-import { ResolverContext } from "types/graphql"
-import {
-  connectionWithCursorInfo,
-  paginationResolver,
-} from "../fields/pagination"
-import { ArtworkType } from "../artwork"
-import { pageable } from "relay-cursor-paging"
-import CollectionArtworkSorts from "../sorts/collection_sorts"
 import {
   CatchCollectionNotFoundException,
   convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
+import { ResolverContext } from "types/graphql"
+import { ArtworkType } from "../artwork"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "../fields/pagination"
+import CollectionArtworkSorts from "../sorts/collection_sorts"
 
 export const COLLECTION_ID = "saved-artwork"
 
@@ -48,7 +48,7 @@ export const SavedArtworks: GraphQLFieldConfig<any, ResolverContext> = {
     },
     sort: {
       type: CollectionArtworkSorts,
-      defaultValue: "-position",
+      defaultValue: "POSITION_DESC",
     },
     page: { type: GraphQLInt },
     size: { type: GraphQLInt },

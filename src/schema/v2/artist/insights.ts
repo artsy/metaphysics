@@ -7,6 +7,8 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { formatMarkdownValue } from "schema/v2/fields/markdown"
+import Format from "schema/v2/input_fields/format"
 import { ResolverContext } from "types/graphql"
 import { ArtistType } from "../artist"
 import {
@@ -14,8 +16,6 @@ import {
   getArtistInsights,
   getAuctionRecord,
 } from "./helpers"
-import { formatMarkdownValue } from "schema/v2/fields/markdown"
-import Format, { FORMATS } from "schema/v2/input_fields/format"
 
 export const ArtistInsightKind = new GraphQLEnumType({
   name: "ArtistInsightKind",
@@ -41,7 +41,7 @@ export const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
       args: {
         format: {
           ...Format,
-          defaultValue: FORMATS.PLAIN.value,
+          defaultValue: "PLAIN",
         },
       },
       resolve: ({ description }, { format }) => {

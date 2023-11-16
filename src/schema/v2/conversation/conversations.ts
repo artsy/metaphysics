@@ -1,17 +1,17 @@
-import { CursorPageable, pageable } from "relay-cursor-paging"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import {
-  GraphQLInt,
-  GraphQLFieldConfig,
-  GraphQLString,
   GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLInt,
+  GraphQLString,
 } from "graphql"
-import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
+import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { assign } from "lodash"
+import { CursorPageable, pageable } from "relay-cursor-paging"
 
+import { GraphQLEnumType } from "graphql"
 import { ConversationType } from "schema/v2/conversation"
 import { ResolverContext } from "types/graphql"
-import { GraphQLEnumType } from "graphql"
 
 interface ConversationsArguments extends CursorPageable {
   dismissed?: boolean

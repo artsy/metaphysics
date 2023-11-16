@@ -69,7 +69,7 @@ export const AuctionResultsState: GraphQLArgumentConfig = {
       },
     },
   }),
-  defaultValue: "all",
+  defaultValue: "ALL",
   description:
     "State of the returned auction results (can be past, upcoming, or all)",
 }
