@@ -1,4 +1,5 @@
-patch-package
+diff --git a/node_modules/graphql-tools/dist/stitching/resolvers.js b/node_modules/graphql-tools/dist/stitching/resolvers.js
+index 5c18b05..1aaa8af 100644
 --- a/node_modules/graphql-tools/dist/stitching/resolvers.js
 +++ b/node_modules/graphql-tools/dist/stitching/resolvers.js
 @@ -51,7 +51,9 @@ function createProxyingResolver(schema, operation, fieldName, transforms) {
@@ -12,6 +13,8 @@ patch-package
          context: context,
          info: info,
          transforms: transforms,
+diff --git a/node_modules/graphql-tools/dist/stitching/schemaRecreation.js b/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
+index b2bdfdc..07ac440 100644
 --- a/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
 +++ b/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
 @@ -62,7 +62,9 @@ function recreateType(type, resolveType, keepResolvers) {
@@ -25,31 +28,33 @@ patch-package
                  deprecationReason: value.deprecationReason,
                  description: value.description,
                  astNode: value.astNode,
+diff --git a/node_modules/graphql-tools/dist/transforms/FilterTypes.js b/node_modules/graphql-tools/dist/transforms/FilterTypes.js
+index c947a4d..73cd984 100644
 --- a/node_modules/graphql-tools/dist/transforms/FilterTypes.js
 +++ b/node_modules/graphql-tools/dist/transforms/FilterTypes.js
-@@ -1,6 +1,8 @@
+@@ -1,6 +1,9 @@
  /* tslint:disable:no-unused-expression */
  Object.defineProperty(exports, "__esModule", { value: true });
  var visitSchema_1 = require("../transforms/visitSchema");
 +var graphql_1 = require("graphql");
 +var schemaRecreation_1 = require("../stitching/schemaRecreation");
++
  var FilterTypes = /** @class */ (function () {
      function FilterTypes(filter) {
          this.filter = filter;
-@@ -8,15 +10,43 @@ var FilterTypes = /** @class */ (function () {
+@@ -8,15 +11,43 @@ var FilterTypes = /** @class */ (function () {
      FilterTypes.prototype.transformSchema = function (schema) {
-         var _this = this;
          var _a;
+         var _this = this;
 +        var filteredTypes = [];
 +        var resolveType = schemaRecreation_1.createResolveType((_name, type) => type);
          return visitSchema_1.visitSchema(schema, (_a = {},
              _a[visitSchema_1.VisitSchemaKind.TYPE] = function (type) {
                  if (_this.filter(type)) {
--                    return undefined;
-+                  return undefined;
+                     return undefined;
                  }
                  else {
-+                  filteredTypes.push(type);
++                    filteredTypes.push(type);
                      return null;
                  }
              },
@@ -77,13 +82,15 @@ patch-package
 +              else {
 +                  return undefined;
 +              }
-+            },
++            },            
              _a));
      };
      return FilterTypes;
+diff --git a/node_modules/graphql-tools/dist/transforms/visitSchema.js b/node_modules/graphql-tools/dist/transforms/visitSchema.js
+index b36f093..0cefb6a 100644
 --- a/node_modules/graphql-tools/dist/transforms/visitSchema.js
 +++ b/node_modules/graphql-tools/dist/transforms/visitSchema.js
-@@ -29,7 +29,35 @@ function visitSchema(schema, visitor, stripResolvers) {
+@@ -36,7 +36,35 @@ function visitSchema(schema, visitor, stripResolvers) {
      var mutationType = schema.getMutationType();
      var subscriptionType = schema.getSubscriptionType();
      var typeMap = schema.getTypeMap();
@@ -116,11 +123,11 @@ patch-package
 +      return 0;
 +    });
 +
-+    typeKeys.map(function (typeName) {
++    typeKeys.map(function (typeName) {    
          var type = typeMap[typeName];
          if (graphql_1.isNamedType(type) && graphql_1.getNamedType(type).name.slice(0, 2) !== '__') {
              var specifiers = getTypeSpecifiers(type, schema);
-@@ -60,6 +88,7 @@ function visitSchema(schema, visitor, stripResolvers) {
+@@ -67,6 +95,7 @@ function visitSchema(schema, visitor, stripResolvers) {
              ? types[subscriptionType.name]
              : null,
          types: Object.keys(types).map(function (name) { return types[name]; }),

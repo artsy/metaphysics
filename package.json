@@ -68,7 +68,7 @@
     "graphql-middleware": "1.2.6",
     "graphql-parse-resolve-info": "^4.12.3",
     "graphql-relay": "0.5.4",
-    "graphql-tools": "4.0.5",
+    "graphql-tools": "4.0.7",
     "graphql-type-json": "0.1.4",
     "graphql-upload": "^13.0.0",
     "hot-shots": "5.6.1",
