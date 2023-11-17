@@ -37,9 +37,12 @@ export const executableVortexSchema = ({
     // accessible through artwork
     ...(removeRootFields
       ? [
-          new FilterRootFields(
-            (_operation, name) => !removeRootFieldList.includes(name)
-          ),
+          new FilterRootFields((_operation, name) => {
+            if (name) {
+              return !removeRootFieldList.includes(name)
+            }
+            return true
+          }),
         ]
       : []),
     new RenameTypes((name) => {

@@ -17,6 +17,9 @@ const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
  */
 export const responseLoggerLink = (name: string) => {
   return new ApolloLink((operation, forward) => {
+    // TODO: Check this with Chris
+    // Forward is not required here
+    // @ts-ignore
     if (!(forward && operation)) {
       return null
     }

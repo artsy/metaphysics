@@ -12,7 +12,6 @@ import {
   GraphQLString,
   GraphQLUnionType,
 } from "graphql"
-import { PageInfoType } from "graphql-relay"
 // Mapping of category ids to MediumType values
 import artworkMediums from "lib/artworkMediums"
 // Mapping of attribution_class ids to AttributionClass values
@@ -92,6 +91,7 @@ import {
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { error } from "lib/loggers"
+import { PageInfoType } from "graphql-relay"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -1866,7 +1866,11 @@ export const ArtworkConnectionInterface = new GraphQLInterfaceType({
   name: "ArtworkConnectionInterface",
   fields: {
     pageCursors: { type: new GraphQLNonNull(PageCursorsType) },
-    pageInfo: { type: new GraphQLNonNull(PageInfoType) },
+    pageInfo: {
+      // TODO: not sure how to fix this - will ask for help
+      // @ts-ignore
+      type: new GraphQLNonNull(PageInfoType),
+    },
     edges: { type: new GraphQLList(ArtworkEdgeInterface) },
   },
 })

@@ -2106,7 +2106,7 @@
   resolved "https://registry.yarnpkg.com/@types/google-libphonenumber/-/google-libphonenumber-7.4.22.tgz#97320192e6482eb4413b935f221d229da346d5db"
   integrity sha512-Hax2fIzdnSH9zWHyUM6/z2scyE2NigZZQKyzst1IuAc/aW66iozy1y2mBvxJgRr3dBD5RikcRKNN8pQHhwiAjQ==
 
-"@types/graphql-relay@0.4.9", "@types/graphql-relay@^0.4.0":
+"@types/graphql-relay@^0.4.0":
   version "0.4.9"
   resolved "https://registry.yarnpkg.com/@types/graphql-relay/-/graphql-relay-0.4.9.tgz#0f34ee87a1bf1fc4c986eeefe0707318c7433212"
   integrity sha512-SL0UXsnNozTBIXwSs0pGB1iTWKaQzxmfqBwx9m0NvDGg463sYaFw4f7rizTzL4OSaVobLkvGJWUPesbg66MfHw==

@@ -1,3 +1,16 @@
+diff --git a/node_modules/graphql-relay/connection/arrayConnection.d.ts b/node_modules/graphql-relay/connection/arrayConnection.d.ts
+index 5abd394..6b06c92 100644
+--- a/node_modules/graphql-relay/connection/arrayConnection.d.ts
++++ b/node_modules/graphql-relay/connection/arrayConnection.d.ts
+@@ -8,6 +8,8 @@ import type {
+ export interface ArraySliceMetaInfo {
+   sliceStart: number;
+   arrayLength: number;
++  useValueAsEdge?: boolean;
++  resolveNode?: GraphQLFieldResolver<any, any> | null;
+ }
+ 
+ /**
 diff --git a/node_modules/graphql-relay/connection/arrayConnection.js b/node_modules/graphql-relay/connection/arrayConnection.js
 index 5a42ae5..bec0ba9 100644
 --- a/node_modules/graphql-relay/connection/arrayConnection.js
@@ -29,6 +42,29 @@ index 5a42ae5..bec0ba9 100644
    const firstEdge = edges[0];
    const lastEdge = edges[edges.length - 1];
    const lowerBound = after != null ? afterOffset + 1 : 0;
+diff --git a/node_modules/graphql-relay/connection/connection.d.ts b/node_modules/graphql-relay/connection/connection.d.ts
+index b6a0e45..0b89ee6 100644
+--- a/node_modules/graphql-relay/connection/connection.d.ts
++++ b/node_modules/graphql-relay/connection/connection.d.ts
+@@ -64,7 +64,9 @@ export interface ConnectionConfig {
+   resolveNode?: GraphQLFieldResolver<any, any>;
+   resolveCursor?: GraphQLFieldResolver<any, any>;
+   edgeFields?: Thunk<GraphQLFieldConfigMap<any, any>>;
++  edgeInterfaces?: GraphQLInterfaceType[];
+   connectionFields?: Thunk<GraphQLFieldConfigMap<any, any>>;
++  connectionInterfaces?: GraphQLInterfaceType[];
+ }
+ 
+ export interface GraphQLConnectionDefinitions {
+@@ -72,6 +74,8 @@ export interface GraphQLConnectionDefinitions {
+   connectionType: GraphQLObjectType;
+ }
+ 
++export const PageInfoType: GraphQLObjectType<any, any>
++
+ /**
+  * Returns a GraphQLObjectType for a connection with the given name,
+  * and whose nodes are of the specified type.
 diff --git a/node_modules/graphql-relay/connection/connection.js b/node_modules/graphql-relay/connection/connection.js
 index 23c916f..081f3b3 100644
 --- a/node_modules/graphql-relay/connection/connection.js
@@ -88,3 +124,49 @@ index 670c089..77a49e6 100644
  Object.defineProperty(exports, "connectionFromArray", {
    enumerable: true,
    get: function () {
+diff --git a/node_modules/graphql-relay/mutation/mutation.d.ts b/node_modules/graphql-relay/mutation/mutation.d.ts
+index c4915e0..294213e 100644
+--- a/node_modules/graphql-relay/mutation/mutation.d.ts
++++ b/node_modules/graphql-relay/mutation/mutation.d.ts
+@@ -8,11 +8,11 @@ import type {
+ } from 'graphql';
+ 
+ // TS_SPECIFIC: This type is only exported by TypeScript
+-export type MutationFn = (
+-  object: any,
+-  ctx: any,
++export type mutationFn<TInput, TOutput, TContext> = (
++  object: TInput,
++  ctx: TContext,
+   info: GraphQLResolveInfo,
+-) => Promise<any> | any;
++) => Promise<TOutput> | TOutput;
+ 
+ // TS_SPECIFIC: This type is only exported by TypeScript
+ /**
+@@ -29,20 +29,20 @@ export type MutationFn = (
+  * input field, and it should return an Object with a key for each
+  * output field. It may return synchronously, or return a Promise.
+  */
+-export interface MutationConfig {
++export interface MutationConfig<TInput, TOutput, TContext> {
+   name: string;
+   description?: string;
+   deprecationReason?: string;
+   extensions?: GraphQLFieldExtensions<any, any>;
+   inputFields: Thunk<GraphQLInputFieldConfigMap>;
+-  outputFields: Thunk<GraphQLFieldConfigMap<any, any>>;
+-  mutateAndGetPayload: MutationFn;
++  outputFields: Thunk<GraphQLFieldConfigMap<TOutput, TContext>>;
++  mutateAndGetPayload: mutationFn<TInput, TOutput, TContext>;
+ }
+ 
+ /**
+  * Returns a GraphQLFieldConfig for the mutation described by the
+  * provided MutationConfig.
+  */
+-export function mutationWithClientMutationId(
+-  config: MutationConfig,
++export function mutationWithClientMutationId<TInput, TOutput, TContext>(
++  config: MutationConfig<TInput, TOutput, TContext>
+ ): GraphQLFieldConfig<any, any>;

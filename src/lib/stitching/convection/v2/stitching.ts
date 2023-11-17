@@ -1,10 +1,11 @@
 import { GraphQLSchema } from "graphql"
 import { amount, amountSDL } from "schema/v2/fields/money"
 import gql from "lib/gql"
+import { GraphQLSchemaWithTransforms } from "graphql-tools"
 
 export const consignmentStitchingEnvironment = (
   localSchema: GraphQLSchema,
-  convectionSchema: GraphQLSchema & { transforms: any }
+  convectionSchema: GraphQLSchemaWithTransforms
 ) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: `

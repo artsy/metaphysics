@@ -30,8 +30,11 @@ export const executableCausalitySchema = () => {
   // Return the new modified schema
   return transformSchema(schema, [
     new FilterTypes((type) => !allowlistedTypes.includes(type.name)),
-    new FilterRootFields((_operation, name, _field) => {
-      return permittedRootFields.includes(name)
+    new FilterRootFields((_operation, name) => {
+      if (name) {
+        return permittedRootFields.includes(name)
+      }
+      return false
     }),
     new RenameTypes((name) => {
       if (name === "Long") return "Long"

@@ -1,14 +1,13 @@
 import { executableConvectionSchema } from "../schema"
 
 import {
-  getTypesFromSchema,
-  getRootFieldsFromSchema,
   getFieldsForTypeFromSchema,
+  getRootFieldsFromSchema,
+  getTypesFromSchema,
 } from "lib/stitching/lib/getTypesFromSchema"
 import { consignmentStitchingEnvironment } from "../v2/stitching"
 
-import { mergeSchemas } from "graphql-tools"
-import { GraphQLSchema } from "graphql"
+import { GraphQLSchemaWithTransforms, mergeSchemas } from "graphql-tools"
 import localSchema from "schema/v2/schema"
 
 /**
@@ -36,9 +35,9 @@ export async function useConvectionStitching() {
  * stitching environment and then caching the results.
  */
 
-let cachedSchema: GraphQLSchema & { transforms: any }
+let cachedSchema: GraphQLSchemaWithTransforms
 let stitchedSchema: ReturnType<typeof consignmentStitchingEnvironment>
-let mergedSchema: GraphQLSchema & { transforms: any }
+let mergedSchema: GraphQLSchemaWithTransforms
 
 /**
  * Gets a cached copy of the transformed convection schema
@@ -75,7 +74,7 @@ const getConvectionMergedSchema = async () => {
     mergedSchema = mergeSchemas({
       schemas: [localSchema, cachedSchema, extensionSchema],
       resolvers: resolvers,
-    }) as GraphQLSchema & { transforms: any }
+    }) as GraphQLSchemaWithTransforms
 
     const anyMergedSchema = mergedSchema as any
     anyMergedSchema.__allowedLegacyNames = ["__id"]

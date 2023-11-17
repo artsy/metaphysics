@@ -4,13 +4,13 @@ import {
   GraphQLString,
   GraphQLUnionType,
 } from "graphql"
-import { mutationWithClientMutationId } from "graphql-relay"
 import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { UserType } from "../user"
+import { mutationWithClientMutationId } from "graphql-relay"
 
 interface DeleteUserMutationInputProps {
   id: string
