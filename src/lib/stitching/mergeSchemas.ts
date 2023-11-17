@@ -11,8 +11,9 @@ import { gravityStitchingEnvironment as gravityStitchingEnvironmentV2 } from "./
 import { exchangeStitchingEnvironment as exchangeStitchingEnvironmentV2 } from "./exchange/v2/stitching"
 import { consignmentStitchingEnvironment as convectionStitchingEnvironmentV2 } from "./convection/v2/stitching"
 import { causalityStitchingEnvironment as causalityStitchingEnvironmentV2 } from "./causality/v2/stitching"
+import config from "config"
 
-const disableExchangeSchemaStitching = true
+const { DISABLE_EXCHANGE_SCHEMA_STITCHING } = config
 
 /**
  * Incrementally merges in schemas according to `process.env`
@@ -54,9 +55,10 @@ export const incrementalMergeSchemas = (localSchema) => {
   const diffusionSchema = executableDiffusionSchema()
   schemas.push(diffusionSchema)
 
-  if (!disableExchangeSchemaStitching) {
+  if (!DISABLE_EXCHANGE_SCHEMA_STITCHING) {
     const {
       executableExchangeSchema,
+      transformsForExchange,
     } = require("./lib/stitching/exchange/schema")
 
     const exchangeSchema = executableExchangeSchema(transformsForExchange)

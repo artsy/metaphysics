@@ -36,6 +36,7 @@ import * as Sentry from "@sentry/node"
 import { bodyParserMiddleware } from "lib/bodyParserMiddleware"
 
 const {
+  DISABLE_EXCHANGE_SCHEMA_STITCHING,
   ENABLE_GRAPHQL_UPLOAD,
   ENABLE_REQUEST_LOGGING,
   GRAPHQL_UPLOAD_MAX_FILE_SIZE_IN_BYTES,
@@ -134,8 +135,6 @@ app.use(
   fetchPersistedQuery
 )
 
-const disableExchangeSchemaStitching = true
-
 const { graphqlHTTP } = require("express-graphql")
 const graphqlServer = graphqlHTTP((req, res, params) => {
   const accessToken = req.headers["x-access-token"] as string | undefined
@@ -190,7 +189,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     ipAddress,
     xImpersonateUserID,
   }
-  if (!disableExchangeSchemaStitching) {
+  if (!DISABLE_EXCHANGE_SCHEMA_STITCHING) {
     const {
       executableExchangeSchema,
       legacyTransformsForExchange,
