@@ -1,46 +1,47 @@
+import { omit, map, deburr } from "lodash"
+import { pageable } from "relay-cursor-paging"
+import { connectionFromArraySlice } from "graphql-relay"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { dateRange, formattedOpeningHours } from "lib/date"
+import { artistConnection } from "./artist"
+import moment from "moment"
+import cached from "./fields/cached"
+import date from "./fields/date"
+import numeral from "./fields/numeral"
+import Profile from "./profile"
+import Image from "./image"
+import Artist from "./artist"
+import Partner, { PartnerType } from "schema/v2/partner/partner"
+import { ShowsConnection } from "./show"
+import { LocationType } from "./location"
 import {
-  GraphQLBoolean,
-  GraphQLFieldConfig,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
+  SlugAndInternalIDFields,
+  SlugIDField,
+  NodeInterface,
+} from "./object_identification"
+import {
   GraphQLObjectType,
   GraphQLString,
+  GraphQLBoolean,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLFieldConfig,
+  GraphQLInt,
 } from "graphql"
-import { connectionFromArraySlice } from "graphql-relay"
+import ShowSorts from "./sorts/show_sorts"
 import { allViaLoader } from "lib/all"
-import { dateRange, formattedOpeningHours } from "lib/date"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { FairArtistSortsType } from "./sorts/fairArtistSorts"
+import { ResolverContext } from "types/graphql"
 import { sponsoredContentForFair } from "lib/sponsoredContent"
-import { deburr, map, omit } from "lodash"
-import moment from "moment"
-import { pageable } from "relay-cursor-paging"
+import { markdown } from "./fields/markdown"
+import { articleConnection } from "./article"
+import ArticleSorts from "./sorts/article_sorts"
 import {
   connectionWithCursorInfo,
   createPageCursors,
   paginationResolver,
 } from "schema/v2/fields/pagination"
-import Partner, { PartnerType } from "schema/v2/partner/partner"
-import { ResolverContext } from "types/graphql"
-import { articleConnection } from "./article"
-import Artist, { artistConnection } from "./artist"
 import { FairOrganizerType } from "./fair_organizer"
-import cached from "./fields/cached"
-import date from "./fields/date"
-import { markdown } from "./fields/markdown"
-import numeral from "./fields/numeral"
-import Image from "./image"
-import { LocationType } from "./location"
-import {
-  NodeInterface,
-  SlugAndInternalIDFields,
-  SlugIDField,
-} from "./object_identification"
-import Profile from "./profile"
-import { ShowsConnection } from "./show"
-import ArticleSorts from "./sorts/article_sorts"
-import { FairArtistSortsType } from "./sorts/fairArtistSorts"
-import ShowSorts from "./sorts/show_sorts"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
@@ -144,7 +145,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           format: {
             type: ExhibitionPeriodFormatEnum,
             description: "Formatting option to apply to exhibition period",
-            defaultValue: "LONG",
+            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG"),
           },
         },
         resolve: ({ start_at, end_at }, args) => {

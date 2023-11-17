@@ -59,9 +59,21 @@ export const MatchConnection: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLList(new GraphQLNonNull(SearchEntity)),
       description:
         "ARTIST_SERIES, CITY, COLLECTION, and VIEWING_ROOM are not yet supported",
-      defaultValue: SearchEntity.getValues().map(
-        (searchEntity) => searchEntity.name
-      ),
+      defaultValue: [
+        "ARTICLE",
+        "ARTIST",
+        "ARTWORK",
+        "FAIR",
+        "FEATURE",
+        "GALLERY",
+        "GENE",
+        "INSTITUTION",
+        "PAGE",
+        "PROFILE",
+        "SALE",
+        "SHOW",
+        "TAG",
+      ],
     },
     mode: {
       type: SearchMode,

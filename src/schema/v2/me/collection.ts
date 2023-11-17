@@ -1,10 +1,10 @@
 import {
-  GraphQLBoolean,
   GraphQLFieldConfig,
-  GraphQLInt,
-  GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLNonNull,
   GraphQLString,
+  GraphQLBoolean,
+  GraphQLInt,
 } from "graphql"
 import {
   CatchCollectionNotFoundException,
@@ -28,7 +28,8 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
         ...pageable({
           sort: {
             type: CollectionArtworkSorts,
-            defaultValue: "SAVED_AT_DESC",
+            defaultValue: CollectionArtworkSorts.getValue("SAVED_AT_DESC")!
+              .value,
           },
           page: { type: GraphQLInt },
         }),

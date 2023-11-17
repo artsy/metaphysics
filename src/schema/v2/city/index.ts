@@ -4,30 +4,30 @@ import {
   GraphQLFieldConfig,
   GraphQLInt,
   GraphQLList,
-  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLNonNull,
 } from "graphql"
-import { connectionFromArraySlice } from "graphql-relay"
-import { HTTPError } from "lib/HTTPError"
-import { MAX_GRAPHQL_INT, allViaLoader } from "lib/all"
-import { LatLng, distance } from "lib/geospatial"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { BodyAndHeaders } from "lib/loaders"
-import { StaticPathLoader } from "lib/loaders/api/loader_interface"
-import { sponsoredContentForCity } from "lib/sponsoredContent"
-import { CursorPageable, pageable } from "relay-cursor-paging"
-import EventStatus from "schema/v2/input_fields/event_status"
-import Near from "schema/v2/input_fields/near"
-import FairSorts from "schema/v2/sorts/fair_sorts"
-import ShowSorts from "schema/v2/sorts/show_sorts"
-import { ResolverContext } from "types/graphql"
-import { createPageCursors } from "../fields/pagination"
 import { LatLngType } from "../location"
+import ShowSorts from "schema/v2/sorts/show_sorts"
+import FairSorts from "schema/v2/sorts/fair_sorts"
+import EventStatus from "schema/v2/input_fields/event_status"
+import { pageable, CursorPageable } from "relay-cursor-paging"
+import { connectionFromArraySlice } from "graphql-relay"
 import {
   LOCAL_DISCOVERY_RADIUS_KM,
   NEAREST_CITY_THRESHOLD_KM,
 } from "./constants"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import Near from "schema/v2/input_fields/near"
+import { LatLng, distance } from "lib/geospatial"
+import { ResolverContext } from "types/graphql"
+import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
+import { StaticPathLoader } from "lib/loaders/api/loader_interface"
+import { BodyAndHeaders } from "lib/loaders"
+import { sponsoredContentForCity } from "lib/sponsoredContent"
+import { createPageCursors } from "../fields/pagination"
+import { HTTPError } from "lib/HTTPError"
 
 export interface TCity {
   slug: string

@@ -1,53 +1,53 @@
+import { CursorPageable, pageable } from "relay-cursor-paging"
 import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLNonNull,
+  GraphQLInt,
+  GraphQLList,
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { allViaLoader } from "lib/all"
-import { deprecate } from "lib/deprecation"
-import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { flatten } from "lodash"
-import { CursorPageable, pageable } from "relay-cursor-paging"
-import { articleConnection } from "schema/v2/article"
-import { ArtistType } from "schema/v2/artist"
-import { artworkConnection } from "schema/v2/artwork"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "schema/v2/fields/cached"
 import initials from "schema/v2/fields/initials"
+import Profile from "schema/v2/profile"
+import { locationsConnection, LocationType } from "schema/v2/location"
+import EventStatus from "schema/v2/input_fields/event_status"
+import {
+  NodeInterface,
+  SlugAndInternalIDFields,
+} from "schema/v2/object_identification"
+import { artworkConnection } from "schema/v2/artwork"
 import numeral from "schema/v2/fields/numeral"
+import { ShowsConnection, ShowType } from "schema/v2/show"
+import { ArtistType } from "schema/v2/artist"
+import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
+import { ResolverContext } from "types/graphql"
+import { PartnerCategoryType } from "./partner_category"
+import ShowSorts from "schema/v2/sorts/show_sorts"
+import ArtistSorts from "schema/v2/sorts/artist_sorts"
+import { fields as partnerArtistFields } from "./partner_artist"
 import {
   connectionWithCursorInfo,
   createPageCursors,
   paginationResolver,
 } from "schema/v2/fields/pagination"
-import EventStatus from "schema/v2/input_fields/event_status"
-import { LocationType, locationsConnection } from "schema/v2/location"
-import {
-  NodeInterface,
-  SlugAndInternalIDFields,
-} from "schema/v2/object_identification"
-import Profile from "schema/v2/profile"
-import { ShowType, ShowsConnection } from "schema/v2/show"
+import { deprecate } from "lib/deprecation"
+import { articleConnection } from "schema/v2/article"
 import ArticleSorts, { ArticleSort } from "schema/v2/sorts/article_sorts"
-import ArtistSorts from "schema/v2/sorts/artist_sorts"
-import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
-import ShowSorts from "schema/v2/sorts/show_sorts"
-import { ResolverContext } from "types/graphql"
-import { fields as partnerArtistFields } from "./partner_artist"
-import { PartnerCategoryType } from "./partner_category"
+import { allViaLoader } from "lib/all"
 
 import { truncate } from "lib/helpers"
-import { compact } from "lodash"
 import { setVersion } from "schema/v2/image/normalize"
-import { AlertsSummaryFields } from "../alerts"
-import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
+import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
+import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
+import { AlertsSummaryFields } from "../alerts"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -776,7 +776,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           },
           status: {
             type: EventStatus.type,
-            defaultValue: "CURRENT",
+            defaultValue: "current",
             description: "Filter shows by chronological event status",
           },
           isDisplayable: {

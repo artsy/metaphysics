@@ -1,51 +1,51 @@
-import {
-  GraphQLBoolean,
-  GraphQLFieldConfig,
-  GraphQLFieldConfigArgumentMap,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLUnionType,
-} from "graphql"
-import {
-  Connection,
-  connectionDefinitions,
-  connectionFromArray,
-  connectionFromArraySlice,
-} from "graphql-relay"
-import { HTTPError } from "lib/HTTPError"
-import { dateRange, exhibitionStatus } from "lib/date"
-import {
-  convertConnectionArgsToGravityArgs,
-  existyValue,
-  isExisty,
-} from "lib/helpers"
-import { totalViaLoader } from "lib/total"
-import { find, flatten } from "lodash"
 import moment from "moment"
 import { pageable } from "relay-cursor-paging"
-import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
-import { PartnerType } from "schema/v2/partner/partner"
-import Artist from "./artist"
-import { artworkConnection } from "./artwork"
-import { ExternalPartnerType } from "./external_partner"
-import Fair from "./fair"
+import {
+  connectionFromArraySlice,
+  connectionFromArray,
+  connectionDefinitions,
+  Connection,
+} from "graphql-relay"
+import {
+  isExisty,
+  existyValue,
+  convertConnectionArgsToGravityArgs,
+} from "lib/helpers"
+import { HTTPError } from "lib/HTTPError"
+import numeral from "./fields/numeral"
+import { dateRange, exhibitionStatus } from "lib/date"
 import cached from "./fields/cached"
 import date from "./fields/date"
 import { markdown } from "./fields/markdown"
-import numeral from "./fields/numeral"
-import Image, { getDefault, normalizeImageData } from "./image"
+import Artist from "./artist"
+import { PartnerType } from "schema/v2/partner/partner"
+import { ExternalPartnerType } from "./external_partner"
+import Fair from "./fair"
+import { artworkConnection } from "./artwork"
 import { LocationType } from "./location"
-import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
+import Image, { getDefault, normalizeImageData } from "./image"
 import ShowEventType from "./show_event"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+  GraphQLUnionType,
+  GraphQLFieldConfig,
+  GraphQLFieldConfigArgumentMap,
+} from "graphql"
+import { totalViaLoader } from "lib/total"
+import { find, flatten } from "lodash"
 
-import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
-import { ResolverContext } from "types/graphql"
-import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
-import EventStatus from "./input_fields/event_status"
 import ShowSorts from "./sorts/show_sorts"
+import EventStatus from "./input_fields/event_status"
+import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
+import { ResolverContext } from "types/graphql"
+import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
@@ -343,7 +343,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           format: {
             type: ExhibitionPeriodFormatEnum,
             description: "Formatting option to apply to exhibition period",
-            defaultValue: "LONG",
+            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG"),
           },
         },
         resolve: ({ start_at, end_at }, args) => {

@@ -1,10 +1,10 @@
 import { GraphQLFieldConfig } from "graphql"
-import { connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
+import { connectionFromArraySlice } from "graphql-relay"
 import EventStatus from "../input_fields/event_status"
-import { ShowsConnection } from "../show"
 import ShowSorts from "../sorts/show_sorts"
+import { ShowsConnection } from "../show"
 
 export const ShowsByFollowedArtists: GraphQLFieldConfig<
   void,
@@ -14,11 +14,11 @@ export const ShowsByFollowedArtists: GraphQLFieldConfig<
   args: pageable({
     sort: {
       type: ShowSorts,
-      defaultValue: "CREATED_AT_DESC",
+      defaultValue: "-created_at",
     },
     status: {
       type: EventStatus.type,
-      defaultValue: "CURRENT",
+      defaultValue: "current",
       description: "Filter shows by chronological event status",
     },
   }),
