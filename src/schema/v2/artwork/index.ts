@@ -91,6 +91,7 @@ import {
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { error } from "lib/loggers"
+// @ts-ignore
 import { PageInfoType } from "graphql-relay"
 
 const has_price_range = (price) => {
@@ -1868,7 +1869,6 @@ export const ArtworkConnectionInterface = new GraphQLInterfaceType({
     pageCursors: { type: new GraphQLNonNull(PageCursorsType) },
     pageInfo: {
       // TODO: not sure how to fix this - will ask for help
-      // @ts-ignore
       type: new GraphQLNonNull(PageInfoType),
     },
     edges: { type: new GraphQLList(ArtworkEdgeInterface) },
