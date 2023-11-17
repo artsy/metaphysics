@@ -2,10 +2,6 @@ import { mergeSchemas as _mergeSchemas } from "graphql-tools"
 import { executableGravitySchema } from "lib/stitching/gravity/schema"
 import { executableCausalitySchema } from "lib/stitching/causality/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
-import {
-  executableExchangeSchema,
-  transformsForExchange,
-} from "lib/stitching/exchange/schema"
 import { executableDiffusionSchema } from "lib/stitching/diffusion/schema"
 import { executableVortexSchema } from "lib/stitching/vortex/schema"
 
@@ -15,6 +11,8 @@ import { gravityStitchingEnvironment as gravityStitchingEnvironmentV2 } from "./
 import { exchangeStitchingEnvironment as exchangeStitchingEnvironmentV2 } from "./exchange/v2/stitching"
 import { consignmentStitchingEnvironment as convectionStitchingEnvironmentV2 } from "./convection/v2/stitching"
 import { causalityStitchingEnvironment as causalityStitchingEnvironmentV2 } from "./causality/v2/stitching"
+
+const disableExchangeSchemaStitching = true
 
 /**
  * Incrementally merges in schemas according to `process.env`
@@ -56,12 +54,18 @@ export const incrementalMergeSchemas = (localSchema) => {
   const diffusionSchema = executableDiffusionSchema()
   schemas.push(diffusionSchema)
 
-  const exchangeSchema = executableExchangeSchema(transformsForExchange)
-  schemas.push(exchangeSchema)
+  if (!disableExchangeSchemaStitching) {
+    const {
+      executableExchangeSchema,
+    } = require("./lib/stitching/exchange/schema")
 
-  useStitchingEnvironment(
-    exchangeStitchingEnvironmentV2({ localSchema, exchangeSchema })
-  )
+    const exchangeSchema = executableExchangeSchema(transformsForExchange)
+    schemas.push(exchangeSchema)
+
+    useStitchingEnvironment(
+      exchangeStitchingEnvironmentV2({ localSchema, exchangeSchema })
+    )
+  }
 
   const convectionSchema = executableConvectionSchema()
   schemas.push(convectionSchema)

@@ -18,10 +18,6 @@ import {
 } from "lib/loaders/api/extensionsLogger"
 import { info } from "./lib/loggers"
 import {
-  executableExchangeSchema,
-  legacyTransformsForExchange,
-} from "./lib/stitching/exchange/schema"
-import {
   middleware as requestIDsAdder,
   requestIPAddress,
 } from "./lib/requestIDs"
@@ -138,7 +134,7 @@ app.use(
   fetchPersistedQuery
 )
 
-const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
+const disableExchangeSchemaStitching = true
 
 const { graphqlHTTP } = require("express-graphql")
 const graphqlServer = graphqlHTTP((req, res, params) => {
@@ -188,12 +184,21 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     defaultTimezone,
     ...loaders,
     // For stitching purposes
-    exchangeSchema,
     requestIDs,
     userAgent,
     appToken,
     ipAddress,
     xImpersonateUserID,
+  }
+  if (!disableExchangeSchemaStitching) {
+    const {
+      executableExchangeSchema,
+      legacyTransformsForExchange,
+    } = require("./lib/stitching/exchange/schema")
+
+    context.exchangeSchema = executableExchangeSchema(
+      legacyTransformsForExchange
+    )
   }
 
   const validationRules = [

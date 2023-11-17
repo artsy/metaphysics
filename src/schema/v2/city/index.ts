@@ -11,7 +11,9 @@ import {
 import { LatLngType } from "../location"
 import ShowSorts from "schema/v2/sorts/show_sorts"
 import FairSorts from "schema/v2/sorts/fair_sorts"
-import EventStatus from "schema/v2/input_fields/event_status"
+import EventStatus, {
+  EVENT_STATUS_SORTS_ENUMS,
+} from "schema/v2/input_fields/event_status"
 import { pageable, CursorPageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import {
@@ -74,7 +76,7 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
           },
           status: {
             type: EventStatus.type,
-            defaultValue: "CURRENT",
+            defaultValue: EVENT_STATUS_SORTS_ENUMS.getValue("CURRENT")?.value,
             description: "Filter shows by chronological event status",
           },
           partnerType: {

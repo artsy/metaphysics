@@ -1,4 +1,4 @@
-import { Transform } from "graphql-tools"
+import { Transform, VisitSchemaKind, visitSchema } from "graphql-tools"
 import {
   GraphQLSchema,
   GraphQLObjectType,
@@ -10,11 +10,6 @@ import {
   isNamedType,
   isWrappingType,
 } from "graphql"
-import {
-  visitSchema,
-  VisitSchemaKind,
-  TypeVisitor,
-} from "graphql-tools/dist/transforms/visitSchema"
 import {
   createResolveType,
   fieldToFieldConfig,
@@ -28,7 +23,7 @@ type TypeWithSelectableFields =
 export class ReplaceCommerceDateTimeType implements Transform {
   public transformSchema(schema: GraphQLSchema): GraphQLSchema {
     const newSchema = visitSchema(schema, {
-      [VisitSchemaKind.OBJECT_TYPE]: ((type: GraphQLObjectType<any, any>) => {
+      [VisitSchemaKind.OBJECT_TYPE]: (type: GraphQLObjectType<any, any>) => {
         const fields = this.transformFields(type)
         return (
           fields &&
@@ -42,9 +37,9 @@ export class ReplaceCommerceDateTimeType implements Transform {
             interfaces: type.getInterfaces(),
           })
         )
-      }) as TypeVisitor,
+      },
 
-      [VisitSchemaKind.INTERFACE_TYPE]: ((type: GraphQLInterfaceType) => {
+      [VisitSchemaKind.INTERFACE_TYPE]: (type: GraphQLInterfaceType) => {
         const fields = this.transformFields(type)
         return (
           fields &&
@@ -57,7 +52,7 @@ export class ReplaceCommerceDateTimeType implements Transform {
             extensionASTNodes: type.extensionASTNodes,
           })
         )
-      }) as TypeVisitor,
+      },
     })
 
     return newSchema
