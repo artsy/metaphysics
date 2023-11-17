@@ -34,9 +34,12 @@ import { principalFieldDirectiveExtension } from "directives/principleField/prin
 import { principalFieldDirectiveValidation } from "directives/principleField/principalFieldDirectiveValidation"
 import * as Sentry from "@sentry/node"
 import { bodyParserMiddleware } from "lib/bodyParserMiddleware"
+import {
+  executableExchangeSchema,
+  legacyTransformsForExchange,
+} from "lib/stitching/exchange/schema"
 
 const {
-  DISABLE_EXCHANGE_SCHEMA_STITCHING,
   ENABLE_GRAPHQL_UPLOAD,
   ENABLE_REQUEST_LOGGING,
   GRAPHQL_UPLOAD_MAX_FILE_SIZE_IN_BYTES,
@@ -177,27 +180,20 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     xImpersonateUserID,
   })
 
+  const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
+
   const context: ResolverContext = {
     accessToken,
     userID,
     defaultTimezone,
     ...loaders,
     // For stitching purposes
+    exchangeSchema,
     requestIDs,
     userAgent,
     appToken,
     ipAddress,
     xImpersonateUserID,
-  }
-  if (!DISABLE_EXCHANGE_SCHEMA_STITCHING) {
-    const {
-      executableExchangeSchema,
-      legacyTransformsForExchange,
-    } = require("./lib/stitching/exchange/schema")
-
-    context.exchangeSchema = executableExchangeSchema(
-      legacyTransformsForExchange
-    )
   }
 
   const validationRules = [
