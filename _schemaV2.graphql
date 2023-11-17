@@ -1400,7 +1400,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     before: String
     first: Int
     last: Int
-    sort: String
+    partnerID: String
   ): AlertConnection
   alternateNames: [String]
   articlesConnection(

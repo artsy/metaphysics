@@ -110,7 +110,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       alertsConnection: {
         args: pageable({
-          sort: {
+          partnerID: {
             type: GraphQLString,
           },
         }),
@@ -128,7 +128,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           } = await artistAlertsLoader(_id, {
             page,
             size,
-            sort: args.sort,
+            partner_id: args.partnerID,
           })
 
           return paginationResolver({
