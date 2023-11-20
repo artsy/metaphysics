@@ -9,8 +9,7 @@ import {
   GraphQLString,
 } from "graphql"
 import attributionClasses from "lib/attributionClasses"
-import { snakeCaseKeys } from "lib/helpers"
-import _ from "lodash"
+import { isExisty, snakeCaseKeys } from "lib/helpers"
 import { stringify } from "qs"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "./artwork/artworkSizes"
@@ -75,6 +74,8 @@ const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   },
 }
 
+const ALLOWED_RARITY_SUGGESTIONS = ["unique", "limited edition"]
+
 const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
   name: "PreviewSavedSearch",
   fields: () => ({
@@ -102,49 +103,56 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(SearchCriteriaLabel))
       ),
-      resolve: async (_root, _args, { filterArtworksLoader }) => {
-        const suggestedFiltersByArtist: SearchCriteriaLabel[][] = await Promise.all(
-          _root.artistIDs.map((artistSlug) =>
-            getSuggestedFiltersByArtistSlug(artistSlug, filterArtworksLoader)
-          )
+      resolve: async ({ artistIDs }, _args, { filterArtworksLoader }) => {
+        if (!artistIDs) {
+          throw new Error("artistIDs are required to get suggested filters")
+        }
+
+        const gravityArgs = {
+          size: 0,
+          aggregations: ["attribution_class", "medium"],
+          artist_ids: artistIDs,
+        }
+
+        const { aggregations } = await filterArtworksLoader(gravityArgs)
+
+        const suggestedFilters: SearchCriteriaLabel[] = []
+
+        const rarity = getRaritySearchCriteriaLabel(
+          getMostPopularOption(aggregations["attribution_class"])
         )
 
-        return (
-          _.chain(suggestedFiltersByArtist)
-            .flatten()
-            // Remove duplicates
-            .uniqBy((searchCriteria) => JSON.stringify(searchCriteria))
-            // Group by search criteria type
-            .groupBy((searchCriteria) => searchCriteria.field)
-            .values()
-            .flatten()
-            .value()
+        if (rarity && ALLOWED_RARITY_SUGGESTIONS.includes(rarity.value)) {
+          suggestedFilters.push(rarity)
+        }
+
+        const medium = getMediumSearchCriteriaLabel(
+          getMostPopularOption(aggregations["medium"])
         )
+
+        if (medium) {
+          suggestedFilters.push(medium)
+        }
+
+        return suggestedFilters
       },
     },
   }),
 })
 
-const getMostPopularField = (aggregation: {
+const getMostPopularOption = (aggregation: {
   [key: string]: { name: string; count: number }
-}): {
-  value: string
-  data: { name: string; count: number }
-} => {
-  const fieldValueArray = Object.entries(aggregation).reduce((acc, curr) => {
-    return curr[1].count > acc[1].count ? curr : acc
-  })
-
-  return {
-    value: fieldValueArray[0],
-    data: fieldValueArray[1],
+}): string | undefined => {
+  if (isExisty(aggregation)) {
+    const key = Object.keys(aggregation)[0]
+    return key
   }
 }
 
 const getRaritySearchCriteriaLabel = (
   value: string | undefined
 ): SearchCriteriaLabel | null => {
-  if (!value || value === "unknown edition") {
+  if (!value) {
     return null
   }
 
@@ -177,39 +185,6 @@ const getMediumSearchCriteriaLabel = (
     value: mediumData.mediumFilterGeneSlug,
     name: "Medium",
   }
-}
-
-const getSuggestedFiltersByArtistSlug = async (
-  artistSlug: string,
-  filterArtworksLoader
-): Promise<SearchCriteriaLabel[]> => {
-  const gravityArgs = {
-    published: true,
-    aggregations: ["attribution_class", "medium"],
-    artist_id: artistSlug,
-  }
-
-  const { aggregations } = await filterArtworksLoader(gravityArgs)
-
-  const suggestedFilters: SearchCriteriaLabel[] = []
-
-  const rarity = getRaritySearchCriteriaLabel(
-    getMostPopularField(aggregations["attribution_class"]).value
-  )
-
-  if (rarity) {
-    suggestedFilters.push(rarity)
-  }
-
-  const medium = getMediumSearchCriteriaLabel(
-    getMostPopularField(aggregations["medium"]).value
-  )
-
-  if (medium) {
-    suggestedFilters.push(medium)
-  }
-
-  return suggestedFilters
 }
 
 const PreviewSavedSearchAttributesType = new GraphQLInputObjectType({
