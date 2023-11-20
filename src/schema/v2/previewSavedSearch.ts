@@ -110,7 +110,6 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
 
         const gravityArgs = {
           size: 0,
-          published: true,
           aggregations: ["attribution_class", "medium"],
           artist_ids: artistIDs,
         }
