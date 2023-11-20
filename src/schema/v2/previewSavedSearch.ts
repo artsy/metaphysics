@@ -9,7 +9,7 @@ import {
   GraphQLString,
 } from "graphql"
 import attributionClasses from "lib/attributionClasses"
-import { snakeCaseKeys } from "lib/helpers"
+import { isExisty, snakeCaseKeys } from "lib/helpers"
 import { stringify } from "qs"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "./artwork/artworkSizes"
@@ -74,7 +74,7 @@ const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   },
 }
 
-const SUPPORTED_ATTRIBUTIONS_CLASSES = ["unique", "limited edition"]
+const ALLOWED_RARITY_SUGGESTIONS = ["unique", "limited edition"]
 
 const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
   name: "PreviewSavedSearch",
@@ -120,15 +120,15 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
         const suggestedFilters: SearchCriteriaLabel[] = []
 
         const rarity = getRaritySearchCriteriaLabel(
-          getMostPopularOption(aggregations["attribution_class"]).value
+          getMostPopularOption(aggregations["attribution_class"])
         )
 
-        if (rarity && SUPPORTED_ATTRIBUTIONS_CLASSES.includes(rarity.value)) {
+        if (rarity && ALLOWED_RARITY_SUGGESTIONS.includes(rarity.value)) {
           suggestedFilters.push(rarity)
         }
 
         const medium = getMediumSearchCriteriaLabel(
-          getMostPopularOption(aggregations["medium"]).value
+          getMostPopularOption(aggregations["medium"])
         )
 
         if (medium) {
@@ -143,17 +143,10 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
 
 const getMostPopularOption = (aggregation: {
   [key: string]: { name: string; count: number }
-}): {
-  value: string
-  data: { name: string; count: number }
-} => {
-  const fieldValueArray = Object.entries(aggregation).reduce((acc, curr) => {
-    return curr[1].count > acc[1].count ? curr : acc
-  })
-
-  return {
-    value: fieldValueArray[0],
-    data: fieldValueArray[1],
+}): string | undefined => {
+  if (isExisty(aggregation)) {
+    const key = Object.keys(aggregation)[0]
+    return key
   }
 }
 
