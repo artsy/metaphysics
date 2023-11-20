@@ -149,35 +149,11 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Partner {
-        searchCriteriaConnection(
-          first: Int,
-          last: Int,
-          before: String,
-          after: String,
-          artistID: ID,
-          partnerID: String,
-          represented: Boolean,
-          since: SearchCriteriaSinceEnum
-          sort: SearchCriteriaSortEnum
-        ): SearchCriteriaConnection
-
         viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
       }
 
       extend type Query {
         curatedMarketingCollections(size: Int): [MarketingCollection]
-
-        searchCriteriaConnection(
-          first: Int,
-          last: Int,
-          before: String,
-          after: String,
-          artistID: ID,
-          represented: Boolean,
-          partnerID: String,
-          since: SearchCriteriaSinceEnum
-          sort: SearchCriteriaSortEnum
-        ): SearchCriteriaConnection
       }
 
       extend type SearchCriteria {
@@ -228,17 +204,6 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Viewer {
-        searchCriteriaConnection(
-          first: Int,
-          last: Int,
-          before: String,
-          after: String,
-          artistID: ID,
-          partnerID: String,
-          represented: Boolean,
-          since: SearchCriteriaSinceEnum
-          sort: SearchCriteriaSortEnum
-        ): SearchCriteriaConnection
         viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!], partnerID: ID): ViewingRoomsConnection
         marketingCollections(
           slugs: [String!]
@@ -704,26 +669,6 @@ export const gravityStitchingEnvironment = (
         },
       },
       Partner: {
-        searchCriteriaConnection: {
-          fragment: gql`
-          ... on Partner {
-            internalID
-          }
-        `,
-          resolve: ({ internalID: partnerID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_searchCriteriaConnection",
-              args: {
-                partnerID,
-                ...args,
-              },
-              context,
-              info,
-            })
-          },
-        },
         viewingRoomsConnection: {
           fragment: gql`
             ... on Partner {
@@ -774,18 +719,6 @@ export const gravityStitchingEnvironment = (
             } catch (error) {
               return []
             }
-          },
-        },
-        searchCriteriaConnection: {
-          resolve: (_fragments, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_searchCriteriaConnection",
-              args,
-              context,
-              info,
-            })
           },
         },
       },
@@ -1091,19 +1024,6 @@ export const gravityStitchingEnvironment = (
         },
       },
       Viewer: {
-        searchCriteriaConnection: {
-          resolve: (_fragments, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_searchCriteriaConnection",
-              args,
-              context,
-              info,
-            })
-          },
-        },
-
         viewingRoomsConnection: {
           fragment: `
           ... on Viewer {
