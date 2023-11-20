@@ -592,18 +592,6 @@ describe("gravity/stitching", () => {
   })
 
   describe("#Viewer", () => {
-    describe("#searchCriteriaConnection", () => {
-      it("extends the Query type with an searchCriteriaConnection field", async () => {
-        const mergedSchema = await getGravityMergedSchema()
-        const rootFields = await getFieldsForTypeFromSchema(
-          "Query",
-          mergedSchema
-        )
-
-        expect(rootFields).toContain("searchCriteriaConnection")
-      })
-    })
-
     describe("#viewingRoomsConnection in Viewer", () => {
       it("extends the Viewer type with a viewingRoomsConnection field", async () => {
         const mergedSchema = await getGravityMergedSchema()
@@ -639,18 +627,6 @@ describe("gravity/stitching", () => {
         )
 
         expect(rootFields).toContain("curatedMarketingCollections")
-      })
-    })
-
-    describe("#searchCriteriaConnection", () => {
-      it("extends the Query type with an searchCriteriaConnection field", async () => {
-        const mergedSchema = await getGravityMergedSchema()
-        const rootFields = await getFieldsForTypeFromSchema(
-          "Query",
-          mergedSchema
-        )
-
-        expect(rootFields).toContain("searchCriteriaConnection")
       })
     })
   })
@@ -1065,46 +1041,6 @@ describe("gravity/stitching", () => {
         )
 
         expect(result).toEqual([])
-      })
-    })
-  })
-
-  describe("SearchCriteria", () => {
-    describe("#artistsConnection", () => {
-      it("extends the SearchCriteria type with an artistsConnection field", async () => {
-        const mergedSchema = await getGravityMergedSchema()
-        const searchCriteriaFields = await getFieldsForTypeFromSchema(
-          "SearchCriteria",
-          mergedSchema
-        )
-        expect(searchCriteriaFields).toContain("artistsConnection")
-      })
-
-      it("resolves the artistsConnection field", async () => {
-        const { resolvers } = await getGravityStitchedSchema()
-        const { artistsConnection } = resolvers.SearchCriteria
-        const info = { mergeInfo: { delegateToSchema: jest.fn() } }
-
-        artistsConnection.resolve(
-          { artistIDs: ["abc123", "foo"] },
-          { first: 2 },
-          {},
-          info
-        )
-
-        expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
-          expect.objectContaining({
-            args: {
-              ids: ["abc123", "foo"],
-              first: 2,
-            },
-            operation: "query",
-            fieldName: "artistsConnection",
-            schema: expect.anything(),
-            context: expect.anything(),
-            info: expect.anything(),
-          })
-        )
       })
     })
   })
