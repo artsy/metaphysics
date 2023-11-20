@@ -74,6 +74,8 @@ const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   },
 }
 
+const SUPPORTED_ATTRIBUTIONS_CLASSES = ["unique", "limited edition"]
+
 const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
   name: "PreviewSavedSearch",
   fields: () => ({
@@ -121,7 +123,7 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
           getMostPopularOption(aggregations["attribution_class"]).value
         )
 
-        if (rarity) {
+        if (rarity && SUPPORTED_ATTRIBUTIONS_CLASSES.includes(rarity.value)) {
           suggestedFilters.push(rarity)
         }
 
@@ -155,12 +157,10 @@ const getMostPopularOption = (aggregation: {
   }
 }
 
-const SUPPORTED_ATTRIBUTIONS_CLASSES = ["unique", "limited edition"]
-
 const getRaritySearchCriteriaLabel = (
   value: string | undefined
 ): SearchCriteriaLabel | null => {
-  if (!value || !SUPPORTED_ATTRIBUTIONS_CLASSES.includes(value)) {
+  if (!value) {
     return null
   }
 
