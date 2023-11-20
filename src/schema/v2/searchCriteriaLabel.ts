@@ -108,6 +108,7 @@ export const resolveSearchCriteriaLabels = async (
     majorPeriods,
     colors,
     partnerIDs,
+    metric,
   } = parent
 
   const {
@@ -117,7 +118,8 @@ export const resolveSearchCriteriaLabels = async (
     partnerLoader,
   } = context
 
-  const metric = await getPreferredMetric(meLoader)
+  // use metric if provided, otherwise fallback to the user's preferred metric
+  const computedMetric = metric ?? (await getPreferredMetric(meLoader))
 
   const labels: any[] = []
 
@@ -125,8 +127,8 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(getRarityLabels(attributionClass))
   labels.push(getMediumLabels(additionalGeneIDs))
   labels.push(getPriceLabel(priceRange))
-  labels.push(getSizeLabels(sizes, metric))
-  labels.push(getCustomSizeLabels({ height, metric, width }))
+  labels.push(getSizeLabels(sizes, computedMetric))
+  labels.push(getCustomSizeLabels({ height, metric: computedMetric, width }))
   labels.push(
     getWaysToBuyLabels({
       acquireable,

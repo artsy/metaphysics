@@ -227,9 +227,12 @@ export const PreviewSavedSearchField: GraphQLFieldConfig<
     attributes: {
       type: PreviewSavedSearchAttributesType,
     },
+    metric: {
+      type: GraphQLString,
+    },
   },
   resolve: (_parent, args, _context, _info) => {
-    return args.attributes
+    return { ...args.attributes, metric: args.metric }
   },
 }
 

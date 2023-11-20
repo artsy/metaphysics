@@ -15902,6 +15902,7 @@ type Query {
   # A previewed saved search
   previewSavedSearch(
     attributes: PreviewSavedSearchAttributes
+    metric: String
   ): PreviewSavedSearch
 
   # Get all price insights for an artist.
@@ -20556,6 +20557,7 @@ type Viewer {
   # A previewed saved search
   previewSavedSearch(
     attributes: PreviewSavedSearchAttributes
+    metric: String
   ): PreviewSavedSearch
 
   # A Profile

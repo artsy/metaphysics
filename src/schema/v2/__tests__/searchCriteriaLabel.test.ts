@@ -490,6 +490,39 @@ describe("resolveSearchCriteriaLabels", () => {
         },
       ])
     })
+    it("handles range parsing with provided metric", async () => {
+      let parent = {
+        width: "40-100",
+        metric: "in",
+      }
+
+      let labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
+
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Size",
+          displayValue: "w: 40–100 in",
+          value: "40-100",
+          field: "width",
+        },
+      ])
+
+      parent = {
+        width: "40-100",
+        metric: "cm",
+      }
+
+      labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
+
+      expect(labels).toIncludeAllMembers([
+        {
+          name: "Size",
+          displayValue: "w: 102–254 cm",
+          value: "40-100",
+          field: "width",
+        },
+      ])
+    })
   })
 
   it("formats ways-to-buy criteria", async () => {
