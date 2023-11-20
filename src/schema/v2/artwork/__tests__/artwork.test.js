@@ -4252,4 +4252,21 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("#recentSavesCount", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          recentSavesCount
+        }
+      }
+    `
+
+    it("returns artworks recent_saves_count", () => {
+      artwork.recent_saves_count = 123
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { recentSavesCount: 123 } })
+      })
+    })
+  })
 })

@@ -1783,6 +1783,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
         resolve: getFigures,
       },
+      recentSavesCount: {
+        description:
+          "Count of collected artworks, in saves collections, in the last 30 days",
+        type: GraphQLInt,
+        resolve: (artwork) => {
+          return artwork.recent_saves_count
+        },
+      },
     }
   },
 })
