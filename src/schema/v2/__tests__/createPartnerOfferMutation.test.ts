@@ -5,7 +5,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 const mutation = gql`
   mutation {
     createPartnerOffer(
-      input: { artwork_id: "xyz321", discount_percentage: "10" }
+      input: { artwork_id: "xyz321", discount_percentage: 10 }
     ) {
       partnerOfferOrError {
         __typename
@@ -38,7 +38,7 @@ describe("Create a partner offer for users", () => {
       created_at: "2022-09-30T12:00:00+00:00",
       end_at: "2022-10-29T12:00:00+00:00",
       partner_id: "partner_id",
-      discount_percentage: "10",
+      discount_percentage: 10,
       user_ids: ["user_id1", "user_id2"],
     }
 
@@ -55,7 +55,7 @@ describe("Create a partner offer for users", () => {
             partnerOffer: {
               artworkId: "artwork_id",
               createdAt: "2022-09-30T12:00:00+00:00",
-              discountPercentage: "10",
+              discountPercentage: 10,
               endAt: "2022-10-29T12:00:00+00:00",
               id: "xyz321",
               partnerId: "partner_id",

@@ -14349,7 +14349,7 @@ type PartnerOffer {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
-  discountPercentage: String
+  discountPercentage: Int
   endAt(
     format: String
 

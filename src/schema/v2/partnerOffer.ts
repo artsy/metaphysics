@@ -1,5 +1,10 @@
 import { date } from "./fields/date"
-import { GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLList,
+  GraphQLInt,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields } from "./object_identification"
 
@@ -21,7 +26,7 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ partner_id }) => partner_id,
     },
     discountPercentage: {
-      type: GraphQLString,
+      type: GraphQLInt,
       resolve: ({ discount_percentage }) => discount_percentage,
     },
     userIds: {
