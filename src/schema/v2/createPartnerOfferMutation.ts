@@ -1,4 +1,5 @@
 import {
+  GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -14,8 +15,7 @@ import { PartnerOfferType } from "./partnerOffer"
 
 interface Input {
   artwork_id: string
-  currency: string
-  price_minor: string
+  discount_percentage: number
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -54,8 +54,7 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
   description: "Create a partner offer for the users",
   inputFields: {
     artwork_id: { type: new GraphQLNonNull(GraphQLString) },
-    currency: { type: GraphQLString },
-    price_minor: { type: new GraphQLNonNull(GraphQLString) },
+    discount_percentage: { type: GraphQLInt },
   },
   outputFields: {
     partnerOfferOrError: {
@@ -72,8 +71,7 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
     try {
       return await createPartnerOfferLoader?.({
         artwork_id: args.artwork_id,
-        currency: args.currency,
-        price_minor: args.price_minor,
+        discount_percentage: args.discount_percentage,
       })
     } catch (error) {
       const formattedErr = formatGravityError(error)

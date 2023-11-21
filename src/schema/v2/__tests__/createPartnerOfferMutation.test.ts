@@ -4,18 +4,19 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 const mutation = gql`
   mutation {
-    createPartnerOffer(input: { artwork_id: "xyz321", price_minor: "4000" }) {
+    createPartnerOffer(
+      input: { artwork_id: "xyz321", discount_percentage: 10 }
+    ) {
       partnerOfferOrError {
         __typename
         ... on createPartnerOfferSuccess {
           partnerOffer {
             artworkId
             createdAt
-            currency
             endAt
             id
             partnerId
-            priceMinor
+            discountPercentage
             userIds
           }
         }
@@ -35,10 +36,9 @@ describe("Create a partner offer for users", () => {
       id: "xyz321",
       artwork_id: "artwork_id",
       created_at: "2022-09-30T12:00:00+00:00",
-      currency: "USD",
       end_at: "2022-10-29T12:00:00+00:00",
       partner_id: "partner_id",
-      price_minor: "4000",
+      discount_percentage: 10,
       user_ids: ["user_id1", "user_id2"],
     }
 
@@ -55,11 +55,10 @@ describe("Create a partner offer for users", () => {
             partnerOffer: {
               artworkId: "artwork_id",
               createdAt: "2022-09-30T12:00:00+00:00",
-              currency: "USD",
+              discountPercentage: 10,
               endAt: "2022-10-29T12:00:00+00:00",
               id: "xyz321",
               partnerId: "partner_id",
-              priceMinor: "4000",
               userIds: ["user_id1", "user_id2"],
             },
           },
