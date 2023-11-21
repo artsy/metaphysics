@@ -34,6 +34,9 @@ const ArtworkSorts = {
       PUBLISHED_AT_DESC: {
         value: "-published_at",
       },
+      RECENT_SAVES_COUNT_DESC: {
+        value: "-recent_saves_count",
+      },
       TITLE_ASC: {
         value: "title",
       },
