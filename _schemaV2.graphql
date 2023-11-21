@@ -7823,8 +7823,7 @@ type createPartnerOfferFailure {
 input createPartnerOfferMutationInput {
   artwork_id: String!
   clientMutationId: String
-  currency: String
-  price_minor: String!
+  discount_percentage: Int
 }
 
 type createPartnerOfferMutationPayload {
@@ -14350,9 +14349,7 @@ type PartnerOffer {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
-
-  # Currency abbreviation (e.g. "USD")
-  currency: String
+  discountPercentage: String
   endAt(
     format: String
 
@@ -14366,7 +14363,6 @@ type PartnerOffer {
   # A type-specific ID.
   internalID: ID!
   partnerId: String
-  priceMinor: String
   userIds: [String]
 }
 

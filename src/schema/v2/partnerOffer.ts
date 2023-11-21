@@ -12,10 +12,6 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ artwork_id }) => artwork_id,
     },
     createdAt: date(),
-    currency: {
-      type: GraphQLString,
-      description: `Currency abbreviation (e.g. "USD")`,
-    },
     endAt: date(),
     id: {
       type: GraphQLString,
@@ -24,9 +20,9 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ partner_id }) => partner_id,
     },
-    priceMinor: {
+    discountPercentage: {
       type: GraphQLString,
-      resolve: ({ price_minor }) => price_minor,
+      resolve: ({ discount_percentage }) => discount_percentage,
     },
     userIds: {
       type: new GraphQLList(GraphQLString),
