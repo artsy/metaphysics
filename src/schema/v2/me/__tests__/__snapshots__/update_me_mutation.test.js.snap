@@ -38,6 +38,7 @@ Object {
       "receiveNewWorksNotification": true,
       "receiveOrderNotification": false,
       "receiveOutbidNotification": false,
+      "receivePartnerOfferNotification": true,
       "receivePartnerShowNotification": true,
       "receivePromotionNotification": false,
       "receivePurchaseNotification": false,
