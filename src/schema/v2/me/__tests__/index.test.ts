@@ -24,6 +24,7 @@ describe("me/index", () => {
         receiveOrderNotification
         receiveViewingRoomNotification
         receivePartnerShowNotification
+        receivePartnerOfferNotification
         currencyPreference
         lengthUnitPreference
       }
@@ -81,6 +82,7 @@ describe("me/index", () => {
       receive_order_notification: false,
       receive_viewing_room_notification: true,
       receive_partner_show_notification: true,
+      receive_partner_offer_notification: true,
       currency_preference: "USD",
       length_unit_preference: "in",
     }
@@ -108,6 +110,7 @@ describe("me/index", () => {
           receiveOrderNotification: false,
           receiveViewingRoomNotification: true,
           receivePartnerShowNotification: true,
+          receivePartnerOfferNotification: true,
           currencyPreference: "USD",
           lengthUnitPreference: "IN",
         },
