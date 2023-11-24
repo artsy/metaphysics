@@ -128,7 +128,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
     getDescription: () =>
       `Works by this artist were handpicked for [this collection](/collection/curators-picks-emerging) of rising talents to watch.`,
     getEntities: (artist) => artist.curated_emerging && [],
-    getLabel: () => "Featured in Curator’s Pick: Emerging",
+    getLabel: () => "Featured in Curators’ Picks: Emerging",
   },
   RECENT_CAREER_EVENT: {
     getDescription: (artist) => artist.recent_show && getRecentShow(artist),
