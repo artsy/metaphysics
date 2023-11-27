@@ -665,7 +665,6 @@ describe("resolveSearchCriteriaLabels", () => {
           Promise.resolve({
             artistSeries: {
               title: "Astroboy",
-              slug: "kaws-astroboy",
             },
           })
         )
@@ -673,7 +672,6 @@ describe("resolveSearchCriteriaLabels", () => {
           Promise.resolve({
             artistSeries: {
               title: "Companions",
-              slug: "kaws-companions",
             },
           })
         ),

@@ -460,21 +460,20 @@ async function getArtistSeriesLabels(
           query GetArtistSeriesLabelsQuery($id: ID!) {
             artistSeries(id: $id) {
               title
-              slug
             }
           }
         `,
         variables: { id },
       })
       const {
-        artistSeries: { title, slug },
+        artistSeries: { title },
       } = data
 
       return {
         name: "Artist Series",
         displayValue: title,
         field: "artistSeriesIDs",
-        value: slug,
+        value: id,
       }
     })
   )
