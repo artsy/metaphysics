@@ -459,22 +459,22 @@ async function getArtistSeriesLabels(
         query: gql`
           query GetArtistSeriesLabelsQuery($id: ID!) {
             artistSeries(id: $id) {
-              internalID
               title
+              slug
             }
           }
         `,
         variables: { id },
       })
       const {
-        artistSeries: { internalID, title },
+        artistSeries: { title, slug },
       } = data
 
       return {
         name: "Artist Series",
         displayValue: title,
         field: "artistSeriesIDs",
-        value: internalID,
+        value: slug,
       }
     })
   )
