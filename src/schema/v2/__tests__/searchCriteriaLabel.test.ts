@@ -664,7 +664,6 @@ describe("resolveSearchCriteriaLabels", () => {
         .mockReturnValueOnce(
           Promise.resolve({
             artistSeries: {
-              internalID: "abc-123",
               title: "Astroboy",
             },
           })
@@ -672,7 +671,6 @@ describe("resolveSearchCriteriaLabels", () => {
         .mockReturnValueOnce(
           Promise.resolve({
             artistSeries: {
-              internalID: "def-456",
               title: "Companions",
             },
           })
@@ -686,13 +684,13 @@ describe("resolveSearchCriteriaLabels", () => {
       {
         name: "Artist Series",
         field: "artistSeriesIDs",
-        value: "abc-123",
+        value: "kaws-astroboy",
         displayValue: "Astroboy",
       },
       {
         name: "Artist Series",
         field: "artistSeriesIDs",
-        value: "def-456",
+        value: "kaws-companions",
         displayValue: "Companions",
       },
     ])
