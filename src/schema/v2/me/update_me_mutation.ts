@@ -222,6 +222,10 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       description: "This user should receive partner show notifications",
       type: GraphQLBoolean,
     },
+    receivePartnerOfferNotification: {
+      description: "This user should receive partner offer notifications",
+      type: GraphQLBoolean,
+    },
     shareFollows: {
       description:
         "Shares FollowArtists, FollowGenes, and FollowProfiles with partners.",
