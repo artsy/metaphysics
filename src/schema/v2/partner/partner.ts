@@ -106,6 +106,11 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     description:
       "If true return both published and unpublished artworks, requires auth",
   },
+  savedAtLeastOnce: {
+    type: GraphQLBoolean,
+    description:
+      "Return artworks that were saved by collectors at least one time.",
+  },
   sort: ArtworkSorts,
   shallow: {
     type: GraphQLBoolean,
@@ -392,6 +397,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page: number
             published?: boolean
             published_within?: number
+            saved_at_least_once?: boolean
             size: number
             sort: string
             total_count: boolean
@@ -404,6 +410,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             published: true,
             published_within: args.publishedWithin,
+            saved_at_least_once: args.savedAtLeastOnce,
             size,
             sort: args.sort,
             total_count: true,
