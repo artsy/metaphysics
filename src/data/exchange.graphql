@@ -1665,6 +1665,11 @@ enum OrderSourceEnum {
   inquiry
 
   """
+  The order was originated from a partner offer
+  """
+  partner_offer
+
+  """
   The order was originated from a private sale
   """
   private_sale
