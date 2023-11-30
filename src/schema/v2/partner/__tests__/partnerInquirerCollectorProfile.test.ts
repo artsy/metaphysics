@@ -53,7 +53,7 @@ describe("partnerInquirerCollectorProfile", () => {
       partner: {
         inquiryRequest: {
           collectorProfile: {
-            name: "Some Collector",
+            name: "Some C.",
             location: { city: "Around", country: "The Globe" },
             profession: "Superhuman",
             bio: "I got snacks to the roof",

@@ -18,6 +18,7 @@ import Image, { normalizeImageData } from "schema/v2/image"
 import { userInterestType } from "../userInterests"
 import { myLocationType } from "../me/myLocation"
 import initials from "schema/v2/fields/initials"
+import formatName from "./helpers/formatName"
 
 export const CollectorProfileFields: GraphQLFieldConfigMap<
   any,
@@ -44,7 +45,10 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   },
   intents: { type: new GraphQLList(GraphQLString) },
   loyaltyApplicantAt: date,
-  name: { type: GraphQLString },
+  name: {
+    type: GraphQLString,
+    resolve: ({ name }) => formatName(name, "public"),
+  },
   initials: initials("name"),
   privacy: { type: GraphQLString },
   professionalBuyerAppliedAt: date,

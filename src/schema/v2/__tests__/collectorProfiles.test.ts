@@ -37,8 +37,8 @@ describe("collectorProfilesConnection", () => {
 
     expect(collectorProfilesConnection.totalCount).toBe(2)
     expect(collectorProfilesConnection.edges).toEqual([
-      { node: { name: "Example Profile 1" } },
-      { node: { name: "Example Profile 2" } },
+      { node: { name: "Example 1." } },
+      { node: { name: "Example 2." } },
     ])
   })
 
