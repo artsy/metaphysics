@@ -46,17 +46,22 @@ export const InquiryRequestType = new GraphQLObjectType<any, ResolverContext>({
     },
     collectorProfile: {
       type: InquirerCollectorProfileType,
-      resolve: (
-        { id: inquiryId, partnerId },
+      resolve: async (
+        { partnerId, inquirer },
         _args,
-        { partnerInquirerCollectorProfileLoader }
+        { partnerCollectorProfileLoader }
       ) => {
-        if (!partnerInquirerCollectorProfileLoader) return
+        if (!partnerCollectorProfileLoader) return
 
-        return partnerInquirerCollectorProfileLoader({
+        const data = await partnerCollectorProfileLoader({
           partnerId,
-          inquiryId,
+          userId: inquirer.id,
         })
+
+        return {
+          ...data.collector_profile,
+          follows_profile: data.follows_profile,
+        }
       },
     },
   }),
