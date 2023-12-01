@@ -499,46 +499,6 @@ describe("previewSavedSearch", () => {
                 name: "Ephemera or Merchandise",
                 count: 1132,
               },
-              "work-on-paper": {
-                name: "Work on Paper",
-                count: 449,
-              },
-              painting: {
-                name: "Painting",
-                count: 313,
-              },
-              sculpture: {
-                name: "Sculpture",
-                count: 236,
-              },
-              drawing: {
-                name: "Drawing",
-                count: 162,
-              },
-              design: {
-                name: "Design",
-                count: 75,
-              },
-              reproduction: {
-                name: "Reproduction",
-                count: 38,
-              },
-              installation: {
-                name: "Installation",
-                count: 20,
-              },
-              "film-slash-video": {
-                name: "Film/Video",
-                count: 13,
-              },
-              "performance-art": {
-                name: "Performance Art",
-                count: 9,
-              },
-              jewelry: {
-                name: "Jewelry",
-                count: 1,
-              },
             },
             attribution_class: {
               "open edition": {
@@ -548,14 +508,6 @@ describe("previewSavedSearch", () => {
               "limited edition": {
                 name: "limited edition",
                 count: 3719,
-              },
-              unique: {
-                name: "unique",
-                count: 1848,
-              },
-              "unknown edition": {
-                name: "unknown edition",
-                count: 1677,
               },
             },
           },
@@ -577,5 +529,75 @@ describe("previewSavedSearch", () => {
         },
       ])
     })
+  })
+
+  it("returns a list of suggested filters minus set attribute types", async () => {
+    const query = gql`
+      {
+        previewSavedSearch(
+          attributes: {
+            artistIDs: ["banksy", "andy-warhol", "picasso"]
+            additionalGeneIDs: ["photography"]
+          }
+        ) {
+          suggestedFilters {
+            displayValue
+            field
+            value
+            name
+          }
+        }
+      }
+    `
+
+    const artistLoader = () => Promise.resolve({})
+
+    const mockFilterArtworksLoader = jest.fn()
+
+    mockFilterArtworksLoader.mockResolvedValueOnce(
+      Promise.resolve({
+        aggregations: {
+          medium: {
+            prints: {
+              name: "Prints",
+              count: 8020,
+            },
+            photography: {
+              name: "Photography",
+              count: 7717,
+            },
+            "ephemera-or-merchandise": {
+              name: "Ephemera or Merchandise",
+              count: 1132,
+            },
+          },
+          attribution_class: {
+            unique: {
+              name: "unique",
+              count: 6646,
+            },
+            "limited edition": {
+              name: "limited edition",
+              count: 3719,
+            },
+          },
+        },
+      })
+    )
+
+    const { previewSavedSearch } = await runQuery(query, {
+      artistLoader,
+      meLoader,
+      filterArtworksLoader: mockFilterArtworksLoader,
+    })
+
+    expect(previewSavedSearch.suggestedFilters).toEqual([
+      {
+        displayValue: "Unique",
+        field: "attributionClass",
+        name: "Rarity",
+        value: "unique",
+      },
+    ])
   })
 })

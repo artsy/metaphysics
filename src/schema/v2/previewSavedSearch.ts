@@ -18,6 +18,7 @@ import {
   resolveSearchCriteriaLabels,
 } from "./searchCriteriaLabel"
 import artworkMediums from "lib/artworkMediums"
+import { isEmpty } from "lodash"
 
 const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   acquireable: {
@@ -103,7 +104,11 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(SearchCriteriaLabel))
       ),
-      resolve: async ({ artistIDs }, _args, { filterArtworksLoader }) => {
+      resolve: async (
+        { artistIDs, attributionClass, additionalGeneIDs },
+        _args,
+        { filterArtworksLoader }
+      ) => {
         if (!artistIDs) {
           throw new Error("artistIDs are required to get suggested filters")
         }
@@ -122,7 +127,11 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
           getMostPopularOption(aggregations["attribution_class"])
         )
 
-        if (rarity && ALLOWED_RARITY_SUGGESTIONS.includes(rarity.value)) {
+        if (
+          rarity &&
+          ALLOWED_RARITY_SUGGESTIONS.includes(rarity.value) &&
+          isEmpty(attributionClass)
+        ) {
           suggestedFilters.push(rarity)
         }
 
@@ -130,7 +139,7 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
           getMostPopularOption(aggregations["medium"])
         )
 
-        if (medium) {
+        if (medium && isEmpty(additionalGeneIDs)) {
           suggestedFilters.push(medium)
         }
 
