@@ -7,7 +7,6 @@ const mutation = gql`
       input: {
         description: "Example description"
         itemId: "abc123"
-        itemIds: ["def456", "ghi789"]
         itemType: "Artist"
         key: "a"
         layout: DEFAULT
@@ -68,7 +67,6 @@ describe("createOrderedSetMutation", () => {
       expect(mockCreateSetLoader).toBeCalledWith({
         description: "Example description",
         item_id: "abc123",
-        item_ids: ["def456", "ghi789"],
         item_type: "Artist",
         key: "a",
         layout: "default",

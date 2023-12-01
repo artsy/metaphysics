@@ -7771,7 +7771,6 @@ input CreateOrderedSetMutationInput {
   description: String
   internalName: String
   itemId: String
-  itemIds: [String]
   itemType: String!
   key: String!
   layout: OrderedSetLayouts
