@@ -1,10 +1,13 @@
-import { convertConnectionArgsToGravityArgs, removeNulls } from "lib/helpers"
-import { createPageCursors, pageToCursor } from "schema/v2/fields/pagination"
-import { connectionFromArraySlice } from "graphql-relay"
 import { GraphQLResolveInfo, visit } from "graphql"
-import { ResolverContext } from "types/graphql"
-import { Searchable } from "schema/v2/searchable"
+import { connectionFromArraySlice } from "graphql-relay"
+import {
+  convertConnectionArgsToGravityArgs,
+  removeArrayEmptyValues,
+} from "lib/helpers"
 import { SearchableItem } from "schema/v2/SearchableItem"
+import { createPageCursors, pageToCursor } from "schema/v2/fields/pagination"
+import { Searchable } from "schema/v2/searchable"
+import { ResolverContext } from "types/graphql"
 
 export class SearchResolver {
   private args: { [argName: string]: any }
@@ -129,11 +132,10 @@ export class SearchResolver {
           this.processSearchResultItem(searchResultItem)
         )
       ).then((processedSearchResults) => {
-        // Filter out nulls due to a search result item being returned,
-        // but the item not being found.
-        removeNulls(processedSearchResults)
         const connection = connectionFromArraySlice(
-          processedSearchResults,
+          // Filter out nulls due to a search result item being returned,
+          // but the item not being found.
+          removeArrayEmptyValues(processedSearchResults),
           this.args,
           {
             arrayLength: totalCount,

@@ -4,7 +4,7 @@ import {
   isExisty,
   isInteger,
   markdownToText,
-  removeEmptyValues,
+  removeObjectEmptyValues,
   removeNulls,
   resolveBlueGreen,
   snakeCaseKeys,
@@ -200,7 +200,7 @@ describe("removeNulls", () => {
   })
 })
 
-describe("removeEmptyValues", () => {
+describe("removeObjectEmptyValues", () => {
   const obj = {
     a: "percy",
     b: null,
@@ -210,7 +210,7 @@ describe("removeEmptyValues", () => {
   }
 
   it("removes null and undefined properties from an object", () => {
-    removeEmptyValues(obj)
+    removeObjectEmptyValues(obj)
     expect(obj).toHaveProperty("a", "percy")
     expect(obj).toHaveProperty("e", ["cat"])
     expect(obj).not.toHaveProperty("b")
