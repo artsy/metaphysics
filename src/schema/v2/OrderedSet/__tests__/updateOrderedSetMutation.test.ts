@@ -63,7 +63,7 @@ describe("UpdateOrderedSetMutation", () => {
       mockUpdateSetLoader.mockReset()
     })
 
-    it("returns a Artist", async () => {
+    it("returns an Ordered Set", async () => {
       const res = await runAuthenticatedQuery(mutation, context)
 
       expect(mockUpdateSetLoader).toBeCalledWith("xyz789", {
