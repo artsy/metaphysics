@@ -113,6 +113,12 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           sort: {
             type: GraphQLString,
           },
+          page: {
+            type: GraphQLInt,
+          },
+          size: {
+            type: GraphQLInt,
+          },
         }),
         type: AlertsConnectionType,
         resolve: async ({ _id }, args, { artistAlertsLoader }) => {

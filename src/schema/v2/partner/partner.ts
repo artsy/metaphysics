@@ -158,6 +158,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           activeInventory: {
             type: GraphQLBoolean,
           },
+          page: {
+            type: GraphQLInt,
+          },
+          size: {
+            type: GraphQLInt,
+          },
         }),
         resolve: async ({ _id }, args, { partnerAlertsSummaryLoader }) => {
           if (!partnerAlertsSummaryLoader) return null
