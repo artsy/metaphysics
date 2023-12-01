@@ -9,7 +9,9 @@ export const ReplaceCommerceDateTimeType = (
 ) => {
   let newFieldConfig = fieldToConfig(fieldConfig)
 
-  if (fieldConfig.type.toString() === "CommerceDateTime!") {
+  if (
+    ["CommerceDateTime!", "CommerceDate!"].includes(fieldConfig.type.toString())
+  ) {
     newFieldConfig = {
       ...newFieldConfig,
       ...dateField,
@@ -18,7 +20,9 @@ export const ReplaceCommerceDateTimeType = (
     return newFieldConfig
   }
 
-  if (fieldConfig.type.toString() === "CommerceDateTime") {
+  if (
+    ["CommerceDateTime", "CommerceDate"].includes(fieldConfig.type.toString())
+  ) {
     newFieldConfig = {
       ...newFieldConfig,
       ...dateField,

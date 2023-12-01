@@ -16,9 +16,15 @@ const originalSchema = new GraphQLSchema({
         type: new GraphQLObjectType({
           name: "SomeType",
           fields: {
-            someDateField: {
+            someCommerceDateTimeField: {
               type: new GraphQLScalarType({
                 name: "CommerceDateTime",
+                serialize: (x) => x,
+              }),
+            },
+            someCommerceDateField: {
+              type: new GraphQLScalarType({
+                name: "CommerceDate",
                 serialize: (x) => x,
               }),
             },
@@ -41,20 +47,23 @@ describe("ReplaceCommerceDateTimeType", () => {
       source: gql`
         query {
           someRootField {
-            someDateField(format: "[The year is] YYYY")
+            someCommerceDateTimeField(format: "[The year is] YYYY")
+            someCommerceDateField(format: "[The year is] YYYY")
           }
         }
       `,
       rootValue: {
         someRootField: {
-          someDateField: "2019-07-16T19:39:10.001Z",
+          someCommerceDateTimeField: "2019-07-16T19:39:10.001Z",
+          someCommerceDateField: "2020-09-16T19:39:10.001Z",
         },
       },
       contextValue: {},
     })
     expect(data).toEqual({
       someRootField: {
-        someDateField: "The year is 2019",
+        someCommerceDateTimeField: "The year is 2019",
+        someCommerceDateField: "The year is 2020",
       },
     })
   })
