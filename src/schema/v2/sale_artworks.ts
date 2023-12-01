@@ -2,25 +2,24 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { map, omit } from "lodash"
 import { pageable } from "relay-cursor-paging"
 
-import numeral from "./fields/numeral"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { SaleArtworkType } from "./sale_artwork"
 import {
   SaleArtworksAggregation,
   SaleArtworksAggregationResultsType,
 } from "./aggregations/filter_sale_artworks_aggregation"
-import { ArtworkType, ArtworkConnectionInterface } from "./artwork"
-import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import { ArtworkType } from "./artwork"
+import numeral from "./fields/numeral"
 
 const DEFAULTS = {
   aggregations: ["total"],
@@ -58,12 +57,10 @@ const SaleArtworkCounts = {
 export const SaleArtworksConnectionType = connectionWithCursorInfo({
   name: "SaleArtworks",
   nodeType: ArtworkType,
-  edgeType: SaleArtworkType,
   connectionFields: {
     aggregations: SaleArtworkAggregations,
     counts: SaleArtworkCounts,
   },
-  connectionInterfaces: [ArtworkConnectionInterface],
 }).connectionType
 
 export const SaleArtworksConnectionField: GraphQLFieldConfig<
