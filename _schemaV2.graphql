@@ -18782,6 +18782,7 @@ input UpdateOrderedSetMutationInput {
   clientMutationId: String
   description: String
   id: String!
+  internalName: String
   itemId: String
   itemType: String
   key: String

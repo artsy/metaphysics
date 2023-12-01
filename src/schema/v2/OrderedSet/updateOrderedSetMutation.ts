@@ -31,6 +31,7 @@ type OwnerType = "Fair" | "Feature" | "Sale"
 interface Input {
   description: string
   id: string
+  internalName: string
   itemId: string
   itemType: ItemType
   key: string
@@ -76,7 +77,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const UpdateOrderedSetMutation = mutationWithClientMutationId<
+export const updateOrderedSetMutation = mutationWithClientMutationId<
   Input,
   any | null,
   ResolverContext
@@ -86,6 +87,7 @@ export const UpdateOrderedSetMutation = mutationWithClientMutationId<
   inputFields: {
     description: { type: GraphQLString },
     id: { type: new GraphQLNonNull(GraphQLString) },
+    internalName: { type: GraphQLString },
     itemId: { type: GraphQLString },
     itemType: { type: GraphQLString },
     key: { type: GraphQLString },
@@ -107,6 +109,7 @@ export const UpdateOrderedSetMutation = mutationWithClientMutationId<
     {
       description,
       id,
+      internalName,
       itemId,
       itemType,
       key,
@@ -128,6 +131,7 @@ export const UpdateOrderedSetMutation = mutationWithClientMutationId<
     try {
       return await updateSetLoader(id, {
         description,
+        internal_name: internalName,
         item_id: itemId,
         item_type: itemType,
         key,
