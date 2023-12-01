@@ -43,20 +43,21 @@ index 5a42ae5..bec0ba9 100644
    const lastEdge = edges[edges.length - 1];
    const lowerBound = after != null ? afterOffset + 1 : 0;
 diff --git a/node_modules/graphql-relay/connection/connection.d.ts b/node_modules/graphql-relay/connection/connection.d.ts
-index b6a0e45..0b89ee6 100644
+index b6a0e45..bcc32f6 100644
 --- a/node_modules/graphql-relay/connection/connection.d.ts
 +++ b/node_modules/graphql-relay/connection/connection.d.ts
-@@ -64,7 +64,9 @@ export interface ConnectionConfig {
+@@ -64,7 +64,10 @@ export interface ConnectionConfig {
    resolveNode?: GraphQLFieldResolver<any, any>;
    resolveCursor?: GraphQLFieldResolver<any, any>;
    edgeFields?: Thunk<GraphQLFieldConfigMap<any, any>>;
++  edgeType?: GraphQLNamedType | GraphQLNonNull<GraphQLNamedType>;
 +  edgeInterfaces?: GraphQLInterfaceType[];
    connectionFields?: Thunk<GraphQLFieldConfigMap<any, any>>;
 +  connectionInterfaces?: GraphQLInterfaceType[];
  }
  
  export interface GraphQLConnectionDefinitions {
-@@ -72,6 +74,8 @@ export interface GraphQLConnectionDefinitions {
+@@ -72,6 +75,8 @@ export interface GraphQLConnectionDefinitions {
    connectionType: GraphQLObjectType;
  }
  
