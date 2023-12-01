@@ -18,8 +18,9 @@ import {
   SaleArtworksAggregation,
   SaleArtworksAggregationResultsType,
 } from "./aggregations/filter_sale_artworks_aggregation"
-import { ArtworkType } from "./artwork"
+import { ArtworkConnectionInterface, ArtworkType } from "./artwork"
 import numeral from "./fields/numeral"
+import { SaleArtworkType } from "./sale_artwork"
 
 const DEFAULTS = {
   aggregations: ["total"],
@@ -57,10 +58,12 @@ const SaleArtworkCounts = {
 export const SaleArtworksConnectionType = connectionWithCursorInfo({
   name: "SaleArtworks",
   nodeType: ArtworkType,
+  edgeType: SaleArtworkType,
   connectionFields: {
     aggregations: SaleArtworkAggregations,
     counts: SaleArtworkCounts,
   },
+  connectionInterfaces: [ArtworkConnectionInterface],
 }).connectionType
 
 export const SaleArtworksConnectionField: GraphQLFieldConfig<

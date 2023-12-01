@@ -16401,27 +16401,18 @@ type SaleArtworksAggregationResults {
 }
 
 # A connection to a list of items.
-type SaleArtworksConnection {
+type SaleArtworksConnection implements ArtworkConnectionInterface {
   # Returns aggregation counts for the given filter query.
   aggregations: [SaleArtworksAggregationResults]
   counts: FilterSaleArtworksCounts
 
   # A list of edges.
-  edges: [SaleArtworksEdge]
+  edges: [SaleArtwork]
   pageCursors: PageCursors!
 
   # Information to aid in pagination.
   pageInfo: PageInfo!
   totalCount: Int
-}
-
-# An edge in a connection.
-type SaleArtworksEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Artwork
 }
 
 type SaleCascadingEndTime {
