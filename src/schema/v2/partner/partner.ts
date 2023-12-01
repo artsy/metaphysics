@@ -155,6 +155,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           represented: {
             type: GraphQLBoolean,
           },
+          activeInventory: {
+            type: GraphQLBoolean,
+          },
         }),
         resolve: async ({ _id }, args, { partnerAlertsSummaryLoader }) => {
           if (!partnerAlertsSummaryLoader) return null
@@ -167,10 +170,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page: number
             size: number
             represented?: boolean
+            active_inventory?: boolean
           }
 
           const gravityArgs: GravityArgs = { page, size }
           if (args.represented) gravityArgs.represented = true
+          if (args.activeInventory) gravityArgs.active_inventory = true
 
           const {
             summary: body,
