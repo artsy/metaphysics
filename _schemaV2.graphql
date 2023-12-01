@@ -13108,8 +13108,8 @@ type Mutation {
 
   # updates an ordered set.
   updateOrderedSet(
-    input: updateOrderedSetMutationInput!
-  ): updateOrderedSetMutationPayload
+    input: UpdateOrderedSetMutationInput!
+  ): UpdateOrderedSetMutationPayload
 
   # Updates a page.
   updatePage(input: UpdatePageMutationInput!): UpdatePageMutationPayload
@@ -18774,11 +18774,11 @@ type updateNotificationPreferencesMutationPayload {
   ): [NotificationPreference!]!
 }
 
-type updateOrderedSetFailure {
+type UpdateOrderedSetFailure {
   mutationError: GravityMutationError
 }
 
-input updateOrderedSetMutationInput {
+input UpdateOrderedSetMutationInput {
   clientMutationId: String
   description: String
   id: String!
@@ -18793,18 +18793,18 @@ input updateOrderedSetMutationInput {
   unsetOwner: Boolean
 }
 
-type updateOrderedSetMutationPayload {
+type UpdateOrderedSetMutationPayload {
   clientMutationId: String
 
   # On success: the ordered set updated.
-  orderedSetOrError: updateOrderedSetResponseOrError
+  orderedSetOrError: UpdateOrderedSetResponseOrError
 }
 
-union updateOrderedSetResponseOrError =
-    updateOrderedSetFailure
-  | updateOrderedSetSuccess
+union UpdateOrderedSetResponseOrError =
+    UpdateOrderedSetFailure
+  | UpdateOrderedSetSuccess
 
-type updateOrderedSetSuccess {
+type UpdateOrderedSetSuccess {
   feature: Feature
   set: OrderedSet
 }

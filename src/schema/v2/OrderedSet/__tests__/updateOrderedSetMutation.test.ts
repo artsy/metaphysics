@@ -19,7 +19,7 @@ const mutation = gql`
     ) {
       orderedSetOrError {
         __typename
-        ... on updateOrderedSetSuccess {
+        ... on UpdateOrderedSetSuccess {
           set {
             description
             itemType
@@ -27,7 +27,7 @@ const mutation = gql`
             published
           }
         }
-        ... on updateOrderedSetFailure {
+        ... on UpdateOrderedSetFailure {
           mutationError {
             type
             message
@@ -39,7 +39,7 @@ const mutation = gql`
   }
 `
 
-describe("updateOrderedSetMutation", () => {
+describe("UpdateOrderedSetMutation", () => {
   describe("on success", () => {
     const set = {
       description: "Example description",
@@ -81,7 +81,7 @@ describe("updateOrderedSetMutation", () => {
       expect(res).toEqual({
         updateOrderedSet: {
           orderedSetOrError: {
-            __typename: "updateOrderedSetSuccess",
+            __typename: "UpdateOrderedSetSuccess",
             set: {
               description: "Example description",
               itemType: "Artist",
@@ -110,7 +110,7 @@ describe("updateOrderedSetMutation", () => {
       expect(res).toEqual({
         updateOrderedSet: {
           orderedSetOrError: {
-            __typename: "updateOrderedSetFailure",
+            __typename: "UpdateOrderedSetFailure",
             mutationError: {
               type: "error",
               message: "example message",

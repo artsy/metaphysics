@@ -102,7 +102,7 @@ import { createOrderedSetMutation } from "./OrderedSet/createOrderedSetMutation"
 import { deleteOrderedSetItemMutation } from "./OrderedSet/deleteOrderedSetItemMutation"
 import { deleteOrderedSetMutation } from "./OrderedSet/deleteOrderedSetMutation"
 import OrderedSets from "./OrderedSet/orderedSets"
-import { updateOrderedSetMutation } from "./OrderedSet/updateOrderedSetMutation"
+import { UpdateOrderedSetMutation } from "./OrderedSet/updateOrderedSetMutation"
 import PartnerArtworks from "./partner/partnerArtworks"
 import Profile from "./profile"
 import { addUserRoleMutation } from "./users/addUserRoleMutation"
@@ -441,7 +441,7 @@ export default new GraphQLSchema({
       updateMyPassword: updateMyPasswordMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateNotificationPreferences: updateNotificationPreferencesMutation,
-      updateOrderedSet: updateOrderedSetMutation,
+      updateOrderedSet: UpdateOrderedSetMutation,
       updatePage: UpdatePageMutation,
       updateQuiz: updateQuizMutation,
       updateUser: updateUserMutation,

@@ -43,7 +43,7 @@ interface Input {
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "updateOrderedSetSuccess",
+  name: "UpdateOrderedSetSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
     set: {
@@ -61,7 +61,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "updateOrderedSetFailure",
+  name: "UpdateOrderedSetFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -72,16 +72,16 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "updateOrderedSetResponseOrError",
+  name: "UpdateOrderedSetResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const updateOrderedSetMutation = mutationWithClientMutationId<
+export const UpdateOrderedSetMutation = mutationWithClientMutationId<
   Input,
   any | null,
   ResolverContext
 >({
-  name: "updateOrderedSetMutation",
+  name: "UpdateOrderedSetMutation",
   description: "updates an ordered set.",
   inputFields: {
     description: { type: GraphQLString },
