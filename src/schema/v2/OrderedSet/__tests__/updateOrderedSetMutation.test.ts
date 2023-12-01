@@ -19,7 +19,7 @@ const mutation = gql`
     ) {
       orderedSetOrError {
         __typename
-        ... on UpdateOrderedSetSuccess {
+        ... on updateOrderedSetSuccess {
           set {
             description
             itemType
@@ -27,7 +27,7 @@ const mutation = gql`
             published
           }
         }
-        ... on UpdateOrderedSetFailure {
+        ... on updateOrderedSetFailure {
           mutationError {
             type
             message
@@ -39,7 +39,7 @@ const mutation = gql`
   }
 `
 
-describe("UpdateOrderedSetMutation", () => {
+describe("updateOrderedSetMutation", () => {
   describe("on success", () => {
     const set = {
       description: "Example description",
@@ -63,7 +63,7 @@ describe("UpdateOrderedSetMutation", () => {
       mockUpdateSetLoader.mockReset()
     })
 
-    it("returns an Ordered Set", async () => {
+    it("returns a Artist", async () => {
       const res = await runAuthenticatedQuery(mutation, context)
 
       expect(mockUpdateSetLoader).toBeCalledWith("xyz789", {
@@ -81,7 +81,7 @@ describe("UpdateOrderedSetMutation", () => {
       expect(res).toEqual({
         updateOrderedSet: {
           orderedSetOrError: {
-            __typename: "UpdateOrderedSetSuccess",
+            __typename: "updateOrderedSetSuccess",
             set: {
               description: "Example description",
               itemType: "Artist",
@@ -110,7 +110,7 @@ describe("UpdateOrderedSetMutation", () => {
       expect(res).toEqual({
         updateOrderedSet: {
           orderedSetOrError: {
-            __typename: "UpdateOrderedSetFailure",
+            __typename: "updateOrderedSetFailure",
             mutationError: {
               type: "error",
               message: "example message",
