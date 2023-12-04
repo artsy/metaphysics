@@ -1,6 +1,6 @@
-type NameFormatType = "default" | "public"
+type nameFormat = "default" | "public"
 
-const formatName = (name: string, format: NameFormatType): string => {
+const formatName = (name: string, format: nameFormat): string => {
   switch (format) {
     case "public":
       return formatPublicName(name)
@@ -19,15 +19,17 @@ export const formatPublicName = (name: string): string => {
 
   if (nameParts.length === 1) {
     return nameParts[0]
-  } else if (nameParts.length > 1) {
+  }
+
+  if (nameParts.length > 1) {
     const firstName = nameParts[0]
     const lastName = nameParts.pop()
     const lastNameInitial = lastName ? lastName.charAt(0) : ""
 
     return `${firstName} ${lastNameInitial}.`.trim()
-  } else {
-    return name
   }
+
+  return name
 }
 
 export default formatName
