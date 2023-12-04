@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLFieldConfigMap,
   GraphQLObjectType,
@@ -11,6 +12,11 @@ const InquirerCollectorProfileFields: GraphQLFieldConfigMap<
   ResolverContext
 > = {
   ...CollectorProfileFields,
+  hasPartnerFollow: {
+    type: GraphQLBoolean,
+    description: "The Collector follows the Gallery profile",
+    resolve: ({ follows_profile }) => follows_profile,
+  },
 }
 
 export const InquirerCollectorProfileType = new GraphQLObjectType<

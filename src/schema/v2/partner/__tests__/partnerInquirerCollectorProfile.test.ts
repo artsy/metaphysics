@@ -7,6 +7,7 @@ describe("partnerInquirerCollectorProfile", () => {
     slug: "catty-partner",
     name: "Catty Partner",
   }
+  const inquirer = { id: "inquirer-id" }
 
   const collectorProfile = {
     name: "Some Collector",
@@ -19,8 +20,13 @@ describe("partnerInquirerCollectorProfile", () => {
   }
 
   const context = {
+    partnerCollectorProfileLoader: () =>
+      Promise.resolve({
+        collector_profile: collectorProfile,
+        follows_profile: true,
+      }),
     partnerInquiryRequestLoader: () =>
-      Promise.resolve({ id: "123", partnerId: "catty-partner" }),
+      Promise.resolve({ id: "123", partnerId: "catty-partner", inquirer }),
     partnerInquirerCollectorProfileLoader: () =>
       Promise.resolve(collectorProfile),
     partnerLoader: () => Promise.resolve(partnerData),
@@ -41,6 +47,7 @@ describe("partnerInquirerCollectorProfile", () => {
               bio
               isActiveInquirer
               isActiveBidder
+              hasPartnerFollow
             }
           }
         }
@@ -57,6 +64,7 @@ describe("partnerInquirerCollectorProfile", () => {
             location: { city: "Around", country: "The Globe" },
             profession: "Superhuman",
             bio: "I got snacks to the roof",
+            hasPartnerFollow: true,
             isActiveInquirer: false,
             isActiveBidder: false,
           },
