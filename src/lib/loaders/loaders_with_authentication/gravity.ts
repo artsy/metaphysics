@@ -542,12 +542,9 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerInquirerCollectorProfileLoader: gravityLoader<
-      any,
-      { partnerId: string; inquiryId: string }
-    >(
-      ({ partnerId, inquiryId }) =>
-        `partner/${partnerId}/inquiry_request/${inquiryId}/collector_profile`
+    partnerCollectorProfileLoader: gravityLoader<any, { partnerId; userId }>(
+      ({ partnerId, userId }) =>
+        `partner_collector_profile?partner_id=${partnerId}&user_id=${userId}`
     ),
     partnerInquiryRequestLoader: gravityLoader<
       any,
