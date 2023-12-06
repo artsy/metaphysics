@@ -2085,7 +2085,6 @@ type SearchCriteria {
   Human readable price range value
   """
   formattedPriceRange: String
-  hasRecentlyEnabledUserSearchCriteria: Boolean!
   height: String
   href: String!
   inquireableOnly: Boolean
@@ -2096,7 +2095,6 @@ type SearchCriteria {
   materialsTerms: [String!]!
   offerable: Boolean
   partnerIDs: [String!]!
-  priceArray: [Float]
   priceRange: String
   sizes: [String!]!
 
@@ -2104,11 +2102,6 @@ type SearchCriteria {
   Summary of the fields selected
   """
   summary: JSON
-  totalUserSearchCriteriaCount: Int
-  totalWithAdditionalGeneIdsCount: Int
-  totalWithAttributionClassCount: Int
-  totalWithOtherMetadataCount: Int
-  totalWithPriceRangeCount: Int
   userAlertSettings: SavedSearchUserAlertSettings!
   userSearchCriteriaCount: Int!
   width: String
