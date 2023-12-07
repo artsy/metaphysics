@@ -108,7 +108,7 @@ export const resolveSearchCriteriaLabels = async (
     majorPeriods,
     colors,
     partnerIDs,
-  } = parent
+  } = parent.attributes
 
   const {
     artistLoader,

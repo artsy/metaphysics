@@ -6,11 +6,10 @@ import { SearchCriteriaLabel } from "./searchCriteriaLabel"
 
 const ALLOWED_RARITY_SUGGESTIONS = ["unique", "limited edition"]
 
-export const suggestedFilters = async (
-  { artistIDs },
-  _args,
-  { filterArtworksLoader }
-) => {
+export const suggestedFilters = async (parent, _args, context) => {
+  const { artistIDs } = parent.attributes
+  const { filterArtworksLoader } = context
+
   if (!artistIDs) {
     throw new Error("artistIDs are required to get suggested filters")
   }

@@ -312,6 +312,16 @@ type AlertsCounts {
   totalUserSearchCriteriaCount: Int
 }
 
+input AlertSource {
+  id: ID!
+  type: AlertSourceType
+}
+
+enum AlertSourceType {
+  ARTIST
+  ARTWORK
+}
+
 # A connection to a list of items.
 type AlertsSummaryArtistConnection {
   # A list of edges.
@@ -15876,6 +15886,7 @@ type Query {
   # A previewed saved search
   previewSavedSearch(
     attributes: PreviewSavedSearchAttributes
+    source: AlertSource
   ): PreviewSavedSearch
 
   # Get all price insights for an artist.
@@ -20492,6 +20503,7 @@ type Viewer {
   # A previewed saved search
   previewSavedSearch(
     attributes: PreviewSavedSearchAttributes
+    source: AlertSource
   ): PreviewSavedSearch
 
   # A Profile

@@ -7,7 +7,9 @@ describe("resolveSearchCriteriaLabels", () => {
 
   it("formats artist criteria", async () => {
     const parent = {
-      artistIDs: ["foo-bar", "baz-qux"],
+      attributes: {
+        artistIDs: ["foo-bar", "baz-qux"],
+      },
     }
 
     const context = {
@@ -38,12 +40,14 @@ describe("resolveSearchCriteriaLabels", () => {
 
   it("formats rarity criteria", async () => {
     const parent = {
-      attributionClass: [
-        "unique",
-        "limited edition",
-        "open edition",
-        "unknown edition",
-      ],
+      attributes: {
+        attributionClass: [
+          "unique",
+          "limited edition",
+          "open edition",
+          "unknown edition",
+        ],
+      },
     }
 
     const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
@@ -79,22 +83,24 @@ describe("resolveSearchCriteriaLabels", () => {
   describe("medium criteria", () => {
     it("formats medium criteria when used with slugs", async () => {
       const parent = {
-        additionalGeneIDs: [
-          "painting",
-          "photography",
-          "sculpture",
-          "prints",
-          "drawing",
-          "work-on-paper",
-          "nft",
-          "design",
-          "installation",
-          "film-slash-video",
-          "jewelry",
-          "performance-art",
-          "reproduction",
-          "ephemera-or-merchandise",
-        ],
+        attributes: {
+          additionalGeneIDs: [
+            "painting",
+            "photography",
+            "sculpture",
+            "prints",
+            "drawing",
+            "work-on-paper",
+            "nft",
+            "design",
+            "installation",
+            "film-slash-video",
+            "jewelry",
+            "performance-art",
+            "reproduction",
+            "ephemera-or-merchandise",
+          ],
+        },
       }
 
       const labels = await resolveSearchCriteriaLabels(
@@ -193,7 +199,9 @@ describe("resolveSearchCriteriaLabels", () => {
     })
     it("formats medium criteria when medium type is unknown", async () => {
       const parent = {
-        additionalGeneIDs: ["watercolor"],
+        attributes: {
+          additionalGeneIDs: ["watercolor"],
+        },
       }
 
       const labels = await resolveSearchCriteriaLabels(
@@ -214,7 +222,9 @@ describe("resolveSearchCriteriaLabels", () => {
     })
     it("formats medium criteria when used with an id", async () => {
       const parent = {
-        additionalGeneIDs: ["4d90d18edcdd5f44a5000010"],
+        attributes: {
+          additionalGeneIDs: ["4d90d18edcdd5f44a5000010"],
+        },
       }
 
       const labels = await resolveSearchCriteriaLabels(
@@ -239,7 +249,9 @@ describe("resolveSearchCriteriaLabels", () => {
     describe("min and max are set", () => {
       it("formats price criteria", async () => {
         const parent = {
-          priceRange: "42-420",
+          attributes: {
+            priceRange: "42-420",
+          },
         }
         const labels = await resolveSearchCriteriaLabels(
           parent,
@@ -262,7 +274,9 @@ describe("resolveSearchCriteriaLabels", () => {
     describe("only min is set", () => {
       it("formats price criteria", async () => {
         const parent = {
-          priceRange: "42-*",
+          attributes: {
+            priceRange: "42-*",
+          },
         }
         const labels = await resolveSearchCriteriaLabels(
           parent,
@@ -285,7 +299,9 @@ describe("resolveSearchCriteriaLabels", () => {
     describe("only max is set", () => {
       it("formats price criteria", async () => {
         const parent = {
-          priceRange: "*-420",
+          attributes: {
+            priceRange: "*-420",
+          },
         }
         const labels = await resolveSearchCriteriaLabels(
           parent,
@@ -308,7 +324,9 @@ describe("resolveSearchCriteriaLabels", () => {
 
   it("formats size bucket criteria", async () => {
     const parent = {
-      sizes: ["LARGE", "MEDIUM", "SMALL"],
+      attributes: {
+        sizes: ["LARGE", "MEDIUM", "SMALL"],
+      },
     }
 
     const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
@@ -338,7 +356,9 @@ describe("resolveSearchCriteriaLabels", () => {
   describe("formatting size criteria", () => {
     it("handles range with min for height", async () => {
       const parent = {
-        height: "0.39370078740157477-*",
+        attributes: {
+          height: "0.39370078740157477-*",
+        },
       }
 
       const labels = await resolveSearchCriteriaLabels(
@@ -359,7 +379,9 @@ describe("resolveSearchCriteriaLabels", () => {
     })
     it("handles range with max for height", async () => {
       const parent = {
-        height: "*-3.937007874015748",
+        attributes: {
+          height: "*-3.937007874015748",
+        },
       }
 
       const labels = await resolveSearchCriteriaLabels(
@@ -380,7 +402,9 @@ describe("resolveSearchCriteriaLabels", () => {
     })
     it("handles range with min and max for height", async () => {
       const parent = {
-        height: "0.39370078740157477-3.937007874015748",
+        attributes: {
+          height: "0.39370078740157477-3.937007874015748",
+        },
       }
 
       const labels = await resolveSearchCriteriaLabels(
@@ -401,7 +425,9 @@ describe("resolveSearchCriteriaLabels", () => {
     })
     it("handles range with min for width", async () => {
       const parent = {
-        width: "0.39370078740157477-*",
+        attributes: {
+          width: "0.39370078740157477-*",
+        },
       }
 
       const labels = await resolveSearchCriteriaLabels(
@@ -422,7 +448,9 @@ describe("resolveSearchCriteriaLabels", () => {
     })
     it("handles range with max for width", async () => {
       const parent = {
-        width: "*-3.937007874015748",
+        attributes: {
+          width: "*-3.937007874015748",
+        },
       }
 
       const labels = await resolveSearchCriteriaLabels(
@@ -443,7 +471,9 @@ describe("resolveSearchCriteriaLabels", () => {
     })
     it("handles range with min and max for width", async () => {
       const parent = {
-        width: "0.39370078740157477-3.937007874015748",
+        attributes: {
+          width: "0.39370078740157477-3.937007874015748",
+        },
       }
 
       const labels = await resolveSearchCriteriaLabels(
@@ -464,8 +494,10 @@ describe("resolveSearchCriteriaLabels", () => {
     })
     it("handles range with min and max for height and width", async () => {
       const parent = {
-        height: "0.39370078740157477-3.937007874015748",
-        width: "*-20",
+        attributes: {
+          height: "0.39370078740157477-3.937007874015748",
+          width: "*-20",
+        },
       }
 
       const labels = await resolveSearchCriteriaLabels(
@@ -494,10 +526,12 @@ describe("resolveSearchCriteriaLabels", () => {
 
   it("formats ways-to-buy criteria", async () => {
     const parent = {
-      acquireable: true,
-      atAuction: true,
-      inquireableOnly: true,
-      offerable: true,
+      attributes: {
+        acquireable: true,
+        atAuction: true,
+        inquireableOnly: true,
+        offerable: true,
+      },
     }
 
     const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
@@ -532,7 +566,9 @@ describe("resolveSearchCriteriaLabels", () => {
 
   it("formats material criteria", async () => {
     const parent = {
-      materialsTerms: ["acrylic", "c-print"],
+      attributes: {
+        materialsTerms: ["acrylic", "c-print"],
+      },
     }
 
     const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
@@ -555,7 +591,9 @@ describe("resolveSearchCriteriaLabels", () => {
 
   it("formats artwork location criteria", async () => {
     const parent = {
-      locationCities: ["Durham, PA, USA", "New York, NY, USA"],
+      attributes: {
+        locationCities: ["Durham, PA, USA", "New York, NY, USA"],
+      },
     }
 
     const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
@@ -578,7 +616,9 @@ describe("resolveSearchCriteriaLabels", () => {
 
   it("formats time period criteria", async () => {
     const parent = {
-      majorPeriods: ["1990", "Early 19th Century"],
+      attributes: {
+        majorPeriods: ["1990", "Early 19th Century"],
+      },
     }
 
     const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
@@ -601,7 +641,9 @@ describe("resolveSearchCriteriaLabels", () => {
 
   it("formats color criteria", async () => {
     const parent = {
-      colors: ["blue", "yellow"],
+      attributes: {
+        colors: ["blue", "yellow"],
+      },
     }
 
     const labels = await resolveSearchCriteriaLabels(parent, _, { meLoader }, _)
@@ -624,7 +666,9 @@ describe("resolveSearchCriteriaLabels", () => {
 
   it("formats partner criteria", async () => {
     const parent = {
-      partnerIDs: ["foo-bar-gallery", "baz-qux-gallery"],
+      attributes: {
+        partnerIDs: ["foo-bar-gallery", "baz-qux-gallery"],
+      },
     }
 
     const context = {
@@ -655,7 +699,9 @@ describe("resolveSearchCriteriaLabels", () => {
 
   it("formats artist series criteria", async () => {
     const parent = {
-      artistSeriesIDs: ["kaws-astroboy", "kaws-companions"],
+      attributes: {
+        artistSeriesIDs: ["kaws-astroboy", "kaws-companions"],
+      },
     }
 
     const context = {

@@ -122,6 +122,6 @@ export const PreviewSavedSearchField: GraphQLFieldConfig<
     },
   },
   resolve: (_parent, args, _context, _info) => {
-    return args.attributes
+    return args
   },
 }
