@@ -10,9 +10,8 @@ import {
 } from "graphql"
 import artworkMediums from "lib/artworkMediums"
 import attributionClasses from "lib/attributionClasses"
-import { isExisty, snakeCaseKeys } from "lib/helpers"
+import { isExisty } from "lib/helpers"
 import _ from "lodash"
-import { stringify } from "qs"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "../artwork/artworkSizes"
 import {
@@ -20,6 +19,7 @@ import {
   resolveSearchCriteriaLabels,
 } from "./searchCriteriaLabel"
 import { generateDisplayName } from "./generateDisplayName"
+import { resolveHref } from "./resolveHref"
 
 const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   acquireable: {
@@ -217,17 +217,4 @@ export const PreviewSavedSearchField: GraphQLFieldConfig<
   resolve: (_parent, args, _context, _info) => {
     return args.attributes
   },
-}
-
-const resolveHref = async (parent, _args, _context, _info) => {
-  const primaryArtist = parent.artistIDs?.[0]
-
-  if (!primaryArtist) return null
-
-  // Filter out artistIDs and snake_case the rest of the attributes
-  const criteriaAttributesWithoutArtistIds = (({ artistIDs, ...o }) =>
-    snakeCaseKeys(o))(parent)
-  const queryParams = stringify(criteriaAttributesWithoutArtistIds)
-
-  return `/artist/${primaryArtist}?${queryParams}&for_sale=true`
 }
