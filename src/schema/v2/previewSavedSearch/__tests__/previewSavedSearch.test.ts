@@ -526,6 +526,78 @@ describe("previewSavedSearch", () => {
         },
       ])
     })
+    describe("when the alert source is specified as a specific artwork", () => {
+      it("derives artist series suggestions from that artwork", async () => {
+        const query = gql`
+          {
+            previewSavedSearch(
+              attributes: { artistIDs: ["banksy", "andy-warhol", "picasso"] }
+            ) {
+              suggestedFilters(
+                source: { id: "some-artwork-id", type: ARTWORK }
+              ) {
+                displayValue
+                field
+                value
+                name
+              }
+            }
+          }
+        `
+
+        const artistLoader = () => Promise.resolve({})
+
+        const mockFilterArtworksLoader = jest.fn()
+
+        mockFilterArtworksLoader.mockResolvedValueOnce(
+          Promise.resolve(aggregationsForSuggestions)
+        )
+
+        const gravityGraphQLLoader = jest
+          .fn()
+          .mockReturnValueOnce(artworkArtistSeriesForSuggestions)
+
+        const { previewSavedSearch } = await runQuery(query, {
+          artistLoader,
+          meLoader,
+          filterArtworksLoader: mockFilterArtworksLoader,
+          gravityGraphQLLoader,
+        })
+
+        expect(previewSavedSearch.suggestedFilters).toEqual([
+          {
+            displayValue: "Companions",
+            field: "artistSeriesIDs",
+            name: "Artist Series",
+            value: "kaws-companions",
+          },
+          {
+            displayValue: "Toys",
+            field: "artistSeriesIDs",
+            name: "Artist Series",
+            value: "kaws-toys",
+          },
+          {
+            displayValue: "Limited edition",
+            field: "attributionClass",
+            name: "Rarity",
+            value: "limited edition",
+          },
+          {
+            displayValue: "Print",
+            field: "additionalGeneIDs",
+            name: "Medium",
+            value: "prints",
+          },
+          {
+            displayValue: "Photography",
+            field: "additionalGeneIDs",
+            name: "Medium",
+            value: "photography",
+          },
+        ])
+      })
+    })
   })
 })
 
@@ -649,5 +721,26 @@ const aggregationsForSuggestions = {
         count: 424,
       },
     },
+  },
+}
+
+const artworkArtistSeriesForSuggestions = {
+  artistSeriesConnection: {
+    edges: [
+      {
+        node: {
+          internalID: "ba48e478-9f5d-400c-9f5c-d4e532966961",
+          slug: "kaws-companions",
+          title: "Companions",
+        },
+      },
+      {
+        node: {
+          internalID: "1e16c94f-7d50-465c-905b-5826ee9f0ec0",
+          slug: "kaws-toys",
+          title: "Toys",
+        },
+      },
+    ],
   },
 }
