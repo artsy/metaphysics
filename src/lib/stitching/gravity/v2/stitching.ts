@@ -10,7 +10,7 @@ import { toGlobalId } from "graphql-relay"
 import { printType } from "lib/stitching/lib/printType"
 import { dateRange } from "lib/date"
 import { resolveSearchCriteriaLabels } from "schema/v2/previewSavedSearch/searchCriteriaLabel"
-import { generateDisplayName } from "schema/v2/previewSavedSearch"
+import { generateDisplayName } from "schema/v2/previewSavedSearch/generateDisplayName"
 import { amount, amountSDL } from "schema/v2/fields/money"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
