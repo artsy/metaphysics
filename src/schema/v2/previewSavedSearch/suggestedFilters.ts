@@ -17,13 +17,22 @@ export const suggestedFilters = async (
 
   const gravityArgs = {
     size: 0,
-    aggregations: ["attribution_class", "medium"],
+    aggregations: ["attribution_class", "medium", "artist_series"],
     artist_ids: artistIDs,
   }
 
   const { aggregations } = await filterArtworksLoader(gravityArgs)
 
   const suggestedFilters: SearchCriteriaLabel[] = []
+
+  const artistSeriesOptions = getArtistSeriesSearchCriteriaLabels(
+    aggregations["artist_series"],
+    2
+  )
+
+  if (artistSeriesOptions) {
+    suggestedFilters.push(...artistSeriesOptions)
+  }
 
   const rarityOptions = _.chain(
     getMostPopularOptions(aggregations["attribution_class"])
@@ -96,4 +105,28 @@ const getMediumSearchCriteriaLabel = (
     value: mediumData.mediumFilterGeneSlug,
     name: "Medium",
   }
+}
+
+const getArtistSeriesSearchCriteriaLabels = (
+  artistSeriesAggregation: Record<string, { name: string; count: number }>,
+  limit?: number
+): SearchCriteriaLabel[] | null => {
+  if (!artistSeriesAggregation) {
+    return null
+  }
+
+  const artistSeriesLabels = Object.entries(artistSeriesAggregation)
+    .slice(0, limit ?? 1)
+    .map(
+      ([slug, value]: [string, any]): SearchCriteriaLabel => {
+        return {
+          displayValue: value.name,
+          field: "artistSeriesIDs",
+          value: slug,
+          name: "Artist Series",
+        }
+      }
+    )
+
+  return artistSeriesLabels
 }

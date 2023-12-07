@@ -484,82 +484,7 @@ describe("previewSavedSearch", () => {
       const mockFilterArtworksLoader = jest.fn()
 
       mockFilterArtworksLoader.mockResolvedValueOnce(
-        Promise.resolve({
-          aggregations: {
-            medium: {
-              prints: {
-                name: "Prints",
-                count: 8020,
-              },
-              photography: {
-                name: "Photography",
-                count: 7717,
-              },
-              "ephemera-or-merchandise": {
-                name: "Ephemera or Merchandise",
-                count: 1132,
-              },
-              "work-on-paper": {
-                name: "Work on Paper",
-                count: 449,
-              },
-              painting: {
-                name: "Painting",
-                count: 313,
-              },
-              sculpture: {
-                name: "Sculpture",
-                count: 236,
-              },
-              drawing: {
-                name: "Drawing",
-                count: 162,
-              },
-              design: {
-                name: "Design",
-                count: 75,
-              },
-              reproduction: {
-                name: "Reproduction",
-                count: 38,
-              },
-              installation: {
-                name: "Installation",
-                count: 20,
-              },
-              "film-slash-video": {
-                name: "Film/Video",
-                count: 13,
-              },
-              "performance-art": {
-                name: "Performance Art",
-                count: 9,
-              },
-              jewelry: {
-                name: "Jewelry",
-                count: 1,
-              },
-            },
-            attribution_class: {
-              "open edition": {
-                name: "open edition",
-                count: 6646,
-              },
-              "limited edition": {
-                name: "limited edition",
-                count: 3719,
-              },
-              unique: {
-                name: "unique",
-                count: 1848,
-              },
-              "unknown edition": {
-                name: "unknown edition",
-                count: 1677,
-              },
-            },
-          },
-        })
+        Promise.resolve(aggregationsForSuggestions)
       )
 
       const { previewSavedSearch } = await runQuery(query, {
@@ -569,6 +494,18 @@ describe("previewSavedSearch", () => {
       })
 
       expect(previewSavedSearch.suggestedFilters).toEqual([
+        {
+          displayValue: "Portraits",
+          field: "artistSeriesIDs",
+          name: "Artist Series",
+          value: "andy-warhol-portraits",
+        },
+        {
+          displayValue: "Lithographs",
+          field: "artistSeriesIDs",
+          name: "Artist Series",
+          value: "pablo-picasso-lithographs",
+        },
         {
           displayValue: "Limited edition",
           field: "attributionClass",
@@ -591,3 +528,126 @@ describe("previewSavedSearch", () => {
     })
   })
 })
+
+const aggregationsForSuggestions = {
+  aggregations: {
+    medium: {
+      prints: {
+        name: "Prints",
+        count: 8020,
+      },
+      photography: {
+        name: "Photography",
+        count: 7717,
+      },
+      "ephemera-or-merchandise": {
+        name: "Ephemera or Merchandise",
+        count: 1132,
+      },
+      "work-on-paper": {
+        name: "Work on Paper",
+        count: 449,
+      },
+      painting: {
+        name: "Painting",
+        count: 313,
+      },
+      sculpture: {
+        name: "Sculpture",
+        count: 236,
+      },
+      drawing: {
+        name: "Drawing",
+        count: 162,
+      },
+      design: {
+        name: "Design",
+        count: 75,
+      },
+      reproduction: {
+        name: "Reproduction",
+        count: 38,
+      },
+      installation: {
+        name: "Installation",
+        count: 20,
+      },
+      "film-slash-video": {
+        name: "Film/Video",
+        count: 13,
+      },
+      "performance-art": {
+        name: "Performance Art",
+        count: 9,
+      },
+      jewelry: {
+        name: "Jewelry",
+        count: 1,
+      },
+    },
+    attribution_class: {
+      "open edition": {
+        name: "open edition",
+        count: 6646,
+      },
+      "limited edition": {
+        name: "limited edition",
+        count: 3719,
+      },
+      unique: {
+        name: "unique",
+        count: 1848,
+      },
+      "unknown edition": {
+        name: "unknown edition",
+        count: 1677,
+      },
+    },
+    artist_series: {
+      "andy-warhol-portraits": {
+        name: "Portraits",
+        count: 1639,
+      },
+      "pablo-picasso-lithographs": {
+        name: "Lithographs",
+        count: 991,
+      },
+      "pablo-picasso-portraits": {
+        name: "Portraits",
+        count: 743,
+      },
+      "pablo-picasso-nudes": {
+        name: "Nudes",
+        count: 599,
+      },
+      "pablo-picasso-etchings": {
+        name: "Etchings",
+        count: 561,
+      },
+      "pablo-picasso-ceramics": {
+        name: "Ceramics",
+        count: 513,
+      },
+      "pablo-picasso-animals": {
+        name: "Animals",
+        count: 491,
+      },
+      "andy-warhol-campbells-soup-cans": {
+        name: "Campbell’s Soup Cans",
+        count: 489,
+      },
+      "pablo-picasso-linocuts": {
+        name: "Linocuts",
+        count: 434,
+      },
+      "pablo-picasso-portraits-of-artists-and-sculptors": {
+        name: "Portraits of Artists and Sculptors",
+        count: 431,
+      },
+      "pablo-picasso-bulls": {
+        name: "Bulls",
+        count: 424,
+      },
+    },
+  },
+}
