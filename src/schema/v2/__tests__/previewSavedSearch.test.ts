@@ -570,10 +570,22 @@ describe("previewSavedSearch", () => {
 
       expect(previewSavedSearch.suggestedFilters).toEqual([
         {
+          displayValue: "Limited edition",
+          field: "attributionClass",
+          name: "Rarity",
+          value: "limited edition",
+        },
+        {
           displayValue: "Print",
           field: "additionalGeneIDs",
           name: "Medium",
           value: "prints",
+        },
+        {
+          displayValue: "Photography",
+          field: "additionalGeneIDs",
+          name: "Medium",
+          value: "photography",
         },
       ])
     })
