@@ -9,7 +9,7 @@ import Format from "schema/v2/input_fields/format"
 import { toGlobalId } from "graphql-relay"
 import { printType } from "lib/stitching/lib/printType"
 import { dateRange } from "lib/date"
-import { resolveSearchCriteriaLabels } from "schema/v2/searchCriteriaLabel"
+import { resolveSearchCriteriaLabels } from "schema/v2/previewSavedSearch/searchCriteriaLabel"
 import { generateDisplayName } from "schema/v2/previewSavedSearch"
 import { amount, amountSDL } from "schema/v2/fields/money"
 

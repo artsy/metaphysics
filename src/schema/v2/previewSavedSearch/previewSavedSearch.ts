@@ -14,7 +14,7 @@ import { isExisty, snakeCaseKeys } from "lib/helpers"
 import _ from "lodash"
 import { stringify } from "qs"
 import { ResolverContext } from "types/graphql"
-import ArtworkSizes from "./artwork/artworkSizes"
+import ArtworkSizes from "../artwork/artworkSizes"
 import {
   SearchCriteriaLabel,
   resolveSearchCriteriaLabels,
