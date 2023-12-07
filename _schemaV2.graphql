@@ -313,10 +313,14 @@ type AlertsCounts {
 }
 
 input AlertSource {
+  # The database id of the object from which the alert originates
   id: ID!
+
+  # The type of object from which the alert originates
   type: AlertSourceType
 }
 
+# The context from which the alert originates
 enum AlertSourceType {
   ARTIST
   ARTWORK
@@ -15885,7 +15889,10 @@ type Query {
 
   # A previewed saved search
   previewSavedSearch(
+    # The criteria which describe the alert
     attributes: PreviewSavedSearchAttributes
+
+    # The context from which the alert originates
     source: AlertSource
   ): PreviewSavedSearch
 
@@ -20502,7 +20509,10 @@ type Viewer {
 
   # A previewed saved search
   previewSavedSearch(
+    # The criteria which describe the alert
     attributes: PreviewSavedSearchAttributes
+
+    # The context from which the alert originates
     source: AlertSource
   ): PreviewSavedSearch
 

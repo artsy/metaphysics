@@ -1,7 +1,9 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
+  GraphQLID,
   GraphQLInputObjectType,
   GraphQLList,
   GraphQLNonNull,
@@ -110,6 +112,30 @@ const PreviewSavedSearchAttributesType = new GraphQLInputObjectType({
   fields: previewSavedSearchArgs,
 })
 
+const AlertSourceTypeEnum = new GraphQLEnumType({
+  name: "AlertSourceType",
+  description: "The context from which the alert originates",
+  values: {
+    ARTWORK: { value: "Artwork" },
+    ARTIST: { value: "Artist" },
+  },
+})
+
+const AlertSourceType = new GraphQLInputObjectType({
+  name: "AlertSource",
+  fields: {
+    type: {
+      type: AlertSourceTypeEnum,
+      description: "The type of object from which the alert originates",
+    },
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description:
+        "The database id of the object from which the alert originates",
+    },
+  },
+})
+
 export const PreviewSavedSearchField: GraphQLFieldConfig<
   void,
   ResolverContext
@@ -119,6 +145,11 @@ export const PreviewSavedSearchField: GraphQLFieldConfig<
   args: {
     attributes: {
       type: PreviewSavedSearchAttributesType,
+      description: "The criteria which describe the alert",
+    },
+    source: {
+      type: AlertSourceType,
+      description: "The context from which the alert originates",
     },
   },
   resolve: (_parent, args, _context, _info) => {
