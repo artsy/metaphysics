@@ -16,7 +16,7 @@ export const suggestedFilters = async (parent, _args, context) => {
 
   const gravityArgs = {
     size: 0,
-    aggregations: ["attribution_class", "medium"],
+    aggregations: ["attribution_class", "medium", "artist_series"],
     artist_ids: artistIDs,
   }
 
@@ -43,6 +43,15 @@ export const suggestedFilters = async (parent, _args, context) => {
 
   if (mediumOptions.length) {
     suggestedFilters.push(...mediumOptions)
+  }
+
+  const artistSeriesOptions = getArtistSeriesSearchCriteriaLabels(
+    aggregations["artist_series"],
+    2
+  )
+
+  if (artistSeriesOptions) {
+    suggestedFilters.push(...artistSeriesOptions)
   }
 
   return suggestedFilters
@@ -95,4 +104,28 @@ const getMediumSearchCriteriaLabel = (
     value: mediumData.mediumFilterGeneSlug,
     name: "Medium",
   }
+}
+
+const getArtistSeriesSearchCriteriaLabels = (
+  artistSeriesAggregation: Record<string, { name: string; count: number }>,
+  limit?: number
+): SearchCriteriaLabel[] | null => {
+  if (!artistSeriesAggregation) {
+    return null
+  }
+
+  const artistSeriesLabels = Object.entries(artistSeriesAggregation)
+    .slice(0, limit ?? 1)
+    .map(
+      ([slug, value]: [string, any]): SearchCriteriaLabel => {
+        return {
+          displayValue: value.name,
+          field: "artistSeriesIDs",
+          value: slug,
+          name: "Artist Series",
+        }
+      }
+    )
+
+  return artistSeriesLabels
 }
