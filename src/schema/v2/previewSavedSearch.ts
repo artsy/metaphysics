@@ -8,8 +8,10 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import artworkMediums from "lib/artworkMediums"
 import attributionClasses from "lib/attributionClasses"
 import { isExisty, snakeCaseKeys } from "lib/helpers"
+import _ from "lodash"
 import { stringify } from "qs"
 import { ResolverContext } from "types/graphql"
 import ArtworkSizes from "./artwork/artworkSizes"
@@ -17,7 +19,6 @@ import {
   SearchCriteriaLabel,
   resolveSearchCriteriaLabels,
 } from "./searchCriteriaLabel"
-import artworkMediums from "lib/artworkMediums"
 
 const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   acquireable: {
@@ -118,20 +119,27 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
 
         const suggestedFilters: SearchCriteriaLabel[] = []
 
-        const rarity = getRaritySearchCriteriaLabel(
-          getMostPopularOption(aggregations["attribution_class"])
+        const rarityOptions = _.chain(
+          getMostPopularOptions(aggregations["attribution_class"])
         )
+          .map((label) => getRaritySearchCriteriaLabel(label))
+          .compact()
+          .filter((rarity) => ALLOWED_RARITY_SUGGESTIONS.includes(rarity.value))
+          .value()
 
-        if (rarity && ALLOWED_RARITY_SUGGESTIONS.includes(rarity.value)) {
-          suggestedFilters.push(rarity)
+        if (rarityOptions.length) {
+          suggestedFilters.push(...rarityOptions)
         }
 
-        const medium = getMediumSearchCriteriaLabel(
-          getMostPopularOption(aggregations["medium"])
+        const mediumOptions = _.chain(
+          getMostPopularOptions(aggregations["medium"])
         )
+          .map((label) => getMediumSearchCriteriaLabel(label))
+          .compact()
+          .value()
 
-        if (medium) {
-          suggestedFilters.push(medium)
+        if (mediumOptions.length) {
+          suggestedFilters.push(...mediumOptions)
         }
 
         return suggestedFilters
@@ -140,13 +148,15 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-const getMostPopularOption = (aggregation: {
+const getMostPopularOptions = (aggregation: {
   [key: string]: { name: string; count: number }
-}): string | undefined => {
+}): string[] => {
   if (isExisty(aggregation)) {
-    const key = Object.keys(aggregation)[0]
-    return key
+    const keys = Object.keys(aggregation).slice(0, 2)
+    return keys
   }
+
+  return []
 }
 
 const getRaritySearchCriteriaLabel = (
