@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLInt,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
@@ -9,6 +10,7 @@ import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import { IDFields } from "./object_identification"
 import GraphQLJSON from "graphql-type-json"
+import { ArtistType } from "./artist"
 
 type GravitySearchCriteriaJSON = {
   id: string
@@ -20,14 +22,15 @@ type GravitySearchCriteriaJSON = {
   summary: JSON
   count_30d: number
   count_7d: number
+  artist_ids: string[]
 }
 
-const AlertType = new GraphQLObjectType<
+export const AlertType = new GraphQLObjectType<
   GravitySearchCriteriaJSON,
   ResolverContext
 >({
   name: "Alert",
-  fields: {
+  fields: () => ({
     ...IDFields,
     priceRange: {
       type: GraphQLString,
@@ -62,7 +65,16 @@ const AlertType = new GraphQLObjectType<
     summary: {
       type: GraphQLJSON,
     },
-  },
+    artists: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ArtistType))),
+      resolve: async ({ artist_ids }, _args, { artistsLoader }) => {
+        if (!artist_ids) return []
+
+        const { body } = await artistsLoader({ ids: artist_ids })
+        return body ?? []
+      },
+    },
+  }),
 })
 
 const AlertsEdgeFields = {
