@@ -459,7 +459,7 @@ describe("Artwork type", () => {
     it("returns valid visibility level", async () => {
       artwork = {
         ...artwork,
-        visibility_level: "draft",
+        visibility_level: "listed",
       }
 
       context = {
@@ -470,7 +470,7 @@ describe("Artwork type", () => {
 
       expect(data).toEqual({
         artwork: {
-          visibilityLevel: "DRAFT",
+          visibilityLevel: "LISTED",
         },
       })
     })

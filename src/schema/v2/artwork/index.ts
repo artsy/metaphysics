@@ -241,7 +241,6 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
 export const VisibilityEnum = new GraphQLEnumType({
   name: "Visibility",
   values: {
-    DRAFT: { value: "draft" },
     UNLISTED: { value: "unlisted" },
     LISTED: { value: "listed" },
   },
