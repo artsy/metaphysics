@@ -2,7 +2,7 @@ import { pageable } from "relay-cursor-paging"
 import {
   convertConnectionArgsToGravityArgs,
   removeNulls,
-  removeEmptyValues,
+  removeObjectEmptyValues,
   isExisty,
 } from "lib/helpers"
 import {
@@ -491,9 +491,9 @@ const filterArtworksConnectionTypeFactory = (
     info
   ) => {
     const argsProvidedAtRoot = convertFilterArgs(rootArguments as any)
-    removeEmptyValues(argsProvidedAtRoot)
+    removeObjectEmptyValues(argsProvidedAtRoot)
     const argsProvidedInInput = convertFilterArgs(input ?? {})
-    removeEmptyValues(argsProvidedInInput)
+    removeObjectEmptyValues(argsProvidedInInput)
 
     const options: any = {
       ...argsProvidedAtRoot,
