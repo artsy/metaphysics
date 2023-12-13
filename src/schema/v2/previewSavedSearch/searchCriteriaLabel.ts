@@ -6,7 +6,7 @@ import artworkMediums from "lib/artworkMediums"
 import allAttributionClasses from "lib/attributionClasses"
 import { COLORS } from "lib/colors"
 import { round } from "lodash"
-import { DEFAULT_LENGTH_UNIT_PREFERENCE } from "./me"
+import { DEFAULT_LENGTH_UNIT_PREFERENCE } from "../me"
 import gql from "lib/gql"
 
 export const SIZES_IN_CM = {

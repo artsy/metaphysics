@@ -484,82 +484,7 @@ describe("previewSavedSearch", () => {
       const mockFilterArtworksLoader = jest.fn()
 
       mockFilterArtworksLoader.mockResolvedValueOnce(
-        Promise.resolve({
-          aggregations: {
-            medium: {
-              prints: {
-                name: "Prints",
-                count: 8020,
-              },
-              photography: {
-                name: "Photography",
-                count: 7717,
-              },
-              "ephemera-or-merchandise": {
-                name: "Ephemera or Merchandise",
-                count: 1132,
-              },
-              "work-on-paper": {
-                name: "Work on Paper",
-                count: 449,
-              },
-              painting: {
-                name: "Painting",
-                count: 313,
-              },
-              sculpture: {
-                name: "Sculpture",
-                count: 236,
-              },
-              drawing: {
-                name: "Drawing",
-                count: 162,
-              },
-              design: {
-                name: "Design",
-                count: 75,
-              },
-              reproduction: {
-                name: "Reproduction",
-                count: 38,
-              },
-              installation: {
-                name: "Installation",
-                count: 20,
-              },
-              "film-slash-video": {
-                name: "Film/Video",
-                count: 13,
-              },
-              "performance-art": {
-                name: "Performance Art",
-                count: 9,
-              },
-              jewelry: {
-                name: "Jewelry",
-                count: 1,
-              },
-            },
-            attribution_class: {
-              "open edition": {
-                name: "open edition",
-                count: 6646,
-              },
-              "limited edition": {
-                name: "limited edition",
-                count: 3719,
-              },
-              unique: {
-                name: "unique",
-                count: 1848,
-              },
-              "unknown edition": {
-                name: "unknown edition",
-                count: 1677,
-              },
-            },
-          },
-        })
+        Promise.resolve(aggregationsForSuggestions)
       )
 
       const { previewSavedSearch } = await runQuery(query, {
@@ -569,6 +494,18 @@ describe("previewSavedSearch", () => {
       })
 
       expect(previewSavedSearch.suggestedFilters).toEqual([
+        {
+          displayValue: "Portraits",
+          field: "artistSeriesIDs",
+          name: "Artist Series",
+          value: "andy-warhol-portraits",
+        },
+        {
+          displayValue: "Lithographs",
+          field: "artistSeriesIDs",
+          name: "Artist Series",
+          value: "pablo-picasso-lithographs",
+        },
         {
           displayValue: "Limited edition",
           field: "attributionClass",
@@ -589,5 +526,221 @@ describe("previewSavedSearch", () => {
         },
       ])
     })
+    describe("when the alert source is specified as a specific artwork", () => {
+      it("derives artist series suggestions from that artwork", async () => {
+        const query = gql`
+          {
+            previewSavedSearch(
+              attributes: { artistIDs: ["banksy", "andy-warhol", "picasso"] }
+            ) {
+              suggestedFilters(
+                source: { id: "some-artwork-id", type: ARTWORK }
+              ) {
+                displayValue
+                field
+                value
+                name
+              }
+            }
+          }
+        `
+
+        const artistLoader = () => Promise.resolve({})
+
+        const mockFilterArtworksLoader = jest.fn()
+
+        mockFilterArtworksLoader.mockResolvedValueOnce(
+          Promise.resolve(aggregationsForSuggestions)
+        )
+
+        const gravityGraphQLLoader = jest
+          .fn()
+          .mockReturnValueOnce(artworkArtistSeriesForSuggestions)
+
+        const { previewSavedSearch } = await runQuery(query, {
+          artistLoader,
+          meLoader,
+          filterArtworksLoader: mockFilterArtworksLoader,
+          gravityGraphQLLoader,
+        })
+
+        expect(previewSavedSearch.suggestedFilters).toEqual([
+          {
+            displayValue: "Companions",
+            field: "artistSeriesIDs",
+            name: "Artist Series",
+            value: "kaws-companions",
+          },
+          {
+            displayValue: "Toys",
+            field: "artistSeriesIDs",
+            name: "Artist Series",
+            value: "kaws-toys",
+          },
+          {
+            displayValue: "Limited edition",
+            field: "attributionClass",
+            name: "Rarity",
+            value: "limited edition",
+          },
+          {
+            displayValue: "Print",
+            field: "additionalGeneIDs",
+            name: "Medium",
+            value: "prints",
+          },
+          {
+            displayValue: "Photography",
+            field: "additionalGeneIDs",
+            name: "Medium",
+            value: "photography",
+          },
+        ])
+      })
+    })
   })
 })
+
+const aggregationsForSuggestions = {
+  aggregations: {
+    medium: {
+      prints: {
+        name: "Prints",
+        count: 8020,
+      },
+      photography: {
+        name: "Photography",
+        count: 7717,
+      },
+      "ephemera-or-merchandise": {
+        name: "Ephemera or Merchandise",
+        count: 1132,
+      },
+      "work-on-paper": {
+        name: "Work on Paper",
+        count: 449,
+      },
+      painting: {
+        name: "Painting",
+        count: 313,
+      },
+      sculpture: {
+        name: "Sculpture",
+        count: 236,
+      },
+      drawing: {
+        name: "Drawing",
+        count: 162,
+      },
+      design: {
+        name: "Design",
+        count: 75,
+      },
+      reproduction: {
+        name: "Reproduction",
+        count: 38,
+      },
+      installation: {
+        name: "Installation",
+        count: 20,
+      },
+      "film-slash-video": {
+        name: "Film/Video",
+        count: 13,
+      },
+      "performance-art": {
+        name: "Performance Art",
+        count: 9,
+      },
+      jewelry: {
+        name: "Jewelry",
+        count: 1,
+      },
+    },
+    attribution_class: {
+      "open edition": {
+        name: "open edition",
+        count: 6646,
+      },
+      "limited edition": {
+        name: "limited edition",
+        count: 3719,
+      },
+      unique: {
+        name: "unique",
+        count: 1848,
+      },
+      "unknown edition": {
+        name: "unknown edition",
+        count: 1677,
+      },
+    },
+    artist_series: {
+      "andy-warhol-portraits": {
+        name: "Portraits",
+        count: 1639,
+      },
+      "pablo-picasso-lithographs": {
+        name: "Lithographs",
+        count: 991,
+      },
+      "pablo-picasso-portraits": {
+        name: "Portraits",
+        count: 743,
+      },
+      "pablo-picasso-nudes": {
+        name: "Nudes",
+        count: 599,
+      },
+      "pablo-picasso-etchings": {
+        name: "Etchings",
+        count: 561,
+      },
+      "pablo-picasso-ceramics": {
+        name: "Ceramics",
+        count: 513,
+      },
+      "pablo-picasso-animals": {
+        name: "Animals",
+        count: 491,
+      },
+      "andy-warhol-campbells-soup-cans": {
+        name: "Campbell’s Soup Cans",
+        count: 489,
+      },
+      "pablo-picasso-linocuts": {
+        name: "Linocuts",
+        count: 434,
+      },
+      "pablo-picasso-portraits-of-artists-and-sculptors": {
+        name: "Portraits of Artists and Sculptors",
+        count: 431,
+      },
+      "pablo-picasso-bulls": {
+        name: "Bulls",
+        count: 424,
+      },
+    },
+  },
+}
+
+const artworkArtistSeriesForSuggestions = {
+  artistSeriesConnection: {
+    edges: [
+      {
+        node: {
+          internalID: "ba48e478-9f5d-400c-9f5c-d4e532966961",
+          slug: "kaws-companions",
+          title: "Companions",
+        },
+      },
+      {
+        node: {
+          internalID: "1e16c94f-7d50-465c-905b-5826ee9f0ec0",
+          slug: "kaws-toys",
+          title: "Toys",
+        },
+      },
+    ],
+  },
+}
