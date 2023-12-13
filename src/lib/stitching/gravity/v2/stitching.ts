@@ -203,6 +203,10 @@ export const gravityStitchingEnvironment = (
         exhibitionPeriod: String
       }
 
+      extend type ViewingRoomPublishedNotificationItem {
+        viewingRoomsConnection(first: Int, after: String, last: Int, before: String): ViewingRoomsConnection
+      }
+
       extend type Viewer {
         viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!], partnerID: ID): ViewingRoomsConnection
         marketingCollections(
@@ -1021,6 +1025,28 @@ export const gravityStitchingEnvironment = (
         `,
           resolve: ({ startAt: _startAt, endAt: _endAt }) =>
             dateRange(_startAt, _endAt, "UTC"),
+        },
+      },
+      ViewingRoomPublishedNotificationItem: {
+        viewingRoomsConnection: {
+          fragment: `
+            ... on ViewingRoomPublishedNotificationItem {
+              viewingRoomIDs
+            }
+          `,
+          resolve: ({ viewingRoomIDs: ids }, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: gravitySchema,
+              operation: "query",
+              fieldName: "_unused_gravity_viewingRoomsConnection",
+              args: {
+                ...args,
+                ids,
+              },
+              context,
+              info,
+            })
+          },
         },
       },
       Viewer: {

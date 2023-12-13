@@ -390,7 +390,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         description: "A connection of artworks from a Partner.",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
-        resolve: (
+        resolve: async (
           { id },
           args,
           { partnerArtworksLoader, partnerArtworksAllLoader }
@@ -438,45 +438,38 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             gravityArgs.artwork_id = flatten([args.artworkIDs])
           }
 
+          const { body, headers } = await partnerArtworksLoader(id, gravityArgs)
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
           // Only accept shallow = false argument if requesting user is authorized admin/partner
           if (args.shallow === false && partnerArtworksAllLoader) {
-            return partnerArtworksLoader(id, gravityArgs).then(
-              ({ body, headers }) => {
-                const artworkIds = body.map((artwork) => artwork._id)
-                const gravityArtworkArgs = {
-                  artwork_id: artworkIds,
-                }
-
-                const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-                return partnerArtworksAllLoader(id, gravityArtworkArgs).then(
-                  ({ body }) => {
-                    return {
-                      totalCount,
-                      ...connectionFromArraySlice(body, args, {
-                        arrayLength: totalCount,
-                        sliceStart: offset,
-                      }),
-                    }
-                  }
-                )
-              }
+            const artworkIds = body.map((artwork) => artwork._id)
+            const gravityArtworkArgs = {
+              artwork_id: artworkIds,
+            }
+            const { body: artworks } = await partnerArtworksAllLoader(
+              id,
+              gravityArtworkArgs
             )
+
+            return paginationResolver({
+              totalCount,
+              offset,
+              page,
+              size,
+              body: artworks,
+              args,
+            })
           }
 
-          return partnerArtworksLoader(id, gravityArgs).then(
-            ({ body, headers }) => {
-              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-              return {
-                totalCount,
-                ...connectionFromArraySlice(body, args, {
-                  arrayLength: totalCount,
-                  sliceStart: offset,
-                }),
-              }
-            }
-          )
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
+            args,
+          })
         },
       },
       artworksSearchConnection: partnerArtworksMatchConnection,

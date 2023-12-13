@@ -23,6 +23,7 @@ import numeral from "../fields/numeral"
 import { IDFields, NodeInterface } from "../object_identification"
 import moment from "moment-timezone"
 import { DEFAULT_TZ } from "lib/date"
+import { NotificationItemType } from "./Item"
 
 const NotificationTypesEnum = new GraphQLEnumType({
   name: "NotificationTypesEnum",
@@ -55,6 +56,10 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     createdAt: {
       ...date(({ date }) => date),
       deprecationReason: "Please use `publishedAt` instead",
+    },
+    item: {
+      type: NotificationItemType,
+      resolve: (notification) => notification,
     },
     publishedAt: {
       type: new GraphQLNonNull(GraphQLString),
