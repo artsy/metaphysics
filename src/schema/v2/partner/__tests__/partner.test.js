@@ -647,6 +647,40 @@ describe("Partner type", () => {
         })
       })
 
+      it("returns cursor info", async () => {
+        const query = gql`
+          {
+            partner(id: "bau-xi-gallery") {
+              artworksConnection(first: 3) {
+                totalCount
+                pageCursors {
+                  around {
+                    page
+                  }
+                }
+              }
+            }
+          }
+        `
+
+        const data = await runAuthenticatedQuery(query, context)
+
+        expect(data).toEqual({
+          partner: {
+            artworksConnection: {
+              totalCount: 3,
+              pageCursors: {
+                around: [
+                  {
+                    page: 1,
+                  },
+                ],
+              },
+            },
+          },
+        })
+      })
+
       describe("when shallow is false", () => {
         it("calls partnerArtworksAllLoader", async () => {
           const query = gql`
