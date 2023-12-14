@@ -158,6 +158,15 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           activeInventory: {
             type: GraphQLBoolean,
           },
+          hasMedium: {
+            type: GraphQLBoolean,
+          },
+          hasRarity: {
+            type: GraphQLBoolean,
+          },
+          hasPrice: {
+            type: GraphQLBoolean,
+          },
           page: {
             type: GraphQLInt,
           },
@@ -177,11 +186,17 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size: number
             represented?: boolean
             active_inventory?: boolean
+            has_medium?: boolean
+            has_rarity?: boolean
+            has_price?: boolean
           }
 
           const gravityArgs: GravityArgs = { page, size }
           if (args.represented) gravityArgs.represented = true
           if (args.activeInventory) gravityArgs.active_inventory = true
+          if (args.hasMedium) gravityArgs.has_medium = true
+          if (args.hasRarity) gravityArgs.has_rarity = true
+          if (args.hasPrice) gravityArgs.has_price = true
 
           const {
             summary: body,
