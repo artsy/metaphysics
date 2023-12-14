@@ -495,18 +495,6 @@ describe("previewSavedSearch", () => {
 
       expect(previewSavedSearch.suggestedFilters).toEqual([
         {
-          displayValue: "Portraits",
-          field: "artistSeriesIDs",
-          name: "Artist Series",
-          value: "andy-warhol-portraits",
-        },
-        {
-          displayValue: "Lithographs",
-          field: "artistSeriesIDs",
-          name: "Artist Series",
-          value: "pablo-picasso-lithographs",
-        },
-        {
           displayValue: "Limited edition",
           field: "attributionClass",
           name: "Rarity",
@@ -523,6 +511,18 @@ describe("previewSavedSearch", () => {
           field: "additionalGeneIDs",
           name: "Medium",
           value: "photography",
+        },
+        {
+          displayValue: "Portraits",
+          field: "artistSeriesIDs",
+          name: "Artist Series",
+          value: "andy-warhol-portraits",
+        },
+        {
+          displayValue: "Lithographs",
+          field: "artistSeriesIDs",
+          name: "Artist Series",
+          value: "pablo-picasso-lithographs",
         },
       ])
     })
@@ -566,18 +566,6 @@ describe("previewSavedSearch", () => {
 
         expect(previewSavedSearch.suggestedFilters).toEqual([
           {
-            displayValue: "Companions",
-            field: "artistSeriesIDs",
-            name: "Artist Series",
-            value: "kaws-companions",
-          },
-          {
-            displayValue: "Toys",
-            field: "artistSeriesIDs",
-            name: "Artist Series",
-            value: "kaws-toys",
-          },
-          {
             displayValue: "Limited edition",
             field: "attributionClass",
             name: "Rarity",
@@ -594,6 +582,18 @@ describe("previewSavedSearch", () => {
             field: "additionalGeneIDs",
             name: "Medium",
             value: "photography",
+          },
+          {
+            displayValue: "Companions",
+            field: "artistSeriesIDs",
+            name: "Artist Series",
+            value: "kaws-companions",
+          },
+          {
+            displayValue: "Toys",
+            field: "artistSeriesIDs",
+            name: "Artist Series",
+            value: "kaws-toys",
           },
         ])
       })

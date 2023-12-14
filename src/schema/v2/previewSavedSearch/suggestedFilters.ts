@@ -40,22 +40,6 @@ export const suggestedFilters: GraphQLFieldResolver<
 
   let artistSeriesOptions: SearchCriteriaLabel[] | null
 
-  if (source?.type === "Artwork") {
-    artistSeriesOptions = await getArtistSeriesSearchCriteriaLabelsFromArtwork(
-      source,
-      gravityGraphQLLoader
-    )
-  } else {
-    artistSeriesOptions = getArtistSeriesSearchCriteriaLabelsFromArtist(
-      aggregations["artist_series"],
-      MAX_SUGGESTIONS
-    )
-  }
-
-  if (artistSeriesOptions) {
-    suggestedFilters.push(...artistSeriesOptions)
-  }
-
   const rarityOptions = _.chain(
     getMostPopularOptions(aggregations["attribution_class"])
   )
@@ -75,6 +59,22 @@ export const suggestedFilters: GraphQLFieldResolver<
 
   if (mediumOptions.length) {
     suggestedFilters.push(...mediumOptions)
+  }
+
+  if (source?.type === "Artwork") {
+    artistSeriesOptions = await getArtistSeriesSearchCriteriaLabelsFromArtwork(
+      source,
+      gravityGraphQLLoader
+    )
+  } else {
+    artistSeriesOptions = getArtistSeriesSearchCriteriaLabelsFromArtist(
+      aggregations["artist_series"],
+      MAX_SUGGESTIONS
+    )
+  }
+
+  if (artistSeriesOptions) {
+    suggestedFilters.push(...artistSeriesOptions)
   }
 
   return suggestedFilters
