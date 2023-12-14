@@ -48,7 +48,6 @@ import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
 import { AlertsSummaryFields } from "../alerts"
-import gravity from "lib/apis/gravity"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
