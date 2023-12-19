@@ -11754,6 +11754,15 @@ type Me implements Node {
     first: Int
     last: Int
   ): UserAddressConnection
+  alertsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+    sort: String
+  ): AlertConnection
 
   # A connection of artist recommendations for the current user.
   artistRecommendations(

@@ -69,6 +69,10 @@ import { UserInterest } from "./userInterest"
 import { UserInterestsConnection } from "./userInterestsConnection"
 import { WatchedLotConnection } from "./watchedLotConnection"
 import { NotificationType } from "../notifications"
+import { AlertsConnectionType } from "../alerts"
+import { paginationResolver } from "../fields/pagination"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -125,6 +129,45 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: {
     ...IDFields,
+    alertsConnection: {
+      args: pageable({
+        sort: {
+          type: GraphQLString,
+        },
+        page: {
+          type: GraphQLInt,
+        },
+        size: {
+          type: GraphQLInt,
+        },
+      }),
+      type: AlertsConnectionType,
+      resolve: async (_id, args, { meSearchCriteriaAllLoader }) => {
+        if (!meSearchCriteriaAllLoader)
+          throw new Error("You need to be signed in.")
+
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+        const data = await meSearchCriteriaAllLoader({
+          page,
+          size,
+          sort: args.sort,
+          total_count: true,
+        })
+
+        const { body, headers } = data
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return paginationResolver({
+          totalCount,
+          offset,
+          page,
+          size,
+          body,
+          args,
+        })
+      },
+    },
     artistRecommendations: ArtistRecommendations,
     artworkRecommendations: ArtworkRecommendations,
     artworkInquiriesConnection: ArtworkInquiries,

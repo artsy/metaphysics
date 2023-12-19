@@ -488,6 +488,11 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     meSearchCriteriaLoader: gravityLoader((id) => `me/search_criteria/${id}`),
+    meSearchCriteriaAllLoader: gravityLoader(
+      `me/search_criteria`,
+      {},
+      { headers: true }
+    ),
     meShowsLoader: gravityLoader("me/shows", {}, { headers: true }),
     myCollectionArtworksLoader: gravityLoader(
       "collection/my-collection/artworks",
