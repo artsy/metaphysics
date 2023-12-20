@@ -469,7 +469,6 @@ const mockShowsResponse = {
       discovery_blocked_reason: null,
       discovery_blocked_at: null,
       duplicate_of_id: null,
-      reverse_image_search_enabled: false,
     },
     {
       fair: null,
@@ -672,7 +671,6 @@ const mockShowsResponse = {
       discovery_blocked_reason: null,
       discovery_blocked_at: null,
       duplicate_of_id: null,
-      reverse_image_search_enabled: false,
     },
   ],
 }
