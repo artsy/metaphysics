@@ -1,8 +1,8 @@
 import {
-  introspectionQuery,
   buildClientSchema,
   printSchema,
   buildSchema,
+  getIntrospectionQuery,
 } from "graphql"
 
 /* eslint-disable import/no-unresolved */
@@ -17,7 +17,7 @@ import fetch from "node-fetch"
  */
 export const downloadSchemaFromURL = async (url: string) => {
   const postBody = {
-    query: introspectionQuery,
+    query: getIntrospectionQuery(),
     operationName: "IntrospectionQuery",
   }
 
@@ -49,7 +49,7 @@ export const getBreakingChanges = async (
     buildSchema(localSchemaSDL),
     buildSchema(upstreamSchemaSDL)
   )
-  const breakings = allChanges.filter(c => c.criticality.level === "BREAKING")
-  const messages = breakings.map(c => c.message)
+  const breakings = allChanges.filter((c) => c.criticality.level === "BREAKING")
+  const messages = breakings.map((c) => c.message)
   return messages
 }

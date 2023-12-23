@@ -3,7 +3,7 @@
 const { updateRepo } = require("@artsy/update-repo")
 const { execSync } = require("child_process")
 const path = require("path")
-const { buildSchema, introspectionQuery, graphqlSync } = require("graphql")
+const { buildSchema, getIntrospectionQuery, graphqlSync } = require("graphql")
 const { readFileSync, writeFileSync } = require("fs")
 
 const defaultBody =
@@ -40,7 +40,7 @@ async function updateSchemaFile({
       if (dest.endsWith(".json")) {
         const sdl = readFileSync("_schemaV2.graphql", "utf8").toString()
         const schema = buildSchema(sdl, { commentDescriptions: true })
-        const gql = graphqlSync(schema, introspectionQuery)
+        const gql = graphqlSync(schema, getIntrospectionQuery())
         writeFileSync(repoDest, JSON.stringify(gql, null, 2))
       } else {
         execSync(`cp _schemaV2.graphql '${repoDest}'`)

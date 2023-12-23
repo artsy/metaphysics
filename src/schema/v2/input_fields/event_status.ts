@@ -26,11 +26,13 @@ const EVENT_STATUS_SORTS = {
   },
 } as const
 
+export const EVENT_STATUS_SORTS_ENUMS = new GraphQLEnumType({
+  name: "EventStatus",
+  values: EVENT_STATUS_SORTS,
+})
+
 export const EventStatus = {
-  type: new GraphQLEnumType({
-    name: "EventStatus",
-    values: EVENT_STATUS_SORTS,
-  }),
+  type: EVENT_STATUS_SORTS_ENUMS,
 }
 
 export type EventStatusType = keyof typeof EVENT_STATUS_SORTS

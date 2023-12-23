@@ -12,6 +12,7 @@ import { dateRange } from "lib/date"
 import { resolveSearchCriteriaLabels } from "schema/v2/previewSavedSearch/searchCriteriaLabel"
 import { generateDisplayName } from "schema/v2/previewSavedSearch/generateDisplayName"
 import { amount, amountSDL } from "schema/v2/fields/money"
+import { GraphQLSchemaWithTransforms } from "graphql-tools"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -62,7 +63,7 @@ function argsToSDL(args: GraphQLFieldConfigArgumentMap) {
 
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
-  gravitySchema: GraphQLSchema & { transforms: any }
+  gravitySchema: GraphQLSchemaWithTransforms
 ) => {
   return {
     // The SDL used to declare how to stitch an object

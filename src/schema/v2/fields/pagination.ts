@@ -10,12 +10,14 @@ import {
 import {
   connectionDefinitions,
   toGlobalId,
-  ConnectionConfig,
-  GraphQLConnectionDefinitions,
   connectionFromArraySlice,
   ConnectionArguments,
   connectionFromArray,
 } from "graphql-relay"
+import {
+  ConnectionConfig,
+  GraphQLConnectionDefinitions,
+} from "graphql-relay/connection/connection"
 import { warn } from "lib/loggers"
 import { pick } from "lodash"
 import { ResolverContext } from "types/graphql"

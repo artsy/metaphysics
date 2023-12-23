@@ -4,7 +4,7 @@ import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
 import { delegateToSchema } from "@graphql-tools/delegate"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
-import { WrapQuery } from "graphql-tools"
+import { GraphQLSchemaWithTransforms, WrapQuery } from "graphql-tools"
 
 const orderTotals = [
   "itemsTotal",
@@ -33,7 +33,7 @@ export const exchangeStitchingEnvironment = ({
   exchangeSchema,
 }: {
   localSchema: GraphQLSchema
-  exchangeSchema: GraphQLSchema & { transforms: any }
+  exchangeSchema: GraphQLSchemaWithTransforms
 }) => {
   type DetailsFactoryInput = { from: string; to: string }
 
@@ -832,7 +832,10 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                     ]
-                    return { ...selectionSet, selections: newSelections }
+                    return {
+                      ...selectionSet,
+                      selections: newSelections,
+                    }
                   },
                   (result) => {
                     return result

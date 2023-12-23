@@ -18,10 +18,6 @@ import {
 } from "lib/loaders/api/extensionsLogger"
 import { info } from "./lib/loggers"
 import {
-  executableExchangeSchema,
-  legacyTransformsForExchange,
-} from "./lib/stitching/exchange/schema"
-import {
   middleware as requestIDsAdder,
   requestIPAddress,
 } from "./lib/requestIDs"
@@ -38,6 +34,10 @@ import { principalFieldDirectiveExtension } from "directives/principleField/prin
 import { principalFieldDirectiveValidation } from "directives/principleField/principalFieldDirectiveValidation"
 import * as Sentry from "@sentry/node"
 import { bodyParserMiddleware } from "lib/bodyParserMiddleware"
+import {
+  executableExchangeSchema,
+  legacyTransformsForExchange,
+} from "lib/stitching/exchange/schema"
 
 const {
   ENABLE_GRAPHQL_UPLOAD,
@@ -138,9 +138,7 @@ app.use(
   fetchPersistedQuery
 )
 
-const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
-
-const graphqlHTTP = require("express-graphql")
+const { graphqlHTTP } = require("express-graphql")
 const graphqlServer = graphqlHTTP((req, res, params) => {
   const accessToken = req.headers["x-access-token"] as string | undefined
   const appToken = req.headers["x-xapp-token"] as string | undefined
@@ -181,6 +179,8 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     isMutation: !!req.body?.query?.includes("mutation"),
     xImpersonateUserID,
   })
+
+  const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
 
   const context: ResolverContext = {
     accessToken,
