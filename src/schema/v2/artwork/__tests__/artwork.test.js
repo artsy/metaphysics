@@ -4269,4 +4269,26 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("#priceListed", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          priceListed{
+            display
+          }
+        }
+      }
+    `
+
+    it("returns artworks price_listed", () => {
+      artwork.price_listed = 123
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: { priceListed: { display: "US$123" } },
+        })
+      })
+    })
+  })
 })
