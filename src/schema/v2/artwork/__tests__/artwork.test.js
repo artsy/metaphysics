@@ -4274,9 +4274,7 @@ describe("Artwork type", () => {
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
-          priceListed{
-            display
-          }
+          priceListed
         }
       }
     `
@@ -4286,7 +4284,7 @@ describe("Artwork type", () => {
       artwork.price_currency = "USD"
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
-          artwork: { priceListed: { display: "US$123" } },
+          artwork: { priceListed: 123 },
         })
       })
     })

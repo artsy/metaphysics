@@ -1124,12 +1124,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       priceListed: {
-        type: Money,
-        resolve: ({ price_listed, price_currency }) => {
-          return {
-            display: priceDisplayText(price_listed * 100, price_currency, ""),
-          }
-        },
+        type: GraphQLFloat,
+        resolve: ({ price_listed }) => price_listed,
       },
       taxInfo: TaxInfo,
       artaShippingEnabled: {
