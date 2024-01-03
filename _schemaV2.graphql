@@ -16091,6 +16091,9 @@ type Query {
   show(
     # The slug or ID of the Show
     id: String!
+
+    # Include shows that are no longer running/active (defaults to false)
+    includeAllShows: Boolean = false
   ): Show
 
   # A list of Shows
@@ -20699,6 +20702,9 @@ type Viewer {
   show(
     # The slug or ID of the Show
     id: String!
+
+    # Include shows that are no longer running/active (defaults to false)
+    includeAllShows: Boolean = false
   ): Show
 
   # A list of Shows
