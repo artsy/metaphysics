@@ -141,7 +141,6 @@ describe("NotificationItem", () => {
                   alert {
                     internalID
                     attributionClass
-                    displayName
                     labels {
                       displayValue
                     }
@@ -178,7 +177,6 @@ describe("NotificationItem", () => {
                     "open edition",
                     "unique",
                   ],
-                  "displayName": "Open edition or Unique",
                   "internalID": "search-criteria-id",
                   "labels": Array [
                     Object {

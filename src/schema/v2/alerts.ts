@@ -15,7 +15,6 @@ import {
   SearchCriteriaLabel,
   resolveSearchCriteriaLabels,
 } from "./previewSavedSearch/searchCriteriaLabel"
-import { generateDisplayName } from "./previewSavedSearch/generateDisplayName"
 
 type GravitySearchCriteriaJSON = {
   id: string
@@ -64,12 +63,6 @@ export const AlertType = new GraphQLObjectType<
     additionalGeneNames: {
       type: new GraphQLList(GraphQLString),
       resolve: ({ additional_gene_names }) => additional_gene_names,
-    },
-    displayName: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: generateDisplayName,
-      description:
-        "A suggestion for a name that describes a set of saved search criteria in a conventional format",
     },
     labels: {
       type: new GraphQLNonNull(new GraphQLList(SearchCriteriaLabel)),
