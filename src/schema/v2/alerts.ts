@@ -65,17 +65,17 @@ export const AlertType = new GraphQLObjectType<
       type: new GraphQLList(GraphQLString),
       resolve: ({ additional_gene_names }) => additional_gene_names,
     },
-    labels: {
-      type: new GraphQLNonNull(new GraphQLList(SearchCriteriaLabel)),
-      resolve: resolveSearchCriteriaLabels,
-      description:
-        "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
-    },
     displayName: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: generateDisplayName,
       description:
         "A suggestion for a name that describes a set of saved search criteria in a conventional format",
+    },
+    labels: {
+      type: new GraphQLNonNull(new GraphQLList(SearchCriteriaLabel)),
+      resolve: resolveSearchCriteriaLabels,
+      description:
+        "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
     },
     // Summary is a generic/dynamic JSON object.
     // TODO: This should probably be structured.

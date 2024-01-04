@@ -57,7 +57,7 @@ export const existyValue = <T>(x: T): T | undefined => {
 }
 
 /**
- * Converts all object keys to camel case.
+ * Converts all keys in an object to camel case.
  */
 export const camelCaseKeys = (object) =>
   Object.entries(object).reduce((carry, [key, value]) => {

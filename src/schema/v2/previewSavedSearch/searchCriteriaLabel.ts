@@ -90,9 +90,6 @@ export const resolveSearchCriteriaLabels = async (
   context,
   _info
 ) => {
-  // Converting keys to snake case because they can come from Gravity's rest or GraphQL APIs
-  const criteria = camelCaseKeys(parent) as any
-
   const {
     artistIDs,
     artistSeriesIDs,
@@ -111,7 +108,8 @@ export const resolveSearchCriteriaLabels = async (
     majorPeriods,
     colors,
     partnerIDs,
-  } = criteria
+    // Converting all keys to camel case because they can come from Gravity's REST or GraphQL APIs.
+  } = camelCaseKeys(parent) as any
 
   const {
     artistLoader,
