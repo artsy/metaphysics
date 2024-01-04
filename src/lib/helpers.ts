@@ -56,16 +56,6 @@ export const existyValue = <T>(x: T): T | undefined => {
   if (isExisty(x)) return x
 }
 
-/**
- * Converts all keys in an object to camel case.
- */
-export const camelCaseKeys = (object) =>
-  Object.entries(object).reduce((carry, [key, value]) => {
-    carry[camelCase(key)] = value
-
-    return carry
-  }, {})
-
 export const capitalizeFirstCharacter = (x) =>
   x.charAt(0).toUpperCase() + x.slice(1)
 
@@ -284,3 +274,15 @@ export const snakeCaseKeys = (
     return snakeCase(key)
   })
 }
+
+/**
+ * Converts all keys in an object to camel case.
+ * @param object — The object to convert.
+ * @return — Returns the object with converted keys.
+ */
+export const camelCaseKeys = (object) =>
+  Object.entries(object).reduce((acc, [key, value]) => {
+    acc[camelCase(key)] = value
+
+    return acc
+  }, {})
