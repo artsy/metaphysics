@@ -62,7 +62,6 @@ import Genes from "./genes"
 import { HighlightsField } from "./Highlights"
 import HomePage from "./home"
 import Image from "./image"
-import { ImageSearchField } from "./imageSearch"
 import Me from "./me"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
 // import MatchGene from "./match/gene"
@@ -117,7 +116,6 @@ import PartnerCategories from "./partner/partner_categories"
 import PartnerCategory from "./partner/partner_category"
 import { PartnersConnection } from "./partner/partners"
 import { RequestLocationField } from "./requestLocation"
-import { ReverseImageSearch } from "./reverseImageSearch"
 import { endSaleMutation } from "./sale/end_sale_mutation"
 import Sale from "./sale/index"
 import SaleArtwork from "./sale_artwork"
@@ -269,7 +267,6 @@ const rootFields = {
   creditCard: CreditCard,
   curatedTrendingArtists: CuratedTrendingArtists,
   departments,
-  doNotUseImageSearch: ImageSearchField,
   external: externalField,
   fair: Fair,
   fairOrganizer: FairOrganizer,
@@ -315,7 +312,6 @@ const rootFields = {
   profilesConnection: Profiles,
   recentlySoldArtworks: RecentlySoldArtworks,
   requestLocation: RequestLocationField,
-  reverseImageSearch: ReverseImageSearch,
   sale: Sale,
   saleArtwork: SaleArtwork,
   saleArtworksConnection: SaleArtworksConnectionField,

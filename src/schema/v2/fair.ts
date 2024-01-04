@@ -193,13 +193,6 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           return now.isAfter(activeStart)
         },
       },
-      isReverseImageSearchEnabled: {
-        type: new GraphQLNonNull(GraphQLBoolean),
-        description: "Have we indexed this fair's artworks to tineye?",
-        resolve: ({ reverse_image_search_enabled }) => {
-          return !!reverse_image_search_enabled
-        },
-      },
       marketingCollectionSlugs: {
         type: new GraphQLNonNull(GraphQLList(GraphQLString)),
         // TODO: We've deprecated the KAWS repository; we should rename this
