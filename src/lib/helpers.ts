@@ -24,6 +24,11 @@ import { CursorPageable, getPagingParameters } from "relay-cursor-paging"
 import { formatMarkdownValue } from "schema/v2/fields/markdown"
 import { emptyConnection } from "schema/v2/fields/pagination"
 
+// These default values are only necessary due to caching issues in Gravity.
+// Normally Gravity should always send values for these preferences.
+export const DEFAULT_CURRENCY_PREFERENCE = "USD"
+export const DEFAULT_LENGTH_UNIT_PREFERENCE = "in"
+
 const loadNs = performance.now()
 const loadMs = Date.now()
 
@@ -50,6 +55,16 @@ export const isExisty = (x) => {
 export const existyValue = <T>(x: T): T | undefined => {
   if (isExisty(x)) return x
 }
+
+/**
+ * Converts all object keys to camel case.
+ */
+export const camelCaseKeys = (object) =>
+  Object.entries(object).reduce((carry, [key, value]) => {
+    carry[camelCase(key)] = value
+
+    return carry
+  }, {})
 
 export const capitalizeFirstCharacter = (x) =>
   x.charAt(0).toUpperCase() + x.slice(1)

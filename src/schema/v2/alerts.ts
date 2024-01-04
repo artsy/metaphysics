@@ -11,6 +11,11 @@ import { ResolverContext } from "types/graphql"
 import { IDFields } from "./object_identification"
 import GraphQLJSON from "graphql-type-json"
 import { ArtistType } from "./artist"
+import {
+  SearchCriteriaLabel,
+  resolveSearchCriteriaLabels,
+} from "./previewSavedSearch/searchCriteriaLabel"
+import { generateDisplayName } from "./previewSavedSearch/generateDisplayName"
 
 type GravitySearchCriteriaJSON = {
   id: string
@@ -59,6 +64,18 @@ export const AlertType = new GraphQLObjectType<
     additionalGeneNames: {
       type: new GraphQLList(GraphQLString),
       resolve: ({ additional_gene_names }) => additional_gene_names,
+    },
+    labels: {
+      type: new GraphQLNonNull(new GraphQLList(SearchCriteriaLabel)),
+      resolve: resolveSearchCriteriaLabels,
+      description:
+        "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
+    },
+    displayName: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: generateDisplayName,
+      description:
+        "A suggestion for a name that describes a set of saved search criteria in a conventional format",
     },
     // Summary is a generic/dynamic JSON object.
     // TODO: This should probably be structured.
