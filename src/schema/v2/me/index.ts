@@ -73,6 +73,10 @@ import {
   DEFAULT_CURRENCY_PREFERENCE,
   DEFAULT_LENGTH_UNIT_PREFERENCE,
 } from "lib/helpers"
+import { AlertType, AlertsConnectionType } from "../alerts"
+import { emptyConnection, paginationResolver } from "../fields/pagination"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -124,6 +128,56 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: {
     ...IDFields,
+    alert: {
+      type: AlertType,
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLString),
+        },
+      },
+      resolve: async (_parent, { id: alertID }, { meAlertLoader }) => {
+        if (!meAlertLoader) return null
+        const alert = await meAlertLoader(alertID)
+
+        const { search_criteria, id, ...rest } = alert
+        return {
+          ...search_criteria,
+          id, // Inject the ID from the `UserSearchCriteria` object
+          settings: rest,
+        }
+      },
+    },
+    alertsConnection: {
+      args: pageable(),
+      type: new GraphQLNonNull(AlertsConnectionType),
+      resolve: async (_parent, args, { meAlertsLoader }) => {
+        if (!meAlertsLoader) return emptyConnection
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+        const { body, headers } = await meAlertsLoader({
+          page,
+          size,
+          total_count: true,
+        })
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return paginationResolver({
+          args,
+          body,
+          offset,
+          page,
+          size,
+          totalCount,
+          resolveNode: (node) => {
+            const { search_criteria, id, ...rest } = node
+            return {
+              ...search_criteria,
+              id, // Inject the ID from the `UserSearchCriteria` object
+              settings: rest,
+            }
+          },
+        })
+      },
+    },
     artistRecommendations: ArtistRecommendations,
     artworkRecommendations: ArtworkRecommendations,
     artworkInquiriesConnection: ArtworkInquiries,

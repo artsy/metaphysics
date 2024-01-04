@@ -387,4 +387,137 @@ describe("me/index", () => {
       })
     })
   })
+
+  describe("alertsConnection", () => {
+    const query = gql`
+      query {
+        me {
+          alertsConnection(first: 1) {
+            totalCount
+            edges {
+              node {
+                internalID
+                keyword
+                artistIDs
+                settings {
+                  email
+                  name
+                  frequency
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("returns the alerts connection", async () => {
+      const meLoader = () => Promise.resolve({})
+      const meAlertsLoader = () =>
+        Promise.resolve({
+          body: [
+            {
+              id: "123",
+              search_criteria: {
+                keyword: "cats",
+                artist_ids: ["andy-warhol"],
+              },
+              frequency: "daily",
+              name: "My Alert",
+              email: true,
+            },
+          ],
+          headers: { "x-total-count": "1" },
+        })
+
+      const data = await runAuthenticatedQuery(query, {
+        meLoader,
+        meAlertsLoader,
+      })
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "alertsConnection": Object {
+              "edges": Array [
+                Object {
+                  "node": Object {
+                    "artistIDs": Array [
+                      "andy-warhol",
+                    ],
+                    "internalID": "123",
+                    "keyword": "cats",
+                    "settings": Object {
+                      "email": true,
+                      "frequency": "DAILY",
+                      "name": "My Alert",
+                    },
+                  },
+                },
+              ],
+              "totalCount": 1,
+            },
+          },
+        }
+      `)
+    })
+  })
+
+  describe("alert", () => {
+    const query = gql`
+      query {
+        me {
+          alert(id: "123") {
+            internalID
+            keyword
+            artistIDs
+            settings {
+              email
+              name
+              frequency
+            }
+          }
+        }
+      }
+    `
+
+    it("returns the alert", async () => {
+      const meLoader = () => Promise.resolve({})
+      const meAlertLoader = () =>
+        Promise.resolve({
+          id: "123",
+          search_criteria: {
+            keyword: "cats",
+            artist_ids: ["andy-warhol"],
+          },
+          frequency: "daily",
+          name: "My Alert",
+          email: true,
+        })
+
+      const data = await runAuthenticatedQuery(query, {
+        meLoader,
+        meAlertLoader,
+      })
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "alert": Object {
+              "artistIDs": Array [
+                "andy-warhol",
+              ],
+              "internalID": "123",
+              "keyword": "cats",
+              "settings": Object {
+                "email": true,
+                "frequency": "DAILY",
+                "name": "My Alert",
+              },
+            },
+          },
+        }
+      `)
+    })
+  })
 })
