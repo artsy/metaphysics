@@ -150,6 +150,23 @@ describe("Show type", () => {
     await expect(runQuery(query, context)).rejects.toThrow("Show Not Found")
   })
 
+  it("does return a show that's not displayable if includeAllShows is set", async () => {
+    showData.displayable = false
+    showData.name = "Some Show"
+    const query = gql`
+      {
+        show(
+          id: "new-museum-1-2015-triennial-surround-audience"
+          includeAllShows: true
+        ) {
+          name
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+    expect(data.show.name).toEqual("Some Show")
+  })
+
   it("returns a fair booth even with displayable set to false", async () => {
     showData.fair = {
       id: "the-art-show-2019",
@@ -200,58 +217,6 @@ describe("Show type", () => {
       show: {
         isFeatured: true,
       },
-    })
-  })
-
-  describe("isReverseImageSearchEnabled flag", () => {
-    it("should be true when show artworks are indexed in tineye", async () => {
-      context.showLoader = sinon.stub().returns(
-        Promise.resolve({
-          ...showData,
-          reverse_image_search_enabled: true,
-        })
-      )
-
-      const query = gql`
-        {
-          show(id: "show-with-indexed-tineye-artworks") {
-            isReverseImageSearchEnabled
-          }
-        }
-      `
-
-      const data = await runQuery(query, context)
-
-      expect(data).toEqual({
-        show: {
-          isReverseImageSearchEnabled: true,
-        },
-      })
-    })
-
-    it("should be false when show artworks are NOT indexed in tineye", async () => {
-      context.showLoader = sinon.stub().returns(
-        Promise.resolve({
-          ...showData,
-          reverse_image_search_enabled: false,
-        })
-      )
-
-      const query = gql`
-        {
-          show(id: "show-without-indexed-tineye-artworks") {
-            isReverseImageSearchEnabled
-          }
-        }
-      `
-
-      const data = await runQuery(query, context)
-
-      expect(data).toEqual({
-        show: {
-          isReverseImageSearchEnabled: false,
-        },
-      })
     })
   })
 

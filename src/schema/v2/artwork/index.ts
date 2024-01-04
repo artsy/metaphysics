@@ -1123,6 +1123,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return price_includes_tax ? "VAT included in price" : null
         },
       },
+      priceListed: {
+        type: GraphQLFloat,
+        resolve: ({ price_listed }) => price_listed,
+      },
       taxInfo: TaxInfo,
       artaShippingEnabled: {
         type: GraphQLBoolean,

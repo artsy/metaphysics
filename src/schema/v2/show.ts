@@ -412,13 +412,6 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           return moment.utc().isBetween(start, end)
         },
       },
-      isReverseImageSearchEnabled: {
-        type: new GraphQLNonNull(GraphQLBoolean),
-        description: "Have we indexed this show's artworks to tineye?",
-        resolve: ({ reverse_image_search_enabled }) => {
-          return !!reverse_image_search_enabled
-        },
-      },
       isDisplayable: {
         description: "Is this something we can display to the front-end?",
         type: GraphQLBoolean,
@@ -658,8 +651,14 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
       description: "The slug or ID of the Show",
     },
+    includeAllShows: {
+      type: GraphQLBoolean,
+      description:
+        "Include shows that are no longer running/active (defaults to false)",
+      defaultValue: false,
+    },
   },
-  resolve: (_root, { id }, { showLoader }) => {
+  resolve: (_root, { id, includeAllShows }, { showLoader }) => {
     // TODO: allowlist filterArtworksConnection
     return showLoader(id).then((show) => {
       if (
@@ -668,7 +667,8 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
           show.is_local_discovery ||
           show.is_reference ||
           isExisty(show.fair)
-        )
+        ) &&
+        !includeAllShows
       ) {
         return new HTTPError("Show Not Found", 404)
       }

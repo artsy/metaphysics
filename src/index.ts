@@ -6,7 +6,6 @@ import config from "./config"
 import cors from "cors"
 import { createLoaders } from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
-import { graphqlUploadExpress } from "graphql-upload"
 import express from "express"
 import { schema as schemaV2 } from "./schema/v2"
 import moment from "moment-timezone"
@@ -40,10 +39,7 @@ import * as Sentry from "@sentry/node"
 import { bodyParserMiddleware } from "lib/bodyParserMiddleware"
 
 const {
-  ENABLE_GRAPHQL_UPLOAD,
   ENABLE_REQUEST_LOGGING,
-  GRAPHQL_UPLOAD_MAX_FILE_SIZE_IN_BYTES,
-  GRAPHQL_UPLOAD_MAX_FILES,
   LOG_QUERY_DETAILS_THRESHOLD,
   PRODUCTION_ENV,
   QUERY_DEPTH_LIMIT,
@@ -225,15 +221,6 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
 })
 
 app.use("/batch", bodyParser.json(), graphqlBatchHTTPWrapper(graphqlServer))
-
-if (ENABLE_GRAPHQL_UPLOAD) {
-  app.use(
-    graphqlUploadExpress({
-      maxFileSize: GRAPHQL_UPLOAD_MAX_FILE_SIZE_IN_BYTES,
-      maxFiles: GRAPHQL_UPLOAD_MAX_FILES,
-    })
-  )
-}
 
 // This is mounted at '/v2' and matches all routes that start with '/v2'.
 //
