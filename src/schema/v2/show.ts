@@ -412,13 +412,6 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           return moment.utc().isBetween(start, end)
         },
       },
-      isReverseImageSearchEnabled: {
-        type: new GraphQLNonNull(GraphQLBoolean),
-        description: "Have we indexed this show's artworks to tineye?",
-        resolve: ({ reverse_image_search_enabled }) => {
-          return !!reverse_image_search_enabled
-        },
-      },
       isDisplayable: {
         description: "Is this something we can display to the front-end?",
         type: GraphQLBoolean,

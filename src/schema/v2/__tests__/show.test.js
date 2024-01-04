@@ -220,58 +220,6 @@ describe("Show type", () => {
     })
   })
 
-  describe("isReverseImageSearchEnabled flag", () => {
-    it("should be true when show artworks are indexed in tineye", async () => {
-      context.showLoader = sinon.stub().returns(
-        Promise.resolve({
-          ...showData,
-          reverse_image_search_enabled: true,
-        })
-      )
-
-      const query = gql`
-        {
-          show(id: "show-with-indexed-tineye-artworks") {
-            isReverseImageSearchEnabled
-          }
-        }
-      `
-
-      const data = await runQuery(query, context)
-
-      expect(data).toEqual({
-        show: {
-          isReverseImageSearchEnabled: true,
-        },
-      })
-    })
-
-    it("should be false when show artworks are NOT indexed in tineye", async () => {
-      context.showLoader = sinon.stub().returns(
-        Promise.resolve({
-          ...showData,
-          reverse_image_search_enabled: false,
-        })
-      )
-
-      const query = gql`
-        {
-          show(id: "show-without-indexed-tineye-artworks") {
-            isReverseImageSearchEnabled
-          }
-        }
-      `
-
-      const data = await runQuery(query, context)
-
-      expect(data).toEqual({
-        show: {
-          isReverseImageSearchEnabled: false,
-        },
-      })
-    })
-  })
-
   describe("is_followed", () => {
     let gravityLoader
 
