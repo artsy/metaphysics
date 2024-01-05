@@ -258,6 +258,24 @@ export const CatchCollectionNotFoundException = (error) => {
 }
 
 /**
+ * Converts all keys in an object to camel case.
+ * @param object — The object to convert.
+ * @return — Returns the object with converted keys.
+ */
+export const camelCaseKeys = (
+  obj: Record<string, any>
+): Record<string, any> => {
+  return mapKeys(obj, (_, key) => {
+    // Special case for ID to not be converted to I_D
+    if (key.includes("_id")) {
+      return camelCase(key.replace(/id/g, "ID"))
+    }
+
+    return camelCase(key)
+  })
+}
+
+/**
  * Converts all object keys to snake case.
  * @param object — The object to convert.
  * @return — Returns the object with converted keys.
@@ -274,15 +292,3 @@ export const snakeCaseKeys = (
     return snakeCase(key)
   })
 }
-
-/**
- * Converts all keys in an object to camel case.
- * @param object — The object to convert.
- * @return — Returns the object with converted keys.
- */
-export const camelCaseKeys = (object) =>
-  Object.entries(object).reduce((acc, [key, value]) => {
-    acc[camelCase(key)] = value
-
-    return acc
-  }, {})
