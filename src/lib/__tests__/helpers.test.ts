@@ -1,4 +1,5 @@
 import {
+  camelCaseKeys,
   convertConnectionArgsToGravityArgs,
   exclude,
   isExisty,
@@ -324,6 +325,44 @@ describe("isInteger", () => {
     expect(isInteger("2023, 4, 23")).toEqual(false)
     expect(isInteger("4th-5th Century AD")).toEqual(false)
     expect(isInteger("2000s")).toEqual(false)
+  })
+})
+
+describe("camelCaseKeys", () => {
+  it("converts all object keys to snake case", () => {
+    const object = {
+      first_name: "John",
+      last_name: "Doe",
+      age: 42,
+      favoritePlant: "cactus",
+      id: "123",
+    }
+
+    expect(camelCaseKeys(object)).toMatchInlineSnapshot(`
+      Object {
+        "age": 42,
+        "favoritePlant": "cactus",
+        "firstName": "John",
+        "id": "123",
+        "lastName": "Doe",
+      }
+    `)
+  })
+
+  it("converts id correctly to ID", () => {
+    const object = {
+      id: "123",
+      artist_ids: ["123"],
+    }
+
+    expect(camelCaseKeys(object)).toMatchInlineSnapshot(`
+      Object {
+        "artistIDs": Array [
+          "123",
+        ],
+        "id": "123",
+      }
+    `)
   })
 })
 

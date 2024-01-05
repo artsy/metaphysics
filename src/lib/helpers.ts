@@ -24,6 +24,11 @@ import { CursorPageable, getPagingParameters } from "relay-cursor-paging"
 import { formatMarkdownValue } from "schema/v2/fields/markdown"
 import { emptyConnection } from "schema/v2/fields/pagination"
 
+// These default values are only necessary due to caching issues in Gravity.
+// Normally Gravity should always send values for these preferences.
+export const DEFAULT_CURRENCY_PREFERENCE = "USD"
+export const DEFAULT_LENGTH_UNIT_PREFERENCE = "in"
+
 const loadNs = performance.now()
 const loadMs = Date.now()
 
@@ -250,6 +255,24 @@ export const CatchCollectionNotFoundException = (error) => {
   if (error.statusCode === 404) return emptyConnection
 
   throw error
+}
+
+/**
+ * Converts all keys in an object to camel case.
+ * @param object — The object to convert.
+ * @return — Returns the object with converted keys.
+ */
+export const camelCaseKeys = (
+  obj: Record<string, any>
+): Record<string, any> => {
+  return mapKeys(obj, (_, key) => {
+    // Special case for ID to not be converted to I_D
+    if (key.includes("_id")) {
+      return camelCase(key.replace(/id/g, "ID"))
+    }
+
+    return camelCase(key)
+  })
 }
 
 /**

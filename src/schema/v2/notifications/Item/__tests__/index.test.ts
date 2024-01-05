@@ -109,6 +109,7 @@ describe("NotificationItem", () => {
     const meSearchCriteriaLoader = jest.fn(() =>
       Promise.resolve({
         id: "search-criteria-id",
+        attribution_class: ["open edition", "unique"],
       })
     )
     const artworksLoader = jest.fn(() =>
@@ -139,6 +140,10 @@ describe("NotificationItem", () => {
                 ... on AlertNotificationItem {
                   alert {
                     internalID
+                    attributionClass
+                    labels {
+                      displayValue
+                    }
                   }
                   artworksConnection(first: 5) {
                     edges {
@@ -168,7 +173,19 @@ describe("NotificationItem", () => {
               "item": Object {
                 "__typename": "AlertNotificationItem",
                 "alert": Object {
+                  "attributionClass": Array [
+                    "open edition",
+                    "unique",
+                  ],
                   "internalID": "search-criteria-id",
+                  "labels": Array [
+                    Object {
+                      "displayValue": "Open edition",
+                    },
+                    Object {
+                      "displayValue": "Unique",
+                    },
+                  ],
                 },
                 "artworksConnection": Object {
                   "edges": Array [
