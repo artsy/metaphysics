@@ -69,6 +69,10 @@ import { UserInterest } from "./userInterest"
 import { UserInterestsConnection } from "./userInterestsConnection"
 import { WatchedLotConnection } from "./watchedLotConnection"
 import { NotificationType } from "../notifications"
+import {
+  DEFAULT_CURRENCY_PREFERENCE,
+  DEFAULT_LENGTH_UNIT_PREFERENCE,
+} from "lib/helpers"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -87,11 +91,6 @@ const collectorProfileResolver = (field: string) => async (
   const result = await meCollectorProfileLoader(options)
   return result?.[field]
 }
-
-// These default values are only necessary due to caching issues in Gravity.
-// Normally Gravity should always send values for these preferences.
-const DEFAULT_CURRENCY_PREFERENCE = "USD"
-export const DEFAULT_LENGTH_UNIT_PREFERENCE = "in"
 
 export const CurrencyPreference = new GraphQLEnumType({
   name: "CurrencyPreference",

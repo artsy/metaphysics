@@ -6,8 +6,8 @@ import artworkMediums from "lib/artworkMediums"
 import allAttributionClasses from "lib/attributionClasses"
 import { COLORS } from "lib/colors"
 import { round } from "lodash"
-import { DEFAULT_LENGTH_UNIT_PREFERENCE } from "../me"
 import gql from "lib/gql"
+import { DEFAULT_LENGTH_UNIT_PREFERENCE, camelCaseKeys } from "lib/helpers"
 
 export const SIZES_IN_CM = {
   SMALL: "Small (under 40cm)",
@@ -108,7 +108,8 @@ export const resolveSearchCriteriaLabels = async (
     majorPeriods,
     colors,
     partnerIDs,
-  } = parent
+    // Converting all keys to camel case because they can come from Gravity's REST or GraphQL APIs.
+  } = camelCaseKeys(parent) as any
 
   const {
     artistLoader,
