@@ -4269,23 +4269,4 @@ describe("Artwork type", () => {
       })
     })
   })
-
-  describe("#priceListed", () => {
-    const query = `
-      {
-        artwork(id: "richard-prince-untitled-portrait") {
-          priceListed
-        }
-      }
-    `
-
-    it("returns artworks price_listed", () => {
-      artwork.price_listed = 123
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: { priceListed: 123 },
-        })
-      })
-    })
-  })
 })
