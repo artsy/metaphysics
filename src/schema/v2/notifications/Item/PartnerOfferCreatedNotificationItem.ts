@@ -37,7 +37,7 @@ export const PartnerOfferCreatedNotificationItemType = new GraphQLObjectType<
         }
       },
     },
-    expires_at: {
+    expiresAt: {
       type: GraphQLString,
       resolve: async ({ object_ids }, _, { mePartnerOfferLoader }) => {
         if (!mePartnerOfferLoader) return null

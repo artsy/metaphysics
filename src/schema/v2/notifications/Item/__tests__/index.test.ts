@@ -468,7 +468,7 @@ describe("NotificationItem", () => {
               item {
                 __typename
                 ... on PartnerOfferCreatedNotificationItem {
-                  expires_at
+                  expiresAt
 
                   artworksConnection(first: 5) {
                     edges {
@@ -506,7 +506,7 @@ describe("NotificationItem", () => {
                     },
                   ],
                 },
-                "expires_at": "2024-01-08T10:10:10+10:00",
+                "expiresAt": "2024-01-08T10:10:10+10:00",
               },
             },
           },

@@ -14436,7 +14436,7 @@ type PartnerOfferCreatedNotificationItem {
     first: Int
     last: Int
   ): ArtworkConnection
-  expires_at: String
+  expiresAt: String
 }
 
 enum PartnersAggregation {
