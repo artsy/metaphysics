@@ -13431,7 +13431,6 @@ interface Node {
 }
 
 type Notification implements Node {
-  actor_ids: [String]
   artworksConnection(
     after: String
     before: String
