@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -13,13 +14,13 @@ import {
   emptyConnection,
 } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { IDFields } from "./object_identification"
+import { IDFields } from "../object_identification"
 import GraphQLJSON from "graphql-type-json"
 import {
   SearchCriteriaLabel,
   resolveSearchCriteriaLabels,
-} from "./previewSavedSearch/searchCriteriaLabel"
-import { ArtistType, artistConnection } from "./artist"
+} from "../previewSavedSearch/searchCriteriaLabel"
+import { ArtistType, artistConnection } from "../artist"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArray } from "graphql-relay"
@@ -31,6 +32,14 @@ type GravityAlertSettingsJSON = {
   details: string
   frequency: string
 }
+
+export const AlertSettingsFrequencyType = new GraphQLEnumType({
+  name: "AlertSettingsFrequency",
+  values: {
+    DAILY: { value: "daily" },
+    INSTANT: { value: "instant" },
+  },
+})
 
 const AlertSettingsType = new GraphQLObjectType<
   GravityAlertSettingsJSON,
@@ -51,16 +60,92 @@ const AlertSettingsType = new GraphQLObjectType<
       type: GraphQLString,
     },
     frequency: {
-      type: new GraphQLEnumType({
-        name: "AlertSettingsFrequency",
-        values: {
-          DAILY: { value: "daily" },
-          INSTANT: { value: "instant" },
-        },
-      }),
+      type: AlertSettingsFrequencyType,
     },
   },
 })
+
+// Fields the `createAlert` and `updateAlert` mutations have in common.
+// Notably, `artistIDs` isn't included as it's required for `createAlert`,
+// but not for `updateAlert`.
+export const AlertInputFields = {
+  acquireable: {
+    type: GraphQLBoolean,
+  },
+  additionalGeneIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
+  artistSeriesIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
+  atAuction: {
+    type: GraphQLBoolean,
+  },
+  attributionClass: {
+    type: new GraphQLList(GraphQLString),
+  },
+  colors: {
+    type: new GraphQLList(GraphQLString),
+  },
+  dimensionRange: {
+    type: GraphQLString,
+  },
+  height: {
+    type: GraphQLString,
+  },
+  inquireableOnly: {
+    type: GraphQLBoolean,
+  },
+  keyword: {
+    type: GraphQLString,
+  },
+  locationCities: {
+    type: new GraphQLList(GraphQLString),
+  },
+  majorPeriods: {
+    type: new GraphQLList(GraphQLString),
+  },
+  materialsTerms: {
+    type: new GraphQLList(GraphQLString),
+  },
+  offerable: {
+    type: GraphQLBoolean,
+  },
+  partnerIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
+  priceRange: {
+    type: GraphQLString,
+  },
+  settings: {
+    type: new GraphQLInputObjectType({
+      name: "AlertSettingsInput",
+      fields: {
+        name: {
+          type: GraphQLString,
+        },
+        email: {
+          type: GraphQLBoolean,
+        },
+        push: {
+          type: GraphQLBoolean,
+        },
+        details: {
+          type: GraphQLString,
+        },
+        frequency: {
+          type: AlertSettingsFrequencyType,
+        },
+      },
+    }),
+  },
+  sizes: {
+    type: new GraphQLList(GraphQLString),
+  },
+  width: {
+    type: GraphQLString,
+  },
+}
 
 type GravitySearchCriteriaJSON = {
   id: string

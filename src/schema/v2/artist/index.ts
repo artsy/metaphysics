@@ -61,7 +61,7 @@ import VerifiedRepresentatives from "./verifiedRepresentatives"
 import { AuctionResultsAggregation } from "../aggregations/filterAuctionResultsAggregation"
 import { parsePriceRangeValues } from "lib/moneyHelper"
 import { ArtistGroupIndicatorEnum } from "schema/v2/artist/groupIndicator"
-import { AlertsConnectionType } from "../alerts"
+import { AlertsConnectionType } from "../Alerts"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.

@@ -449,6 +449,7 @@ export default (accessToken, userID, opts) => {
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     meBiddersLoader: gravityLoader("me/bidders"),
     meCollectorProfileLoader: gravityLoader("me/collector_profile"),
+    meCreateAlertLoader: gravityLoader("me/alert", {}, { method: "POST" }),
     meCreateUserInterestLoader: gravityLoader(
       "me/user_interest",
       {},
@@ -459,11 +460,21 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    meDeleteAlertLoader: gravityLoader(
+      (id) => `me/alert/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     meDeleteUserAccountLoader: gravityLoader("me", {}, { method: "DELETE" }),
     meDeleteUserInterestLoader: gravityLoader(
       (id) => `me/user_interest/${id}`,
       {},
       { method: "DELETE" }
+    ),
+    meUpdateAlertLoader: gravityLoader(
+      (id) => `me/alert/${id}`,
+      {},
+      { method: "PUT" }
     ),
     meUpdateUserInterestLoader: gravityLoader(
       (id) => `me/user_interest/${id}`,

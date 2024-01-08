@@ -73,7 +73,7 @@ import {
   DEFAULT_CURRENCY_PREFERENCE,
   DEFAULT_LENGTH_UNIT_PREFERENCE,
 } from "lib/helpers"
-import { AlertType, AlertsConnectionType } from "../alerts"
+import { AlertType, AlertsConnectionType } from "../Alerts"
 import { emptyConnection, paginationResolver } from "../fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
