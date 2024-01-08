@@ -8,12 +8,14 @@ describe("NotificationItem", () => {
     object_ids: ["object-id1"],
   }
   let meNotificationLoader
+  let mePartnerOfferLoader = jest.fn()
 
   const meLoader = jest.fn(() => Promise.resolve({ id: "user-id" }))
 
   afterEach(() => {
     meLoader.mockClear()
     meNotificationLoader.mockClear()
+    mePartnerOfferLoader.mockClear()
   })
 
   describe('for "ArtworkPublishedNotificationItem"', () => {
@@ -424,6 +426,87 @@ describe("NotificationItem", () => {
                 "viewingRoomIDs": Array [
                   "viewing-room-id",
                 ],
+              },
+            },
+          },
+        }
+      `)
+    })
+  })
+
+  describe('for "PartnerOfferCreatedNotificationItem"', () => {
+    const artworksLoader = jest.fn(() =>
+      Promise.resolve([
+        {
+          id: "artwork-id",
+          title: "Catty Artwork",
+        },
+      ])
+    )
+
+    beforeEach(() => {
+      mePartnerOfferLoader = jest.fn(() =>
+        Promise.resolve({
+          id: "partner-offer-id",
+          end_at: "2024-01-08T10:10:10+10:00",
+        })
+      )
+
+      meNotificationLoader = jest.fn(() =>
+        Promise.resolve({
+          ...notificationPayload,
+          activity_type: "PartnerOfferCreatedActivity",
+        })
+      )
+    })
+
+    it("returns data", async () => {
+      const query = gql`
+        {
+          me {
+            notification(id: "user-notification-id") {
+              item {
+                __typename
+                ... on PartnerOfferCreatedNotificationItem {
+                  expires_at
+
+                  artworksConnection(first: 5) {
+                    edges {
+                      node {
+                        title
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runAuthenticatedQuery(query, {
+        meNotificationLoader,
+        meLoader,
+        mePartnerOfferLoader,
+        artworksLoader,
+      })
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "notification": Object {
+              "item": Object {
+                "__typename": "PartnerOfferCreatedNotificationItem",
+                "artworksConnection": Object {
+                  "edges": Array [
+                    Object {
+                      "node": Object {
+                        "title": "Catty Artwork",
+                      },
+                    },
+                  ],
+                },
+                "expires_at": "2024-01-08T10:10:10+10:00",
               },
             },
           },

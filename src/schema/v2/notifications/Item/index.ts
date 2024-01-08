@@ -4,6 +4,7 @@ import { ArticleFeaturedArtistNotificationItemType } from "./ArticleFeaturedArti
 import { ArtworkPublishedNotificationItemType } from "./ArtworkPublishedNotificationItem"
 import { ShowOpenedNotificationItemType } from "./ShowOpenedNotificationItem"
 import { ViewingRoomPublishedNotificationItemType } from "./ViewingRoomPublishedNotificationItem"
+import { PartnerOfferCreatedNotificationItemType } from "./PartnerOfferCreatedNotificationItem"
 
 export const NotificationItemType = new GraphQLUnionType({
   name: "NotificationItem",
@@ -13,6 +14,7 @@ export const NotificationItemType = new GraphQLUnionType({
     ArticleFeaturedArtistNotificationItemType,
     ShowOpenedNotificationItemType,
     ViewingRoomPublishedNotificationItemType,
+    PartnerOfferCreatedNotificationItemType,
   ],
   resolveType: ({ activity_type }) => {
     switch (activity_type) {
@@ -26,6 +28,8 @@ export const NotificationItemType = new GraphQLUnionType({
         return ShowOpenedNotificationItemType
       case "ViewingRoomPublishedActivity":
         return ViewingRoomPublishedNotificationItemType
+      case "PartnerOfferCreatedActivity":
+        return PartnerOfferCreatedNotificationItemType
       default:
         throw new Error("Unknown notification content type")
     }

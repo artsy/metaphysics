@@ -13431,6 +13431,7 @@ interface Node {
 }
 
 type Notification implements Node {
+  actor_ids: [String]
   artworksConnection(
     after: String
     before: String
@@ -13508,6 +13509,7 @@ union NotificationItem =
     AlertNotificationItem
   | ArticleFeaturedArtistNotificationItem
   | ArtworkPublishedNotificationItem
+  | PartnerOfferCreatedNotificationItem
   | ShowOpenedNotificationItem
   | ViewingRoomPublishedNotificationItem
 
@@ -13530,6 +13532,7 @@ enum NotificationTypesEnum {
   ARTICLE_FEATURED_ARTIST
   ARTWORK_ALERT
   ARTWORK_PUBLISHED
+  PARTNER_OFFER_CREATED
   PARTNER_SHOW_OPENED
   VIEWING_ROOM_PUBLISHED
 }
@@ -14425,6 +14428,16 @@ type PartnerOffer {
   internalID: ID!
   partnerId: String
   userIds: [String]
+}
+
+type PartnerOfferCreatedNotificationItem {
+  artworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection
+  expires_at: String
 }
 
 enum PartnersAggregation {

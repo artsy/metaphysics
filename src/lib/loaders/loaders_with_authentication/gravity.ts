@@ -471,6 +471,7 @@ export default (accessToken, userID, opts) => {
     meNotificationLoader: gravityLoader((id) => `me/notifications/${id}`),
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
+    mePartnerOfferLoader: gravityLoader((id) => `me/partner_offer/${id}`),
     meUpdateCollectorProfileLoader: gravityLoader(
       "me/collector_profile",
       {},

@@ -33,6 +33,7 @@ const NotificationTypesEnum = new GraphQLEnumType({
     ARTWORK_PUBLISHED: { value: "ArtworkPublishedActivity" },
     VIEWING_ROOM_PUBLISHED: { value: "ViewingRoomPublishedActivity" },
     PARTNER_SHOW_OPENED: { value: "PartnerShowOpenedActivity" },
+    PARTNER_OFFER_CREATED: { value: "PartnerOfferCreatedActivity" },
   },
 })
 
@@ -44,6 +45,10 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     title: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ actors }) => actors,
+    },
+    actor_ids: {
+      type: new GraphQLList(GraphQLString),
+      resolve: ({ actor_ids }) => actor_ids,
     },
     message: {
       type: new GraphQLNonNull(GraphQLString),
