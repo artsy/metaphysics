@@ -471,9 +471,9 @@ describe("me/index", () => {
             internalID
             keyword
             artistIDs
+            displayName
             settings {
               email
-              name
               frequency
             }
           }
@@ -489,15 +489,16 @@ describe("me/index", () => {
           search_criteria: {
             keyword: "cats",
             artist_ids: ["andy-warhol"],
+            price_range: "*-1000",
           },
           frequency: "daily",
-          name: "My Alert",
           email: true,
         })
 
       const data = await runAuthenticatedQuery(query, {
         meLoader,
         meAlertLoader,
+        artistLoader: () => Promise.resolve({ name: "Andy Warhol" }),
       })
 
       expect(data).toMatchInlineSnapshot(`
@@ -507,12 +508,12 @@ describe("me/index", () => {
               "artistIDs": Array [
                 "andy-warhol",
               ],
+              "displayName": "Andy Warhol — $0–$1,000",
               "internalID": "123",
               "keyword": "cats",
               "settings": Object {
                 "email": true,
                 "frequency": "DAILY",
-                "name": "My Alert",
               },
             },
           },

@@ -6,6 +6,10 @@ import {
 export const generateDisplayName = async (parent, args, context, info) => {
   if (parent?.userAlertSettings?.name) return parent?.userAlertSettings?.name
 
+  // When being used from the non-stitched schema, the field is called `settings`
+  // instead of `userAlertSettings`
+  if (parent?.settings?.name) return parent.settings.name
+
   const labels = await resolveSearchCriteriaLabels(parent, args, context, info)
 
   // artist always
