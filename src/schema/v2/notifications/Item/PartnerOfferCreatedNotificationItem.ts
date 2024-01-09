@@ -15,19 +15,9 @@ export const PartnerOfferCreatedNotificationItemType = new GraphQLObjectType<
     artworksConnection: {
       type: artworkConnection.connectionType,
       args: pageable(),
-      resolve: async (
-        { object_ids },
-        args,
-        { artworksLoader, mePartnerOfferLoader }
-      ) => {
-        if (!mePartnerOfferLoader) return null
-        // object_ids should include a single partner offer id
-        if (object_ids.length === 0) return null
-
-        const { artwork_id } = await mePartnerOfferLoader(object_ids[0])
-
+      resolve: async ({ object_ids }, args, { artworksLoader }) => {
         const { page, size } = convertConnectionArgsToGravityArgs(args)
-        const body = await artworksLoader({ ids: [artwork_id] })
+        const body = await artworksLoader({ ids: object_ids })
         const totalCount = body.length
 
         return {
@@ -39,12 +29,11 @@ export const PartnerOfferCreatedNotificationItemType = new GraphQLObjectType<
     },
     expiresAt: {
       type: GraphQLString,
-      resolve: async ({ object_ids }, _, { mePartnerOfferLoader }) => {
+      resolve: async ({ actor_ids }, _, { mePartnerOfferLoader }) => {
         if (!mePartnerOfferLoader) return null
-        // object_ids should include a single partner offer id
-        if (object_ids.length === 0) return null
+        if (actor_ids.length === 0) return null
 
-        const { end_at } = await mePartnerOfferLoader(object_ids[0])
+        const { end_at } = await mePartnerOfferLoader(actor_ids[0])
 
         return end_at
       },

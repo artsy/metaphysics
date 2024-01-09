@@ -105,20 +105,7 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     artworksConnection: {
       type: artworkConnection.connectionType,
       args: pageable(),
-      resolve: async (
-        { notificationType, object_ids: ids },
-        args,
-        { artworksLoader, mePartnerOfferLoader }
-      ) => {
-        if (notificationType == "PartnerOfferCreatedActivity") {
-          if (!mePartnerOfferLoader) return null
-          // ids (object_ids) should include a single partner offer id
-          if (ids.length === 0) return null
-
-          const { artwork_id } = await mePartnerOfferLoader(ids[0])
-          ids = [artwork_id]
-        }
-
+      resolve: async ({ object_ids: ids }, args, { artworksLoader }) => {
         const { page, size } = convertConnectionArgsToGravityArgs(args)
         return artworksLoader({ ids }).then((body) => {
           const totalCount = body.length
