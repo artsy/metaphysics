@@ -76,7 +76,7 @@ async function main() {
       { repo: "forque" },
       { repo: "volt-v2" },
       { repo: "pulse", dest: "vendor/graphql/schema/metaphysics.json" },
-      { repo: "volt", dest: "vendor/graphql/schema/metaphysics.json" },
+      { repo: "volt", dest: "vendor/graphql/schema/schema.graphql" },
     ]
 
     const updatePromises = reposToUpdate.map((repo) => updateSchemaFile(repo))
