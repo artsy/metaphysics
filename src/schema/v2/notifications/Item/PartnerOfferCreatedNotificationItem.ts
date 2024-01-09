@@ -1,8 +1,9 @@
-import { GraphQLObjectType, GraphQLString } from "graphql"
+import { GraphQLObjectType } from "graphql"
 import { connectionFromArray } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { artworkConnection } from "schema/v2/artwork"
+import { date } from "schema/v2/fields/date"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 
@@ -28,7 +29,7 @@ export const PartnerOfferCreatedNotificationItemType = new GraphQLObjectType<
       },
     },
     expiresAt: {
-      type: GraphQLString,
+      ...date(({ date }) => date),
       resolve: async ({ actor_ids }, _, { mePartnerOfferLoader }) => {
         if (!mePartnerOfferLoader) return null
         if (actor_ids.length === 0) return null
