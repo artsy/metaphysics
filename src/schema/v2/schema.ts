@@ -212,6 +212,9 @@ import { updateUserInterestMutation } from "./me/updateUserInterestMutation"
 import { updateUserInterestsMutation } from "./me/updateUserInterestsMutation"
 import { createAdvisoryOpportunityMutation } from "./createAdvisoryOpportunity"
 import { createPartnerOfferMutation } from "./createPartnerOfferMutation"
+import { createAlertMutation } from "./Alerts/createAlertMutation"
+import { updateAlertMutation } from "./Alerts/updateAlertMutation"
+import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -356,6 +359,7 @@ export default new GraphQLSchema({
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       createAccountRequest: createAccountRequestMutation,
+      createAlert: createAlertMutation,
       createAdvisoryOpportunity: createAdvisoryOpportunityMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,
       deleteVerifiedRepresentative: deleteVerifiedRepresentativeMutation,
@@ -378,6 +382,7 @@ export default new GraphQLSchema({
       createUserInterestForUser: createUserInterestForUser,
       createUserInterests: createUserInterestsMutation,
       createUserSaleProfile: createUserSaleProfileMutation,
+      deleteAlert: deleteAlertMutation,
       deleteArtist: deleteArtistMutation,
       deleteArtworkImage: DeleteArtworkImageMutation,
       deleteBankAccount: deleteBankAccountMutation,
@@ -423,6 +428,7 @@ export default new GraphQLSchema({
       submitInquiryRequestMutation,
       triggerCampaign: triggerCampaignMutation,
       unlinkAuthentication: unlinkAuthenticationMutation,
+      updateAlert: updateAlertMutation,
       updateArtist: updateArtistMutation,
       updateArtwork: updateArtworkMutation,
       updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
