@@ -24,6 +24,7 @@ import { ArtistType, artistConnection } from "../artist"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArray } from "graphql-relay"
+import { generateDisplayName } from "../previewSavedSearch/generateDisplayName"
 
 type GravityAlertSettingsJSON = {
   name: string
@@ -189,12 +190,6 @@ export const AlertType = new GraphQLObjectType<
       type: new GraphQLList(GraphQLString),
       resolve: ({ additional_gene_names }) => additional_gene_names,
     },
-    labels: {
-      type: new GraphQLNonNull(new GraphQLList(SearchCriteriaLabel)),
-      resolve: resolveSearchCriteriaLabels,
-      description:
-        "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
-    },
     artistIDs: {
       type: new GraphQLList(GraphQLString),
       resolve: ({ artist_ids }) => artist_ids,
@@ -244,6 +239,12 @@ export const AlertType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ dimension_range }) => dimension_range,
     },
+    displayName: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: generateDisplayName,
+      description:
+        "A suggestion for a name that describes a set of saved search criteria in a conventional format",
+    },
     forSale: {
       type: GraphQLBoolean,
       resolve: ({ for_sale }) => for_sale,
@@ -264,6 +265,12 @@ export const AlertType = new GraphQLObjectType<
     },
     keyword: {
       type: GraphQLString,
+    },
+    labels: {
+      type: new GraphQLNonNull(new GraphQLList(SearchCriteriaLabel)),
+      resolve: resolveSearchCriteriaLabels,
+      description:
+        "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
     },
     locationCities: {
       type: new GraphQLList(GraphQLString),

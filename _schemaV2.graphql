@@ -285,6 +285,9 @@ type Alert {
   attributionClass: [String]
   colors: [String]
   dimensionRange: String
+
+  # A suggestion for a name that describes a set of saved search criteria in a conventional format
+  displayName: String!
   formattedPriceRange: String
   forSale: Boolean
   hasRecentlyEnabledUserSearchCriteria: Boolean
@@ -2508,7 +2511,7 @@ type Artwork implements Node & Searchable & Sellable {
   priceCurrency: String
   priceIncludesTax: Boolean
   priceIncludesTaxDisplay: String
-  priceListed: Float
+  priceListed: Money
 
   # The price paid for the artwork in a user's 'my collection'
   pricePaid: Money
@@ -13631,6 +13634,7 @@ union NotificationItem =
     AlertNotificationItem
   | ArticleFeaturedArtistNotificationItem
   | ArtworkPublishedNotificationItem
+  | PartnerOfferCreatedNotificationItem
   | ShowOpenedNotificationItem
   | ViewingRoomPublishedNotificationItem
 
@@ -13653,6 +13657,7 @@ enum NotificationTypesEnum {
   ARTICLE_FEATURED_ARTIST
   ARTWORK_ALERT
   ARTWORK_PUBLISHED
+  PARTNER_OFFER_CREATED
   PARTNER_SHOW_OPENED
   VIEWING_ROOM_PUBLISHED
 }
@@ -14548,6 +14553,23 @@ type PartnerOffer {
   internalID: ID!
   partnerId: String
   userIds: [String]
+}
+
+type PartnerOfferCreatedNotificationItem {
+  artworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection
+  expiresAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 }
 
 enum PartnersAggregation {

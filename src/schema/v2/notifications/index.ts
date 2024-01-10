@@ -33,6 +33,7 @@ const NotificationTypesEnum = new GraphQLEnumType({
     ARTWORK_PUBLISHED: { value: "ArtworkPublishedActivity" },
     VIEWING_ROOM_PUBLISHED: { value: "ViewingRoomPublishedActivity" },
     PARTNER_SHOW_OPENED: { value: "PartnerShowOpenedActivity" },
+    PARTNER_OFFER_CREATED: { value: "PartnerOfferCreatedActivity" },
   },
 })
 
