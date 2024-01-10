@@ -4274,16 +4274,35 @@ describe("Artwork type", () => {
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
-          priceListed
+          priceListed{
+            major
+            minor
+            currencyCode
+          }
         }
       }
     `
 
-    it("returns artworks price_listed", () => {
+    it("returns artwork price_listed", () => {
       artwork.price_listed = 123
+      artwork.price_currency = "USD"
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
-          artwork: { priceListed: 123 },
+          artwork: {
+            priceListed: { major: 123, minor: 12300, currencyCode: "USD" },
+          },
+        })
+      })
+    })
+
+    it("converts price_listed to the expected minor value", () => {
+      artwork.price_listed = 123
+      artwork.price_currency = "KRW"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            priceListed: { major: 123, minor: 123, currencyCode: "KRW" },
+          },
         })
       })
     })

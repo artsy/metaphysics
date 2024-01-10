@@ -92,6 +92,7 @@ import {
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { error } from "lib/loggers"
+import currencyCodes from "lib/currency_codes.json"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -1124,8 +1125,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       priceListed: {
-        type: GraphQLFloat,
-        resolve: ({ price_listed }) => price_listed,
+        type: Money,
+        resolve: ({ price_listed: price_listed, price_currency: currency }) => {
+          const factor =
+            currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
+          const cents = price_listed * factor
+          return { cents, currency }
+        },
       },
       taxInfo: TaxInfo,
       artaShippingEnabled: {
