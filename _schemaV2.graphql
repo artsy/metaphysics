@@ -2678,6 +2678,7 @@ type ArtworkEdge implements ArtworkEdgeInterface {
     last: Int
     page: Int
     size: Int
+    sort: PartnerOfferSorts
   ): PartnerOfferConnection
 }
 
@@ -14584,6 +14585,13 @@ type PartnerOfferEdge {
 
   # The item at the end of the edge
   node: PartnerOffer
+}
+
+enum PartnerOfferSorts {
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  END_AT_ASC
+  END_AT_DESC
 }
 
 type PartnerOfferCreatedNotificationItem {

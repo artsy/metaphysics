@@ -1889,6 +1889,26 @@ export const ArtworkConnectionInterface = new GraphQLInterfaceType({
   },
 })
 
+const PartnerOfferSorts = {
+  type: new GraphQLEnumType({
+    name: "PartnerOfferSorts",
+    values: {
+      CREATED_AT_ASC: {
+        value: "created_at",
+      },
+      CREATED_AT_DESC: {
+        value: "-created_at",
+      },
+      END_AT_ASC: {
+        value: "end_at",
+      },
+      END_AT_DESC: {
+        value: "-end_at",
+      },
+    },
+  }),
+}
+
 export const artworkConnection = connectionWithCursorInfo({
   nodeType: ArtworkType,
   connectionInterfaces: [ArtworkConnectionInterface],
@@ -1901,6 +1921,7 @@ export const artworkConnection = connectionWithCursorInfo({
       args: pageable({
         page: { type: GraphQLInt },
         size: { type: GraphQLInt },
+        sort: PartnerOfferSorts,
       }),
       resolve: async (root, args: CursorPageable, { partnerOffersLoader }) => {
         if (!partnerOffersLoader) return
@@ -1913,6 +1934,7 @@ export const artworkConnection = connectionWithCursorInfo({
           page,
           size,
           artwork_id: root.node._id,
+          sort: args.sort,
         })
 
         const totalCount = parseInt(headers["x-total-count"] || "0", 10)
