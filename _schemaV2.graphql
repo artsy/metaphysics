@@ -2671,7 +2671,7 @@ type ArtworkEdge implements ArtworkEdgeInterface {
 
   # The item at the end of the edge
   node: Artwork
-  partnerOffers(
+  partnerOfferConnection(
     after: String
     before: String
     first: Int

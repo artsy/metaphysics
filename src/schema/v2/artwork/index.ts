@@ -1914,7 +1914,7 @@ export const artworkConnection = connectionWithCursorInfo({
   connectionInterfaces: [ArtworkConnectionInterface],
   edgeInterfaces: [ArtworkEdgeInterface],
   edgeFields: {
-    partnerOffers: {
+    partnerOfferConnection: {
       type: connectionWithCursorInfo({
         nodeType: PartnerOfferType,
       }).connectionType,
