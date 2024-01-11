@@ -2475,6 +2475,9 @@ type Artwork implements Node & Searchable & Sellable {
   isShareable: Boolean
   isSold: Boolean
   isUnique: Boolean
+
+  # Metadata of the last partner offer sent for this artwork
+  lastPartnerOffer: PartnerOffer
   layer(id: String): ArtworkLayer
   layers: [ArtworkLayer]
   listPrice: ListPrice
@@ -2668,6 +2671,14 @@ type ArtworkEdge implements ArtworkEdgeInterface {
 
   # The item at the end of the edge
   node: Artwork
+  partnerOffers(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): PartnerOfferConnection
 }
 
 interface ArtworkEdgeInterface {
@@ -14553,6 +14564,26 @@ type PartnerOffer {
   internalID: ID!
   partnerId: String
   userIds: [String]
+}
+
+# A connection to a list of items.
+type PartnerOfferConnection {
+  # A list of edges.
+  edges: [PartnerOfferEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerOfferEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: PartnerOffer
 }
 
 type PartnerOfferCreatedNotificationItem {

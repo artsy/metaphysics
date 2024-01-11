@@ -89,9 +89,10 @@ import {
   isTooBig,
   isTwoDimensional,
 } from "./utilities"
-import { pageable } from "relay-cursor-paging"
+import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { error } from "lib/loggers"
+import { PartnerOfferType } from "../partnerOffer"
 import currencyCodes from "lib/currency_codes.json"
 
 const has_price_range = (price) => {
@@ -1800,6 +1801,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return artwork.recent_saves_count
         },
       },
+      lastPartnerOffer: {
+        description: "Metadata of the last partner offer sent for this artwork",
+        type: PartnerOfferType,
+        resolve: (artwork) => {
+          return artwork.last_partner_offer
+        },
+      },
     }
   },
 })
@@ -1885,6 +1893,41 @@ export const artworkConnection = connectionWithCursorInfo({
   nodeType: ArtworkType,
   connectionInterfaces: [ArtworkConnectionInterface],
   edgeInterfaces: [ArtworkEdgeInterface],
+  edgeFields: {
+    partnerOffers: {
+      type: connectionWithCursorInfo({
+        nodeType: PartnerOfferType,
+      }).connectionType,
+      args: pageable({
+        page: { type: GraphQLInt },
+        size: { type: GraphQLInt },
+      }),
+      resolve: async (root, args: CursorPageable, { partnerOffersLoader }) => {
+        if (!partnerOffersLoader) return
+
+        const gravityArgs = convertConnectionArgsToGravityArgs(args)
+        const { page, size, offset } = gravityArgs
+
+        const { body, headers } = await partnerOffersLoader({
+          total_count: true,
+          page,
+          size,
+          artwork_id: root.node._id,
+        })
+
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return paginationResolver({
+          args,
+          body,
+          offset,
+          page,
+          size,
+          totalCount,
+        })
+      },
+    },
+  },
 })
 
 export default Artwork

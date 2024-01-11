@@ -568,6 +568,7 @@ export default (accessToken, userID, opts) => {
       ({ partnerId, inquiryId }) =>
         `partner/${partnerId}/inquiry_request/${inquiryId}`
     ),
+    partnerOffersLoader: gravityLoader("partner_offers", {}, { headers: true }),
     partnerSearchArtistsLoader: gravityLoader(
       (id) => `/match/partner/${id}/artists`,
       {},
