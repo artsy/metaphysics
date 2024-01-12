@@ -1088,6 +1088,63 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return partnerLoader(partner.id).catch(() => null)
         },
       },
+      partnerOfferConnection: {
+        type: connectionWithCursorInfo({
+          nodeType: PartnerOfferType,
+        }).connectionType,
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+          sort: {
+            type: new GraphQLEnumType({
+              name: "PartnerOfferSorts",
+              values: {
+                CREATED_AT_ASC: {
+                  value: "created_at",
+                },
+                CREATED_AT_DESC: {
+                  value: "-created_at",
+                },
+                END_AT_ASC: {
+                  value: "end_at",
+                },
+                END_AT_DESC: {
+                  value: "-end_at",
+                },
+              },
+            }),
+          },
+        }),
+        resolve: async (
+          artwork,
+          args: CursorPageable,
+          { partnerOffersLoader }
+        ) => {
+          if (!partnerOffersLoader) return
+
+          const gravityArgs = convertConnectionArgsToGravityArgs(args)
+          const { page, size, offset } = gravityArgs
+
+          const { body, headers } = await partnerOffersLoader({
+            total_count: true,
+            page,
+            size,
+            artwork_id: artwork.id,
+            sort: args.sort,
+          })
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            args,
+            body,
+            offset,
+            page,
+            size,
+            totalCount,
+          })
+        },
+      },
       realizedToEstimate: {
         type: GraphQLString,
         resolve: (artwork) => {
@@ -1889,67 +1946,10 @@ export const ArtworkConnectionInterface = new GraphQLInterfaceType({
   },
 })
 
-const PartnerOfferSorts = {
-  type: new GraphQLEnumType({
-    name: "PartnerOfferSorts",
-    values: {
-      CREATED_AT_ASC: {
-        value: "created_at",
-      },
-      CREATED_AT_DESC: {
-        value: "-created_at",
-      },
-      END_AT_ASC: {
-        value: "end_at",
-      },
-      END_AT_DESC: {
-        value: "-end_at",
-      },
-    },
-  }),
-}
-
 export const artworkConnection = connectionWithCursorInfo({
   nodeType: ArtworkType,
   connectionInterfaces: [ArtworkConnectionInterface],
   edgeInterfaces: [ArtworkEdgeInterface],
-  edgeFields: {
-    partnerOfferConnection: {
-      type: connectionWithCursorInfo({
-        nodeType: PartnerOfferType,
-      }).connectionType,
-      args: pageable({
-        page: { type: GraphQLInt },
-        size: { type: GraphQLInt },
-        sort: PartnerOfferSorts,
-      }),
-      resolve: async (root, args: CursorPageable, { partnerOffersLoader }) => {
-        if (!partnerOffersLoader) return
-
-        const gravityArgs = convertConnectionArgsToGravityArgs(args)
-        const { page, size, offset } = gravityArgs
-
-        const { body, headers } = await partnerOffersLoader({
-          total_count: true,
-          page,
-          size,
-          artwork_id: root.node._id,
-          sort: args.sort,
-        })
-
-        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-        return paginationResolver({
-          args,
-          body,
-          offset,
-          page,
-          size,
-          totalCount,
-        })
-      },
-    },
-  },
 })
 
 export default Artwork
