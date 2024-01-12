@@ -1088,7 +1088,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return partnerLoader(partner.id).catch(() => null)
         },
       },
-      partnerOfferConnection: {
+      partnerOffersConnection: {
         type: connectionWithCursorInfo({
           nodeType: PartnerOfferType,
         }).connectionType,
@@ -1120,7 +1120,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           args: CursorPageable,
           { partnerOffersLoader }
         ) => {
-          if (!partnerOffersLoader) return
+          if (!partnerOffersLoader)
+            throw new Error("You need to be signed in to perform this action")
 
           const gravityArgs = convertConnectionArgsToGravityArgs(args)
           const { page, size, offset } = gravityArgs

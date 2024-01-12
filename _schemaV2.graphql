@@ -2509,7 +2509,7 @@ type Artwork implements Node & Searchable & Sellable {
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): Partner
-  partnerOfferConnection(
+  partnerOffersConnection(
     after: String
     before: String
     first: Int
