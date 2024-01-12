@@ -89,9 +89,10 @@ import {
   isTooBig,
   isTwoDimensional,
 } from "./utilities"
-import { pageable } from "relay-cursor-paging"
+import { CursorPageable, pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { error } from "lib/loggers"
+import { PartnerOfferType } from "../partnerOffer"
 import currencyCodes from "lib/currency_codes.json"
 
 const has_price_range = (price) => {
@@ -1085,6 +1086,64 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           if (shallow) return partner
           if (_.isEmpty(partner)) return null
           return partnerLoader(partner.id).catch(() => null)
+        },
+      },
+      partnerOffersConnection: {
+        type: connectionWithCursorInfo({
+          nodeType: PartnerOfferType,
+        }).connectionType,
+        args: pageable({
+          page: { type: GraphQLInt },
+          size: { type: GraphQLInt },
+          sort: {
+            type: new GraphQLEnumType({
+              name: "PartnerOfferSorts",
+              values: {
+                CREATED_AT_ASC: {
+                  value: "created_at",
+                },
+                CREATED_AT_DESC: {
+                  value: "-created_at",
+                },
+                END_AT_ASC: {
+                  value: "end_at",
+                },
+                END_AT_DESC: {
+                  value: "-end_at",
+                },
+              },
+            }),
+          },
+        }),
+        resolve: async (
+          artwork,
+          args: CursorPageable,
+          { partnerOffersLoader }
+        ) => {
+          if (!partnerOffersLoader)
+            throw new Error("You need to be signed in to perform this action")
+
+          const gravityArgs = convertConnectionArgsToGravityArgs(args)
+          const { page, size, offset } = gravityArgs
+
+          const { body, headers } = await partnerOffersLoader({
+            total_count: true,
+            page,
+            size,
+            artwork_id: artwork.id,
+            sort: args.sort,
+          })
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            args,
+            body,
+            offset,
+            page,
+            size,
+            totalCount,
+          })
         },
       },
       realizedToEstimate: {
