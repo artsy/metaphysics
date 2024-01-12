@@ -2475,9 +2475,6 @@ type Artwork implements Node & Searchable & Sellable {
   isShareable: Boolean
   isSold: Boolean
   isUnique: Boolean
-
-  # Metadata of the last partner offer sent for this artwork
-  lastPartnerOffer: PartnerOffer
   layer(id: String): ArtworkLayer
   layers: [ArtworkLayer]
   listPrice: ListPrice
@@ -14578,22 +14575,6 @@ type PartnerOfferConnection {
   totalCount: Int
 }
 
-# An edge in a connection.
-type PartnerOfferEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: PartnerOffer
-}
-
-enum PartnerOfferSorts {
-  CREATED_AT_ASC
-  CREATED_AT_DESC
-  END_AT_ASC
-  END_AT_DESC
-}
-
 type PartnerOfferCreatedNotificationItem {
   artworksConnection(
     after: String
@@ -14609,6 +14590,22 @@ type PartnerOfferCreatedNotificationItem {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+}
+
+# An edge in a connection.
+type PartnerOfferEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: PartnerOffer
+}
+
+enum PartnerOfferSorts {
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  END_AT_ASC
+  END_AT_DESC
 }
 
 enum PartnersAggregation {

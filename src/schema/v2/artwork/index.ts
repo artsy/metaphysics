@@ -1859,13 +1859,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return artwork.recent_saves_count
         },
       },
-      lastPartnerOffer: {
-        description: "Metadata of the last partner offer sent for this artwork",
-        type: PartnerOfferType,
-        resolve: (artwork) => {
-          return artwork.last_partner_offer
-        },
-      },
     }
   },
 })
