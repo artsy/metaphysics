@@ -28,7 +28,7 @@ export const PartnerCollectorProfileType = new GraphQLObjectType<
             follows_profile: data.follows_profile,
           }
         } catch (error) {
-          console.error("PartnerCollectorProfileType", error)
+          console.error("[schema/v2/partner/partnerCollectorProfile] Error:", error)
           return null
         }
       },
