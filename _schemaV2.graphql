@@ -4056,6 +4056,7 @@ type CollectorProfileType {
     @deprecated(
       reason: "emailConfirmed is going to be removed, use isEmailConfirmed instead"
     )
+  firstNameLastInitial: String
   icon: Image
 
   # A globally unique ID.
@@ -7295,6 +7296,7 @@ type Conversation implements Node {
 
   # The collector profile of the user who initiated the conversation
   fromProfile: CollectorProfileType
+    @deprecated(reason: "Use `partnerCollectorProfile` instead")
 
   # The user who initiated the conversation
   fromUser: User
@@ -7378,6 +7380,9 @@ type Conversation implements Node {
     state: CommerceOrderStateEnum
     states: [CommerceOrderStateEnum!]
   ): CommerceOrderConnectionWithTotalCount
+
+  # The collector profile of the user who initiated the conversation. Do not use this field for Partners
+  partnerCollectorProfile: PartnerCollectorProfile
 
   # The participant(s) responding to the conversation
   to: ConversationResponder!
@@ -11182,6 +11187,7 @@ type InquirerCollectorProfile {
     @deprecated(
       reason: "emailConfirmed is going to be removed, use isEmailConfirmed instead"
     )
+  firstNameLastInitial: String
 
   # The Collector follows the Gallery profile
   hasPartnerFollow: Boolean
@@ -14412,6 +14418,10 @@ enum PartnerClassification {
   INSTITUTIONAL_SELLER
   PRIVATE_COLLECTOR
   PRIVATE_DEALER
+}
+
+type PartnerCollectorProfile {
+  collectorProfile: CollectorProfileType
 }
 
 # A connection to a list of items.
@@ -18628,6 +18638,7 @@ type UpdateCollectorProfilePayload {
     @deprecated(
       reason: "emailConfirmed is going to be removed, use isEmailConfirmed instead"
     )
+  firstNameLastInitial: String
   icon: Image
 
   # A globally unique ID.

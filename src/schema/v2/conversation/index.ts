@@ -34,6 +34,7 @@ import {
   connectionWithCursorInfo,
   paginationResolver,
 } from "../fields/pagination"
+import { PartnerCollectorProfileType } from "../partner/__tests__/partnerCollectorProfile"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -303,10 +304,22 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
+    partnerCollectorProfile: {
+      description:
+        "The collector profile of the user who initiated the conversation. Do not use this field for Partners",
+      type: PartnerCollectorProfileType,
+      resolve: async ({ from_id, to_id }) => {
+        return {
+          partnerId: to_id,
+          collectorId: from_id,
+        }
+      },
+    },
     fromProfile: {
       description:
         "The collector profile of the user who initiated the conversation",
       type: CollectorProfileType,
+      deprecationReason: "Use `partnerCollectorProfile` instead",
       resolve: async ({ from_id }, _options, { collectorProfilesLoader }) => {
         if (!collectorProfilesLoader)
           throw new Error(
