@@ -34,7 +34,7 @@ import {
   connectionWithCursorInfo,
   paginationResolver,
 } from "../fields/pagination"
-import { PartnerCollectorProfileType } from "../partner/__tests__/partnerCollectorProfile"
+import { PartnerCollectorProfileType } from "../partner/partnerCollectorProfile"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
