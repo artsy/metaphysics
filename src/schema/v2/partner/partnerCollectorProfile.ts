@@ -17,14 +17,19 @@ export const PartnerCollectorProfileType = new GraphQLObjectType<
       ) => {
         if (!partnerCollectorProfileLoader) return
 
-        const data = await partnerCollectorProfileLoader({
-          partnerId,
-          userId: collectorId,
-        })
+        try {
+          const data = await partnerCollectorProfileLoader({
+            partnerId,
+            userId: collectorId,
+          })
 
-        return {
-          ...data.collector_profile,
-          follows_profile: data.follows_profile,
+          return {
+            ...data.collector_profile,
+            follows_profile: data.follows_profile,
+          }
+        } catch (error) {
+          console.error("PartnerCollectorProfileType", error)
+          return null
         }
       },
     },
