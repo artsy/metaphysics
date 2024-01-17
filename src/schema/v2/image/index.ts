@@ -54,6 +54,10 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
         return aspect_ratio || 1
       },
     },
+    blurhash: {
+      type: GraphQLString,
+      description: "Blurhash code for the image",
+    },
     caption: {
       type: GraphQLString,
     },
