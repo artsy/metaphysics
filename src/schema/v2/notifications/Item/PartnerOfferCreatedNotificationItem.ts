@@ -1,4 +1,4 @@
-import { GraphQLObjectType } from "graphql"
+import { GraphQLBoolean, GraphQLObjectType } from "graphql"
 import { connectionFromArray } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
@@ -26,6 +26,17 @@ export const PartnerOfferCreatedNotificationItemType = new GraphQLObjectType<
           pageCursors: createPageCursors({ page, size }, totalCount),
           ...connectionFromArray(body, args),
         }
+      },
+    },
+    available: {
+      type: GraphQLBoolean,
+      description: "Whether or not the offer is still available",
+      resolve: async ({ actor_ids }, _, { mePartnerOfferLoader }) => {
+        if (!mePartnerOfferLoader) return null
+        if (actor_ids.length === 0) return null
+
+        const { available } = await mePartnerOfferLoader(actor_ids[0])
+        return available
       },
     },
     expiresAt: {
