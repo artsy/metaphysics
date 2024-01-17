@@ -448,6 +448,7 @@ describe("NotificationItem", () => {
       mePartnerOfferLoader = jest.fn(() =>
         Promise.resolve({
           id: "partner-offer-id",
+          available: true,
           end_at: "2024-01-08T10:10:10+10:00",
         })
       )
@@ -468,6 +469,7 @@ describe("NotificationItem", () => {
               item {
                 __typename
                 ... on PartnerOfferCreatedNotificationItem {
+                  available
                   expiresAt
 
                   artworksConnection(first: 5) {
@@ -506,6 +508,7 @@ describe("NotificationItem", () => {
                     },
                   ],
                 },
+                "available": true,
                 "expiresAt": "2024-01-08T10:10:10+10:00",
               },
             },
