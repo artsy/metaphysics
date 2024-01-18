@@ -1859,6 +1859,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return artwork.recent_saves_count
         },
       },
+      lastSavedAt: {
+        description: "Time the artwork was last saved by a user",
+        type: GraphQLString,
+        resolve: (artwork) => {
+          return artwork.last_saved_at
+        },
+      },
     }
   },
 })
