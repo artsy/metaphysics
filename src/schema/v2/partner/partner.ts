@@ -93,30 +93,34 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   forSale: {
     type: GraphQLBoolean,
   },
-  missingPriorityMetadata: {
-    type: GraphQLBoolean,
-    description: "Return artworks that are missing priority metadata",
-  },
-  publishedWithin: {
-    type: GraphQLInt,
-    description: "Return artworks published less than x seconds ago.",
-  },
   includeUnpublished: {
     type: GraphQLBoolean,
     description:
       "If true return both published and unpublished artworks, requires auth",
+  },
+  missingPriorityMetadata: {
+    type: GraphQLBoolean,
+    description: "Return artworks that are missing priority metadata",
+  },
+  offerable: {
+    type: GraphQLBoolean,
+    description: "Only return artworks that are partner-offerable",
+  },
+  publishedWithin: {
+    type: GraphQLInt,
+    description: "Return artworks published less than x seconds ago.",
   },
   savedAtLeastOnce: {
     type: GraphQLBoolean,
     description:
       "Return artworks that were saved by collectors at least one time.",
   },
-  sort: ArtworkSorts,
   shallow: {
     type: GraphQLBoolean,
     description:
       "Only allowed for authorized admin/partner requests. When false fetch :all properties on an artwork, when true or not present fetch artwork :short properties",
   },
+  sort: ArtworkSorts,
 }
 
 export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
@@ -420,6 +424,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             exclude_ids?: string[]
             for_sale: boolean
             missing_priority_metadata?: boolean
+            offerable?: boolean
             page: number
             published?: boolean
             published_within?: number
@@ -433,6 +438,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             for_sale: args.forSale,
             missing_priority_metadata: args.missingPriorityMetadata,
             artist_id: args.artistID || undefined,
+            offerable: args.offerable,
             page,
             published: true,
             published_within: args.publishedWithin,
