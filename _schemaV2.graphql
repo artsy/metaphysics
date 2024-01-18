@@ -2475,6 +2475,14 @@ type Artwork implements Node & Searchable & Sellable {
   isShareable: Boolean
   isSold: Boolean
   isUnique: Boolean
+  lastSavedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See
+    # http://www.iana.org/time-zones,
+    # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
   layer(id: String): ArtworkLayer
   layers: [ArtworkLayer]
   listPrice: ListPrice
