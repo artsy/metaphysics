@@ -13984,7 +13984,7 @@ type Partner implements Node {
     missingPriorityMetadata: Boolean
 
     # Only return artworks that are partner-offerable
-    offerable: Boolean
+    partnerOfferable: Boolean
 
     # Return artworks published less than x seconds ago.
     publishedWithin: Int

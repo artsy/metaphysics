@@ -102,7 +102,7 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLBoolean,
     description: "Return artworks that are missing priority metadata",
   },
-  offerable: {
+  partnerOfferable: {
     type: GraphQLBoolean,
     description: "Only return artworks that are partner-offerable",
   },
@@ -424,7 +424,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             exclude_ids?: string[]
             for_sale: boolean
             missing_priority_metadata?: boolean
-            offerable?: boolean
+            partner_offerable?: boolean
             page: number
             published?: boolean
             published_within?: number
@@ -438,7 +438,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             for_sale: args.forSale,
             missing_priority_metadata: args.missingPriorityMetadata,
             artist_id: args.artistID || undefined,
-            offerable: args.offerable,
+            partner_offerable: args.partnerOfferable,
             page,
             published: true,
             published_within: args.publishedWithin,
