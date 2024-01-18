@@ -2475,7 +2475,6 @@ type Artwork implements Node & Searchable & Sellable {
   isShareable: Boolean
   isSold: Boolean
   isUnique: Boolean
-<<<<<<< HEAD
   lastSavedAt(
     format: String
 
@@ -2484,11 +2483,6 @@ type Artwork implements Node & Searchable & Sellable {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
-=======
-
-  # Time the artwork was last saved by a user
-  lastSavedAt: String
->>>>>>> d4fbe3771 (feat: add new sort and lastSavedAt to artwork+connection types)
   layer(id: String): ArtworkLayer
   layers: [ArtworkLayer]
   listPrice: ListPrice
