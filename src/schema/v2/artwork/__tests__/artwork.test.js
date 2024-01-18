@@ -4270,6 +4270,25 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#lastSavedAt", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          lastSavedAt
+        }
+      }
+    `
+
+    it("returns artworks last_saved_at", () => {
+      artwork.last_saved_at = "2020-01-01T00:00:00.000Z"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: { lastSavedAt: "2020-01-01T00:00:00.000Z" },
+        })
+      })
+    })
+  })
+
   describe("#priceListed", () => {
     const query = `
       {
