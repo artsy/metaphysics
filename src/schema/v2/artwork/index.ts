@@ -94,6 +94,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { error } from "lib/loggers"
 import { PartnerOfferType } from "../partnerOffer"
 import currencyCodes from "lib/currency_codes.json"
+import { date } from "../fields/date"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -1859,6 +1860,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return artwork.recent_saves_count
         },
       },
+      lastSavedAt: date(),
     }
   },
 })
