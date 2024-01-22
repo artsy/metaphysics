@@ -13615,6 +13615,7 @@ type Notification implements Node {
     # pass `RELATIVE` to display the human-friendly date (e.g. "Today", "Yesterday", "5 days ago")
     format: String
   ): String!
+  subject: String!
   targetHref: String!
   title: String!
 }

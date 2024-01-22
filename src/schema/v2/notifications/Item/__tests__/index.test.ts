@@ -6,6 +6,7 @@ describe("NotificationItem", () => {
     id: "user-notification-id",
     actor_ids: ["actor-id"],
     object_ids: ["object-id1"],
+    objects_count: 1,
   }
   let meNotificationLoader
   let mePartnerOfferLoader = jest.fn()
@@ -43,6 +44,7 @@ describe("NotificationItem", () => {
         Promise.resolve({
           ...notificationPayload,
           activity_type: "ArtworkPublishedActivity",
+          actors: "Catty Artist",
         })
       )
     })
@@ -67,6 +69,7 @@ describe("NotificationItem", () => {
                   }
                 }
               }
+              subject
             }
           }
         }
@@ -100,6 +103,7 @@ describe("NotificationItem", () => {
                   ],
                 },
               },
+              "subject": "1 New Work by Catty Artist",
             },
           },
         }
@@ -128,6 +132,7 @@ describe("NotificationItem", () => {
         Promise.resolve({
           ...notificationPayload,
           activity_type: "SavedSearchHitActivity",
+          actors: "Work by Catty Artist",
         })
       )
     })
@@ -156,6 +161,7 @@ describe("NotificationItem", () => {
                   }
                 }
               }
+              subject
             }
           }
         }
@@ -199,6 +205,7 @@ describe("NotificationItem", () => {
                   ],
                 },
               },
+              "subject": "1 New Work by Catty Artist",
             },
           },
         }
@@ -252,6 +259,7 @@ describe("NotificationItem", () => {
                   }
                 }
               }
+              subject
             }
           }
         }
@@ -334,6 +342,7 @@ describe("NotificationItem", () => {
                   }
                 }
               }
+              subject
             }
           }
         }
@@ -403,6 +412,7 @@ describe("NotificationItem", () => {
                   viewingRoomIDs
                 }
               }
+              subject
             }
           }
         }
@@ -481,6 +491,7 @@ describe("NotificationItem", () => {
                   }
                 }
               }
+              subject
             }
           }
         }
