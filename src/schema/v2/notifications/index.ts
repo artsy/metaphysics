@@ -96,7 +96,11 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     },
     subject: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: async (notification, _args, { artworksLoader }) => {
+      resolve: async (
+        notification,
+        _args,
+        { articleLoader, artworksLoader }
+      ) => {
         switch (notification.activity_type) {
           case "ArtworkPublishedActivity":
             return `${notification.objects_count} New ${
@@ -105,7 +109,9 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
           case "SavedSearchHitActivity":
             return `${notification.objects_count} New ${notification.actors}`
           case "ArticleFeaturedArtistActivity":
-            return notification.article?.title
+            const article = await articleLoader(notification.actor_ids?.[0])
+
+            return article?.title
           case "PartnerOfferCreatedActivity":
             // TODO: This is a hack to get the artwork's artist name. It's not good because we potentially request the artworks list twice without caching!
             const artworks = await artworksLoader({
