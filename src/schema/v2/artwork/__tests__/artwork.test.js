@@ -6,6 +6,7 @@ import { getMicrofunnelDataByArtworkInternalID } from "schema/v2/artist/targetSu
 import { runQuery } from "schema/v2/test/utils"
 import { CHECKOUT_TAXES_DOC_URL } from "../taxInfo"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { HTTPError } from "lib/HTTPError"
 
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
 
@@ -4323,6 +4324,80 @@ describe("Artwork type", () => {
             priceListed: { major: 123, minor: 123, currencyCode: "KRW" },
           },
         })
+      })
+    })
+  })
+
+  describe("principalField directive and error behavior", () => {
+    describe("when the directive is used", () => {
+      it("propagates the error as usual", () => {
+        const query = `
+          {
+            artwork(id: "unpublished-artwork-id") @principalField {
+              artist {
+                name
+              }
+            }
+          }
+        `
+
+        context.artworkLoader = () => {
+          throw new HTTPError("Artwork Not Found", 404)
+        }
+
+        return runQuery(query, context).catch((error) => {
+          expect(error.message).toEqual("Artwork Not Found")
+        })
+      })
+    })
+
+    describe("when the directive is not used", () => {
+      it("propagates a non-404 error", () => {
+        const query = `
+          {
+            artwork(id: "unpublished-artwork-id") {
+              artist {
+                name
+              }
+            }
+          }
+        `
+
+        context.artworkLoader = () => {
+          throw new HTTPError("Something Went Wrong", 500)
+        }
+
+        return runQuery(query, context).catch((error) => {
+          expect(error.message).toEqual("Something Went Wrong")
+        })
+      })
+
+      it("resolves when a 404 occurs", () => {
+        const query = `
+          {
+            artwork(id: "unpublished-artwork-id") {
+              slug
+            }
+          }
+        `
+
+        context.artworkLoader = () => {
+          throw new HTTPError("Artwork Not Found", 404)
+        }
+
+        return runQuery(query, context)
+          .then((data) => {
+            expect(data).toMatchInlineSnapshot(`
+              Object {
+                "artwork": Object {
+                  "slug": "unpublished-artwork-id",
+                },
+              }
+            `)
+          })
+          .catch(() => {
+            throw new Error("Should not have thrown an error")
+          })
       })
     })
   })

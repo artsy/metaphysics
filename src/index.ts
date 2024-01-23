@@ -37,6 +37,8 @@ import { principalFieldDirectiveExtension } from "directives/principleField/prin
 import { principalFieldDirectiveValidation } from "directives/principleField/principalFieldDirectiveValidation"
 import * as Sentry from "@sentry/node"
 import { bodyParserMiddleware } from "lib/bodyParserMiddleware"
+import { Source, parse } from "graphql"
+import { getPrincipalFieldDirectivePath } from "directives/principleField/getPrincipalFieldDirectivePath"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -89,6 +91,15 @@ function createExtensions(document, result, requestID, userAgent) {
   // Instead of an empty hash, which will include `extensions: {}`
   // in all responses, make sure to return undefined.
   return Object.keys(extensions).length ? extensions : undefined
+}
+
+const queryToAst = (query) => parse(new Source(query))
+const principalFieldDirectivePath = (query) => {
+  try {
+    return getPrincipalFieldDirectivePath(queryToAst(query))
+  } catch {
+    // noop
+  }
 }
 
 const app = express()
@@ -190,6 +201,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     appToken,
     ipAddress,
     xImpersonateUserID,
+    principalDirectivePath: principalFieldDirectivePath(params?.query),
   }
 
   const validationRules = [

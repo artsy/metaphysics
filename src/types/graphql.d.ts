@@ -30,6 +30,8 @@ export interface ResolverContextValues {
 
   ipAddress: string
   xImpersonateUserID?: string
+
+  principalDirectivePath: string[] | undefined
 }
 
 export type ResolverContext = ResolverContextValues &

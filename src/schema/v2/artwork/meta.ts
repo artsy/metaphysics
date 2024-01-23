@@ -19,7 +19,8 @@ export const artistNames = (artwork) =>
 const forSaleIndication = (artwork) =>
   artwork.forsale ? "Available for Sale" : undefined
 
-const dimensions = (artwork) => artwork.dimensions[artwork.metric]
+const dimensions = (artwork) =>
+  artwork.dimensions && artwork.dimensions[artwork.metric]
 
 const partnerDescription = ({ partner, forsale }, expanded = true) => {
   const name = partner && partner.name

@@ -11,6 +11,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
+  responsePathAsArray,
 } from "graphql"
 import { PageInfoType } from "graphql-relay"
 // Mapping of category ids to MediumType values
@@ -1891,33 +1892,56 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (
     _source,
     args,
-    { artworkLoader, marketPriceInsightsBatchLoader },
+    { artworkLoader, marketPriceInsightsBatchLoader, principalDirectivePath },
     resolveInfo
   ) => {
-    const { id } = args
+    try {
+      const { id } = args
 
-    const hasRequestedPriceInsights = isFieldRequested(
-      "marketPriceInsights",
-      resolveInfo
-    )
-
-    const artwork = await artworkLoader(id)
-
-    // // We don't want to query for the price insights unless the user has requested them
-    if (
-      marketPriceInsightsBatchLoader &&
-      artwork &&
-      hasRequestedPriceInsights
-    ) {
-      const enrichedArtworks = await enrichArtworksWithPriceInsights(
-        [artwork],
-        marketPriceInsightsBatchLoader
+      const hasRequestedPriceInsights = isFieldRequested(
+        "marketPriceInsights",
+        resolveInfo
       )
 
-      return enrichedArtworks?.[0]
-    }
+      const artwork = await artworkLoader(id)
 
-    return artwork
+      // // We don't want to query for the price insights unless the user has requested them
+      if (
+        marketPriceInsightsBatchLoader &&
+        artwork &&
+        hasRequestedPriceInsights
+      ) {
+        const enrichedArtworks = await enrichArtworksWithPriceInsights(
+          [artwork],
+          marketPriceInsightsBatchLoader
+        )
+
+        return enrichedArtworks?.[0]
+      }
+
+      return artwork
+    } catch (error) {
+      // When the upstream service returns a 404, and the `principalField`
+      // directive was not applied to this selection, return a partial
+      // object to allow any underlying field selections to still be resolved.
+      const isError404 = error.statusCode === 404
+      const responsePathsArray = responsePathAsArray(resolveInfo.path)
+      const isPrincipalField = _.isEqual(
+        responsePathsArray,
+        principalDirectivePath
+      )
+
+      if (isError404 && !isPrincipalField) {
+        return {
+          id: args.id,
+          _id: args.id,
+          artists: [],
+          images: [],
+          published: false,
+        }
+      }
+      throw error
+    }
   },
 }
 
