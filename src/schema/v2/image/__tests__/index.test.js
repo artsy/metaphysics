@@ -64,6 +64,24 @@ describe("Image type", () => {
     }
   })
 
+  describe("blurhashDataURI", () => {
+    it("returns a data URI for a given blurhash", () => {
+      const query = `{
+        artwork(id: "richard-prince-untitled-portrait") {
+          image {
+            blurhashDataURI
+          }
+        }
+      }`
+      assign(image, { blurhash: "LGHLe$4oIU-;_3%MbHRj~pIo%MM{" })
+      return runQuery(query, context).then((data) => {
+        expect(data.artwork.image.blurhashDataURI).toStartWith(
+          "data:image/png;base64,"
+        )
+      })
+    })
+  })
+
   describe("#aspect_ratio", () => {
     const query = `{
       artwork(id: "richard-prince-untitled-portrait") {
