@@ -813,7 +813,7 @@ describe("Me", () => {
                 collectorProfile {
                   name
                 }
-                hasPartnerFollow
+                isCollectorFollowingPartner
               }
             }
           }
@@ -823,7 +823,7 @@ describe("Me", () => {
             expect(collectorResume?.collectorProfile.name).toBe(
               "Some Collector"
             )
-            expect(collectorResume?.hasPartnerFollow).toBe(true)
+            expect(collectorResume?.isCollectorFollowingPartner).toBe(true)
           }
         )
       })

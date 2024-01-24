@@ -4135,10 +4135,10 @@ type CollectorProfileTypeEdge {
 }
 
 type CollectorResume {
-  collectorProfile: CollectorProfileType
+  collectorProfile: CollectorProfileType!
 
   # The Collector follows the Gallery profile
-  hasPartnerFollow: Boolean
+  isCollectorFollowingPartner: Boolean!
 }
 
 # Represents either an action or a potential failure
@@ -7306,7 +7306,7 @@ type Conversation implements Node {
 
   # The collector profile of the user who initiated the conversation
   fromProfile: CollectorProfileType
-    @deprecated(reason: "Use `partnerCollectorProfile` instead")
+    @deprecated(reason: "Use `collectorResume` instead")
 
   # The user who initiated the conversation
   fromUser: User

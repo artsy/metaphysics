@@ -322,8 +322,8 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
           })
 
           return {
-            collector_profile: data.collector_profile,
-            follows_profile: data.follows_profile,
+            collectorProfile: data.collector_profile,
+            isCollectorFollowingPartner: data.follows_profile,
           }
         } catch (error) {
           console.error(
@@ -338,7 +338,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       description:
         "The collector profile of the user who initiated the conversation",
       type: CollectorProfileType,
-      deprecationReason: "Use `partnerCollectorProfile` instead",
+      deprecationReason: "Use `collectorResume` instead",
       resolve: async ({ from_id }, _options, { collectorProfilesLoader }) => {
         if (!collectorProfilesLoader)
           throw new Error(
