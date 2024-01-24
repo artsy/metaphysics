@@ -4134,6 +4134,13 @@ type CollectorProfileTypeEdge {
   node: CollectorProfileType
 }
 
+type CollectorResume {
+  collectorProfile: CollectorProfileType
+
+  # The Collector follows the Gallery profile
+  hasPartnerFollow: Boolean
+}
+
 # Represents either an action or a potential failure
 union CommerceActionOrFailureUnion =
     CommerceOrderRequiresAction
@@ -7265,6 +7272,9 @@ type Conversation implements Node {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
+
+  # The collector profile of the user who initiated the conversation. Do not use this field for Partners
+  collectorResume: CollectorResume
   createdAt(
     format: String
 
@@ -7380,9 +7390,6 @@ type Conversation implements Node {
     state: CommerceOrderStateEnum
     states: [CommerceOrderStateEnum!]
   ): CommerceOrderConnectionWithTotalCount
-
-  # The collector profile of the user who initiated the conversation. Do not use this field for Partners
-  partnerCollectorProfile: PartnerCollectorProfile
 
   # The participant(s) responding to the conversation
   to: ConversationResponder!
@@ -14418,10 +14425,6 @@ enum PartnerClassification {
   INSTITUTIONAL_SELLER
   PRIVATE_COLLECTOR
   PRIVATE_DEALER
-}
-
-type PartnerCollectorProfile {
-  collectorProfile: CollectorProfileType
 }
 
 # A connection to a list of items.
