@@ -36,8 +36,8 @@ describe("me.notification", () => {
       Object {
         "me": Object {
           "notification": Object {
-            "internalID": "user-notification-id",
             "headline": "6 works added by Gerhard Richter",
+            "internalID": "user-notification-id",
             "message": "6 works added",
           },
         },
