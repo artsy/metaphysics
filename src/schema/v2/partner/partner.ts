@@ -116,6 +116,7 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
       "Only allowed for authorized admin/partner requests. When false fetch :all properties on an artwork, when true or not present fetch artwork :short properties",
   },
   sort: ArtworkSorts,
+  page: { type: GraphQLInt },
 }
 
 export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
