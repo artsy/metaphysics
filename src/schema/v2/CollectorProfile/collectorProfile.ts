@@ -111,7 +111,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
       artwork_inquiry_requests_count >= 25,
   },
   inquiryRequestsCount: {
-    type: GraphQLInt,
+    type: new GraphQLNonNull(GraphQLInt),
     resolve: ({ artwork_inquiry_requests_count }) =>
       artwork_inquiry_requests_count,
   },
