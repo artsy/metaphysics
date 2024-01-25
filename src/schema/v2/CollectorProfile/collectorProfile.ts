@@ -46,6 +46,10 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   loyaltyApplicantAt: date,
   name: { type: GraphQLString },
   initials: initials("name"),
+  firstNameLastInitial: {
+    type: GraphQLString,
+    resolve: ({ first_name_last_initial }) => first_name_last_initial,
+  },
   privacy: { type: GraphQLString },
   professionalBuyerAppliedAt: date,
   professionalBuyerAt: date,
@@ -105,6 +109,11 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
     type: GraphQLBoolean,
     resolve: ({ artwork_inquiry_requests_count }) =>
       artwork_inquiry_requests_count >= 25,
+  },
+  inquiryRequestsCount: {
+    type: GraphQLInt,
+    resolve: ({ artwork_inquiry_requests_count }) =>
+      artwork_inquiry_requests_count,
   },
   isActiveBidder: {
     type: GraphQLBoolean,

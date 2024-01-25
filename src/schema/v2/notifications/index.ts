@@ -42,6 +42,10 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: () => ({
     ...IDFields,
+    headline: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ headline }) => headline,
+    },
     title: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ actors }) => actors,
