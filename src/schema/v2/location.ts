@@ -13,6 +13,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import { compact } from "lodash"
 
 export const LatLngType = new GraphQLObjectType<any, ResolverContext>({
   name: "LatLng",
@@ -106,10 +107,22 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
 
     display: {
       type: GraphQLString,
-      resolve: ({ address, city, state, country }) =>
-        `${address && address + ", "}${city && city + ", "}${
-          state && state + ", "
-        }${country && country}`,
+      resolve: ({
+        display,
+        address,
+        address_2,
+        city,
+        state,
+        postal_code,
+        country,
+      }) => {
+        return (
+          display ||
+          compact([address, address_2, city, state, postal_code, country]).join(
+            ", "
+          )
+        )
+      },
     },
     phone: {
       type: GraphQLString,
