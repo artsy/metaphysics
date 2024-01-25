@@ -61,7 +61,7 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description: "Blurhash code for the image",
     },
-    blurhashDataURI: {
+    blurhashDataURL: {
       type: GraphQLString,
       args: {
         width: {
