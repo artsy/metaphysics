@@ -9,6 +9,7 @@ describe("me.notification", () => {
         me {
           notification(id: "user-notification-id") {
             internalID
+            headline
             message
           }
         }
@@ -16,6 +17,7 @@ describe("me.notification", () => {
     `
     const meNotificationLoader = jest.fn(async () => ({
       id: "user-notification-id",
+      headline: "6 works added by Gerhard Richter",
       message: "6 works added",
     }))
     const meLoader = jest.fn(async () => ({ id: "some-user-id" }))
@@ -34,6 +36,7 @@ describe("me.notification", () => {
       Object {
         "me": Object {
           "notification": Object {
+            "headline": "6 works added by Gerhard Richter",
             "internalID": "user-notification-id",
             "message": "6 works added",
           },
