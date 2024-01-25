@@ -786,5 +786,47 @@ describe("Me", () => {
         )
       })
     })
+
+    describe("collectorResume", () => {
+      it("fetches the collector_profile and follows_profile", () => {
+        const collectorResumeContext = {
+          ...context,
+          partnerCollectorProfileLoader: ({ _partnerId, _user_id }) =>
+            Promise.resolve({
+              collector_profile: {
+                name: "Some Collector",
+                location: {
+                  city: "Around",
+                  country: "The Globe",
+                },
+                profession: "Superhuman",
+                bio: "I got snacks to the roof",
+              },
+              follows_profile: true,
+            }),
+        }
+
+        const query = `
+          {
+            conversation(id: "420") {
+              collectorResume {
+                collectorProfile {
+                  name
+                }
+                isCollectorFollowingPartner
+              }
+            }
+          }
+        `
+        return runAuthenticatedQuery(query, collectorResumeContext).then(
+          ({ conversation: { collectorResume } }) => {
+            expect(collectorResume?.collectorProfile.name).toBe(
+              "Some Collector"
+            )
+            expect(collectorResume?.isCollectorFollowingPartner).toBe(true)
+          }
+        )
+      })
+    })
   })
 })
