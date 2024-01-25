@@ -107,7 +107,9 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
     display: {
       type: GraphQLString,
       resolve: ({ address, city, state, country }) =>
-        `${address}, ${city}, ${state}, ${country}`,
+        `${address && address + ", "}${city && city + ", "}${
+          state && state + ", "
+        }${country && country}`,
     },
     phone: {
       type: GraphQLString,
