@@ -110,6 +110,11 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
     resolve: ({ artwork_inquiry_requests_count }) =>
       artwork_inquiry_requests_count >= 25,
   },
+  inquiryRequestsCount: {
+    type: GraphQLInt,
+    resolve: ({ artwork_inquiry_requests_count }) =>
+      artwork_inquiry_requests_count,
+  },
   isActiveBidder: {
     type: GraphQLBoolean,
     resolve: ({ previously_registered_for_auction }) =>
