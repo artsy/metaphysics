@@ -14750,6 +14750,7 @@ input PreviewSavedSearchAttributes {
   atAuction: Boolean
   attributionClass: [String]
   colors: [String]
+  dimensionRange: String
   height: String
   inquireableOnly: Boolean
   locationCities: [String]

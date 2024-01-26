@@ -42,6 +42,9 @@ const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   colors: {
     type: new GraphQLList(GraphQLString),
   },
+  dimensionRange: {
+    type: GraphQLString,
+  },
   height: {
     type: GraphQLString,
   },

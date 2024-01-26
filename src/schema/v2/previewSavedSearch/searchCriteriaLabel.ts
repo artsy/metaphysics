@@ -9,6 +9,12 @@ import { round } from "lodash"
 import gql from "lib/gql"
 import { DEFAULT_LENGTH_UNIT_PREFERENCE, camelCaseKeys } from "lib/helpers"
 
+export const DIMENSION_RANGES = {
+  "*-16.0": "SMALL",
+  "16.0-40.0": "MEDIUM",
+  "40.0-*": "LARGE",
+}
+
 export const SIZES_IN_CM = {
   SMALL: "Small (under 40cm)",
   MEDIUM: "Medium (40 – 100cm)",
@@ -95,6 +101,7 @@ export const resolveSearchCriteriaLabels = async (
     artistSeriesIDs,
     attributionClass,
     additionalGeneIDs,
+    dimensionRange,
     priceRange,
     sizes,
     width,
@@ -127,6 +134,7 @@ export const resolveSearchCriteriaLabels = async (
   labels.push(getMediumLabels(additionalGeneIDs))
   labels.push(getPriceLabel(priceRange))
   labels.push(getSizeLabels(sizes, metric))
+  labels.push(getDimensionRangeLabel(dimensionRange, metric))
   labels.push(getCustomSizeLabels({ height, metric, width }))
   labels.push(
     getWaysToBuyLabels({
@@ -249,6 +257,22 @@ function getSizeLabels(sizes: string[], metric) {
       field: "sizes",
     }
   })
+}
+
+const getDimensionRangeLabel = (dimensionRange: string, metric: string) => {
+  if (!dimensionRange) return
+
+  const dimensionRangeValue = DIMENSION_RANGES[dimensionRange]
+
+  return {
+    name: "Size", // Or should this be "Dimension range"?
+    displayValue:
+      metric === "cm"
+        ? SIZES_IN_CM[dimensionRangeValue]
+        : SIZES_IN_INCHES[dimensionRangeValue],
+    value: dimensionRange,
+    field: "dimensionRange",
+  }
 }
 
 const convertToCentimeters = (element: number) => {
