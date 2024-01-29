@@ -457,12 +457,27 @@ describe("Partner type", () => {
       locationsResponse = [
         {
           city: "New York",
+          country: "US",
+          address: "401 Broadway 26th floor",
+          address_2: "",
+          postal_code: "10013",
+          state: "NY",
         },
         {
           city: "Detroit",
+          country: "US",
+          address: "123 Main Street",
+          address_2: "",
+          postal_code: "12345",
+          state: "MI",
         },
         {
           city: "Tokyo",
+          country: "JP",
+          address: "123 Main Street",
+          address_2: "",
+          postal_code: "12345",
+          state: "",
         },
       ]
       context = {
@@ -513,6 +528,50 @@ describe("Partner type", () => {
               {
                 node: {
                   city: "Tokyo",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns formated display locations", async () => {
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            locationsConnection(first:3) {
+              totalCount
+              edges {
+                node {
+                  display
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          locationsConnection: {
+            totalCount: 3,
+            edges: [
+              {
+                node: {
+                  display: "401 Broadway 26th floor, New York, NY, 10013, US",
+                },
+              },
+              {
+                node: {
+                  display: "123 Main Street, Detroit, MI, 12345, US",
+                },
+              },
+              {
+                node: {
+                  display: "123 Main Street, Tokyo, 12345, JP",
                 },
               },
             ],
