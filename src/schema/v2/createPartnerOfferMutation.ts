@@ -81,8 +81,7 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
         artwork_id: args.artwork_id,
         discount_percentage: args.discount_percentage,
       })
-
-      const partner = await partnerAllLoader?.(partnerOffer._id)
+      const partner = await partnerAllLoader?.(partnerOffer.partner_id)
 
       return { partnerOffer, partner }
     } catch (error) {
