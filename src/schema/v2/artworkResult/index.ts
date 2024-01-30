@@ -11,6 +11,7 @@ import { ResolverContext } from "types/graphql"
 import { ArtworkType, artworkResolver } from "schema/v2/artwork"
 import ArtworkLayers, { artworkLayers } from "schema/v2/artwork/layers"
 import { RequestErrorType } from "schema/v2/fields/requestError"
+import { SlugAndInternalIDFields } from "../object_identification"
 
 const ArtworkErrorType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkError",
@@ -23,6 +24,7 @@ const ArtworkErrorType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "An artwork with partial data. useful for rendering an error state",
         fields: {
+          ...SlugAndInternalIDFields,
           artists: {
             type: new GraphQLList(Artist.type),
             resolve: ({ artist_ids }, _, { artistLoader }) => {
