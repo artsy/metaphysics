@@ -1,17 +1,19 @@
 import {
   GraphQLFieldConfig,
-  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
 } from "graphql"
-import Artist from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
 import { ArtworkType, artworkResolver } from "schema/v2/artwork"
-import ArtworkLayers, { artworkLayers } from "schema/v2/artwork/layers"
+import { artworkLayers } from "schema/v2/artwork/layers"
+import ArtworkLayer from "schema/v2/artwork/layer"
 import { RequestErrorType } from "schema/v2/fields/requestError"
 import { SlugAndInternalIDFields } from "../object_identification"
+import _ from "lodash"
+import Context from "schema/v2/artwork/context"
+import { ArtworkContextGrids } from "schema/v2/artwork/artworkContextGrids"
 
 const ArtworkErrorType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkError",
@@ -25,24 +27,35 @@ const ArtworkErrorType = new GraphQLObjectType<any, ResolverContext>({
           "An artwork with partial data. useful for rendering an error state",
         fields: {
           ...SlugAndInternalIDFields,
-          artists: {
-            type: new GraphQLList(Artist.type),
-            resolve: ({ artist_ids }, _, { artistLoader }) => {
-              if (!artist_ids || !artist_ids.length) return []
 
-              return Promise.all(
-                artist_ids.map((artist_id) => artistLoader(artist_id))
-              ).catch(() => [])
+          context: Context,
+          contextGrids: ArtworkContextGrids,
+
+          layer: {
+            type: ArtworkLayer.type,
+            args: { id: { type: GraphQLString } },
+            resolve: (artwork, { id }, { relatedLayersLoader }) => {
+              return artworkLayers(
+                artwork.id,
+                relatedLayersLoader
+              ).then((layers) =>
+                !!id ? _.find(layers, { id }) : _.first(layers)
+              )
             },
-          },
-
-          layers: {
-            type: ArtworkLayers.type,
-            resolve: ({ id }, _options, { relatedLayersLoader }) =>
-              artworkLayers(id, relatedLayersLoader),
           },
         },
       }),
+      resolve: async (resp, _, { artistLoader }) => {
+        const { artwork } = resp
+        if (!artwork) return null
+
+        const { artist_ids } = artwork
+
+        return {
+          ...artwork,
+          artist: await artistLoader(artist_ids[0]),
+        }
+      },
     },
 
     requestError: {
