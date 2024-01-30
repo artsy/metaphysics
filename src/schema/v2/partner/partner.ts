@@ -466,7 +466,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             const gravityArtworkArgs = {
               artwork_id: artworkIds,
               sort: args.sort,
-              page: page,
             }
 
             const { body: artworks } = await partnerArtworksAllLoader(
