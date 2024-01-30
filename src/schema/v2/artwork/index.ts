@@ -1879,6 +1879,30 @@ const ArtworkInfoRowType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
+export const artworkResolver = async (_source, args, context, resolveInfo) => {
+  const { id } = args
+  const { artworkLoader, marketPriceInsightsBatchLoader } = context
+
+  const hasRequestedPriceInsights = isFieldRequested(
+    "marketPriceInsights",
+    resolveInfo
+  )
+
+  const artwork = await artworkLoader(id)
+
+  // // We don't want to query for the price insights unless the user has requested them
+  if (marketPriceInsightsBatchLoader && artwork && hasRequestedPriceInsights) {
+    const enrichedArtworks = await enrichArtworksWithPriceInsights(
+      [artwork],
+      marketPriceInsightsBatchLoader
+    )
+
+    return enrichedArtworks?.[0]
+  }
+
+  return artwork
+}
+
 const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
   type: ArtworkType,
   description: "An Artwork",
@@ -1888,37 +1912,7 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The slug or ID of the Artwork",
     },
   },
-  resolve: async (
-    _source,
-    args,
-    { artworkLoader, marketPriceInsightsBatchLoader },
-    resolveInfo
-  ) => {
-    const { id } = args
-
-    const hasRequestedPriceInsights = isFieldRequested(
-      "marketPriceInsights",
-      resolveInfo
-    )
-
-    const artwork = await artworkLoader(id)
-
-    // // We don't want to query for the price insights unless the user has requested them
-    if (
-      marketPriceInsightsBatchLoader &&
-      artwork &&
-      hasRequestedPriceInsights
-    ) {
-      const enrichedArtworks = await enrichArtworksWithPriceInsights(
-        [artwork],
-        marketPriceInsightsBatchLoader
-      )
-
-      return enrichedArtworks?.[0]
-    }
-
-    return artwork
-  },
+  resolve: artworkResolver,
 }
 
 export const ArtworkEdgeInterface = new GraphQLInterfaceType({

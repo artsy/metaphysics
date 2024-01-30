@@ -215,6 +215,7 @@ import { createPartnerOfferMutation } from "./createPartnerOfferMutation"
 import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
+import { ArtworkResult } from "./artworkResult"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -254,6 +255,7 @@ const rootFields = {
   artwork: Artwork,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkMediums: ArtworkMediums,
+  artworkResult: ArtworkResult,
   artworks: Artworks,
   artworksConnection: filterArtworksConnection(),
   artworksForUser,
