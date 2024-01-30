@@ -9,6 +9,18 @@ describe("Artwork type", () => {
       _id: "artwork-id",
     }
 
+    const relatedArtworksResponse = [
+      {
+        id: "leonor-fini-les-aveugles",
+      },
+      {
+        id: "gregorio-vardanega-cereles-metaphorique",
+      },
+      {
+        id: "joaquin-torres-garcia-grafismo-del-hombre-y-barco",
+      },
+    ]
+
     const context = {
       artworkLoader: () => {
         throw new HTTPError(
@@ -17,6 +29,9 @@ describe("Artwork type", () => {
           JSON.stringify({ artwork })
         )
       },
+      relatedLayersLoader: () => Promise.resolve([{ id: "main" }]),
+      relatedLayerArtworksLoader: () =>
+        Promise.resolve(relatedArtworksResponse),
       artistLoader: () => Promise.resolve({ name: "Catty Artist" }),
     }
     const query = `
@@ -30,8 +45,14 @@ describe("Artwork type", () => {
             artwork {
               internalID
               slug
-              artists {
-                name
+              layer {
+                artworksConnection {
+                  edges {
+                    node {
+                      slug
+                    }
+                  }
+                }
               }
             }
           }
@@ -47,12 +68,28 @@ describe("Artwork type", () => {
           "artworkResult": Object {
             "__typename": "ArtworkError",
             "artwork": Object {
-              "artists": Array [
-                Object {
-                  "name": "Catty Artist",
-                },
-              ],
               "internalID": "artwork-id",
+              "layer": Object {
+                "artworksConnection": Object {
+                  "edges": Array [
+                    Object {
+                      "node": Object {
+                        "slug": "leonor-fini-les-aveugles",
+                      },
+                    },
+                    Object {
+                      "node": Object {
+                        "slug": "gregorio-vardanega-cereles-metaphorique",
+                      },
+                    },
+                    Object {
+                      "node": Object {
+                        "slug": "joaquin-torres-garcia-grafismo-del-hombre-y-barco",
+                      },
+                    },
+                  ],
+                },
+              },
               "slug": "artwork-slug",
             },
             "requestError": Object {
