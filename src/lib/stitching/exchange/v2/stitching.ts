@@ -331,6 +331,10 @@ export const exchangeStitchingEnvironment = ({
       orders(first: Int, last: Int, after: String, before: String, mode: CommerceOrderModeEnum, sellerId: String, sort: CommerceOrderConnectionSortEnum, states: [CommerceOrderStateEnum!]): CommerceOrderConnectionWithTotalCount
     }
 
+    extend type CollectorResume {
+      buyerActivity: CommerceBuyerActivity
+    }
+
     extend type Mutation {
       # Creates an order and links the conversation to it
       createInquiryOrder(
@@ -348,6 +352,29 @@ export const exchangeStitchingEnvironment = ({
 
     // Resolvers for the above
     resolvers: {
+      CollectorResume: {
+        buyerActivity: {
+          fragment: gql`
+            ... on CollectorResume {
+             userId
+            }
+          `,
+          resolve: async (parent, _args, context, info) => {
+            const exchangeArgs = {
+              buyerId: parent.userId,
+            }
+
+            return await info.mergeInfo.delegateToSchema({
+              schema: exchangeSchema,
+              operation: "query",
+              fieldName: "commerceBuyerActivity",
+              args: exchangeArgs,
+              context,
+              info,
+            })
+          },
+        },
+      },
       Conversation: {
         orderConnection: {
           fragment: gql`

@@ -40,6 +40,15 @@ it("extends the Me object", async () => {
   expect(meFields).toContain("orders")
 })
 
+it("extends the CollectorResume", async () => {
+  const mergedSchema = await getExchangeMergedSchema()
+  const collectorResumeFields = await getFieldsForTypeFromSchema(
+    "CollectorResume",
+    mergedSchema
+  )
+  expect(collectorResumeFields).toContain("buyerActivity")
+})
+
 it("extends the Conversation type", async () => {
   const mergedSchema = await getExchangeMergedSchema()
   const conversationFields = await getFieldsForTypeFromSchema(
