@@ -27,6 +27,13 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
       type: PartnerOfferType,
       resolve: (result) => result,
     },
+    partner: {
+      type: PartnerType,
+      resolve: async (result, _args, { partnerAllLoader }) => {
+        const partner = await partnerAllLoader?.(result.partner_id)
+        return partner
+      },
+    },
   }),
 })
 
@@ -58,32 +65,22 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
     discount_percentage: { type: GraphQLInt },
   },
   outputFields: {
-    partner: {
-      type: PartnerType,
-      resolve: (result) => result.partner || null,
-    },
     partnerOfferOrError: {
       type: ResponseOrErrorType,
       description: "On success: the partner offer created.",
-      resolve: (result) => result.partnerOffer || result,
+      resolve: (result) => result,
     },
   },
-  mutateAndGetPayload: async (
-    args,
-    { createPartnerOfferLoader, partnerAllLoader }
-  ) => {
+  mutateAndGetPayload: async (args, { createPartnerOfferLoader }) => {
     if (!createPartnerOfferLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      const partnerOffer = await createPartnerOfferLoader?.({
+      return await createPartnerOfferLoader?.({
         artwork_id: args.artwork_id,
         discount_percentage: args.discount_percentage,
       })
-      const partner = await partnerAllLoader?.(partnerOffer.partner_id)
-
-      return { partnerOffer, partner }
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
