@@ -5,6 +5,8 @@ describe("Artwork type", () => {
   describe("when throwing an error", () => {
     const artwork = {
       artist_ids: ["artist-id"],
+      id: "artwork-slug",
+      _id: "artwork-id",
     }
 
     const context = {
@@ -26,6 +28,8 @@ describe("Artwork type", () => {
               statusCode
             }
             artwork {
+              internalID
+              slug
               artists {
                 name
               }
@@ -48,6 +52,8 @@ describe("Artwork type", () => {
                   "name": "Catty Artist",
                 },
               ],
+              "internalID": "artwork-id",
+              "slug": "artwork-slug",
             },
             "requestError": Object {
               "statusCode": 404,
