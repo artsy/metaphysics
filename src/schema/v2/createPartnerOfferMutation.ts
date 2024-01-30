@@ -12,6 +12,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferType } from "./partnerOffer"
+import { PartnerType } from "schema/v2/partner/partner"
 
 interface Input {
   artwork_id: string
@@ -57,22 +58,33 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
     discount_percentage: { type: GraphQLInt },
   },
   outputFields: {
+    partner: {
+      type: PartnerType,
+      resolve: (result) => result.partner || null,
+    },
     partnerOfferOrError: {
       type: ResponseOrErrorType,
       description: "On success: the partner offer created.",
-      resolve: (result) => result,
+      resolve: (result) => result.partnerOffer || result,
     },
   },
-  mutateAndGetPayload: async (args, { createPartnerOfferLoader }) => {
+  mutateAndGetPayload: async (
+    args,
+    { createPartnerOfferLoader, partnerAllLoader }
+  ) => {
     if (!createPartnerOfferLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      return await createPartnerOfferLoader?.({
+      const partnerOffer = await createPartnerOfferLoader?.({
         artwork_id: args.artwork_id,
         discount_percentage: args.discount_percentage,
       })
+
+      const partner = await partnerAllLoader?.(partnerOffer._id)
+
+      return { partnerOffer, partner }
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {

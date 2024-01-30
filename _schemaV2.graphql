@@ -8018,6 +8018,7 @@ input createPartnerOfferMutationInput {
 
 type createPartnerOfferMutationPayload {
   clientMutationId: String
+  partner: Partner
 
   # On success: the partner offer created.
   partnerOfferOrError: createPartnerOfferResponseOrError

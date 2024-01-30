@@ -26,6 +26,9 @@ const mutation = gql`
           }
         }
       }
+      partner {
+        name
+      }
     }
   }
 `
@@ -42,12 +45,18 @@ describe("Create a partner offer for users", () => {
       user_ids: ["user_id1", "user_id2"],
     }
 
+    const partner = {
+      name: "partner_name",
+    }
+
     const context = {
       createPartnerOfferLoader: () => Promise.resolve(partnerOffer),
+      partnerAllLoader: () => Promise.resolve(partner),
     }
 
     it("creates a partner offer request", async () => {
       const data = await runAuthenticatedQuery(mutation, context)
+      console.log(data)
       expect(data).toEqual({
         createPartnerOffer: {
           partnerOfferOrError: {
@@ -61,6 +70,9 @@ describe("Create a partner offer for users", () => {
               partnerId: "partner_id",
               userIds: ["user_id1", "user_id2"],
             },
+          },
+          partner: {
+            name: "partner_name",
           },
         },
       })
@@ -88,6 +100,7 @@ describe("Create a partner offer for users", () => {
               message: "Artwork not found",
             },
           },
+          partner: null,
         },
       })
     })
