@@ -455,21 +455,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           const { body, headers } = await partnerArtworksLoader(id, gravityArgs)
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+          const artworkIds = body.map((artwork) => artwork._id)
 
           // Only accept shallow = false argument if requesting user is authorized admin/partner
-          if (args.shallow === false && partnerArtworksAllLoader) {
-            const artworkIds = body.map((artwork) => artwork._id)
-            if (artworkIds.length === 0) {
-              return paginationResolver({
-                totalCount,
-                offset,
-                page,
-                size,
-                body: [],
-                args,
-              })
-            }
-
+          if (
+            args.shallow === false &&
+            artworkIds.length > 0 &&
+            partnerArtworksAllLoader
+          ) {
             const gravityArtworkArgs = {
               artwork_id: artworkIds,
               sort: args.sort,
