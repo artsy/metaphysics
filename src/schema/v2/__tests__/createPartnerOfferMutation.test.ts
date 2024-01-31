@@ -19,15 +19,15 @@ const mutation = gql`
             discountPercentage
             userIds
           }
+          partner {
+            name
+          }
         }
         ... on createPartnerOfferFailure {
           mutationError {
             message
           }
         }
-      }
-      partner {
-        name
       }
     }
   }
@@ -70,9 +70,9 @@ describe("Create a partner offer for users", () => {
               partnerId: "partner_id",
               userIds: ["user_id1", "user_id2"],
             },
-          },
-          partner: {
-            name: "partner_name",
+            partner: {
+              name: "partner_name",
+            },
           },
         },
       })
@@ -100,7 +100,6 @@ describe("Create a partner offer for users", () => {
               message: "Artwork not found",
             },
           },
-          partner: null,
         },
       })
     })
