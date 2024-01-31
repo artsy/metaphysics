@@ -21,7 +21,8 @@ export const CollectorResume = new GraphQLObjectType<any, ResolverContext>({
     },
     userId: {
       type: GraphQLNonNull(GraphQLString),
-      description: "The Collector's id",
+      description:
+        "Collector's ID used to stitch buyerActivity with the Exchange schema",
       resolve: ({ userId }) => userId,
     },
   }),
