@@ -56,7 +56,6 @@ describe("Create a partner offer for users", () => {
 
     it("creates a partner offer request", async () => {
       const data = await runAuthenticatedQuery(mutation, context)
-      console.log(data)
       expect(data).toEqual({
         createPartnerOffer: {
           partnerOfferOrError: {
