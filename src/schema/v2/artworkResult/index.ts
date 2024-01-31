@@ -68,7 +68,11 @@ const ArtworkResultType = new GraphQLUnionType<any, ResolverContext>({
   name: "ArtworkResult",
   types: [ArtworkErrorType, ArtworkType],
   resolveType: (artwork) => {
-    if (artwork?.published) {
+    // Rather than use `artwork?.published`, we still need to support owners
+    // being able to see unpublished works resolve with `ArtworkType`.
+    // Instead, let's check for the presence of a `title` to determine if this
+    // is a full artwork.
+    if ("title" in artwork) {
       return ArtworkType
     }
 

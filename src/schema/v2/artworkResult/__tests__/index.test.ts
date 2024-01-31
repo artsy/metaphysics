@@ -122,7 +122,7 @@ describe("Artwork type", () => {
 
   describe("without any errors", () => {
     const artwork = {
-      published: true,
+      title: "Catty Artwork Title",
       artists: [{ id: "artist-id" }],
     }
 
