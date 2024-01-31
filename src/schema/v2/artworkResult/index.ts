@@ -45,15 +45,19 @@ const ArtworkErrorType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
       }),
-      resolve: async (resp, _, { artistLoader }) => {
-        const { artwork } = resp
+      resolve: async ({ artwork }, _, { artistLoader }) => {
         if (!artwork) return null
 
         const { artist_ids } = artwork
-
+        const artistID = artist_ids[0]
         return {
           ...artwork,
-          artist: await artistLoader(artist_ids[0]),
+
+          // Inject a resolved `artist`, in order to better match `Artwork` shape.
+          //
+          // TODO: Move this upstream to Gravity, where a partial artwork 404 response
+          // should better match the shape of a full artwork response.
+          artist: !!artistID ? await artistLoader(artistID) : null,
         }
       },
     },
@@ -67,14 +71,8 @@ const ArtworkErrorType = new GraphQLObjectType<any, ResolverContext>({
 const ArtworkResultType = new GraphQLUnionType<any, ResolverContext>({
   name: "ArtworkResult",
   types: [ArtworkErrorType, ArtworkType],
-  resolveType: (artwork) => {
-    // Rather than use `artwork?.published`, we still need to support owners
-    // being able to see unpublished works resolve with `ArtworkType`.
-    // Instead, let's check for the presence of a `title` to determine if this
-    // is a full artwork.
-    if ("title" in artwork) {
-      return ArtworkType
-    }
+  resolveType: ({ requestError }) => {
+    if (_.isEmpty(requestError)) return ArtworkType
 
     return ArtworkErrorType
   },
