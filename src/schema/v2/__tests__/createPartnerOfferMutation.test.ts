@@ -19,6 +19,9 @@ const mutation = gql`
             discountPercentage
             userIds
           }
+          partner {
+            name
+          }
         }
         ... on createPartnerOfferFailure {
           mutationError {
@@ -42,8 +45,13 @@ describe("Create a partner offer for users", () => {
       user_ids: ["user_id1", "user_id2"],
     }
 
+    const partner = {
+      name: "partner_name",
+    }
+
     const context = {
       createPartnerOfferLoader: () => Promise.resolve(partnerOffer),
+      partnerAllLoader: () => Promise.resolve(partner),
     }
 
     it("creates a partner offer request", async () => {
@@ -60,6 +68,9 @@ describe("Create a partner offer for users", () => {
               id: "xyz321",
               partnerId: "partner_id",
               userIds: ["user_id1", "user_id2"],
+            },
+            partner: {
+              name: "partner_name",
             },
           },
         },

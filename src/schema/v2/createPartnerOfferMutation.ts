@@ -12,6 +12,7 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferType } from "./partnerOffer"
+import { PartnerType } from "schema/v2/partner/partner"
 
 interface Input {
   artwork_id: string
@@ -25,6 +26,13 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     partnerOffer: {
       type: PartnerOfferType,
       resolve: (result) => result,
+    },
+    partner: {
+      type: PartnerType,
+      resolve: async (result, _args, { partnerAllLoader }) => {
+        const partner = await partnerAllLoader?.(result.partner_id)
+        return partner
+      },
     },
   }),
 })
