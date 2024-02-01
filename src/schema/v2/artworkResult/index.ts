@@ -45,19 +45,20 @@ const ArtworkErrorType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
       }),
-      resolve: async ({ artwork }, _, { artistLoader }) => {
+      resolve: async ({ artwork }, _, { artistLoader, partnerLoader }) => {
         if (!artwork) return null
 
-        const { artist_ids } = artwork
+        const { artist_ids, partner_id: partnerID } = artwork
         const artistID = artist_ids[0]
         return {
           ...artwork,
 
-          // Inject a resolved `artist`, in order to better match `Artwork` shape.
+          // Inject resolved data, in order to better match `Artwork` shape.
           //
-          // TODO: Move this upstream to Gravity, where a partial artwork 404 response
-          // should better match the shape of a full artwork response.
+          // TODO: Consider moving this upstream to Gravity, where a partial
+          // artwork 404 response should better match the shape of the full one.
           artist: !!artistID ? await artistLoader(artistID) : null,
+          partner: !!partnerID ? await partnerLoader(partnerID) : null,
         }
       },
     },
