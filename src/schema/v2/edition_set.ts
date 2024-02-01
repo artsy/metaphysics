@@ -13,6 +13,8 @@ import { capitalizeFirstCharacter } from "lib/helpers"
 import { Sellable } from "./sellable"
 import { ResolverContext } from "types/graphql"
 import { listPrice } from "./fields/listPrice"
+import { Money } from "./fields/money"
+import currencyCodes from "lib/currency_codes.json"
 
 export const EditionSetSorts = {
   type: new GraphQLEnumType({
@@ -75,6 +77,15 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
     },
     price: {
       type: GraphQLString,
+    },
+    priceListed: {
+      type: Money,
+      resolve: ({ price_listed: price_listed, price_currency: currency }) => {
+        const factor =
+          currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
+        const cents = price_listed * factor
+        return { cents, currency }
+      },
     },
     sizeScore: {
       description: "score assigned to an artwork based on its dimensions",
