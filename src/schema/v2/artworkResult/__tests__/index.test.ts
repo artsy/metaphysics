@@ -5,6 +5,7 @@ describe("Artwork type", () => {
   describe("when throwing an error", () => {
     const artwork = {
       artist_ids: ["artist-id"],
+      partner_id: "partner-id",
       id: "artwork-slug",
       _id: "artwork-id",
     }
@@ -33,6 +34,7 @@ describe("Artwork type", () => {
       relatedLayerArtworksLoader: () =>
         Promise.resolve(relatedArtworksResponse),
       artistLoader: () => Promise.resolve({ name: "Catty Artist" }),
+      partnerLoader: () => Promise.resolve({ name: "Catty Partner" }),
     }
     const query = `
       {
