@@ -5,10 +5,11 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLBoolean,
-  GraphQLFloat,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields } from "./object_identification"
+import { Money } from "./fields/money"
+import currencyCodes from "lib/currency_codes.json"
 
 export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerOffer",
@@ -31,12 +32,22 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ partner_id }) => partner_id,
     },
     priceListed: {
-      type: GraphQLFloat,
-      resolve: ({ price_listed }) => price_listed,
+      type: Money,
+      resolve: ({ price_listed: price, price_currency: currency }) => {
+        const factor =
+          currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
+        const cents = price * factor
+        return { cents, currency }
+      },
     },
     priceWithDiscount: {
-      type: GraphQLFloat,
-      resolve: ({ price_with_discount }) => price_with_discount,
+      type: Money,
+      resolve: ({ price_with_discount: price, price_currency: currency }) => {
+        const factor =
+          currencyCodes[currency?.toLowerCase()]?.subunit_to_unit ?? 100
+        const cents = price * factor
+        return { cents, currency }
+      },
     },
     discountPercentage: {
       type: GraphQLInt,

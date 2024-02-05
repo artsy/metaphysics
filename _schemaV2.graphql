@@ -14639,8 +14639,8 @@ type PartnerOffer {
   # A type-specific ID.
   internalID: ID!
   partnerId: String
-  priceListed: Float
-  priceWithDiscount: Float
+  priceListed: Money
+  priceWithDiscount: Money
   userIds: [String]
 }
 
