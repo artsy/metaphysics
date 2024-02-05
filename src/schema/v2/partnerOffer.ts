@@ -4,6 +4,8 @@ import {
   GraphQLInt,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLBoolean,
+  GraphQLFloat,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields } from "./object_identification"
@@ -16,6 +18,9 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ artwork_id }) => artwork_id,
     },
+    available: {
+      type: GraphQLBoolean,
+    },
     createdAt: date(),
     endAt: date(),
     id: {
@@ -24,6 +29,14 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
     partnerId: {
       type: GraphQLString,
       resolve: ({ partner_id }) => partner_id,
+    },
+    priceListed: {
+      type: GraphQLFloat,
+      resolve: ({ price_listed }) => price_listed,
+    },
+    priceWithDiscount: {
+      type: GraphQLFloat,
+      resolve: ({ price_with_discount }) => price_with_discount,
     },
     discountPercentage: {
       type: GraphQLInt,

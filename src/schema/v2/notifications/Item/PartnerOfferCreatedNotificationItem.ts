@@ -5,6 +5,7 @@ import { pageable } from "relay-cursor-paging"
 import { artworkConnection } from "schema/v2/artwork"
 import { date } from "schema/v2/fields/date"
 import { createPageCursors } from "schema/v2/fields/pagination"
+import { PartnerOfferType } from "schema/v2/partnerOffer"
 import { ResolverContext } from "types/graphql"
 
 export const PartnerOfferCreatedNotificationItemType = new GraphQLObjectType<
@@ -30,7 +31,7 @@ export const PartnerOfferCreatedNotificationItemType = new GraphQLObjectType<
     },
     available: {
       type: GraphQLBoolean,
-      description: "Whether or not the offer is still available",
+      description: "Deprecated. Use `partnerOffer.available` instead.",
       resolve: async ({ actor_ids }, _, { mePartnerOfferLoader }) => {
         if (!mePartnerOfferLoader) return null
         if (actor_ids.length === 0) return null
@@ -41,6 +42,7 @@ export const PartnerOfferCreatedNotificationItemType = new GraphQLObjectType<
     },
     expiresAt: {
       ...date(({ date }) => date),
+      description: "Deprecated. Use `partnerOffer.endAt` instead.",
       resolve: async ({ actor_ids }, _, { mePartnerOfferLoader }) => {
         if (!mePartnerOfferLoader) return null
         if (actor_ids.length === 0) return null
@@ -48,6 +50,15 @@ export const PartnerOfferCreatedNotificationItemType = new GraphQLObjectType<
         const { end_at } = await mePartnerOfferLoader(actor_ids[0])
 
         return end_at
+      },
+    },
+    partnerOffer: {
+      type: PartnerOfferType,
+      resolve: async ({ actor_ids }, _, { mePartnerOfferLoader }) => {
+        if (!mePartnerOfferLoader) return null
+        if (actor_ids.length === 0) return null
+
+        return await mePartnerOfferLoader(actor_ids[0])
       },
     },
   },
