@@ -23,6 +23,7 @@ export const createExchangeLink = () => {
       const headers = {
         ...(graphqlContext && requestIDHeaders(graphqlContext.requestIDs)),
       }
+
       // If a token loader exists for Exchange (i.e. this is an authenticated request), use that token to make
       // authenticated requests to Exchange.
       if (tokenLoader) {
@@ -34,8 +35,20 @@ export const createExchangeLink = () => {
           }
         })
       }
+
+      // Use the app token when an application is trying to reach Exchange eg. Impulse calling Metaphysics
+      if (graphqlContext.appToken) {
+        return {
+          headers: Object.assign(headers, {
+            Authorization: `Bearer ${graphqlContext.appToken}`,
+          }),
+        }
+      }
+
       // Exchange uses no authentication for now
-      return { headers }
+      return {
+        headers,
+      }
     }
   )
 
