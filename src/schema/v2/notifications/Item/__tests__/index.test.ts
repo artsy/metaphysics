@@ -450,6 +450,9 @@ describe("NotificationItem", () => {
           id: "partner-offer-id",
           available: true,
           end_at: "2024-01-08T10:10:10+10:00",
+          price_currency: "EUR",
+          price_listed: 100.0,
+          price_with_discount: 90.0,
         })
       )
 
@@ -471,6 +474,13 @@ describe("NotificationItem", () => {
                 ... on PartnerOfferCreatedNotificationItem {
                   available
                   expiresAt
+
+                  partnerOffer {
+                    isAvailable
+                    endAt
+                    priceListedMessage
+                    priceWithDiscountMessage
+                  }
 
                   artworksConnection(first: 5) {
                     edges {
@@ -510,6 +520,12 @@ describe("NotificationItem", () => {
                 },
                 "available": true,
                 "expiresAt": "2024-01-08T10:10:10+10:00",
+                "partnerOffer": Object {
+                  "endAt": "2024-01-08T10:10:10+10:00",
+                  "isAvailable": true,
+                  "priceListedMessage": "€100",
+                  "priceWithDiscountMessage": "€90",
+                },
               },
             },
           },

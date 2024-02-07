@@ -4,9 +4,11 @@ import {
   GraphQLInt,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields } from "./object_identification"
+import { priceDisplayText } from "lib/moneyHelpers"
 
 export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerOffer",
@@ -16,6 +18,10 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ artwork_id }) => artwork_id,
     },
+    isAvailable: {
+      type: GraphQLBoolean,
+      resolve: ({ available }) => available,
+    },
     createdAt: date(),
     endAt: date(),
     id: {
@@ -24,6 +30,28 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
     partnerId: {
       type: GraphQLString,
       resolve: ({ partner_id }) => partner_id,
+    },
+    priceListedMessage: {
+      type: GraphQLString,
+      resolve: ({ price_listed: price, price_currency: currency }) => {
+        if (!price || !currency) {
+          return null
+        }
+
+        const priceCents = price * 100
+        return priceDisplayText(priceCents, currency, "")
+      },
+    },
+    priceWithDiscountMessage: {
+      type: GraphQLString,
+      resolve: ({ price_with_discount: price, price_currency: currency }) => {
+        if (!price || !currency) {
+          return null
+        }
+
+        const priceCents = price * 100
+        return priceDisplayText(priceCents, currency, "")
+      },
     },
     discountPercentage: {
       type: GraphQLInt,
