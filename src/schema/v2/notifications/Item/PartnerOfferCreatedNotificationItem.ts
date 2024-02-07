@@ -31,7 +31,7 @@ export const PartnerOfferCreatedNotificationItemType = new GraphQLObjectType<
     },
     available: {
       type: GraphQLBoolean,
-      description: "Deprecated. Use `partnerOffer.available` instead.",
+      description: "Deprecated. Use `partnerOffer.isAvailable` instead.",
       resolve: async ({ actor_ids }, _, { mePartnerOfferLoader }) => {
         if (!mePartnerOfferLoader) return null
         if (actor_ids.length === 0) return null

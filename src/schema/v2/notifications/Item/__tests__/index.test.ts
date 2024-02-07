@@ -476,7 +476,7 @@ describe("NotificationItem", () => {
                   expiresAt
 
                   partnerOffer {
-                    available
+                    isAvailable
                     endAt
                     priceListedMessage
                     priceWithDiscountMessage
@@ -521,8 +521,8 @@ describe("NotificationItem", () => {
                 "available": true,
                 "expiresAt": "2024-01-08T10:10:10+10:00",
                 "partnerOffer": Object {
-                  "available": true,
                   "endAt": "2024-01-08T10:10:10+10:00",
+                  "isAvailable": true,
                   "priceListedMessage": "€100",
                   "priceWithDiscountMessage": "€90",
                 },

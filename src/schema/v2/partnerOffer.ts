@@ -18,8 +18,9 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ artwork_id }) => artwork_id,
     },
-    available: {
+    isAvailable: {
       type: GraphQLBoolean,
+      resolve: ({ available }) => available,
     },
     createdAt: date(),
     endAt: date(),

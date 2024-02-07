@@ -14616,7 +14616,6 @@ type PartnerMeta {
 
 type PartnerOffer {
   artworkId: String
-  available: Boolean
   createdAt(
     format: String
 
@@ -14638,6 +14637,7 @@ type PartnerOffer {
 
   # A type-specific ID.
   internalID: ID!
+  isAvailable: Boolean
   partnerId: String
   priceListedMessage: String
   priceWithDiscountMessage: String
@@ -14663,7 +14663,7 @@ type PartnerOfferCreatedNotificationItem {
     last: Int
   ): ArtworkConnection
 
-  # Deprecated. Use `partnerOffer.available` instead.
+  # Deprecated. Use `partnerOffer.isAvailable` instead.
   available: Boolean
 
   # Deprecated. Use `partnerOffer.endAt` instead.
