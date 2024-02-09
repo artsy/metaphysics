@@ -724,8 +724,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       isAcquireable: {
         type: GraphQLBoolean,
-        description: "Whether a work can be purchased through e-commerce",
+        description: "Whether a work can be purchased through Buy Now",
         resolve: ({ acquireable }) => acquireable,
+      },
+      isPurchasable: {
+        type: GraphQLBoolean,
+        description: "Whether a work can be purchased",
+        resolve: ({ purchasable }) => purchasable,
       },
       isOfferable: {
         type: GraphQLBoolean,
