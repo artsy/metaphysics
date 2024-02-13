@@ -113,7 +113,23 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   inquiryRequestsCount: {
     type: new GraphQLNonNull(GraphQLInt),
     resolve: ({ artwork_inquiry_requests_count }) =>
-      artwork_inquiry_requests_count,
+      artwork_inquiry_requests_count || 0,
+  },
+  savedArtworksCount: {
+    type: new GraphQLNonNull(GraphQLInt),
+    resolve: ({ saved_artworks_count }) => saved_artworks_count || 0,
+  },
+  followedArtistsCount: {
+    type: new GraphQLNonNull(GraphQLInt),
+    resolve: ({ followed_artists_count }) => followed_artists_count || 0,
+  },
+  collectedArtworksCount: {
+    type: new GraphQLNonNull(GraphQLInt),
+    resolve: ({ collected_artworks_count }) => collected_artworks_count || 0,
+  },
+  totalBidsCount: {
+    type: new GraphQLNonNull(GraphQLInt),
+    resolve: ({ total_bids_count }) => total_bids_count || 0,
   },
   isActiveBidder: {
     type: GraphQLBoolean,
