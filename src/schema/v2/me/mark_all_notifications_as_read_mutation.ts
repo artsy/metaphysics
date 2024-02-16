@@ -1,4 +1,4 @@
-import { GraphQLObjectType } from "graphql"
+import { GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { GraphQLUnionType } from "graphql"
 import { GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
@@ -7,11 +7,19 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { meType } from "../me"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "MarkAllNotificationsAsReadSuccess",
   isTypeOf: (data) => data.success,
   fields: () => ({
+    me: {
+      type: new GraphQLNonNull(meType),
+      resolve: (_source, _args, { meLoader }) => {
+        debugger
+        return meLoader?.()
+      },
+    },
     success: {
       type: GraphQLBoolean,
       resolve: (result) => result.success,
