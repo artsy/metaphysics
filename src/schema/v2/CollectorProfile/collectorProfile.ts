@@ -18,6 +18,7 @@ import Image, { normalizeImageData } from "schema/v2/image"
 import { userInterestType } from "../userInterests"
 import { myLocationType } from "../me/myLocation"
 import initials from "schema/v2/fields/initials"
+import { UserType } from "schema/v2/user"
 
 export const CollectorProfileFields: GraphQLFieldConfigMap<
   any,
@@ -58,19 +59,24 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
     resolve: ({ self_reported_purchases }) => self_reported_purchases,
   },
   userInterests: {
+    deprecationReason: 'Use "owner#interestsConnection" field instead.',
     type: new GraphQLNonNull(new GraphQLList(userInterestType)),
     resolve: (_collectorProfile, _args, { meUserInterestsLoader }) => {
       return meUserInterestsLoader?.().then(({ body }) => body)
     },
   },
-
-  // moved InquirerCollectorProfileFields here
   location: { type: myLocationType },
   artsyUserSince: dateFormatter(({ artsy_user_since }) => artsy_user_since),
   ownerID: {
     type: new GraphQLNonNull(GraphQLID),
     description: "User ID of the collector profile's owner",
     resolve: ({ owner: { id } }) => id,
+  },
+  owner: {
+    type: new GraphQLNonNull(UserType),
+    resolve: ({ owner: { id } }, _args, { userByIDLoader }) => {
+      return userByIDLoader(id)
+    },
   },
   icon: {
     type: Image.type,
