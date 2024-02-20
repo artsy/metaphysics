@@ -16,7 +16,6 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     me: {
       type: new GraphQLNonNull(meType),
       resolve: (_source, _args, { meLoader }) => {
-        debugger
         return meLoader?.()
       },
     },
