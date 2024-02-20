@@ -11,11 +11,18 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { meType } from "../me"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "MarkNotificationAsReadSuccess",
   isTypeOf: (data) => data.success,
   fields: () => ({
+    me: {
+      type: new GraphQLNonNull(meType),
+      resolve: (_source, _args, { meLoader }) => {
+        return meLoader?.()
+      },
+    },
     success: {
       type: GraphQLBoolean,
       resolve: (result) => result.success,
