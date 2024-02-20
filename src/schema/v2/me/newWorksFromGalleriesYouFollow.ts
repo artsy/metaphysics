@@ -7,7 +7,7 @@ import { ResolverContext } from "types/graphql"
 import { createPageCursors } from "../fields/pagination"
 
 export const newWorksFromGalleriesYouFollow: GraphQLFieldConfig<
-  {},
+  Record<string, unknown>,
   ResolverContext
 > = {
   type: artworkConnection.connectionType,

@@ -82,6 +82,7 @@ export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
         artist,
         auctionLotsLoader
       )
+      /* eslint-disable require-atomic-updates */
       artist.highAuctionRecord = highAuctionRecord
     }
 

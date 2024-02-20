@@ -34,7 +34,7 @@ export const setVersion = (
   return image_url
 }
 
-const normalizeImageUrl = (includeAll: boolean = false) => (image) => {
+const normalizeImageUrl = (includeAll = false) => (image) => {
   const image_url = grab(image, ["url", "image_url"])
 
   if (!includeAll && !image_url) return null
@@ -55,7 +55,7 @@ const normalizeBareUrls = (image) => {
   return image
 }
 
-const _normalize = (includeAll: boolean = false) =>
+const _normalize = (includeAll = false) =>
   flow(normalizeBareUrls, normalizeImageUrl(includeAll), normalizeImageVersions)
 
 export type ImageData =
@@ -79,7 +79,7 @@ export function normalize(
 ): NormalizedImageData[]
 export function normalize(
   response: ImageData | ImageData[],
-  includeAll: boolean = false
+  includeAll = false
 ) {
   if (isArray(response)) return compact(response.map(_normalize(includeAll)))
   return _normalize(includeAll)(response)

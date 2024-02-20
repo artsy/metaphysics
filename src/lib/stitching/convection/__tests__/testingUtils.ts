@@ -45,6 +45,7 @@ let mergedSchema: GraphQLSchema & { transforms: any }
  */
 const getConvectionTransformedSchema = async () => {
   if (!cachedSchema) {
+    /* eslint-disable require-atomic-updates */
     cachedSchema = await executableConvectionSchema()
   }
   return cachedSchema

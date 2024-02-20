@@ -901,18 +901,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             return null
           }
 
-          try {
-            const response = await partnerInquiryRequestLoader({
-              partnerId,
-              inquiryId,
-            })
+          const response = await partnerInquiryRequestLoader({
+            partnerId,
+            inquiryId,
+          })
 
-            return {
-              partnerId,
-              ...response,
-            }
-          } catch (error) {
-            throw error
+          return {
+            partnerId,
+            ...response,
           }
         },
       },

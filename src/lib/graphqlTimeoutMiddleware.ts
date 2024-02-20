@@ -65,9 +65,9 @@ export const graphqlTimeoutMiddleware = (defaultTimeoutInMS: number) => {
           )
         }, timeoutInMS)
       }),
-      new Promise(async (resolve, reject) => {
+      new Promise((resolve, reject) => {
         try {
-          const result = await middlewareResolver(parent, args, context, info)
+          const result = middlewareResolver(parent, args, context, info)
           resolve(result)
         } catch (error) {
           reject(error)

@@ -9,6 +9,7 @@ let cachedSchema: GraphQLSchema & { transforms: any }
 /** Gets a cached copy of the transformed gravity schema  */
 export const getGravityTransformedSchema = async () => {
   if (!cachedSchema) {
+    /* eslint-disable require-atomic-updates */
     cachedSchema = await executableGravitySchema()
   }
   return cachedSchema

@@ -48,10 +48,7 @@ export const formatGravityError = (error) => {
   if (error instanceof HTTPError) {
     const freeBody: any = error.body
 
-    let parsedError
-    try {
-      parsedError = JSON.parse(freeBody)
-    } catch {}
+    const parsedError = JSON.parse(freeBody)
 
     if (isObject(parsedError)) {
       return {

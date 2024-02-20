@@ -15,8 +15,6 @@ export const ManagedPartners: GraphQLFieldConfig<void, ResolverContext> = {
     const partners = await mePartnersLoader?.({
       size: args.size ?? 10,
     })
-    return Promise.all(
-      partners.map((partner) => partnerLoader(partner.id))
-    ).catch(() => {})
+    return Promise.all(partners.map((partner) => partnerLoader(partner.id)))
   },
 }

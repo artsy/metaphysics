@@ -375,7 +375,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           cascading_end_time_interval_minutes,
         }) => {
           if (!cascading_end_time_interval_minutes) return false
-          if (!!ended_at) return false
+          if (ended_at) return false
 
           const thisMoment = moment.tz(moment(), DEFAULT_TZ)
           const lotsClosingMoment = moment.tz(end_at, DEFAULT_TZ)
