@@ -65,9 +65,10 @@ export const graphqlTimeoutMiddleware = (defaultTimeoutInMS: number) => {
           )
         }, timeoutInMS)
       }),
-      new Promise((resolve, reject) => {
+      // eslint-disable-next-line no-async-promise-executor
+      new Promise(async (resolve, reject) => {
         try {
-          const result = middlewareResolver(parent, args, context, info)
+          const result = await middlewareResolver(parent, args, context, info)
           resolve(result)
         } catch (error) {
           reject(error)
