@@ -1,4 +1,9 @@
-import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLEnumType,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import { toTitleCase } from "@artsy/to-title-case"
 
@@ -86,7 +91,7 @@ export const SearchCriteriaLabel = new GraphQLObjectType<
  */
 export const resolveSearchCriteriaLabels = async (
   parent,
-  _args,
+  args,
   context,
   _info
 ) => {
@@ -111,6 +116,8 @@ export const resolveSearchCriteriaLabels = async (
     // Converting all keys to camel case because they can come from Gravity's REST or GraphQL APIs.
   } = camelCaseKeys(parent) as any
 
+  const labelsToReturn = searchCriteriaLabelsToReturn(args.only, args.except)
+
   const {
     artistLoader,
     gravityGraphQLLoader,
@@ -122,30 +129,98 @@ export const resolveSearchCriteriaLabels = async (
 
   const labels: any[] = []
 
-  labels.push(await getArtistLabels(artistIDs, artistLoader))
-  labels.push(getRarityLabels(attributionClass))
-  labels.push(getMediumLabels(additionalGeneIDs))
-  labels.push(getPriceLabel(priceRange))
-  labels.push(getSizeLabels(sizes, metric))
-  labels.push(getCustomSizeLabels({ height, metric, width }))
-  labels.push(
-    getWaysToBuyLabels({
-      acquireable,
-      atAuction,
-      inquireableOnly,
-      offerable,
-    })
-  )
-  labels.push(getMaterialLabels(materialsTerms))
-  labels.push(getLocationLabels(locationCities))
-  labels.push(getPeriodLabels(majorPeriods))
-  labels.push(getColorLabels(colors))
-  labels.push(await getPartnerLabels(partnerIDs, partnerLoader))
-  labels.push(
-    await getArtistSeriesLabels(artistSeriesIDs, gravityGraphQLLoader)
-  )
+  if (labelsToReturn.includes("artistIDs")) {
+    labels.push(await getArtistLabels(artistIDs, artistLoader))
+  }
+  if (labelsToReturn.includes("attributionClass")) {
+    labels.push(getRarityLabels(attributionClass))
+  }
+  if (labelsToReturn.includes("additionalGeneIDs")) {
+    labels.push(getMediumLabels(additionalGeneIDs))
+  }
+  if (labelsToReturn.includes("priceRange")) {
+    labels.push(getPriceLabel(priceRange))
+  }
+  if (labelsToReturn.includes("sizes")) {
+    labels.push(getSizeLabels(sizes, metric))
+  }
+  if (labelsToReturn.includes("width") || labelsToReturn.includes("height")) {
+    labels.push(getCustomSizeLabels({ height, metric, width }))
+  }
+  if (
+    labelsToReturn.includes("acquireable") ||
+    labelsToReturn.includes("atAuction") ||
+    labelsToReturn.includes("inquireableOnly") ||
+    labelsToReturn.includes("offerable")
+  ) {
+    labels.push(
+      getWaysToBuyLabels({
+        acquireable,
+        atAuction,
+        inquireableOnly,
+        offerable,
+      })
+    )
+  }
+  if (labelsToReturn.includes("materialsTerms")) {
+    labels.push(getMaterialLabels(materialsTerms))
+  }
+  if (labelsToReturn.includes("locationCities")) {
+    labels.push(getLocationLabels(locationCities))
+  }
+  if (labelsToReturn.includes("majorPeriods")) {
+    labels.push(getPeriodLabels(majorPeriods))
+  }
+  if (labelsToReturn.includes("colors")) {
+    labels.push(getColorLabels(colors))
+  }
+  if (labelsToReturn.includes("partnerIDs")) {
+    labels.push(await getPartnerLabels(partnerIDs, partnerLoader))
+  }
+  if (labelsToReturn.includes("artistSeriesIDs")) {
+    labels.push(
+      await getArtistSeriesLabels(artistSeriesIDs, gravityGraphQLLoader)
+    )
+  }
 
   return labels.flat().filter((x) => x !== undefined) as SearchCriteriaLabel[]
+}
+
+export const SearchCriteriaFields = new GraphQLEnumType({
+  name: "SearchCriteriaFields",
+  values: {
+    artistIDs: { value: "artistIDs" },
+    artistSeriesIDs: { value: "artistSeriesIDs" },
+    attributionClass: { value: "attributionClass" },
+    additionalGeneIDs: { value: "additionalGeneIDs" },
+    priceRange: { value: "priceRange" },
+    sizes: { value: "sizes" },
+    width: { value: "width" },
+    height: { value: "height" },
+    acquireable: { value: "acquireable" },
+    atAuction: { value: "atAuction" },
+    inquireableOnly: { value: "inquireableOnly" },
+    offerable: { value: "offerable" },
+    materialsTerms: { value: "materialsTerms" },
+    locationCities: { value: "locationCities" },
+    majorPeriods: { value: "majorPeriods" },
+    colors: { value: "colors" },
+    partnerIDs: { value: "partnerIDs" },
+  },
+})
+
+export const searchCriteriaLabelsToReturn = (
+  only: string[] = [],
+  except: string[] = []
+) => {
+  let labelsToReturn = SearchCriteriaFields.getValues().map((x) => x.value)
+  if (only.length > 0) {
+    labelsToReturn = labelsToReturn.filter((label) => only.includes(label))
+  }
+  if (except.length > 0) {
+    labelsToReturn = labelsToReturn.filter((label) => !except.includes(label))
+  }
+  return labelsToReturn
 }
 
 async function getArtistLabels(artistIDs: string[], artistLoader) {
