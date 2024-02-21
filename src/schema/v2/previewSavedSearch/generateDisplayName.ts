@@ -1,14 +1,17 @@
 import {
   resolveSearchCriteriaLabels,
   SearchCriteriaLabel,
+  searchCriteriaLabelsToReturn,
 } from "./searchCriteriaLabel"
 
 export const generateDisplayName = async (parent, args, context, info) => {
-  if (parent?.userAlertSettings?.name) return parent?.userAlertSettings?.name
-
-  // When being used from the non-stitched schema, the field is called `settings`
-  // instead of `userAlertSettings`
-  if (parent?.settings?.name) return parent.settings.name
+  // if `only` or `except` is provided, we forcefully resolve display name dynamically
+  if (!args?.only && !args?.except) {
+    if (parent?.userAlertSettings?.name) return parent?.userAlertSettings?.name
+    // When being used from the non-stitched schema, the field is called `settings`
+    // instead of `userAlertSettings`
+    if (parent?.settings?.name) return parent.settings.name
+  }
 
   const labels = await resolveSearchCriteriaLabels(parent, args, context, info)
 
@@ -72,8 +75,16 @@ export const generateDisplayName = async (parent, args, context, info) => {
   const displayValues = useableLabels.map((labels) => {
     return labels.map((label) => label.displayValue).join(" or ")
   })
-  const [artist, ...others] = displayValues
-  let result = [artist, others.join(", ")].join(others.length > 0 ? " — " : "")
+
+  let result = ""
+  if (
+    searchCriteriaLabelsToReturn(args.only, args.except).includes("artistIDs")
+  ) {
+    const [artist, ...others] = displayValues
+    result = [artist, others.join(", ")].join(others.length > 0 ? " — " : "")
+  } else {
+    result = displayValues.join(", ")
+  }
 
   const remainingCount = allLabels.length - useableLabels.length
   if (remainingCount > 0) result += ` + ${remainingCount} more`
