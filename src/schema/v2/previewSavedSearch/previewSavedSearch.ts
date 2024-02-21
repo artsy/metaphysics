@@ -20,7 +20,7 @@ import { generateDisplayName } from "./generateDisplayName"
 import { resolveHref } from "./resolveHref"
 import { suggestedFilters } from "./suggestedFilters"
 
-const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
+export const previewSavedSearchArgs: GraphQLFieldConfigArgumentMap = {
   acquireable: {
     type: GraphQLBoolean,
   },
