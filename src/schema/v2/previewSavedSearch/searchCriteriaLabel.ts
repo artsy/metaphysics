@@ -1,5 +1,6 @@
 import {
   GraphQLEnumType,
+  GraphQLError,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -13,6 +14,7 @@ import { COLORS } from "lib/colors"
 import { round } from "lodash"
 import gql from "lib/gql"
 import { DEFAULT_LENGTH_UNIT_PREFERENCE, camelCaseKeys } from "lib/helpers"
+import { previewSavedSearchArgs } from "./previewSavedSearch"
 
 export const SIZES_IN_CM = {
   SMALL: "Small (under 40cm)",
@@ -188,31 +190,22 @@ export const resolveSearchCriteriaLabels = async (
 
 export const SearchCriteriaFields = new GraphQLEnumType({
   name: "SearchCriteriaFields",
-  values: {
-    artistIDs: { value: "artistIDs" },
-    artistSeriesIDs: { value: "artistSeriesIDs" },
-    attributionClass: { value: "attributionClass" },
-    additionalGeneIDs: { value: "additionalGeneIDs" },
-    priceRange: { value: "priceRange" },
-    sizes: { value: "sizes" },
-    width: { value: "width" },
-    height: { value: "height" },
-    acquireable: { value: "acquireable" },
-    atAuction: { value: "atAuction" },
-    inquireableOnly: { value: "inquireableOnly" },
-    offerable: { value: "offerable" },
-    materialsTerms: { value: "materialsTerms" },
-    locationCities: { value: "locationCities" },
-    majorPeriods: { value: "majorPeriods" },
-    colors: { value: "colors" },
-    partnerIDs: { value: "partnerIDs" },
-  },
+  values: Object.keys(previewSavedSearchArgs).reduce((acc, item) => {
+    acc[item] = { value: item }
+    return acc
+  }, {}),
 })
 
 export const searchCriteriaLabelsToReturn = (
   only: string[] = [],
   except: string[] = []
 ) => {
+  if (only.length > 0 && except.length > 0) {
+    throw new GraphQLError(
+      "You can't specify both `only` and `except` at the same time."
+    )
+  }
+
   let labelsToReturn = SearchCriteriaFields.getValues().map((x) => x.value)
   if (only.length > 0) {
     labelsToReturn = labelsToReturn.filter((label) => only.includes(label))

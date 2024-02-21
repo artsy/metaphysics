@@ -282,7 +282,7 @@ export const AlertType = new GraphQLObjectType<
       args: {
         only: {
           type: new GraphQLList(SearchCriteriaFields),
-          description: "An array of fields to include to labels array.",
+          description: "An array of fields to include in labels array.",
         },
         except: {
           type: new GraphQLList(SearchCriteriaFields),

@@ -313,7 +313,7 @@ type Alert {
     # An array of fields to exclude from labels array.
     except: [SearchCriteriaFields]
 
-    # An array of fields to include to labels array.
+    # An array of fields to include in labels array.
     only: [SearchCriteriaFields]
   ): [SearchCriteriaLabel]!
   locationCities: [String]

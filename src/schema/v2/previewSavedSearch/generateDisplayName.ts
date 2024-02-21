@@ -5,7 +5,7 @@ import {
 } from "./searchCriteriaLabel"
 
 export const generateDisplayName = async (parent, args, context, info) => {
-  // if `only` or `except` is provided, we forcefully resolve display name dinamically
+  // if `only` or `except` is provided, we forcefully resolve display name dynamically
   if (!args?.only && !args?.except) {
     if (parent?.userAlertSettings?.name) return parent?.userAlertSettings?.name
     // When being used from the non-stitched schema, the field is called `settings`
