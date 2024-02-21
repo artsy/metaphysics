@@ -392,7 +392,7 @@ describe("me/index", () => {
     const query = gql`
       query {
         me {
-          alertsConnection(first: 1) {
+          alertsConnection(first: 1, sort: ENABLED_AT_DESC) {
             totalCount
             edges {
               node {

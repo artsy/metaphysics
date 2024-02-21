@@ -73,7 +73,11 @@ import {
   DEFAULT_CURRENCY_PREFERENCE,
   DEFAULT_LENGTH_UNIT_PREFERENCE,
 } from "lib/helpers"
-import { AlertType, AlertsConnectionType } from "../Alerts"
+import {
+  AlertType,
+  AlertsConnectionSortEnum,
+  AlertsConnectionType,
+} from "../Alerts"
 import { emptyConnection, paginationResolver } from "../fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
@@ -148,14 +152,21 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     alertsConnection: {
-      args: pageable(),
+      args: pageable({
+        sort: {
+          type: AlertsConnectionSortEnum,
+        },
+      }),
       type: new GraphQLNonNull(AlertsConnectionType),
       resolve: async (_parent, args, { meAlertsLoader }) => {
         if (!meAlertsLoader) return emptyConnection
-        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+        const { page, size, offset, sort } = convertConnectionArgsToGravityArgs(
+          args
+        )
         const { body, headers } = await meAlertsLoader({
           page,
           size,
+          sort,
           total_count: true,
         })
         const totalCount = parseInt(headers["x-total-count"] || "0", 10)

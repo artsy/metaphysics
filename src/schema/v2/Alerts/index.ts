@@ -53,10 +53,10 @@ const AlertSettingsType = new GraphQLObjectType<
       type: GraphQLString,
     },
     email: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
     },
     push: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
     },
     details: {
       type: GraphQLString,
@@ -278,7 +278,9 @@ export const AlertType = new GraphQLObjectType<
       type: GraphQLString,
     },
     labels: {
-      type: new GraphQLNonNull(new GraphQLList(SearchCriteriaLabel)),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(SearchCriteriaLabel))
+      ),
       args: {
         only: {
           type: new GraphQLList(SearchCriteriaFields),
@@ -332,7 +334,7 @@ export const AlertType = new GraphQLObjectType<
       type: GraphQLString,
     },
     settings: {
-      type: AlertSettingsType,
+      type: new GraphQLNonNull(AlertSettingsType),
     },
 
     // Below fields are injected in the JSON when the alert data is being returned
@@ -369,6 +371,19 @@ const AlertsEdgeFields = {
     resolve: ({ count_7d }) => count_7d > 0,
   },
 }
+
+export const AlertsConnectionSortEnum = new GraphQLEnumType({
+  name: "AlertsConnectionSortEnum",
+  values: {
+    NAME_ASC: {
+      value: "name",
+    },
+
+    ENABLED_AT_DESC: {
+      value: "-enabled_at",
+    },
+  },
+})
 
 export const AlertsConnectionType = connectionWithCursorInfo({
   name: "Alert",
