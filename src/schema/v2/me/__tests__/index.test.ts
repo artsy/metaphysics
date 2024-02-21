@@ -473,6 +473,8 @@ describe("me/index", () => {
             keyword
             artistIDs
             displayName
+            title: displayName(only: [artistIDs])
+            subtitle: displayName(except: [artistIDs])
             settings {
               email
               frequency
@@ -501,6 +503,7 @@ describe("me/index", () => {
             keyword: "cats",
             artist_ids: ["andy-warhol"],
             price_range: "*-1000",
+            additional_gene_ids: ["painting"],
           },
           frequency: "daily",
           email: true,
@@ -564,13 +567,15 @@ describe("me/index", () => {
                   },
                 ],
               },
-              "displayName": "Andy Warhol — $0–$1,000",
+              "displayName": "Andy Warhol — $0–$1,000, Painting",
               "internalID": "123",
               "keyword": "cats",
               "settings": Object {
                 "email": true,
                 "frequency": "DAILY",
               },
+              "subtitle": "$0–$1,000, Painting",
+              "title": "Andy Warhol",
             },
           },
         }

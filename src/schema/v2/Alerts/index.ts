@@ -17,6 +17,7 @@ import { ResolverContext } from "types/graphql"
 import { IDFields } from "../object_identification"
 import GraphQLJSON from "graphql-type-json"
 import {
+  SearchCriteriaFields,
   SearchCriteriaLabel,
   resolveSearchCriteriaLabels,
 } from "../previewSavedSearch/searchCriteriaLabel"
@@ -273,6 +274,16 @@ export const AlertType = new GraphQLObjectType<
       },
       displayName: {
         type: new GraphQLNonNull(GraphQLString),
+        args: {
+          only: {
+            type: new GraphQLList(SearchCriteriaFields),
+            description: "An array of fields to include in the display name.",
+          },
+          except: {
+            type: new GraphQLList(SearchCriteriaFields),
+            description: "An array of fields to exclude from the display name.",
+          },
+        },
         resolve: generateDisplayName,
         description:
           "A suggestion for a name that describes a set of saved search criteria in a conventional format",
@@ -300,6 +311,16 @@ export const AlertType = new GraphQLObjectType<
       },
       labels: {
         type: new GraphQLNonNull(new GraphQLList(SearchCriteriaLabel)),
+        args: {
+          only: {
+            type: new GraphQLList(SearchCriteriaFields),
+            description: "An array of fields to include in labels array.",
+          },
+          except: {
+            type: new GraphQLList(SearchCriteriaFields),
+            description: "An array of fields to exclude from labels array.",
+          },
+        },
         resolve: resolveSearchCriteriaLabels,
         description:
           "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
