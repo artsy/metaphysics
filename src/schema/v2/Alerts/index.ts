@@ -171,6 +171,7 @@ type GravitySearchCriteriaJSON = {
   inquireable_only: boolean
   at_auction: boolean
   offerable: boolean
+  search_criteria_id: string
 }
 
 export const AlertType = new GraphQLObjectType<
@@ -322,6 +323,10 @@ export const AlertType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ price_range }) => price_range,
     },
+    searchCriteriaID: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ search_criteria_id }) => search_criteria_id,
+    },
     sizes: {
       type: new GraphQLList(GraphQLString),
     },
@@ -384,6 +389,16 @@ export const AlertsConnectionSortEnum = new GraphQLEnumType({
     },
   },
 })
+
+export const resolveAlertFromJSON = (alert) => {
+  const { search_criteria, id, ...rest } = alert
+  return {
+    ...search_criteria,
+    id, // Inject the ID from the `UserSearchCriteria` object
+    search_criteria_id: search_criteria.id,
+    settings: rest,
+  }
+}
 
 export const AlertsConnectionType = connectionWithCursorInfo({
   name: "Alert",

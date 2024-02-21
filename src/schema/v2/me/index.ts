@@ -77,6 +77,7 @@ import {
   AlertType,
   AlertsConnectionSortEnum,
   AlertsConnectionType,
+  resolveAlertFromJSON,
 } from "../Alerts"
 import { emptyConnection, paginationResolver } from "../fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -143,12 +144,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         if (!meAlertLoader) return null
         const alert = await meAlertLoader(alertID)
 
-        const { search_criteria, id, ...rest } = alert
-        return {
-          ...search_criteria,
-          id, // Inject the ID from the `UserSearchCriteria` object
-          settings: rest,
-        }
+        return resolveAlertFromJSON(alert)
       },
     },
     alertsConnection: {
@@ -178,14 +174,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
           page,
           size,
           totalCount,
-          resolveNode: (node) => {
-            const { search_criteria, id, ...rest } = node
-            return {
-              ...search_criteria,
-              id, // Inject the ID from the `UserSearchCriteria` object
-              settings: rest,
-            }
-          },
+          resolveNode: resolveAlertFromJSON,
         })
       },
     },

@@ -397,6 +397,7 @@ describe("me/index", () => {
             edges {
               node {
                 internalID
+                searchCriteriaID
                 keyword
                 artistIDs
                 settings {
@@ -421,6 +422,7 @@ describe("me/index", () => {
               search_criteria: {
                 keyword: "cats",
                 artist_ids: ["andy-warhol"],
+                id: "search-criteria-id",
               },
               frequency: "daily",
               name: "My Alert",
@@ -447,6 +449,7 @@ describe("me/index", () => {
                     ],
                     "internalID": "123",
                     "keyword": "cats",
+                    "searchCriteriaID": "search-criteria-id",
                     "settings": Object {
                       "email": true,
                       "frequency": "DAILY",
@@ -469,6 +472,7 @@ describe("me/index", () => {
         me {
           alert(id: "123") {
             internalID
+            searchCriteriaID
             keyword
             artistIDs
             displayName
@@ -493,6 +497,7 @@ describe("me/index", () => {
             artist_ids: ["andy-warhol"],
             price_range: "*-1000",
             additional_gene_ids: ["painting"],
+            id: "search-criteria-id",
           },
           frequency: "daily",
           email: true,
@@ -514,6 +519,7 @@ describe("me/index", () => {
               "displayName": "Andy Warhol — $0–$1,000, Painting",
               "internalID": "123",
               "keyword": "cats",
+              "searchCriteriaID": "search-criteria-id",
               "settings": Object {
                 "email": true,
                 "frequency": "DAILY",
