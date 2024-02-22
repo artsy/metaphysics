@@ -8,6 +8,7 @@
   },
   "plugins": ["promise", "@typescript-eslint", "jest"],
   "extends": [
+    "eslint:recommended",
     "plugin:promise/recommended",
     "plugin:import/errors",
     "plugin:import/typescript",

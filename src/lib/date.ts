@@ -255,7 +255,7 @@ export function cascadingFormattedStartDateTime(
   const lotsClosingMoment = moment.tz(endAt, tz)
   const saleEndMoment = moment.tz(endedAt, tz) // only used for formatting
 
-  if (!!endedAt) return `Closed ${saleEndMoment.format("MMM D, YYYY")}`
+  if (endedAt) return `Closed ${saleEndMoment.format("MMM D, YYYY")}`
 
   if (thisMoment.isAfter(lotsClosingMoment)) return "Closing soon"
 
@@ -276,7 +276,7 @@ export function auctionsDetailFormattedStartDateTime(
   const saleEndMoment = moment.tz(endedAt, tz)
   const liveStartMoment = moment.tz(liveStartAt, tz)
 
-  if (!!endedAt)
+  if (endedAt)
     return `Closed ${saleEndMoment.format(
       "MMM D, YYYY"
     )} • ${saleEndMoment.format("h:mma z")}`

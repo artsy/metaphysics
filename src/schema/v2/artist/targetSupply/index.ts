@@ -11,8 +11,8 @@ import { ResolverContext } from "types/graphql"
 import { getArtistMicrofunnelMetadata } from "./utils/getMicrofunnelData"
 
 const ARTIST_TARGET_SUPPLY_PRIORITIES = {
-  P1: { value: 1 },
-  P2: { value: 2 },
+  FALSE: { value: 0 },
+  TRUE: { value: 1 },
 } as const
 
 export type ArtistTargetSupplyPriority = typeof ARTIST_TARGET_SUPPLY_PRIORITIES[keyof typeof ARTIST_TARGET_SUPPLY_PRIORITIES]["value"]
@@ -23,12 +23,10 @@ export const ArtistTargetSupplyPriorityEnum = new GraphQLEnumType({
 })
 
 const ARTIST_TARGET_SUPPLY_TYPES = {
-  BLUE_CHIP: { value: "Blue-Chip" },
-  CRITICALLY_ACCLAIMED: { value: "Critically-Acclaimed" },
-  NEW_AND_NOTEWORTHY: { value: "New & Noteworthy" },
-  STREET_AND_URBAN: { value: "Street & Urban" },
-  TRENDING_EMERGING: { value: "Trending Emerging" },
-  ULTRA_HIGH_DEMAND: { value: "Ultra High Demand" },
+  HIGHEST_HQDLS: { value: "Highest HQDLs" },
+  HIGH_HQDLS: { value: "High HQDLs" },
+  AUCTION_MARKET: { value: "Auction Market" },
+  CURATED_EMERGING: { value: "Curated Emerging" },
 } as const
 
 export type ArtistTargetSupplyType = typeof ARTIST_TARGET_SUPPLY_TYPES[keyof typeof ARTIST_TARGET_SUPPLY_TYPES]["value"]

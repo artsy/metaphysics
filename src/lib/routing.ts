@@ -1,6 +1,8 @@
 import _ from "lodash"
 
 export default (type, id) => {
+  const namespace = _.snakeCase(type)
+
   switch (type) {
     case "PartnerShow":
       return {
@@ -15,7 +17,6 @@ export default (type, id) => {
       }
 
     default:
-      const namespace = _.snakeCase(type)
       return {
         api: `${namespace}/${id}`,
         href: `/${namespace}/${id}`,

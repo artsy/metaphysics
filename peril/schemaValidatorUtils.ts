@@ -49,7 +49,7 @@ export const getBreakingChanges = async (
     buildSchema(localSchemaSDL),
     buildSchema(upstreamSchemaSDL)
   )
-  const breakings = allChanges.filter(c => c.criticality.level === "BREAKING")
-  const messages = breakings.map(c => c.message)
+  const breakings = allChanges.filter((c) => c.criticality.level === "BREAKING")
+  const messages = breakings.map((c) => c.message)
   return messages
 }

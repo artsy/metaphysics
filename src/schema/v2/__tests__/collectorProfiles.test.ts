@@ -1,3 +1,5 @@
+// eslint-disable jest/no-try-expect
+
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
@@ -75,6 +77,8 @@ describe("collectorProfilesConnection", () => {
       })
       throw new Error("An error was not thrown but was expected.")
     } catch (error) {
+      /* eslint-disable jest/no-conditional-expect */
+      /* eslint-disable jest/no-try-expect */
       expect(error.message).toEqual(
         "Arguments `partnerID` and `term` are required."
       )

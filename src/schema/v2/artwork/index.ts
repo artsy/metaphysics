@@ -1033,7 +1033,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         args: { id: { type: GraphQLString } },
         resolve: (artwork, { id }, { relatedLayersLoader }) =>
           artworkLayers(artwork.id, relatedLayersLoader).then((layers) =>
-            !!id ? _.find(layers, { id }) : _.first(layers)
+            id ? _.find(layers, { id }) : _.first(layers)
           ),
       },
       layers: {

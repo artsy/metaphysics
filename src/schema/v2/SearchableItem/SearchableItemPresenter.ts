@@ -71,12 +71,13 @@ export class SearchableItemPresenter {
   displayType(): string {
     const { fair_id, label, owner_type } = this.item
 
+    const institutionTypes = [
+      "PartnerInstitution",
+      "PartnerInstitutionalSeller",
+    ]
+
     switch (label) {
       case "Profile":
-        const institutionTypes = [
-          "PartnerInstitution",
-          "PartnerInstitutionalSeller",
-        ]
         if (institutionTypes.includes(owner_type)) {
           return "Institution"
         } else if (owner_type === "FairOrganizer") {

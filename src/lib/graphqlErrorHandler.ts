@@ -16,7 +16,8 @@ declare class CombinedError extends Error {
 
 const isCombinedError = (
   error?: Error | CombinedError | null
-): error is CombinedError => !!error && error.hasOwnProperty("errors")
+): error is CombinedError =>
+  !!error && Object.prototype.hasOwnProperty.call(error, "errors")
 
 export const flattenErrors = (error: GraphQLError) => {
   const originalTopLevelError = error.originalError as

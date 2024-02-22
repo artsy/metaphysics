@@ -2,6 +2,7 @@
 import gql from "lib/gql"
 import moment from "moment"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
+
 describe("me/index", () => {
   const query = gql`
     query {
@@ -392,11 +393,12 @@ describe("me/index", () => {
     const query = gql`
       query {
         me {
-          alertsConnection(first: 1) {
+          alertsConnection(first: 1, sort: ENABLED_AT_DESC) {
             totalCount
             edges {
               node {
                 internalID
+                searchCriteriaID
                 keyword
                 artistIDs
                 settings {
@@ -421,6 +423,7 @@ describe("me/index", () => {
               search_criteria: {
                 keyword: "cats",
                 artist_ids: ["andy-warhol"],
+                id: "search-criteria-id",
               },
               frequency: "daily",
               name: "My Alert",
@@ -447,6 +450,7 @@ describe("me/index", () => {
                     ],
                     "internalID": "123",
                     "keyword": "cats",
+                    "searchCriteriaID": "search-criteria-id",
                     "settings": Object {
                       "email": true,
                       "frequency": "DAILY",
@@ -469,6 +473,7 @@ describe("me/index", () => {
         me {
           alert(id: "123") {
             internalID
+            searchCriteriaID
             keyword
             artistIDs
             displayName
@@ -477,6 +482,16 @@ describe("me/index", () => {
             settings {
               email
               frequency
+            }
+            artworksConnection(first: 1) {
+              counts {
+                total
+              }
+              edges {
+                node {
+                  title
+                }
+              }
             }
           }
         }
@@ -493,16 +508,50 @@ describe("me/index", () => {
             artist_ids: ["andy-warhol"],
             price_range: "*-1000",
             additional_gene_ids: ["painting"],
+            id: "search-criteria-id",
           },
           frequency: "daily",
           email: true,
         })
 
-      const data = await runAuthenticatedQuery(query, {
+      const filterArtworksLoader = jest.fn().mockReturnValue(
+        Promise.resolve({
+          hits: [
+            {
+              title: "Soup can",
+            },
+          ],
+          aggregations: {
+            total: {
+              value: 1,
+            },
+          },
+        })
+      )
+
+      const context = {
         meLoader,
         meAlertLoader,
         artistLoader: () => Promise.resolve({ name: "Andy Warhol" }),
-      })
+        authenticatedLoaders: {
+          filterArtworksLoader,
+        },
+        unauthenticatedLoaders: {
+          filterArtworksLoader,
+        },
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(
+        context.unauthenticatedLoaders.filterArtworksLoader
+      ).toHaveBeenCalledWith(
+        expect.objectContaining({
+          artist_ids: ["andy-warhol"],
+          price_range: "*-1000",
+          aggregations: ["total"],
+        })
+      )
 
       expect(data).toMatchInlineSnapshot(`
         Object {
@@ -511,9 +560,22 @@ describe("me/index", () => {
               "artistIDs": Array [
                 "andy-warhol",
               ],
+              "artworksConnection": Object {
+                "counts": Object {
+                  "total": 1,
+                },
+                "edges": Array [
+                  Object {
+                    "node": Object {
+                      "title": "Soup can",
+                    },
+                  },
+                ],
+              },
               "displayName": "Andy Warhol — $0–$1,000, Painting",
               "internalID": "123",
               "keyword": "cats",
+              "searchCriteriaID": "search-criteria-id",
               "settings": Object {
                 "email": true,
                 "frequency": "DAILY",

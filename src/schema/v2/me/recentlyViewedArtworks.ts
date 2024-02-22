@@ -32,9 +32,9 @@ export const RecentlyViewedArtworks: GraphQLFieldConfig<
       let artworkIDs
 
       // If `recently_viewed_artwork_ids` exists, use those
-      if (!!recently_viewed_artwork_ids) {
+      if (recently_viewed_artwork_ids) {
         artworkIDs = recently_viewed_artwork_ids
-      } else if (!!xImpersonateUserID) {
+      } else if (xImpersonateUserID) {
         // Otherwise, we are impersonating and use special loader to fetch
         const {
           body: recentlyViewedArtworkIds,
