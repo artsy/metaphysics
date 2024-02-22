@@ -1,7 +1,5 @@
 import { date } from "./fields/date"
 import {
-  GraphQLList,
-  GraphQLInt,
   GraphQLObjectType,
   GraphQLString,
   GraphQLBoolean,
@@ -12,14 +10,19 @@ import { IDFields } from "./object_identification"
 import { priceDisplayText } from "lib/moneyHelpers"
 import { connectionWithCursorInfo } from "./fields/pagination"
 
-export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
-  name: "PartnerOffer",
+export const PartnerOfferToCollectorType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "PartnerOfferToCollector",
   fields: () => ({
     ...IDFields,
     artworkId: {
       type: GraphQLString,
       resolve: ({ artwork_id }) => artwork_id,
     },
+    createdAt: date(),
+    endAt: date(),
     isActive: {
       type: GraphQLBoolean,
       resolve: ({ active }) => active,
@@ -28,22 +31,9 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ available }) => available,
     },
-    createdAt: date(),
-    endAt: date(),
     partnerId: {
       type: GraphQLString,
       resolve: ({ partner_id }) => partner_id,
-    },
-    priceListedMessage: {
-      type: GraphQLString,
-      resolve: ({ price_listed: price, price_currency: currency }) => {
-        if (!price || !currency) {
-          return null
-        }
-
-        const priceCents = price * 100
-        return priceDisplayText(priceCents, currency, "")
-      },
     },
     priceWithDiscountMessage: {
       type: GraphQLString,
@@ -56,26 +46,15 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
         return priceDisplayText(priceCents, currency, "")
       },
     },
-    discountPercentage: {
-      type: GraphQLInt,
-      resolve: ({ discount_percentage }) => discount_percentage,
-    },
-    note: {
-      type: GraphQLString,
-    },
-    userIds: {
-      type: new GraphQLList(GraphQLString),
-      resolve: ({ user_ids }) => user_ids,
-    },
   }),
 })
 
-export const PartnerOfferConnectionType = connectionWithCursorInfo({
-  nodeType: PartnerOfferType,
+export const PartnerOfferToCollectorConnectionType = connectionWithCursorInfo({
+  nodeType: PartnerOfferToCollectorType,
 }).connectionType
 
-export const PartnerOfferSortsType = new GraphQLEnumType({
-  name: "PartnerOfferSorts",
+export const PartnerOfferToCollectorSortsType = new GraphQLEnumType({
+  name: "PartnerOfferToCollectorSorts",
   values: {
     CREATED_AT_ASC: {
       value: "created_at",

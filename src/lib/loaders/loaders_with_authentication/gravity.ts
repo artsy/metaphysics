@@ -485,6 +485,11 @@ export default (accessToken, userID, opts) => {
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
     mePartnerOfferLoader: gravityLoader((id) => `me/partner_offer/${id}`),
+    mePartnerOffersLoader: gravityLoader(
+      `me/partner_offers`,
+      {},
+      { headers: true }
+    ),
     meUpdateCollectorProfileLoader: gravityLoader(
       "me/collector_profile",
       {},
@@ -501,6 +506,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+
     meSearchCriteriaLoader: gravityLoader((id) => `me/search_criteria/${id}`),
     meShowsLoader: gravityLoader("me/shows", {}, { headers: true }),
     myCollectionArtworksLoader: gravityLoader(
