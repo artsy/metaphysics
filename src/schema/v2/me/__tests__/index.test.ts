@@ -2,6 +2,7 @@
 import gql from "lib/gql"
 import moment from "moment"
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
+
 describe("me/index", () => {
   const query = gql`
     query {
@@ -482,6 +483,16 @@ describe("me/index", () => {
               email
               frequency
             }
+            artworksConnection(first: 1) {
+              counts {
+                total
+              }
+              edges {
+                node {
+                  title
+                }
+              }
+            }
           }
         }
       }
@@ -503,11 +514,44 @@ describe("me/index", () => {
           email: true,
         })
 
-      const data = await runAuthenticatedQuery(query, {
+      const filterArtworksLoader = jest.fn().mockReturnValue(
+        Promise.resolve({
+          hits: [
+            {
+              title: "Soup can",
+            },
+          ],
+          aggregations: {
+            total: {
+              value: 1,
+            },
+          },
+        })
+      )
+
+      const context = {
         meLoader,
         meAlertLoader,
         artistLoader: () => Promise.resolve({ name: "Andy Warhol" }),
-      })
+        authenticatedLoaders: {
+          filterArtworksLoader,
+        },
+        unauthenticatedLoaders: {
+          filterArtworksLoader,
+        },
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(
+        context.unauthenticatedLoaders.filterArtworksLoader
+      ).toHaveBeenCalledWith(
+        expect.objectContaining({
+          artist_ids: ["andy-warhol"],
+          price_range: "*-1000",
+          aggregations: ["total"],
+        })
+      )
 
       expect(data).toMatchInlineSnapshot(`
         Object {
@@ -516,6 +560,18 @@ describe("me/index", () => {
               "artistIDs": Array [
                 "andy-warhol",
               ],
+              "artworksConnection": Object {
+                "counts": Object {
+                  "total": 1,
+                },
+                "edges": Array [
+                  Object {
+                    "node": Object {
+                      "title": "Soup can",
+                    },
+                  },
+                ],
+              },
               "displayName": "Andy Warhol — $0–$1,000, Painting",
               "internalID": "123",
               "keyword": "cats",
