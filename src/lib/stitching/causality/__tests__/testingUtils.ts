@@ -45,6 +45,7 @@ let mergedSchema: GraphQLSchema & { transforms: any }
  */
 const getCausalityTransformedSchema = async () => {
   if (!cachedSchema) {
+    /* eslint-disable require-atomic-updates */
     cachedSchema = await executableCausalitySchema()
   }
   return cachedSchema
@@ -57,6 +58,7 @@ const getCausalityTransformedSchema = async () => {
 const getCausalityStitchedSchema = async () => {
   if (!stitchedSchema) {
     const causalitySchema = await getCausalityTransformedSchema()
+    // @ts-ignore require-atomic-updates
     stitchedSchema = causalityStitchingEnvironmentV2({
       localSchema,
       causalitySchema,

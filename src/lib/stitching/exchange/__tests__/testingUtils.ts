@@ -11,6 +11,7 @@ let mergedSchema: GraphQLSchema & { transforms: any }
 /** Gets a cached copy of the transformed exchange schema  */
 export const getExchangeTransformedSchema = async () => {
   if (!cachedSchema) {
+    /* eslint-disable require-atomic-updates */
     cachedSchema = await executableExchangeSchema(transformsForExchange)
   }
   return cachedSchema

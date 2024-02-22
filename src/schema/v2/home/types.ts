@@ -75,7 +75,10 @@ export interface HomePageArtworkModuleDetails {
 export function isFollowedArtistArtworkModuleParams(
   params: HomePageArtworkModuleDetails["params"]
 ): params is FollowedArtistArtworkModuleParams {
-  return !!params && params.hasOwnProperty("followed_artist_id")
+  return (
+    !!params &&
+    Object.prototype.hasOwnProperty.call(params, "followed_artist_id")
+  )
 }
 
 export function isRelatedArtistArtworkModuleParams(
@@ -83,20 +86,20 @@ export function isRelatedArtistArtworkModuleParams(
 ): params is RelatedArtistArtworkModuleParams {
   return (
     isFollowedArtistArtworkModuleParams(params) &&
-    params.hasOwnProperty("related_artist_id")
+    Object.prototype.hasOwnProperty.call(params, "related_artist_id")
   )
 }
 
 export function isFollowedGeneArtworkModuleParams(
   params: HomePageArtworkModuleDetails["params"]
 ): params is FollowedGeneArtworkModuleParams {
-  return !!params && params.hasOwnProperty("gene")
+  return !!params && Object.prototype.hasOwnProperty.call(params, "gene")
 }
 
 export function isGenericGeneArtworkModuleParams(
   params: HomePageArtworkModuleDetails["params"]
 ): params is GenericGeneArtworkModuleParams {
-  return !!params && params.hasOwnProperty("gene_id")
+  return !!params && Object.prototype.hasOwnProperty.call(params, "gene_id")
 }
 
 export interface HomePageArtworkModuleResolvers<T> {

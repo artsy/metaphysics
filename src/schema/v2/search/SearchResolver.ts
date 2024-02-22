@@ -105,7 +105,7 @@ export class SearchResolver {
     }
 
     const pageOptions = convertConnectionArgsToGravityArgs(this.args)
-    if (!!this.args.page) pageOptions.page = this.args.page
+    if (this.args.page) pageOptions.page = this.args.page
     const { page, size, offset, ...rest } = pageOptions
     const gravityArgs = {
       ...rest,

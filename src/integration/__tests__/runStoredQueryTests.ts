@@ -77,7 +77,7 @@ const go = async () => {
   const map = readFileSync("src/data/complete.queryMap.json", "utf8")
   const queries = JSON.parse(map)
   for (const key in queries) {
-    if (queries.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(queries, key)) {
       const queryString: string = queries[key]
       // Pull out the query name with some simple splitting
       const name = queryString

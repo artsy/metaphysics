@@ -39,7 +39,7 @@ const ArtworkErrorType = new GraphQLObjectType<any, ResolverContext>({
                 artwork.id,
                 relatedLayersLoader
               ).then((layers) =>
-                !!id ? _.find(layers, { id }) : _.first(layers)
+                id ? _.find(layers, { id }) : _.first(layers)
               )
             },
           },
@@ -57,8 +57,8 @@ const ArtworkErrorType = new GraphQLObjectType<any, ResolverContext>({
           //
           // TODO: Consider moving this upstream to Gravity, where a partial
           // artwork 404 response should better match the shape of the full one.
-          artist: !!artistID ? await artistLoader(artistID) : null,
-          partner: !!partnerID ? await partnerLoader(partnerID) : null,
+          artist: artistID ? await artistLoader(artistID) : null,
+          partner: partnerID ? await partnerLoader(partnerID) : null,
         }
       },
     },

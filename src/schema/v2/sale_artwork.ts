@@ -279,7 +279,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         description: "Can bids be placed on the artwork?",
         resolve: (saleArtwork, _options, { saleLoader }) => {
-          if (!!saleArtwork.sale) {
+          if (saleArtwork.sale) {
             return isBiddable(saleArtwork.sale, saleArtwork)
           }
           return saleLoader(saleArtwork.sale_id).then((sale) =>
@@ -392,7 +392,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
       sale: {
         type: Sale.type,
         resolve: ({ sale, sale_id }, _options, { saleLoader }) => {
-          if (!!sale) return sale
+          if (sale) return sale
           return saleLoader(sale_id)
         },
       },
