@@ -11,7 +11,7 @@ import {
   formatGravityError,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import { AlertInputFields, AlertType } from "./"
+import { AlertInputFields, AlertType, resolveAlertFromJSON } from "./"
 import { meType } from "../me"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -20,13 +20,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     alert: {
       type: AlertType,
-      resolve: async ({ search_criteria, id, ...rest }) => {
-        return {
-          ...search_criteria,
-          id, // Inject the ID from the `UserSearchCriteria` object
-          settings: rest,
-        }
-      },
+      resolve: resolveAlertFromJSON,
     },
     me: {
       type: new GraphQLNonNull(meType),

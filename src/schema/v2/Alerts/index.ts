@@ -53,10 +53,10 @@ const AlertSettingsType = new GraphQLObjectType<
       type: GraphQLString,
     },
     email: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
     },
     push: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
     },
     details: {
       type: GraphQLString,
@@ -171,6 +171,7 @@ type GravitySearchCriteriaJSON = {
   inquireable_only: boolean
   at_auction: boolean
   offerable: boolean
+  search_criteria_id: string
 }
 
 export const AlertType = new GraphQLObjectType<
@@ -310,7 +311,9 @@ export const AlertType = new GraphQLObjectType<
         type: GraphQLString,
       },
       labels: {
-        type: new GraphQLNonNull(new GraphQLList(SearchCriteriaLabel)),
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(SearchCriteriaLabel))
+        ),
         args: {
           only: {
             type: new GraphQLList(SearchCriteriaFields),
@@ -352,6 +355,10 @@ export const AlertType = new GraphQLObjectType<
         type: GraphQLString,
         resolve: ({ price_range }) => price_range,
       },
+      searchCriteriaID: {
+        type: new GraphQLNonNull(GraphQLString),
+        resolve: ({ search_criteria_id }) => search_criteria_id,
+      },
       sizes: {
         type: new GraphQLList(GraphQLString),
       },
@@ -364,7 +371,7 @@ export const AlertType = new GraphQLObjectType<
         type: GraphQLString,
       },
       settings: {
-        type: AlertSettingsType,
+        type: new GraphQLNonNull(AlertSettingsType),
       },
 
       // Below fields are injected in the JSON when the alert data is being returned
@@ -401,6 +408,29 @@ const AlertsEdgeFields = {
     type: GraphQLBoolean,
     resolve: ({ count_7d }) => count_7d > 0,
   },
+}
+
+export const AlertsConnectionSortEnum = new GraphQLEnumType({
+  name: "AlertsConnectionSortEnum",
+  values: {
+    NAME_ASC: {
+      value: "name",
+    },
+
+    ENABLED_AT_DESC: {
+      value: "-enabled_at",
+    },
+  },
+})
+
+export const resolveAlertFromJSON = (alert) => {
+  const { search_criteria, id, ...rest } = alert
+  return {
+    ...search_criteria,
+    id, // Inject the ID from the `UserSearchCriteria` object
+    search_criteria_id: search_criteria.id,
+    settings: rest,
+  }
 }
 
 export const AlertsConnectionType = connectionWithCursorInfo({
