@@ -13,8 +13,10 @@ describe("Me", () => {
         return Promise.resolve({
           id: "420",
           initial_message: "Loved some of the works at your fair booth!",
+          from_id: "collector-id",
           from_email: "collector@example.com",
           from_name: "Percy",
+          to_id: "partner-id",
           _embedded: {
             last_message: {
               snippet:
@@ -788,24 +790,25 @@ describe("Me", () => {
     })
 
     describe("collectorResume", () => {
-      it("fetches the collector_profile and follows_profile", () => {
-        const collectorResumeContext = {
-          ...context,
-          partnerCollectorProfileLoader: ({ _partnerId, _user_id }) =>
-            Promise.resolve({
-              collector_profile: {
-                name: "Some Collector",
-                location: {
-                  city: "Around",
-                  country: "The Globe",
-                },
-                profession: "Superhuman",
-                bio: "I got snacks to the roof",
+      const collectorResumeContext = {
+        ...context,
+        partnerCollectorProfileLoader: ({ _partnerId, _user_id }) =>
+          Promise.resolve({
+            collector_profile: {
+              id: "collector-profile-id",
+              name: "Some Collector",
+              location: {
+                city: "Around",
+                country: "The Globe",
               },
-              follows_profile: true,
-            }),
-        }
+              profession: "Superhuman",
+              bio: "I got snacks to the roof",
+            },
+            follows_profile: true,
+          }),
+      }
 
+      it("fetches the collector_profile and follows_profile", () => {
         const query = `
           {
             conversation(id: "420") {
@@ -826,6 +829,64 @@ describe("Me", () => {
             expect(collectorResume?.isCollectorFollowingPartner).toBe(true)
           }
         )
+      })
+
+      describe("interestsConnection", () => {
+        const query = `
+            {
+              conversation(id: "420") {
+                collectorResume {
+                  collectorProfile {
+                    id
+                    interestsConnection(first: 20) {
+                      totalCount
+                      edges {
+                        node {
+                          __typename
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          `
+
+        it("fetches interestsConnection", async () => {
+          const interestsLoader = jest.fn()
+
+          await runAuthenticatedQuery(query, {
+            ...collectorResumeContext,
+            partnerCollectorProfileUserInterestsLoader: interestsLoader,
+          })
+          expect(interestsLoader).toHaveBeenCalledTimes(1)
+          expect(interestsLoader).toHaveBeenCalledWith(
+            {
+              collectorProfileId: "collector-profile-id",
+              partnerId: "partner-id",
+            },
+            {
+              page: 1,
+              size: 20,
+              total_count: true,
+            }
+          )
+        })
+
+        it("returns null given an error from partnerCollectorProfileUserInterestsLoader", () => {
+          const interestsLoader = jest
+            .fn()
+            .mockRejectedValueOnce("Error fetching interests")
+
+          return runAuthenticatedQuery(query, {
+            ...collectorResumeContext,
+            partnerCollectorProfileUserInterestsLoader: interestsLoader,
+          }).then(({ conversation: { collectorResume } }) => {
+            expect(
+              collectorResume.collectorProfile.interestsConnection
+            ).toBeNull()
+          })
+        })
       })
     })
   })

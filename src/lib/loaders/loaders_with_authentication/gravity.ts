@@ -561,6 +561,15 @@ export default (accessToken, userID, opts) => {
       ({ partnerId, userId }) =>
         `partner_collector_profile?partner_id=${partnerId}&user_id=${userId}`
     ),
+    partnerCollectorProfileUserInterestsLoader: gravityLoader<
+      any,
+      { collectorProfileId: string; partnerId: string }
+    >(
+      ({ collectorProfileId, partnerId }) =>
+        `partner_collector_profile/${collectorProfileId}/user_interests?partner_id=${partnerId}`,
+      {},
+      { headers: true }
+    ),
     partnerInquiryRequestLoader: gravityLoader<
       any,
       { partnerId: string; inquiryId: string }
