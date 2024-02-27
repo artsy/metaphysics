@@ -667,7 +667,7 @@ describe("me/index", () => {
     })
   })
 
-  describe("partnerOffersToCollectorConnection", () => {
+  describe("partnerOffersConnection", () => {
     it("returns partner offers for the collector", async () => {
       const meLoader = () => Promise.resolve({})
       const mePartnerOffersLoader = jest.fn(() =>
@@ -693,7 +693,7 @@ describe("me/index", () => {
       const query = gql`
         query {
           me {
-            partnerOffersToCollectorConnection(first: 10) {
+            partnerOffersConnection(first: 10) {
               totalCount
               edges {
                 node {
@@ -724,7 +724,7 @@ describe("me/index", () => {
 
       expect(response).toEqual({
         me: {
-          partnerOffersToCollectorConnection: {
+          partnerOffersConnection: {
             totalCount: 1,
             edges: [
               {

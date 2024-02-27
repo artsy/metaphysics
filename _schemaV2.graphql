@@ -2606,15 +2606,6 @@ type Artwork implements Node & Searchable & Sellable {
     size: Int
     sort: PartnerOfferSorts
   ): PartnerOfferConnection
-  partnerOffersToCollectorConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    page: Int
-    size: Int
-    sort: PartnerOfferToCollectorSorts
-  ): PartnerOfferToCollectorConnection
   pickupAvailable: Boolean
   price: String
   priceCurrency: String
@@ -12433,7 +12424,7 @@ type Me implements Node {
   # Collector's position with relevant institutions
   otherRelevantPositions: String
   paddleNumber: String
-  partnerOffersToCollectorConnection(
+  partnerOffersConnection(
     after: String
     artworkID: String
     before: String

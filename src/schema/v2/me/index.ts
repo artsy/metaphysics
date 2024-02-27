@@ -478,7 +478,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ paddle_number }) => paddle_number,
     },
-    partnerOffersToCollectorConnection: {
+    partnerOffersConnection: {
       type: PartnerOfferToCollectorConnectionType,
       args: pageable({
         artworkID: {
