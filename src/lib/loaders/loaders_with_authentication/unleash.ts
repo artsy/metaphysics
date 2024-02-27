@@ -85,8 +85,10 @@ export const unleashLoaders = (accessToken, opts) => {
       { method: "POST" }
     ),
 
-    adminFeatureFlagsLoader: unleashLoader("features"),
-    adminFeatureFlagLoader: unleashLoader((id) => `features/${id}`),
+    adminFeatureFlagsLoader: unleashLoader("projects/default/features"),
+    adminFeatureFlagLoader: unleashLoader(
+      (id) => `projects/default/features/${id}`
+    ),
     adminProjectsLoader: unleashLoader("projects"),
     adminProjectLoader: unleashLoader((id) => `projects/${id}`),
   }
