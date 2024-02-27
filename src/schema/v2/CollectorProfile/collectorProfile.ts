@@ -15,10 +15,14 @@ import {
 import { ResolverContext } from "types/graphql"
 import Image, { normalizeImageData } from "schema/v2/image"
 
-import { userInterestType } from "../userInterests"
+import { UserInterestConnection, userInterestType } from "../userInterests"
 import { myLocationType } from "../me/myLocation"
 import initials from "schema/v2/fields/initials"
 import { UserType } from "schema/v2/user"
+import { pageable } from "relay-cursor-paging"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { createPageCursors } from "../fields/pagination"
+import { connectionFromArraySlice } from "graphql-relay"
 
 export const CollectorProfileFields: GraphQLFieldConfigMap<
   any,
@@ -63,6 +67,43 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
     type: new GraphQLNonNull(new GraphQLList(userInterestType)),
     resolve: (_collectorProfile, _args, { meUserInterestsLoader }) => {
       return meUserInterestsLoader?.().then(({ body }) => body)
+    },
+  },
+  interestsConnection: {
+    type: UserInterestConnection,
+    args: pageable({}),
+    resolve: async (
+      { id, partnerId },
+      args,
+      { partnerCollectorProfileUserInterestsLoader }
+    ) => {
+      if (!partnerCollectorProfileUserInterestsLoader || !partnerId) {
+        return null
+      }
+
+      const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+      const {
+        body,
+        headers,
+      } = await partnerCollectorProfileUserInterestsLoader(
+        { collectorProfileId: id, partnerId },
+        {
+          page,
+          size,
+          total_count: true,
+        }
+      )
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+      return {
+        totalCount,
+        pageCursors: createPageCursors({ page, size }, totalCount),
+        ...connectionFromArraySlice(body, args, {
+          arrayLength: totalCount,
+          sliceStart: offset,
+          resolveNode: (node) => node.interest,
+        }),
+      }
     },
   },
   location: { type: myLocationType },
