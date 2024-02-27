@@ -51,7 +51,32 @@ describe("notificationsConnection", () => {
       page: 1,
     })
 
-    expect(data).toEqual(expectedData)
+    expect(data).toMatchInlineSnapshot(`
+      Object {
+        "notificationsConnection": Object {
+          "counts": Object {
+            "total": 100,
+            "unread": 10,
+            "unseen": 10,
+          },
+          "edges": Array [
+            Object {
+              "node": Object {
+                "createdAt": "2022",
+                "internalID": "6303f205b54941000843419a",
+                "isUnread": true,
+                "message": "8 Works Added",
+                "notificationType": "ARTWORK_PUBLISHED",
+                "objectsCount": 2,
+                "targetHref": "/artist/damien-hirst/works-for-sale",
+                "title": "Works by Damien Hirst",
+              },
+            },
+          ],
+          "totalCount": 100,
+        },
+      }
+    `)
   })
 
   describe("with activity types filter", () => {
@@ -94,7 +119,32 @@ describe("notificationsConnection", () => {
         page: 1,
       })
 
-      expect(data).toEqual(expectedData)
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "notificationsConnection": Object {
+            "counts": Object {
+              "total": 100,
+              "unread": 10,
+              "unseen": 10,
+            },
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "createdAt": "2022",
+                  "internalID": "6303f205b54941000843419a",
+                  "isUnread": true,
+                  "message": "8 Works Added",
+                  "notificationType": "ARTWORK_PUBLISHED",
+                  "objectsCount": 2,
+                  "targetHref": "/artist/damien-hirst/works-for-sale",
+                  "title": "Works by Damien Hirst",
+                },
+              },
+            ],
+            "totalCount": 100,
+          },
+        }
+      `)
     })
   })
 
@@ -237,29 +287,4 @@ const notificationFeedItem = {
   },
   activity_type: "ArtworkPublishedActivity",
   target_href: "/artist/damien-hirst/works-for-sale",
-}
-
-const expectedData = {
-  notificationsConnection: {
-    totalCount: 100,
-    counts: {
-      total: 100,
-      unread: 10,
-      unseen: 10,
-    },
-    edges: [
-      {
-        node: {
-          internalID: "6303f205b54941000843419a",
-          isUnread: true,
-          createdAt: "2022",
-          notificationType: "ARTWORK_PUBLISHED",
-          title: "Works by Damien Hirst",
-          message: "8 works added",
-          targetHref: "/artist/damien-hirst/works-for-sale",
-          objectsCount: 2,
-        },
-      },
-    ],
-  },
 }

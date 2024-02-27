@@ -52,7 +52,7 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
     },
     message: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ message }) => message.toLowerCase(),
+      resolve: ({ message }) => message,
     },
     isUnread: {
       type: new GraphQLNonNull(GraphQLBoolean),
