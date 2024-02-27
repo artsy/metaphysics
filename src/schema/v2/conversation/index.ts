@@ -322,7 +322,11 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
           })
 
           return {
-            collectorProfile: data.collector_profile,
+            collectorProfile: {
+              ...data.collector_profile,
+              // forward the partnerId to the collectorProfile to be used by data loaders
+              partnerId: to_id,
+            },
             isCollectorFollowingPartner: data.follows_profile,
             userId: from_id,
           }
