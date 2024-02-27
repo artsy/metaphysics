@@ -81,28 +81,36 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
         return null
       }
 
-      const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-      const {
-        body,
-        headers,
-      } = await partnerCollectorProfileUserInterestsLoader(
-        { collectorProfileId: id, partnerId },
-        {
-          page,
-          size,
-          total_count: true,
-        }
-      )
-      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+      try {
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+        const {
+          body,
+          headers,
+        } = await partnerCollectorProfileUserInterestsLoader(
+          { collectorProfileId: id, partnerId },
+          {
+            page,
+            size,
+            total_count: true,
+          }
+        )
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-      return {
-        totalCount,
-        pageCursors: createPageCursors({ page, size }, totalCount),
-        ...connectionFromArraySlice(body, args, {
-          arrayLength: totalCount,
-          sliceStart: offset,
-          resolveNode: (node) => node.interest,
-        }),
+        return {
+          totalCount,
+          pageCursors: createPageCursors({ page, size }, totalCount),
+          ...connectionFromArraySlice(body, args, {
+            arrayLength: totalCount,
+            sliceStart: offset,
+            resolveNode: (node) => node.interest,
+          }),
+        }
+      } catch (error) {
+        console.error(
+          "[schema/v2/conversation/collectorResume#collectorProfile#interestsConnection] Error:",
+          error
+        )
+        return null
       }
     },
   },
