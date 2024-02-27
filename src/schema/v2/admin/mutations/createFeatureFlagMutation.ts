@@ -172,8 +172,7 @@ export const createFeatureFlagMutation = mutationWithClientMutationId<
         await addFeatureFlagVariant(args.name, args.variants)
       }
 
-      const featureFlag = await adminFeatureFlagLoader(args.name)
-      return featureFlag
+      return {}
     } catch (error) {
       throw new Error(JSON.stringify(error))
     }
