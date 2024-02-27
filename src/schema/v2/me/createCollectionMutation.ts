@@ -3,6 +3,7 @@ import {
   GraphQLUnionType,
   GraphQLNonNull,
   GraphQLString,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
@@ -45,6 +46,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
 
 interface InputProps {
   name: string
+  shareableWithPartners: boolean
 }
 
 export const createCollectionMutation = mutationWithClientMutationId<
@@ -56,6 +58,7 @@ export const createCollectionMutation = mutationWithClientMutationId<
   description: "Create a collection",
   inputFields: {
     name: { type: new GraphQLNonNull(GraphQLString) },
+    shareableWithPartners: { type: GraphQLBoolean },
   },
   outputFields: {
     responseOrError: {
@@ -73,6 +76,7 @@ export const createCollectionMutation = mutationWithClientMutationId<
         name: args.name,
         user_id: context.userID,
         saves: true,
+        shareable_with_partners: args.shareableWithPartners,
       })
 
       return response
