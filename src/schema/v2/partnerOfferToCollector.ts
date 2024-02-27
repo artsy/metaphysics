@@ -6,7 +6,7 @@ import {
   GraphQLEnumType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { IDFields } from "./object_identification"
+import { IDFields, NodeInterface } from "./object_identification"
 import { priceDisplayText } from "lib/moneyHelpers"
 import { connectionWithCursorInfo } from "./fields/pagination"
 
@@ -15,6 +15,7 @@ export const PartnerOfferToCollectorType = new GraphQLObjectType<
   ResolverContext
 >({
   name: "PartnerOfferToCollector",
+  interfaces: [NodeInterface],
   fields: () => ({
     ...IDFields,
     artworkId: {

@@ -769,10 +769,7 @@ describe("me/index", () => {
       const query = gql`
         query {
           me {
-            partnerOffersToCollectorConnection(
-              artworkID: "art.jpg"
-              first: 10
-            ) {
+            partnerOffersConnection(artworkID: "art.jpg", first: 10) {
               totalCount
               edges {
                 node {
@@ -798,7 +795,7 @@ describe("me/index", () => {
 
       expect(response).toEqual({
         me: {
-          partnerOffersToCollectorConnection: {
+          partnerOffersConnection: {
             totalCount: 1,
             edges: [
               {

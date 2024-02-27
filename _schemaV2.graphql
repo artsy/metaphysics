@@ -14748,7 +14748,7 @@ type PartnerMeta {
   title: String
 }
 
-type PartnerOffer {
+type PartnerOffer implements Node {
   artworkId: String
   createdAt(
     format: String
@@ -14832,7 +14832,7 @@ enum PartnerOfferSorts {
   END_AT_DESC
 }
 
-type PartnerOfferToCollector {
+type PartnerOfferToCollector implements Node {
   artworkId: String
   createdAt(
     format: String
