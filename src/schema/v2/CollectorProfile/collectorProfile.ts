@@ -1,6 +1,9 @@
 import date, { date as dateFormatter } from "schema/v2/fields/date"
 
-import { InternalIDFields } from "schema/v2/object_identification"
+import {
+  InternalIDFields,
+  NodeInterface,
+} from "schema/v2/object_identification"
 import {
   GraphQLID,
   GraphQLObjectType,
@@ -217,6 +220,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
 export const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>(
   {
     name: "CollectorProfileType",
+    interfaces: [NodeInterface],
     fields: CollectorProfileFields,
   }
 )
