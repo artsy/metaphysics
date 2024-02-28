@@ -40,34 +40,27 @@ export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLString),
     },
     variants: {
-      type: new GraphQLNonNull(
-        new GraphQLList(
-          new GraphQLNonNull(
-            new GraphQLObjectType<any, ResolverContext>({
-              name: "FeatureFlagVariantType",
-              fields: {
-                name: {
-                  type: new GraphQLNonNull(GraphQLString),
-                },
-                weightType: {
-                  type: GraphQLString,
-                },
-                weight: {
-                  type: new GraphQLNonNull(GraphQLInt),
-                },
-                stickiness: {
-                  type: GraphQLString,
-                },
-              },
-            })
-          )
-        )
+      type: new GraphQLList(
+        new GraphQLObjectType<any, ResolverContext>({
+          name: "FeatureFlagVariantType",
+          fields: {
+            name: {
+              type: GraphQLString,
+            },
+            weightType: {
+              type: GraphQLString,
+            },
+            weight: {
+              type: GraphQLInt,
+            },
+            stickiness: {
+              type: GraphQLString,
+            },
+          },
+        })
       ),
     },
     createdAt: date(),
-    enabled: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-    },
     name: {
       type: new GraphQLNonNull(GraphQLString),
     },
