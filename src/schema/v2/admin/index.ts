@@ -1,6 +1,7 @@
 import { GraphQLFieldConfig, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { FeatureFlagType, FeatureFlags } from "./featureFlags"
+import { base64 } from "lib/base64"
 
 export const AdminField: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLObjectType<any, ResolverContext>({
@@ -21,7 +22,11 @@ export const AdminField: GraphQLFieldConfig<void, ResolverContext> = {
 
           try {
             const featureFlag = await adminFeatureFlagLoader(id)
-            return featureFlag
+
+            return {
+              ...featureFlag,
+              id: base64(featureFlag.name), // Relay
+            }
           } catch (error) {
             throw new Error(JSON.stringify(error))
           }
