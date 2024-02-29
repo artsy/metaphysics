@@ -72,6 +72,7 @@ import { NotificationType } from "../notifications"
 import {
   DEFAULT_CURRENCY_PREFERENCE,
   DEFAULT_LENGTH_UNIT_PREFERENCE,
+  snakeCaseKeys,
 } from "lib/helpers"
 import {
   AlertType,
@@ -82,6 +83,7 @@ import {
 import { emptyConnection, paginationResolver } from "../fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
+import { PreviewSavedSearchAttributesType } from "../previewSavedSearch"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -152,6 +154,9 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         sort: {
           type: AlertsConnectionSortEnum,
         },
+        attributes: {
+          type: PreviewSavedSearchAttributesType,
+        },
       }),
       type: new GraphQLNonNull(AlertsConnectionType),
       resolve: async (_parent, args, { meAlertsLoader }) => {
@@ -159,11 +164,18 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         const { page, size, offset, sort } = convertConnectionArgsToGravityArgs(
           args
         )
+
+        // Convert artistIDs to artist_ids, etc.
+        const gravitySearchCriteriaAttributes = snakeCaseKeys(
+          args.attributes
+        ) as any
+
         const { body, headers } = await meAlertsLoader({
           page,
           size,
           sort,
           total_count: true,
+          search_criteria: gravitySearchCriteriaAttributes,
         })
         const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
