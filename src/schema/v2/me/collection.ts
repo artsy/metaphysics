@@ -139,6 +139,12 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
         return totalCount > 0
       },
     },
+    shareableWithPartners: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: (collection) => {
+        return collection.shareable_with_partners
+      },
+    },
   }),
 })
 

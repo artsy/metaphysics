@@ -4,11 +4,12 @@ import { HTTPError } from "lib/HTTPError"
 
 const mutation = `
   mutation {
-    createCollection(input: { name: "Dining room" }) {
+    createCollection(input: { name: "Dining room", shareableWithPartners: false }) {
       responseOrError {
         ... on CreateCollectionSuccess {
           collection {
             name
+            shareableWithPartners
           }
         }
 
@@ -30,6 +31,7 @@ describe("createCollection", () => {
     const mockGravityResponse = {
       id: "id",
       name: "Dining room",
+      shareable_with_partners: false,
     }
 
     let context: Partial<ResolverContext>
@@ -49,6 +51,7 @@ describe("createCollection", () => {
         user_id: "user-42",
         name: "Dining room",
         saves: true,
+        shareable_with_partners: false,
       })
     })
 
@@ -61,6 +64,7 @@ describe("createCollection", () => {
             "responseOrError": Object {
               "collection": Object {
                 "name": "Dining room",
+                "shareableWithPartners": false,
               },
             },
           },
