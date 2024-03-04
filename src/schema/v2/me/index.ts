@@ -87,6 +87,7 @@ import {
   PartnerOfferToCollectorConnectionType,
   PartnerOfferToCollectorSortsType,
 } from "../partnerOfferToCollector"
+import { PreviewSavedSearchAttributesType } from "../previewSavedSearch"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.

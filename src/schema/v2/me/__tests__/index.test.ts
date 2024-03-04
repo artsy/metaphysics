@@ -702,7 +702,12 @@ describe("me/index", () => {
                   isActive
                   isAvailable
                   partnerId
-                  priceWithDiscountMessage
+                  priceWithDiscount {
+                    display
+                    major
+                    minor
+                    currencyCode
+                  }
                   createdAt
                   endAt
                 }
@@ -736,7 +741,12 @@ describe("me/index", () => {
                   isActive: true,
                   isAvailable: true,
                   partnerId: "5f80bfefe8d808000ea212c1",
-                  priceWithDiscountMessage: "£17,360",
+                  priceWithDiscount: {
+                    currencyCode: "GBP",
+                    display: "£17,360",
+                    minor: 1736000,
+                    major: 17360,
+                  },
                 },
               },
             ],
@@ -744,6 +754,7 @@ describe("me/index", () => {
         },
       })
     })
+
     it("returns partner offers for the collector on an artwork", async () => {
       const meLoader = () => Promise.resolve({})
       const mePartnerOffersLoader = jest.fn(() =>
@@ -775,6 +786,12 @@ describe("me/index", () => {
                 node {
                   internalID
                   artworkId
+                  priceWithDiscount {
+                    display
+                    major
+                    minor
+                    currencyCode
+                  }
                 }
               }
             }
@@ -802,6 +819,12 @@ describe("me/index", () => {
                 node: {
                   artworkId: "65d9b98ae37dd70006240bf6",
                   internalID: "866f16a0-92bf-4fb6-8911-e1ab1a5fb508",
+                  priceWithDiscount: {
+                    currencyCode: "GBP",
+                    display: "£17,360",
+                    minor: 1736000,
+                    major: 17360,
+                  },
                 },
               },
             ],

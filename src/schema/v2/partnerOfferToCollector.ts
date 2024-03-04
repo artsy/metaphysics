@@ -7,8 +7,12 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields, NodeInterface } from "./object_identification"
-import { priceDisplayText } from "lib/moneyHelpers"
 import { connectionWithCursorInfo } from "./fields/pagination"
+import {
+  Money,
+  minorCurrencyFromMajor,
+  resolveMinorAndCurrencyFieldsToMoney,
+} from "./fields/money"
 
 export const PartnerOfferToCollectorType = new GraphQLObjectType<
   any,
@@ -36,15 +40,27 @@ export const PartnerOfferToCollectorType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ partner_id }) => partner_id,
     },
-    priceWithDiscountMessage: {
-      type: GraphQLString,
-      resolve: ({ price_with_discount: price, price_currency: currency }) => {
-        if (!price || !currency) {
-          return null
-        }
-
-        const priceCents = price * 100
-        return priceDisplayText(priceCents, currency, "")
+    priceWithDiscount: {
+      type: Money,
+      resolve: (
+        { price_with_discount: priceMajor, price_currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        const { minor } = minorCurrencyFromMajor({
+          major: priceMajor,
+          currencyCode,
+        })
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
       },
     },
   }),

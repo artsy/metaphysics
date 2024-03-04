@@ -11,6 +11,11 @@ import { ResolverContext } from "types/graphql"
 import { IDFields, NodeInterface } from "./object_identification"
 import { priceDisplayText } from "lib/moneyHelpers"
 import { connectionWithCursorInfo } from "./fields/pagination"
+import {
+  Money,
+  minorCurrencyFromMajor,
+  resolveMinorAndCurrencyFieldsToMoney,
+} from "./fields/money"
 
 export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerOffer",
@@ -35,6 +40,29 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ partner_id }) => partner_id,
     },
+    priceListed: {
+      type: Money,
+      resolve: (
+        { price_listed: priceMajor, price_currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        const { minor } = minorCurrencyFromMajor({
+          major: priceMajor,
+          currencyCode,
+        })
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
     priceListedMessage: {
       type: GraphQLString,
       resolve: ({ price_listed: price, price_currency: currency }) => {
@@ -44,6 +72,30 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
 
         const priceCents = price * 100
         return priceDisplayText(priceCents, currency, "")
+      },
+      deprecationReason: "This field is deprecated. Use 'priceListed' instead.",
+    },
+    priceWithDiscount: {
+      type: Money,
+      resolve: (
+        { price_with_discount: priceMajor, price_currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        const { minor } = minorCurrencyFromMajor({
+          major: priceMajor,
+          currencyCode,
+        })
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
       },
     },
     priceWithDiscountMessage: {
@@ -56,6 +108,8 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
         const priceCents = price * 100
         return priceDisplayText(priceCents, currency, "")
       },
+      deprecationReason:
+        "This field is deprecated. Use 'priceWithDiscount' instead.",
     },
     discountPercentage: {
       type: GraphQLInt,

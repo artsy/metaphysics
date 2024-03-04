@@ -14777,8 +14777,14 @@ type PartnerOffer implements Node {
   isAvailable: Boolean
   note: String
   partnerId: String
+  priceListed: Money
   priceListedMessage: String
+    @deprecated(reason: "This field is deprecated. Use 'priceListed' instead.")
+  priceWithDiscount: Money
   priceWithDiscountMessage: String
+    @deprecated(
+      reason: "This field is deprecated. Use 'priceWithDiscount' instead."
+    )
   userIds: [String]
 }
 
@@ -14859,7 +14865,7 @@ type PartnerOfferToCollector implements Node {
   isActive: Boolean
   isAvailable: Boolean
   partnerId: String
-  priceWithDiscountMessage: String
+  priceWithDiscount: Money
 }
 
 # A connection to a list of items.
