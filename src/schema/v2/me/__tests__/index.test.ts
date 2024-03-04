@@ -465,6 +465,84 @@ describe("me/index", () => {
         }
       `)
     })
+
+    it("calls gravity with the correct params", async () => {
+      const query = gql`
+        query {
+          me {
+            alertsConnection(
+              first: 1
+              sort: ENABLED_AT_DESC
+              attributes: {
+                acquireable: true
+                additionalGeneIDs: ["gene1", "gene2"]
+                artistIDs: ["kaws", "banksy"]
+                artistSeriesIDs: ["series1", "series2"]
+                atAuction: true
+                attributionClass: ["unique", "limited edition"]
+                colors: ["blue", "red"]
+                height: "10"
+                inquireableOnly: true
+                locationCities: ["New York", "Los Angeles"]
+                majorPeriods: ["period1", "period2"]
+                materialsTerms: ["oil", "canvas"]
+                offerable: true
+                partnerIDs: ["partner1", "partner2"]
+                priceRange: "*-1000"
+                sizes: [SMALL, MEDIUM]
+                width: "10"
+              }
+            ) {
+              totalCount
+              edges {
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const meLoader = () => Promise.resolve({})
+      const meAlertsLoader = jest.fn().mockReturnValue(
+        Promise.resolve({
+          body: [],
+          headers: { "x-total-count": "0" },
+        })
+      )
+
+      await runAuthenticatedQuery(query, {
+        meLoader,
+        meAlertsLoader,
+      })
+
+      expect(meAlertsLoader).toHaveBeenCalledWith({
+        page: 1,
+        search_criteria: {
+          acquireable: true,
+          additional_gene_ids: ["gene1", "gene2"],
+          artist_ids: ["kaws", "banksy"],
+          artist_series_ids: ["series1", "series2"],
+          at_auction: true,
+          attribution_class: ["unique", "limited edition"],
+          colors: ["blue", "red"],
+          height: "10",
+          inquireable_only: true,
+          location_cities: ["New York", "Los Angeles"],
+          major_periods: ["period1", "period2"],
+          materials_terms: ["oil", "canvas"],
+          offerable: true,
+          partner_ids: ["partner1", "partner2"],
+          price_range: "*-1000",
+          sizes: ["small", "medium"],
+          width: "10",
+        },
+        size: 1,
+        sort: "-enabled_at",
+        total_count: true,
+      })
+    })
   })
 
   describe("alert", () => {

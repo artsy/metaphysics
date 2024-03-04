@@ -113,7 +113,7 @@ const PreviewSavedSearchType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-const PreviewSavedSearchAttributesType = new GraphQLInputObjectType({
+export const PreviewSavedSearchAttributesType = new GraphQLInputObjectType({
   name: "PreviewSavedSearchAttributes",
   fields: previewSavedSearchArgs,
 })
