@@ -1651,7 +1651,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
                 }
 
                 const mediumGene = artworkMediums[artwork.category]
-                if (mediumGene) {
+                if (mediumGene && mediumGene.mediumFilterGeneSlug) {
                   filterArtworksArgs.additional_gene_ids = [
                     mediumGene.mediumFilterGeneSlug,
                   ]
