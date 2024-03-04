@@ -238,7 +238,10 @@ export const resolveMinorAndCurrencyFieldsToMoney = async (
       display: formatMoney(major, symbolFromCurrencyCode(currencyCode), 0),
     }
   } catch (error) {
-    console.error("v2/fields/money @resolveLotCentsFieldToMoney: Error:", error)
+    console.error(
+      "v2/fields/money @resolveMinorAndCurrencyFieldsToMoney: Error:",
+      error
+    )
     return null
   }
 }
