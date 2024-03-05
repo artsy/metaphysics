@@ -17,6 +17,7 @@ import { PartnerType } from "schema/v2/partner/partner"
 interface Input {
   artwork_id: string
   discount_percentage: number
+  note?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
@@ -63,6 +64,7 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
   inputFields: {
     artwork_id: { type: new GraphQLNonNull(GraphQLString) },
     discount_percentage: { type: GraphQLInt },
+    note: { type: GraphQLString },
   },
   outputFields: {
     partnerOfferOrError: {
@@ -80,6 +82,7 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
       return await createPartnerOfferLoader?.({
         artwork_id: args.artwork_id,
         discount_percentage: args.discount_percentage,
+        note: args.note,
       })
     } catch (error) {
       const formattedErr = formatGravityError(error)
