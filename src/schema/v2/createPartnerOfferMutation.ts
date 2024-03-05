@@ -63,7 +63,7 @@ export const createPartnerOfferMutation = mutationWithClientMutationId<
   description: "Create a partner offer for the users",
   inputFields: {
     artwork_id: { type: new GraphQLNonNull(GraphQLString) },
-    discount_percentage: { type: GraphQLInt },
+    discount_percentage: { type: new GraphQLNonNull(GraphQLInt) },
     note: { type: GraphQLString },
   },
   outputFields: {
