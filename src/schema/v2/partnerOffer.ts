@@ -57,6 +57,9 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLInt,
       resolve: ({ discount_percentage }) => discount_percentage,
     },
+    note: {
+      type: GraphQLString,
+    },
     userIds: {
       type: new GraphQLList(GraphQLString),
       resolve: ({ user_ids }) => user_ids,
