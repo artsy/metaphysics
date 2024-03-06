@@ -250,6 +250,27 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
               }
             },
           },
+          followedProfiles: {
+            type: new GraphQLNonNull(GraphQLInt),
+            description:
+              "Returns the total count of followed profiles. There is currently no way to filter this count by `owner_type`.",
+            resolve: async (_me, { followedPartnersLoader }) => {
+              if (!followedPartnersLoader) return 0
+
+              try {
+                const { headers } = await followedPartnersLoader({
+                  page: 1,
+                  size: 1,
+                  total_count: true,
+                })
+
+                return headers["x-total-count"] ?? 0
+              } catch (error) {
+                console.error(error)
+                return 0
+              }
+            },
+          },
           savedArtworks: {
             type: new GraphQLNonNull(GraphQLInt),
             resolve: async (_me, _args, { collectionArtworksLoader }) => {
