@@ -32,9 +32,11 @@ import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
 import { ConversationEventType } from "./conversationEvent"
 import {
   connectionWithCursorInfo,
+  createPageCursors,
   paginationResolver,
 } from "../fields/pagination"
 import { CollectorResume } from "./collectorResume"
+import { UserInterestConnection } from "../userInterests"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -333,6 +335,65 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         } catch (error) {
           console.error(
             "[schema/v2/conversation/collectorResume] Error:",
+            error
+          )
+          return null
+        }
+      },
+    },
+    collectorInterestsConnection: {
+      type: UserInterestConnection,
+      args: pageable({}),
+      resolve: async (
+        { from_id, to_id },
+        args,
+        {
+          partnerCollectorProfileUserInterestsLoader,
+          partnerCollectorProfileLoader,
+        }
+      ) => {
+        if (
+          !partnerCollectorProfileUserInterestsLoader ||
+          !partnerCollectorProfileLoader ||
+          !from_id ||
+          !to_id
+        ) {
+          return null
+        }
+
+        try {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+          const data = await partnerCollectorProfileLoader({
+            partnerId: to_id,
+            userId: from_id,
+          })
+          const {
+            body,
+            headers,
+          } = await partnerCollectorProfileUserInterestsLoader(
+            { collectorProfileId: data.collector_profile.id, partnerId: to_id },
+            {
+              page,
+              size,
+              total_count: true,
+            }
+          )
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return {
+            totalCount,
+            pageCursors: createPageCursors({ page, size }, totalCount),
+            ...connectionFromArraySlice(body, args, {
+              arrayLength: totalCount,
+              sliceStart: offset,
+              resolveNode: (node) => node.interest,
+            }),
+          }
+        } catch (error) {
+          console.error(
+            "[schema/v2/conversation#collectorInterestsConnection] Error:",
             error
           )
           return null
