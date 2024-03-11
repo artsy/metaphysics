@@ -254,7 +254,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
             type: new GraphQLNonNull(GraphQLInt),
             description:
               "Returns the total count of followed profiles. There is currently no way to filter this count by `owner_type`.",
-            resolve: async (_me, { followedPartnersLoader }) => {
+            resolve: async (_me, _args, { followedPartnersLoader }) => {
               if (!followedPartnersLoader) return 0
 
               try {
