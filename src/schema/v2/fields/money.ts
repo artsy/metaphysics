@@ -204,20 +204,10 @@ export const MoneyInput = new GraphQLInputObjectType({
   },
 })
 
-export const minorCurrencyFromMajor = ({
-  major,
-  currencyCode,
-}: {
-  major: number
-  currencyCode: string
-}): { minor: number } => {
-  const factor =
-    currencyCodes[currencyCode?.toLowerCase()]?.subunit_to_unit ?? 100
-  const minor = major * factor
-  return { minor }
-}
-
-/* See src/schema/v2/partnerOfferToCollector.ts for usage */
+/**
+ * Money type resolver for a cents/minor and currency field.
+ * See src/schema/v2/partnerOfferToCollector.ts for usage
+ */
 export const resolveMinorAndCurrencyFieldsToMoney = async (
   { minor, currencyCode }: { minor: number; currencyCode: string },
   _args,

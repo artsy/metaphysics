@@ -5,17 +5,12 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLBoolean,
-  GraphQLEnumType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields, NodeInterface } from "./object_identification"
 import { priceDisplayText } from "lib/moneyHelpers"
 import { connectionWithCursorInfo } from "./fields/pagination"
-import {
-  Money,
-  minorCurrencyFromMajor,
-  resolveMinorAndCurrencyFieldsToMoney,
-} from "./fields/money"
+import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
 
 export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerOffer",
@@ -120,21 +115,3 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
 export const PartnerOfferConnectionType = connectionWithCursorInfo({
   nodeType: PartnerOfferType,
 }).connectionType
-
-export const PartnerOfferSortsType = new GraphQLEnumType({
-  name: "PartnerOfferSorts",
-  values: {
-    CREATED_AT_ASC: {
-      value: "created_at",
-    },
-    CREATED_AT_DESC: {
-      value: "-created_at",
-    },
-    END_AT_ASC: {
-      value: "end_at",
-    },
-    END_AT_DESC: {
-      value: "-end_at",
-    },
-  },
-})

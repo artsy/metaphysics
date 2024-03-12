@@ -8,11 +8,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { IDFields, NodeInterface } from "./object_identification"
 import { connectionWithCursorInfo } from "./fields/pagination"
-import {
-  Money,
-  minorCurrencyFromMajor,
-  resolveMinorAndCurrencyFieldsToMoney,
-} from "./fields/money"
+import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
 
 export const PartnerOfferToCollectorType = new GraphQLObjectType<
   any,
