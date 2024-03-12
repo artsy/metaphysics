@@ -43,15 +43,11 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
     priceListed: {
       type: Money,
       resolve: (
-        { price_listed: priceMajor, price_currency: currencyCode },
+        { price_listed_minor: minor, price_currency: currencyCode },
         args,
         context,
         info
       ) => {
-        const { minor } = minorCurrencyFromMajor({
-          major: priceMajor,
-          currencyCode,
-        })
         return resolveMinorAndCurrencyFieldsToMoney(
           {
             minor,
@@ -78,15 +74,11 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
     priceWithDiscount: {
       type: Money,
       resolve: (
-        { price_with_discount: priceMajor, price_currency: currencyCode },
+        { price_with_discount_minor: minor, price_currency: currencyCode },
         args,
         context,
         info
       ) => {
-        const { minor } = minorCurrencyFromMajor({
-          major: priceMajor,
-          currencyCode,
-        })
         return resolveMinorAndCurrencyFieldsToMoney(
           {
             minor,
