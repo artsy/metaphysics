@@ -28,7 +28,7 @@ export const CollectorResume = new GraphQLObjectType<any, ResolverContext>({
     },
     purchases: {
       type: CollectorPurchasesType,
-      description: "Collector's purchase history",
+      description: "non-bnmo Collector's purchase history",
       resolve: ({ purchases }) => purchases,
     },
   }),
@@ -39,7 +39,7 @@ const CollectorPurchasesType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     totalAuctionCount: {
       type: GraphQLInt,
-      description: "Total number of purchases",
+      description: "Total number of auction winning bids",
       resolve: ({ auction }) => auction,
     },
     totalPrivateSaleCount: {

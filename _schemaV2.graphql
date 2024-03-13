@@ -4246,7 +4246,7 @@ type CollectorResume {
   # The Collector follows the Gallery profile
   isCollectorFollowingPartner: Boolean!
 
-  # Collector's purchase history
+  # non-bnmo Collector's purchase history
   purchases: purchases
 
   # Collector's ID used to stitch buyerActivity with the Exchange schema
@@ -15266,7 +15266,7 @@ type PublishViewingRoomPayload {
 }
 
 type purchases {
-  # Total number of purchases
+  # Total number of auction winning bids
   totalAuctionCount: Int
 
   # Total number of private sales
