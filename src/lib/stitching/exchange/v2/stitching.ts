@@ -364,11 +364,11 @@ export const exchangeStitchingEnvironment = ({
             }
           `,
           resolve: async (parent, _args, context, info) => {
-            const nonBnmoPurchases =
-              (parent?.purchases?.totalAuctionCount ?? 0) +
-              (parent?.purchases?.totalPrivateSaleCount ?? 0)
-
             try {
+              const nonBnmoPurchases =
+                (parent?.purchases?.totalAuctionCount ?? 0) +
+                (parent?.purchases?.totalPrivateSaleCount ?? 0)
+
               const exchangeArgs = {
                 buyerId: parent.userId,
               }
@@ -391,9 +391,7 @@ export const exchangeStitchingEnvironment = ({
                 error
               )
 
-              return {
-                totalPurchases: nonBnmoPurchases,
-              }
+              return { totalPurchases: null }
             }
           },
         },

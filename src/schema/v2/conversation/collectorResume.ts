@@ -38,14 +38,14 @@ const CollectorPurchasesType = new GraphQLObjectType<any, ResolverContext>({
   name: "purchases",
   fields: {
     totalAuctionCount: {
-      type: GraphQLInt,
+      type: GraphQLNonNull(GraphQLInt),
       description: "Total number of auction winning bids",
-      resolve: ({ auction }) => auction,
+      resolve: ({ auction }) => auction || 0,
     },
     totalPrivateSaleCount: {
-      type: GraphQLInt,
+      type: GraphQLNonNull(GraphQLInt),
       description: "Total number of private sales",
-      resolve: (data) => data["private sale"],
+      resolve: (data) => data["private sale"] || 0,
     },
   },
 })

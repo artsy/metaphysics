@@ -15267,10 +15267,10 @@ type PublishViewingRoomPayload {
 
 type purchases {
   # Total number of auction winning bids
-  totalAuctionCount: Int
+  totalAuctionCount: Int!
 
   # Total number of private sales
-  totalPrivateSaleCount: Int
+  totalPrivateSaleCount: Int!
 }
 
 type Query {
