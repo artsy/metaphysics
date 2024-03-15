@@ -391,7 +391,7 @@ export const exchangeStitchingEnvironment = ({
                 error
               )
 
-              return { totalPurchases: null }
+              return { totalPurchases: 0 }
             }
           },
         },
