@@ -357,21 +357,42 @@ export const exchangeStitchingEnvironment = ({
           fragment: gql`
             ... on CollectorResume {
              userId
+             purchases {
+                totalAuctionCount
+                totalPrivateSaleCount
+              }
             }
           `,
           resolve: async (parent, _args, context, info) => {
-            const exchangeArgs = {
-              buyerId: parent.userId,
-            }
+            try {
+              const nonBnmoPurchases =
+                (parent?.purchases?.totalAuctionCount ?? 0) +
+                (parent?.purchases?.totalPrivateSaleCount ?? 0)
 
-            return await info.mergeInfo.delegateToSchema({
-              schema: exchangeSchema,
-              operation: "query",
-              fieldName: "commerceBuyerActivity",
-              args: exchangeArgs,
-              context,
-              info,
-            })
+              const exchangeArgs = {
+                buyerId: parent.userId,
+              }
+
+              const bnmoPurchases = await info.mergeInfo.delegateToSchema({
+                schema: exchangeSchema,
+                operation: "query",
+                fieldName: "commerceBuyerActivity",
+                args: exchangeArgs,
+                context,
+                info,
+              })
+
+              return {
+                totalPurchases: bnmoPurchases.totalPurchases + nonBnmoPurchases,
+              }
+            } catch (error) {
+              console.error(
+                "[schema/v2/conversation/collectorResume/totalPurchases] Error:",
+                error
+              )
+
+              return { totalPurchases: 0 }
+            }
           },
         },
       },
