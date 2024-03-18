@@ -133,7 +133,14 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
       }),
       resolve: ({ metadata }) => isInvoiceMessage(metadata),
     },
+    isMessageSentOnPlatform: {
+      description:
+        "True if message was sent on the platform. False if sent via an email client.",
+      type: GraphQLBoolean,
+      resolve: ({ sent_at }) => !!sent_at,
+    },
     createdAt: date(),
+    sentAt: date(),
     to: {
       description: "Masked emails w/ display name of the recipients.",
       type: new GraphQLNonNull(
