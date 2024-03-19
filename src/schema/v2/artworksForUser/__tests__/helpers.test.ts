@@ -1,7 +1,7 @@
 import {
   getBackfillArtworks,
   getNewForYouArtworks,
-  getNewForYouRecs,
+  getNewForYouArtworkIDs,
 } from "../helpers"
 
 const mockLoaderFactory = (affinities) => {
@@ -29,7 +29,7 @@ describe("getNewForYouRecs", () => {
       },
     } as any
 
-    const artworkIds = await getNewForYouRecs({}, context)
+    const artworkIds = await getNewForYouArtworkIDs({}, context)
 
     expect(artworkIds).toEqual(["banksy"])
   })
@@ -120,6 +120,7 @@ describe("getBackfillArtworks", () => {
     const context = {
       setsLoader: mockSetsLoader,
       setItemsLoader: mockSetItemsLoader,
+      unauthenticatedLoaders: {},
     } as any
 
     const backfillArtworks = await getBackfillArtworks(
@@ -131,6 +132,30 @@ describe("getBackfillArtworks", () => {
     expect(backfillArtworks.length).toEqual(1)
   })
 
+  it("returns backfilled from a collection for auction artworks", async () => {
+    const mockFilterArtworksLoader = jest.fn(() => ({
+      hits: [{ id: "backfill-artwork-id" }],
+    }))
+    const remainingSize = 1
+    const includeBackfill = true
+    const context = {
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+    } as any
+
+    const backfillArtworks = await getBackfillArtworks(
+      remainingSize,
+      includeBackfill,
+      context,
+      true
+    )
+
+    expect(backfillArtworks.map((artwork) => artwork.id)).toEqual([
+      "backfill-artwork-id",
+    ])
+  })
+
   it("returns no more backfill than the remaining size asks for", async () => {
     const mockSetsLoader = jest.fn(() => ({ body: [{ id: "valid_id" }] }))
     const mockSetItemsLoader = jest.fn(() => ({ body: [{}, {}] }))
@@ -139,6 +164,7 @@ describe("getBackfillArtworks", () => {
     const context = {
       setsLoader: mockSetsLoader,
       setItemsLoader: mockSetItemsLoader,
+      unauthenticatedLoaders: {},
     } as any
 
     const backfillArtworks = await getBackfillArtworks(

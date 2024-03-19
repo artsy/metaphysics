@@ -95,6 +95,9 @@ export default (accessToken, opts) => {
     vortexTokenLoader,
     vortexGraphqlLoader,
     marketPriceInsightsBatchLoader,
+    auctionLotRecommendationsLoader: vortexLoader(
+      "auction_lot_recommendations"
+    ),
   }
 }
 

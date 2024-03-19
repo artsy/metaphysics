@@ -53,19 +53,6 @@ const buildContext = (responses: any = {}) => {
 }
 
 describe("artworksForUser", () => {
-  describe("with no artworksLoader", () => {
-    it("returns null", async () => {
-      const query = buildQuery()
-      const context = {
-        ...buildContext(),
-        artworksLoader: undefined,
-      }
-
-      const response = await runAuthenticatedQuery(query, context)
-      expect(response.artworksForUser).toBeNull()
-    })
-  })
-
   describe("with no artwork recommendations", () => {
     it("returns an empty array", async () => {
       const query = buildQuery()

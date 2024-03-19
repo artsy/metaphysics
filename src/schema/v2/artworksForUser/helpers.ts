@@ -1,21 +1,46 @@
 import { ResolverContext } from "types/graphql"
 import { CursorPageable } from "relay-cursor-paging"
-import { extractNodes } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import gql from "lib/gql"
 
-export const getNewForYouRecs = async (
+export const getNewForYouArtworkIDs = async (
   args: CursorPageable,
   context: ResolverContext
 ): Promise<string[]> => {
   const {
     authenticatedLoaders: {
       vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+      auctionLotRecommendationsLoader: auctionLotRecommendationsAuthenticatedLoader,
     },
     unauthenticatedLoaders: {
       vortexGraphqlLoader: vortexGraphQLUnauthenticatedLoader,
+      auctionLotRecommendationsLoader: auctionLotRecommendationsUnauthenticatedLoader,
     },
     xImpersonateUserID,
   } = context
+
+  if (args.onlyAtAuction) {
+    if (!auctionLotRecommendationsAuthenticatedLoader)
+      throw new Error("Authentication failed: User is not authenticated.")
+
+    const userID = args.userId || xImpersonateUserID
+    const gravityArgs = convertConnectionArgsToGravityArgs(args)
+    const { page, size } = gravityArgs
+
+    // When a `userID` is specified, this is an app request and we should use the
+    // unauthenticated loader. The authenticated loader is for logged-in users.
+    const loader = userID
+      ? auctionLotRecommendationsUnauthenticatedLoader
+      : auctionLotRecommendationsAuthenticatedLoader
+
+    const { data } = await loader({
+      page,
+      size,
+      user_id: userID,
+    })
+
+    return data.map((recommendation) => recommendation.artwork_id)
+  }
   if (!vortexGraphQLAuthenticatedLoader)
     throw new Error("Authentication failed: User is not authenticated.")
 
@@ -87,11 +112,26 @@ export const getNewForYouArtworks = async (
 export const getBackfillArtworks = async (
   remainingSize: number,
   includeBackfill: boolean,
-  context: ResolverContext
+  context: ResolverContext,
+  onlyAtAuction = false
 ): Promise<any[]> => {
   if (!includeBackfill || remainingSize < 1) return []
 
-  const { setItemsLoader, setsLoader } = context
+  const {
+    setItemsLoader,
+    setsLoader,
+    unauthenticatedLoaders: { filterArtworksLoader }, // Not personalized
+  } = context
+
+  if (onlyAtAuction) {
+    const { hits } = await filterArtworksLoader({
+      size: remainingSize,
+      sort: "-decayed_merch",
+      marketing_collection_id: "top-auction-lots",
+    })
+
+    return hits
+  }
 
   const { body: setsBody } = await setsLoader({
     key: "artwork-backfill",
