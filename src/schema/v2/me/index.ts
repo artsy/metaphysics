@@ -83,6 +83,10 @@ import {
 import { emptyConnection, paginationResolver } from "../fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
+import {
+  PartnerOfferToCollectorConnectionType,
+  PartnerOfferToCollectorSortsType,
+} from "../partnerOfferToCollector"
 import { PreviewSavedSearchAttributesType } from "../previewSavedSearch"
 
 /**
@@ -474,6 +478,50 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     paddleNumber: {
       type: GraphQLString,
       resolve: ({ paddle_number }) => paddle_number,
+    },
+    partnerOffersConnection: {
+      type: PartnerOfferToCollectorConnectionType,
+      args: pageable({
+        artworkID: {
+          type: GraphQLString,
+        },
+        page: { type: GraphQLInt },
+        size: { type: GraphQLInt },
+        sort: { type: PartnerOfferToCollectorSortsType },
+      }),
+      resolve: async (_me, args, { mePartnerOffersLoader }) => {
+        if (!mePartnerOffersLoader)
+          throw new Error("You need to be signed in to perform this action")
+
+        const paginationArgs = convertConnectionArgsToGravityArgs(args)
+        const { page, size, offset } = paginationArgs
+
+        const gravityArgs = {
+          total_count: true,
+          page,
+          size,
+        }
+
+        if (args.sort) {
+          gravityArgs["sort"] = args.sort
+        }
+        if (args.artworkID) {
+          gravityArgs["artwork_id"] = args.artworkID
+        }
+
+        const { body, headers } = await mePartnerOffersLoader(gravityArgs)
+
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return paginationResolver({
+          args,
+          body,
+          offset,
+          page,
+          size,
+          totalCount,
+        })
+      },
     },
     pendingIdentityVerification: PendingIdentityVerification,
     phone: {

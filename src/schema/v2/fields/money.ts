@@ -204,6 +204,38 @@ export const MoneyInput = new GraphQLInputObjectType({
   },
 })
 
+/**
+ * Money type resolver for a cents/minor and currency field.
+ * See src/schema/v2/partnerOfferToCollector.ts for usage
+ */
+export const resolveMinorAndCurrencyFieldsToMoney = async (
+  { minor, currencyCode }: { minor: number; currencyCode: string },
+  _args,
+  context,
+  _info
+) => {
+  try {
+    const major = await moneyMajorResolver(
+      { cents: minor, currency: currencyCode },
+      {},
+      context
+    )
+
+    return {
+      major,
+      cents: minor,
+      currency: currencyCode,
+      display: formatMoney(major, symbolFromCurrencyCode(currencyCode), 0),
+    }
+  } catch (error) {
+    console.error(
+      "v2/fields/money @resolveMinorAndCurrencyFieldsToMoney: Error:",
+      error
+    )
+    return null
+  }
+}
+
 export const resolveLotCentsFieldToMoney = (centsField) => {
   return async (parent, _args, context, _info) => {
     const { internalID, [centsField]: cents } = parent

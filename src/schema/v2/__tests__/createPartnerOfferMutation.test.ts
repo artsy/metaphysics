@@ -14,7 +14,7 @@ const mutation = gql`
             artworkId
             createdAt
             endAt
-            id
+            internalID
             partnerId
             discountPercentage
             note
@@ -68,7 +68,7 @@ describe("Create a partner offer for users", () => {
               discountPercentage: 10,
               note: "hi!",
               endAt: "2022-10-29T12:00:00+00:00",
-              id: "xyz321",
+              internalID: "xyz321",
               partnerId: "partner_id",
               userIds: ["user_id1", "user_id2"],
             },
