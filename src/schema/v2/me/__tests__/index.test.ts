@@ -666,4 +666,173 @@ describe("me/index", () => {
       `)
     })
   })
+
+  describe("partnerOffersConnection", () => {
+    it("returns partner offers for the collector", async () => {
+      const meLoader = () => Promise.resolve({})
+      const mePartnerOffersLoader = jest.fn(() =>
+        Promise.resolve({
+          body: [
+            {
+              id: "866f16a0-92bf-4fb6-8911-e1ab1a5fb508",
+              active: true,
+              artwork_id: "65d9b98ae37dd70006240bf6",
+              available: true,
+              partner_id: "5f80bfefe8d808000ea212c1",
+              price_currency: "GBP",
+              price_listed: 56000.0,
+              price_listed_minor: 5600000,
+              price_with_discount: 17360.0,
+              price_with_discount_minor: 1736000,
+              discount_percentage: 69,
+              created_at: "2024-02-27T19:01:51.461Z",
+              end_at: "2024-03-01T19:01:51.457Z",
+            },
+          ],
+          headers: { "x-total-count": "1" },
+        })
+      )
+      const query = gql`
+        query {
+          me {
+            partnerOffersConnection(first: 10) {
+              totalCount
+              edges {
+                node {
+                  internalID
+                  artworkId
+                  isAvailable
+                  partnerId
+                  priceWithDiscount {
+                    display
+                    major
+                    minor
+                    currencyCode
+                  }
+                  createdAt
+                  endAt
+                }
+              }
+            }
+          }
+        }
+      `
+      const response = await runAuthenticatedQuery(query, {
+        meLoader,
+        mePartnerOffersLoader,
+      })
+
+      expect(mePartnerOffersLoader).toHaveBeenCalledWith({
+        page: 1,
+        size: 10,
+        total_count: true,
+      })
+
+      expect(response).toEqual({
+        me: {
+          partnerOffersConnection: {
+            totalCount: 1,
+            edges: [
+              {
+                node: {
+                  artworkId: "65d9b98ae37dd70006240bf6",
+                  createdAt: "2024-02-27T19:01:51.461Z",
+                  endAt: "2024-03-01T19:01:51.457Z",
+                  internalID: "866f16a0-92bf-4fb6-8911-e1ab1a5fb508",
+                  isAvailable: true,
+                  partnerId: "5f80bfefe8d808000ea212c1",
+                  priceWithDiscount: {
+                    currencyCode: "GBP",
+                    display: "£17,360",
+                    minor: 1736000,
+                    major: 17360,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns partner offers for the collector on an artwork", async () => {
+      const meLoader = () => Promise.resolve({})
+      const mePartnerOffersLoader = jest.fn(() =>
+        Promise.resolve({
+          body: [
+            {
+              id: "866f16a0-92bf-4fb6-8911-e1ab1a5fb508",
+              active: true,
+              artwork_id: "65d9b98ae37dd70006240bf6",
+              available: true,
+              partner_id: "5f80bfefe8d808000ea212c1",
+              price_currency: "GBP",
+              price_listed: 56000.0,
+              price_listed_minor: 5600000,
+              price_with_discount: 17360.0,
+              price_with_discount_minor: 1736000,
+              discount_percentage: 69,
+              created_at: "2024-02-27T19:01:51.461Z",
+              end_at: "2024-03-01T19:01:51.457Z",
+            },
+          ],
+          headers: { "x-total-count": "1" },
+        })
+      )
+      const query = gql`
+        query {
+          me {
+            partnerOffersConnection(artworkID: "art.jpg", first: 10) {
+              totalCount
+              edges {
+                node {
+                  internalID
+                  artworkId
+                  priceWithDiscount {
+                    display
+                    major
+                    minor
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+      const response = await runAuthenticatedQuery(query, {
+        meLoader,
+        mePartnerOffersLoader,
+      })
+
+      expect(mePartnerOffersLoader).toHaveBeenCalledWith({
+        page: 1,
+        size: 10,
+        total_count: true,
+        artwork_id: "art.jpg",
+      })
+
+      expect(response).toEqual({
+        me: {
+          partnerOffersConnection: {
+            totalCount: 1,
+            edges: [
+              {
+                node: {
+                  artworkId: "65d9b98ae37dd70006240bf6",
+                  internalID: "866f16a0-92bf-4fb6-8911-e1ab1a5fb508",
+                  priceWithDiscount: {
+                    currencyCode: "GBP",
+                    display: "£17,360",
+                    minor: 1736000,
+                    major: 17360,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
 })
