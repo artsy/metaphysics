@@ -21,10 +21,6 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ artwork_id }) => artwork_id,
     },
-    isActive: {
-      type: GraphQLBoolean,
-      resolve: ({ active }) => active,
-    },
     isAvailable: {
       type: GraphQLBoolean,
       resolve: ({ available }) => available,

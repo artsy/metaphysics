@@ -24,10 +24,6 @@ export const PartnerOfferToCollectorType = new GraphQLObjectType<
     },
     createdAt: date(),
     endAt: date(),
-    isActive: {
-      type: GraphQLBoolean,
-      resolve: ({ active }) => active,
-    },
     isAvailable: {
       type: GraphQLBoolean,
       resolve: ({ available }) => available,
