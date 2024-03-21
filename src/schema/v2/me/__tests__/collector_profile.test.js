@@ -20,9 +20,6 @@ describe("Me", () => {
               isIdentityVerified
               isActiveInquirer
               isActiveBidder
-              collectorProfileArtists {
-                name
-              }
             }
           }
         }
@@ -43,7 +40,6 @@ describe("Me", () => {
         profession: "typer",
         artwork_inquiry_requests_count: 25,
         previously_registered_for_auction: false,
-        collected_artist_names: [{ name: "Gumball" }, { name: "Edgar" }],
       }
 
       const expectedProfileData = {
@@ -59,7 +55,6 @@ describe("Me", () => {
         isIdentityVerified: true,
         isActiveInquirer: true,
         isActiveBidder: false,
-        collectorProfileArtists: [{ name: "Gumball" }, { name: "Edgar" }],
       }
 
       const context = {

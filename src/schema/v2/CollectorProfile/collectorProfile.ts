@@ -194,18 +194,6 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
     resolve: ({ previously_registered_for_auction }) =>
       previously_registered_for_auction ?? false,
   },
-  collectorProfileArtists: {
-    type: new GraphQLList(
-      new GraphQLObjectType<any, ResolverContext>({
-        name: "CollectorProfileArtists",
-        fields: {
-          name: { type: GraphQLString },
-        },
-      })
-    ),
-    description: "List of artists the Collector is interested in.",
-    resolve: ({ collected_artist_names }) => collected_artist_names,
-  },
   isProfileComplete: {
     type: GraphQLBoolean,
     resolve: ({ name, location, profession, other_relevant_positions, bio }) =>
