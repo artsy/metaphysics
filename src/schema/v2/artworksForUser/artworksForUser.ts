@@ -14,7 +14,7 @@ import { artworkConnection } from "schema/v2/artwork"
 import {
   getBackfillArtworks,
   getNewForYouArtworks,
-  getNewForYouRecs,
+  getNewForYouArtworkIDs,
 } from "./helpers"
 
 const MAX_ARTWORKS = 100
@@ -29,11 +29,13 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     version: { type: GraphQLString },
     maxWorksPerArtist: { type: GraphQLInt },
     marketable: { type: GraphQLBoolean },
+    onlyAtAuction: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+    },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
-    if (!context.artworksLoader) return
-
-    const newForYouArtworkIds = await getNewForYouRecs(args, context)
+    const newForYouArtworkIds = await getNewForYouArtworkIDs(args, context)
 
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = gravityArgs
@@ -51,7 +53,8 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     const backfillArtworks = await getBackfillArtworks(
       remainingSize,
       args.includeBackfill,
-      context
+      context,
+      args.onlyAtAuction
     )
 
     const artworks = [...newForYouArtworks, ...backfillArtworks]

@@ -6,11 +6,13 @@ interface GraphQLArgs {
 }
 
 export default (opts) => {
-  const { vortexLoaderWithoutAuthenticationFactory } = factories(opts)
+  const { vortexLoaderWithoutAuthenticationFactory: vortexLoader } = factories(
+    opts
+  )
 
   return {
     vortexGraphqlLoader: ({ query, variables }: GraphQLArgs) => {
-      return vortexLoaderWithoutAuthenticationFactory(
+      return vortexLoader(
         "/graphql",
         { query, variables: JSON.stringify(variables) },
         {
@@ -18,5 +20,8 @@ export default (opts) => {
         }
       )
     },
+    auctionLotRecommendationsLoader: vortexLoader(
+      "auction_lot_recommendations"
+    ),
   }
 }
