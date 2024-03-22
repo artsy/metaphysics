@@ -6,8 +6,7 @@ import {
   GraphQLString,
   GraphQLBoolean,
 } from "graphql"
-import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
-import { assign } from "lodash"
+import { connectionDefinitions, connectionFromArray } from "graphql-relay"
 
 import { ConversationType } from "schema/v2/conversation"
 import { ResolverContext } from "types/graphql"
@@ -83,7 +82,7 @@ const Conversations: GraphQLFieldConfig<
       return null
     }
 
-    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+    const { page, size } = convertConnectionArgsToGravityArgs(args)
     const expand = ["total_unread_count"]
 
     let params
@@ -118,14 +117,22 @@ const Conversations: GraphQLFieldConfig<
       page,
       size,
       ...params,
-    }).then(({ total_count, total_unread_count, conversations }) => {
-      return assign(
-        { total_unread_count },
-        connectionFromArraySlice(conversations, args, {
-          arrayLength: total_count,
-          sliceStart: offset,
-        })
-      )
+    }).then(({ total_unread_count, conversations }) => {
+      const connection = {
+        total_unread_count,
+        ...connectionFromArray(conversations, args),
+      }
+
+      const lessThanRequested = conversations.length < size
+
+      return {
+        ...connection,
+        pageInfo: {
+          ...connection.pageInfo,
+          hasNextPage: !lessThanRequested,
+          hasPreviousPage: page > 1,
+        },
+      }
     })
   },
 }
