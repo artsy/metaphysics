@@ -115,6 +115,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createSaleAgreementLoader: gravityLoader(
+      "sale_agreement",
+      {},
+      { method: "POST" }
+    ),
     createSetLoader: gravityLoader("set", {}, { method: "POST" }),
     createUserAdminNoteLoader: gravityLoader(
       (id) => `/user/${id}/admin_note`,
@@ -426,6 +431,11 @@ export default (accessToken, userID, opts) => {
     ),
     matchProfilesLoader: gravityLoader("match/profiles", {}, { headers: true }),
     matchSalesLoader: gravityLoader("match/sales", {}, { headers: true }),
+    matchSaleAgreementsLoader: gravityLoader(
+      "match/sale_agreements",
+      {},
+      { headers: true }
+    ),
     matchSetsLoader: gravityLoader("match/sets", {}, { headers: true }),
     matchShowsLoader: gravityLoader(
       "match/partner_shows",
@@ -633,6 +643,11 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     userRolesLoader: gravityLoader("system/roles"),
+    saleAgreementsLoader: gravityLoader(
+      "sale_agreements",
+      {},
+      { headers: true }
+    ),
     saleArtworksAllLoader: gravityLoader(
       "sale_artworks",
       {},
@@ -775,6 +790,11 @@ export default (accessToken, userID, opts) => {
     ),
     updatePartnerFlagsLoader: gravityLoader(
       (id) => `partner/${id}/partner_flags`,
+      {},
+      { method: "PUT" }
+    ),
+    updateSaleAgreementLoader: gravityLoader(
+      (id) => `sale_agreement/${id}`,
       {},
       { method: "PUT" }
     ),
