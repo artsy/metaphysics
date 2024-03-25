@@ -4108,11 +4108,6 @@ type CollectionsEdge {
   node: Collection
 }
 
-input CollectionsInput {
-  id: String!
-  shareableWithPartners: Boolean!
-}
-
 enum CollectionSorts {
   CREATED_AT_ASC
   CREATED_AT_DESC
@@ -13428,11 +13423,6 @@ type Mutation {
   # Update a collection
   updateCollection(input: updateCollectionInput!): updateCollectionPayload
 
-  # Updates the user's collections in batch.
-  updateCollectionsMutation(
-    input: updateCollectionsMutationInput!
-  ): updateCollectionsMutationPayload
-
   # Updating a collector profile (loyalty applicant status).
   updateCollectorProfile(
     input: UpdateCollectorProfileInput!
@@ -13466,6 +13456,11 @@ type Mutation {
   updateHeroUnit(
     input: UpdateHeroUnitMutationInput!
   ): UpdateHeroUnitMutationPayload
+
+  # Updates the user's collections in batch.
+  updateMeCollectionsMutation(
+    input: updateMeCollectionsMutationInput!
+  ): updateMeCollectionsMutationPayload
 
   # Update a message.
   updateMessage(
@@ -18889,28 +18884,6 @@ union UpdateCollectionResponseOrError =
     UpdateCollectionFailure
   | UpdateCollectionSuccess
 
-type UpdateCollectionsFailure {
-  mutationError: GravityMutationError
-}
-
-input updateCollectionsMutationInput {
-  attributes: [CollectionsInput!]!
-  clientMutationId: String
-}
-
-type updateCollectionsMutationPayload {
-  clientMutationId: String
-  collectionsOrErrors: [UpdateCollectionsResponseOrError!]!
-}
-
-union UpdateCollectionsResponseOrError =
-    UpdateCollectionsFailure
-  | UpdateCollectionsSuccess
-
-type UpdateCollectionsSuccess {
-  collection: Collection
-}
-
 type UpdateCollectionSuccess {
   collection: Collection
 }
@@ -19201,6 +19174,33 @@ union updateHeroUnitResponseOrError =
 
 type updateHeroUnitSuccess {
   heroUnit: HeroUnit
+}
+
+input UpdateMeCollectionInput {
+  id: String!
+  shareableWithPartners: Boolean!
+}
+
+type UpdateMeCollectionsFailure {
+  mutationError: GravityMutationError
+}
+
+input updateMeCollectionsMutationInput {
+  attributes: [UpdateMeCollectionInput!]!
+  clientMutationId: String
+}
+
+type updateMeCollectionsMutationPayload {
+  clientMutationId: String
+  meCollectionsOrErrors: [UpdateMeCollectionsResponseOrError!]!
+}
+
+union UpdateMeCollectionsResponseOrError =
+    UpdateMeCollectionsFailure
+  | UpdateMeCollectionsSuccess
+
+type UpdateMeCollectionsSuccess {
+  collection: Collection
 }
 
 type UpdateMessageFailure {

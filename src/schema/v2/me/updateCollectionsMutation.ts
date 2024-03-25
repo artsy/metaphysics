@@ -17,7 +17,7 @@ import {
 import { snakeCase } from "lodash"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateCollectionsSuccess",
+  name: "UpdateMeCollectionsSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
     collection: {
@@ -28,7 +28,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "UpdateCollectionsFailure",
+  name: "UpdateMeCollectionsFailure",
   isTypeOf: (data) => data._type === "GravityMutationError",
   fields: () => ({
     mutationError: {
@@ -39,12 +39,12 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "UpdateCollectionsResponseOrError",
+  name: "UpdateMeCollectionsResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const CollectionsInputType = new GraphQLInputObjectType({
-  name: "CollectionsInput",
+export const UpdateMeCollectionInput = new GraphQLInputObjectType({
+  name: "UpdateMeCollectionInput",
   fields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -55,22 +55,22 @@ export const CollectionsInputType = new GraphQLInputObjectType({
   },
 })
 
-export const updateCollectionsMutation = mutationWithClientMutationId<
+export const updateMeCollectionsMutation = mutationWithClientMutationId<
   any,
   any | null,
   ResolverContext
 >({
-  name: "updateCollectionsMutation",
+  name: "updateMeCollectionsMutation",
   description: "Updates the user's collections in batch.",
   inputFields: {
     attributes: {
       type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(CollectionsInputType))
+        new GraphQLList(new GraphQLNonNull(UpdateMeCollectionInput))
       ),
     },
   },
   outputFields: {
-    collectionsOrErrors: {
+    meCollectionsOrErrors: {
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(ResponseOrErrorType))
       ),
