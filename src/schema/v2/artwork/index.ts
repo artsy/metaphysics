@@ -780,6 +780,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return isEligibleForOnPlatformTransaction(artwork)
         },
       },
+      isUnlisted: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description:
+          'Artwork is marked as "unlisted" (or private) by the partner',
+        resolve: (artwork) => {
+          return artwork.visibility_level === "unlisted"
+        },
+      },
       canRequestLotConditionsReport: {
         type: GraphQLBoolean,
         description:
