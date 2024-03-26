@@ -448,6 +448,11 @@ export default (accessToken, userID, opts) => {
     ),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     meBiddersLoader: gravityLoader("me/bidders"),
+    meUpdateCollectionsLoader: gravityLoader(
+      "me/collections",
+      {},
+      { method: "PUT" }
+    ),
     meCollectorProfileLoader: gravityLoader("me/collector_profile"),
     meCreateAlertLoader: gravityLoader("me/alert", {}, { method: "POST" }),
     meCreateUserInterestLoader: gravityLoader(
