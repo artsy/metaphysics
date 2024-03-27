@@ -216,6 +216,7 @@ import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
 import { ArtworkResult } from "./artworkResult"
+import { updateMeCollectionsMutation } from "./me/updateCollectionsMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -435,6 +436,7 @@ export default new GraphQLSchema({
       updateArtwork: updateArtworkMutation,
       updateCMSLastAccessTimestamp: updateCMSLastAccessTimestampMutation,
       updateCollection: updateCollectionMutation,
+      updateMeCollectionsMutation: updateMeCollectionsMutation,
       updateCollectorProfile: UpdateCollectorProfile,
       updateCollectorProfileWithID: UpdateCollectorProfileWithID,
       updateConversation: UpdateConversationMutation,
