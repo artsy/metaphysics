@@ -1574,6 +1574,28 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return formatted
         },
       },
+      priceListedDisplay: {
+        type: GraphQLString,
+        resolve: ({ price_cents, price_currency }) => {
+          let formatted
+
+          if (price_cents) {
+            formatted =
+              price_cents.length === 1
+                ? priceDisplayText(price_cents[0], price_currency, "")
+                : priceRangeDisplayText(
+                    price_cents[0],
+                    price_cents[1],
+                    price_currency,
+                    ""
+                  )
+          } else {
+            formatted = "Not publicly listed"
+          }
+
+          return formatted
+        },
+      },
       series: markdown(),
       isSetVideoAsCover: {
         type: GraphQLBoolean,
