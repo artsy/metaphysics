@@ -12,7 +12,7 @@ import {
   GraphQLString,
   GraphQLUnionType,
 } from "graphql"
-import { PageInfoType } from "graphql-relay"
+import { connectionFromArray, PageInfoType } from "graphql-relay"
 // Mapping of category ids to MediumType values
 import artworkMediums from "lib/artworkMediums"
 // Mapping of attribution_class ids to AttributionClass values
@@ -1048,6 +1048,18 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: ArtworkLayers.type,
         resolve: ({ id }, _options, { relatedLayersLoader }) =>
           artworkLayers(id, relatedLayersLoader),
+      },
+      listedArtworksConnection: {
+        type: GraphQLNonNull(artworkConnection.connectionType),
+        args: pageable(),
+        resolve: async ({ listed_artwork_ids }, args, { artworksLoader }) => {
+          const artworks =
+            listed_artwork_ids?.length > 0
+              ? await artworksLoader({ ids: listed_artwork_ids })
+              : []
+
+          return connectionFromArray(artworks, args)
+        },
       },
       literature: markdown(({ literature }) =>
         literature.replace(/^literature:\s+/i, "")

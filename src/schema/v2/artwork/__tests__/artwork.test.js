@@ -4369,6 +4369,47 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#listedArtworksConnection", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          listedArtworksConnection(first: 3) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("returns the connection", async () => {
+      const artworks = [{ id: "foo-bar" }, { id: "bar-foo" }]
+      const context = {
+        artworkLoader: () =>
+          Promise.resolve({
+            id: "richard-prince-untitled-portrait",
+            listed_artwork_ids: ["foo-bar", "bar-foo"],
+          }),
+        artworksLoader: () => Promise.resolve(artworks),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          listedArtworksConnection: {
+            edges: [
+              { node: { slug: "foo-bar" } },
+              { node: { slug: "bar-foo" } },
+            ],
+          },
+        },
+      })
+    })
+  })
+
   describe("#priceListed", () => {
     const query = `
       {
