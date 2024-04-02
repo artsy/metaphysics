@@ -1194,6 +1194,90 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#priceListedDisplay", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          priceListedDisplay
+        }
+      }
+    `
+
+    it("returns 'Not publicly listed' if work is on hold with no price", () => {
+      artwork.price_cents = null
+      artwork.availability = "on hold"
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            priceListedDisplay: "Not publicly listed",
+          },
+        })
+      })
+    })
+
+    it("returns 'Not publicly listed' if work is for sale with no price", () => {
+      artwork.price_cents = null
+      artwork.availability = "for sale"
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            priceListedDisplay: "Not publicly listed",
+          },
+        })
+      })
+    })
+
+    it("returns '[Price]' if work is on hold with a price", () => {
+      artwork.price_cents = [42000000]
+      artwork.price_currency = "USD"
+      artwork.availability = "on hold"
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            priceListedDisplay: "US$420,000",
+          },
+        })
+      })
+    })
+
+    it("returns '[Price]' if work is sold", () => {
+      artwork.price_cents = [42000000]
+      artwork.price_currency = "USD"
+      artwork.availability = "sold"
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            priceListedDisplay: "US$420,000",
+          },
+        })
+      })
+    })
+
+    it("returns '[Price]' if work is not for sale", () => {
+      artwork.price_cents = [42000000]
+      artwork.price_currency = "USD"
+      artwork.availability = "not for sale"
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            priceListedDisplay: "US$420,000",
+          },
+        })
+      })
+    })
+  })
+
   describe("#collectionsConnection", () => {
     const query = gql`
       query {
