@@ -250,6 +250,7 @@ export const AlertType = new GraphQLObjectType<
           price_range: args.price_range,
           sizes: args.sizes,
           width: args.width,
+          for_sale: args.for_sale,
         }
 
         return filterArtworksArgs
