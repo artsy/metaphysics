@@ -24,7 +24,7 @@ interface SaleAgreementGravityResponse {
   sale_id: string
   status: string
   updated_at: string
-  updated_by: string
+  user_id: string
 }
 
 export const SaleAgreementType = new GraphQLObjectType<
@@ -44,8 +44,8 @@ export const SaleAgreementType = new GraphQLObjectType<
       },
       saleId: {
         type: GraphQLString,
-        resolve: (res) => {
-          return res.sale_id
+        resolve: ({ sale_id }) => {
+          return sale_id
         },
       },
       sale: {
@@ -53,9 +53,9 @@ export const SaleAgreementType = new GraphQLObjectType<
       },
       status: { type: new GraphQLNonNull(SaleAgreementStatusEnum) },
       updatedAt: date(),
-      updatedBy: {
+      userId: {
         type: new GraphQLNonNull(GraphQLString),
-        resolve: ({ updated_by }) => updated_by,
+        resolve: ({ user_id }) => user_id,
       },
     }
   },

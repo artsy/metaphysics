@@ -17209,7 +17209,7 @@ type SaleAgreement {
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
-  updatedBy: String!
+  userId: String!
 }
 
 # A connection to a list of items.
