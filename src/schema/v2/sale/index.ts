@@ -45,6 +45,7 @@ import config from "config"
 import { ResolverContext } from "types/graphql"
 import { allViaLoader } from "lib/all"
 import { markdown } from "../fields/markdown"
+import { SaleAgreementType } from "../SaleAgreements/SaleAgreement"
 
 const { PREDICTION_ENDPOINT } = config
 
@@ -474,6 +475,12 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
               })
             }
           })
+        },
+      },
+      saleAgreement: {
+        type: SaleAgreementType,
+        resolve: async ({ _id }, _args, { saleSaleAgreementLoader }) => {
+          return saleSaleAgreementLoader(_id)
         },
       },
       saleArtworksConnection: {
