@@ -587,6 +587,7 @@ describe("me/index", () => {
             price_range: "*-1000",
             additional_gene_ids: ["painting"],
             id: "search-criteria-id",
+            for_sale: true,
           },
           frequency: "daily",
           email: true,
