@@ -628,6 +628,7 @@ describe("me/index", () => {
           artist_ids: ["andy-warhol"],
           price_range: "*-1000",
           aggregations: ["total"],
+          for_sale: true,
         })
       )
 
