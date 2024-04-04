@@ -17199,7 +17199,7 @@ type SaleAgreement {
   internalID: ID!
   published: Boolean!
   sale: Sale
-  saleId: String
+  saleId: String!
   status: SaleAgreementStatus!
   updatedAt(
     format: String

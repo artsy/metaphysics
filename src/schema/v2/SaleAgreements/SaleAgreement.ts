@@ -43,7 +43,7 @@ export const SaleAgreementType = new GraphQLObjectType<
         type: new GraphQLNonNull(GraphQLBoolean),
       },
       saleId: {
-        type: GraphQLString,
+        type: new GraphQLNonNull(GraphQLString),
         resolve: ({ sale_id }) => {
           return sale_id
         },
