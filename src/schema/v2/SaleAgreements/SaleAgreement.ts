@@ -7,12 +7,12 @@ import {
   GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { markdown } from "../fields/markdown"
+import { markdown } from "schema/v2/fields/markdown"
 import { connectionWithCursorInfo } from "../fields/pagination"
 import { IDFields } from "../object_identification"
-import { date } from "../fields/date"
-import { SaleType } from "../sale"
-import { SaleAgreementStatusEnum } from "./SaleAgreementStatusEnum"
+import { date } from "schema/v2/fields/date"
+import { SaleType } from "schema/v2/sale"
+import { SaleAgreementStatusEnum } from "schema/v2/SaleAgreements/SaleAgreementStatusEnum"
 
 interface SaleAgreementGravityResponse {
   id: string
