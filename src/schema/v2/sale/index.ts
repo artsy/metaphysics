@@ -479,7 +479,9 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       saleAgreement: {
         type: SaleAgreementType,
-        resolve: ({ sale_agreement }) => sale_agreement,
+        resolve: async ({ _id }, _args, { saleSaleAgreementLoader }) => {
+          return saleSaleAgreementLoader(_id)
+        },
       },
       saleArtworksConnection: {
         type: saleArtworkConnection,

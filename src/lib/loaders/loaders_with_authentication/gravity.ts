@@ -660,7 +660,7 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     salesLoaderWithHeaders: gravityLoader("sales", {}, { headers: true }),
-    saleAgreementLoader: gravityLoader((id) => `sale_agreements/${id}`),
+    saleSaleAgreementLoader: gravityLoader((id) => `sale/${id}/sale_agreement`),
     saveArtworkLoader: gravityLoader(
       (id) => `collection/saved-artwork/artwork/${id}`,
       {},

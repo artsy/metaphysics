@@ -248,6 +248,7 @@ export default (opts) => {
     salesLoader: batchSalesLoader,
     salesLoaderWithHeaders: gravityLoader("sales", {}, { headers: true }),
     saleAgreementLoader: gravityLoader((id) => `sale_agreements/${id}`),
+    saleSaleAgreementLoader: gravityLoader((id) => `sale/${id}/sale_agreement`),
     searchLoader: searchLoader(gravityLoader),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     setItemsLoader: gravityLoader(
