@@ -217,6 +217,10 @@ import { updateAlertMutation } from "./Alerts/updateAlertMutation"
 import { deleteAlertMutation } from "./Alerts/deleteAlertMutation"
 import { ArtworkResult } from "./artworkResult"
 import { updateMeCollectionsMutation } from "./me/updateCollectionsMutation"
+import { CreateSaleAgreementMutation } from "./SaleAgreements/createSaleAgreementMutation"
+import { UpdateSaleAgreementMutation } from "./SaleAgreements/updateSaleAgreementMutation"
+import { SaleAgreementsConnection } from "./SaleAgreements/saleAgreementsConnection"
+import { SaleAgreement } from "./SaleAgreements/SaleAgreement"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -293,6 +297,8 @@ const rootFields = {
   identityVerificationsConnection,
   job,
   jobs,
+  saleAgreement: SaleAgreement,
+  saleAgreementsConnection: SaleAgreementsConnection,
   markdown: MarkdownContent,
   matchArtist: MatchArtist,
   matchConnection: MatchConnection,
@@ -377,6 +383,7 @@ export default new GraphQLSchema({
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       createHeroUnit: createHeroUnitMutation,
       createIdentityVerificationOverride: createIdentityVerificationOverrideMutation,
+      createSaleAgreement: CreateSaleAgreementMutation,
       createOrderedSet: createOrderedSetMutation,
       createPage: CreatePageMutation,
       createPartnerOffer: createPartnerOfferMutation,
@@ -443,6 +450,7 @@ export default new GraphQLSchema({
       updateFeature: UpdateFeatureMutation,
       updateFeaturedLink: UpdateFeaturedLinkMutation,
       updateHeroUnit: updateHeroUnitMutation,
+      updateSaleAgreement: UpdateSaleAgreementMutation,
       updateMessage: updateMessageMutation,
       updateMyPassword: updateMyPasswordMutation,
       updateMyUserProfile: UpdateMyUserProfileMutation,
