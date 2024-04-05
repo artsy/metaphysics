@@ -102,8 +102,12 @@ export const userInterestFields: Thunk<GraphQLFieldConfigMap<
   },
 })
 
-export const UserInterestConnection = connectionWithCursorInfo({
+export const {
+  connectionType: UserInterestConnection,
+  edgeType: UserInterestEdge,
+} = connectionWithCursorInfo({
   name: "UserInterest",
   nodeType: userInterestInterestUnion,
   edgeFields: userInterestFields,
-}).connectionType
+  resolveNode: (node) => node.interest,
+})

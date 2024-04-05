@@ -11,7 +11,11 @@ import {
   formatGravityError,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import { UserInterest, userInterestType } from "../userInterests"
+import {
+  UserInterest,
+  UserInterestEdge,
+  userInterestType,
+} from "../userInterests"
 
 interface Input {
   id: string
@@ -62,6 +66,10 @@ export const updateUserInterestMutation = mutationWithClientMutationId<
     private: { type: GraphQLBoolean },
   },
   outputFields: {
+    userInterestEdge: {
+      type: UserInterestEdge,
+      resolve: (result) => result,
+    },
     userInterestOrError: {
       type: ResponseOrErrorType,
       description: "On success: the new state of the UserInterest",
