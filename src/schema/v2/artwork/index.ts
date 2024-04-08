@@ -809,6 +809,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return false
         },
       },
+      displayArtistBio: {
+        type: GraphQLBoolean,
+        resolve: ({ display_artist_bio }) => display_artist_bio,
+      },
       displayPriceRange: {
         type: GraphQLBoolean,
         resolve: ({ display_price_range }) => display_price_range,
