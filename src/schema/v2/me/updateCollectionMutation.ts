@@ -63,7 +63,7 @@ export const updateCollectionMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
     },
     name: { type: new GraphQLNonNull(GraphQLString) },
-    shareableWithPartners: { type: new GraphQLNonNull(GraphQLBoolean) },
+    shareableWithPartners: { type: GraphQLBoolean },
   },
   outputFields: {
     responseOrError: {
