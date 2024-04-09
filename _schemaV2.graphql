@@ -16643,7 +16643,7 @@ type Query {
     term: String
   ): ShowConnection
 
-  # Static set of SWA specialists
+  # A list of SWA specialists
   specialistBios: [SpecialistBio]
 
   # Content for a specific page or view
@@ -18496,7 +18496,6 @@ type SpecialistBio {
   email: String
   firstName: String
   image: Image
-  imageUrl: String
   jobTitle: String
   name: String
   specialty: String
@@ -21440,7 +21439,7 @@ type Viewer {
     term: String
   ): ShowConnection
 
-  # Static set of SWA specialists
+  # A list of SWA specialists
   specialistBios: [SpecialistBio]
 
   # Content for a specific page or view

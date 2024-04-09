@@ -35,7 +35,6 @@ const SpecialistBioType = new GraphQLObjectType<specialistBio, ResolverContext>(
           }
         },
       },
-      imageUrl: { type: GraphQLString },
       jobTitle: { type: GraphQLString },
       name: { type: GraphQLString },
       specialty: { type: GraphQLString },
@@ -44,7 +43,7 @@ const SpecialistBioType = new GraphQLObjectType<specialistBio, ResolverContext>(
 )
 
 export const SpecialistBios: GraphQLFieldConfig<void, ResolverContext> = {
-  description: "Static set of SWA specialists",
+  description: "A list of SWA specialists",
   type: new GraphQLList(SpecialistBioType),
   resolve: () => specialistBiosData,
 }
