@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLString } from "graphql"
+import { GraphQLFieldConfig, GraphQLInt, GraphQLString } from "graphql"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
@@ -15,6 +15,8 @@ export const UserInterestsConnection: GraphQLFieldConfig<
 > = {
   type: UserInterestConnection,
   args: pageable({
+    page: { type: GraphQLInt },
+    size: { type: GraphQLInt },
     category: {
       type: userInterestCategoryEnum,
       description:
