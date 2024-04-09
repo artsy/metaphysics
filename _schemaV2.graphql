@@ -16643,6 +16643,9 @@ type Query {
     term: String
   ): ShowConnection
 
+  # Static set of SWA specialists
+  specialistBios: [SpecialistBio]
+
   # Content for a specific page or view
   staticContent(
     # The slug or id for the view
@@ -18486,6 +18489,17 @@ union SmsSecondFactorOrErrorsUnion = Errors | SmsSecondFactor
 enum sort {
   ASC
   DESC
+}
+
+type SpecialistBio {
+  bio: String
+  email: String
+  firstName: String
+  image: Image
+  imageUrl: String
+  jobTitle: String
+  name: String
+  specialty: String
 }
 
 type StartIdentityVerificationFailure {
@@ -21425,6 +21439,9 @@ type Viewer {
     # If present, will search by term
     term: String
   ): ShowConnection
+
+  # Static set of SWA specialists
+  specialistBios: [SpecialistBio]
 
   # Content for a specific page or view
   staticContent(

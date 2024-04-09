@@ -221,6 +221,7 @@ import { CreateSaleAgreementMutation } from "./SaleAgreements/createSaleAgreemen
 import { UpdateSaleAgreementMutation } from "./SaleAgreements/updateSaleAgreementMutation"
 import { SaleAgreementsConnection } from "./SaleAgreements/saleAgreementsConnection"
 import { SaleAgreement } from "./SaleAgreements/SaleAgreement"
+import { SpecialistBios } from "lib/specialistBios"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -332,6 +333,7 @@ const rootFields = {
   shortcut,
   show: Show,
   showsConnection: Shows,
+  specialistBios: SpecialistBios,
   staticContent: StaticContent,
   system: System,
   tag: TagField,
