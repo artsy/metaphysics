@@ -3,6 +3,7 @@ import {
   GraphQLUnionType,
   GraphQLNonNull,
   GraphQLString,
+  GraphQLBoolean,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
@@ -46,6 +47,7 @@ const ResponseOrErrorType = new GraphQLUnionType({
 interface InputProps {
   id: string
   name: string
+  shareableWithPartners: boolean
 }
 
 export const updateCollectionMutation = mutationWithClientMutationId<
@@ -61,6 +63,7 @@ export const updateCollectionMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(GraphQLString),
     },
     name: { type: new GraphQLNonNull(GraphQLString) },
+    shareableWithPartners: { type: new GraphQLNonNull(GraphQLBoolean) },
   },
   outputFields: {
     responseOrError: {
@@ -77,6 +80,7 @@ export const updateCollectionMutation = mutationWithClientMutationId<
       const response = await context.updateCollectionLoader(args.id, {
         name: args.name,
         user_id: context.userID,
+        shareable_with_partners: args.shareableWithPartners,
       })
 
       return response
