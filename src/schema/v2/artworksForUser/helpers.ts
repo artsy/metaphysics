@@ -145,3 +145,21 @@ export const getBackfillArtworks = async (
 
   return (itemsBody || []).slice(0, remainingSize)
 }
+
+export const getDislikedArtworkIds = async (
+  context: ResolverContext
+): Promise<string[]> => {
+  const { collectionArtworksLoader } = context
+
+  if (!collectionArtworksLoader) return []
+
+  const { body: dislikedArtworks } = await collectionArtworksLoader(
+    "disliked-artwork",
+    {
+      private: true,
+      sort: "-created_at",
+    }
+  )
+
+  return (dislikedArtworks || []).map((artwork) => artwork._id)
+}

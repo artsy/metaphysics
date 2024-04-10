@@ -2,6 +2,7 @@ import {
   getBackfillArtworks,
   getNewForYouArtworks,
   getNewForYouArtworkIDs,
+  getDislikedArtworkIds,
 } from "../helpers"
 
 const mockLoaderFactory = (affinities) => {
@@ -174,5 +175,35 @@ describe("getBackfillArtworks", () => {
     )
 
     expect(backfillArtworks.length).toEqual(1)
+  })
+})
+
+describe("getDislikedArtworkIds", () => {
+  it("returns an empty array with no disliked artwork ids", async () => {
+    const mockCollectionArtworksLoader = jest.fn(() => ({ body: [] }))
+    const context = {
+      collectionArtworksLoader: mockCollectionArtworksLoader,
+    } as any
+
+    const dislikedArtworkIds = await getDislikedArtworkIds(context)
+
+    expect(dislikedArtworkIds).toEqual([])
+  })
+
+  it("returns disliked artwork ids", async () => {
+    const mockCollectionArtworksLoader = jest.fn(() => ({
+      body: [{ _id: "artwork-1" }, { _id: "artwork-2" }],
+    }))
+    const context = {
+      collectionArtworksLoader: mockCollectionArtworksLoader,
+    } as any
+
+    const dislikedArtworkIds = await getDislikedArtworkIds(context)
+
+    expect(mockCollectionArtworksLoader).toBeCalledWith("disliked-artwork", {
+      private: true,
+      sort: "-created_at",
+    })
+    expect(dislikedArtworkIds).toEqual(["artwork-1", "artwork-2"])
   })
 })

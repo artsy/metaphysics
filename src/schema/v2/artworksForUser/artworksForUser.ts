@@ -15,6 +15,7 @@ import {
   getBackfillArtworks,
   getNewForYouArtworks,
   getNewForYouArtworkIDs,
+  getDislikedArtworkIds,
 } from "./helpers"
 
 const MAX_ARTWORKS = 100
@@ -35,18 +36,26 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
+    // Receive disliked artwork ids to exclude them from recommendations.
+    const dislikedArtworkIds = await getDislikedArtworkIds(context)
     const newForYouArtworkIds = await getNewForYouArtworkIDs(args, context)
 
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = gravityArgs
 
-    const newForYouArtworks = await getNewForYouArtworks(
+    let newForYouArtworks = await getNewForYouArtworks(
       {
         ids: newForYouArtworkIds,
         marketable: args.marketable,
       },
       gravityArgs,
       context
+    )
+    // We filter out disliked artworks 2 times - here and after receiving backfilled artworks.
+    // We do this so that remaningSize option for getBackfillArtworks
+    // is calculated correctly.
+    newForYouArtworks = newForYouArtworks.filter(
+      (artwork) => !dislikedArtworkIds.includes(artwork._id)
     )
 
     const remainingSize = (gravityArgs.size || 0) - newForYouArtworks.length
@@ -57,7 +66,9 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       args.onlyAtAuction
     )
 
-    const artworks = [...newForYouArtworks, ...backfillArtworks]
+    const artworks = [...newForYouArtworks, ...backfillArtworks].filter(
+      (artwork) => !dislikedArtworkIds.includes(artwork._id)
+    )
 
     // TODO: get count from artworks loader to optimize pagination
     const count = artworks.length === 0 ? 0 : MAX_ARTWORKS

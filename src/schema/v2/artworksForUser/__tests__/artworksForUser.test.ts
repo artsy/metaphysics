@@ -28,12 +28,16 @@ const buildContext = (responses: any = {}) => {
     newForYouArtworks,
     sets,
     setItems,
+    dislikedArtworks,
   } = responses
   const mockArtworksLoader = jest.fn(() => Promise.resolve(newForYouArtworks))
   const mockSetsLoader = jest.fn(() => Promise.resolve({ body: sets }))
   const mockSetItemsLoader = jest.fn(() => Promise.resolve({ body: setItems }))
   const mockVortexGraphqlLoader = jest.fn(() => () =>
     Promise.resolve({ data: { newForYouRecommendations } })
+  )
+  const mockCollectionArtworksLoader = jest.fn(() =>
+    Promise.resolve({ body: dislikedArtworks })
   )
 
   const context = {
@@ -47,6 +51,7 @@ const buildContext = (responses: any = {}) => {
     unauthenticatedLoaders: {
       vortexGraphqlLoader: null,
     },
+    collectionArtworksLoader: mockCollectionArtworksLoader,
   } as any
 
   return context
@@ -178,6 +183,49 @@ describe("artworksForUser", () => {
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(1)
+    })
+  })
+
+  describe("exclude disliked artworks", () => {
+    // request 4 artworks, 2 of which are disliked
+    // 2 artworks come from recommendations (1 disliked)
+    // 2 come from backfill (1 disliked)
+    it("exludes disliked artworks", async () => {
+      const query = buildQuery({ first: 4, includeBackfill: true })
+
+      const dislikedArtworks = [{ _id: "artwork-1" }, { _id: "artwork-3" }]
+      const newForYouRecommendations = {
+        edges: [
+          { node: { artworkId: "artwork-1" } },
+          { node: { artworkId: "artwork-2" } },
+        ],
+      }
+      const newForYouArtworks = [
+        { _id: "artwork-1", title: "artwork 1" },
+        { _id: "artwork-2", title: "artwork 2" },
+      ]
+      const sets = [{ id: "artwork-backfill" }]
+      const setItems = [
+        { _id: "artwork-3", title: "artwork 3" },
+        { _id: "artwork-4", title: "artwork 4" },
+      ]
+
+      const context = buildContext({
+        newForYouRecommendations,
+        newForYouArtworks,
+        dislikedArtworks,
+        sets,
+        setItems,
+      })
+
+      const { artworksForUser } = await runAuthenticatedQuery(query, context)
+      const artworks = extractNodes(artworksForUser)
+
+      expect(artworks.length).toEqual(2)
+      // not disliked artwork that comes from recommendations
+      expect(artworks[0].title).toEqual("artwork 2")
+      // not disliked artwork that comes from backfill
+      expect(artworks[1].title).toEqual("artwork 4")
     })
   })
 })
