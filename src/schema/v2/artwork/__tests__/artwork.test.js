@@ -656,6 +656,30 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#displayArtistBio", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          displayArtistBio
+        }
+      }
+    `
+
+    it("passes true from gravity", () => {
+      artwork.display_artist_bio = true
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            slug: "richard-prince-untitled-portrait",
+            displayArtistBio: true,
+          },
+        })
+      })
+    })
+  })
+
   describe("#priceIncludesTaxDisplay", () => {
     const query = `
       {

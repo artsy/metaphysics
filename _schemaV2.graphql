@@ -2419,6 +2419,7 @@ type Artwork implements Node & Searchable & Sellable {
   depth: String
   description(format: Format): String
   dimensions: dimensions
+  displayArtistBio: Boolean
   displayLabel: String
   displayPriceRange: Boolean
 
@@ -12635,6 +12636,8 @@ type Me implements Node {
     # UserInterest InterestType to select. 'Artist' or 'Gene' type
     interestType: UserInterestInterestType
     last: Int
+    page: Int
+    size: Int
   ): UserInterestConnection
 
   # A list of lots a user is watching.
@@ -19006,6 +19009,7 @@ input updateCollectionInput {
   # The internal ID of the collection
   id: String!
   name: String!
+  shareableWithPartners: Boolean
 }
 
 type updateCollectionPayload {
