@@ -23,9 +23,6 @@ describe("SpecialistBios", () => {
     const result = await runQuery(query, {})
 
     specialistBiosData.forEach((specialist, index) => {
-      expect(result.specialistBios[index].firstName).toEqual(
-        specialist.firstName
-      )
       expect(result.specialistBios[index].name).toEqual(specialist.name)
       expect(result.specialistBios[index].email).toEqual(specialist.email)
       expect(result.specialistBios[index].jobTitle).toEqual(specialist.jobTitle)
@@ -37,5 +34,9 @@ describe("SpecialistBios", () => {
         specialist.imageUrl
       )
     })
+
+    // separately test the resolver for firstName
+    expect(result.specialistBios[0].firstName).toEqual("Jessica")
+    expect(result.specialistBios[1].firstName).toEqual("Christine")
   })
 })

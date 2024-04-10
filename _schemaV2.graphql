@@ -16643,7 +16643,7 @@ type Query {
     term: String
   ): ShowConnection
 
-  # A list of SWA specialists
+  # A list of specialists
   specialistBios: [SpecialistBio]
 
   # Content for a specific page or view
@@ -21439,7 +21439,7 @@ type Viewer {
     term: String
   ): ShowConnection
 
-  # A list of SWA specialists
+  # A list of specialists
   specialistBios: [SpecialistBio]
 
   # Content for a specific page or view

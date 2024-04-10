@@ -1,6 +1,5 @@
 [
   {
-    "firstName": "Jessica",
     "name": "Jessica Backus",
     "email": "jessica@artsymail.com",
     "jobTitle": "VP, Collector Sales",
@@ -9,7 +8,6 @@
     "imageUrl": "https://files.artsy.net/images/Jessica-Mobile.webp"
   },
   {
-    "firstName": "Christine",
     "name": "Christine Aschwald",
     "email": "christine.aschwald@artsymail.com",
     "jobTitle": "Senior Director, Auctions and Private Sales",
@@ -18,7 +16,6 @@
     "imageUrl": "https://files.artsy.net/images/Christine-Mobile.webp"
   },
   {
-    "firstName": "Wendy",
     "name": "Wendy Wiberg",
     "email": "wendy.wiberg@artsymail.com",
     "jobTitle": "Associate Director, Collector Services",
@@ -27,7 +24,6 @@
     "imageUrl": "https://files.artsy.net/images/Wendy-Mobile.webp"
   },
   {
-    "firstName": "Daniela",
     "name": "Daniela Bianco-Duppen",
     "email": "daniela.bianco-duppen@artsymail.com",
     "jobTitle": "Senior Advisor",
@@ -36,7 +32,6 @@
     "imageUrl": "https://files.artsy.net/images/Daniela-Mobile.webp"
   },
   {
-    "firstName": "Lauren",
     "name": "Lauren Carpinelli",
     "email": "lauren.carpinelli@artsymail.com",
     "jobTitle": "Post-War & Contemporary Specialist",
@@ -45,7 +40,6 @@
     "imageUrl": "https://files.artsy.net/images/Lauren-Mobile.webp"
   },
   {
-    "firstName": "Meave",
     "name": "Meave Hamill",
     "email": "meave@artsymail.com",
     "jobTitle": "Senior Advisor",
@@ -54,7 +48,6 @@
     "imageUrl": "https://files.artsy.net/images/Meave-Mobile.webp"
   },
   {
-    "firstName": "George",
     "name": "George King",
     "email": "george.king@artsymail.com",
     "jobTitle": "Senior Advisor",
@@ -63,7 +56,6 @@
     "imageUrl": "https://files.artsy.net/images/George-Mobile.webp"
   },
   {
-    "firstName": "Erica",
     "name": "Erica Lyon",
     "email": "erica@artsymail.com",
     "jobTitle": "Director, Business Strategy & Operations",
@@ -72,7 +64,6 @@
     "imageUrl": "https://files.artsy.net/images/Erica-Mobile.webp"
   },
   {
-    "firstName": "Laura",
     "name": "Laura Martin",
     "email": "laura.martin@artsymail.com",
     "jobTitle": "Post-War & Contemporary Specialist",
@@ -81,7 +72,6 @@
     "imageUrl": "https://files.artsy.net/images/Laura-Mobile.webp"
   },
   {
-    "firstName": "Caroline",
     "name": "Caroline Perkins",
     "email": "caroline.perkins@artsymail.com",
     "jobTitle": "Advisor",
@@ -90,7 +80,6 @@
     "imageUrl": "https://files.artsy.net/images/Caroline-Mobile-1701268893821.webp"
   },
   {
-    "firstName": "Itziar",
     "name": "Itziar Ramos Ricoy",
     "email": "itziar.ramos@artsymail.com",
     "jobTitle": "Senior Advisor, Auctions and Private Sales",
@@ -99,7 +88,6 @@
     "imageUrl": "https://files.artsy.net/images/Itziar-Mobile.webp"
   },
   {
-    "firstName": "Dana",
     "name": "Dana Rodriguez",
     "email": "dana.rodriguez@artsymail.com",
     "jobTitle": "Collector Services Manager",
@@ -108,7 +96,6 @@
     "imageUrl": "https://files.artsy.net/images/Dana-Mobile.webp"
   },
   {
-    "firstName": "Isabel",
     "name": "Isabel Telonis",
     "email": "isabel.telonis@artsymail.com",
     "jobTitle": "Senior Manager, Collector Services",
@@ -117,7 +104,6 @@
     "imageUrl": "https://files.artsy.net/images/Isabel-Desktop.webp"
   },
   {
-    "firstName": "Alexssa",
     "name": "Alexssa Todd",
     "email": "alexssa.todd@artsymail.com",
     "jobTitle": "Auction Partnerships Lead",
@@ -126,7 +112,6 @@
     "imageUrl": "https://files.artsy.net/images/Alexssa-Mobile.webp"
   },
   {
-    "firstName": "Alan",
     "name": "Alan Zeng",
     "email": "alan.zeng@artsymail.com",
     "jobTitle": "Head of Street Art",
