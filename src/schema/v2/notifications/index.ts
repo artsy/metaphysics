@@ -10,7 +10,7 @@ import {
 } from "graphql"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { pick, size } from "lodash"
+import { pick } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { date, formatDate } from "schema/v2/fields/date"
 import {
@@ -26,7 +26,6 @@ import { DEFAULT_TZ } from "lib/date"
 import { NotificationItemType } from "./Item"
 import _ from "lodash"
 import Image, { normalizeImageData } from "../image"
-import gql from "lib/gql"
 
 const NotificationTypesEnum = new GraphQLEnumType({
   name: "NotificationTypesEnum",
