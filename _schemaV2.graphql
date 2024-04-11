@@ -16649,7 +16649,7 @@ type Query {
   # Content for a specific page or view
   staticContent(
     # The slug or id for the view
-    id: String!
+    id: String
   ): StaticContent
 
   # Get a Submission
@@ -18491,6 +18491,16 @@ enum sort {
   DESC
 }
 
+type SpecialistBio {
+  bio: String
+  email: String
+  firstName: String
+  image: Image
+  jobTitle: String
+  name: String
+  specialty: String
+}
+
 type StartIdentityVerificationFailure {
   mutationError: GravityMutationError
 }
@@ -18531,6 +18541,9 @@ type StaticContent {
 
   # A slug ID.
   slug: ID!
+
+  # A list of specialists
+  specialistBios: [SpecialistBio]
 }
 
 enum SubGroupInputStatus {
@@ -21433,7 +21446,7 @@ type Viewer {
   # Content for a specific page or view
   staticContent(
     # The slug or id for the view
-    id: String!
+    id: String
   ): StaticContent
 
   # Fields related to internal systems.
