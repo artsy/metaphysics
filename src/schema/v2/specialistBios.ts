@@ -4,7 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import specialistBiosData from "./data.json"
+import specialistBiosData from "data/specialistBios.json"
 import { ResolverContext } from "types/graphql"
 import { ImageType } from "schema/v2/image"
 

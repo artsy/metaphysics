@@ -1,26 +1,28 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
-import specialistBiosData from "./data.json"
+import specialistBiosData from "data/specialistBios.json"
 
 describe("SpecialistBios", () => {
   it("returns a list of specialist bios", async () => {
     const query = gql`
       query {
-        specialistBios {
-          name
-          firstName
-          jobTitle
-          specialty
-          bio
-          email
-          image {
-            imageURL
+        staticContent {
+          specialistBios {
+            name
+            firstName
+            jobTitle
+            specialty
+            bio
+            email
+            image {
+              imageURL
+            }
           }
         }
       }
     `
 
-    const result = await runQuery(query, {})
+    const result = (await runQuery(query, {})).staticContent
 
     specialistBiosData.forEach((specialist, index) => {
       expect(result.specialistBios[index].name).toEqual(specialist.name)

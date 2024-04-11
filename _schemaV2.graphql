@@ -16643,13 +16643,10 @@ type Query {
     term: String
   ): ShowConnection
 
-  # A list of specialists
-  specialistBios: [SpecialistBio]
-
   # Content for a specific page or view
   staticContent(
     # The slug or id for the view
-    id: String!
+    id: String
   ): StaticContent
 
   # Get a Submission
@@ -18541,6 +18538,9 @@ type StaticContent {
 
   # A slug ID.
   slug: ID!
+
+  # A list of specialists
+  specialistBios: [SpecialistBio]
 }
 
 enum SubGroupInputStatus {
@@ -21439,13 +21439,10 @@ type Viewer {
     term: String
   ): ShowConnection
 
-  # A list of specialists
-  specialistBios: [SpecialistBio]
-
   # Content for a specific page or view
   staticContent(
     # The slug or id for the view
-    id: String!
+    id: String
   ): StaticContent
 
   # Fields related to internal systems.
