@@ -10,7 +10,7 @@ import {
 } from "graphql"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { pick } from "lodash"
+import { pick, size } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { date, formatDate } from "schema/v2/fields/date"
 import {
@@ -24,6 +24,9 @@ import { IDFields, NodeInterface } from "../object_identification"
 import moment from "moment-timezone"
 import { DEFAULT_TZ } from "lib/date"
 import { NotificationItemType } from "./Item"
+import _ from "lodash"
+import Image, { normalizeImageData } from "../image"
+import gql from "lib/gql"
 
 const NotificationTypesEnum = new GraphQLEnumType({
   name: "NotificationTypesEnum",
@@ -96,6 +99,51 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
         }
 
         return formatDate(date, dateFormat, timezone)
+      },
+    },
+    previewImages: {
+      type: new GraphQLList(Image.type),
+      args: {
+        size: { type: GraphQLInt },
+      },
+      resolve: async (
+        notification,
+        { size },
+        { articleLoader, artworksLoader, showsLoader, viewingRoomLoader }
+      ) => {
+        switch (notification.activity_type) {
+          case "ViewingRoomPublishedActivity":
+            const data = await viewingRoomLoader(notification.object_ids[0])
+
+            return [
+              normalizeImageData(
+                data?.viewingRoom?.image?.imageURLs?.normalized
+              ),
+            ]
+          case "ArticleFeaturedArtistActivity":
+            const article = await articleLoader(notification.actor_ids[0])
+
+            return [normalizeImageData(article?.thumbnail_image)]
+          case "PartnerShowOpenedActivity":
+            const shows = await showsLoader({
+              size,
+              id: notification.object_ids,
+            })
+
+            return shows.map(({ image_versions, image_url }) => {
+              return normalizeImageData({
+                image_versions,
+                image_url,
+              })
+            })
+          default:
+            const artworks = await artworksLoader({
+              ids: notification.object_ids,
+              size,
+            })
+
+            return artworks.map((artwork) => artwork.images?.[0])
+        }
       },
     },
     targetHref: {

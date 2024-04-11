@@ -289,5 +289,6 @@ export default (opts) => {
       {},
       { method: "GET" }
     ),
+    viewingRoomLoader: gravityLoader((id) => `viewing_room/${id}`),
   }
 }
