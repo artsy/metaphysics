@@ -8,6 +8,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLError,
 } from "graphql"
 import gql from "lib/gql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
@@ -69,6 +70,9 @@ import { UserInterest } from "./userInterest"
 import { UserInterestsConnection } from "./userInterestsConnection"
 import { WatchedLotConnection } from "./watchedLotConnection"
 import { NotificationType } from "../notifications"
+import { artworkConnection } from "../artwork"
+import { connectionFromArraySlice } from "graphql-relay"
+import { createPageCursors } from "schema/v2/fields/pagination"
 import {
   DEFAULT_CURRENCY_PREFERENCE,
   DEFAULT_LENGTH_UNIT_PREFERENCE,
@@ -635,6 +639,55 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ share_follows }) => {
         return !!share_follows
+      },
+    },
+    // genomic recommendation
+    recommendedArtworks: {
+      type: artworkConnection.connectionType,
+      args: pageable({
+        page: { type: GraphQLInt },
+      }),
+      resolve: async (_root, args, { homepageSuggestedArtworksLoader }) => {
+        if (!homepageSuggestedArtworksLoader) return null
+
+        try {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const recommendedArtworks = await homepageSuggestedArtworksLoader({
+            limit: size,
+          })
+
+          const totalCount = recommendedArtworks.length
+
+          const connection = connectionFromArraySlice(
+            recommendedArtworks,
+            args,
+            {
+              arrayLength: totalCount,
+              sliceStart: offset,
+            }
+          )
+
+          const totalPages = Math.ceil(totalCount / size)
+
+          return {
+            totalCount,
+            pageCursors: createPageCursors({ ...args, page, size }, totalCount),
+            ...connection,
+            pageInfo: {
+              ...connection.pageInfo,
+              hasPreviousPage: page > 1,
+              hasNextPage: page < totalPages,
+            },
+          }
+        } catch (e) {
+          console.error(e)
+          throw new GraphQLError(
+            "[metaphysics @ gravity/v2/me] Error fetching recommended artworks"
+          )
+        }
       },
     },
     similarToRecentlyViewedConnection: SimilarToRecentlyViewed,

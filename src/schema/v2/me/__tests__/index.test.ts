@@ -838,3 +838,71 @@ describe("me/index", () => {
     })
   })
 })
+
+describe("recommendedArtworks", () => {
+  const query = gql`
+    query {
+      me {
+        recommendedArtworks(first: 1) {
+          totalCount
+          edges {
+            node {
+              title
+            }
+          }
+        }
+      }
+    }
+  `
+
+  it("returns recommended artworks for the user", async () => {
+    const meLoader = () => Promise.resolve({})
+    const homepageSuggestedArtworksLoader = jest.fn(() =>
+      Promise.resolve([
+        {
+          id: "1",
+          title: "Soup can 1",
+        },
+      ])
+    )
+    const response = await runAuthenticatedQuery(query, {
+      meLoader,
+      homepageSuggestedArtworksLoader,
+    })
+
+    expect(homepageSuggestedArtworksLoader).toHaveBeenCalledWith({
+      limit: 1,
+    })
+
+    expect(response).toEqual({
+      me: {
+        recommendedArtworks: {
+          totalCount: 1,
+          edges: [
+            {
+              node: {
+                title: "Soup can 1",
+              },
+            },
+          ],
+        },
+      },
+    })
+  })
+
+  it("fails gracefully if the loader throws an error", async () => {
+    const meLoader = () => Promise.resolve({})
+    const homepageSuggestedArtworksLoader = jest.fn(() =>
+      Promise.reject(new Error("An error occurred"))
+    )
+
+    await expect(
+      runAuthenticatedQuery(query, {
+        meLoader,
+        homepageSuggestedArtworksLoader,
+      })
+    ).rejects.toThrowError(
+      "[metaphysics @ gravity/v2/me] Error fetching recommended artworks"
+    )
+  })
+})
