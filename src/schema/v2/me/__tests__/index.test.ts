@@ -680,6 +680,7 @@ describe("me/index", () => {
               active: true,
               artwork_id: "65d9b98ae37dd70006240bf6",
               available: true,
+              note: "This is a note!",
               partner_id: "5f80bfefe8d808000ea212c1",
               price_currency: "GBP",
               price_listed: 56000.0,
@@ -704,6 +705,7 @@ describe("me/index", () => {
                   internalID
                   artworkId
                   isAvailable
+                  note
                   partnerId
                   priceWithDiscount {
                     display
@@ -742,6 +744,7 @@ describe("me/index", () => {
                   endAt: "2024-03-01T19:01:51.457Z",
                   internalID: "866f16a0-92bf-4fb6-8911-e1ab1a5fb508",
                   isAvailable: true,
+                  note: "This is a note!",
                   partnerId: "5f80bfefe8d808000ea212c1",
                   priceWithDiscount: {
                     currencyCode: "GBP",
@@ -774,6 +777,7 @@ describe("me/index", () => {
               price_with_discount: 17360.0,
               price_with_discount_minor: 1736000,
               discount_percentage: 69,
+              note: "This is  a note!",
               created_at: "2024-02-27T19:01:51.461Z",
               end_at: "2024-03-01T19:01:51.457Z",
             },
@@ -790,6 +794,7 @@ describe("me/index", () => {
                 node {
                   internalID
                   artworkId
+                  note
                   priceWithDiscount {
                     display
                     major
@@ -823,6 +828,7 @@ describe("me/index", () => {
                 node: {
                   artworkId: "65d9b98ae37dd70006240bf6",
                   internalID: "866f16a0-92bf-4fb6-8911-e1ab1a5fb508",
+                  note: "This is  a note!",
                   priceWithDiscount: {
                     currencyCode: "GBP",
                     display: "£17,360",
