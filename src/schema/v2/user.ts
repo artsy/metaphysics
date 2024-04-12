@@ -412,6 +412,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
             size,
             user_id: id,
             private: true,
+            all: true,
             total_count: true,
             sort: "-position",
           }
