@@ -14928,6 +14928,7 @@ type PartnerOfferToCollector implements Node {
   # A type-specific ID.
   internalID: ID!
   isAvailable: Boolean
+  note: String
   partnerId: String
   priceWithDiscount: Money
 }

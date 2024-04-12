@@ -28,6 +28,9 @@ export const PartnerOfferToCollectorType = new GraphQLObjectType<
       type: GraphQLBoolean,
       resolve: ({ available }) => available,
     },
+    note: {
+      type: GraphQLString,
+    },
     partnerId: {
       type: GraphQLString,
       resolve: ({ partner_id }) => partner_id,
