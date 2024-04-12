@@ -240,6 +240,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      awards: {
+        type: GraphQLNonNull(GraphQLString),
+        resolve: ({ awards }) => awards || "",
+      },
       auctionResultsConnection: {
         type: auctionResultConnection.connectionType,
         args: pageable({
@@ -894,8 +898,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       statuses: ArtistStatuses,
       targetSupply: ArtistTargetSupply,
       vanguardYear: {
-        type: GraphQLString,
-        resolve: ({ vanguard_year }) => vanguard_year,
+        type: GraphQLNonNull(GraphQLString),
+        resolve: ({ vanguard_year }) => vanguard_year || "",
       },
       verifiedRepresentatives: VerifiedRepresentatives,
       years: { type: GraphQLString },

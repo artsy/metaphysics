@@ -27,8 +27,10 @@ import {
 
 interface Input {
   alternateNames: string[]
+  awards?: string
   birthday?: string
   blurb?: string
+  criticallyAcclaimed?: boolean
   coverArtworkId?: string
   deathday?: string
   displayName?: string
@@ -44,12 +46,15 @@ interface Input {
   public?: boolean
   targetSupplyPriority?: ArtistTargetSupplyPriority
   targetSupplyType?: ArtistTargetSupplyType
+  vanguardYear?: string
 }
 
 const inputFields = {
   alternateNames: { type: new GraphQLList(new GraphQLNonNull(GraphQLString)) },
+  awards: { type: GraphQLString },
   birthday: { type: GraphQLString },
   blurb: { type: GraphQLString },
+  criticallyAcclaimed: { type: GraphQLBoolean },
   coverArtworkId: { type: GraphQLString },
   deathday: { type: GraphQLString },
   displayName: { type: GraphQLString },
@@ -65,13 +70,16 @@ const inputFields = {
   public: { type: GraphQLBoolean },
   targetSupplyPriority: { type: ArtistTargetSupplyPriorityEnum },
   targetSupplyType: { type: ArtistTargetSupplyTypeEnum },
+  vanguardYear: { type: GraphQLString },
 }
 
 interface GravityInput {
   alternate_names: string[]
+  awards?: string
   birthday?: string
   blurb?: string
   cover_artwork_id?: string
+  critically_acclaimed?: boolean
   deathday?: string
   display_name?: string
   first?: string
@@ -86,6 +94,7 @@ interface GravityInput {
   public?: boolean
   target_supply_priority?: string
   target_supply_type?: string
+  vanguard_year?: string
 }
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
