@@ -241,7 +241,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       awards: {
-        type: GraphQLNonNull(GraphQLString),
+        type: GraphQLString,
         resolve: ({ awards }) => awards || "",
       },
       auctionResultsConnection: {
@@ -658,8 +658,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       createdAt: date(),
       criticallyAcclaimed: {
-        type: GraphQLBoolean,
-        resolve: ({ critically_acclaimed }) => critically_acclaimed,
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: ({ critically_acclaimed }) => !!critically_acclaimed,
       },
       currentEvent: CurrentEvent,
       deathday: { type: GraphQLString },
@@ -898,8 +898,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       statuses: ArtistStatuses,
       targetSupply: ArtistTargetSupply,
       vanguardYear: {
-        type: GraphQLNonNull(GraphQLString),
-        resolve: ({ vanguard_year }) => vanguard_year || "",
+        type: GraphQLString,
+        resolve: ({ vanguard_year }) => vanguard_year,
       },
       verifiedRepresentatives: VerifiedRepresentatives,
       years: { type: GraphQLString },

@@ -1668,7 +1668,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     # State of the returned auction results (can be past, upcoming, or all)
     state: AuctionResultsState
   ): AuctionResultConnection
-  awards: String!
+  awards: String
 
   # In applicable contexts, this is what the artist (as a suggestion) is based on.
   basedOn: Artist
@@ -1703,7 +1703,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
     # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: String
   ): String
-  criticallyAcclaimed: Boolean
+  criticallyAcclaimed: Boolean!
   currentEvent: CurrentEvent
   deathday: String
   disablePriceContext: Boolean
@@ -1893,7 +1893,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   sortableID: String
   statuses: ArtistStatuses
   targetSupply: ArtistTargetSupply!
-  vanguardYear: String!
+  vanguardYear: String
   verifiedRepresentatives: [VerifiedRepresentative!]!
   years: String
 }
