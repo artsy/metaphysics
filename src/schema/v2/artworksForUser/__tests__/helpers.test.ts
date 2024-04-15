@@ -2,7 +2,6 @@ import {
   getBackfillArtworks,
   getNewForYouArtworks,
   getNewForYouArtworkIDs,
-  getDislikedArtworkIds,
 } from "../helpers"
 
 const mockLoaderFactory = (affinities) => {
@@ -64,6 +63,11 @@ describe("getNewForYouArtworks", () => {
       context
     )
     expect(artworks.length).toEqual(1)
+    expect(mockArtworksLoader).toBeCalledWith({
+      availability: "for sale",
+      exclude_disliked_artworks: true,
+      ids: artworkIds,
+    })
   })
 })
 
@@ -130,6 +134,9 @@ describe("getBackfillArtworks", () => {
       context
     )
 
+    expect(mockSetItemsLoader).toBeCalledWith("valid_id", {
+      exclude_disliked_artworks: true,
+    })
     expect(backfillArtworks.length).toEqual(1)
   })
 
@@ -152,6 +159,12 @@ describe("getBackfillArtworks", () => {
       true
     )
 
+    expect(mockFilterArtworksLoader).toBeCalledWith({
+      exclude_disliked_artworks: true,
+      size: 1,
+      sort: "-decayed_merch",
+      marketing_collection_id: "top-auction-lots",
+    })
     expect(backfillArtworks.map((artwork) => artwork.id)).toEqual([
       "backfill-artwork-id",
     ])
@@ -175,35 +188,5 @@ describe("getBackfillArtworks", () => {
     )
 
     expect(backfillArtworks.length).toEqual(1)
-  })
-})
-
-describe("getDislikedArtworkIds", () => {
-  it("returns an empty array with no disliked artwork ids", async () => {
-    const mockCollectionArtworksLoader = jest.fn(() => ({ body: [] }))
-    const context = {
-      collectionArtworksLoader: mockCollectionArtworksLoader,
-    } as any
-
-    const dislikedArtworkIds = await getDislikedArtworkIds(context)
-
-    expect(dislikedArtworkIds).toEqual([])
-  })
-
-  it("returns disliked artwork ids", async () => {
-    const mockCollectionArtworksLoader = jest.fn(() => ({
-      body: [{ _id: "artwork-1" }, { _id: "artwork-2" }],
-    }))
-    const context = {
-      collectionArtworksLoader: mockCollectionArtworksLoader,
-    } as any
-
-    const dislikedArtworkIds = await getDislikedArtworkIds(context)
-
-    expect(mockCollectionArtworksLoader).toBeCalledWith("disliked-artwork", {
-      private: true,
-      sort: "-created_at",
-    })
-    expect(dislikedArtworkIds).toEqual(["artwork-1", "artwork-2"])
   })
 })

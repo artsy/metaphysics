@@ -95,6 +95,7 @@ export const getNewForYouArtworks = async (
 
   const artworkParams = {
     availability: "for sale",
+    exclude_disliked_artworks: true,
     ids: ids,
     offset,
     size,
@@ -125,6 +126,7 @@ export const getBackfillArtworks = async (
 
   if (onlyAtAuction) {
     const { hits } = await filterArtworksLoader({
+      exclude_disliked_artworks: true,
       size: remainingSize,
       sort: "-decayed_merch",
       marketing_collection_id: "top-auction-lots",
@@ -141,25 +143,9 @@ export const getBackfillArtworks = async (
 
   if (!backfillSetId) return []
 
-  const { body: itemsBody } = await setItemsLoader(backfillSetId)
+  const { body: itemsBody } = await setItemsLoader(backfillSetId, {
+    exclude_disliked_artworks: true,
+  })
 
   return (itemsBody || []).slice(0, remainingSize)
-}
-
-export const getDislikedArtworkIds = async (
-  context: ResolverContext
-): Promise<string[]> => {
-  const { collectionArtworksLoader } = context
-
-  if (!collectionArtworksLoader) return []
-
-  const { body: dislikedArtworks } = await collectionArtworksLoader(
-    "disliked-artwork",
-    {
-      private: true,
-      sort: "-created_at",
-    }
-  )
-
-  return (dislikedArtworks || []).map((artwork) => artwork._id)
 }
