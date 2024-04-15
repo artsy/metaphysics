@@ -12645,6 +12645,10 @@ type Me implements Node {
     last: Int
     page: Int
     size: Int
+
+    # If present, will search by term. Will ignore page/size. This will not give
+    # accurate results if there's more than 100 user interests.
+    term: String
   ): UserInterestConnection
 
   # A list of lots a user is watching.
