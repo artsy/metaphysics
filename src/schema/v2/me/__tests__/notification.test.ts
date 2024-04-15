@@ -67,15 +67,8 @@ describe("me.notification", () => {
           object_ids: ["viewing-room-id"],
         })),
         viewingRoomLoader: jest.fn(async () => ({
-          viewingRoom: {
-            image: {
-              imageURLs: {
-                normalized: {
-                  image_url: "http://test.com",
-                },
-              },
-            },
-          },
+          image_versions: ["large"],
+          image_url: "http://test.com",
         })),
       }
 

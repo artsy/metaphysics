@@ -10,7 +10,7 @@ import {
 } from "graphql"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { pick } from "lodash"
+import { compact, pick } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { date, formatDate } from "schema/v2/fields/date"
 import {
@@ -24,7 +24,6 @@ import { IDFields, NodeInterface } from "../object_identification"
 import moment from "moment-timezone"
 import { DEFAULT_TZ } from "lib/date"
 import { NotificationItemType } from "./Item"
-import _ from "lodash"
 import Image, { normalizeImageData } from "../image"
 
 const NotificationTypesEnum = new GraphQLEnumType({
@@ -111,37 +110,54 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
         { articleLoader, artworksLoader, showsLoader, viewingRoomLoader }
       ) => {
         switch (notification.activity_type) {
-          case "ViewingRoomPublishedActivity":
-            const data = await viewingRoomLoader(notification.object_ids[0])
+          case "ViewingRoomPublishedActivity": {
+            const viewingRoomImages = await Promise.all(
+              notification.object_ids.map(async (viewingRoomId) => {
+                const { image_versions, image_url } = await viewingRoomLoader(
+                  viewingRoomId
+                )
 
-            return [
-              normalizeImageData(
-                data?.viewingRoom?.image?.imageURLs?.normalized
-              ),
-            ]
-          case "ArticleFeaturedArtistActivity":
-            const article = await articleLoader(notification.actor_ids[0])
-
-            return [normalizeImageData(article?.thumbnail_image)]
-          case "PartnerShowOpenedActivity":
-            const shows = await showsLoader({
-              size,
-              id: notification.object_ids,
-            })
-
-            return shows.map(({ image_versions, image_url }) => {
-              return normalizeImageData({
-                image_versions,
-                image_url,
+                return normalizeImageData({
+                  image_versions,
+                  image_url,
+                })
               })
-            })
-          default:
-            const artworks = await artworksLoader({
-              ids: notification.object_ids,
-              size,
+            )
+
+            return compact(viewingRoomImages)
+          }
+          case "ArticleFeaturedArtistActivity": {
+            const images = await Promise.all(
+              notification.actor_ids.map(async (articleId) => {
+                const article = await articleLoader(articleId)
+
+                return normalizeImageData(article?.thumbnail_image)
+              })
+            )
+
+            return compact(images)
+          }
+          case "PartnerShowOpenedActivity": {
+            const shows = await showsLoader({
+              id: notification.object_ids.slice(0, size),
             })
 
-            return artworks.map((artwork) => artwork.images?.[0])
+            return compact(
+              shows.map(({ image_versions, image_url }) => {
+                return normalizeImageData({
+                  image_versions,
+                  image_url,
+                })
+              })
+            )
+          }
+          default: {
+            const artworks = await artworksLoader({
+              ids: notification.object_ids.slice(0, size),
+            })
+
+            return compact(artworks.map((artwork) => artwork.images?.[0]))
+          }
         }
       },
     },
