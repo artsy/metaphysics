@@ -240,6 +240,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      awards: {
+        type: GraphQLString,
+        resolve: ({ awards }) => awards || "",
+      },
       auctionResultsConnection: {
         type: auctionResultConnection.connectionType,
         args: pageable({
@@ -654,8 +658,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       createdAt: date(),
       criticallyAcclaimed: {
-        type: GraphQLBoolean,
-        resolve: ({ critically_acclaimed }) => critically_acclaimed,
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: ({ critically_acclaimed }) => !!critically_acclaimed,
       },
       currentEvent: CurrentEvent,
       deathday: { type: GraphQLString },

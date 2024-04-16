@@ -10,7 +10,7 @@ import {
 } from "graphql"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { pick } from "lodash"
+import { compact, pick } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { date, formatDate } from "schema/v2/fields/date"
 import {
@@ -24,6 +24,8 @@ import { IDFields, NodeInterface } from "../object_identification"
 import moment from "moment-timezone"
 import { DEFAULT_TZ } from "lib/date"
 import { NotificationItemType } from "./Item"
+import Image, { normalizeImageData } from "../image"
+import { NormalizedImageData } from "../image/normalize"
 
 const NotificationTypesEnum = new GraphQLEnumType({
   name: "NotificationTypesEnum",
@@ -96,6 +98,73 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
         }
 
         return formatDate(date, dateFormat, timezone)
+      },
+    },
+    previewImages: {
+      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Image.type))),
+      args: {
+        size: { type: GraphQLInt },
+      },
+      resolve: async (
+        notification,
+        { size },
+        { articleLoader, artworksLoader, showsLoader, viewingRoomLoader }
+      ) => {
+        let images: NormalizedImageData[] = []
+
+        const slicedObjectIds = (notification.object_ids || []).slice(0, size)
+
+        switch (notification.activity_type) {
+          case "ViewingRoomPublishedActivity": {
+            images = await Promise.all(
+              slicedObjectIds.map(async (viewingRoomId) => {
+                const { image_versions, image_url } = await viewingRoomLoader(
+                  viewingRoomId
+                )
+
+                return normalizeImageData({
+                  image_versions,
+                  image_url,
+                })
+              })
+            )
+            break
+          }
+          case "ArticleFeaturedArtistActivity": {
+            const slicedArticleIds = notification.actor_ids.slice(0, size)
+
+            images = await Promise.all(
+              slicedArticleIds.map(async (articleId) => {
+                const article = await articleLoader(articleId)
+
+                return normalizeImageData(article?.thumbnail_image)
+              })
+            )
+            break
+          }
+          case "PartnerShowOpenedActivity": {
+            const shows = await showsLoader({
+              id: slicedObjectIds,
+            })
+
+            images = shows.map(({ image_versions, image_url }) => {
+              return normalizeImageData({
+                image_versions,
+                image_url,
+              })
+            })
+            break
+          }
+          default: {
+            const artworks = await artworksLoader({
+              ids: slicedObjectIds,
+            })
+
+            images = artworks.map((artwork) => artwork.images?.[0])
+          }
+        }
+
+        return compact(images)
       },
     },
     targetHref: {
