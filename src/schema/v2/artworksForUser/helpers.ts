@@ -95,6 +95,7 @@ export const getNewForYouArtworks = async (
 
   const artworkParams = {
     availability: "for sale",
+    exclude_disliked_artworks: true,
     ids: ids,
     offset,
     size,
@@ -125,6 +126,7 @@ export const getBackfillArtworks = async (
 
   if (onlyAtAuction) {
     const { hits } = await filterArtworksLoader({
+      exclude_disliked_artworks: true,
       size: remainingSize,
       sort: "-decayed_merch",
       marketing_collection_id: "top-auction-lots",
@@ -141,7 +143,9 @@ export const getBackfillArtworks = async (
 
   if (!backfillSetId) return []
 
-  const { body: itemsBody } = await setItemsLoader(backfillSetId)
+  const { body: itemsBody } = await setItemsLoader(backfillSetId, {
+    exclude_disliked_artworks: true,
+  })
 
   return (itemsBody || []).slice(0, remainingSize)
 }
