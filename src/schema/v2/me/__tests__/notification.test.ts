@@ -3,6 +3,8 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
 
 describe("me.notification", () => {
+  const meLoader = jest.fn(async () => ({ id: "some-user-id" }))
+
   it("returns a notification", async () => {
     const query = gql`
       {
@@ -20,7 +22,6 @@ describe("me.notification", () => {
       headline: "6 works added by Gerhard Richter",
       message: "6 works added",
     }))
-    const meLoader = jest.fn(async () => ({ id: "some-user-id" }))
 
     const context: Partial<ResolverContext> = {
       meNotificationLoader,
@@ -43,5 +44,151 @@ describe("me.notification", () => {
         },
       }
     `)
+  })
+
+  describe("previewImages", () => {
+    const query = gql`
+      {
+        me {
+          notification(id: "test-id") {
+            notificationType
+            previewImages(size: 5) {
+              imageURL
+            }
+          }
+        }
+      }
+    `
+    it('returns "ViewingRoomPublishedActivity" preview images', async () => {
+      const context: Partial<ResolverContext> = {
+        meLoader,
+        meNotificationLoader: jest.fn(async () => ({
+          activity_type: "ViewingRoomPublishedActivity",
+          object_ids: ["viewing-room-id"],
+        })),
+        viewingRoomLoader: jest.fn(async () => ({
+          image_versions: ["large"],
+          image_url: "http://test.com",
+        })),
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "notification": Object {
+              "notificationType": "VIEWING_ROOM_PUBLISHED",
+              "previewImages": Array [
+                Object {
+                  "imageURL": "http://test.com",
+                },
+              ],
+            },
+          },
+        }
+      `)
+    })
+
+    it('returns "ArticleFeaturedArtistActivity" preview images', async () => {
+      const context: Partial<ResolverContext> = {
+        meLoader,
+        meNotificationLoader: jest.fn(async () => ({
+          activity_type: "ArticleFeaturedArtistActivity",
+          actor_ids: ["article-id"],
+        })),
+        articleLoader: jest.fn(async () => ({
+          thumbnail_image: {
+            image_url: "http://test.com",
+          },
+        })),
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "notification": Object {
+              "notificationType": "ARTICLE_FEATURED_ARTIST",
+              "previewImages": Array [
+                Object {
+                  "imageURL": "http://test.com",
+                },
+              ],
+            },
+          },
+        }
+      `)
+    })
+
+    it('returns "PartnerShowOpenedActivity" preview images', async () => {
+      const context: Partial<ResolverContext> = {
+        meLoader,
+        meNotificationLoader: jest.fn(async () => ({
+          activity_type: "PartnerShowOpenedActivity",
+          object_ids: ["show-id"],
+        })),
+        showsLoader: jest.fn(async () => [
+          {
+            image_versions: ["large"],
+            image_url: "http://test.com",
+          },
+        ]),
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "notification": Object {
+              "notificationType": "PARTNER_SHOW_OPENED",
+              "previewImages": Array [
+                Object {
+                  "imageURL": "http://test.com",
+                },
+              ],
+            },
+          },
+        }
+      `)
+    })
+
+    it("returns default preview images from artworksConnection", async () => {
+      const context: Partial<ResolverContext> = {
+        meLoader,
+        meNotificationLoader: jest.fn(async () => ({
+          activity_type: "ArtworkPublishedActivity",
+          object_ids: ["artwork-id"],
+        })),
+        artworksLoader: jest.fn(async () => [
+          {
+            images: [
+              {
+                image_url: "http://test.com",
+              },
+            ],
+          },
+        ]),
+      }
+
+      const data = await runAuthenticatedQuery(query, context)
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "notification": Object {
+              "notificationType": "ARTWORK_PUBLISHED",
+              "previewImages": Array [
+                Object {
+                  "imageURL": "http://test.com",
+                },
+              ],
+            },
+          },
+        }
+      `)
+    })
   })
 })

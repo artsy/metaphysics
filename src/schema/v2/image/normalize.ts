@@ -67,7 +67,10 @@ export type ImageData =
       image_versions?: string[]
     }
 
-type NormalizedImageData = { image_url: string; image_versions: string[] }
+export type NormalizedImageData = {
+  image_url: string
+  image_versions: string[]
+}
 
 export function normalize(
   response: ImageData,
