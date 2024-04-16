@@ -25,6 +25,7 @@ import moment from "moment-timezone"
 import { DEFAULT_TZ } from "lib/date"
 import { NotificationItemType } from "./Item"
 import Image, { normalizeImageData } from "../image"
+import { NormalizedImageData } from "../image/normalize"
 
 const NotificationTypesEnum = new GraphQLEnumType({
   name: "NotificationTypesEnum",
@@ -100,7 +101,7 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     previewImages: {
-      type: new GraphQLList(Image.type),
+      type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Image.type))),
       args: {
         size: { type: GraphQLInt },
       },
@@ -109,10 +110,14 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
         { size },
         { articleLoader, artworksLoader, showsLoader, viewingRoomLoader }
       ) => {
+        let images: NormalizedImageData[] = []
+
+        const slicedObjectIds = (notification.object_ids || []).slice(0, size)
+
         switch (notification.activity_type) {
           case "ViewingRoomPublishedActivity": {
-            const viewingRoomImages = await Promise.all(
-              notification.object_ids.map(async (viewingRoomId) => {
+            images = await Promise.all(
+              slicedObjectIds.map(async (viewingRoomId) => {
                 const { image_versions, image_url } = await viewingRoomLoader(
                   viewingRoomId
                 )
@@ -123,42 +128,43 @@ export const NotificationType = new GraphQLObjectType<any, ResolverContext>({
                 })
               })
             )
-
-            return compact(viewingRoomImages)
+            break
           }
           case "ArticleFeaturedArtistActivity": {
-            const images = await Promise.all(
-              notification.actor_ids.map(async (articleId) => {
+            const slicedArticleIds = notification.actor_ids.slice(0, size)
+
+            images = await Promise.all(
+              slicedArticleIds.map(async (articleId) => {
                 const article = await articleLoader(articleId)
 
                 return normalizeImageData(article?.thumbnail_image)
               })
             )
-
-            return compact(images)
+            break
           }
           case "PartnerShowOpenedActivity": {
             const shows = await showsLoader({
-              id: notification.object_ids.slice(0, size),
+              id: slicedObjectIds,
             })
 
-            return compact(
-              shows.map(({ image_versions, image_url }) => {
-                return normalizeImageData({
-                  image_versions,
-                  image_url,
-                })
+            images = shows.map(({ image_versions, image_url }) => {
+              return normalizeImageData({
+                image_versions,
+                image_url,
               })
-            )
+            })
+            break
           }
           default: {
             const artworks = await artworksLoader({
-              ids: notification.object_ids.slice(0, size),
+              ids: slicedObjectIds,
             })
 
-            return compact(artworks.map((artwork) => artwork.images?.[0]))
+            images = artworks.map((artwork) => artwork.images?.[0])
           }
         }
+
+        return compact(images)
       },
     },
     targetHref: {
