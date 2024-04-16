@@ -63,6 +63,11 @@ describe("getNewForYouArtworks", () => {
       context
     )
     expect(artworks.length).toEqual(1)
+    expect(mockArtworksLoader).toBeCalledWith({
+      availability: "for sale",
+      exclude_disliked_artworks: true,
+      ids: artworkIds,
+    })
   })
 })
 
@@ -129,6 +134,9 @@ describe("getBackfillArtworks", () => {
       context
     )
 
+    expect(mockSetItemsLoader).toBeCalledWith("valid_id", {
+      exclude_disliked_artworks: true,
+    })
     expect(backfillArtworks.length).toEqual(1)
   })
 
@@ -151,6 +159,12 @@ describe("getBackfillArtworks", () => {
       true
     )
 
+    expect(mockFilterArtworksLoader).toBeCalledWith({
+      exclude_disliked_artworks: true,
+      size: 1,
+      sort: "-decayed_merch",
+      marketing_collection_id: "top-auction-lots",
+    })
     expect(backfillArtworks.map((artwork) => artwork.id)).toEqual([
       "backfill-artwork-id",
     ])
