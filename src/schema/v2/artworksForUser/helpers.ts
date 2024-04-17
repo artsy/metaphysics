@@ -121,10 +121,10 @@ export const getBackfillArtworks = async (
   const {
     setItemsLoader,
     setsLoader,
-    unauthenticatedLoaders: { filterArtworksLoader }, // Not personalized
+    authenticatedLoaders: { filterArtworksLoader },
   } = context
 
-  if (onlyAtAuction) {
+  if (filterArtworksLoader && onlyAtAuction) {
     const { hits } = await filterArtworksLoader({
       exclude_disliked_artworks: true,
       size: remainingSize,

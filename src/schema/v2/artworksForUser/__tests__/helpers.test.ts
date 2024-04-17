@@ -125,7 +125,7 @@ describe("getBackfillArtworks", () => {
     const context = {
       setsLoader: mockSetsLoader,
       setItemsLoader: mockSetItemsLoader,
-      unauthenticatedLoaders: {},
+      authenticatedLoaders: {},
     } as any
 
     const backfillArtworks = await getBackfillArtworks(
@@ -147,7 +147,7 @@ describe("getBackfillArtworks", () => {
     const remainingSize = 1
     const includeBackfill = true
     const context = {
-      unauthenticatedLoaders: {
+      authenticatedLoaders: {
         filterArtworksLoader: mockFilterArtworksLoader,
       },
     } as any
@@ -178,7 +178,7 @@ describe("getBackfillArtworks", () => {
     const context = {
       setsLoader: mockSetsLoader,
       setItemsLoader: mockSetItemsLoader,
-      unauthenticatedLoaders: {},
+      authenticatedLoaders: {},
     } as any
 
     const backfillArtworks = await getBackfillArtworks(
