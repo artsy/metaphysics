@@ -44,6 +44,7 @@ interface Input {
   middle?: string
   nationality?: string
   public?: boolean
+  recentShow?: string
   targetSupplyPriority?: ArtistTargetSupplyPriority
   targetSupplyType?: ArtistTargetSupplyType
   vanguardYear?: string
@@ -68,6 +69,7 @@ const inputFields = {
   middle: { type: GraphQLString },
   nationality: { type: GraphQLString },
   public: { type: GraphQLBoolean },
+  recentShow: { type: GraphQLString },
   targetSupplyPriority: { type: ArtistTargetSupplyPriorityEnum },
   targetSupplyType: { type: ArtistTargetSupplyTypeEnum },
   vanguardYear: { type: GraphQLString },
@@ -92,6 +94,7 @@ interface GravityInput {
   middle?: string
   nationality?: string
   public?: boolean
+  recent_show?: string
   target_supply_priority?: string
   target_supply_type?: string
   vanguard_year?: string

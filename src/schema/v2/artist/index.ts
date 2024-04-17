@@ -860,6 +860,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       related: Related,
+      recentShow: {
+        type: GraphQLString,
+        description: "The most recent show for an artist",
+        resolve: ({ recent_show }) => recent_show,
+      },
       sales: {
         type: new GraphQLList(Sale.type),
         args: {
