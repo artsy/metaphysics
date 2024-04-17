@@ -16,6 +16,7 @@ import {
   getNewForYouArtworks,
   getNewForYouArtworkIDs,
 } from "./helpers"
+import { uniqBy } from "lodash"
 
 const MAX_ARTWORKS = 100
 
@@ -54,16 +55,18 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       context
     )
 
-    const remainingSize = (gravityArgs.size || 0) - newForYouArtworks.length
     const backfillArtworks = await getBackfillArtworks(
-      remainingSize,
+      size || 0,
       args.includeBackfill,
       context,
       args.onlyAtAuction,
       args.excludeDislikedArtworks
     )
 
-    const artworks = [...newForYouArtworks, ...backfillArtworks]
+    const artworks = uniqBy(
+      newForYouArtworks.concat(backfillArtworks),
+      "id"
+    ).slice(0, size)
 
     // TODO: get count from artworks loader to optimize pagination
     const count = artworks.length === 0 ? 0 : MAX_ARTWORKS
