@@ -6,10 +6,11 @@ const buildQuery = (args: any = {}) => {
   const first = args.first || 10
   const includeBackfill = args.includeBackfill || false
   const userId = args.userId || "abc123"
+  const excludeDislikedArtworks = args.excludeDislikedArtworks || false
 
   const query = gql`
       {
-        artworksForUser(first: ${first}, includeBackfill: ${includeBackfill}, userId: "${userId}") {
+        artworksForUser(first: ${first}, includeBackfill: ${includeBackfill}, userId: "${userId}", excludeDislikedArtworks: ${excludeDislikedArtworks}) {
           edges {
             node {
               title
@@ -178,6 +179,40 @@ describe("artworksForUser", () => {
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(1)
+    })
+  })
+
+  describe("excludeDislikedArtworks option", () => {
+    it("passes exclude_disliked_artworks parameter to Gravity loaders", async () => {
+      const query = buildQuery({
+        first: 2,
+        includeBackfill: true,
+        excludeDislikedArtworks: true,
+      })
+      const newForYouRecommendations = {
+        edges: [{ node: { artworkId: "valid-id" } }],
+      }
+      const newForYouArtworks = [{}]
+      const sets = [{ id: "valid-id" }]
+      const setItems = [{}]
+      const context = buildContext({
+        newForYouRecommendations,
+        newForYouArtworks,
+        sets,
+        setItems,
+      })
+
+      await runAuthenticatedQuery(query, context)
+
+      expect(context.artworksLoader).toBeCalledWith(
+        expect.objectContaining({
+          exclude_disliked_artworks: true,
+        })
+      )
+
+      expect(context.setItemsLoader).toBeCalledWith("valid-id", {
+        exclude_disliked_artworks: true,
+      })
     })
   })
 })
