@@ -627,6 +627,24 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
                 return headers["x-total-count"] || 0
               },
             },
+            myCollectedArtworks: {
+              type: new GraphQLNonNull(GraphQLInt),
+              resolve: async ({ _id }, _, { meMyCollectionArtworksLoader }) => {
+                if (!meMyCollectionArtworksLoader) {
+                  return 0
+                }
+
+                const { headers } = await meMyCollectionArtworksLoader({
+                  total_count: true,
+                  artist_ids: [_id],
+                  exclude_purchased_artworks: false,
+                })
+
+                const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+                return totalCount
+              },
+            },
           },
         }),
         resolve: (artist) => artist,
