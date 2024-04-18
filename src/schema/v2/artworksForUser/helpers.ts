@@ -84,7 +84,11 @@ export const getNewForYouArtworkIDs = async (
 }
 
 export const getNewForYouArtworks = async (
-  { ids, marketable }: { ids: string[]; marketable?: boolean },
+  {
+    ids,
+    marketable,
+    excludeDislikedArtworks = false,
+  }: { ids: string[]; marketable?: boolean; excludeDislikedArtworks?: boolean },
   gravityArgs,
   context: ResolverContext
 ): Promise<any[]> => {
@@ -95,6 +99,7 @@ export const getNewForYouArtworks = async (
 
   const artworkParams = {
     availability: "for sale",
+    exclude_disliked_artworks: excludeDislikedArtworks,
     ids: ids,
     offset,
     size,
@@ -113,18 +118,30 @@ export const getBackfillArtworks = async (
   remainingSize: number,
   includeBackfill: boolean,
   context: ResolverContext,
-  onlyAtAuction = false
+  onlyAtAuction = false,
+  excludeDislikedArtworks = false
 ): Promise<any[]> => {
   if (!includeBackfill || remainingSize < 1) return []
 
   const {
     setItemsLoader,
     setsLoader,
-    unauthenticatedLoaders: { filterArtworksLoader }, // Not personalized
+    authenticatedLoaders: {
+      filterArtworksLoader: filterArtworksAuthenticatedLoader,
+    },
+    unauthenticatedLoaders: {
+      filterArtworksLoader: filterArtworksUnauthenticatedLoader,
+    },
   } = context
 
-  if (onlyAtAuction) {
+  const filterArtworksLoader =
+    excludeDislikedArtworks === true
+      ? filterArtworksAuthenticatedLoader
+      : filterArtworksUnauthenticatedLoader
+
+  if (filterArtworksLoader && onlyAtAuction) {
     const { hits } = await filterArtworksLoader({
+      exclude_disliked_artworks: excludeDislikedArtworks,
       size: remainingSize,
       sort: "-decayed_merch",
       marketing_collection_id: "top-auction-lots",
@@ -141,7 +158,9 @@ export const getBackfillArtworks = async (
 
   if (!backfillSetId) return []
 
-  const { body: itemsBody } = await setItemsLoader(backfillSetId)
+  const { body: itemsBody } = await setItemsLoader(backfillSetId, {
+    exclude_disliked_artworks: excludeDislikedArtworks,
+  })
 
   return (itemsBody || []).slice(0, remainingSize)
 }

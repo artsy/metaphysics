@@ -63,6 +63,31 @@ describe("getNewForYouArtworks", () => {
       context
     )
     expect(artworks.length).toEqual(1)
+    expect(mockArtworksLoader).toBeCalledWith({
+      availability: "for sale",
+      exclude_disliked_artworks: false,
+      ids: artworkIds,
+    })
+  })
+
+  it("passes exclude_disliked_artworks parameter to Gravity artworksLoader", async () => {
+    const artworkIds = ["banksy"]
+    const gravityArgs = {}
+    const mockArtworksLoader = jest.fn(() => [{}])
+    const context = {
+      artworksLoader: mockArtworksLoader,
+    } as any
+
+    await getNewForYouArtworks(
+      { ids: artworkIds, excludeDislikedArtworks: true },
+      gravityArgs,
+      context
+    )
+    expect(mockArtworksLoader).toBeCalledWith({
+      availability: "for sale",
+      exclude_disliked_artworks: true,
+      ids: artworkIds,
+    })
   })
 })
 
@@ -120,6 +145,7 @@ describe("getBackfillArtworks", () => {
     const context = {
       setsLoader: mockSetsLoader,
       setItemsLoader: mockSetItemsLoader,
+      authenticatedLoaders: {},
       unauthenticatedLoaders: {},
     } as any
 
@@ -129,7 +155,35 @@ describe("getBackfillArtworks", () => {
       context
     )
 
+    expect(mockSetItemsLoader).toBeCalledWith("valid_id", {
+      exclude_disliked_artworks: false,
+    })
     expect(backfillArtworks.length).toEqual(1)
+  })
+
+  it("passes exclude_disliked_artworks parameter to Gravity setItemsLoader", async () => {
+    const mockSetsLoader = jest.fn(() => ({ body: [{ id: "valid_id" }] }))
+    const mockSetItemsLoader = jest.fn(() => ({ body: [{}] }))
+    const remainingSize = 1
+    const includeBackfill = true
+    const context = {
+      setsLoader: mockSetsLoader,
+      setItemsLoader: mockSetItemsLoader,
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {},
+    } as any
+
+    await getBackfillArtworks(
+      remainingSize,
+      includeBackfill,
+      context,
+      false,
+      true
+    )
+
+    expect(mockSetItemsLoader).toBeCalledWith("valid_id", {
+      exclude_disliked_artworks: true,
+    })
   })
 
   it("returns backfilled from a collection for auction artworks", async () => {
@@ -139,6 +193,9 @@ describe("getBackfillArtworks", () => {
     const remainingSize = 1
     const includeBackfill = true
     const context = {
+      authenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
       unauthenticatedLoaders: {
         filterArtworksLoader: mockFilterArtworksLoader,
       },
@@ -151,6 +208,46 @@ describe("getBackfillArtworks", () => {
       true
     )
 
+    expect(mockFilterArtworksLoader).toBeCalledWith({
+      exclude_disliked_artworks: false,
+      size: 1,
+      sort: "-decayed_merch",
+      marketing_collection_id: "top-auction-lots",
+    })
+    expect(backfillArtworks.map((artwork) => artwork.id)).toEqual([
+      "backfill-artwork-id",
+    ])
+  })
+
+  it("passes exclude_disliked_artworks to Gravity filterArtworksLoader", async () => {
+    const mockFilterArtworksLoader = jest.fn(() => ({
+      hits: [{ id: "backfill-artwork-id" }],
+    }))
+    const remainingSize = 1
+    const includeBackfill = true
+    const context = {
+      authenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+    } as any
+
+    const backfillArtworks = await getBackfillArtworks(
+      remainingSize,
+      includeBackfill,
+      context,
+      true,
+      true
+    )
+
+    expect(mockFilterArtworksLoader).toBeCalledWith({
+      exclude_disliked_artworks: true,
+      size: 1,
+      sort: "-decayed_merch",
+      marketing_collection_id: "top-auction-lots",
+    })
     expect(backfillArtworks.map((artwork) => artwork.id)).toEqual([
       "backfill-artwork-id",
     ])
@@ -164,6 +261,7 @@ describe("getBackfillArtworks", () => {
     const context = {
       setsLoader: mockSetsLoader,
       setItemsLoader: mockSetItemsLoader,
+      authenticatedLoaders: {},
       unauthenticatedLoaders: {},
     } as any
 

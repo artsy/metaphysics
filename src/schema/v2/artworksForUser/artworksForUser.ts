@@ -33,6 +33,10 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLBoolean,
       defaultValue: false,
     },
+    excludeDislikedArtworks: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+    },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
     const newForYouArtworkIds = await getNewForYouArtworkIDs(args, context)
@@ -44,6 +48,7 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       {
         ids: newForYouArtworkIds,
         marketable: args.marketable,
+        excludeDislikedArtworks: args.excludeDislikedArtworks,
       },
       gravityArgs,
       context
@@ -54,7 +59,8 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       remainingSize,
       args.includeBackfill,
       context,
-      args.onlyAtAuction
+      args.onlyAtAuction,
+      args.excludeDislikedArtworks
     )
 
     const artworks = [...newForYouArtworks, ...backfillArtworks]
