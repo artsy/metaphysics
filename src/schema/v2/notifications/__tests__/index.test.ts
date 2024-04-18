@@ -1,4 +1,5 @@
 import gql from "lib/gql"
+import { DEFAULT_TZ } from "lib/date"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import moment from "moment-timezone"
 
@@ -165,7 +166,7 @@ describe("notificationsConnection", () => {
       it("should return `Today` label", async () => {
         const loader = () => {
           return Promise.resolve({
-            feed: [{ ...notificationFeedItem, date: moment() }],
+            feed: [{ ...notificationFeedItem, date: moment().tz(DEFAULT_TZ) }],
             total: 1,
             total_unread: 1,
             total_unseen: 1,
@@ -187,7 +188,7 @@ describe("notificationsConnection", () => {
               {
                 ...notificationFeedItem,
                 // 23:59:59 yesterday
-                date: moment().endOf("day").subtract(1, "days"),
+                date: moment().tz(DEFAULT_TZ).endOf("day").subtract(1, "days"),
               },
             ],
             total: 1,
