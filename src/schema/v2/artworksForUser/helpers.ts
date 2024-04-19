@@ -115,13 +115,13 @@ export const getNewForYouArtworks = async (
 }
 
 export const getBackfillArtworks = async (
-  remainingSize: number,
+  size: number,
   includeBackfill: boolean,
   context: ResolverContext,
   onlyAtAuction = false,
   excludeDislikedArtworks = false
 ): Promise<any[]> => {
-  if (!includeBackfill || remainingSize < 1) return []
+  if (!includeBackfill || size < 1) return []
 
   const {
     setItemsLoader,
@@ -142,7 +142,7 @@ export const getBackfillArtworks = async (
   if (filterArtworksLoader && onlyAtAuction) {
     const { hits } = await filterArtworksLoader({
       exclude_disliked_artworks: excludeDislikedArtworks,
-      size: remainingSize,
+      size: size,
       sort: "-decayed_merch",
       marketing_collection_id: "top-auction-lots",
     })
@@ -162,5 +162,5 @@ export const getBackfillArtworks = async (
     exclude_disliked_artworks: excludeDislikedArtworks,
   })
 
-  return (itemsBody || []).slice(0, remainingSize)
+  return (itemsBody || []).slice(0, size)
 }

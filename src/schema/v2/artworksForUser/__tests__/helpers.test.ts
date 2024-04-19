@@ -93,12 +93,12 @@ describe("getNewForYouArtworks", () => {
 
 describe("getBackfillArtworks", () => {
   it("returns an empty array without the backfill flag", async () => {
-    const remainingSize = 6
+    const size = 6
     const includeBackfill = false
     const context = {} as any
 
     const backfillArtworks = await getBackfillArtworks(
-      remainingSize,
+      size,
       includeBackfill,
       context
     )
@@ -107,12 +107,12 @@ describe("getBackfillArtworks", () => {
   })
 
   it("returns an empty array with zero remaining size", async () => {
-    const remainingSize = 0
+    const size = 0
     const includeBackfill = true
     const context = {} as any
 
     const backfillArtworks = await getBackfillArtworks(
-      remainingSize,
+      size,
       includeBackfill,
       context
     )
@@ -122,14 +122,14 @@ describe("getBackfillArtworks", () => {
 
   it("returns an empty array with no backfill id", async () => {
     const mockSetsLoader = jest.fn(() => ({ body: [] }))
-    const remainingSize = 6
+    const size = 6
     const includeBackfill = false
     const context = {
       setsLoader: mockSetsLoader,
     } as any
 
     const backfillArtworks = await getBackfillArtworks(
-      remainingSize,
+      size,
       includeBackfill,
       context
     )
@@ -140,7 +140,7 @@ describe("getBackfillArtworks", () => {
   it("returns backfill with a remaining size", async () => {
     const mockSetsLoader = jest.fn(() => ({ body: [{ id: "valid_id" }] }))
     const mockSetItemsLoader = jest.fn(() => ({ body: [{}] }))
-    const remainingSize = 1
+    const size = 1
     const includeBackfill = true
     const context = {
       setsLoader: mockSetsLoader,
@@ -150,7 +150,7 @@ describe("getBackfillArtworks", () => {
     } as any
 
     const backfillArtworks = await getBackfillArtworks(
-      remainingSize,
+      size,
       includeBackfill,
       context
     )
@@ -190,7 +190,7 @@ describe("getBackfillArtworks", () => {
     const mockFilterArtworksLoader = jest.fn(() => ({
       hits: [{ id: "backfill-artwork-id" }],
     }))
-    const remainingSize = 1
+    const size = 1
     const includeBackfill = true
     const context = {
       authenticatedLoaders: {
@@ -202,7 +202,7 @@ describe("getBackfillArtworks", () => {
     } as any
 
     const backfillArtworks = await getBackfillArtworks(
-      remainingSize,
+      size,
       includeBackfill,
       context,
       true
@@ -256,7 +256,7 @@ describe("getBackfillArtworks", () => {
   it("returns no more backfill than the remaining size asks for", async () => {
     const mockSetsLoader = jest.fn(() => ({ body: [{ id: "valid_id" }] }))
     const mockSetItemsLoader = jest.fn(() => ({ body: [{}, {}] }))
-    const remainingSize = 1
+    const size = 1
     const includeBackfill = true
     const context = {
       setsLoader: mockSetsLoader,
@@ -266,7 +266,7 @@ describe("getBackfillArtworks", () => {
     } as any
 
     const backfillArtworks = await getBackfillArtworks(
-      remainingSize,
+      size,
       includeBackfill,
       context
     )
