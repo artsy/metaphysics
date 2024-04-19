@@ -148,9 +148,9 @@ describe("artworksForUser", () => {
       const newForYouRecommendations = {
         edges: [{ node: { artworkId: "valid-id" } }],
       }
-      const newForYouArtworks = [{}]
+      const newForYouArtworks = [{ id: "valid-id" }]
       const sets = [{ id: "valid-id" }]
-      const setItems = [{}]
+      const setItems = [{ id: "other-valid-id" }]
       const context = buildContext({
         newForYouRecommendations,
         newForYouArtworks,
