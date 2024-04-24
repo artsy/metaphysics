@@ -548,6 +548,11 @@ input CreateOfferOrderWithArtworkInput {
   findActiveOrCreate: Boolean = true
 
   """
+  PartnerOffer Id
+  """
+  partnerOfferId: String
+
+  """
   Number of items in the line item, default is 1
   """
   quantity: Int
@@ -2036,11 +2041,6 @@ input SellerAcceptProvisionalOfferInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
-
-  """
-  If location was set in the accept offer step
-  """
-  locationFilledOnOrder: Boolean
   offerId: ID!
 
   """
@@ -2074,11 +2074,6 @@ input SellerCounterOfferInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
-
-  """
-  If location was set in the counter offer step
-  """
-  locationFilledOnOrder: Boolean
   note: String
   offerId: ID!
   shippingContact: ShippingContactAttributes
