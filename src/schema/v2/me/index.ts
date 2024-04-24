@@ -281,21 +281,14 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
           },
           savedArtworks: {
             type: new GraphQLNonNull(GraphQLInt),
-            resolve: async (_me, _args, { collectionArtworksLoader }) => {
-              if (!collectionArtworksLoader) return 0
+            resolve: async (_me, _args, { collectionLoader }) => {
+              if (!collectionLoader) return 0
 
               try {
-                const { headers } = await collectionArtworksLoader(
-                  COLLECTION_ID,
-                  {
-                    page: 1,
-                    private: true,
-                    size: 1,
-                    total_count: true,
-                  }
+                const { visible_artworks_count } = await collectionLoader(
+                  COLLECTION_ID
                 )
-
-                return headers["x-total-count"] ?? 0
+                return visible_artworks_count
               } catch (error) {
                 console.error(error)
                 return 0
