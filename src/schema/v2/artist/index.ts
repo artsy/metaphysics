@@ -868,6 +868,38 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ id }, options, { partnerArtistsForArtistLoader }) =>
           partnerArtistsForArtistLoader(id, options),
       },
+      partnerBiographyBlurb: {
+        description: "The Partner's provided biography for the artist",
+        args: {
+          ...markdown().args,
+        },
+        type: new GraphQLObjectType<any, ResolverContext>({
+          name: "partnerBiographyBlurb",
+          fields: {
+            text: {
+              type: GraphQLString,
+              resolve: ({ text }) => text,
+            },
+          },
+        }),
+        resolve: async (
+          { id },
+          { format },
+          { partnerArtistsForArtistLoader }
+        ) => {
+          const partnerArtists = await partnerArtistsForArtistLoader(id, {
+            size: 1,
+          })
+
+          if (partnerArtists && partnerArtists.length) {
+            const { biography } = first(partnerArtists) as any
+
+            return {
+              text: formatMarkdownValue(biography, format),
+            }
+          }
+        },
+      },
       duplicates: {
         type: new GraphQLList(Artist.type),
         resolve: ({ id }, _args, { artistDuplicatesLoader }, _info) => {
