@@ -570,6 +570,55 @@ describe("Artist type", () => {
       })
     })
   })
+
+  describe("partnerBiographyBlurb", () => {
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          partnerBiographyBlurb {
+            text   
+          }
+        }
+      }
+    `
+  
+    it("returns the partners provided biography", () => {
+      const partnerArtists = Promise.resolve([{ biography: "Oh hello, I am a bio" }]);
+      context.partnerArtistsForArtistLoader = sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(partnerArtists);
+  
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artist: {
+            partnerBiographyBlurb: {
+              text: "Oh hello, I am a bio",
+            },
+          },
+        })
+      })
+    })
+  
+    it("handles null partner artist biography", () => {
+      const partnerArtists = Promise.resolve([{ biography: null }]);
+      context.partnerArtistsForArtistLoader = sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(partnerArtists);
+  
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artist: {
+            partnerBiographyBlurb: {
+              text: null,
+            },
+          },
+        })
+      })
+    })
+  })
+
   describe("concerning related shows", () => {
     beforeEach(() => {
       const partnerlessShow = {
