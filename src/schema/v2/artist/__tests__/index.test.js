@@ -581,14 +581,17 @@ describe("Artist type", () => {
         }
       }
     `
-  
     it("returns the partners provided biography", () => {
-      const partnerArtists = Promise.resolve([{ biography: "Oh hello, I am a bio" }]);
+      const partnerArtists = Promise.resolve([
+        {
+          biography: "Oh hello, I am a bio",
+        }
+      ])
       context.partnerArtistsForArtistLoader = sinon
         .stub()
         .withArgs(artist.id)
-        .returns(partnerArtists);
-  
+        .returns(partnerArtists)
+
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artist: {
@@ -599,14 +602,18 @@ describe("Artist type", () => {
         })
       })
     })
-  
-    it("handles null partner artist biography", () => {
-      const partnerArtists = Promise.resolve([{ biography: null }]);
+
+    it("returns the null if no partners provided biography", () => {
+      const partnerArtists = Promise.resolve([
+        {
+          biography: null,
+        }
+      ])
       context.partnerArtistsForArtistLoader = sinon
         .stub()
         .withArgs(artist.id)
-        .returns(partnerArtists);
-  
+        .returns(partnerArtists)
+
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artist: {
