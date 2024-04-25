@@ -62,7 +62,7 @@ import { newWorksFromGalleriesYouFollow } from "./newWorksFromGalleriesYouFollow
 import { ManagedPartners } from "./partners"
 import { RecentlyViewedArtworks } from "./recentlyViewedArtworks"
 import { SaleRegistrationConnection } from "./sale_registrations"
-import { COLLECTION_ID, SavedArtworks } from "./savedArtworks"
+import { SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { ShowsConnection } from "./showsConnection"
 import { SimilarToRecentlyViewed } from "./similarToRecentlyViewed"
@@ -281,14 +281,14 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
           },
           savedArtworks: {
             type: new GraphQLNonNull(GraphQLInt),
-            resolve: async (_me, _args, { collectionLoader }) => {
-              if (!collectionLoader) return 0
+            resolve: async (_me, _args, { meCollectorProfileLoader }) => {
+              if (!meCollectorProfileLoader) return 0
 
               try {
-                const { visible_artworks_count } = await collectionLoader(
-                  COLLECTION_ID
-                )
-                return visible_artworks_count
+                const {
+                  saved_artworks_count,
+                } = await meCollectorProfileLoader()
+                return saved_artworks_count
               } catch (error) {
                 console.error(error)
                 return 0

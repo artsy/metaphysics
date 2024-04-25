@@ -26,6 +26,7 @@ import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { createPageCursors } from "../fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
+import { PartnerEngagementType } from "./partnerEngagement"
 
 export const CollectorProfileFields: GraphQLFieldConfigMap<
   any,
@@ -57,6 +58,21 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   firstNameLastInitial: {
     type: GraphQLString,
     resolve: ({ first_name_last_initial }) => first_name_last_initial,
+  },
+  partnerEngagement: {
+    type: PartnerEngagementType,
+    description:
+      "Holds information about the engagement a collector profile has with a given partner",
+    args: {
+      partnerID: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: "The ID of the partner to check for engagement",
+      },
+    },
+    resolve: ({ id: collectorProfileID }, { partnerID }) => {
+      // Inject data needed for fields within this type to resolve
+      return { collectorProfileID, partnerID }
+    },
   },
   privacy: { type: GraphQLString },
   professionalBuyerAppliedAt: date,
