@@ -577,6 +577,20 @@ export default (accessToken, userID, opts) => {
       ({ partnerId, userId }) =>
         `partner_collector_profile?partner_id=${partnerId}&user_id=${userId}`
     ),
+    partnerCollectorProfileArtworkInquiryCountLoader: gravityLoader<
+      any,
+      { partnerID: string; collectorProfileID: string }
+    >(
+      ({ partnerID, collectorProfileID }) =>
+        `partner_collector_profile/${collectorProfileID}/artwork_inquiry_requests_count?partner_id=${partnerID}`
+    ),
+    partnerCollectorProfileEngagementLoader: gravityLoader<
+      any,
+      { partnerID: string; collectorProfileID: string }
+    >(
+      ({ partnerID, collectorProfileID }) =>
+        `partner_collector_profile/${collectorProfileID}/partner_engagement?partner_id=${partnerID}`
+    ),
     partnerCollectorProfileUserInterestsLoader: gravityLoader<
       any,
       { collectorProfileId: string; partnerId: string }
