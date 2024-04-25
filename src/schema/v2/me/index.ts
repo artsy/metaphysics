@@ -285,9 +285,9 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
               if (!collectionLoader) return 0
 
               try {
-                const { visible_artworks_count } = await collectionLoader(
-                  COLLECTION_ID
-                )
+                const {
+                  visible_artworks_count,
+                } = await collectionLoader(COLLECTION_ID, { private: true })
                 return visible_artworks_count
               } catch (error) {
                 console.error(error)
