@@ -2759,10 +2759,19 @@ interface ArtworkConnectionInterface {
 }
 
 type ArtworkConsignmentSubmission {
-  displayText: String
+  displayText: String @deprecated(reason: "Prefer `stateLabel` field.")
   inProgress: Boolean
   internalID: String
   isSold: Boolean
+
+  # Submission state.
+  state: String
+
+  # More information about the submission state.
+  stateHelpMessage: String
+
+  # Submission state label visible to the user.
+  stateLabel: String
 }
 
 union ArtworkContext = Fair | Sale | Show

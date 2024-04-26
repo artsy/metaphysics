@@ -268,4 +268,143 @@ describe("ArtworkConsignmentSubmissionType", () => {
       expect(data.artwork.consignmentSubmission.isSold).toBeFalse()
     })
   })
+
+  describe("#state", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          consignmentSubmission {
+            state
+          }
+        }
+      }
+    `
+
+    it("returns correct state", async () => {
+      artwork.consignmentSubmission.state = "DRAFT"
+      let data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.state).toEqual("draft")
+
+      artwork.consignmentSubmission.state = "APPROVED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.state).toEqual("approved")
+    })
+  })
+
+  describe("#stateLabel", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          consignmentSubmission {
+            stateLabel
+          }
+        }
+      }
+    `
+
+    it("returns correct state label", async () => {
+      artwork.consignmentSubmission.state = "DRAFT"
+      let data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
+        "In Progress"
+      )
+
+      artwork.consignmentSubmission.state = "SUBMITTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
+        "In Progress"
+      )
+
+      artwork.consignmentSubmission.state = "APPROVED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
+        "Evaluation Complete"
+      )
+
+      artwork.consignmentSubmission.state = "PUBLISHED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
+        "Evaluation Complete"
+      )
+
+      artwork.consignmentSubmission.state = "REJECTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
+        "Evaluation Complete"
+      )
+
+      artwork.consignmentSubmission.state = "HOLD"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
+        "In Progress"
+      )
+
+      artwork.consignmentSubmission.state = "CLOSED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
+        "Evaluation Complete"
+      )
+    })
+  })
+
+  describe("#stateHelpMessage", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          consignmentSubmission {
+            stateHelpMessage
+          }
+        }
+      }
+    `
+
+    const IN_PROGRESS_MESSAGE =
+      "The artwork is being reviewed or is in the sale process."
+    const SUBMISSION_EVALUATED_MESSAGE =
+      "Our specialists have reviewed this submission and determined that we do not currently have a market for it."
+
+    it("returns correct help message", async () => {
+      artwork.consignmentSubmission.state = "DRAFT"
+      let data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
+        IN_PROGRESS_MESSAGE
+      )
+
+      artwork.consignmentSubmission.state = "SUBMITTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
+        IN_PROGRESS_MESSAGE
+      )
+
+      artwork.consignmentSubmission.state = "APPROVED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
+        SUBMISSION_EVALUATED_MESSAGE
+      )
+
+      artwork.consignmentSubmission.state = "PUBLISHED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
+        SUBMISSION_EVALUATED_MESSAGE
+      )
+
+      artwork.consignmentSubmission.state = "REJECTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
+        SUBMISSION_EVALUATED_MESSAGE
+      )
+
+      artwork.consignmentSubmission.state = "HOLD"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
+        IN_PROGRESS_MESSAGE
+      )
+
+      artwork.consignmentSubmission.state = "CLOSED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
+        SUBMISSION_EVALUATED_MESSAGE
+      )
+    })
+  })
 })
