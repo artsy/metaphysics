@@ -57,7 +57,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
       state: {
         type: GraphQLString,
         description: "Submission state.",
-        resolve: ({ state }) => state.toLowerCase(),
+        resolve: ({ state }) => state,
       },
       stateLabel: {
         type: GraphQLString,

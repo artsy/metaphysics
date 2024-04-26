@@ -283,11 +283,11 @@ describe("ArtworkConsignmentSubmissionType", () => {
     it("returns correct state", async () => {
       artwork.consignmentSubmission.state = "DRAFT"
       let data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.state).toEqual("draft")
+      expect(data.artwork.consignmentSubmission.state).toEqual("DRAFT")
 
       artwork.consignmentSubmission.state = "APPROVED"
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.state).toEqual("approved")
+      expect(data.artwork.consignmentSubmission.state).toEqual("APPROVED")
     })
   })
 
