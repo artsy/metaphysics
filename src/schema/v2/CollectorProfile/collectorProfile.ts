@@ -219,6 +219,18 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
       !!other_relevant_positions &&
       !!bio,
   },
+  summarySentence: {
+    type: new GraphQLNonNull(GraphQLString),
+    description: "A partner-specific sentence describing the collector.",
+    args: {
+      partnerID: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+    },
+    resolve: () => {
+      return "This collector exists."
+    },
+  },
 }
 
 export const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>(
