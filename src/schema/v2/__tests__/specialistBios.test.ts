@@ -35,6 +35,6 @@ describe("SpecialistBios", () => {
 
     // separately test the resolver for firstName
     expect(result.specialistBios[0].firstName).toEqual("Jessica")
-    expect(result.specialistBios[1].firstName).toEqual("Christine")
+    expect(result.specialistBios[1].firstName).toEqual("Erica")
   })
 })
