@@ -11,7 +11,6 @@ describe("SpecialistBios", () => {
             name
             firstName
             jobTitle
-            specialty
             bio
             email
             image {
@@ -28,9 +27,6 @@ describe("SpecialistBios", () => {
       expect(result.specialistBios[index].name).toEqual(specialist.name)
       expect(result.specialistBios[index].email).toEqual(specialist.email)
       expect(result.specialistBios[index].jobTitle).toEqual(specialist.jobTitle)
-      expect(result.specialistBios[index].specialty).toEqual(
-        specialist.specialty
-      )
       expect(result.specialistBios[index].bio).toEqual(specialist.bio)
       expect(result.specialistBios[index].image.imageURL).toEqual(
         specialist.imageUrl

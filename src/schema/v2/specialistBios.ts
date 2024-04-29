@@ -14,7 +14,6 @@ interface specialistBio {
   imageUrl: string
   jobTitle: string
   name: string
-  specialty: string
 }
 
 const SpecialistBioType = new GraphQLObjectType<specialistBio, ResolverContext>(
@@ -43,7 +42,6 @@ const SpecialistBioType = new GraphQLObjectType<specialistBio, ResolverContext>(
       },
       jobTitle: { type: GraphQLString },
       name: { type: GraphQLString },
-      specialty: { type: GraphQLString },
     },
   }
 )
