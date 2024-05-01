@@ -137,5 +137,35 @@ describe("Me", () => {
         )
       })
     })
+
+    describe("summarySentence", () => {
+      it("returns a summary sentence", () => {
+        const query = `
+          {
+            me {
+              collectorProfile {
+                summarySentence(partnerID: "foo-partner")
+              }
+            }
+          }
+        `
+
+        const collectorProfile = {
+          id: "3",
+        }
+
+        const context = {
+          meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+        }
+
+        return runAuthenticatedQuery(query, context).then(
+          ({ me: { collectorProfile } }) => {
+            expect(collectorProfile.summarySentence).toBe(
+              "This collector exists."
+            )
+          }
+        )
+      })
+    })
   })
 })
