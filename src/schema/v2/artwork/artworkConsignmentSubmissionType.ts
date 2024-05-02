@@ -1,5 +1,25 @@
-import { GraphQLBoolean, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLEnumType,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
+
+// Based directly on Convection Submission#state: https://github.com/artsy/convection/blob/main/app/models/submission.rb
+const ArtworkConsignmentSubmissionStateType = new GraphQLEnumType({
+  name: "ArtworkConsignmentSubmissionState",
+  values: {
+    DRAFT: { value: "draft" },
+    SUBMITTED: { value: "submitted" },
+    APPROVED: { value: "approved" },
+    PUBLISHED: { value: "published" },
+    REJECTED: { value: "rejected" },
+    HOLD: { value: "hold" },
+    CLOSED: { value: "closed" },
+  },
+})
 
 const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
   any,
@@ -55,9 +75,11 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
         },
       },
       state: {
-        type: GraphQLString,
+        type: new GraphQLNonNull(ArtworkConsignmentSubmissionStateType),
         description: "Submission state.",
-        resolve: ({ state }) => state,
+        resolve: ({ state }) => {
+          return state.toLowerCase()
+        },
       },
       stateLabel: {
         type: GraphQLString,
