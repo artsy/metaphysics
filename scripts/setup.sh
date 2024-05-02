@@ -14,10 +14,11 @@ if ! which memcached > /dev/null; then
   brew install memcached
 fi
 
-if [[ ! -z $NVM_DIR ]]; then # skip if nvm is not available
-  echo "Installing Node..."
-  source ~/.nvm/nvm.sh
-  nvm install
+if command -v asdf >/dev/null; then
+  echo "Installing language dependencies with asdf"
+  asdf install
+else
+  echo "Skipping language dependencies installation (asdf not found)"
 fi
 
 echo "Installing dependencies..."
