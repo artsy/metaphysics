@@ -84,12 +84,12 @@ describe("Me", () => {
           id: "3",
           name: "Johnathan Storm",
           email: "johnathan@storm.com",
+          icon: { url: "http://image.com" },
           location: {
             display: "Berlin",
           },
           profession: "coder",
           other_relevant_positions: "other typer",
-          bio: "J. Storm",
         }
 
         const context = {

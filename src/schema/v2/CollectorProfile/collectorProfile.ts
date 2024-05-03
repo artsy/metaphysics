@@ -212,12 +212,12 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   },
   isProfileComplete: {
     type: GraphQLBoolean,
-    resolve: ({ name, location, profession, other_relevant_positions, bio }) =>
+    resolve: ({ icon, name, location, profession, other_relevant_positions }) =>
+      !!icon &&
       !!name &&
       !!location?.display &&
       !!profession &&
-      !!other_relevant_positions &&
-      !!bio,
+      !!other_relevant_positions,
   },
   summarySentence: {
     type: new GraphQLNonNull(GraphQLString),
