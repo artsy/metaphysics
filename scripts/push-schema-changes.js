@@ -74,6 +74,10 @@ async function main() {
       { repo: "prediction" },
       { repo: "force" },
       { repo: "forque" },
+      // We're pushing two changes to volt; one for Relay and one for Artemis,
+      // our server-side GraphQL client. They take different schema formats.
+      // Keeping this entry separate from the other volt to avoid race condition.
+      { repo: "volt", dest: "vendor/graphql/schema/metaphysics.json" },
       { repo: "volt-v2" },
       { repo: "pulse", dest: "vendor/graphql/schema/metaphysics.json" },
       { repo: "volt", dest: "vendor/graphql/schema/schema.graphql" },
