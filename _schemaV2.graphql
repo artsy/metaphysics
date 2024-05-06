@@ -15692,7 +15692,7 @@ type Query {
 
     #
     #         Only return artists matching specified slugs.
-    #         Accepts list of slugs. (e.g. 'andy-warhol', 'banksy')
+    #         Accepts list of slugs (e.g. 'andy-warhol', 'banksy').
     #
     slugs: [String]
     sort: ArtistSorts
@@ -20711,7 +20711,7 @@ type Viewer {
 
     #
     #         Only return artists matching specified slugs.
-    #         Accepts list of slugs. (e.g. 'andy-warhol', 'banksy')
+    #         Accepts list of slugs (e.g. 'andy-warhol', 'banksy').
     #
     slugs: [String]
     sort: ArtistSorts

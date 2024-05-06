@@ -82,7 +82,7 @@ export const artistsConnection = {
       type: new GraphQLList(GraphQLString),
       description: `
         Only return artists matching specified slugs.
-        Accepts list of slugs. (e.g. 'andy-warhol', 'banksy')
+        Accepts list of slugs (e.g. 'andy-warhol', 'banksy').
       `,
     },
     letter: { type: GraphQLString },
