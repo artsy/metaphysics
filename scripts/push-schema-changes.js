@@ -77,9 +77,6 @@ async function main() {
       { repo: "volt-v2" },
       { repo: "pulse", dest: "vendor/graphql/schema/metaphysics.json" },
       { repo: "volt", dest: "vendor/graphql/schema/schema.graphql" },
-      // We're pushing two changes to volt; one for Relay and one for Artemis,
-      // our server-side GraphQL client. They take different schema formats.
-      { repo: "volt", dest: "vendor/graphql/schema/metaphysics.json" },
     ]
 
     const updatePromises = reposToUpdate.map((repo) => updateSchemaFile(repo))
