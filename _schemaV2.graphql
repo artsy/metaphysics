@@ -230,15 +230,6 @@ type AdminUpdateFeatureFlagPayload {
   ): [FeatureFlag]
 }
 
-type AdvisoryOpportunity {
-  # A globally unique ID.
-  id: ID!
-
-  # A type-specific ID.
-  internalID: ID!
-  message: String
-}
-
 # One item in an aggregation
 type AggregationCount {
   count: Int!
@@ -7692,32 +7683,6 @@ union CreateAccountRequestMutationType =
     CreateAccountRequestMutationFailure
   | CreateAccountRequestMutationSuccess
 
-type createAdvisoryOpportunityFailure {
-  mutationError: GravityMutationError
-}
-
-input createAdvisoryOpportunityMutationInput {
-  clientMutationId: String
-  message: String
-  phoneCountryCode: String
-  phoneNumber: String
-  searchCriteriaID: String!
-}
-
-type createAdvisoryOpportunityMutationPayload {
-  # On success: the advisory opportunity
-  advisoryOpportunityOrError: createAdvisoryOpportunityResponseOrError
-  clientMutationId: String
-}
-
-union createAdvisoryOpportunityResponseOrError =
-    createAdvisoryOpportunityFailure
-  | createAdvisoryOpportunitySuccess
-
-type createAdvisoryOpportunitySuccess {
-  advisoryOpportunity: AdvisoryOpportunity!
-}
-
 type CreateAlertFailure {
   mutationError: GravityMutationError
 }
@@ -13128,11 +13093,6 @@ type Mutation {
   createAccountRequest(
     input: CreateAccountRequestMutationInput!
   ): CreateAccountRequestMutationPayload
-
-  # Create an advisory opportunity
-  createAdvisoryOpportunity(
-    input: createAdvisoryOpportunityMutationInput!
-  ): createAdvisoryOpportunityMutationPayload
 
   # Create an alert
   createAlert(input: createAlertInput!): createAlertPayload

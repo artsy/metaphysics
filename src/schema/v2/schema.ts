@@ -210,7 +210,6 @@ import VanityURLEntity from "./vanityURLEntity"
 import { VerifyAddress } from "./verifyAddress"
 import { updateUserInterestMutation } from "./me/updateUserInterestMutation"
 import { updateUserInterestsMutation } from "./me/updateUserInterestsMutation"
-import { createAdvisoryOpportunityMutation } from "./createAdvisoryOpportunity"
 import { createPartnerOfferMutation } from "./createPartnerOfferMutation"
 import { createAlertMutation } from "./Alerts/createAlertMutation"
 import { updateAlertMutation } from "./Alerts/updateAlertMutation"
@@ -369,7 +368,6 @@ export default new GraphQLSchema({
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
-      createAdvisoryOpportunity: createAdvisoryOpportunityMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,
       deleteVerifiedRepresentative: deleteVerifiedRepresentativeMutation,
       createArtist: createArtistMutation,
