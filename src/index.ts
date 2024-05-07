@@ -37,6 +37,10 @@ import { principalFieldDirectiveExtension } from "directives/principleField/prin
 import { principalFieldDirectiveValidation } from "directives/principleField/principalFieldDirectiveValidation"
 import * as Sentry from "@sentry/node"
 import { bodyParserMiddleware } from "lib/bodyParserMiddleware"
+import { initilizeFeatureFlags } from "lib/featureFlags"
+
+// Initialize Unleash feature flags as early as possible
+initilizeFeatureFlags()
 
 const {
   ENABLE_REQUEST_LOGGING,

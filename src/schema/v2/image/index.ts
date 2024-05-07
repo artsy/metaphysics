@@ -19,6 +19,7 @@ import VersionedUrl from "./versioned"
 import { decode as decodeBlurHash } from "blurhash"
 import UPNG from "upng-js"
 import { encode } from "base64-arraybuffer"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 export type OriginalImage = {
   original_width?: number
@@ -70,6 +71,11 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       resolve: ({ blurhash, aspect_ratio }, { width }) => {
+        const isBlurhashEnabled = isFeatureFlagEnabled(
+          "diamond_blurhash-enabled-globally"
+        )
+
+        if (!isBlurhashEnabled) return null
         if (!blurhash) return null
 
         try {
