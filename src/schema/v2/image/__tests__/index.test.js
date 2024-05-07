@@ -1,4 +1,5 @@
 /* eslint-disable promise/always-return */
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { assign } from "lodash"
 import { getDefault } from "schema/v2/image"
 
@@ -65,7 +66,11 @@ describe("Image type", () => {
   })
 
   describe("blurhashDataURL", () => {
+    const mockIsFeatureFlagEnabled = isFeatureFlagEnabled
+
     it("returns a data URL for a given blurhash", () => {
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
+
       const query = `{
         artwork(id: "richard-prince-untitled-portrait") {
           image {
