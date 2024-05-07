@@ -14,11 +14,11 @@ const defaultBody =
  * @param {Object} input
  * @param {string} input.repo - repo: name of the artsy repo to update
  * @param {string} [input.body] - body: The PR body descrption
- * @param {string} [input.dest] - dest: Path to schema file in target repo
+ * @param {Array<string>} [input.destinations] - destinations: Paths to schema files in target repo
  */
 async function updateSchemaFile({
   repo,
-  dest = "data/schema.graphql",
+  destinations = ["data/schema.graphql"],
   body = defaultBody,
 }) {
   await updateRepo({
@@ -34,30 +34,34 @@ async function updateSchemaFile({
     assignees: ["artsyit"],
     labels: ["Squash On Green"],
     update: (repoDir) => {
-      const repoDest = path.join(repoDir, dest)
       execSync("yarn config set ignore-engines true", { cwd: repoDir })
       execSync("yarn install", { cwd: repoDir })
-      if (dest.endsWith(".json")) {
-        const sdl = readFileSync("_schemaV2.graphql", "utf8").toString()
-        const schema = buildSchema(sdl, { commentDescriptions: true })
-        const gql = graphqlSync(schema, introspectionQuery)
-        writeFileSync(repoDest, JSON.stringify(gql, null, 2))
-      } else {
-        execSync(`cp _schemaV2.graphql '${repoDest}'`)
 
-        // Running the compiler directly for Rails projects
-        const relayCompilerCommand = ["pulse", "volt"].includes(repo)
-          ? "./node_modules/.bin/relay-compiler"
-          : "yarn relay"
+      destinations.forEach((dest) => {
+        const repoDest = path.join(repoDir, dest)
+        if (dest.endsWith(".json")) {
+          const sdl = readFileSync("_schemaV2.graphql", "utf8").toString()
+          const schema = buildSchema(sdl, { commentDescriptions: true })
+          const gql = graphqlSync(schema, introspectionQuery)
+          writeFileSync(repoDest, JSON.stringify(gql, null, 2))
+        } else {
+          execSync(`cp _schemaV2.graphql '${repoDest}'`)
 
-        execSync(relayCompilerCommand, { cwd: repoDir })
-      }
-      execSync(
-        `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier --write ${dest}`,
-        {
-          cwd: repoDir,
+          // Running the compiler directly for Rails projects
+          const relayCompilerCommand = ["pulse", "volt"].includes(repo)
+            ? "./node_modules/.bin/relay-compiler"
+            : "yarn relay"
+
+          execSync(relayCompilerCommand, { cwd: repoDir })
         }
-      )
+
+        execSync(
+          `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier --write ${dest}`,
+          {
+            cwd: repoDir,
+          }
+        )
+      })
     },
   })
 }
@@ -74,9 +78,18 @@ async function main() {
       { repo: "prediction" },
       { repo: "force" },
       { repo: "forque" },
+      {
+        repo: "pulse",
+        destinations: ["vendor/graphql/schema/metaphysics.json"],
+      },
+      {
+        repo: "volt",
+        destinations: [
+          "vendor/graphql/schema/schema.graphql",
+          "vendor/graphql/schema/metaphysics.json",
+        ],
+      },
       { repo: "volt-v2" },
-      { repo: "pulse", dest: "vendor/graphql/schema/metaphysics.json" },
-      { repo: "volt", dest: "vendor/graphql/schema/schema.graphql" },
     ]
 
     const updatePromises = reposToUpdate.map((repo) => updateSchemaFile(repo))
