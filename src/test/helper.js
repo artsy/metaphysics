@@ -49,3 +49,11 @@ jest.mock("node-uuid")
  * their env file.
  */
 jest.mock("debug", () => () => jest.fn())
+
+/**
+ * Mock out feature flag checks.
+ */
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn(),
+  initilizeFeatureFlags: jest.fn(),
+}))
