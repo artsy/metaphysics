@@ -459,15 +459,17 @@ describe("Artist type", () => {
               }
             }
           `
-          return runQuery(query, context).then((data) => {
-            expect(data).toEqual({
-              artist: {
-                biographyBlurb: {
-                  text: "<p>new catty bio</p>\n",
-                  credit: "Submitted by Catty Partner",
-                  partnerID: "catty-partner",
+          it("returns the correct bio data", () => {
+            return runQuery(query, context).then((data) => {
+              expect(data).toEqual({
+                artist: {
+                  biographyBlurb: {
+                    text: "<p>new catty bio</p>\n",
+                    credit: "Submitted by Catty Partner",
+                    partnerID: "catty-partner",
+                  },
                 },
-              },
+              })
             })
           })
         })
