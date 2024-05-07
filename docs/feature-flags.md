@@ -29,3 +29,14 @@ const Artist = {
   },
 }
 ```
+
+If needing to pass addition unleash context info along, a second argument can be provided to the helper:
+
+```ts
+isFeatureFlagEnabled("some-artist-flag", {
+  userId: "foo",
+  sessionId: "bar",
+})
+```
+
+See the [Unleash Context docs](https://docs.getunleash.io/reference/unleash-context) for more info.

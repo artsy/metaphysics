@@ -1,5 +1,5 @@
 import config from "config"
-import { Unleash, initialize } from "unleash-client"
+import { Context as UnleashContext, Unleash, initialize } from "unleash-client"
 import { info, error } from "./loggers"
 
 const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
@@ -30,7 +30,10 @@ export function initilizeFeatureFlags() {
   })
 }
 
-export function isFeatureFlagEnabled(flag: FeatureFlag) {
+export function isFeatureFlagEnabled(
+  flag: FeatureFlag,
+  context: UnleashContext = {}
+) {
   if (!unleashClient) {
     error(
       `[featureFlags] Error retrieving ${flag} feature flag. Unleash client not initialized.`
@@ -39,5 +42,5 @@ export function isFeatureFlagEnabled(flag: FeatureFlag) {
     return false
   }
 
-  return unleashClient.isEnabled(flag)
+  return unleashClient.isEnabled(flag, context)
 }
