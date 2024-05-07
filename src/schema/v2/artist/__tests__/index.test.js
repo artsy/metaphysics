@@ -410,7 +410,7 @@ describe("Artist type", () => {
       })
     })
   })
-  describe("biographyBlurb", () => {
+  describe("biographyBlurb with artist data", () => {
     it("returns the blurb if present", () => {
       artist.blurb = "catty blurb"
       const query = `
@@ -429,7 +429,7 @@ describe("Artist type", () => {
       })
     })
   })
-  describe("biographyBlurb", () => {
+  describe("biographyBlurb with partner data", () => {
     describe("with partnerBio set to true", () => {
       describe("with a featured partner bio", () => {
         beforeEach(() => {
@@ -470,10 +470,6 @@ describe("Artist type", () => {
               },
             })
           })
-        })
-        it("returns the featured partner bio without an artsy blurb", () => {})
-        it("returns the featured partner bio with an artsy blurb", () => {
-          artist.blurb = "artsy blurb"
         })
       })
       describe("without a featured partner bio", () => {
