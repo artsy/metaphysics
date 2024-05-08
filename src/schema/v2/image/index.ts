@@ -70,10 +70,11 @@ export const ImageType = new GraphQLObjectType<any, ResolverContext>({
           defaultValue: 64,
         },
       },
-      resolve: ({ blurhash, aspect_ratio }, { width }) => {
-        const isBlurhashEnabled = isFeatureFlagEnabled(
-          "diamond_blurhash-enabled-globally"
-        )
+      resolve: ({ blurhash, aspect_ratio }, { width }, { userAgent }) => {
+        const isEigen = userAgent?.match("Artsy-Mobile") != null
+
+        const isBlurhashEnabled =
+          isEigen || isFeatureFlagEnabled("diamond_blurhash-enabled-globally")
 
         if (!isBlurhashEnabled) return null
         if (!blurhash) return null
