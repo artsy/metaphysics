@@ -31,13 +31,16 @@ export const CollectorProfilesConnection: GraphQLFieldConfig<
     { term, partnerID, ...args },
     { collectorProfilesLoader }
   ) => {
-    if (!collectorProfilesLoader)
+    if (!collectorProfilesLoader) {
       throw new Error(
         "A X-Access-Token header is required to perform this action."
       )
-
-    if (!partnerID || !term) {
-      throw new Error("Arguments `partnerID` and `term` are required.")
+    }
+    if (!partnerID) {
+      throw new Error("Argument `partnerID` is required.")
+    }
+    if (term == undefined) {
+      throw new Error("Argument `term` is required.")
     }
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)

@@ -57,31 +57,57 @@ describe("collectorProfilesConnection", () => {
     })
   })
 
-  it("returns an error if the partnerID or term arguments are missing", async () => {
+  it("returns an error partnerID argument is missing", async () => {
     const missingArgsQuery = gql`
       {
         collectorProfilesConnection(first: 5) {
           totalCount
-          edges {
-            node {
-              name
-            }
-          }
         }
       }
     `
 
     try {
-      await runQuery(missingArgsQuery, {
-        collectorProfilesLoader,
-      })
+      await runQuery(missingArgsQuery, { collectorProfilesLoader })
       throw new Error("An error was not thrown but was expected.")
     } catch (error) {
       /* eslint-disable jest/no-conditional-expect */
       /* eslint-disable jest/no-try-expect */
-      expect(error.message).toEqual(
-        "Arguments `partnerID` and `term` are required."
-      )
+      expect(error.message).toEqual("Argument `partnerID` is required.")
     }
+  })
+
+  it("returns an error term argument is missing", async () => {
+    const missingArgsQuery = gql`
+      {
+        collectorProfilesConnection(first: 5, partnerID: "test-id") {
+          totalCount
+        }
+      }
+    `
+
+    try {
+      await runQuery(missingArgsQuery, { collectorProfilesLoader })
+      throw new Error("An error was not thrown but was expected.")
+    } catch (error) {
+      /* eslint-disable jest/no-conditional-expect */
+      /* eslint-disable jest/no-try-expect */
+      expect(error.message).toEqual("Argument `term` is required.")
+    }
+  })
+
+  it("returns the data when term is ''", async () => {
+    const query = gql`
+      {
+        collectorProfilesConnection(first: 5, partnerID: "test-id", term: "") {
+          totalCount
+        }
+      }
+    `
+
+    const { collectorProfilesConnection } = await runQuery(query, {
+      collectorProfilesLoader,
+    })
+
+    expect(collectorProfilesConnection.totalCount).toBe(2)
   })
 })
