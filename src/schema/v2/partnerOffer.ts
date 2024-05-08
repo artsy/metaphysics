@@ -101,6 +101,9 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
     note: {
       type: GraphQLString,
     },
+    source: {
+      type: GraphQLString,
+    },
     userIds: {
       type: new GraphQLList(GraphQLString),
       resolve: ({ user_ids }) => user_ids,

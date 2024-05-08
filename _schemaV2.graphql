@@ -14872,6 +14872,7 @@ type PartnerOffer implements Node {
     @deprecated(
       reason: "This field is deprecated. Use 'priceWithDiscount' instead."
     )
+  source: String
   userIds: [String]
 }
 
@@ -14953,6 +14954,7 @@ type PartnerOfferToCollector implements Node {
   note: String
   partnerId: String
   priceWithDiscount: Money
+  source: String
 }
 
 # A connection to a list of items.

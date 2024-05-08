@@ -54,6 +54,9 @@ export const PartnerOfferToCollectorType = new GraphQLObjectType<
         )
       },
     },
+    source: {
+      type: GraphQLString,
+    },
   }),
 })
 
