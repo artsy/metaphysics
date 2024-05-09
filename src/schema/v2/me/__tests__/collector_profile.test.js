@@ -139,32 +139,83 @@ describe("Me", () => {
     })
 
     describe("summarySentence", () => {
-      it("returns a summary sentence", () => {
-        const query = `
+      const query = `
           {
             me {
               collectorProfile {
-                summarySentence(partnerID: "foo-partner")
+                summarySentence
               }
             }
           }
         `
 
-        const collectorProfile = {
-          id: "3",
-        }
+      const collectorProfile = {
+        first_name_last_initial: "John S.",
+        artsy_user_since: "2013-01-28T17:32:09+00:00",
+      }
 
-        const context = {
-          meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
-        }
+      describe("user activity", () => {
+        describe("when the user is a confirmed buyer", () => {
+          it("returns a summary sentence", () => {
+            collectorProfile.confirmed_buyer_at = "2013-01-28T17:32:09+00:00"
 
-        return runAuthenticatedQuery(query, context).then(
-          ({ me: { collectorProfile } }) => {
-            expect(collectorProfile.summarySentence).toBe(
-              "This collector exists."
+            const context = {
+              meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+            }
+
+            return runAuthenticatedQuery(query, context).then(
+              ({ me: { collectorProfile } }) => {
+                expect(collectorProfile.summarySentence).toBe(
+                  "John S. is a Confirmed Artsy Buyer."
+                )
+              }
             )
-          }
-        )
+          })
+        })
+
+        describe("when the user has signed up in the last 30 days", () => {
+          const realNow = Date.now
+          beforeEach(() => {
+            Date.now = () => new Date("2013-01-30T03:24:00")
+          })
+          afterEach(() => {
+            Date.now = realNow
+          })
+
+          it("returns a summary sentence", () => {
+            collectorProfile.confirmed_buyer_at = null
+
+            const context = {
+              meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+            }
+
+            return runAuthenticatedQuery(query, context).then(
+              ({ me: { collectorProfile } }) => {
+                expect(collectorProfile.summarySentence).toBe(
+                  "John S. is a New Artsy user."
+                )
+              }
+            )
+          })
+        })
+
+        describe("when the user has signed up more than 30 days ago", () => {
+          it("returns a summary sentence", () => {
+            collectorProfile.confirmed_buyer_at = null
+
+            const context = {
+              meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+            }
+
+            return runAuthenticatedQuery(query, context).then(
+              ({ me: { collectorProfile } }) => {
+                expect(collectorProfile.summarySentence).toBe(
+                  "John S. is an Active Artsy user."
+                )
+              }
+            )
+          })
+        })
       })
     })
   })

@@ -4242,9 +4242,7 @@ type CollectorProfileType implements Node {
   ): String
   savedArtworksCount: Int!
   selfReportedPurchases: String
-
-  # A partner-specific sentence describing the collector.
-  summarySentence(partnerID: String!): String!
+  summarySentence: String
   totalBidsCount: Int!
   userInterests: [UserInterest]!
     @deprecated(reason: "Use \"owner#interestsConnection\" field instead.")
@@ -11422,9 +11420,7 @@ type InquirerCollectorProfile {
   ): String
   savedArtworksCount: Int!
   selfReportedPurchases: String
-
-  # A partner-specific sentence describing the collector.
-  summarySentence(partnerID: String!): String!
+  summarySentence: String
   totalBidsCount: Int!
   userInterests: [UserInterest]!
     @deprecated(reason: "Use \"owner#interestsConnection\" field instead.")
@@ -19192,9 +19188,7 @@ type UpdateCollectorProfilePayload {
   ): String
   savedArtworksCount: Int!
   selfReportedPurchases: String
-
-  # A partner-specific sentence describing the collector.
-  summarySentence(partnerID: String!): String!
+  summarySentence: String
   totalBidsCount: Int!
   userInterests: [UserInterest]!
     @deprecated(reason: "Use \"owner#interestsConnection\" field instead.")

@@ -27,6 +27,9 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { createPageCursors } from "../fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 import { PartnerEngagementType } from "./partnerEngagement"
+import { SummarySentenceField } from "./summarySentence"
+
+// TODO: Add typing based on Gravity JSON
 
 export const CollectorProfileFields: GraphQLFieldConfigMap<
   any,
@@ -219,18 +222,7 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
       !!profession &&
       !!other_relevant_positions,
   },
-  summarySentence: {
-    type: new GraphQLNonNull(GraphQLString),
-    description: "A partner-specific sentence describing the collector.",
-    args: {
-      partnerID: {
-        type: new GraphQLNonNull(GraphQLString),
-      },
-    },
-    resolve: () => {
-      return "This collector exists."
-    },
-  },
+  summarySentence: SummarySentenceField,
 }
 
 export const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>(
