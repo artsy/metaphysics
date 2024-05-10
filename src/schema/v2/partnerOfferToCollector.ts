@@ -9,6 +9,7 @@ import { ResolverContext } from "types/graphql"
 import { IDFields, NodeInterface } from "./object_identification"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
+import { PartnerOfferSourceEnumType } from "./partnerOffer"
 
 export const PartnerOfferToCollectorType = new GraphQLObjectType<
   any,
@@ -53,6 +54,9 @@ export const PartnerOfferToCollectorType = new GraphQLObjectType<
           info
         )
       },
+    },
+    source: {
+      type: PartnerOfferSourceEnumType,
     },
   }),
 })
