@@ -13,8 +13,8 @@ import { priceDisplayText } from "lib/moneyHelpers"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
 
-export const SourceEnumType = new GraphQLEnumType({
-  name: "SourceEnum",
+export const PartnerOfferSourceEnumType = new GraphQLEnumType({
+  name: "PartnerOfferSourceEnum",
   values: {
     SAVE: { value: "Save" },
     ABANDONED_ORDER: { value: "Abandoned Order" },
@@ -111,7 +111,7 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     source: {
-      type: SourceEnumType,
+      type: PartnerOfferSourceEnumType,
     },
     userIds: {
       type: new GraphQLList(GraphQLString),
