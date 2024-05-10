@@ -831,7 +831,7 @@ describe("me/index", () => {
                   artworkId: "65d9b98ae37dd70006240bf6",
                   internalID: "866f16a0-92bf-4fb6-8911-e1ab1a5fb508",
                   note: "This is  a note!",
-                  source: "Save",
+                  source: "SAVE",
                   priceWithDiscount: {
                     currencyCode: "GBP",
                     display: "£17,360",

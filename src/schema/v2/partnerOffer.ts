@@ -5,12 +5,21 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLBoolean,
+  GraphQLEnumType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields, NodeInterface } from "./object_identification"
 import { priceDisplayText } from "lib/moneyHelpers"
 import { connectionWithCursorInfo } from "./fields/pagination"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
+
+export const SourceEnumType = new GraphQLEnumType({
+  name: "SourceEnum",
+  values: {
+    SAVE: { value: "Save" },
+    ABANDONED_ORDER: { value: "Abandoned Order" },
+  },
+})
 
 export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerOffer",
@@ -102,7 +111,7 @@ export const PartnerOfferType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     source: {
-      type: GraphQLString,
+      type: SourceEnumType,
     },
     userIds: {
       type: new GraphQLList(GraphQLString),

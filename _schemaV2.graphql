@@ -14872,7 +14872,7 @@ type PartnerOffer implements Node {
     @deprecated(
       reason: "This field is deprecated. Use 'priceWithDiscount' instead."
     )
-  source: String
+  source: SourceEnum
   userIds: [String]
 }
 
@@ -14954,7 +14954,7 @@ type PartnerOfferToCollector implements Node {
   note: String
   partnerId: String
   priceWithDiscount: Money
-  source: String
+  source: SourceEnum
 }
 
 # A connection to a list of items.
@@ -18522,6 +18522,11 @@ union SmsSecondFactorOrErrorsUnion = Errors | SmsSecondFactor
 enum sort {
   ASC
   DESC
+}
+
+enum SourceEnum {
+  ABANDONED_ORDER
+  SAVE
 }
 
 type SpecialistBio {
