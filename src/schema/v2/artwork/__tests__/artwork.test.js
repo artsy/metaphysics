@@ -4477,6 +4477,42 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#recentAbandonedOrdersCount", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          recentAbandonedOrdersCount
+        }
+      }
+    `
+
+    it("returns artworks recent_abandoned_orders_count", () => {
+      artwork.recent_abandoned_orders_count = 123
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({ artwork: { recentAbandonedOrdersCount: 123 } })
+      })
+    })
+  })
+
+  describe("#lastOfferableActivityAt", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          lastOfferableActivityAt
+        }
+      }
+    `
+
+    it("returns artworks last_offerable_activity_at", () => {
+      artwork.last_offerable_activity_at = "2020-01-01T00:00:00.000Z"
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: { lastOfferableActivityAt: "2020-01-01T00:00:00.000Z" },
+        })
+      })
+    })
+  })
+
   describe("#listedArtworksConnection", () => {
     const query = `
       {

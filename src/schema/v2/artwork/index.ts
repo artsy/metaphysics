@@ -1912,6 +1912,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       lastSavedAt: date(),
+      recentAbandonedOrdersCount: {
+        description: "Count of abandoned orders, in the last 30 days.",
+        type: GraphQLInt,
+        resolve: (artwork) => {
+          return artwork.recent_abandoned_orders_count
+        },
+      },
+      lastOfferableActivityAt: date(),
     }
   },
 })
