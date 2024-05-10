@@ -630,6 +630,11 @@ input CreatePartnerOfferOrderInput {
   editionSetId: String
 
   """
+  Impulse conversation id corresponding to an order.
+  """
+  impulseConversationId: String
+
+  """
   PartnerOffer Id
   """
   partnerOfferId: String!
@@ -1853,7 +1858,7 @@ type Query {
   """
   Buyer Activity Data for Collector Resume
   """
-  buyerActivity(buyerId: String!): BuyerActivity
+  buyerActivity(buyerId: String!, sellerId: String): BuyerActivity
 
   """
   Find list of competing orders
