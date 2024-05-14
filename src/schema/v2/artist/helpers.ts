@@ -1,6 +1,6 @@
 import { compact, sortBy } from "lodash"
 import { priceDisplayText } from "lib/moneyHelpers"
-
+import camelCase from "lodash/camelCase"
 const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
   .artists
 
@@ -40,7 +40,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
 > = {
   SOLO_SHOW: {
     getDescription: () => null,
-    getEntities: (artist) => splitEntities(artist.solo_show_institutions),
+    getEntities: (artist) => artist.soloShowInstitutions,
     getLabel: (_artist, count: number) =>
       `Solo show at ${
         count === 1 ? "a major institution" : `${count} major institutions`
@@ -48,7 +48,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   },
   GROUP_SHOW: {
     getDescription: () => null,
-    getEntities: (artist) => splitEntities(artist.group_show_institutions),
+    getEntities: (artist) => artist.groupShowInstitutions,
     getLabel: (_artist, count: number) =>
       `Group show at ${
         count === 1 ? "a major institution" : `${count} major institutions`
@@ -56,7 +56,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   },
   COLLECTED: {
     getDescription: () => null,
-    getEntities: (artist) => splitEntities(artist.collections),
+    getEntities: (artist) => artist.collectedInstitutions,
     getLabel: (_artist, count: number) =>
       `Collected by ${
         count === 1 ? "a major institution" : `${count} major institutions`
@@ -234,6 +234,59 @@ export const getAuctionRecord = async (artist, auctionLotsLoader) => {
     organization: auctionLot.organization,
     year,
     url,
+  }
+}
+
+const careerHighlightsMap = {
+  solo_show: "solo",
+  group_show: "group",
+  collected: "collected",
+}
+
+export const enrichWithArtistCareerHighlights = async (
+  kind,
+  artist,
+  artistCareerHighlightsLoader
+) => {
+  if (!artistCareerHighlightsLoader) return
+
+  const validTypes = ["SOLO_SHOW", "GROUP_SHOW", "COLLECTED"]
+
+  for (const type of validTypes) {
+    if (kind.includes(type)) {
+      const highlights = await getArtistCareerHighlights(
+        artistCareerHighlightsLoader,
+        artist._id,
+        careerHighlightsMap[type.toLowerCase()]
+      )
+      // eslint-disable-next-line require-atomic-updates
+      artist[`${camelCase(type)}Institutions`] = highlights
+    }
+  }
+}
+
+export const getArtistCareerHighlights = async (
+  artistCareerHighlightsLoader,
+  artist_id,
+  type
+) => {
+  if (!artistCareerHighlightsLoader) return null
+
+  try {
+    const response = await artistCareerHighlightsLoader({
+      artist_id,
+      [type]: true,
+    })
+
+    if (!response) return null
+
+    const highlights = response.map((highlight) => highlight.venue.trim())
+    return highlights
+  } catch (error) {
+    console.error(
+      `[schema/v2/artist/insights] fetching artist career highlights: ${error}`
+    )
+    return null
   }
 }
 

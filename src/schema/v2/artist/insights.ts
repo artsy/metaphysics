@@ -13,6 +13,7 @@ import {
   ARTIST_INSIGHT_KINDS,
   getArtistInsights,
   getAuctionRecord,
+  enrichWithArtistCareerHighlights,
 } from "./helpers"
 import { formatMarkdownValue } from "schema/v2/fields/markdown"
 import Format, { FORMATS } from "schema/v2/input_fields/format"
@@ -76,7 +77,11 @@ export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
       defaultValue: ARTIST_INSIGHT_KINDS,
     },
   },
-  resolve: async (artist, { kind }, { auctionLotsLoader }) => {
+  resolve: async (
+    artist,
+    { kind },
+    { auctionLotsLoader, artistCareerHighlightsLoader }
+  ) => {
     if (kind.includes("HIGH_AUCTION_RECORD")) {
       const highAuctionRecord = await getAuctionRecord(
         artist,
@@ -85,6 +90,12 @@ export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
       /* eslint-disable require-atomic-updates */
       artist.highAuctionRecord = highAuctionRecord
     }
+
+    await enrichWithArtistCareerHighlights(
+      kind,
+      artist,
+      artistCareerHighlightsLoader
+    )
 
     const insights = getArtistInsights(artist)
 

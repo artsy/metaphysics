@@ -21,16 +21,6 @@ describe("getArtistInsights", () => {
 
     const fields = [
       {
-        key: "solo_show_institutions",
-        kind: "SOLO_SHOW",
-        value,
-      },
-      {
-        key: "group_show_institutions",
-        kind: "GROUP_SHOW",
-        value,
-      },
-      {
         key: "review_sources",
         kind: "REVIEWED",
         value,
@@ -38,11 +28,6 @@ describe("getArtistInsights", () => {
       {
         key: "biennials",
         kind: "BIENNIAL",
-        value,
-      },
-      {
-        key: "collections",
-        kind: "COLLECTED",
         value,
       },
     ]
