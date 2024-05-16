@@ -870,6 +870,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       partnerBiographyBlurb: {
         description: "The Partner's provided biography for the artist",
+        deprecationReason: "This field is deprecated. No longer in use",
         args: {
           ...markdown().args,
         },
