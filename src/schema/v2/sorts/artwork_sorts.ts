@@ -22,6 +22,12 @@ const ArtworkSorts = {
       ICONICITY_DESC: {
         value: "-iconicity",
       },
+      LAST_OFFERABLE_ACTIVITY_AT_DESC: {
+        value: "-last_offerable_activity_at",
+      },
+      LAST_SAVED_AT_DESC: {
+        value: "-last_saved_at",
+      },
       MERCHANDISABILITY_DESC: {
         value: "-merchandisability",
       },
@@ -36,9 +42,6 @@ const ArtworkSorts = {
       },
       RECENT_SAVES_COUNT_DESC: {
         value: "-recent_saves_count",
-      },
-      LAST_SAVED_AT_DESC: {
-        value: "-last_saved_at",
       },
       TITLE_ASC: {
         value: "title",
