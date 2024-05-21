@@ -11,7 +11,10 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { artistConnection } from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
-import { getArtistInsights } from "../artist/helpers"
+import {
+  getArtistInsights,
+  enrichWithArtistCareerHighlights,
+} from "../artist/helpers"
 import { ArtistInsight, ArtistInsightKind } from "../artist/insights"
 import { paginationResolver } from "../fields/pagination"
 import ArtistSorts from "../sorts/artist_sorts"
@@ -72,8 +75,6 @@ export const myCollectionInfoFields = {
     resolve: async (_root, _args, context) => {
       const { collectionArtistsLoader, userID } = context
 
-      if (!collectionArtistsLoader) return
-
       const { body: artists } = await collectionArtistsLoader("my-collection", {
         size: MAX_ARTISTS,
         user_id: userID,
@@ -91,17 +92,8 @@ export const myCollectionInfoFields = {
         insight: ReturnType<typeof getArtistInsights>[0]
       ) => {
         switch (insight.kind) {
-          case "SOLO_SHOW":
-            soloShowCount += 1
-            break
-          case "GROUP_SHOW":
-            groupShowCount += 1
-            break
           case "REVIEWED":
             reviewedCount += 1
-            break
-          case "COLLECTED":
-            collectedCount += 1
             break
           case "BIENNIAL":
             biennialCount += 1
@@ -113,6 +105,10 @@ export const myCollectionInfoFields = {
       }
 
       artists.forEach((artist) => {
+        if (artist.solo_shows_count) soloShowCount += 1
+        if (artist.group_shows_count) groupShowCount += 1
+        if (artist.collected_by_institutions_count) collectedCount += 1
+
         getArtistInsights(artist).forEach((insight) => {
           if (insight.kind) countInsights(insight)
         })
@@ -140,7 +136,11 @@ export const myCollectionInfoFields = {
       },
     },
     resolve: async (_root, args, context) => {
-      const { collectionArtistsLoader, userID } = context
+      const {
+        collectionArtistsLoader,
+        artistCareerHighlightsLoader,
+        userID,
+      } = context
 
       const { body: artists } = await collectionArtistsLoader("my-collection", {
         size: MAX_ARTISTS,
@@ -149,6 +149,17 @@ export const myCollectionInfoFields = {
       })
 
       const insights: ReturnType<typeof getArtistInsights> = []
+
+      // Fetch career highlights based on insight kind for each artist
+      const artistHighlightsPromises = artists.map(async (artist) => {
+        await enrichWithArtistCareerHighlights(
+          [args.kind],
+          artist,
+          artistCareerHighlightsLoader
+        )
+      })
+
+      await Promise.all(artistHighlightsPromises)
 
       artists.map((artist) => {
         getArtistInsights(artist).map((insight) => {

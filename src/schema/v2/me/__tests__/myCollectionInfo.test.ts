@@ -67,33 +67,32 @@ describe("me.myCollectionInfo", () => {
           body: [
             {
               name: "Artist 1",
-              collections: "Collected by a major art publication",
+              collected_by_institutions_count: 10,
               review_sources: "Reviewed by a major art publication",
               artworks_count_within_collection: 3,
             },
             {
               name: "Artist 2",
-              group_show_institutions: "Group show at a major institution",
+              group_shows_count: 1,
               review_sources: "Reviewed by a major art publication",
-              solo_show_institutions: "Solo show at a major institution",
+              solo_shows_count: 2,
             },
             {
               name: "Artist 3",
               active_secondary_market: "Active Secondary Market",
               biennials: "Included in a major biennial",
-              collections: "Collected by a major art publication",
+              collected_by_institutions_count: 1,
             },
             {
               name: "Artist 4",
               active_secondary_market: "Active Secondary Market",
-              collections: "Collected by a major art publication",
+              collected_by_institutions_count: 1,
             },
           ],
         }),
       }
 
       const data = await runAuthenticatedQuery(query, context)
-
       const {
         activeSecondaryMarketCount,
         biennialCount,
@@ -148,6 +147,7 @@ describe("me.myCollectionInfo", () => {
           }
         }
       `
+      const artistCareerHighlightsLoader = jest.fn(() => Promise.resolve(null))
 
       const context: Partial<ResolverContext> = {
         collectionLoader: async () => ({}),
@@ -165,7 +165,12 @@ describe("me.myCollectionInfo", () => {
             },
           ],
         }),
+        artistCareerHighlightsLoader: artistCareerHighlightsLoader,
       }
+
+      artistCareerHighlightsLoader
+        .mockResolvedValueOnce([{ venue: "MoMA PS1" }])
+        .mockResolvedValueOnce(null)
 
       const data = await runAuthenticatedQuery(query, context)
 
@@ -179,7 +184,7 @@ describe("me.myCollectionInfo", () => {
                     "name": "Artist 1",
                   },
                   "entities": Array [
-                    "Collected by a major art publication",
+                    "MoMA PS1",
                   ],
                   "kind": "COLLECTED",
                   "label": "Collected by a major institution",
