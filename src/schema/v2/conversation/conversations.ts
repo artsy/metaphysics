@@ -44,6 +44,10 @@ const Conversations: GraphQLFieldConfig<
   type: connectionDefinitions({
     nodeType: ConversationType,
     connectionFields: {
+      totalCount: {
+        type: GraphQLInt,
+        resolve: ({ total_count }) => total_count,
+      },
       totalUnreadCount: {
         type: GraphQLInt,
         resolve: ({ total_unread_count }) => total_unread_count,
@@ -120,6 +124,7 @@ const Conversations: GraphQLFieldConfig<
       ...params,
     }).then(({ total_count, total_unread_count, conversations }) => {
       return assign(
+        { total_count },
         { total_unread_count },
         connectionFromArraySlice(conversations, args, {
           arrayLength: total_count,

@@ -108,6 +108,7 @@ describe("Conversations", () => {
         {
           me {
             conversationsConnection(first: 10, type: USER) {
+              totalCount
               totalUnreadCount
               edges {
                 node {
@@ -135,6 +136,7 @@ describe("Conversations", () => {
       }
 
       const expectedConversationData = {
+        totalCount: 2,
         totalUnreadCount: 1,
         edges: [
           {
@@ -180,6 +182,7 @@ describe("Conversations", () => {
         {
           me {
             conversationsConnection(first: 10) {
+              totalCount
               totalUnreadCount
               edges {
                 node {
@@ -207,6 +210,7 @@ describe("Conversations", () => {
       }
 
       const expectedConversationData = {
+        totalCount: 2,
         totalUnreadCount: 1,
         edges: [
           {
