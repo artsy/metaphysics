@@ -5,6 +5,8 @@ describe("ArtistInsights type", () => {
   let artist = null as any
   let context = null as any
 
+  const artistCareerHighlightsLoader = jest.fn(() => Promise.resolve(null))
+
   beforeEach(() => {
     artist = {
       id: "foo-bar",
@@ -12,6 +14,7 @@ describe("ArtistInsights type", () => {
     }
     context = {
       artistLoader: () => Promise.resolve(artist),
+      artistCareerHighlightsLoader,
     }
   })
 
@@ -35,9 +38,14 @@ describe("ArtistInsights type", () => {
   })
 
   it("returns all insights when they are present", () => {
-    artist.solo_show_institutions = "MoMA PS1|Museum of Modern Art (MoMA)"
-    artist.group_show_institutions = "Metropolitan Museum of Art"
-    artist.collections = "Museum of Modern Art (MoMA)"
+    artistCareerHighlightsLoader
+      .mockReturnValueOnce([
+        { venue: "MoMA PS1" },
+        { venue: "Museum of Modern Art (MoMA)" },
+      ])
+      .mockReturnValueOnce([{ venue: "Metropolitan Museum of Art" }])
+      .mockReturnValueOnce([{ venue: "Museum of Modern Art (MoMA)" }])
+
     artist.review_sources = "Artforum International Magazine"
     artist.biennials = "frieze"
     artist.active_secondary_market = true
@@ -92,9 +100,14 @@ describe("ArtistInsights type", () => {
   })
 
   it("returns only matching insights when a kind is specified", () => {
-    artist.solo_show_institutions = "MoMA PS1|Museum of Modern Art (MoMA)"
-    artist.group_show_institutions = "Metropolitan Museum of Art"
-    artist.collections = "Museum of Modern Art (MoMA)"
+    artistCareerHighlightsLoader
+      .mockResolvedValueOnce([
+        { venue: "MoMA PS1" },
+        { venue: "Museum of Modern Art (MoMA)" },
+      ])
+      .mockResolvedValueOnce([{ venue: "Metropolitan Museum of Art" }])
+      .mockResolvedValue([{ venue: "Museum of Modern Art (MoMA)" }])
+
     artist.review_sources = "Artforum International Magazine"
     artist.biennials = "frieze"
     artist.active_secondary_market = true
@@ -124,9 +137,13 @@ describe("ArtistInsights type", () => {
   })
 
   it("returns only matching insights when a few kinds are specified", () => {
-    artist.solo_show_institutions = "MoMA PS1|Museum of Modern Art (MoMA)"
-    artist.group_show_institutions = "Metropolitan Museum of Art"
-    artist.collections = "Museum of Modern Art (MoMA)"
+    artistCareerHighlightsLoader
+      .mockReturnValue([{ venue: "Metropolitan Museum of Art" }])
+      .mockReturnValueOnce([
+        { venue: "MoMA PS1" },
+        { venue: "Museum of Modern Art (MoMA)" },
+      ])
+
     artist.review_sources = "Artforum International Magazine"
     artist.biennials = "frieze"
     artist.active_secondary_market = true
@@ -166,9 +183,8 @@ describe("ArtistInsights type", () => {
   })
 
   it("returns an empty array when there are no matching insights and a kind is specified", () => {
-    artist.solo_show_institutions = undefined
-    artist.group_show_institutions = "Metropolitan Museum of Art"
-    artist.collections = "Museum of Modern Art (MoMA)"
+    artistCareerHighlightsLoader.mockReturnValueOnce(null)
+
     artist.review_sources = "Artforum International Magazine"
     artist.biennials = "frieze"
     artist.active_secondary_market = true
