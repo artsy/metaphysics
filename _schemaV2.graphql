@@ -3110,12 +3110,7 @@ type Attachment {
 
 # Collection of fields that describe attribution class
 type AttributionClass {
-  # A globally unique ID.
-  id: ID!
   info: String @deprecated(reason: "Prefer `shortDescription`")
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
 
   # Long description (can include multiple sentences) for attribution class
   longDescription: String

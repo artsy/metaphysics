@@ -1,12 +1,10 @@
 import { GraphQLObjectType, GraphQLString, GraphQLList } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "schema/v2/object_identification"
 
 const AttributionClass = new GraphQLObjectType<any, ResolverContext>({
   name: "AttributionClass",
   description: "Collection of fields that describe attribution class",
   fields: {
-    ...InternalIDFields,
     name: {
       type: GraphQLString,
       description: "Shortest form of attribution class display",

@@ -1,6 +1,5 @@
 export default {
   unique: {
-    id: "unique",
     name: "Unique",
     info: null,
     short_description: "Unique work",
@@ -8,7 +7,6 @@ export default {
     long_description: "One-of-a-kind piece.",
   },
   "limited edition": {
-    id: "limited edition",
     name: "Limited edition",
     info: null,
     short_description: "Part of a limited edition set",
@@ -17,7 +15,6 @@ export default {
       "The edition run has ended; the number of works produced is known and included in the listing.",
   },
   "open edition": {
-    id: "open edition",
     name: "Open edition",
     info: null,
     short_description: "From an open edition",
@@ -29,7 +26,6 @@ export default {
     ].join(" "),
   },
   "unknown edition": {
-    id: "unknown edition",
     name: "Unknown edition",
     info: null,
     short_description: "From an unknown edition",
