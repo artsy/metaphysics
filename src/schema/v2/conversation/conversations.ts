@@ -97,6 +97,7 @@ const Conversations: GraphQLFieldConfig<
       }
 
       params = {
+        expand,
         deleted: false,
         intercepted: false,
         to_id: args.partnerId,

@@ -36,6 +36,8 @@ describe("Conversations", () => {
         {
           me {
             conversationsConnection(first: 10, type: PARTNER, partnerId: "foo") {
+              totalCount
+              totalUnreadCount
               edges {
                 node {
                   internalID
@@ -62,6 +64,8 @@ describe("Conversations", () => {
       }
 
       const expectedConversationData = {
+        totalCount: 2,
+        totalUnreadCount: 1,
         edges: [
           {
             node: {
