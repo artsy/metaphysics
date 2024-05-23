@@ -62,6 +62,7 @@ import { AuctionResultsAggregation } from "../aggregations/filterAuctionResultsA
 import { parsePriceRangeValues } from "lib/moneyHelper"
 import { ArtistGroupIndicatorEnum } from "schema/v2/artist/groupIndicator"
 import { AlertsConnectionType } from "../Alerts"
+import CareerHighlights from "./careerHighlights"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -958,6 +959,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ vanguard_year }) => vanguard_year,
       },
       verifiedRepresentatives: VerifiedRepresentatives,
+      careerHighlights: CareerHighlights,
       years: { type: GraphQLString },
     }
   },
