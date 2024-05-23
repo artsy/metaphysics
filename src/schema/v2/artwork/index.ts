@@ -1653,6 +1653,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       signature: markdown(({ signature }) =>
         signature.replace(/^signature:\s+/i, "")
       ),
+      signatureDetails: {
+        type: GraphQLString,
+        resolve: ({ signature }) => signature,
+      },
       savedSearch: {
         description: "Schema related to saved searches based on this artwork",
         type: new GraphQLObjectType({

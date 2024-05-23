@@ -16,6 +16,10 @@ import {
   transformToPricePaidCents,
 } from "./myCollectionCreateArtworkMutation"
 import { EditableLocationFields } from "./update_me_mutation"
+import {
+  ArtworkSignatureTypeEnum,
+  transformSignatureFieldsToGravityFields,
+} from "../artwork/artworkSignatureTypes"
 
 interface MyCollectionArtworkUpdateMutationInput {
   artworkId: string
@@ -36,6 +40,8 @@ interface MyCollectionArtworkUpdateMutationInput {
   collectorLocation?: Record<string, string>
   pricePaidCents?: number
   pricePaidCurrency?: string
+  signatureDetails?: string
+  signatureTypes?: [string]
   submissionId?: string
 }
 
@@ -114,6 +120,12 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     provenance: {
       type: GraphQLString,
     },
+    signatureDetails: {
+      type: GraphQLString,
+    },
+    signatureTypes: {
+      type: new GraphQLList(ArtworkSignatureTypeEnum),
+    },
     submissionId: {
       type: GraphQLString,
     },
@@ -147,6 +159,8 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       isEdition,
       pricePaidCents,
       pricePaidCurrency,
+      signatureDetails,
+      signatureTypes,
       submissionId,
       ...rest
     },
@@ -188,6 +202,8 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         price_paid_currency: pricePaidCurrency,
         attribution_class: attributionClass,
         submission_id: submissionId,
+        signature: signatureDetails,
+        ...transformSignatureFieldsToGravityFields(signatureTypes),
         ...rest,
       })
 
