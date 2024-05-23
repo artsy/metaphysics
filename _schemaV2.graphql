@@ -1688,7 +1688,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
 
     # Filter by solo shows.
     solo: Boolean
-  ): [CareerHighlight!]
+  ): [CareerHighlight!]!
   carousel: ArtistCarousel
   collections: [String]
   contemporary(
@@ -4001,8 +4001,8 @@ type CaptureHoldPayload {
 
 type CareerHighlight implements Node {
   artist: Artist!
-  collected: Boolean
-  group: Boolean
+  collected: Boolean!
+  group: Boolean!
 
   # A globally unique ID.
   id: ID!
@@ -4010,7 +4010,7 @@ type CareerHighlight implements Node {
   # A type-specific ID.
   internalID: ID!
   partner: Partner!
-  solo: Boolean
+  solo: Boolean!
   venue: String!
 }
 

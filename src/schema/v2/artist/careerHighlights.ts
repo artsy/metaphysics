@@ -9,7 +9,9 @@ import { ResolverContext } from "types/graphql"
 import { CareerHighlightType } from "../careerHighlight/careerHighlight"
 
 const CareerHighlights: GraphQLFieldConfig<{ _id: string }, ResolverContext> = {
-  type: new GraphQLList(new GraphQLNonNull(CareerHighlightType)),
+  type: new GraphQLNonNull(
+    new GraphQLList(new GraphQLNonNull(CareerHighlightType))
+  ),
   args: {
     partnerId: {
       type: GraphQLString,
@@ -36,16 +38,16 @@ const CareerHighlights: GraphQLFieldConfig<{ _id: string }, ResolverContext> = {
       )
 
       if (!response || !Array.isArray(response)) {
-        console.log(
+        console.error(
           "[schema/v2/artist/careerHighlights.ts] Error: response is not an array or is null."
         )
-        return null
+        return []
       }
 
       return response
     } catch (error) {
       console.error(error)
-      return null
+      return []
     }
   },
 }
