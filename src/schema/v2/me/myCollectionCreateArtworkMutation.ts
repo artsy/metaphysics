@@ -16,6 +16,10 @@ import { ResolverContext } from "types/graphql"
 import { ArtworkImportSourceEnum } from "../artwork"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { EditableLocationFields } from "./update_me_mutation"
+import {
+  ArtworkSignatureTypeEnum,
+  transformSignatureFieldsToGravityFields,
+} from "../artwork/artworkSignatureTypes"
 
 export const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
@@ -131,6 +135,12 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     provenance: {
       type: GraphQLString,
     },
+    signatureDetails: {
+      type: GraphQLString,
+    },
+    signatureTypes: {
+      type: new GraphQLList(ArtworkSignatureTypeEnum),
+    },
     width: {
       type: GraphQLString,
     },
@@ -162,6 +172,8 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       isEdition,
       pricePaidCents,
       pricePaidCurrency,
+      signatureDetails,
+      signatureTypes,
       submissionId,
       ...rest
     },
@@ -214,6 +226,8 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         collector_location: collectorLocation,
         attribution_class: attributionClass,
         import_source: importSource,
+        signature: signatureDetails,
+        ...transformSignatureFieldsToGravityFields(signatureTypes),
         ...rest,
       })
 

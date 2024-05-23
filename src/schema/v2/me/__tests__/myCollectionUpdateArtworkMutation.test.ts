@@ -41,6 +41,8 @@ const defaultArtworkDetails = ({
   title: "hey now",
   width: "20",
   attribution_class: "open edition",
+  signature: "artist initials",
+  signed_other: true,
   submissionId: "submission-id",
 })
 
@@ -85,6 +87,8 @@ const computeMutationInput = ({
           pricePaidCents: 10000
           pricePaidCurrency: "USD"
           provenance: "Pat Hearn Gallery"
+          signatureDetails: "artist initials"
+          signatureTypes: [OTHER]
           title: "hey now"
           width: "20"
           submissionId: "submission-id"
@@ -118,6 +122,11 @@ const computeMutationInput = ({
               }
               attributionClass{
                 name
+              }
+              signature
+              signatureInfo {
+                details
+                label
               }
             }
             artworkEdge {
@@ -216,6 +225,11 @@ describe("myCollectionUpdateArtworkMutation", () => {
               "display": "$100",
             },
             "provenance": "Pat Hearn Gallery",
+            "signature": "artist initials",
+            "signatureInfo": Object {
+              "details": "Artist initials",
+              "label": "Signature",
+            },
             "title": "hey now",
             "width": "20",
           },
@@ -268,6 +282,11 @@ describe("myCollectionUpdateArtworkMutation", () => {
               "display": "$100",
             },
             "provenance": "Pat Hearn Gallery",
+            "signature": "artist initials",
+            "signatureInfo": Object {
+              "details": "Artist initials",
+              "label": "Signature",
+            },
             "title": "hey now",
             "width": "20",
           },
