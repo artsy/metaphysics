@@ -335,6 +335,31 @@ export const exchangeStitchingEnvironment = ({
       buyerActivity: CommerceBuyerActivity
     }
 
+    extend type Viewer {
+      commerceOrders(
+        # Returns the elements in the list that come after the specified cursor.
+        after: String
+
+        # Returns the elements in the list that come before the specified cursor.
+        before: String
+        buyerId: String
+        buyerType: String
+
+        # Returns the first _n_ elements from the list.
+        first: Int
+        impulseConversationId: String
+
+        # Returns the last _n_ elements from the list.
+        last: Int
+        mode: CommerceOrderModeEnum
+        sellerId: String
+        sellerType: String
+        sort: CommerceOrderConnectionSortEnum
+        state: CommerceOrderStateEnum
+        states: [CommerceOrderStateEnum!]
+      ): CommerceOrderConnectionWithTotalCount
+    }
+
     extend type Mutation {
       # Creates an order and links the conversation to it
       createInquiryOrder(
@@ -597,6 +622,25 @@ export const exchangeStitchingEnvironment = ({
               schema: exchangeSchema,
               operation: "query",
               fieldName: "commerceMyOrders",
+              args,
+              context,
+              info,
+            })
+          },
+        },
+      },
+      Viewer: {
+        commerceOrders: {
+          fragment: gql`
+            ... on Viewer {
+              __typename
+            }
+          `,
+          resolve: (_parent, args, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: exchangeSchema,
+              operation: "query",
+              fieldName: "commerceOrders",
               args,
               context,
               info,
