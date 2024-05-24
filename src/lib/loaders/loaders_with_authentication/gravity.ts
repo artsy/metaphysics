@@ -67,6 +67,21 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     createArtistLoader: gravityLoader("artist", {}, { method: "POST" }),
+    createArtistCareerHighlightLoader: gravityLoader(
+      "artist_career_highlight",
+      {},
+      { method: "POST" }
+    ),
+    updateArtistCareerHighlightLoader: gravityLoader(
+      (id) => `artist_career_highlight/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteArtistCareerHighlightLoader: gravityLoader(
+      (id) => `artist_career_highlight/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     createVerifiedRepresentativeLoader: gravityLoader(
       "verified_representatives",
       {},
