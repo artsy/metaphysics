@@ -95,6 +95,7 @@ import { error } from "lib/loggers"
 import { PartnerOfferType } from "../partnerOffer"
 import currencyCodes from "lib/currency_codes.json"
 import { date } from "../fields/date"
+import ArtworkVisibility from "./artworkVisibility"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -238,14 +239,6 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
     sellThroughRate: {
       type: GraphQLFloat,
     },
-  },
-})
-
-export const VisibilityEnum = new GraphQLEnumType({
-  name: "Visibility",
-  values: {
-    UNLISTED: { value: "unlisted" },
-    LISTED: { value: "listed" },
   },
 })
 
@@ -1844,7 +1837,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       visibilityLevel: {
         description: "The visibility level of the artwork",
-        type: VisibilityEnum,
+        type: ArtworkVisibility,
         resolve: ({ visibility_level }) => visibility_level,
       },
       width: {

@@ -14374,7 +14374,7 @@ type Partner implements Node {
     sort: ArtworkSorts
 
     # Return artworks according to visibility levels. Defaults to ["listed"].
-    visibilityLevels: [VisibilityEnumInput]
+    visibilityLevels: [Visibility]
   ): ArtworkConnection
   artworksSearchConnection(
     after: String
@@ -21915,11 +21915,6 @@ input ViewingRoomSubsectionInput {
 }
 
 enum Visibility {
-  LISTED
-  UNLISTED
-}
-
-enum VisibilityEnumInput {
   LISTED
   UNLISTED
 }
