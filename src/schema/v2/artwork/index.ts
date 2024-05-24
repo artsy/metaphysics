@@ -95,7 +95,7 @@ import { error } from "lib/loggers"
 import { PartnerOfferType } from "../partnerOffer"
 import currencyCodes from "lib/currency_codes.json"
 import { date } from "../fields/date"
-import ArtworkVisibility from "./artworkVisibility"
+import { ArtworkVisibility } from "./artworkVisibility"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)

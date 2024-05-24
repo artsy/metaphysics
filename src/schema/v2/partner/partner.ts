@@ -47,7 +47,8 @@ import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
 import { AlertsSummaryFields } from "../Alerts"
-import ArtworkVisibility, {
+import {
+  ArtworkVisibility,
   ArtworkVisibilityEnumValues,
 } from "schema/v2/artwork/artworkVisibility"
 
@@ -452,6 +453,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
               ArtworkVisibilityEnumValues.LISTED,
             ],
           }
+          console.log("args", args.visibilityLevels)
 
           if (args.includeUnpublished) {
             delete gravityArgs.published
