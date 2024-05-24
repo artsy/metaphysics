@@ -1374,6 +1374,7 @@ type Submission {
   rejectionReason: String
   saleState: String
   signature: Boolean
+  source: SubmissionSource
 
   """
   If this artwork exists in Gravity, its ID
