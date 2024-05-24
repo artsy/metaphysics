@@ -449,11 +449,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             sort: args.sort,
             total_count: true,
-            visibility_levels: args.visibilityLevels || [
-              ArtworkVisibilityEnumValues.LISTED,
-            ],
+            visibility_levels: args.visibilityLevels
+              ? args.visibilityLevels
+              : [ArtworkVisibilityEnumValues.LISTED],
           }
-          console.log("args", args.visibilityLevels)
 
           if (args.includeUnpublished) {
             delete gravityArgs.published
