@@ -8,6 +8,7 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
+  GraphQLEnumType,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { flatten } from "lodash"
@@ -48,7 +49,6 @@ import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
 import { AlertsSummaryFields } from "../Alerts"
-
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
 const isPartner = (type) => isGallery(type) || isInstitution(type)
@@ -74,6 +74,17 @@ const partnerTitleContent = (type) => {
 
   return result
 }
+
+// DO NOT MERGE: just testing ---
+// I really want to just use the same as artwork VisibilityEnum thats define in artwork schema
+// but its wrestling with me
+export const VisibilityEnumInput = new GraphQLEnumType({
+  name: "VisibilityEnumInput",
+  values: {
+    UNLISTED: { value: "unlisted" },
+    LISTED: { value: "listed" },
+  },
+})
 
 const isPartnerPageEligible = ({ type }) =>
   ["Gallery", "Institution", "Institutional Seller", "Brand"].includes(type)
@@ -114,6 +125,11 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLBoolean,
     description:
       "Only allowed for authorized admin/partner requests. When false fetch :all properties on an artwork, when true or not present fetch artwork :short properties",
+  },
+  visibilityLevels: {
+    type: GraphQLList(VisibilityEnumInput),
+    description:
+      'Return artworks according to visibility levels. Defaults to ["listed"].',
   },
   sort: ArtworkSorts,
   page: { type: GraphQLInt },
@@ -427,6 +443,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size: number
             sort: string
             total_count: boolean
+            visibility_levels: string[]
           }
 
           const gravityArgs: GravityArgs = {
@@ -440,6 +457,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             sort: args.sort,
             total_count: true,
+            visibility_levels: args.visibilityLevels || ["listed"], //No magic strings, yo
           }
 
           if (args.includeUnpublished) {
