@@ -1920,6 +1920,27 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       lastOfferableActivityAt: date(),
+      offerableActivityCount: {
+        description: "Count of collectors with eligible offerable activities.",
+        type: GraphQLInt,
+        resolve: async (
+          { id, partner },
+          {},
+          { partnerArtworkOfferableActivityLoader }
+        ) => {
+          if (!partnerArtworkOfferableActivityLoader) {
+            throw new Error("You need to be signed in to perform this action")
+          }
+          if (_.isEmpty(partner)) return null
+
+          const { headers } = await partnerArtworkOfferableActivityLoader({
+            artworkId: id,
+            id: partner.id,
+          })
+
+          return parseInt(headers["x-total-count"] || "0", 10)
+        },
+      },
     }
   },
 })
