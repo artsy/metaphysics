@@ -4517,7 +4517,9 @@ describe("Artwork type", () => {
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
-          offerableActivityCount
+          offerableActivity {
+            totalCount
+          }
         }
       }
     `
@@ -4530,7 +4532,13 @@ describe("Artwork type", () => {
       artwork.partner = { id: "123" }
 
       return runQuery(query, context).then((data) => {
-        expect(data).toEqual({ artwork: { offerableActivityCount: 3 } })
+        expect(data).toEqual({
+          artwork: {
+            offerableActivity: {
+              totalCount: 3,
+            },
+          },
+        })
       })
     })
   })
