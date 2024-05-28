@@ -4513,6 +4513,36 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#offerableActivityCount", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          offerableActivity {
+            totalCount
+          }
+        }
+      }
+    `
+
+    it("returns count of collectors with eligible offerable activities", () => {
+      const partnerArtworkOfferableActivityLoader = jest.fn(() =>
+        Promise.resolve({ headers: { "x-total-count": 3 } })
+      )
+      context.partnerArtworkOfferableActivityLoader = partnerArtworkOfferableActivityLoader
+      artwork.partner = { id: "123" }
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            offerableActivity: {
+              totalCount: 3,
+            },
+          },
+        })
+      })
+    })
+  })
+
   describe("#listedArtworksConnection", () => {
     const query = `
       {
