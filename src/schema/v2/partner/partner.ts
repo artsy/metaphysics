@@ -119,9 +119,9 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
       "Only allowed for authorized admin/partner requests. When false fetch :all properties on an artwork, when true or not present fetch artwork :short properties",
   },
   visibilityLevels: {
-    type: GraphQLList(ArtworkVisibility),
+    type: new GraphQLList(ArtworkVisibility),
     description:
-      'Return artworks according to visibility levels. Defaults to ["listed"].',
+      "Return artworks according to visibility levels. Defaults to ['listed'].",
   },
   sort: ArtworkSorts,
   page: { type: GraphQLInt },
@@ -435,7 +435,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size: number
             sort: string
             total_count: boolean
-            visibility_levels: string[]
+            visibility_levels: Array<"listed" | "unlisted">
           }
 
           const gravityArgs: GravityArgs = {
