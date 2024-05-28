@@ -41,13 +41,16 @@ import { deprecate } from "lib/deprecation"
 import { articleConnection } from "schema/v2/article"
 import ArticleSorts, { ArticleSort } from "schema/v2/sorts/article_sorts"
 import { allViaLoader } from "lib/all"
-
 import { truncate } from "lib/helpers"
 import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
 import { AlertsSummaryFields } from "../Alerts"
+import {
+  ArtworkVisibility,
+  ArtworkVisibilityEnumValues,
+} from "schema/v2/artwork/artworkVisibility"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -114,6 +117,11 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     type: GraphQLBoolean,
     description:
       "Only allowed for authorized admin/partner requests. When false fetch :all properties on an artwork, when true or not present fetch artwork :short properties",
+  },
+  visibilityLevels: {
+    type: new GraphQLList(ArtworkVisibility),
+    description:
+      "Return artworks according to visibility levels. Defaults to ['listed'].",
   },
   sort: ArtworkSorts,
   page: { type: GraphQLInt },
@@ -427,6 +435,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size: number
             sort: string
             total_count: boolean
+            visibility_levels: Array<"listed" | "unlisted">
           }
 
           const gravityArgs: GravityArgs = {
@@ -440,6 +449,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             sort: args.sort,
             total_count: true,
+            visibility_levels: args.visibilityLevels
+              ? args.visibilityLevels
+              : [ArtworkVisibilityEnumValues.LISTED],
           }
 
           if (args.includeUnpublished) {
