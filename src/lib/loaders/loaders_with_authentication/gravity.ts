@@ -578,6 +578,15 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerArtworkOfferableActivityLoader: gravityLoader<
+      any,
+      { id: string; artworkId: string }
+    >(
+      ({ id, artworkId }) =>
+        `partner/${id}/artworks/${artworkId}/offerable_activity`,
+      {},
+      { headers: true }
+    ),
     partnerDocumentsLoader: gravityLoader<any, { id: string }>(
       (id) => `partner/${id}/documents`,
       {},

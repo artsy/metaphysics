@@ -1920,6 +1920,29 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       lastOfferableActivityAt: date(),
+      offerableActivity: {
+        description: "Count of collectors with eligible offerable activities.",
+        type: offerableActivityType,
+        resolve: async (
+          { id, partner },
+          {},
+          { partnerArtworkOfferableActivityLoader }
+        ) => {
+          if (!partnerArtworkOfferableActivityLoader) {
+            throw new Error("You need to be signed in to perform this action")
+          }
+          if (_.isEmpty(partner)) return null
+
+          const { headers } = await partnerArtworkOfferableActivityLoader({
+            artworkId: id,
+            id: partner.id,
+          })
+
+          const totalCount = parseInt(headers?.["x-total-count"] || "0", 10)
+
+          return { totalCount }
+        },
+      },
     }
   },
 })
@@ -1999,6 +2022,16 @@ export const artworkConnection = connectionWithCursorInfo({
   nodeType: ArtworkType,
   connectionInterfaces: [ArtworkConnectionInterface],
   edgeInterfaces: [ArtworkEdgeInterface],
+})
+
+const offerableActivityType = new GraphQLObjectType<any, ResolverContext>({
+  name: "OfferableActivity",
+  fields: {
+    totalCount: {
+      type: GraphQLInt,
+      description: "Count of collectors with eligible offerable activities.",
+    },
+  },
 })
 
 export default Artwork
