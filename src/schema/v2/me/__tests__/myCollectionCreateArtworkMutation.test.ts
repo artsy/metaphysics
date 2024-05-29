@@ -20,6 +20,8 @@ const artworkDetails = {
       aspect_ratio: 1,
     },
   ],
+  signature: "artist initials",
+  signed_other: true,
 }
 
 const createArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
@@ -69,6 +71,8 @@ const computeMutationInput = ({
           pricePaidCents: 10000
           pricePaidCurrency: "USD"
           provenance: "Pat Hearn Gallery"
+          signatureDetails: "artist initials"
+          signatureTypes: [OTHER]
           title: "hey now"
           width: "20"
           importSource: CONVECTION
@@ -88,6 +92,11 @@ const computeMutationInput = ({
               }
               images(includeAll: true) {
                 imageURL
+              }
+              signature
+              signatureInfo {
+                details
+                label
               }
             }
             artworkEdge {
@@ -173,6 +182,11 @@ describe("myCollectionCreateArtworkMutation", () => {
             "pricePaid": Object {
               "display": "$100",
             },
+            "signature": "artist initials",
+            "signatureInfo": Object {
+              "details": "Artist initials",
+              "label": "Signature",
+            },
           },
           "artworkEdge": Object {
             "node": Object {
@@ -223,6 +237,7 @@ describe("myCollectionCreateArtworkMutation", () => {
         category: "some strange category",
         collection_id: "my-collection",
         collector_location: { city: "Berlin", country: "Germany" },
+        confidential_notes: undefined,
         cost_currency_code: "USD",
         cost_minor: 200,
         date: "1990",
@@ -231,9 +246,16 @@ describe("myCollectionCreateArtworkMutation", () => {
         import_source: "convection",
         medium: "Painting",
         metric: "in",
+        not_signed: false,
         price_paid_cents: 10000,
         price_paid_currency: "USD",
         provenance: "Pat Hearn Gallery",
+        signature: "artist initials",
+        signed_by_artist: false,
+        signed_in_plate: false,
+        signed_other: true,
+        stamped_by_artist_estate: false,
+        sticker_label: false,
         submission_id: undefined,
         title: "hey now",
         width: "20",
@@ -268,6 +290,11 @@ describe("myCollectionCreateArtworkMutation", () => {
             "medium": "Painting",
             "pricePaid": Object {
               "display": "$100",
+            },
+            "signature": "artist initials",
+            "signatureInfo": Object {
+              "details": "Artist initials",
+              "label": "Signature",
             },
           },
           "artworkEdge": Object {
