@@ -190,7 +190,7 @@ describe("myCollectionCreateArtworkMutation", () => {
             },
             "framedDepth": "1",
             "framedHeight": "21",
-            "framedMetric": "cm",
+            "framedMetric": "in",
             "framedWidth": "21",
             "images": Array [
               Object {
