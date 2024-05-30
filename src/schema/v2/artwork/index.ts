@@ -1740,8 +1740,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (artwork) =>
           isEmbeddedVideo(artwork) ? null : artwork.website,
       },
+      isFramed: {
+        type: GraphQLBoolean,
+        resolve: ({ framed }) => {
+          return framed
+        },
+      },
       framed: {
         type: ArtworkInfoRowType,
+        deprecationReason: "Consider using isFramed field (boolean) instead",
         resolve: ({ framed }) => {
           if (framed) {
             return { label: "Framed", details: "Included" }
@@ -1751,6 +1758,22 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             return null
           }
         },
+      },
+      framedDepth: {
+        type: GraphQLString,
+        resolve: ({ framed_depth }) => framed_depth,
+      },
+      framedHeight: {
+        type: GraphQLString,
+        resolve: ({ framed_height }) => framed_height,
+      },
+      framedMetric: {
+        type: GraphQLString,
+        resolve: ({ framed_metric }) => framed_metric,
+      },
+      framedWidth: {
+        type: GraphQLString,
+        resolve: ({ framed_width }) => framed_width,
       },
       signatureInfo: {
         type: ArtworkInfoRowType,

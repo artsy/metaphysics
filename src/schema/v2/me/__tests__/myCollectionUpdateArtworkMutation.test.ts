@@ -30,6 +30,11 @@ const defaultArtworkDetails = ({
   edition_number: JSON.stringify(editionNumber),
   edition_size: JSON.stringify(editionSize),
   external_image_urls: JSON.stringify(externalImageUrls),
+  framed: true,
+  framed_depth: "1",
+  framed_height: "21",
+  framed_metric: "in",
+  framed_width: "21",
   height: "20",
   medium: "Updated",
   metric: "in",
@@ -76,6 +81,11 @@ const computeMutationInput = ({
           date: "1990"
           depth: "20"
           isEdition: ${JSON.stringify(isEdition)}
+          isFramed: true
+          framedDepth: "1"
+          framedHeight: "21"
+          framedMetric: "in"
+          framedWidth: "21"
           editionNumber: ${JSON.stringify(editionNumber)}
           editionSize: ${JSON.stringify(editionSize)}
           externalImageUrls: ${JSON.stringify(externalImageUrls)}
@@ -110,9 +120,14 @@ const computeMutationInput = ({
                 city
                 country
               }
+              framedDepth
+              framedHeight
+              framedMetric
+              framedWidth
               images(includeAll: true) {
                 imageURL
               }
+              isFramed
               metric
               provenance
               title
@@ -212,6 +227,10 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "depth": "20",
             "editionNumber": null,
             "editionSize": null,
+            "framedDepth": "1",
+            "framedHeight": "21",
+            "framedMetric": "in",
+            "framedWidth": "21",
             "height": "20",
             "images": Array [
               Object {
@@ -219,6 +238,7 @@ describe("myCollectionUpdateArtworkMutation", () => {
               },
             ],
             "isEdition": null,
+            "isFramed": true,
             "medium": "Updated",
             "metric": "in",
             "pricePaid": Object {
@@ -269,6 +289,10 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "depth": "20",
             "editionNumber": null,
             "editionSize": null,
+            "framedDepth": "1",
+            "framedHeight": "21",
+            "framedMetric": "in",
+            "framedWidth": "21",
             "height": "20",
             "images": Array [
               Object {
@@ -276,6 +300,7 @@ describe("myCollectionUpdateArtworkMutation", () => {
               },
             ],
             "isEdition": null,
+            "isFramed": true,
             "medium": "Updated",
             "metric": "in",
             "pricePaid": Object {

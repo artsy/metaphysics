@@ -33,6 +33,11 @@ interface MyCollectionArtworkUpdateMutationInput {
   date?: string
   depth?: string
   isEdition?: boolean
+  isFramed?: boolean
+  framedDepth?: string
+  framedHeight?: string
+  framedMetric?: string
+  framedWidth?: string
   editionNumber?: string
   editionSize?: string
   externalImageUrls?: [string]
@@ -94,6 +99,21 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     },
     externalImageUrls: {
       type: new GraphQLList(GraphQLString),
+    },
+    isFramed: {
+      type: GraphQLBoolean,
+    },
+    framedDepth: {
+      type: GraphQLString,
+    },
+    framedHeight: {
+      type: GraphQLString,
+    },
+    framedMetric: {
+      type: GraphQLString,
+    },
+    framedWidth: {
+      type: GraphQLString,
     },
     height: {
       type: GraphQLString,
@@ -157,6 +177,11 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       editionSize,
       externalImageUrls = [],
       isEdition,
+      isFramed,
+      framedDepth,
+      framedHeight,
+      framedMetric,
+      framedWidth,
       pricePaidCents,
       pricePaidCurrency,
       signatureDetails,
@@ -198,6 +223,11 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         cost_minor: costMinor,
         artwork_location: artworkLocation,
         collector_location: collectorLocation,
+        framed: isFramed,
+        framed_depth: framedDepth,
+        framed_height: framedHeight,
+        framed_metric: framedMetric,
+        framed_width: framedWidth,
         price_paid_cents: transformedPricePaidCents,
         price_paid_currency: pricePaidCurrency,
         attribution_class: attributionClass,
