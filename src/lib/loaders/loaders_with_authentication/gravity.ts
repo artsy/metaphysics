@@ -61,6 +61,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    collectorProfileSummaryLoader: gravityLoader("collector_profile_summary"),
     createAccountRequestLoader: gravityLoader(
       "account_requests",
       {},
