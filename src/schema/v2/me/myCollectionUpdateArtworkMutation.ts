@@ -22,6 +22,7 @@ import {
 } from "../artwork/artworkSignatureTypes"
 
 interface MyCollectionArtworkUpdateMutationInput {
+  additionalInformation?: string
   artworkId: string
   artistIds?: [string]
   attributionClass?: string
@@ -58,6 +59,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
   name: "MyCollectionUpdateArtwork",
   description: "Update an artwork in my collection",
   inputFields: {
+    additionalInformation: {
+      type: GraphQLString,
+    },
     artworkId: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -164,6 +168,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     {
+      additionalInformation,
       artistIds,
       artworkId,
       artworkLocation,
@@ -217,6 +222,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
 
     try {
       const response = await updateArtworkLoader(artworkId, {
+        additional_information: additionalInformation,
         artists: artistIds,
         confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
