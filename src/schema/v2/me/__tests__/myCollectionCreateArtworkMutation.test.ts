@@ -14,6 +14,7 @@ const artworkDetails = {
   price_paid_currency: "USD",
   artwork_location: "Berlin, Germany",
   collector_location: { country: "Germany", city: "Berlin" },
+  condition_description: "like a new!",
   attribution_class: "open edition",
   images: [
     {
@@ -60,6 +61,7 @@ const computeMutationInput = ({
               : null
           }],
           category: "some strange category"
+          conditionDescription: "like a new!"
           costCurrencyCode: "USD"
           costMinor: 200
           date: "1990"
@@ -96,6 +98,10 @@ const computeMutationInput = ({
               collectorLocation {
                 city
                 country
+              }
+              conditionDescription {
+                label
+                details
               }
               pricePaid {
                 display
@@ -188,6 +194,10 @@ describe("myCollectionCreateArtworkMutation", () => {
               "city": "Berlin",
               "country": "Germany",
             },
+            "conditionDescription": Object {
+              "details": "Like a new!",
+              "label": "Condition details",
+            },
             "framedDepth": "1",
             "framedHeight": "21",
             "framedMetric": "in",
@@ -257,6 +267,7 @@ describe("myCollectionCreateArtworkMutation", () => {
         category: "some strange category",
         collection_id: "my-collection",
         collector_location: { city: "Berlin", country: "Germany" },
+        condition_description: "like a new!",
         confidential_notes: undefined,
         cost_currency_code: "USD",
         cost_minor: 200,
@@ -306,6 +317,10 @@ describe("myCollectionCreateArtworkMutation", () => {
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
+            },
+            "conditionDescription": Object {
+              "details": "Like a new!",
+              "label": "Condition details",
             },
             "framedDepth": "1",
             "framedHeight": "21",

@@ -136,6 +136,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       description: "The given location of the user as structured data",
       type: EditableLocationFields,
     },
+    conditionDescription: {
+      type: GraphQLString,
+    },
     metric: {
       type: GraphQLString,
     },
@@ -176,6 +179,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       artworkLocation,
       attributionClass,
       collectorLocation,
+      conditionDescription,
       confidentialNotes,
       costCurrencyCode,
       costMajor,
@@ -237,6 +241,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         artists: artistIds,
         submission_id: submissionId,
         collection_id: "my-collection",
+        condition_description: conditionDescription,
         confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,

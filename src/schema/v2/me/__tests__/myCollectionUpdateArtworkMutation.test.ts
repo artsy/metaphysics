@@ -42,6 +42,7 @@ const defaultArtworkDetails = ({
   price_paid_currency: "USD",
   artwork_location: "Berlin, Germany",
   collector_location: { city: "Berlin", country: "Germany" },
+  condition_description: "like a new!",
   provenance: "Pat Hearn Gallery",
   title: "hey now",
   width: "20",
@@ -94,6 +95,7 @@ const computeMutationInput = ({
           metric: "in"
           artworkLocation: "Berlin, Germany"
           collectorLocation: {country: "Germany", city: "Berlin"}
+          conditionDescription: "like a new!"
           pricePaidCents: 10000
           pricePaidCurrency: "USD"
           provenance: "Pat Hearn Gallery"
@@ -119,6 +121,10 @@ const computeMutationInput = ({
               collectorLocation {
                 city
                 country
+              }
+              conditionDescription {
+                label
+                details
               }
               framedDepth
               framedHeight
@@ -223,6 +229,10 @@ describe("myCollectionUpdateArtworkMutation", () => {
               "city": "Berlin",
               "country": "Germany",
             },
+            "conditionDescription": Object {
+              "details": "Like a new!",
+              "label": "Condition details",
+            },
             "date": "1990",
             "depth": "20",
             "editionNumber": null,
@@ -284,6 +294,10 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
+            },
+            "conditionDescription": Object {
+              "details": "Like a new!",
+              "label": "Condition details",
             },
             "date": "1990",
             "depth": "20",
