@@ -22,6 +22,11 @@ const artworkDetails = {
   ],
   signature: "artist initials",
   signed_other: true,
+  framed: true,
+  framed_metric: "in",
+  framed_depth: "1",
+  framed_height: "21",
+  framed_width: "21",
 }
 
 const createArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
@@ -60,9 +65,14 @@ const computeMutationInput = ({
           date: "1990"
           depth: "20"
           isEdition: ${JSON.stringify(isEdition)}
+          isFramed: true,
           editionNumber: ${JSON.stringify(editionNumber)}
           editionSize: ${JSON.stringify(editionSize)}
           externalImageUrls: ${JSON.stringify(externalImageUrls)}
+          framedMetric: "in",
+          framedDepth: "1",
+          framedHeight: "21",
+          framedWidth: "21",
           height: "20"
           artworkLocation: "Berlin, Germany"
           collectorLocation: {country: "Germany", city: "Berlin"}
@@ -98,6 +108,11 @@ const computeMutationInput = ({
                 details
                 label
               }
+              isFramed
+              framedMetric
+              framedDepth
+              framedHeight
+              framedWidth
             }
             artworkEdge {
               node {
@@ -173,11 +188,16 @@ describe("myCollectionCreateArtworkMutation", () => {
               "city": "Berlin",
               "country": "Germany",
             },
+            "framedDepth": "1",
+            "framedHeight": "21",
+            "framedMetric": "in",
+            "framedWidth": "21",
             "images": Array [
               Object {
                 "imageURL": null,
               },
             ],
+            "isFramed": true,
             "medium": "Painting",
             "pricePaid": Object {
               "display": "$100",
@@ -242,6 +262,11 @@ describe("myCollectionCreateArtworkMutation", () => {
         cost_minor: 200,
         date: "1990",
         depth: "20",
+        framed: true,
+        framed_depth: "1",
+        framed_height: "21",
+        framed_metric: "in",
+        framed_width: "21",
         height: "20",
         import_source: "convection",
         medium: "Painting",
@@ -282,11 +307,16 @@ describe("myCollectionCreateArtworkMutation", () => {
               "city": "Berlin",
               "country": "Germany",
             },
+            "framedDepth": "1",
+            "framedHeight": "21",
+            "framedMetric": "in",
+            "framedWidth": "21",
             "images": Array [
               Object {
                 "imageURL": null,
               },
             ],
+            "isFramed": true,
             "medium": "Painting",
             "pricePaid": Object {
               "display": "$100",
