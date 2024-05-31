@@ -219,16 +219,31 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
       !!profession &&
       !!other_relevant_positions,
   },
-  summarySentence: {
-    type: new GraphQLNonNull(GraphQLString),
-    description: "A partner-specific sentence describing the collector.",
+  summaryParagraph: {
+    type: GraphQLString,
+    description: "An artwork-specific paragraph describing the collector.",
     args: {
-      partnerID: {
-        type: new GraphQLNonNull(GraphQLString),
+      artworkID: {
+        type: GraphQLString,
+        description:
+          "This can be specified, and is injected in a conversation context for convenience.",
       },
     },
-    resolve: () => {
-      return "This collector exists."
+    resolve: async (
+      { id: collector_profile_id, artworkID },
+      { artworkID: artworkIDFromArgs },
+      { collectorProfileSummaryLoader }
+    ) => {
+      if (!collectorProfileSummaryLoader) {
+        throw new Error("You must be signed in to perform this action.")
+      }
+
+      const { paragraph } = await collectorProfileSummaryLoader({
+        artwork_id: artworkIDFromArgs || artworkID,
+        collector_profile_id,
+      })
+
+      return paragraph
     },
   },
 }

@@ -311,7 +311,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         "The collector profile of the user who initiated the conversation. Do not use this field for Partners",
       type: CollectorResume,
       resolve: async (
-        { from_id, to_id },
+        { from_id, to_id, items },
         _args,
         { partnerCollectorProfileLoader }
       ) => {
@@ -323,11 +323,17 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
             userId: from_id,
           })
 
+          // Assume a conversation only has one item
+          const artwork = items.find((item) => item.item_type === "Artwork")
+          const artworkID = artwork ? artwork.properties.id : null
+
           return {
             collectorProfile: {
               ...data.collector_profile,
-              // forward the partnerId to the collectorProfile to be used by data loaders
+              // inject data that can be optionally used by
+              // collectorProfile fields to resolve
               partnerId: to_id,
+              artworkID,
             },
             isCollectorFollowingPartner: data.follows_profile,
             userId: from_id,
