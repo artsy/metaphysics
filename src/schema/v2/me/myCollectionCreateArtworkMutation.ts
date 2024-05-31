@@ -68,12 +68,20 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     title: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    // Optional
+    coaByAuthenticatingBody: {
+      type: GraphQLBoolean,
+    },
+    coaByGallery: {
+      type: GraphQLBoolean,
+    },
     confidentialNotes: {
       type: GraphQLString,
     },
     importSource: {
       type: ArtworkImportSourceEnum,
+    },
+    hasCertificateOfAuthenticity: {
+      type: GraphQLBoolean,
     },
     isFramed: {
       type: GraphQLBoolean,
@@ -175,6 +183,8 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       artists,
       artworkLocation,
       attributionClass,
+      coaByAuthenticatingBody,
+      coaByGallery,
       collectorLocation,
       confidentialNotes,
       costCurrencyCode,
@@ -183,6 +193,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       editionNumber,
       editionSize,
       externalImageUrls = [],
+      hasCertificateOfAuthenticity,
       importSource,
       isEdition,
       isFramed,
@@ -236,6 +247,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       const response = await createArtworkLoader({
         artists: artistIds,
         submission_id: submissionId,
+        certificate_of_authenticity: hasCertificateOfAuthenticity,
+        coa_by_authenticating_body: coaByAuthenticatingBody,
+        coa_by_gallery: coaByGallery,
         collection_id: "my-collection",
         confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
