@@ -75,6 +75,21 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     importSource: {
       type: ArtworkImportSourceEnum,
     },
+    isFramed: {
+      type: GraphQLBoolean,
+    },
+    framedDepth: {
+      type: GraphQLString,
+    },
+    framedHeight: {
+      type: GraphQLString,
+    },
+    framedMetric: {
+      type: GraphQLString,
+    },
+    framedWidth: {
+      type: GraphQLString,
+    },
     submissionId: {
       type: GraphQLString,
     },
@@ -170,6 +185,11 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       externalImageUrls = [],
       importSource,
       isEdition,
+      isFramed,
+      framedDepth,
+      framedHeight,
+      framedMetric,
+      framedWidth,
       pricePaidCents,
       pricePaidCurrency,
       signatureDetails,
@@ -220,6 +240,11 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
+        framed: isFramed,
+        framed_depth: framedDepth,
+        framed_height: framedHeight,
+        framed_metric: framedMetric,
+        framed_width: framedWidth,
         price_paid_cents: transformedPricePaidCents,
         price_paid_currency: pricePaidCurrency,
         artwork_location: artworkLocation,

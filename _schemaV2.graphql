@@ -2463,6 +2463,11 @@ type Artwork implements Node & Searchable & Sellable {
   # Formatted artwork metadata, including artist, title, date and partner; e.g., 'Andy Warhol, Truck, 1980, Westward Gallery'.
   formattedMetadata: String
   framed: ArtworkInfoRow
+    @deprecated(reason: "Consider using isFramed field (boolean) instead")
+  framedDepth: String
+  framedHeight: String
+  framedMetric: String
+  framedWidth: String
 
   # Returns true when artwork has a certificate of authenticity
   hasCertificateOfAuthenticity: Boolean
@@ -2538,6 +2543,7 @@ type Artwork implements Node & Searchable & Sellable {
   isEligibleToCreateAlert: Boolean!
   isEmbeddableVideo: Boolean
   isForSale: Boolean
+  isFramed: Boolean
   isHangable: Boolean
 
   # Is this artwork part of an auction?
@@ -13818,9 +13824,14 @@ input MyCollectionCreateArtworkInput {
   editionNumber: String
   editionSize: String
   externalImageUrls: [String]
+  framedDepth: String
+  framedHeight: String
+  framedMetric: String
+  framedWidth: String
   height: String
   importSource: ArtworkImportSource
   isEdition: Boolean
+  isFramed: Boolean
   medium: String
   metric: String
 
@@ -13909,8 +13920,13 @@ input MyCollectionUpdateArtworkInput {
   editionNumber: String
   editionSize: String
   externalImageUrls: [String]
+  framedDepth: String
+  framedHeight: String
+  framedMetric: String
+  framedWidth: String
   height: String
   isEdition: Boolean
+  isFramed: Boolean
   medium: String
   metric: String
   pricePaidCents: Long
