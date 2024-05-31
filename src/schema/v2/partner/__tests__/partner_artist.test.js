@@ -7,6 +7,19 @@ describe("partnerArtist", () => {
   let context = null
 
   beforeEach(() => {
+    partnerArtistData = [
+      {
+        use_default_biography: true,
+        biography: "Partner provided biography",
+        artist: {
+          blurb: "Artsy provided biography",
+        },
+        partner: {
+          name: "Catty Gallery",
+        },
+      },
+    ]
+
     partnerData = {
       id: "catty-partner",
       slug: "catty-partner",
@@ -172,6 +185,40 @@ describe("partnerArtist", () => {
           },
         },
       })
+    })
+  })
+
+  it("isHiddenInPresentationMode", async () => {
+    partnerArtistData = [
+      {
+        hide_in_presentation_mode: true,
+      },
+    ]
+
+    const query = gql`
+      {
+        partner(id: "levy-gorvy") {
+          artistsConnection(first: 3) {
+            edges {
+              isHiddenInPresentationMode
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      partner: {
+        artistsConnection: {
+          edges: [
+            {
+              isHiddenInPresentationMode: true,
+            },
+          ],
+        },
+      },
     })
   })
 
