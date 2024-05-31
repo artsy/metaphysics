@@ -138,13 +138,13 @@ describe("Me", () => {
       })
     })
 
-    describe("summarySentence", () => {
-      it("returns a summary sentence", () => {
+    describe("summaryParagraph", () => {
+      it("returns a summary paragraph", () => {
         const query = `
           {
             me {
               collectorProfile {
-                summarySentence(partnerID: "foo-partner")
+                summaryParagraph(artworkID: "blah")
               }
             }
           }
@@ -156,11 +156,13 @@ describe("Me", () => {
 
         const context = {
           meCollectorProfileLoader: () => Promise.resolve(collectorProfile),
+          collectorProfileSummaryLoader: () =>
+            Promise.resolve({ paragraph: "This collector exists." }),
         }
 
         return runAuthenticatedQuery(query, context).then(
           ({ me: { collectorProfile } }) => {
-            expect(collectorProfile.summarySentence).toBe(
+            expect(collectorProfile.summaryParagraph).toBe(
               "This collector exists."
             )
           }
