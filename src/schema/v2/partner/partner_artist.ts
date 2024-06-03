@@ -23,21 +23,22 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 // TODO: This should move to the gravity loader
 interface PartnerArtistDetails {
-  sortable_id: string
-  use_default_biography: boolean
-  published_artworks_count: number
-  published_for_sale_artworks_count: number
-  display_on_partner_profile: boolean
-  represented_by: boolean
-  biography: string
   artist: {
     id: string
     blurb: string
   }
+  biography: string
+  display_on_partner_profile: boolean
+  hide_in_presentation_mode: boolean
   partner: {
     id: string
     name: string
   }
+  published_artworks_count: number
+  published_for_sale_artworks_count: number
+  represented_by: boolean
+  sortable_id: string
+  use_default_biography: boolean
 }
 
 const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
@@ -125,6 +126,10 @@ export const fields: Thunk<GraphQLFieldConfigMap<
   },
   biographyBlurb,
   counts,
+  isHiddenInPresentationMode: {
+    type: GraphQLBoolean,
+    resolve: ({ hide_in_presentation_mode }) => !!hide_in_presentation_mode,
+  },
   artworksConnection: {
     type: artworkConnection.connectionType,
     args: pageable({

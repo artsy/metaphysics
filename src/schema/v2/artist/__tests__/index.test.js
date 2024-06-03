@@ -576,7 +576,7 @@ describe("Artist type", () => {
       {
         artist(id: "foo-bar") {
           partnerBiographyBlurb {
-            text   
+            text
           }
         }
       }
@@ -585,7 +585,7 @@ describe("Artist type", () => {
       const partnerArtists = Promise.resolve([
         {
           biography: "Oh hello, I am a bio",
-        }
+        },
       ])
       context.partnerArtistsForArtistLoader = sinon
         .stub()
@@ -607,7 +607,7 @@ describe("Artist type", () => {
       const partnerArtists = Promise.resolve([
         {
           biography: null,
-        }
+        },
       ])
       context.partnerArtistsForArtistLoader = sinon
         .stub()
