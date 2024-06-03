@@ -22,12 +22,14 @@ import {
 } from "../artwork/artworkSignatureTypes"
 
 interface MyCollectionArtworkUpdateMutationInput {
+  additionalInformation?: string
   artworkId: string
   artistIds?: [string]
   attributionClass?: string
   category?: string
   coaByAuthenticatingBody?: boolean
   coaByGallery?: boolean
+  conditionDescription?: string
   confidentialNotes?: string
   costCurrencyCode?: string
   costMajor?: number
@@ -61,6 +63,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
   name: "MyCollectionUpdateArtwork",
   description: "Update an artwork in my collection",
   inputFields: {
+    additionalInformation: {
+      type: GraphQLString,
+    },
     artworkId: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -78,6 +83,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     },
     coaByGallery: {
       type: GraphQLBoolean,
+    },
+    conditionDescription: {
+      type: GraphQLString,
     },
     confidentialNotes: {
       type: GraphQLString,
@@ -176,6 +184,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     {
+      additionalInformation,
       artistIds,
       artworkId,
       artworkLocation,
@@ -183,6 +192,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       coaByAuthenticatingBody,
       coaByGallery,
       collectorLocation,
+      conditionDescription,
       confidentialNotes,
       costCurrencyCode,
       costMajor,
@@ -232,9 +242,11 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
 
     try {
       const response = await updateArtworkLoader(artworkId, {
+        additional_information: additionalInformation,
         artists: artistIds,
         coa_by_authenticating_body: coaByAuthenticatingBody,
         coa_by_gallery: coaByGallery,
+        condition_description: conditionDescription,
         confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,

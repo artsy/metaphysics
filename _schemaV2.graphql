@@ -4320,8 +4320,11 @@ type CollectorProfileType implements Node {
   savedArtworksCount: Int!
   selfReportedPurchases: String
 
-  # A partner-specific sentence describing the collector.
-  summarySentence(partnerID: String!): String!
+  # An artwork-specific paragraph describing the collector.
+  summaryParagraph(
+    # This can be specified, and is injected in a conversation context for convenience.
+    artworkID: String
+  ): String
   totalBidsCount: Int!
   userInterests: [UserInterest]!
     @deprecated(reason: "Use \"owner#interestsConnection\" field instead.")
@@ -11555,8 +11558,11 @@ type InquirerCollectorProfile {
   savedArtworksCount: Int!
   selfReportedPurchases: String
 
-  # A partner-specific sentence describing the collector.
-  summarySentence(partnerID: String!): String!
+  # An artwork-specific paragraph describing the collector.
+  summaryParagraph(
+    # This can be specified, and is injected in a conversation context for convenience.
+    artworkID: String
+  ): String
   totalBidsCount: Int!
   userInterests: [UserInterest]!
     @deprecated(reason: "Use \"owner#interestsConnection\" field instead.")
@@ -13812,6 +13818,7 @@ type MyCollectionConnection {
 }
 
 input MyCollectionCreateArtworkInput {
+  additionalInformation: String
   artistIds: [String]
   artists: [MyCollectionArtistInput]
   artworkLocation: String
@@ -13823,6 +13830,7 @@ input MyCollectionCreateArtworkInput {
 
   # The given location of the user as structured data
   collectorLocation: EditableLocation
+  conditionDescription: String
   confidentialNotes: String
   costCurrencyCode: String
   costMajor: Int
@@ -13911,6 +13919,7 @@ type MyCollectionInfo {
 }
 
 input MyCollectionUpdateArtworkInput {
+  additionalInformation: String
   artistIds: [String]
   artworkId: String!
   artworkLocation: String
@@ -13922,6 +13931,7 @@ input MyCollectionUpdateArtworkInput {
 
   # The given location of the user as structured data
   collectorLocation: EditableLocation
+  conditionDescription: String
   confidentialNotes: String
   costCurrencyCode: String
   costMajor: Int
@@ -19404,8 +19414,11 @@ type UpdateCollectorProfilePayload {
   savedArtworksCount: Int!
   selfReportedPurchases: String
 
-  # A partner-specific sentence describing the collector.
-  summarySentence(partnerID: String!): String!
+  # An artwork-specific paragraph describing the collector.
+  summaryParagraph(
+    # This can be specified, and is injected in a conversation context for convenience.
+    artworkID: String
+  ): String
   totalBidsCount: Int!
   userInterests: [UserInterest]!
     @deprecated(reason: "Use \"owner#interestsConnection\" field instead.")
