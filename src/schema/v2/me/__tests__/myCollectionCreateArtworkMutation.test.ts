@@ -8,6 +8,7 @@ import {
 const newArtwork = { id: "some-artwork-id" }
 const newArtist = { id: "some-artist-id" }
 const artworkDetails = {
+  additional_information: "additional info",
   id: "some-artwork-id",
   medium: "Painting",
   price_paid_cents: 10000,
@@ -51,6 +52,7 @@ const computeMutationInput = ({
     mutation {
       myCollectionCreateArtwork(
         input: {
+          additionalInformation: "additional info"
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
           artists: [${
             artists
@@ -91,6 +93,7 @@ const computeMutationInput = ({
         artworkOrError {
           ... on MyCollectionArtworkMutationSuccess {
             artwork {
+              additionalInformation
               medium
               artworkLocation
               collectorLocation {
@@ -183,6 +186,7 @@ describe("myCollectionCreateArtworkMutation", () => {
       expect(artworkOrError).toMatchInlineSnapshot(`
         Object {
           "artwork": Object {
+            "additionalInformation": "additional info",
             "artworkLocation": "Berlin, Germany",
             "collectorLocation": Object {
               "city": "Berlin",
@@ -247,6 +251,7 @@ describe("myCollectionCreateArtworkMutation", () => {
       })
 
       expect(createArtworkLoader).toBeCalledWith({
+        additional_information: "additional info",
         artists: [
           "4d8b92b34eb68a1b2c0003f4",
           "some-artist-id",
@@ -302,6 +307,7 @@ describe("myCollectionCreateArtworkMutation", () => {
       expect(artworkOrError).toMatchInlineSnapshot(`
         Object {
           "artwork": Object {
+            "additionalInformation": "additional info",
             "artworkLocation": "Berlin, Germany",
             "collectorLocation": Object {
               "city": "Berlin",

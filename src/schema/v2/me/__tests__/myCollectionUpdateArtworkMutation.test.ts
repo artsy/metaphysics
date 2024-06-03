@@ -15,6 +15,7 @@ const defaultArtworkDetails = ({
   editionNumber?: string | null
   isEdition?: boolean | null
 } = {}) => ({
+  additional_information: "some additional info",
   id: "some-artwork-id",
   artistIds: ["4d8b92b34eb68a1b2c0003f4"],
   artworkId: "some-artwork-id",
@@ -75,6 +76,7 @@ const computeMutationInput = ({
     mutation {
       myCollectionUpdateArtwork(
         input: {
+          additionalInformation: "some additional info"
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
           artworkId: "some-artwork-id"
           category: "some strange category"
@@ -107,6 +109,7 @@ const computeMutationInput = ({
         artworkOrError {
           ... on MyCollectionArtworkMutationSuccess {
             artwork {
+              additionalInformation
               category
               date
               depth
@@ -214,6 +217,7 @@ describe("myCollectionUpdateArtworkMutation", () => {
       expect(artworkOrError).toMatchInlineSnapshot(`
         Object {
           "artwork": Object {
+            "additionalInformation": "some additional info",
             "artworkLocation": "Berlin, Germany",
             "attributionClass": Object {
               "name": "Open edition",
@@ -276,6 +280,7 @@ describe("myCollectionUpdateArtworkMutation", () => {
       expect(artworkOrError).toMatchInlineSnapshot(`
         Object {
           "artwork": Object {
+            "additionalInformation": "some additional info",
             "artworkLocation": "Berlin, Germany",
             "attributionClass": Object {
               "name": "Open edition",
