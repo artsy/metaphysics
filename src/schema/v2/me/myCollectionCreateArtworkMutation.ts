@@ -59,6 +59,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   name: "MyCollectionCreateArtwork",
   description: "Create an artwork in my collection",
   inputFields: {
+    additionalInformation: {
+      type: GraphQLString,
+    },
     artistIds: {
       type: new GraphQLList(GraphQLString),
     },
@@ -136,6 +139,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       description: "The given location of the user as structured data",
       type: EditableLocationFields,
     },
+    conditionDescription: {
+      type: GraphQLString,
+    },
     metric: {
       type: GraphQLString,
     },
@@ -171,11 +177,13 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     {
+      additionalInformation,
       artistIds,
       artists,
       artworkLocation,
       attributionClass,
       collectorLocation,
+      conditionDescription,
       confidentialNotes,
       costCurrencyCode,
       costMajor,
@@ -234,9 +242,11 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
 
     try {
       const response = await createArtworkLoader({
+        additional_information: additionalInformation,
         artists: artistIds,
         submission_id: submissionId,
         collection_id: "my-collection",
+        condition_description: conditionDescription,
         confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,

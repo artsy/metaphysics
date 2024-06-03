@@ -15,6 +15,7 @@ const defaultArtworkDetails = ({
   editionNumber?: string | null
   isEdition?: boolean | null
 } = {}) => ({
+  additional_information: "some additional info",
   id: "some-artwork-id",
   artistIds: ["4d8b92b34eb68a1b2c0003f4"],
   artworkId: "some-artwork-id",
@@ -42,6 +43,7 @@ const defaultArtworkDetails = ({
   price_paid_currency: "USD",
   artwork_location: "Berlin, Germany",
   collector_location: { city: "Berlin", country: "Germany" },
+  condition_description: "like a new!",
   provenance: "Pat Hearn Gallery",
   title: "hey now",
   width: "20",
@@ -75,6 +77,7 @@ const computeMutationInput = ({
     mutation {
       myCollectionUpdateArtwork(
         input: {
+          additionalInformation: "some additional info"
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
           artworkId: "some-artwork-id"
           category: "some strange category"
@@ -94,6 +97,7 @@ const computeMutationInput = ({
           metric: "in"
           artworkLocation: "Berlin, Germany"
           collectorLocation: {country: "Germany", city: "Berlin"}
+          conditionDescription: "like a new!"
           pricePaidCents: 10000
           pricePaidCurrency: "USD"
           provenance: "Pat Hearn Gallery"
@@ -107,6 +111,7 @@ const computeMutationInput = ({
         artworkOrError {
           ... on MyCollectionArtworkMutationSuccess {
             artwork {
+              additionalInformation
               category
               date
               depth
@@ -119,6 +124,10 @@ const computeMutationInput = ({
               collectorLocation {
                 city
                 country
+              }
+              conditionDescription {
+                label
+                details
               }
               framedDepth
               framedHeight
@@ -214,6 +223,7 @@ describe("myCollectionUpdateArtworkMutation", () => {
       expect(artworkOrError).toMatchInlineSnapshot(`
         Object {
           "artwork": Object {
+            "additionalInformation": "some additional info",
             "artworkLocation": "Berlin, Germany",
             "attributionClass": Object {
               "name": "Open edition",
@@ -222,6 +232,10 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
+            },
+            "conditionDescription": Object {
+              "details": "Like a new!",
+              "label": "Condition details",
             },
             "date": "1990",
             "depth": "20",
@@ -276,6 +290,7 @@ describe("myCollectionUpdateArtworkMutation", () => {
       expect(artworkOrError).toMatchInlineSnapshot(`
         Object {
           "artwork": Object {
+            "additionalInformation": "some additional info",
             "artworkLocation": "Berlin, Germany",
             "attributionClass": Object {
               "name": "Open edition",
@@ -284,6 +299,10 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
+            },
+            "conditionDescription": Object {
+              "details": "Like a new!",
+              "label": "Condition details",
             },
             "date": "1990",
             "depth": "20",
