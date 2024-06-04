@@ -16008,6 +16008,7 @@ type Query {
   artworksForUser(
     after: String
     before: String
+    excludeArtworkIds: [String] = []
     excludeDislikedArtworks: Boolean = false
     first: Int
     includeBackfill: Boolean!
@@ -21032,6 +21033,7 @@ type Viewer {
   artworksForUser(
     after: String
     before: String
+    excludeArtworkIds: [String] = []
     excludeDislikedArtworks: Boolean = false
     first: Int
     includeBackfill: Boolean!
