@@ -25,7 +25,8 @@ export const getNewForYouArtworkIDs = async (
 
     const userID = args.userId || xImpersonateUserID
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
-    const { page, size } = gravityArgs
+    const { page } = gravityArgs
+    const size = gravityArgs.size + args.excludeArtworkIds.length
 
     // When a `userID` is specified, this is an app request and we should use the
     // unauthenticated loader. The authenticated loader is for logged-in users.
@@ -52,11 +53,13 @@ export const getNewForYouArtworkIDs = async (
     ? `maxWorksPerArtist: ${args.maxWorksPerArtist}`
     : ""
 
+  const first = args.first + args.excludeArtworkIds.length
+
   const query = {
     query: gql`
         query newForYouRecommendationsQuery {
           newForYouRecommendations(
-            first: ${args.first}
+            first: ${first}
             ${userIdArgument}
             ${versionArgument}
             ${maxWorksPerArtistArgument}
