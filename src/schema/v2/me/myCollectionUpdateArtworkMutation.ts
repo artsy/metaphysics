@@ -27,6 +27,8 @@ interface MyCollectionArtworkUpdateMutationInput {
   artistIds?: [string]
   attributionClass?: string
   category?: string
+  coaByAuthenticatingBody?: boolean
+  coaByGallery?: boolean
   conditionDescription?: string
   confidentialNotes?: string
   costCurrencyCode?: string
@@ -34,6 +36,7 @@ interface MyCollectionArtworkUpdateMutationInput {
   costMinor?: number
   date?: string
   depth?: string
+  hasCertificateOfAuthenticity?: boolean
   isEdition?: boolean
   isFramed?: boolean
   framedDepth?: string
@@ -75,6 +78,12 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     category: {
       type: GraphQLString,
     },
+    coaByAuthenticatingBody: {
+      type: GraphQLBoolean,
+    },
+    coaByGallery: {
+      type: GraphQLBoolean,
+    },
     conditionDescription: {
       type: GraphQLString,
     },
@@ -95,6 +104,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     },
     depth: {
       type: GraphQLString,
+    },
+    hasCertificateOfAuthenticity: {
+      type: GraphQLBoolean,
     },
     isEdition: {
       type: GraphQLBoolean,
@@ -177,6 +189,8 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       artworkId,
       artworkLocation,
       attributionClass,
+      coaByAuthenticatingBody,
+      coaByGallery,
       collectorLocation,
       conditionDescription,
       confidentialNotes,
@@ -186,6 +200,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       editionNumber,
       editionSize,
       externalImageUrls = [],
+      hasCertificateOfAuthenticity,
       isEdition,
       isFramed,
       framedDepth,
@@ -229,11 +244,14 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       const response = await updateArtworkLoader(artworkId, {
         additional_information: additionalInformation,
         artists: artistIds,
+        coa_by_authenticating_body: coaByAuthenticatingBody,
+        coa_by_gallery: coaByGallery,
         condition_description: conditionDescription,
         confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
         artwork_location: artworkLocation,
+        certificate_of_authenticity: hasCertificateOfAuthenticity,
         collector_location: collectorLocation,
         framed: isFramed,
         framed_depth: framedDepth,

@@ -20,6 +20,9 @@ const defaultArtworkDetails = ({
   artistIds: ["4d8b92b34eb68a1b2c0003f4"],
   artworkId: "some-artwork-id",
   category: "some strange category",
+  certificate_of_authenticity: true,
+  coa_by_authenticating_body: false,
+  coa_by_gallery: true,
   images: [
     {
       imageUrl: "an-image-url",
@@ -81,8 +84,11 @@ const computeMutationInput = ({
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
           artworkId: "some-artwork-id"
           category: "some strange category"
+          coaByAuthenticatingBody: false
+          coaByGallery: true
           date: "1990"
           depth: "20"
+          hasCertificateOfAuthenticity: true
           isEdition: ${JSON.stringify(isEdition)}
           isFramed: true
           framedDepth: "1"
@@ -113,8 +119,13 @@ const computeMutationInput = ({
             artwork {
               additionalInformation
               category
+              certificateOfAuthenticityDetails {
+                coaByAuthenticatingBody
+                coaByGallery
+              }
               date
               depth
+              hasCertificateOfAuthenticity
               isEdition
               editionNumber
               editionSize
@@ -229,6 +240,10 @@ describe("myCollectionUpdateArtworkMutation", () => {
               "name": "Open edition",
             },
             "category": "some strange category",
+            "certificateOfAuthenticityDetails": Object {
+              "coaByAuthenticatingBody": false,
+              "coaByGallery": true,
+            },
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
@@ -245,6 +260,7 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "framedHeight": "21",
             "framedMetric": "in",
             "framedWidth": "21",
+            "hasCertificateOfAuthenticity": true,
             "height": "20",
             "images": Array [
               Object {
@@ -296,6 +312,10 @@ describe("myCollectionUpdateArtworkMutation", () => {
               "name": "Open edition",
             },
             "category": "some strange category",
+            "certificateOfAuthenticityDetails": Object {
+              "coaByAuthenticatingBody": false,
+              "coaByGallery": true,
+            },
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
@@ -312,6 +332,7 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "framedHeight": "21",
             "framedMetric": "in",
             "framedWidth": "21",
+            "hasCertificateOfAuthenticity": true,
             "height": "20",
             "images": Array [
               Object {

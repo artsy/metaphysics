@@ -1862,6 +1862,23 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      certificateOfAuthenticityDetails: {
+        type: new GraphQLObjectType<any, ResolverContext>({
+          name: "CertificateOfAuthenticityDetails",
+          fields: {
+            coaByAuthenticatingBody: {
+              type: GraphQLBoolean,
+              resolve: ({ coa_by_authenticating_body }) =>
+                coa_by_authenticating_body,
+            },
+            coaByGallery: {
+              type: GraphQLBoolean,
+              resolve: ({ coa_by_gallery }) => coa_by_gallery,
+            },
+          },
+        }),
+        resolve: (artwork) => artwork,
+      },
       visibilityLevel: {
         description: "The visibility level of the artwork",
         type: ArtworkVisibility,

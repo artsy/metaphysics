@@ -10,6 +10,9 @@ const newArtist = { id: "some-artist-id" }
 const artworkDetails = {
   additional_information: "additional info",
   id: "some-artwork-id",
+  certificate_of_authenticity: true,
+  coa_by_authenticating_body: false,
+  coa_by_gallery: true,
   medium: "Painting",
   price_paid_cents: 10000,
   price_paid_currency: "USD",
@@ -63,11 +66,14 @@ const computeMutationInput = ({
               : null
           }],
           category: "some strange category"
+          coaByAuthenticatingBody: false
+          coaByGallery: true
           conditionDescription: "like a new!"
           costCurrencyCode: "USD"
           costMinor: 200
           date: "1990"
           depth: "20"
+          hasCertificateOfAuthenticity: true
           isEdition: ${JSON.stringify(isEdition)}
           isFramed: true,
           editionNumber: ${JSON.stringify(editionNumber)}
@@ -98,6 +104,10 @@ const computeMutationInput = ({
               additionalInformation
               medium
               artworkLocation
+              certificateOfAuthenticityDetails {
+                coaByAuthenticatingBody
+                coaByGallery
+              }
               collectorLocation {
                 city
                 country
@@ -109,6 +119,7 @@ const computeMutationInput = ({
               pricePaid {
                 display
               }
+              hasCertificateOfAuthenticity
               images(includeAll: true) {
                 imageURL
               }
@@ -194,6 +205,10 @@ describe("myCollectionCreateArtworkMutation", () => {
           "artwork": Object {
             "additionalInformation": "additional info",
             "artworkLocation": "Berlin, Germany",
+            "certificateOfAuthenticityDetails": Object {
+              "coaByAuthenticatingBody": false,
+              "coaByGallery": true,
+            },
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
@@ -206,6 +221,7 @@ describe("myCollectionCreateArtworkMutation", () => {
             "framedHeight": "21",
             "framedMetric": "in",
             "framedWidth": "21",
+            "hasCertificateOfAuthenticity": true,
             "images": Array [
               Object {
                 "imageURL": null,
@@ -270,6 +286,9 @@ describe("myCollectionCreateArtworkMutation", () => {
         artwork_location: "Berlin, Germany",
         attribution_class: undefined,
         category: "some strange category",
+        certificate_of_authenticity: true,
+        coa_by_authenticating_body: false,
+        coa_by_gallery: true,
         collection_id: "my-collection",
         collector_location: { city: "Berlin", country: "Germany" },
         condition_description: "like a new!",
@@ -320,6 +339,10 @@ describe("myCollectionCreateArtworkMutation", () => {
           "artwork": Object {
             "additionalInformation": "additional info",
             "artworkLocation": "Berlin, Germany",
+            "certificateOfAuthenticityDetails": Object {
+              "coaByAuthenticatingBody": false,
+              "coaByGallery": true,
+            },
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
@@ -332,6 +355,7 @@ describe("myCollectionCreateArtworkMutation", () => {
             "framedHeight": "21",
             "framedMetric": "in",
             "framedWidth": "21",
+            "hasCertificateOfAuthenticity": true,
             "images": Array [
               Object {
                 "imageURL": null,
