@@ -15,7 +15,7 @@ const mockLoaderFactory = (affinities) => {
   return loader
 }
 
-describe("getNewForYouRecs", () => {
+describe("getNewForYouArtworkIDs", () => {
   const userLoader = mockLoaderFactory([{ artworkId: "banksy" }])
   const appLoader = mockLoaderFactory([{ artworkId: "warhol" }])
 
@@ -29,7 +29,10 @@ describe("getNewForYouRecs", () => {
       },
     } as any
 
-    const artworkIds = await getNewForYouArtworkIDs({}, context)
+    const artworkIds = await getNewForYouArtworkIDs(
+      { excludeArtworkIds: [] },
+      context
+    )
 
     expect(artworkIds).toEqual(["banksy"])
   })
