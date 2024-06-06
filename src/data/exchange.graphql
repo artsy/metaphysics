@@ -121,6 +121,7 @@ type BuyOrder implements Order {
   lastApprovedAt: DateTime
   lastSubmittedAt: DateTime
   lastTransactionFailed: Boolean
+  lastTransactionFailureCode: String
   lineItems(
     """
     Returns the elements in the list that come after the specified cursor.
@@ -1309,6 +1310,7 @@ type OfferOrder implements Order {
   lastOffer: Offer
   lastSubmittedAt: DateTime
   lastTransactionFailed: Boolean
+  lastTransactionFailureCode: String
   lineItems(
     """
     Returns the elements in the list that come after the specified cursor.
@@ -1422,6 +1424,7 @@ interface Order {
   lastApprovedAt: DateTime
   lastSubmittedAt: DateTime
   lastTransactionFailed: Boolean
+  lastTransactionFailureCode: String
   lineItems(
     """
     Returns the elements in the list that come after the specified cursor.
@@ -1850,6 +1853,39 @@ type Pickup {
 }
 
 type Query {
+  """
+  Find list of abandoned orders
+  """
+  abandonedOrders(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+    artworkId: ID!
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Ignored for the time being, future iterations will support this.
+    """
+    excludeFailedPayments: Boolean
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+    from: DateTime!
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    sellerId: String!
+  ): OrderConnectionWithTotalCount
+
   """
   Find balance of an account associated with a setup intent
   """
