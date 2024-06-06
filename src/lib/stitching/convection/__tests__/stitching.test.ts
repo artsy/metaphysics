@@ -1,7 +1,10 @@
 import { incrementalMergeSchemas } from "lib/stitching/mergeSchemas"
 import { graphql } from "graphql"
 import { addMockFunctionsToSchema } from "graphql-tools"
-import { useConvectionStitching } from "./testingUtils"
+import {
+  getConvectionStitchedSchema,
+  useConvectionStitching,
+} from "./testingUtils"
 import gql from "lib/gql"
 import schema from "schema/v2/schema"
 
@@ -101,4 +104,20 @@ it("resolves an Artist on a Consignment Submission", async () => {
   expect(result).toEqual({
     data: { submission: { artist: { name: "Hello World" }, artistId: "321" } },
   })
+})
+
+it("resolves the artwork field on Consignment Submission", async () => {
+  const { resolvers } = await getConvectionStitchedSchema()
+  const { artwork } = resolvers.ConsignmentSubmission
+  const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+  artwork.resolve({ myCollectionArtworkID: "artwork-id" }, {}, {}, info)
+
+  expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+    expect.objectContaining({
+      args: { id: "artwork-id" },
+      operation: "query",
+      fieldName: "artwork",
+    })
+  )
 })

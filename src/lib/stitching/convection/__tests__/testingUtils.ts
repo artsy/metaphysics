@@ -55,7 +55,7 @@ const getConvectionTransformedSchema = async () => {
  * Gets a cached copy of the stitched schema, independent of being merged into
  * the local schema
  */
-const getConvectionStitchedSchema = async () => {
+export const getConvectionStitchedSchema = async () => {
   if (!stitchedSchema) {
     const cachedSchema = await getConvectionTransformedSchema()
     stitchedSchema = consignmentStitchingEnvironment(localSchema, cachedSchema)
