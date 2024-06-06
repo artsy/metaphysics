@@ -32,6 +32,9 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
               .value,
           },
           page: { type: GraphQLInt },
+          forSale: { type: GraphQLBoolean },
+          priceMin: { type: GraphQLInt, description: "In USD Dollars" },
+          priceMax: { type: GraphQLInt, description: "In USD Dollars" },
         }),
       },
       resolve: async (parent, args, context, _info) => {
@@ -49,6 +52,9 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
           private: true,
           sort: args.sort,
           total_count: true,
+          for_sale: args.forSale,
+          price_min_major_usd: args.priceMin,
+          price_max_major_usd: args.priceMax,
         }
 
         try {
