@@ -106,12 +106,17 @@ it("resolves an Artist on a Consignment Submission", async () => {
   })
 })
 
-it("resolves the artwork field on Consignment Submission", async () => {
+it("resolves the myCollectionArtwork field on Consignment Submission", async () => {
   const { resolvers } = await getConvectionStitchedSchema()
-  const { artwork } = resolvers.ConsignmentSubmission
+  const { myCollectionArtwork } = resolvers.ConsignmentSubmission
   const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
-  artwork.resolve({ myCollectionArtworkID: "artwork-id" }, {}, {}, info)
+  myCollectionArtwork.resolve(
+    { myCollectionArtworkID: "artwork-id" },
+    {},
+    {},
+    info
+  )
 
   expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
     expect.objectContaining({

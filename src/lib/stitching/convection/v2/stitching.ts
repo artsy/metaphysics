@@ -10,7 +10,7 @@ export const consignmentStitchingEnvironment = (
   extensionSchema: `
     extend type ConsignmentSubmission {
       artist: Artist
-      artwork: Artwork
+      myCollectionArtwork: Artwork
     }
 
     extend type ConsignmentOffer {
@@ -39,7 +39,7 @@ export const consignmentStitchingEnvironment = (
           })
         },
       },
-      artwork: {
+      myCollectionArtwork: {
         fragment: `fragment SubmissionArtwork on ConsignmentSubmission { myCollectionArtworkID }`,
         resolve: (parent, _args, context, info) => {
           const id = parent.myCollectionArtworkID

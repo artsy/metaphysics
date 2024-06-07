@@ -6939,7 +6939,6 @@ type ConsignmentSubmission {
   additionalInfo: String
   artist: Artist
   artistId: String!
-  artwork: Artwork
   assets: [ConsignmentSubmissionCategoryAsset]
   attributionClass: ConsignmentAttributionClass
   authenticityCertificate: Boolean
@@ -6966,6 +6965,7 @@ type ConsignmentSubmission {
   locationState: String
   medium: String
   minimumPriceDollars: Int
+  myCollectionArtwork: Artwork
   myCollectionArtworkID: String
   offers(gravityPartnerId: ID!): [ConsignmentOffer!]!
   primaryImage: ConsignmentSubmissionCategoryAsset
