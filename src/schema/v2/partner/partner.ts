@@ -365,8 +365,17 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           artistIDs: {
             type: new GraphQLList(GraphQLString),
           },
+          includeAllFields: {
+            type: GraphQLBoolean,
+            description:
+              "Include additional fields on artists, requires authentication",
+          },
         }),
-        resolve: ({ id }, args, { partnerArtistsForPartnerLoader }) => {
+        resolve: (
+          { id },
+          args,
+          { partnerArtistsForPartnerLoader, partnerArtistsAllLoader }
+        ) => {
           const pageOptions = convertConnectionArgsToGravityArgs(args)
           const { page, size, offset } = pageOptions
 
@@ -392,7 +401,22 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             has_published_artworks: args.hasPublishedArtworks,
           }
 
-          return partnerArtistsForPartnerLoader(id, gravityArgs).then(
+          const partnerArtistsLoader = (() => {
+            // Authenticated
+            if (args.includeAllFields) {
+              if (!partnerArtistsAllLoader) {
+                throw new Error(
+                  "You need to pass a X-Access-Token header to perform this action"
+                )
+              }
+
+              return partnerArtistsAllLoader
+            }
+
+            return partnerArtistsForPartnerLoader
+          })()
+
+          return partnerArtistsLoader?.(id, gravityArgs).then(
             ({ body, headers }) => {
               const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
