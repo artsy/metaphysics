@@ -371,7 +371,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
               "Include additional fields on artists, requires authentication",
           },
         }),
-        resolve: (
+        resolve: async (
           { id },
           args,
           { partnerArtistsForPartnerLoader, partnerArtistsAllLoader }
@@ -416,20 +416,22 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             return partnerArtistsForPartnerLoader
           })()
 
-          return partnerArtistsLoader?.(id, gravityArgs).then(
-            ({ body, headers }) => {
-              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-              return {
-                totalCount,
-                ...connectionFromArraySlice(body, args, {
-                  arrayLength: totalCount,
-                  sliceStart: offset,
-                  resolveNode: (node) => node.artist,
-                }),
-              }
-            }
+          const { body, headers } = await partnerArtistsLoader?.(
+            id,
+            gravityArgs
           )
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            args,
+            body,
+            offset,
+            page,
+            size,
+            totalCount,
+            resolveNode: (node) => node.artist,
+          })
         },
       },
       artistsSearchConnection: partnerArtistsMatchConnection,
