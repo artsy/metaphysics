@@ -1367,6 +1367,7 @@ type Submission {
   locationState: String
   medium: String
   minimumPriceDollars: Int
+  myCollectionArtworkID: String
   offers(gravityPartnerId: ID!): [Offer!]!
   primaryImage: Asset
   provenance: String
