@@ -365,8 +365,17 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           artistIDs: {
             type: new GraphQLList(GraphQLString),
           },
+          includeAllFields: {
+            type: GraphQLBoolean,
+            description:
+              "Include additional fields on artists, requires authentication",
+          },
         }),
-        resolve: ({ id }, args, { partnerArtistsForPartnerLoader }) => {
+        resolve: async (
+          { id },
+          args,
+          { partnerArtistsForPartnerLoader, partnerArtistsAllLoader }
+        ) => {
           const pageOptions = convertConnectionArgsToGravityArgs(args)
           const { page, size, offset } = pageOptions
 
@@ -392,20 +401,37 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             has_published_artworks: args.hasPublishedArtworks,
           }
 
-          return partnerArtistsForPartnerLoader(id, gravityArgs).then(
-            ({ body, headers }) => {
-              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-              return {
-                totalCount,
-                ...connectionFromArraySlice(body, args, {
-                  arrayLength: totalCount,
-                  sliceStart: offset,
-                  resolveNode: (node) => node.artist,
-                }),
+          const partnerArtistsLoader = (() => {
+            // Authenticated
+            if (args.includeAllFields) {
+              if (!partnerArtistsAllLoader) {
+                throw new Error(
+                  "You need to pass a X-Access-Token header to perform this action"
+                )
               }
+
+              return partnerArtistsAllLoader
             }
+
+            return partnerArtistsForPartnerLoader
+          })()
+
+          const { body, headers } = await partnerArtistsLoader?.(
+            id,
+            gravityArgs
           )
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            args,
+            body,
+            offset,
+            page,
+            size,
+            totalCount,
+            resolveNode: (node) => node.artist,
+          })
         },
       },
       artistsSearchConnection: partnerArtistsMatchConnection,

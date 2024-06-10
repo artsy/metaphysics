@@ -53,6 +53,10 @@ const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
         ({ published_for_sale_artworks_count }) =>
           published_for_sale_artworks_count
       ),
+      unlistedArtworks: numeral(
+        ({ published_unlisted_artworks_count }) =>
+          published_unlisted_artworks_count
+      ),
     },
   }),
   resolve: (partner_artist) => partner_artist,
