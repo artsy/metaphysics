@@ -643,6 +643,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerShowsLoader: gravityLoader(
+      (partner_id) => `partner/${partner_id}/shows`,
+      {},
+      { headers: true }
+    ),
     partnerShowArtworksLoader: gravityLoader<
       any,
       { partner_id: string; show_id: string }
