@@ -824,6 +824,14 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updatePartnerShowLoader: gravityLoader<
+      any,
+      { partnerId: string; showId: string }
+    >(
+      ({ partnerId, showId }) => `partner/${partnerId}/show/${showId}`,
+      {},
+      { method: "PUT" }
+    ),
     updatePartnerFlagsLoader: gravityLoader(
       (id) => `partner/${id}/partner_flags`,
       {},
