@@ -20,6 +20,8 @@ import { BodyAndHeaders } from "lib/loaders"
 import { formatMarkdownValue, markdown } from "schema/v2/fields/markdown"
 import { artworkConnection } from "schema/v2/artwork"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import Image, { getDefault } from "../image"
+import { setVersion } from "../image/normalize"
 
 // TODO: This should move to the gravity loader
 interface PartnerArtistDetails {
@@ -30,6 +32,9 @@ interface PartnerArtistDetails {
   biography: string
   display_on_partner_profile: boolean
   hide_in_presentation_mode: boolean
+  image_versions: string[]
+  image_url: string
+  image_urls: string[]
   partner: {
     id: string
     name: string
@@ -168,6 +173,20 @@ export const fields: Thunk<GraphQLFieldConfigMap<
           }),
         }
       })
+    },
+  },
+  image: Image,
+  imageUrl: {
+    type: GraphQLString,
+    resolve: ({ image_versions, image_url, image_urls }) => {
+      return setVersion(
+        getDefault({
+          image_url,
+          images_urls: image_urls,
+          image_versions,
+        }),
+        ["square"]
+      )
     },
   },
   isDisplayOnPartnerProfile: {
