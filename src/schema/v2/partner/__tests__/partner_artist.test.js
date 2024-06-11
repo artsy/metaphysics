@@ -188,6 +188,48 @@ describe("partnerArtist", () => {
     })
   })
 
+  it("returns a partner image", async () => {
+    partnerArtistData = [
+      {
+        image_url: "foo.jpg",
+        images_urls: ["foo.jpg", "bar.jpg"],
+        image_versions: ["wide"],
+      },
+    ]
+
+    const query = gql`
+      {
+        partner(id: "levy-gorvy") {
+          artistsConnection(first: 3) {
+            edges {
+              imageUrl
+              image {
+                url
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      partner: {
+        artistsConnection: {
+          edges: [
+            {
+              image: {
+                url: "foo.jpg",
+              },
+              imageUrl: "foo.jpg",
+            },
+          ],
+        },
+      },
+    })
+  })
+
   it("isHiddenInPresentationMode", async () => {
     partnerArtistData = [
       {
