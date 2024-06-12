@@ -76,6 +76,7 @@ describe("me.myCollection", () => {
     expect(meMyCollectionArtworksLoader).toHaveBeenCalledWith({
       artist_ids: ["artist-id"],
       exclude_purchased_artworks: false,
+      include_only_target_supply: false,
       offset: 0,
       size: 10,
       total_count: true,
@@ -139,6 +140,51 @@ describe("me.myCollection", () => {
           },
         ]
       `)
+    })
+  })
+
+  it("queries for only target supply artworks when includeOnlyTargetSupply argument is present", async () => {
+    const query = gql`
+      {
+        me {
+          myCollectionConnection(first: 10, includeOnlyTargetSupply: true) {
+            edges {
+              node {
+                title
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const mockMeMyCollectionArtworksLoader = jest.fn(() => {
+      return mockCollectionArtworksResponse
+    })
+
+    const context: Partial<ResolverContext> = {
+      meLoader: () =>
+        Promise.resolve({
+          id: "some-user-id",
+        }),
+
+      meMyCollectionArtworksLoader: mockMeMyCollectionArtworksLoader,
+      marketPriceInsightsBatchLoader: jest.fn(async () => mockVortexResponse),
+      artistLoader: () =>
+        Promise.resolve({
+          _id: "artist-id",
+        }),
+    }
+
+    await runAuthenticatedQuery(query, context)
+
+    expect(mockMeMyCollectionArtworksLoader).toHaveBeenCalledWith({
+      exclude_purchased_artworks: false,
+      offset: 0,
+      include_only_target_supply: true,
+      size: 10,
+      sort_by_last_auction_result_date: false,
+      total_count: true,
     })
   })
 
