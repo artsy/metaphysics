@@ -42,6 +42,11 @@ export const MyCollection: GraphQLFieldConfig<any, ResolverContext> = {
   args: pageable({
     page: { type: GraphQLInt },
     size: { type: GraphQLInt },
+    includeOnlyTargetSupply: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+      description: "Show only artworks from target supply artists",
+    },
     sort: {
       type: new GraphQLEnumType({
         name: "MyCollectionArtworkSorts",
