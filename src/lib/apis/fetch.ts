@@ -71,8 +71,18 @@ export default (url, options = {}) => {
     const { method } = opts
     const { url: cleanedUrl, body, json } = constructUrlAndParams(method, url)
 
+    const isBrazeRequest = userAgent.includes("Braze")
+
     request(cleanedUrl, { ...opts, body, json }, (err, response) => {
       if (err) return reject(err)
+
+      // Any Braze requests that resulted in a 429 should propagate that status
+      // all the way up (entire MP response should be a 429).
+      // That way Braze knows to retry.
+      if (isBrazeRequest && response.statusCode === 429) {
+        return reject(new HTTPError("Braze rate limit reached", 429))
+      }
+
       // If there is a non-200 status code, reject.
       if (
         response.statusCode &&
