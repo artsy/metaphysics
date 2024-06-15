@@ -140,8 +140,9 @@ app.use(
 
 const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
 
-const graphqlHTTP = require("express-graphql")
-const graphqlServer = graphqlHTTP((req, res, params) => {
+// const graphqlHTTP = require("express-graphql")
+const { createHandler } = require("graphql-http/lib/use/express")
+const graphqlServer = (req, res, params) => {
   const accessToken = req.headers["x-access-token"] as string | undefined
   const appToken = req.headers["x-xapp-token"] as string | undefined
   const xUserID = req.headers["x-user-id"] as string | undefined
@@ -207,7 +208,7 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
   ]
   if (QUERY_DEPTH_LIMIT) validationRules.push(depthLimit(QUERY_DEPTH_LIMIT))
 
-  return {
+  return createHandler({
     schema,
     graphiql: !PRODUCTION_ENV,
     context,
@@ -221,8 +222,8 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
     validationRules,
     extensions: ({ document, result }) =>
       createExtensions(document, result, requestID, userAgent),
-  }
-})
+  })(req, res, params)
+}
 
 app.use("/batch", bodyParser.json(), graphqlBatchHTTPWrapper(graphqlServer))
 

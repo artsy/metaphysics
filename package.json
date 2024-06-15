@@ -66,6 +66,7 @@
     "google-libphonenumber": "^3.2.25",
     "graphql": "14.5.4",
     "graphql-depth-limit": "1.1.0",
+    "graphql-http": "^1.22.1",
     "graphql-middleware": "1.2.6",
     "graphql-parse-resolve-info": "^4.12.3",
     "graphql-relay": "0.5.4",
