@@ -99,7 +99,7 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
     },
     saleMessage: {
       type: GraphQLString,
-      resolve: ({ availability, price, forsale }) => {
+      resolve: ({ availability, price, forsale, sale_message }) => {
         // If it's a supported availability, just return it (capitalized).
         if (includes(EditionSetAvailabilities, availability)) {
           return capitalizeFirstCharacter(availability)
@@ -110,9 +110,8 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
           return price
         }
 
-        // If its for sale (and no price), return 'Available'.
         if (forsale) {
-          return "Contact for price"
+          return sale_message
         }
 
         return "No longer available"

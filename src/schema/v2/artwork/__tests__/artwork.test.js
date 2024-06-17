@@ -903,7 +903,8 @@ describe("Artwork type", () => {
         {
           availabilitiy: "not for sale",
         },
-        { forsale: true },
+        { forsale: true, sale_message: "Contact for price" },
+        { forsale: true, sale_message: "Inquire about availability" },
       ]
 
       return runQuery(query, context).then((data) => {
@@ -927,6 +928,9 @@ describe("Artwork type", () => {
               },
               {
                 saleMessage: "Contact for price",
+              },
+              {
+                saleMessage: "Inquire about availability",
               },
             ],
           },
