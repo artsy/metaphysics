@@ -110,7 +110,6 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
           return price
         }
 
-        // If its for sale (and no price), return 'Available'.
         if (forsale) {
           return sale_message
         }
