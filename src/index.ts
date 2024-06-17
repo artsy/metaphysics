@@ -38,6 +38,7 @@ import { principalFieldDirectiveValidation } from "directives/principleField/pri
 import * as Sentry from "@sentry/node"
 import { bodyParserMiddleware } from "lib/bodyParserMiddleware"
 import { initilizeFeatureFlags } from "lib/featureFlags"
+import { emailProviderRateLimitExtension } from "extensions/email_provider_rate_limit_extension"
 
 // Initialize Unleash feature flags as early as possible
 initilizeFeatureFlags()
@@ -84,10 +85,17 @@ function createExtensions(document, result, requestID, userAgent) {
     ? fetchLoggerRequestDone(requestID, userAgent)
     : {}
 
+  // Should this introspect xapp token/roles for `email_provider` instead?
+  const isEmailProviderRequest = userAgent.includes("Braze")
+  const emailProviderExtensions = isEmailProviderRequest
+    ? emailProviderRateLimitExtension(document, result)
+    : {}
+
   const extensions = {
     ...optionalFieldsExtensions,
     ...principalFieldExtensions,
     ...requestLoggerExtensions,
+    ...emailProviderExtensions,
   }
 
   // Instead of an empty hash, which will include `extensions: {}`
@@ -247,6 +255,42 @@ export const supportedV2RouteHandler = (req, res, next, server) => {
 
   return server(req, res, next)
 }
+
+// Middleware that must be mounted on our GraphQL route _before_
+// our regular GraphQL handler. This is so we can register a new `res.end`
+// method that will intercept the response and check if any email provider
+// rate limting occurred.
+//
+// If so, we return a 429 status code and a JSON error message.
+app.use("/v2", function (req, res, next) {
+  const userAgent = req.headers["user-agent"] || ""
+  if (!userAgent.includes("Braze")) {
+    return next()
+  }
+
+  const originalEnd = res.end
+
+  res.end = function (...args) {
+    res.end = originalEnd
+    const [chunk, encoding, cb] = args
+
+    const contentType = res.get("content-type") || "text/html"
+
+    if (contentType.indexOf("application/json") === 0) {
+      const response = JSON.parse(chunk)
+
+      if (response.extensions && response.extensions.emailProviderLimited) {
+        res.status(429).json({ error: "rate limit reached, try again later" })
+      } else {
+        res.end(chunk, encoding, cb)
+      }
+    } else {
+      res.end(chunk, encoding, cb)
+    }
+  }
+
+  return next()
+})
 
 app.use("/v2", (req, res, next) => {
   supportedV2RouteHandler(req, res, next, graphqlServer)
