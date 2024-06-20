@@ -151,7 +151,7 @@ describe("createConsignmentSubmission mutation", () => {
 
   it("uses artwork data to fill in submission when myCollectionArtworkID is specified", async () => {
     const { resolvers } = await getConvectionStitchedSchema()
-    const { createConsignmentSubmission } = resolvers.Mutation
+    const resolver = resolvers.Mutation.createConsignmentSubmission.resolve
     const info = { mergeInfo: { delegateToSchema: jest.fn() } }
     const context = {
       artworkLoader: jest.fn(),
@@ -159,11 +159,19 @@ describe("createConsignmentSubmission mutation", () => {
 
     context.artworkLoader.mockResolvedValue({
       dates: [2003],
+      category: "Drawing, Collage or other Work on Paper",
+      edition_sets: [{ available_editions: ["1"], edition_size: "2" }],
     })
 
-    createConsignmentSubmission.resolve(
+    await resolver(
       {},
-      { input: { artistID: "banksy", myCollectionArtworkID: "artwork-id" } },
+      {
+        input: {
+          artistID: "banksy",
+          myCollectionArtworkID: "artwork-id",
+          year: "2004",
+        },
+      },
       context,
       info
     )
@@ -174,7 +182,10 @@ describe("createConsignmentSubmission mutation", () => {
           input: {
             artistID: "banksy",
             myCollectionArtworkID: "artwork-id",
-            year: "2003",
+            year: "2004",
+            category: "DRAWING_COLLAGE_OR_OTHER_WORK_ON_PAPER",
+            editionNumber: "1",
+            editionSize: 2,
           },
         },
         operation: "mutation",

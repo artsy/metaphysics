@@ -1,6 +1,7 @@
 import { GraphQLSchema } from "graphql"
 import { amount, amountSDL } from "schema/v2/fields/money"
 import gql from "lib/gql"
+import { artworkToSubmissionMapping } from "lib/artworkToSubmissionMapping"
 
 export const consignmentStitchingEnvironment = (
   localSchema: GraphQLSchema,
@@ -105,43 +106,18 @@ export const consignmentStitchingEnvironment = (
           const myCollectionArtworkID = args.input?.myCollectionArtworkID
           let createSubmissionArgs = args
 
+          // when myCollectionArtworkID is specified, use artwork data to fill in submission
           if (myCollectionArtworkID) {
-            const { artworkLoader } = context
-
-            if (artworkLoader) {
-              const artwork = await artworkLoader(myCollectionArtworkID)
+            if (context.artworkLoader) {
+              const artwork = await context.artworkLoader(myCollectionArtworkID)
 
               if (!artwork) {
                 throw new Error("Artwork not found")
               }
 
-              const artworkSubmissionData = {
-                artistID: artwork.artist?.id,
-                title: artwork.title,
-                year: (artwork.dates || [])[0]?.toString(),
-                medium: artwork.medium,
-                // TODO: format category, ideally take Category enum from Convection Schema (ConsignmentSubmissionCategoryAggregation)
-                // category: artwork.category,
-                attributionClass: artwork.attribution_class
-                  ?.replace(" ", "_")
-                  ?.toUpperCase(),
-                editionNumber:
-                  artwork.edition_sets?.[0]?.available_editions?.[0],
-                editionSize: artwork.edition_sets?.[0]?.edition_size
-                  ? +artwork.edition_sets?.[0]?.edition_size
-                  : undefined,
-                height: artwork.height,
-                width: artwork.width,
-                depth: artwork.depth,
-                dimensionsMetric: artwork.metric ?? "in",
-                provenance: artwork.provenance ?? "",
-                locationCity: artwork.collector_location?.city,
-                locationCountry: artwork.collector_location?.country,
-                locationState: artwork.collector_location?.state,
-                locationCountryCode: artwork.collector_location?.countryCode,
-                locationPostalCode: artwork.collector_location?.postalCode,
-              }
+              const artworkSubmissionData = artworkToSubmissionMapping(artwork)
 
+              // use artwork data to fill in submission, but allow input to override
               createSubmissionArgs = {
                 ...createSubmissionArgs,
                 input: {
