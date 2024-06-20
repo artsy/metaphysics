@@ -67,7 +67,7 @@ Object {
 `;
 
 exports[`Me Conversation inquiry request returns the formatted first message, questions, and shipping location when present 3`] = `
-"Hello world!,
+"Hello world!
 
 I would like to request the following information about this artwork:
 • Shipping Quote to New York City, US
