@@ -17,6 +17,15 @@ export const consignmentStitchingEnvironment = (
       ${amountSDL("lowEstimateAmount")}
       ${amountSDL("highEstimateAmount")}
     }
+
+    extend type Mutation {
+      createConsignmentSubmission(
+       """
+       Parameters for CreateSubmissionMutation
+       """
+       input: CreateSubmissionMutationInput!
+      ): CreateSubmissionMutationPayload
+    }
   `,
 
   // Resolvers for the above
@@ -88,6 +97,71 @@ export const consignmentStitchingEnvironment = (
             },
             args
           ),
+      },
+    },
+    Mutation: {
+      createConsignmentSubmission: {
+        resolve: async (_source, args, context, info) => {
+          const myCollectionArtworkID = args.input?.myCollectionArtworkID
+          let createSubmissionArgs = args
+
+          if (myCollectionArtworkID) {
+            const { artworkLoader } = context
+
+            if (artworkLoader) {
+              const artwork = await artworkLoader(myCollectionArtworkID)
+
+              if (!artwork) {
+                throw new Error("Artwork not found")
+              }
+
+              const artworkSubmissionData = {
+                artistID: artwork.artist?.id,
+                title: artwork.title,
+                year: (artwork.dates || [])[0]?.toString(),
+                medium: artwork.medium,
+                // TODO: format category, ideally take Category enum from Convection Schema (ConsignmentSubmissionCategoryAggregation)
+                // category: artwork.category,
+                attributionClass: artwork.attribution_class
+                  ?.replace(" ", "_")
+                  ?.toUpperCase(),
+                editionNumber:
+                  artwork.edition_sets?.[0]?.available_editions?.[0],
+                editionSize: artwork.edition_sets?.[0]?.edition_size
+                  ? +artwork.edition_sets?.[0]?.edition_size
+                  : undefined,
+                height: artwork.height,
+                width: artwork.width,
+                depth: artwork.depth,
+                dimensionsMetric: artwork.metric ?? "in",
+                provenance: artwork.provenance ?? "",
+                locationCity: artwork.collector_location?.city,
+                locationCountry: artwork.collector_location?.country,
+                locationState: artwork.collector_location?.state,
+                locationCountryCode: artwork.collector_location?.countryCode,
+                locationPostalCode: artwork.collector_location?.postalCode,
+              }
+
+              createSubmissionArgs = {
+                ...createSubmissionArgs,
+                input: {
+                  ...artworkSubmissionData,
+                  ...createSubmissionArgs.input,
+                },
+              }
+            }
+          }
+
+          return await info.mergeInfo.delegateToSchema({
+            schema: convectionSchema,
+            operation: "mutation",
+            fieldName: "convectionCreateConsignmentSubmission",
+            args: createSubmissionArgs,
+            context,
+            info,
+            transforms: [],
+          })
+        },
       },
     },
   },

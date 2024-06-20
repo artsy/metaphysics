@@ -126,3 +126,60 @@ it("resolves the myCollectionArtwork field on Consignment Submission", async () 
     })
   )
 })
+
+describe("createConsignmentSubmission mutation", () => {
+  it("delegates to convectionCreateConsignmentSubmission mutation", async () => {
+    const { resolvers } = await getConvectionStitchedSchema()
+    const { createConsignmentSubmission } = resolvers.Mutation
+    const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+    createConsignmentSubmission.resolve(
+      {},
+      { input: { artistID: "banksy" } },
+      {},
+      info
+    )
+
+    expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+      expect.objectContaining({
+        args: { input: { artistID: "banksy" } },
+        operation: "mutation",
+        fieldName: "convectionCreateConsignmentSubmission",
+      })
+    )
+  })
+
+  it("uses artwork data to fill in submission when myCollectionArtworkID is specified", async () => {
+    const { resolvers } = await getConvectionStitchedSchema()
+    const { createConsignmentSubmission } = resolvers.Mutation
+    const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+    const context = {
+      artworkLoader: jest.fn(),
+    }
+
+    context.artworkLoader.mockResolvedValue({
+      dates: [2003],
+    })
+
+    createConsignmentSubmission.resolve(
+      {},
+      { input: { artistID: "banksy", myCollectionArtworkID: "artwork-id" } },
+      context,
+      info
+    )
+
+    expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+      expect.objectContaining({
+        args: {
+          input: {
+            artistID: "banksy",
+            myCollectionArtworkID: "artwork-id",
+            year: "2003",
+          },
+        },
+        operation: "mutation",
+        fieldName: "convectionCreateConsignmentSubmission",
+      })
+    )
+  })
+})
