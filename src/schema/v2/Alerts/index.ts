@@ -440,6 +440,13 @@ export const AlertsConnectionType = connectionWithCursorInfo({
   edgeFields: AlertsEdgeFields,
 }).connectionType
 
+export const PartnerAlertsSummaryFields = {
+  id: {
+    type: AlertType,
+    resolve: ({ id }) => id,
+  },
+}
+
 export const AlertsSummaryFields = {
   topHit: {
     type: AlertType,

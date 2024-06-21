@@ -154,6 +154,27 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       nodeType: ArtistType,
     }).connectionType
 
+    const PartnerAlertType = new GraphQLObjectType({
+      name: "PartnerAlert",
+      fields: {
+        id: { type: GraphQLString },
+        search_criteria_id: { type: GraphQLString },
+        partner_id: { type: GraphQLString },
+        score: { type: GraphQLString },
+        matched_at: { type: GraphQLString },
+        created_at: { type: GraphQLString },
+        updated_at: { type: GraphQLString },
+        user_ids: { type: new GraphQLList(GraphQLString) },
+        artist_id: { type: GraphQLString },
+      },
+    })
+
+    const PartnerAlertsConnectionType = connectionWithCursorInfo({
+      name: "PartnerAlerts",
+      // edgeFields: PartnerAlertsSummaryFields,
+      nodeType: PartnerAlertType,
+    }).connectionType
+
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -219,6 +240,56 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             body,
             args,
             resolveNode: ({ artist }) => artist,
+          })
+        },
+      },
+      partnerAlertsConnection: {
+        type: PartnerAlertsConnectionType,
+        args: pageable({
+          page: {
+            type: GraphQLInt,
+          },
+          size: {
+            type: GraphQLInt,
+          },
+          totalCount: {
+            type: GraphQLBoolean,
+          },
+        }),
+        resolve: async ({ _id }, args, { partnerSearchCriteriaLoader }) => {
+          if (!partnerSearchCriteriaLoader) return null
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          type GravityArgs = {
+            page: number
+            size: number
+            total_count: number
+          }
+
+          const gravityArgs: GravityArgs = {
+            page,
+            size,
+            total_count: args.totalCount,
+          }
+
+          const { body, headers } = await partnerSearchCriteriaLoader?.(
+            _id,
+            gravityArgs
+          )
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          // TODO: Fix paginationResolver, do we need gravity level defaults?
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body: body.hits,
+            args,
+            resolveNode: (node) => node,
           })
         },
       },
