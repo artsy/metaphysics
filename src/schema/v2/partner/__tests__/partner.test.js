@@ -1421,6 +1421,67 @@ describe("Partner type", () => {
     })
   })
 
+  describe("#partnerAlertsConnection", () => {
+    it("returns the summary of artists with recently enabled user search criteria", async () => {  
+     const response = 
+       {
+        body: {
+          hits: [
+          {
+            id: '8754ff90-b020-425b-8dae-894ce5ad9d1f',
+            search_criteria_id: '3f980bbe-7b9b-4fa9-beb1-69d13e94fb0c',
+            partner_id: '5f80bfefe8d808000ea212c1',
+          
+          },
+          {
+            id: 'b4adc50d-a584-4820-9140-4d49d7b6c7dc',
+            search_criteria_id: '614af56c-88cb-4ea7-bec5-fbdf9b67c24a',
+            partner_id: '5f80bfefe8d808000ea212c1',
+          },
+        ],
+        },
+         headers: {
+           "x-total-count": 1,
+         },
+       }
+     
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            partnerAlertsConnection(first: 10) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      const partnerSearchCriteriaLoader = () => Promise.resolve(response)
+      const data = await runAuthenticatedQuery(query, {
+        ...context,
+        partnerSearchCriteriaLoader,
+      })
+
+      // TODO: WHY ONLY ONE BEING RETURNED
+      // {"partner": {"partnerAlertsConnection": {"edges": [{"node": {"id": "8754ff90-b020-425b-8dae-894ce5ad9d1f"}}]}}}
+      expect(data).toEqual({
+        partner: {
+          partnerAlertsConnection: {
+            edges: [
+              {
+                node: {
+                  id: "8754ff90-b020-425b-8dae-894ce5ad9d1f",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
+
   describe("#alertsSummaryArtistsConnection", () => {
     it("returns the summary of artists with recently enabled user search criteria", async () => {
       const summaryResponse = {

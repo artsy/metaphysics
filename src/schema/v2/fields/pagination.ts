@@ -83,6 +83,7 @@ function pageToCursorObject(page, currentPage, size) {
 // Returns an array of PageCursor objects
 // from start to end (page numbers).
 function pageCursorsToArray(start, end, currentPage, size) {
+  console.log(start, end, currentPage, size)
   let page
   const cursors = []
   for (page = start; page <= end; page++) {
@@ -100,6 +101,9 @@ export function computeTotalPages(
   pageNumberCap: number | null = PAGE_NUMBER_CAP
 ) {
   const totalPages = Math.ceil(totalRecords / size)
+  console.log("totalRecords", totalRecords)
+  console.log("size", size)
+  console.log("TPs", totalPages)
   return pageNumberCap ? Math.min(totalPages, pageNumberCap) : totalPages
 }
 
@@ -117,12 +121,16 @@ export function createPageCursors(
 
   const totalPages = computeTotalPages(totalRecords, size, pageNumberCap)
 
+  console.log("totalpages", totalPages)
+  console.log("max", max)
+
   let pageCursors
   // Degenerate case of no records found.
   if (totalPages === 0) {
     pageCursors = { around: [pageToCursorObject(1, 1, size)] }
   } else if (totalPages <= max) {
     // Collection is short, and `around` includes page 1 and the last page.
+    console.log("hello??")
     pageCursors = {
       around: pageCursorsToArray(1, totalPages, currentPage, size),
     }
@@ -165,6 +173,7 @@ export function createPageCursors(
       size
     )
   }
+  console.log(pageCursors)
   return pageCursors
 }
 
@@ -221,6 +230,7 @@ export const paginationResolver = <T>({
     ...pick(args, "before", "after", "first", "last"),
   }
 
+  console.log("from the paginationR", body, page, totalCount)
   return {
     totalCount,
     pageCursors: createPageCursors({ page, size }, totalCount),
