@@ -704,6 +704,7 @@ describe("me/index", () => {
                 node {
                   internalID
                   artworkId
+                  isActive
                   isAvailable
                   note
                   partnerId
@@ -743,6 +744,7 @@ describe("me/index", () => {
                   createdAt: "2024-02-27T19:01:51.461Z",
                   endAt: "2024-03-01T19:01:51.457Z",
                   internalID: "866f16a0-92bf-4fb6-8911-e1ab1a5fb508",
+                  isActive: true,
                   isAvailable: true,
                   note: "This is a note!",
                   partnerId: "5f80bfefe8d808000ea212c1",
