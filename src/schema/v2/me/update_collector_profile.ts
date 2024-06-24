@@ -27,6 +27,11 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     intents: { type: new GraphQLList(IntentsType) },
     loyaltyApplicant: { type: GraphQLBoolean },
     professionalBuyer: { type: GraphQLBoolean },
+    promptedForUpdate: {
+      type: GraphQLBoolean,
+      description:
+        "Since we don't want to ask a collector to update their profile too often, set this to record they've been prompted",
+    },
     selfReportedPurchases: {
       description: "Free-form text of purchases the collector has indicated.",
       type: GraphQLString,
