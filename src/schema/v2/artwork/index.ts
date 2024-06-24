@@ -95,6 +95,7 @@ import { error } from "lib/loggers"
 import { PartnerOfferType } from "../partnerOffer"
 import currencyCodes from "lib/currency_codes.json"
 import { date } from "../fields/date"
+import { ArtworkVisibility } from "./artworkVisibility"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -238,14 +239,6 @@ const ArtworkPriceInsightsType = new GraphQLObjectType<any, ResolverContext>({
     sellThroughRate: {
       type: GraphQLFloat,
     },
-  },
-})
-
-export const VisibilityEnum = new GraphQLEnumType({
-  name: "Visibility",
-  values: {
-    UNLISTED: { value: "unlisted" },
-    LISTED: { value: "listed" },
   },
 })
 
@@ -1653,6 +1646,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       signature: markdown(({ signature }) =>
         signature.replace(/^signature:\s+/i, "")
       ),
+      signatureDetails: {
+        type: GraphQLString,
+        resolve: ({ signature }) => signature,
+      },
       savedSearch: {
         description: "Schema related to saved searches based on this artwork",
         type: new GraphQLObjectType({
@@ -1743,8 +1740,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (artwork) =>
           isEmbeddedVideo(artwork) ? null : artwork.website,
       },
+      isFramed: {
+        type: GraphQLBoolean,
+        resolve: ({ framed }) => {
+          return framed
+        },
+      },
       framed: {
         type: ArtworkInfoRowType,
+        deprecationReason: "Consider using isFramed field (boolean) instead",
         resolve: ({ framed }) => {
           if (framed) {
             return { label: "Framed", details: "Included" }
@@ -1754,6 +1758,22 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             return null
           }
         },
+      },
+      framedDepth: {
+        type: GraphQLString,
+        resolve: ({ framed_depth }) => framed_depth,
+      },
+      framedHeight: {
+        type: GraphQLString,
+        resolve: ({ framed_height }) => framed_height,
+      },
+      framedMetric: {
+        type: GraphQLString,
+        resolve: ({ framed_metric }) => framed_metric,
+      },
+      framedWidth: {
+        type: GraphQLString,
+        resolve: ({ framed_width }) => framed_width,
       },
       signatureInfo: {
         type: ArtworkInfoRowType,
@@ -1842,9 +1862,26 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      certificateOfAuthenticityDetails: {
+        type: new GraphQLObjectType<any, ResolverContext>({
+          name: "CertificateOfAuthenticityDetails",
+          fields: {
+            coaByAuthenticatingBody: {
+              type: GraphQLBoolean,
+              resolve: ({ coa_by_authenticating_body }) =>
+                coa_by_authenticating_body,
+            },
+            coaByGallery: {
+              type: GraphQLBoolean,
+              resolve: ({ coa_by_gallery }) => coa_by_gallery,
+            },
+          },
+        }),
+        resolve: (artwork) => artwork,
+      },
       visibilityLevel: {
         description: "The visibility level of the artwork",
-        type: VisibilityEnum,
+        type: ArtworkVisibility,
         resolve: ({ visibility_level }) => visibility_level,
       },
       width: {
@@ -1920,6 +1957,29 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       lastOfferableActivityAt: date(),
+      offerableActivity: {
+        description: "Count of collectors with eligible offerable activities.",
+        type: offerableActivityType,
+        resolve: async (
+          { id, partner },
+          {},
+          { partnerArtworkOfferableActivityLoader }
+        ) => {
+          if (!partnerArtworkOfferableActivityLoader) {
+            throw new Error("You need to be signed in to perform this action")
+          }
+          if (_.isEmpty(partner)) return null
+
+          const { headers } = await partnerArtworkOfferableActivityLoader({
+            artworkId: id,
+            id: partner.id,
+          })
+
+          const totalCount = parseInt(headers?.["x-total-count"] || "0", 10)
+
+          return { totalCount }
+        },
+      },
     }
   },
 })
@@ -1999,6 +2059,16 @@ export const artworkConnection = connectionWithCursorInfo({
   nodeType: ArtworkType,
   connectionInterfaces: [ArtworkConnectionInterface],
   edgeInterfaces: [ArtworkEdgeInterface],
+})
+
+const offerableActivityType = new GraphQLObjectType<any, ResolverContext>({
+  name: "OfferableActivity",
+  fields: {
+    totalCount: {
+      type: GraphQLInt,
+      description: "Count of collectors with eligible offerable activities.",
+    },
+  },
 })
 
 export default Artwork

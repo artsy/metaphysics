@@ -20,24 +20,30 @@ import { BodyAndHeaders } from "lib/loaders"
 import { formatMarkdownValue, markdown } from "schema/v2/fields/markdown"
 import { artworkConnection } from "schema/v2/artwork"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import Image, { getDefault } from "../image"
+import { setVersion } from "../image/normalize"
 
 // TODO: This should move to the gravity loader
 interface PartnerArtistDetails {
-  sortable_id: string
-  use_default_biography: boolean
-  published_artworks_count: number
-  published_for_sale_artworks_count: number
-  display_on_partner_profile: boolean
-  represented_by: boolean
-  biography: string
   artist: {
     id: string
     blurb: string
   }
+  biography: string
+  display_on_partner_profile: boolean
+  hide_in_presentation_mode: boolean
+  image_versions: string[]
+  image_url: string
+  image_urls: string[]
   partner: {
     id: string
     name: string
   }
+  published_artworks_count: number
+  published_for_sale_artworks_count: number
+  represented_by: boolean
+  sortable_id: string
+  use_default_biography: boolean
 }
 
 const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
@@ -51,6 +57,10 @@ const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
       forSaleArtworks: numeral(
         ({ published_for_sale_artworks_count }) =>
           published_for_sale_artworks_count
+      ),
+      unlistedArtworks: numeral(
+        ({ published_unlisted_artworks_count }) =>
+          published_unlisted_artworks_count
       ),
     },
   }),
@@ -125,6 +135,10 @@ export const fields: Thunk<GraphQLFieldConfigMap<
   },
   biographyBlurb,
   counts,
+  isHiddenInPresentationMode: {
+    type: GraphQLBoolean,
+    resolve: ({ hide_in_presentation_mode }) => !!hide_in_presentation_mode,
+  },
   artworksConnection: {
     type: artworkConnection.connectionType,
     args: pageable({
@@ -159,6 +173,20 @@ export const fields: Thunk<GraphQLFieldConfigMap<
           }),
         }
       })
+    },
+  },
+  image: Image,
+  imageUrl: {
+    type: GraphQLString,
+    resolve: ({ image_versions, image_url, image_urls }) => {
+      return setVersion(
+        getDefault({
+          image_url,
+          images_urls: image_urls,
+          image_versions,
+        }),
+        ["square"]
+      )
     },
   },
   isDisplayOnPartnerProfile: {

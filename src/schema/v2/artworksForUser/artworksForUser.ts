@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLString,
 } from "graphql"
@@ -38,16 +39,23 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLBoolean,
       defaultValue: false,
     },
+    excludeArtworkIds: {
+      type: new GraphQLList(GraphQLString),
+      defaultValue: [],
+    },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
     const newForYouArtworkIds = await getNewForYouArtworkIDs(args, context)
+    const filteredArtworkIds = newForYouArtworkIds.filter(
+      (artworkId) => !args.excludeArtworkIds.includes(artworkId)
+    )
 
     const gravityArgs = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = gravityArgs
 
     const newForYouArtworks = await getNewForYouArtworks(
       {
-        ids: newForYouArtworkIds,
+        ids: filteredArtworkIds,
         marketable: args.marketable,
         excludeDislikedArtworks: args.excludeDislikedArtworks,
       },

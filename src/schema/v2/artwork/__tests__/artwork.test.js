@@ -903,7 +903,8 @@ describe("Artwork type", () => {
         {
           availabilitiy: "not for sale",
         },
-        { forsale: true },
+        { forsale: true, sale_message: "Contact for price" },
+        { forsale: true, sale_message: "Inquire about availability" },
       ]
 
       return runQuery(query, context).then((data) => {
@@ -927,6 +928,9 @@ describe("Artwork type", () => {
               },
               {
                 saleMessage: "Contact for price",
+              },
+              {
+                saleMessage: "Inquire about availability",
               },
             ],
           },
@@ -4508,6 +4512,36 @@ describe("Artwork type", () => {
       return runQuery(query, context).then((data) => {
         expect(data).toEqual({
           artwork: { lastOfferableActivityAt: "2020-01-01T00:00:00.000Z" },
+        })
+      })
+    })
+  })
+
+  describe("#offerableActivityCount", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          offerableActivity {
+            totalCount
+          }
+        }
+      }
+    `
+
+    it("returns count of collectors with eligible offerable activities", () => {
+      const partnerArtworkOfferableActivityLoader = jest.fn(() =>
+        Promise.resolve({ headers: { "x-total-count": 3 } })
+      )
+      context.partnerArtworkOfferableActivityLoader = partnerArtworkOfferableActivityLoader
+      artwork.partner = { id: "123" }
+
+      return runQuery(query, context).then((data) => {
+        expect(data).toEqual({
+          artwork: {
+            offerableActivity: {
+              totalCount: 3,
+            },
+          },
         })
       })
     })

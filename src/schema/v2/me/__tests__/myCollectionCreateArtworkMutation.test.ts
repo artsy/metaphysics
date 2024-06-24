@@ -8,18 +8,30 @@ import {
 const newArtwork = { id: "some-artwork-id" }
 const newArtist = { id: "some-artist-id" }
 const artworkDetails = {
+  additional_information: "additional info",
   id: "some-artwork-id",
+  certificate_of_authenticity: true,
+  coa_by_authenticating_body: false,
+  coa_by_gallery: true,
   medium: "Painting",
   price_paid_cents: 10000,
   price_paid_currency: "USD",
   artwork_location: "Berlin, Germany",
   collector_location: { country: "Germany", city: "Berlin" },
+  condition_description: "like a new!",
   attribution_class: "open edition",
   images: [
     {
       aspect_ratio: 1,
     },
   ],
+  signature: "artist initials",
+  signed_other: true,
+  framed: true,
+  framed_metric: "in",
+  framed_depth: "1",
+  framed_height: "21",
+  framed_width: "21",
 }
 
 const createArtworkLoader = jest.fn().mockResolvedValue(newArtwork)
@@ -44,6 +56,7 @@ const computeMutationInput = ({
     mutation {
       myCollectionCreateArtwork(
         input: {
+          additionalInformation: "additional info"
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
           artists: [${
             artists
@@ -53,14 +66,23 @@ const computeMutationInput = ({
               : null
           }],
           category: "some strange category"
+          coaByAuthenticatingBody: false
+          coaByGallery: true
+          conditionDescription: "like a new!"
           costCurrencyCode: "USD"
           costMinor: 200
           date: "1990"
           depth: "20"
+          hasCertificateOfAuthenticity: true
           isEdition: ${JSON.stringify(isEdition)}
+          isFramed: true,
           editionNumber: ${JSON.stringify(editionNumber)}
           editionSize: ${JSON.stringify(editionSize)}
           externalImageUrls: ${JSON.stringify(externalImageUrls)}
+          framedMetric: "in",
+          framedDepth: "1",
+          framedHeight: "21",
+          framedWidth: "21",
           height: "20"
           artworkLocation: "Berlin, Germany"
           collectorLocation: {country: "Germany", city: "Berlin"}
@@ -69,6 +91,8 @@ const computeMutationInput = ({
           pricePaidCents: 10000
           pricePaidCurrency: "USD"
           provenance: "Pat Hearn Gallery"
+          signatureDetails: "artist initials"
+          signatureTypes: [OTHER]
           title: "hey now"
           width: "20"
           importSource: CONVECTION
@@ -77,18 +101,38 @@ const computeMutationInput = ({
         artworkOrError {
           ... on MyCollectionArtworkMutationSuccess {
             artwork {
+              additionalInformation
               medium
               artworkLocation
+              certificateOfAuthenticityDetails {
+                coaByAuthenticatingBody
+                coaByGallery
+              }
               collectorLocation {
                 city
                 country
               }
+              conditionDescription {
+                label
+                details
+              }
               pricePaid {
                 display
               }
+              hasCertificateOfAuthenticity
               images(includeAll: true) {
                 imageURL
               }
+              signature
+              signatureInfo {
+                details
+                label
+              }
+              isFramed
+              framedMetric
+              framedDepth
+              framedHeight
+              framedWidth
             }
             artworkEdge {
               node {
@@ -159,19 +203,39 @@ describe("myCollectionCreateArtworkMutation", () => {
       expect(artworkOrError).toMatchInlineSnapshot(`
         Object {
           "artwork": Object {
+            "additionalInformation": "additional info",
             "artworkLocation": "Berlin, Germany",
+            "certificateOfAuthenticityDetails": Object {
+              "coaByAuthenticatingBody": false,
+              "coaByGallery": true,
+            },
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
             },
+            "conditionDescription": Object {
+              "details": "Like a new!",
+              "label": "Condition details",
+            },
+            "framedDepth": "1",
+            "framedHeight": "21",
+            "framedMetric": "in",
+            "framedWidth": "21",
+            "hasCertificateOfAuthenticity": true,
             "images": Array [
               Object {
                 "imageURL": null,
               },
             ],
+            "isFramed": true,
             "medium": "Painting",
             "pricePaid": Object {
               "display": "$100",
+            },
+            "signature": "artist initials",
+            "signatureInfo": Object {
+              "details": "Artist initials",
+              "label": "Signature",
             },
           },
           "artworkEdge": Object {
@@ -213,6 +277,7 @@ describe("myCollectionCreateArtworkMutation", () => {
       })
 
       expect(createArtworkLoader).toBeCalledWith({
+        additional_information: "additional info",
         artists: [
           "4d8b92b34eb68a1b2c0003f4",
           "some-artist-id",
@@ -221,19 +286,36 @@ describe("myCollectionCreateArtworkMutation", () => {
         artwork_location: "Berlin, Germany",
         attribution_class: undefined,
         category: "some strange category",
+        certificate_of_authenticity: true,
+        coa_by_authenticating_body: false,
+        coa_by_gallery: true,
         collection_id: "my-collection",
         collector_location: { city: "Berlin", country: "Germany" },
+        condition_description: "like a new!",
+        confidential_notes: undefined,
         cost_currency_code: "USD",
         cost_minor: 200,
         date: "1990",
         depth: "20",
+        framed: true,
+        framed_depth: "1",
+        framed_height: "21",
+        framed_metric: "in",
+        framed_width: "21",
         height: "20",
         import_source: "convection",
         medium: "Painting",
         metric: "in",
+        not_signed: false,
         price_paid_cents: 10000,
         price_paid_currency: "USD",
         provenance: "Pat Hearn Gallery",
+        signature: "artist initials",
+        signed_by_artist: false,
+        signed_in_plate: false,
+        signed_other: true,
+        stamped_by_artist_estate: false,
+        sticker_label: false,
         submission_id: undefined,
         title: "hey now",
         width: "20",
@@ -255,19 +337,39 @@ describe("myCollectionCreateArtworkMutation", () => {
       expect(artworkOrError).toMatchInlineSnapshot(`
         Object {
           "artwork": Object {
+            "additionalInformation": "additional info",
             "artworkLocation": "Berlin, Germany",
+            "certificateOfAuthenticityDetails": Object {
+              "coaByAuthenticatingBody": false,
+              "coaByGallery": true,
+            },
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
             },
+            "conditionDescription": Object {
+              "details": "Like a new!",
+              "label": "Condition details",
+            },
+            "framedDepth": "1",
+            "framedHeight": "21",
+            "framedMetric": "in",
+            "framedWidth": "21",
+            "hasCertificateOfAuthenticity": true,
             "images": Array [
               Object {
                 "imageURL": null,
               },
             ],
+            "isFramed": true,
             "medium": "Painting",
             "pricePaid": Object {
               "display": "$100",
+            },
+            "signature": "artist initials",
+            "signatureInfo": Object {
+              "details": "Artist initials",
+              "label": "Signature",
             },
           },
           "artworkEdge": Object {

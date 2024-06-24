@@ -16,19 +16,33 @@ import {
   transformToPricePaidCents,
 } from "./myCollectionCreateArtworkMutation"
 import { EditableLocationFields } from "./update_me_mutation"
+import {
+  ArtworkSignatureTypeEnum,
+  transformSignatureFieldsToGravityFields,
+} from "../artwork/artworkSignatureTypes"
 
 interface MyCollectionArtworkUpdateMutationInput {
+  additionalInformation?: string
   artworkId: string
   artistIds?: [string]
   attributionClass?: string
   category?: string
+  coaByAuthenticatingBody?: boolean
+  coaByGallery?: boolean
+  conditionDescription?: string
   confidentialNotes?: string
   costCurrencyCode?: string
   costMajor?: number
   costMinor?: number
   date?: string
   depth?: string
+  hasCertificateOfAuthenticity?: boolean
   isEdition?: boolean
+  isFramed?: boolean
+  framedDepth?: string
+  framedHeight?: string
+  framedMetric?: string
+  framedWidth?: string
   editionNumber?: string
   editionSize?: string
   externalImageUrls?: [string]
@@ -36,6 +50,8 @@ interface MyCollectionArtworkUpdateMutationInput {
   collectorLocation?: Record<string, string>
   pricePaidCents?: number
   pricePaidCurrency?: string
+  signatureDetails?: string
+  signatureTypes?: [string]
   submissionId?: string
 }
 
@@ -47,6 +63,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
   name: "MyCollectionUpdateArtwork",
   description: "Update an artwork in my collection",
   inputFields: {
+    additionalInformation: {
+      type: GraphQLString,
+    },
     artworkId: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -57,6 +76,15 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       type: ArtworkAttributionClassEnum,
     },
     category: {
+      type: GraphQLString,
+    },
+    coaByAuthenticatingBody: {
+      type: GraphQLBoolean,
+    },
+    coaByGallery: {
+      type: GraphQLBoolean,
+    },
+    conditionDescription: {
       type: GraphQLString,
     },
     confidentialNotes: {
@@ -77,6 +105,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     depth: {
       type: GraphQLString,
     },
+    hasCertificateOfAuthenticity: {
+      type: GraphQLBoolean,
+    },
     isEdition: {
       type: GraphQLBoolean,
     },
@@ -88,6 +119,21 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     },
     externalImageUrls: {
       type: new GraphQLList(GraphQLString),
+    },
+    isFramed: {
+      type: GraphQLBoolean,
+    },
+    framedDepth: {
+      type: GraphQLString,
+    },
+    framedHeight: {
+      type: GraphQLString,
+    },
+    framedMetric: {
+      type: GraphQLString,
+    },
+    framedWidth: {
+      type: GraphQLString,
     },
     height: {
       type: GraphQLString,
@@ -114,6 +160,12 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     provenance: {
       type: GraphQLString,
     },
+    signatureDetails: {
+      type: GraphQLString,
+    },
+    signatureTypes: {
+      type: new GraphQLList(ArtworkSignatureTypeEnum),
+    },
     submissionId: {
       type: GraphQLString,
     },
@@ -132,11 +184,15 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     {
+      additionalInformation,
       artistIds,
       artworkId,
       artworkLocation,
       attributionClass,
+      coaByAuthenticatingBody,
+      coaByGallery,
       collectorLocation,
+      conditionDescription,
       confidentialNotes,
       costCurrencyCode,
       costMajor,
@@ -144,9 +200,17 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       editionNumber,
       editionSize,
       externalImageUrls = [],
+      hasCertificateOfAuthenticity,
       isEdition,
+      isFramed,
+      framedDepth,
+      framedHeight,
+      framedMetric,
+      framedWidth,
       pricePaidCents,
       pricePaidCurrency,
+      signatureDetails,
+      signatureTypes,
       submissionId,
       ...rest
     },
@@ -178,16 +242,28 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
 
     try {
       const response = await updateArtworkLoader(artworkId, {
+        additional_information: additionalInformation,
         artists: artistIds,
+        coa_by_authenticating_body: coaByAuthenticatingBody,
+        coa_by_gallery: coaByGallery,
+        condition_description: conditionDescription,
         confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
         artwork_location: artworkLocation,
+        certificate_of_authenticity: hasCertificateOfAuthenticity,
         collector_location: collectorLocation,
+        framed: isFramed,
+        framed_depth: framedDepth,
+        framed_height: framedHeight,
+        framed_metric: framedMetric,
+        framed_width: framedWidth,
         price_paid_cents: transformedPricePaidCents,
         price_paid_currency: pricePaidCurrency,
         attribution_class: attributionClass,
         submission_id: submissionId,
+        signature: signatureDetails,
+        ...transformSignatureFieldsToGravityFields(signatureTypes),
         ...rest,
       })
 

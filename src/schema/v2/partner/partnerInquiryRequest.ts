@@ -40,7 +40,7 @@ export const InquiryRequestType = new GraphQLObjectType<any, ResolverContext>({
               : `• ${question?.question}`
           )
         })
-        if (message) lines.unshift([message, "\n"].join())
+        if (message) lines.unshift(`${message}\n`)
         return lines.join("\n")
       },
     },

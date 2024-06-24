@@ -61,12 +61,28 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    collectorProfileSummaryLoader: gravityLoader("collector_profile_summary"),
     createAccountRequestLoader: gravityLoader(
       "account_requests",
       {},
       { method: "POST" }
     ),
     createArtistLoader: gravityLoader("artist", {}, { method: "POST" }),
+    createArtistCareerHighlightLoader: gravityLoader(
+      "artist_career_highlight",
+      {},
+      { method: "POST" }
+    ),
+    updateArtistCareerHighlightLoader: gravityLoader(
+      (id) => `artist_career_highlight/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    deleteArtistCareerHighlightLoader: gravityLoader(
+      (id) => `artist_career_highlight/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     createVerifiedRepresentativeLoader: gravityLoader(
       "verified_representatives",
       {},
@@ -563,6 +579,15 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerArtworkOfferableActivityLoader: gravityLoader<
+      any,
+      { id: string; artworkId: string }
+    >(
+      ({ id, artworkId }) =>
+        `partner/${id}/artworks/${artworkId}/offerable_activity`,
+      {},
+      { headers: true }
+    ),
     partnerDocumentsLoader: gravityLoader<any, { id: string }>(
       (id) => `partner/${id}/documents`,
       {},
@@ -615,6 +640,11 @@ export default (accessToken, userID, opts) => {
     ),
     partnerSearchShowsLoader: gravityLoader(
       (id) => `/match/partner/${id}/shows`,
+      {},
+      { headers: true }
+    ),
+    partnerShowsLoader: gravityLoader(
+      (partner_id) => `partner/${partner_id}/shows`,
       {},
       { headers: true }
     ),
@@ -796,6 +826,14 @@ export default (accessToken, userID, opts) => {
     ),
     updatePartnerArtworksLoader: gravityLoader(
       (id) => `partner/${id}/artworks`,
+      {},
+      { method: "PUT" }
+    ),
+    updatePartnerShowLoader: gravityLoader<
+      any,
+      { partnerId: string; showId: string }
+    >(
+      ({ partnerId, showId }) => `partner/${partnerId}/show/${showId}`,
       {},
       { method: "PUT" }
     ),

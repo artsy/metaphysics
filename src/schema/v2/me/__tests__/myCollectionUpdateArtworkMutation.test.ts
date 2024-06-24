@@ -15,10 +15,14 @@ const defaultArtworkDetails = ({
   editionNumber?: string | null
   isEdition?: boolean | null
 } = {}) => ({
+  additional_information: "some additional info",
   id: "some-artwork-id",
   artistIds: ["4d8b92b34eb68a1b2c0003f4"],
   artworkId: "some-artwork-id",
   category: "some strange category",
+  certificate_of_authenticity: true,
+  coa_by_authenticating_body: false,
+  coa_by_gallery: true,
   images: [
     {
       imageUrl: "an-image-url",
@@ -30,6 +34,11 @@ const defaultArtworkDetails = ({
   edition_number: JSON.stringify(editionNumber),
   edition_size: JSON.stringify(editionSize),
   external_image_urls: JSON.stringify(externalImageUrls),
+  framed: true,
+  framed_depth: "1",
+  framed_height: "21",
+  framed_metric: "in",
+  framed_width: "21",
   height: "20",
   medium: "Updated",
   metric: "in",
@@ -37,10 +46,13 @@ const defaultArtworkDetails = ({
   price_paid_currency: "USD",
   artwork_location: "Berlin, Germany",
   collector_location: { city: "Berlin", country: "Germany" },
+  condition_description: "like a new!",
   provenance: "Pat Hearn Gallery",
   title: "hey now",
   width: "20",
   attribution_class: "open edition",
+  signature: "artist initials",
+  signed_other: true,
   submissionId: "submission-id",
 })
 
@@ -68,12 +80,21 @@ const computeMutationInput = ({
     mutation {
       myCollectionUpdateArtwork(
         input: {
+          additionalInformation: "some additional info"
           artistIds: ["4d8b92b34eb68a1b2c0003f4"]
           artworkId: "some-artwork-id"
           category: "some strange category"
+          coaByAuthenticatingBody: false
+          coaByGallery: true
           date: "1990"
           depth: "20"
+          hasCertificateOfAuthenticity: true
           isEdition: ${JSON.stringify(isEdition)}
+          isFramed: true
+          framedDepth: "1"
+          framedHeight: "21"
+          framedMetric: "in"
+          framedWidth: "21"
           editionNumber: ${JSON.stringify(editionNumber)}
           editionSize: ${JSON.stringify(editionSize)}
           externalImageUrls: ${JSON.stringify(externalImageUrls)}
@@ -82,9 +103,12 @@ const computeMutationInput = ({
           metric: "in"
           artworkLocation: "Berlin, Germany"
           collectorLocation: {country: "Germany", city: "Berlin"}
+          conditionDescription: "like a new!"
           pricePaidCents: 10000
           pricePaidCurrency: "USD"
           provenance: "Pat Hearn Gallery"
+          signatureDetails: "artist initials"
+          signatureTypes: [OTHER]
           title: "hey now"
           width: "20"
           submissionId: "submission-id"
@@ -93,9 +117,15 @@ const computeMutationInput = ({
         artworkOrError {
           ... on MyCollectionArtworkMutationSuccess {
             artwork {
+              additionalInformation
               category
+              certificateOfAuthenticityDetails {
+                coaByAuthenticatingBody
+                coaByGallery
+              }
               date
               depth
+              hasCertificateOfAuthenticity
               isEdition
               editionNumber
               editionSize
@@ -106,9 +136,18 @@ const computeMutationInput = ({
                 city
                 country
               }
+              conditionDescription {
+                label
+                details
+              }
+              framedDepth
+              framedHeight
+              framedMetric
+              framedWidth
               images(includeAll: true) {
                 imageURL
               }
+              isFramed
               metric
               provenance
               title
@@ -118,6 +157,11 @@ const computeMutationInput = ({
               }
               attributionClass{
                 name
+              }
+              signature
+              signatureInfo {
+                details
+                label
               }
             }
             artworkEdge {
@@ -190,19 +234,33 @@ describe("myCollectionUpdateArtworkMutation", () => {
       expect(artworkOrError).toMatchInlineSnapshot(`
         Object {
           "artwork": Object {
+            "additionalInformation": "some additional info",
             "artworkLocation": "Berlin, Germany",
             "attributionClass": Object {
               "name": "Open edition",
             },
             "category": "some strange category",
+            "certificateOfAuthenticityDetails": Object {
+              "coaByAuthenticatingBody": false,
+              "coaByGallery": true,
+            },
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
+            },
+            "conditionDescription": Object {
+              "details": "Like a new!",
+              "label": "Condition details",
             },
             "date": "1990",
             "depth": "20",
             "editionNumber": null,
             "editionSize": null,
+            "framedDepth": "1",
+            "framedHeight": "21",
+            "framedMetric": "in",
+            "framedWidth": "21",
+            "hasCertificateOfAuthenticity": true,
             "height": "20",
             "images": Array [
               Object {
@@ -210,12 +268,18 @@ describe("myCollectionUpdateArtworkMutation", () => {
               },
             ],
             "isEdition": null,
+            "isFramed": true,
             "medium": "Updated",
             "metric": "in",
             "pricePaid": Object {
               "display": "$100",
             },
             "provenance": "Pat Hearn Gallery",
+            "signature": "artist initials",
+            "signatureInfo": Object {
+              "details": "Artist initials",
+              "label": "Signature",
+            },
             "title": "hey now",
             "width": "20",
           },
@@ -242,19 +306,33 @@ describe("myCollectionUpdateArtworkMutation", () => {
       expect(artworkOrError).toMatchInlineSnapshot(`
         Object {
           "artwork": Object {
+            "additionalInformation": "some additional info",
             "artworkLocation": "Berlin, Germany",
             "attributionClass": Object {
               "name": "Open edition",
             },
             "category": "some strange category",
+            "certificateOfAuthenticityDetails": Object {
+              "coaByAuthenticatingBody": false,
+              "coaByGallery": true,
+            },
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
+            },
+            "conditionDescription": Object {
+              "details": "Like a new!",
+              "label": "Condition details",
             },
             "date": "1990",
             "depth": "20",
             "editionNumber": null,
             "editionSize": null,
+            "framedDepth": "1",
+            "framedHeight": "21",
+            "framedMetric": "in",
+            "framedWidth": "21",
+            "hasCertificateOfAuthenticity": true,
             "height": "20",
             "images": Array [
               Object {
@@ -262,12 +340,18 @@ describe("myCollectionUpdateArtworkMutation", () => {
               },
             ],
             "isEdition": null,
+            "isFramed": true,
             "medium": "Updated",
             "metric": "in",
             "pricePaid": Object {
               "display": "$100",
             },
             "provenance": "Pat Hearn Gallery",
+            "signature": "artist initials",
+            "signatureInfo": Object {
+              "details": "Artist initials",
+              "label": "Signature",
+            },
             "title": "hey now",
             "width": "20",
           },

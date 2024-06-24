@@ -16,6 +16,10 @@ import { ResolverContext } from "types/graphql"
 import { ArtworkImportSourceEnum } from "../artwork"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import { EditableLocationFields } from "./update_me_mutation"
+import {
+  ArtworkSignatureTypeEnum,
+  transformSignatureFieldsToGravityFields,
+} from "../artwork/artworkSignatureTypes"
 
 export const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
@@ -55,6 +59,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   name: "MyCollectionCreateArtwork",
   description: "Create an artwork in my collection",
   inputFields: {
+    additionalInformation: {
+      type: GraphQLString,
+    },
     artistIds: {
       type: new GraphQLList(GraphQLString),
     },
@@ -64,12 +71,35 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     title: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    // Optional
+    coaByAuthenticatingBody: {
+      type: GraphQLBoolean,
+    },
+    coaByGallery: {
+      type: GraphQLBoolean,
+    },
     confidentialNotes: {
       type: GraphQLString,
     },
     importSource: {
       type: ArtworkImportSourceEnum,
+    },
+    hasCertificateOfAuthenticity: {
+      type: GraphQLBoolean,
+    },
+    isFramed: {
+      type: GraphQLBoolean,
+    },
+    framedDepth: {
+      type: GraphQLString,
+    },
+    framedHeight: {
+      type: GraphQLString,
+    },
+    framedMetric: {
+      type: GraphQLString,
+    },
+    framedWidth: {
+      type: GraphQLString,
     },
     submissionId: {
       type: GraphQLString,
@@ -117,6 +147,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       description: "The given location of the user as structured data",
       type: EditableLocationFields,
     },
+    conditionDescription: {
+      type: GraphQLString,
+    },
     metric: {
       type: GraphQLString,
     },
@@ -130,6 +163,12 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
     provenance: {
       type: GraphQLString,
+    },
+    signatureDetails: {
+      type: GraphQLString,
+    },
+    signatureTypes: {
+      type: new GraphQLList(ArtworkSignatureTypeEnum),
     },
     width: {
       type: GraphQLString,
@@ -146,11 +185,15 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     {
+      additionalInformation,
       artistIds,
       artists,
       artworkLocation,
       attributionClass,
+      coaByAuthenticatingBody,
+      coaByGallery,
       collectorLocation,
+      conditionDescription,
       confidentialNotes,
       costCurrencyCode,
       costMajor,
@@ -158,10 +201,18 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       editionNumber,
       editionSize,
       externalImageUrls = [],
+      hasCertificateOfAuthenticity,
       importSource,
       isEdition,
+      isFramed,
+      framedDepth,
+      framedHeight,
+      framedMetric,
+      framedWidth,
       pricePaidCents,
       pricePaidCurrency,
+      signatureDetails,
+      signatureTypes,
       submissionId,
       ...rest
     },
@@ -202,18 +253,30 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
 
     try {
       const response = await createArtworkLoader({
+        additional_information: additionalInformation,
         artists: artistIds,
         submission_id: submissionId,
+        certificate_of_authenticity: hasCertificateOfAuthenticity,
+        coa_by_authenticating_body: coaByAuthenticatingBody,
+        coa_by_gallery: coaByGallery,
         collection_id: "my-collection",
+        condition_description: conditionDescription,
         confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
         cost_minor: costMinor,
+        framed: isFramed,
+        framed_depth: framedDepth,
+        framed_height: framedHeight,
+        framed_metric: framedMetric,
+        framed_width: framedWidth,
         price_paid_cents: transformedPricePaidCents,
         price_paid_currency: pricePaidCurrency,
         artwork_location: artworkLocation,
         collector_location: collectorLocation,
         attribution_class: attributionClass,
         import_source: importSource,
+        signature: signatureDetails,
+        ...transformSignatureFieldsToGravityFields(signatureTypes),
         ...rest,
       })
 

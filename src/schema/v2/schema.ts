@@ -220,6 +220,10 @@ import { CreateSaleAgreementMutation } from "./SaleAgreements/createSaleAgreemen
 import { UpdateSaleAgreementMutation } from "./SaleAgreements/updateSaleAgreementMutation"
 import { SaleAgreementsConnection } from "./SaleAgreements/saleAgreementsConnection"
 import { SaleAgreement } from "./SaleAgreements/SaleAgreement"
+import { createCareerHighlightMutation } from "./careerHighlight/createCareerHighlightMutation"
+import { deleteCareerHighlightMutation } from "./careerHighlight/deleteCareerHighlightMutation"
+import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHighlightMutation"
+import { updatePartnerShowMutation } from "./partner/updatePartnerShowMutation"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -370,6 +374,9 @@ export default new GraphQLSchema({
       createAlert: createAlertMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,
       deleteVerifiedRepresentative: deleteVerifiedRepresentativeMutation,
+      createCareerHighlight: createCareerHighlightMutation,
+      updateCareerHighlight: updateCareerHighlightMutation,
+      deleteCareerHighlight: deleteCareerHighlightMutation,
       createArtist: createArtistMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
@@ -455,6 +462,7 @@ export default new GraphQLSchema({
       updateNotificationPreferences: updateNotificationPreferencesMutation,
       updateOrderedSet: updateOrderedSetMutation,
       updatePage: UpdatePageMutation,
+      updatePartnerShow: updatePartnerShowMutation,
       updateQuiz: updateQuizMutation,
       updateUser: updateUserMutation,
       updateUserInterest: updateUserInterestMutation,
