@@ -123,6 +123,7 @@ export const consignmentStitchingEnvironment = (
                 input: {
                   ...artworkSubmissionData,
                   ...createSubmissionArgs.input,
+                  source: "MY_COLLECTION",
                 },
               }
             }

@@ -158,7 +158,7 @@ describe("createConsignmentSubmission mutation", () => {
     }
 
     context.artworkLoader.mockResolvedValue({
-      dates: [2003],
+      date: "2003",
       category: "Drawing, Collage or other Work on Paper",
       edition_sets: [{ available_editions: ["1"], edition_size: "2" }],
     })
@@ -186,6 +186,7 @@ describe("createConsignmentSubmission mutation", () => {
             category: "DRAWING_COLLAGE_OR_OTHER_WORK_ON_PAPER",
             editionNumber: "1",
             editionSize: 2,
+            source: "MY_COLLECTION",
           },
         },
         operation: "mutation",

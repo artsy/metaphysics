@@ -15,7 +15,7 @@ describe("artworkToSubmissionMapping", () => {
     const artwork = {
       artist: { id: "artist-id" },
       title: "Artwork Title",
-      dates: ["2020"],
+      date: "2020",
       medium: "Medium",
       category: "Photography",
       attribution_class: "Attribution Class",
@@ -32,30 +32,36 @@ describe("artworkToSubmissionMapping", () => {
         countryCode: "US",
         postalCode: "10001",
       },
+      signature: "back",
     }
 
     const submission = artworkToSubmissionMapping(artwork)
 
-    expect(submission).toEqual({
-      artistID: "artist-id",
-      title: "Artwork Title",
-      year: "2020",
-      medium: "Medium",
-      category: "PHOTOGRAPHY",
-      attributionClass: "ATTRIBUTION_CLASS",
-      editionNumber: 1,
-      editionSize: 2,
-      height: "10",
-      width: "10",
-      depth: "10",
-      dimensionsMetric: "in",
-      provenance: "Provenance",
-      locationCity: "City",
-      locationCountry: "Country",
-      locationState: "State",
-      locationCountryCode: "US",
-      locationPostalCode: "10001",
-    })
+    expect(submission).toMatchInlineSnapshot(
+      `
+      Object {
+        "artistID": "artist-id",
+        "attributionClass": "ATTRIBUTION_CLASS",
+        "category": "PHOTOGRAPHY",
+        "depth": "10",
+        "dimensionsMetric": "in",
+        "editionNumber": 1,
+        "editionSize": 2,
+        "height": "10",
+        "locationCity": "City",
+        "locationCountry": "Country",
+        "locationCountryCode": "US",
+        "locationPostalCode": "10001",
+        "locationState": "State",
+        "medium": "Medium",
+        "provenance": "Provenance",
+        "signature": true,
+        "title": "Artwork Title",
+        "width": "10",
+        "year": "2020",
+      }
+    `
+    )
   })
 })
 
