@@ -53,6 +53,9 @@ export const consignmentStitchingEnvironment = (
         fragment: `fragment SubmissionArtwork on ConsignmentSubmission { myCollectionArtworkID }`,
         resolve: (parent, _args, context, info) => {
           const id = parent.myCollectionArtworkID
+
+          if (!id) return null
+
           return info.mergeInfo.delegateToSchema({
             schema: localSchema,
             operation: "query",

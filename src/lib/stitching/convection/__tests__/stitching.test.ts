@@ -127,6 +127,21 @@ it("resolves the myCollectionArtwork field on Consignment Submission", async () 
   )
 })
 
+it("resolves null for the myCollectionArtwork field on Consignment Submission if myCollectionArtworkID is null", async () => {
+  const { resolvers } = await getConvectionStitchedSchema()
+  const { myCollectionArtwork } = resolvers.ConsignmentSubmission
+  const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+  const response = myCollectionArtwork.resolve(
+    { myCollectionArtworkID: null },
+    {},
+    {},
+    info
+  )
+
+  expect(response).toEqual(null)
+})
+
 describe("createConsignmentSubmission mutation", () => {
   it("delegates to convectionCreateConsignmentSubmission mutation", async () => {
     const { resolvers } = await getConvectionStitchedSchema()
