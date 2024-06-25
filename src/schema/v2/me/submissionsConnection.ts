@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig } from "graphql"
+import { GraphQLFieldConfig, GraphQLList } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
@@ -20,7 +20,7 @@ export const submissionsConnection: GraphQLFieldConfig<
   type: submissionsConnectionType,
   args: pageable({
     state: {
-      type: ArtworkConsignmentSubmissionStateType,
+      type: new GraphQLList(ArtworkConsignmentSubmissionStateType),
     },
   }),
   description: "A list of the current user’s submissions",

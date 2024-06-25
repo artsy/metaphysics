@@ -59,7 +59,7 @@ describe("submissionsConnection", () => {
     const query = gql`
       {
         me {
-          submissionsConnection(first: 10, state: DRAFT) {
+          submissionsConnection(first: 10, state: [DRAFT]) {
             totalCount
             edges {
               node {
@@ -90,7 +90,7 @@ describe("submissionsConnection", () => {
     expect(submissionsLoader).toHaveBeenCalledWith({
       offset: 0,
       size: 10,
-      state: "draft",
+      state: ["draft"],
       total_count: true,
     })
     expect(submissionsConnection).toEqual({
