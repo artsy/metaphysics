@@ -1441,7 +1441,7 @@ describe("Partner type", () => {
         ],
         },
          headers: {
-           "x-total-count": 1,
+           "x-total-count": 2,
          },
        }
      
@@ -1463,9 +1463,6 @@ describe("Partner type", () => {
         ...context,
         partnerSearchCriteriaLoader,
       })
-
-      // TODO: WHY ONLY ONE BEING RETURNED
-      // {"partner": {"partnerAlertsConnection": {"edges": [{"node": {"id": "8754ff90-b020-425b-8dae-894ce5ad9d1f"}}]}}}
       expect(data).toEqual({
         partner: {
           partnerAlertsConnection: {
@@ -1475,6 +1472,11 @@ describe("Partner type", () => {
                   id: "8754ff90-b020-425b-8dae-894ce5ad9d1f",
                 },
               },
+              {
+                node: {
+                  id: "b4adc50d-a584-4820-9140-4d49d7b6c7dc"
+                }
+              }
             ],
           },
         },

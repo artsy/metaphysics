@@ -281,7 +281,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-          // TODO: Fix paginationResolver, do we need gravity level defaults?
           return paginationResolver({
             totalCount,
             offset,
