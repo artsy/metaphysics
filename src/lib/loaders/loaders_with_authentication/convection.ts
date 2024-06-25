@@ -88,7 +88,7 @@ export default (accessToken, opts) => {
       {},
       { method: "POST" }
     ),
-    submissionsLoader: convectionLoader(`submissions`),
+    submissionsLoader: convectionLoader(`submissions`, {}, { headers: true }),
     submissionUpdateLoader: convectionLoader(
       (id) => `submissions/${id}`,
       {},

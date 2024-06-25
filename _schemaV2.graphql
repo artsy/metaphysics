@@ -2804,6 +2804,26 @@ type ArtworkConsignmentSubmission {
   stateLabel: String
 }
 
+# A connection to a list of items.
+type ArtworkConsignmentSubmissionConnection {
+  # A list of edges.
+  edges: [ArtworkConsignmentSubmissionEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type ArtworkConsignmentSubmissionEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: ArtworkConsignmentSubmission
+}
+
 enum ArtworkConsignmentSubmissionState {
   APPROVED
   CLOSED
@@ -12796,6 +12816,21 @@ type Me implements Node {
     first: Int
     last: Int
   ): ArtworkConnection
+
+  # A list of the current user’s submissions
+  submissionsConnection(
+    after: String
+    before: String
+
+    #
+    # If true, only return submissions that are complete (approved, rejected, or closed).
+    # if false, only return submissions that are not complete (draft).
+    # If not provided/undefined, return all submissions.
+    #
+    complete: Boolean
+    first: Int
+    last: Int
+  ): ArtworkConsignmentSubmissionConnection
   type: String
 
   # The count of conversations with unread messages.
