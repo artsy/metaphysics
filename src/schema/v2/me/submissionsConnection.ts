@@ -1,9 +1,11 @@
-import { GraphQLBoolean, GraphQLFieldConfig } from "graphql"
+import { GraphQLFieldConfig } from "graphql"
+import { connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
-import ArtworkConsignmentSubmissionType from "../artwork/artworkConsignmentSubmissionType"
+import ArtworkConsignmentSubmissionType, {
+  ArtworkConsignmentSubmissionStateType,
+} from "../artwork/artworkConsignmentSubmissionType"
 import { connectionWithCursorInfo } from "../fields/pagination"
-import { connectionFromArraySlice } from "graphql-relay"
 
 export const submissionsConnectionType = connectionWithCursorInfo({
   nodeType: ArtworkConsignmentSubmissionType,
@@ -17,14 +19,8 @@ export const submissionsConnection: GraphQLFieldConfig<
 > = {
   type: submissionsConnectionType,
   args: pageable({
-    complete: {
-      description: `
-If true, only return submissions that are complete (approved, rejected, or closed).
-if false, only return submissions that are not complete (draft).
-If not provided/undefined, return all submissions.
-      `,
-      type: GraphQLBoolean,
-      defaultValue: undefined,
+    state: {
+      type: ArtworkConsignmentSubmissionStateType,
     },
   }),
   description: "A list of the current user’s submissions",
@@ -39,7 +35,7 @@ If not provided/undefined, return all submissions.
       size,
       offset,
       total_count: true,
-      completed: options.complete,
+      state: options.state,
     }
 
     try {

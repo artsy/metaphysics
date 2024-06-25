@@ -8,7 +8,7 @@ import {
 import { ResolverContext } from "types/graphql"
 
 // Based directly on Convection Submission#state: https://github.com/artsy/convection/blob/main/app/models/submission.rb
-const ArtworkConsignmentSubmissionStateType = new GraphQLEnumType({
+export const ArtworkConsignmentSubmissionStateType = new GraphQLEnumType({
   name: "ArtworkConsignmentSubmissionState",
   values: {
     DRAFT: { value: "draft" },

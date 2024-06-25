@@ -12821,15 +12821,9 @@ type Me implements Node {
   submissionsConnection(
     after: String
     before: String
-
-    #
-    # If true, only return submissions that are complete (approved, rejected, or closed).
-    # if false, only return submissions that are not complete (draft).
-    # If not provided/undefined, return all submissions.
-    #
-    complete: Boolean
     first: Int
     last: Int
+    state: ArtworkConsignmentSubmissionState
   ): ArtworkConsignmentSubmissionConnection
   type: String
 
