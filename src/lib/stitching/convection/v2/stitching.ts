@@ -1,6 +1,7 @@
 import { GraphQLSchema } from "graphql"
 import { amount, amountSDL } from "schema/v2/fields/money"
 import gql from "lib/gql"
+import { artworkToSubmissionMapping } from "lib/artworkToSubmissionMapping"
 
 export const consignmentStitchingEnvironment = (
   localSchema: GraphQLSchema,
@@ -16,6 +17,15 @@ export const consignmentStitchingEnvironment = (
     extend type ConsignmentOffer {
       ${amountSDL("lowEstimateAmount")}
       ${amountSDL("highEstimateAmount")}
+    }
+
+    extend type Mutation {
+      createConsignmentSubmission(
+       """
+       Parameters for CreateSubmissionMutation
+       """
+       input: CreateSubmissionMutationInput!
+      ): CreateSubmissionMutationPayload
     }
   `,
 
@@ -91,6 +101,47 @@ export const consignmentStitchingEnvironment = (
             },
             args
           ),
+      },
+    },
+    Mutation: {
+      createConsignmentSubmission: {
+        resolve: async (_source, args, context, info) => {
+          const myCollectionArtworkID = args.input?.myCollectionArtworkID
+          let createSubmissionArgs = args
+
+          // when myCollectionArtworkID is specified, use artwork data to fill in submission
+          if (myCollectionArtworkID) {
+            if (context.artworkLoader) {
+              const artwork = await context.artworkLoader(myCollectionArtworkID)
+
+              if (!artwork) {
+                throw new Error("Artwork not found")
+              }
+
+              const artworkSubmissionData = artworkToSubmissionMapping(artwork)
+
+              // use artwork data to fill in submission, but allow input to override
+              createSubmissionArgs = {
+                ...createSubmissionArgs,
+                input: {
+                  ...artworkSubmissionData,
+                  ...createSubmissionArgs.input,
+                  source: "MY_COLLECTION",
+                },
+              }
+            }
+          }
+
+          return await info.mergeInfo.delegateToSchema({
+            schema: convectionSchema,
+            operation: "mutation",
+            fieldName: "convectionCreateConsignmentSubmission",
+            args: createSubmissionArgs,
+            context,
+            info,
+            transforms: [],
+          })
+        },
       },
     },
   },
