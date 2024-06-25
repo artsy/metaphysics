@@ -5,7 +5,7 @@ describe("UpdateCollectorProfile", () => {
   it("calls the expected loader with correctly formatted params", async () => {
     const mutation = `
       mutation {
-        updateCollectorProfile(input: { professionalBuyer: true, loyaltyApplicant: true, selfReportedPurchases: "trust me i buy art", intents: [BUY_ART_AND_DESIGN], institutionalAffiliations: "example", companyName: "Cool Art Stuff", companyWebsite: "https://artsy.net" }) {
+        updateCollectorProfile(input: { professionalBuyer: true, loyaltyApplicant: true, selfReportedPurchases: "trust me i buy art", intents: [BUY_ART_AND_DESIGN], institutionalAffiliations: "example", companyName: "Cool Art Stuff", companyWebsite: "https://artsy.net", promptedForUpdate: true }) {
           internalID
           name
           email
@@ -14,6 +14,7 @@ describe("UpdateCollectorProfile", () => {
           companyName
           companyWebsite
           professionalBuyerAt
+          lastUpdatePromptAt
         }
       }
     `
@@ -28,6 +29,7 @@ describe("UpdateCollectorProfile", () => {
         email: "percy@cat.com",
         self_reported_purchases: "treats",
         intents: ["buy art & design"],
+        last_update_prompt_at: "2022-08-15T11:14:55+00:00",
       })
     )
 
@@ -44,6 +46,7 @@ describe("UpdateCollectorProfile", () => {
       email: "percy@cat.com",
       selfReportedPurchases: "treats",
       intents: ["buy art & design"],
+      lastUpdatePromptAt: "2022-08-15T11:14:55+00:00",
     }
 
     expect.assertions(2)
@@ -63,6 +66,7 @@ describe("UpdateCollectorProfile", () => {
       institutional_affiliations: "example",
       company_name: "Cool Art Stuff",
       company_website: "https://artsy.net",
+      prompted_for_update: true,
     })
   })
 

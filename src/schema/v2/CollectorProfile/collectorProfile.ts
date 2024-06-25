@@ -219,6 +219,9 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
       !!profession &&
       !!other_relevant_positions,
   },
+  lastUpdatePromptAt: dateFormatter(
+    ({ last_update_prompt_at }) => last_update_prompt_at
+  ),
   summaryParagraph: {
     type: GraphQLString,
     description: "An artwork-specific paragraph describing the collector.",

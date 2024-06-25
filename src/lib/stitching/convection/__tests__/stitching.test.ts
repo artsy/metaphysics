@@ -141,3 +141,72 @@ it("resolves null for the myCollectionArtwork field on Consignment Submission if
 
   expect(response).toEqual(null)
 })
+
+describe("createConsignmentSubmission mutation", () => {
+  it("delegates to convectionCreateConsignmentSubmission mutation", async () => {
+    const { resolvers } = await getConvectionStitchedSchema()
+    const { createConsignmentSubmission } = resolvers.Mutation
+    const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+    createConsignmentSubmission.resolve(
+      {},
+      { input: { artistID: "banksy" } },
+      {},
+      info
+    )
+
+    expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+      expect.objectContaining({
+        args: { input: { artistID: "banksy" } },
+        operation: "mutation",
+        fieldName: "convectionCreateConsignmentSubmission",
+      })
+    )
+  })
+
+  it("uses artwork data to fill in submission when myCollectionArtworkID is specified", async () => {
+    const { resolvers } = await getConvectionStitchedSchema()
+    const resolver = resolvers.Mutation.createConsignmentSubmission.resolve
+    const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+    const context = {
+      artworkLoader: jest.fn(),
+    }
+
+    context.artworkLoader.mockResolvedValue({
+      date: "2003",
+      category: "Drawing, Collage or other Work on Paper",
+      edition_sets: [{ available_editions: ["1"], edition_size: "2" }],
+    })
+
+    await resolver(
+      {},
+      {
+        input: {
+          artistID: "banksy",
+          myCollectionArtworkID: "artwork-id",
+          year: "2004",
+        },
+      },
+      context,
+      info
+    )
+
+    expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+      expect.objectContaining({
+        args: {
+          input: {
+            artistID: "banksy",
+            myCollectionArtworkID: "artwork-id",
+            year: "2004",
+            category: "DRAWING_COLLAGE_OR_OTHER_WORK_ON_PAPER",
+            editionNumber: "1",
+            editionSize: 2,
+            source: "MY_COLLECTION",
+          },
+        },
+        operation: "mutation",
+        fieldName: "convectionCreateConsignmentSubmission",
+      })
+    )
+  })
+})
