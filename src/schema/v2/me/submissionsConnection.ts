@@ -24,8 +24,8 @@ export const submissionsConnection: GraphQLFieldConfig<
     },
   }),
   description: "A list of the current user’s submissions",
-  resolve: async ({ id: userID }, options, { submissionsLoader }) => {
-    if (!userID || !submissionsLoader) {
+  resolve: async (_, options, { submissionsLoader }) => {
+    if (!submissionsLoader) {
       throw new Error("You need to be signed in to query for submission")
     }
 
