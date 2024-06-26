@@ -12823,7 +12823,7 @@ type Me implements Node {
     before: String
     first: Int
     last: Int
-    state: [ArtworkConsignmentSubmissionState]
+    states: [ArtworkConsignmentSubmissionState]
   ): ArtworkConsignmentSubmissionConnection
   type: String
 

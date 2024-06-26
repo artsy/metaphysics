@@ -19,7 +19,7 @@ export const submissionsConnection: GraphQLFieldConfig<
 > = {
   type: submissionsConnectionType,
   args: pageable({
-    state: {
+    states: {
       type: new GraphQLList(ArtworkConsignmentSubmissionStateType),
     },
   }),
@@ -35,7 +35,7 @@ export const submissionsConnection: GraphQLFieldConfig<
       size,
       offset,
       total_count: true,
-      state: options.state,
+      state: options.states,
     }
 
     try {

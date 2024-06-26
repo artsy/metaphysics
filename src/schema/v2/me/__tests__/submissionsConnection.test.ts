@@ -59,7 +59,7 @@ describe("submissionsConnection", () => {
     const query = gql`
       {
         me {
-          submissionsConnection(first: 10, state: [DRAFT]) {
+          submissionsConnection(first: 10, states: [DRAFT]) {
             totalCount
             edges {
               node {
