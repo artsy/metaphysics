@@ -231,6 +231,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    userLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
     deleteUserAdminNoteLoader: gravityLoader<
       any,
       { id: string; admin_note_id: string }

@@ -51,6 +51,7 @@ import {
   ArtworkVisibility,
   ArtworkVisibilityEnumValues,
 } from "schema/v2/artwork/artworkVisibility"
+import { UserType } from "schema/v2/user"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -166,6 +167,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         updated_at: { type: GraphQLString },
         user_ids: { type: new GraphQLList(GraphQLString) },
         artist_id: { type: GraphQLString },
+        users: {
+          type: new GraphQLList(UserType),
+          resolve: ({ user_ids }, _args, { userLoader }) => {
+            console.log("UL", userLoader)
+            if (!user_ids || !userLoader) return null
+            return Promise.all(user_ids.map((userId) => userLoader(userId)))
+          },
+        },
       },
     })
 
@@ -607,7 +616,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(PartnerCategoryType),
         resolve: ({ partner_categories }) => partner_categories,
       },
-      collectingInstitution: {
+      collectiongInstitution: {
         type: GraphQLString,
         resolve: ({ collecting_institution }) => collecting_institution,
       },
@@ -615,7 +624,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "PartnerCounts",
           fields: {
-            artworks: numeral(({ artworks_count }) => artworks_count),
+            artwrks: numeral(({ artworks_count }) => artworks_count),
             artists: numeral(({ artists_count }) => artists_count),
             partnerArtists: numeral(
               ({ partner_artists_count }) => partner_artists_count

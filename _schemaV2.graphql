@@ -14481,7 +14481,7 @@ type Partner implements Node {
   # A list of the partners unique city locations
   cities(size: Int = 25): [String]
   claimed: Boolean
-  collectingInstitution: String
+  collectiongInstitution: String
   counts: PartnerCounts
   defaultProfileID: String
   displayArtistsSection: Boolean
@@ -14702,6 +14702,7 @@ type PartnerAlert {
   search_criteria_id: String
   updated_at: String
   user_ids: [String]
+  users: [User]
 }
 
 # A connection to a list of items.
@@ -14962,7 +14963,7 @@ type PartnerCounts {
     format: String
     label: String
   ): FormattedNumber
-  artworks(
+  artwrks(
     # Returns a `String` when format is specified. e.g.`'0,0.0000''`
     format: String
     label: String
