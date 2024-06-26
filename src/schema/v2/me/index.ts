@@ -92,6 +92,7 @@ import {
   PartnerOfferToCollectorSortsType,
 } from "../partnerOfferToCollector"
 import { PreviewSavedSearchAttributesType } from "../previewSavedSearch"
+import { submissionsConnection } from "./submissionsConnection"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -634,6 +635,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
         return !!share_follows
       },
     },
+    submissionsConnection: submissionsConnection,
     // genomic recommendation
     recommendedArtworks: {
       type: artworkConnection.connectionType,
