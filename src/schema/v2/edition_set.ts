@@ -1,4 +1,4 @@
-import { isEmpty, includes } from "lodash"
+import { isEmpty } from "lodash"
 import { InternalIDFields } from "./object_identification"
 import Dimensions from "./dimensions"
 import {
@@ -9,7 +9,6 @@ import {
   GraphQLFieldConfig,
   GraphQLFloat,
 } from "graphql"
-import { capitalizeFirstCharacter } from "lib/helpers"
 import { Sellable } from "./sellable"
 import { ResolverContext } from "types/graphql"
 import { listPrice } from "./fields/listPrice"
@@ -26,13 +25,6 @@ export const EditionSetSorts = {
     },
   }),
 }
-
-const EditionSetAvailabilities = [
-  "sold",
-  "on hold",
-  "on loan",
-  "permanent collection",
-]
 
 export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
   name: "EditionSet",
@@ -99,22 +91,13 @@ export const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
     },
     saleMessage: {
       type: GraphQLString,
-      resolve: ({ availability, price, forsale, sale_message }) => {
-        // If it's a supported availability, just return it (capitalized).
-        if (includes(EditionSetAvailabilities, availability)) {
-          return capitalizeFirstCharacter(availability)
-        }
-
-        // If there's a price string, just return it.
-        if (!isEmpty(price)) {
-          return price
-        }
-
-        if (forsale) {
+      resolve: ({ price, forsale, sale_message }) => {
+        if (!forsale || isEmpty(price)) {
           return sale_message
         }
 
-        return "No longer available"
+        // If there's a price string, just return it.
+        return price
       },
     },
     widthCm: {
