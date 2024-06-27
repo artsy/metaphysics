@@ -52,6 +52,7 @@ import {
   ArtworkVisibilityEnumValues,
 } from "schema/v2/artwork/artworkVisibility"
 import { UserType } from "schema/v2/user"
+import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -167,14 +168,23 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         updated_at: { type: GraphQLString },
         user_ids: { type: new GraphQLList(GraphQLString) },
         artist_id: { type: GraphQLString },
-        users: {
-          type: new GraphQLList(UserType),
-          resolve: ({ user_ids }, _args, { userLoader }) => {
-            // collector profile loader for top two? ---
-            // gravity returns the best two people ---
-          },
-        },
+        // collectorProfiles: {
+        //   type: new GraphQLList(CollectorProfileType),
+        //   resolve: (parent, _args, { partnerCollectorProfileLoader }) => {
+        //     const { user_ids, partner_id } = parent;
+
+        //     // returns null as we need a new endpoint (this is checking singular based on conversations)
+        //     return([partnerCollectorProfileLoader({partnerId: partner_id, userId: user_ids[0]})])
+        //   }
       },
+      // users: {
+      //   type: new GraphQLList(UserType),
+      //   resolve: ({ user_ids }, _args, { userLoader }) => {
+      //     // collector profile loader for top two? ---
+      //     // gravity returns the best two people ---
+      //   },
+      // },
+      // },
     })
 
     // show more
@@ -255,6 +265,22 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
+      collectorProfilesConnection: {
+        type: new GraphQLList(CollectorProfileType),
+        resolve: (parent, _args, { partnerCollectorProfileLoader }) => {
+          const { user_ids, partner_id } = parent
+
+          if (!partnerCollectorProfileLoader) return null
+
+          // returns null as we need a new endpoint (this is checking singular based on conversations)
+          return [
+            partnerCollectorProfileLoader({
+              partnerId: partner_id,
+              userId: user_ids[0],
+            }),
+          ]
+        },
+      },
       partnerAlertsConnection: {
         type: PartnerAlertsConnectionType,
         args: pageable({
@@ -293,7 +319,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-          // TODO: Fix paginationResolver, do we need gravity level defaults?
+          console.log(body)
+
           return paginationResolver({
             totalCount,
             offset,
@@ -619,7 +646,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(PartnerCategoryType),
         resolve: ({ partner_categories }) => partner_categories,
       },
-      collectiongInstitution: {
+      collectionInstitution: {
         type: GraphQLString,
         resolve: ({ collecting_institution }) => collecting_institution,
       },

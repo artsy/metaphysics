@@ -14481,7 +14481,8 @@ type Partner implements Node {
   # A list of the partners unique city locations
   cities(size: Int = 25): [String]
   claimed: Boolean
-  collectiongInstitution: String
+  collectionInstitution: String
+  collectorProfilesConnection: [CollectorProfileType]
   counts: PartnerCounts
   defaultProfileID: String
   displayArtistsSection: Boolean
@@ -14702,7 +14703,6 @@ type PartnerAlert {
   search_criteria_id: String
   updated_at: String
   user_ids: [String]
-  users: [User]
 }
 
 # A connection to a list of items.
