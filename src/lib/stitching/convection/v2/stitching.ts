@@ -12,6 +12,7 @@ export const consignmentStitchingEnvironment = (
     extend type ConsignmentSubmission {
       artist: Artist
       myCollectionArtwork: Artwork
+      userPhoneNumber: PhoneNumberType
     }
 
     extend type ConsignmentOffer {
@@ -62,6 +63,27 @@ export const consignmentStitchingEnvironment = (
             fieldName: "artwork",
             args: {
               id,
+            },
+            context,
+            info,
+            transforms: convectionSchema.transforms,
+          })
+        },
+      },
+      userPhoneNumber: {
+        fragment: gql`
+          fragment ConsignmentSubmissionUserPhoneNumber on ConsignmentSubmission {
+            userPhone
+          }
+        `,
+        resolve: (parent, _args, context, info) => {
+          const phoneNumber = parent.userPhone
+          return info.mergeInfo.delegateToSchema({
+            schema: localSchema,
+            operation: "query",
+            fieldName: "phoneNumber",
+            args: {
+              phoneNumber: phoneNumber || "",
             },
             context,
             info,

@@ -127,6 +127,22 @@ it("resolves the myCollectionArtwork field on Consignment Submission", async () 
   )
 })
 
+it("resolves userPhoneNumber field on Consignment Submission", async () => {
+  const { resolvers } = await getConvectionStitchedSchema()
+  const { userPhoneNumber } = resolvers.ConsignmentSubmission
+  const info = { mergeInfo: { delegateToSchema: jest.fn() } }
+
+  userPhoneNumber.resolve({ userPhone: "1234567890" }, {}, {}, info)
+
+  expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith(
+    expect.objectContaining({
+      args: { phoneNumber: "1234567890" },
+      operation: "query",
+      fieldName: "phoneNumber",
+    })
+  )
+})
+
 it("resolves null for the myCollectionArtwork field on Consignment Submission if myCollectionArtworkID is null", async () => {
   const { resolvers } = await getConvectionStitchedSchema()
   const { myCollectionArtwork } = resolvers.ConsignmentSubmission
