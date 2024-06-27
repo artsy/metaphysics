@@ -170,13 +170,16 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         users: {
           type: new GraphQLList(UserType),
           resolve: ({ user_ids }, _args, { userLoader }) => {
-            console.log("UL", userLoader)
-            if (!user_ids || !userLoader) return null
-            return Promise.all(user_ids.map((userId) => userLoader(userId)))
+            // collector profile loader for top two? ---
+            // gravity returns the best two people ---
           },
         },
       },
     })
+
+    // show more
+    // another endpoint with partner id, search crit id and something....
+    // partner -> returns multiple collector profiles just paginated
 
     const PartnerAlertsConnectionType = connectionWithCursorInfo({
       name: "PartnerAlerts",
