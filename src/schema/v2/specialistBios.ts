@@ -11,6 +11,7 @@ import { ImageType } from "schema/v2/image"
 interface specialistBio {
   bio: string
   email: string
+  firstName: string
   imageUrl: string
   jobTitle: string
   name: string
@@ -24,11 +25,6 @@ const SpecialistBioType = new GraphQLObjectType<specialistBio, ResolverContext>(
       email: { type: GraphQLString },
       firstName: {
         type: GraphQLString,
-        resolve: ({ name }) => {
-          const names: string[] = (name || "").match(/[^\s,]+\.?/g) || []
-
-          return names[0] || ""
-        },
       },
       image: {
         type: ImageType,
