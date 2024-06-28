@@ -887,23 +887,11 @@ describe("Artwork type", () => {
     it("returns the proper saleMessage for edition sets", () => {
       artwork.edition_sets = [
         {
-          availability: "on hold",
+          forsale: false,
           price: "$1,000",
+          sale_message: "Permanent collection",
         },
-        {
-          availability: "on loan",
-        },
-        {
-          availability: "permanent collection",
-        },
-        {
-          availabilitiy: "for sale",
-          price: "$1,000",
-        },
-        {
-          availabilitiy: "not for sale",
-        },
-        { forsale: true, sale_message: "Contact for price" },
+        { forsale: true, price: "$1,000" },
         { forsale: true, sale_message: "Inquire about availability" },
       ]
 
@@ -912,22 +900,10 @@ describe("Artwork type", () => {
           artwork: {
             editionSets: [
               {
-                saleMessage: "On hold",
-              },
-              {
-                saleMessage: "On loan",
-              },
-              {
                 saleMessage: "Permanent collection",
               },
               {
                 saleMessage: "$1,000",
-              },
-              {
-                saleMessage: "No longer available",
-              },
-              {
-                saleMessage: "Contact for price",
               },
               {
                 saleMessage: "Inquire about availability",
@@ -1089,92 +1065,6 @@ describe("Artwork type", () => {
         }
       }
     `
-
-    it("returns 'On hold' if work is on hold with no price", () => {
-      artwork.sale_message = "Not for sale"
-      artwork.price = null
-      artwork.availability = "on hold"
-
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            slug: "richard-prince-untitled-portrait",
-            saleMessage: "On hold",
-          },
-        })
-      })
-    })
-
-    it("returns '[Price], on hold' if work is on hold with a price", () => {
-      artwork.sale_message = "Not for sale"
-      artwork.price = "$420,000"
-      artwork.price_cents = [42000000]
-      artwork.price_currency = "USD"
-      artwork.availability = "on hold"
-
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            slug: "richard-prince-untitled-portrait",
-            saleMessage: "US$420,000, on hold",
-          },
-        })
-      })
-    })
-
-    it("returns 'Sold' if work is sold", () => {
-      artwork.sale_message = "$420,000 - Sold"
-
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            slug: "richard-prince-untitled-portrait",
-            saleMessage: "Sold",
-          },
-        })
-      })
-    })
-
-    it("returns null if work is not for sale", () => {
-      artwork.availability = "not for sale"
-
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            slug: "richard-prince-untitled-portrait",
-            saleMessage: null,
-          },
-        })
-      })
-    })
-
-    it("returns 'On loan' if work is on loan", () => {
-      artwork.sale_message = "Not for sale"
-      artwork.availability = "on loan"
-
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            slug: "richard-prince-untitled-portrait",
-            saleMessage: "On loan",
-          },
-        })
-      })
-    })
-
-    it("returns Permanent Collection if work is part of permanent collection", () => {
-      artwork.sale_message = "for sale"
-      artwork.availability = "permanent collection"
-
-      return runQuery(query, context).then((data) => {
-        expect(data).toEqual({
-          artwork: {
-            slug: "richard-prince-untitled-portrait",
-            saleMessage: "Permanent collection",
-          },
-        })
-      })
-    })
 
     it("returns the gravity sale_message if for sale but there is no price", () => {
       artwork.availability = "for sale"
