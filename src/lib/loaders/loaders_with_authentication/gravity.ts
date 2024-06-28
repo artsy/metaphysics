@@ -648,6 +648,13 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerSearchCriteriaCollectorProfilesLoader: gravityLoader<
+      any,
+      { partnerId: string; partnerSearchCriteriaId: string }
+    >(
+      ({ partnerId, partnerSearchCriteriaId }) =>
+        `partner/${partnerId}/partner_search_criterias/${partnerSearchCriteriaId}/users`
+    ),
     partnerShowsLoader: gravityLoader(
       (partner_id) => `partner/${partner_id}/shows`,
       {},

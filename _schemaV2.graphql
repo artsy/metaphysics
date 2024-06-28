@@ -14682,6 +14682,13 @@ type Partner implements Node {
   ): LocationConnection
   meta: PartnerMeta
   name: String
+  partnerAlertsCollectorProfilesConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    partnerSearchCriteriaId: String
+  ): PartnerAlertsCollectorProfilesConnection
   partnerAlertsConnection(
     after: String
     before: String
@@ -14774,6 +14781,26 @@ type PartnerAlert {
   search_criteria_id: String
   updated_at: String
   user_ids: [String]
+}
+
+# A connection to a list of items.
+type PartnerAlertsCollectorProfilesConnection {
+  # A list of edges.
+  edges: [PartnerAlertsCollectorProfilesEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerAlertsCollectorProfilesEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: CollectorProfileType
 }
 
 # A connection to a list of items.

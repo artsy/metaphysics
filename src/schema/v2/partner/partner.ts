@@ -51,6 +51,7 @@ import {
   ArtworkVisibility,
   ArtworkVisibilityEnumValues,
 } from "schema/v2/artwork/artworkVisibility"
+import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -175,6 +176,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       nodeType: PartnerAlertType,
     }).connectionType
 
+    const PartnerAlertsCollectorProfilesConnectionType = connectionWithCursorInfo(
+      {
+        name: "PartnerAlertsCollectorProfiles",
+        nodeType: CollectorProfileType,
+      }
+    ).connectionType
+
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -241,6 +249,77 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             args,
             resolveNode: ({ artist }) => artist,
           })
+        },
+      },
+      partnerAlertsCollectorProfilesConnection: {
+        type: PartnerAlertsCollectorProfilesConnectionType,
+        args: pageable({
+          partnerSearchCriteriaId: {
+            type: GraphQLString,
+          },
+        }),
+        // partnerSearchCriteriaCollectorProfilesLoader
+        resolve: async (
+          { _id },
+          args,
+          { partnerSearchCriteriaCollectorProfilesLoader }
+        ) => {
+          if (!partnerSearchCriteriaCollectorProfilesLoader) return null
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          console.log("were args", args)
+
+          type GravityArgs = {
+            page: number
+            size: number
+            total_count: number
+            partner_search_criteria_id: string
+          }
+
+          const gravityArgs: GravityArgs = {
+            page,
+            size,
+            total_count: args.totalCount,
+            partner_search_criteria_id: args.partnerSearchCriteriaId,
+          }
+
+          // const { results, count } = await articlesLoader(articleArgs)
+          const data = await partnerSearchCriteriaCollectorProfilesLoader?.({
+            partnerId: _id,
+            partnerSearchCriteriaId: args.partnerSearchCriteriaId,
+          })
+
+          console.log("CP endpoint", data)
+          console.log("CP count", data.collector_profiles.length)
+
+          // totalCount: count,
+          //   pageCursors: createPageCursors({ ...args, page, size }, count),
+          //   ...connectionFromArraySlice(results, args, {
+          //     arrayLength: count,
+          //     sliceStart: offset,
+          //   }),
+
+          return {
+            totalCount: 10,
+            pageCursors: createPageCursors({ ...args, page, size }, 10),
+            ...connectionFromArraySlice(data.collector_profiles, args, {
+              arrayLength: 10,
+              sliceStart: offset,
+            }),
+          }
+
+          // const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          // return paginationResolver({
+          //   offset,
+          //   page,
+          //   size,
+          //   body: body.collector_profiles,
+          //   args,
+          //   resolveNode: (node) => node,
+          // })
         },
       },
       partnerAlertsConnection: {
