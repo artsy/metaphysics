@@ -1528,47 +1528,21 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           price_cents,
           price_currency,
         }) => {
-          // Don't display anything if artwork is not for sale.
-          if (availability === "not for sale") {
-            return null
+          if (availability !== "for sale" || !price_cents) {
+            return sale_message
           }
 
-          // If permanent collection, on loan or sold, just return those, do not include price.
-          if (availability === "permanent collection") {
-            return "Permanent collection"
-          }
-          if (availability === "on loan") {
-            return "On loan"
-          }
-          if (sale_message && sale_message.indexOf("Sold") > -1) {
-            return "Sold"
-          }
+          const formattedSaleMessage =
+            price_cents.length === 1
+              ? priceDisplayText(price_cents[0], price_currency, "")
+              : priceRangeDisplayText(
+                  price_cents[0],
+                  price_cents[1],
+                  price_currency,
+                  ""
+                )
 
-          let formatted
-
-          if (price_cents) {
-            formatted =
-              price_cents.length === 1
-                ? priceDisplayText(price_cents[0], price_currency, "")
-                : priceRangeDisplayText(
-                    price_cents[0],
-                    price_cents[1],
-                    price_currency,
-                    ""
-                  )
-          } else {
-            formatted = sale_message
-          }
-
-          // If on hold, prepend the price (if there is one).
-          if (availability === "on hold") {
-            if (price_cents) {
-              return `${formatted}, on hold`
-            }
-            return "On hold"
-          }
-
-          return formatted
+          return formattedSaleMessage
         },
       },
       priceListedDisplay: {
