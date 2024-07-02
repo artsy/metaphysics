@@ -17,6 +17,7 @@ const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
  */
 export const responseLoggerLink = (name: string) => {
   return new ApolloLink((operation, forward) => {
+    // @ts-expect-error
     if (!(forward && operation)) {
       return null
     }
