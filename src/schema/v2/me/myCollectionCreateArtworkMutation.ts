@@ -20,6 +20,7 @@ import {
   ArtworkSignatureTypeEnum,
   transformSignatureFieldsToGravityFields,
 } from "../artwork/artworkSignatureTypes"
+import { ArtworkConditionEnum } from "../artwork/artworkCondition"
 
 export const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
@@ -76,6 +77,9 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
     },
     coaByGallery: {
       type: GraphQLBoolean,
+    },
+    condition: {
+      type: ArtworkConditionEnum,
     },
     confidentialNotes: {
       type: GraphQLString,
@@ -193,6 +197,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       coaByAuthenticatingBody,
       coaByGallery,
       collectorLocation,
+      condition,
       conditionDescription,
       confidentialNotes,
       costCurrencyCode,
@@ -260,6 +265,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
         coa_by_authenticating_body: coaByAuthenticatingBody,
         coa_by_gallery: coaByGallery,
         collection_id: "my-collection",
+        condition: condition,
         condition_description: conditionDescription,
         confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,

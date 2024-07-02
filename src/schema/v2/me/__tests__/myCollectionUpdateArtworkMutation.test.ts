@@ -46,6 +46,7 @@ const defaultArtworkDetails = ({
   price_paid_currency: "USD",
   artwork_location: "Berlin, Germany",
   collector_location: { city: "Berlin", country: "Germany" },
+  condition: "very_good",
   condition_description: "like a new!",
   provenance: "Pat Hearn Gallery",
   title: "hey now",
@@ -103,6 +104,7 @@ const computeMutationInput = ({
           metric: "in"
           artworkLocation: "Berlin, Germany"
           collectorLocation: {country: "Germany", city: "Berlin"}
+          condition: VERY_GOOD
           conditionDescription: "like a new!"
           pricePaidCents: 10000
           pricePaidCurrency: "USD"
@@ -135,6 +137,11 @@ const computeMutationInput = ({
               collectorLocation {
                 city
                 country
+              }
+              condition {
+                value
+                displayText
+                description
               }
               conditionDescription {
                 label
@@ -248,6 +255,11 @@ describe("myCollectionUpdateArtworkMutation", () => {
               "city": "Berlin",
               "country": "Germany",
             },
+            "condition": Object {
+              "description": "Like a new!",
+              "displayText": "Very good",
+              "value": "VERY_GOOD",
+            },
             "conditionDescription": Object {
               "details": "Like a new!",
               "label": "Condition details",
@@ -319,6 +331,11 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
+            },
+            "condition": Object {
+              "description": "Like a new!",
+              "displayText": "Very good",
+              "value": "VERY_GOOD",
             },
             "conditionDescription": Object {
               "details": "Like a new!",

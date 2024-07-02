@@ -18,6 +18,7 @@ const artworkDetails = {
   price_paid_currency: "USD",
   artwork_location: "Berlin, Germany",
   collector_location: { country: "Germany", city: "Berlin" },
+  condition: "very_good",
   condition_description: "like a new!",
   attribution_class: "open edition",
   images: [
@@ -68,6 +69,7 @@ const computeMutationInput = ({
           category: "some strange category"
           coaByAuthenticatingBody: false
           coaByGallery: true
+          condition: VERY_GOOD
           conditionDescription: "like a new!"
           costCurrencyCode: "USD"
           costMinor: 200
@@ -111,6 +113,11 @@ const computeMutationInput = ({
               collectorLocation {
                 city
                 country
+              }
+              condition {
+                value
+                displayText
+                description
               }
               conditionDescription {
                 label
@@ -213,6 +220,11 @@ describe("myCollectionCreateArtworkMutation", () => {
               "city": "Berlin",
               "country": "Germany",
             },
+            "condition": Object {
+              "description": "Like a new!",
+              "displayText": "Very good",
+              "value": "VERY_GOOD",
+            },
             "conditionDescription": Object {
               "details": "Like a new!",
               "label": "Condition details",
@@ -291,6 +303,7 @@ describe("myCollectionCreateArtworkMutation", () => {
         coa_by_gallery: true,
         collection_id: "my-collection",
         collector_location: { city: "Berlin", country: "Germany" },
+        condition: "very_good",
         condition_description: "like a new!",
         confidential_notes: undefined,
         cost_currency_code: "USD",
@@ -346,6 +359,11 @@ describe("myCollectionCreateArtworkMutation", () => {
             "collectorLocation": Object {
               "city": "Berlin",
               "country": "Germany",
+            },
+            "condition": Object {
+              "description": "Like a new!",
+              "displayText": "Very good",
+              "value": "VERY_GOOD",
             },
             "conditionDescription": Object {
               "details": "Like a new!",
