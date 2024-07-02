@@ -155,6 +155,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       nodeType: ArtistType,
     }).connectionType
 
+    const PartnerAlertsCollectorProfilesConnectionType = connectionWithCursorInfo(
+      {
+        name: "PartnerAlertsCollectorProfiles",
+        nodeType: CollectorProfileType,
+      }
+    ).connectionType
+
     const PartnerAlertType = new GraphQLObjectType({
       name: "PartnerAlert",
       fields: {
@@ -167,6 +174,58 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         updated_at: { type: GraphQLString },
         user_ids: { type: new GraphQLList(GraphQLString) },
         artist_id: { type: GraphQLString },
+        collectorProfilesConnection: {
+          type: PartnerAlertsCollectorProfilesConnectionType,
+          args: pageable({
+            // partnerSearchCriteriaId: { type: GraphQLString },
+          }),
+          resolve: async (
+            parent,
+            args,
+            { partnerSearchCriteriaCollectorProfilesLoader }
+          ) => {
+            if (!partnerSearchCriteriaCollectorProfilesLoader) return null
+
+            const { page, size, offset } = convertConnectionArgsToGravityArgs(
+              args
+            )
+            console.log("hello????")
+
+            console.log(args)
+            console.log("parent", parent)
+            // console.log(partnerAlertId)
+
+            const gravityArgs = {
+              page,
+              size,
+              partnerId: parent.partner_id,
+              userIds: parent.user_ids,
+            }
+
+            console.log(gravityArgs)
+
+            const data = await partnerSearchCriteriaCollectorProfilesLoader(
+              gravityArgs
+            )
+            const collectorProfiles = data.body.map(
+              (item) => item.collector_profile
+            )
+            console.log(data)
+            console.log("CP:", collectorProfiles)
+
+            return {
+              totalCount: collectorProfiles.length,
+              pageCursors: createPageCursors(
+                { ...args, page, size },
+                collectorProfiles.length
+              ),
+              ...connectionFromArraySlice(collectorProfiles, args, {
+                arrayLength: collectorProfiles.length,
+                sliceStart: offset,
+              }),
+            }
+          },
+        },
       },
     })
 
@@ -175,13 +234,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       // edgeFields: PartnerAlertsSummaryFields,
       nodeType: PartnerAlertType,
     }).connectionType
-
-    const PartnerAlertsCollectorProfilesConnectionType = connectionWithCursorInfo(
-      {
-        name: "PartnerAlertsCollectorProfiles",
-        nodeType: CollectorProfileType,
-      }
-    ).connectionType
 
     return {
       ...SlugAndInternalIDFields,
@@ -285,7 +337,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             partner_search_criteria_id: args.partnerSearchCriteriaId,
           }
 
-          // const { results, count } = await articlesLoader(articleArgs)
           const data = await partnerSearchCriteriaCollectorProfilesLoader?.({
             partnerId: _id,
             partnerSearchCriteriaId: args.partnerSearchCriteriaId,

@@ -14756,6 +14756,13 @@ union PartnerAgreementOrErrorsUnion = Errors | PartnerAgreement
 
 type PartnerAlert {
   artist_id: String
+  collectorProfilesConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    partnerSearchCriteriaId: String
+  ): PartnerAlertsCollectorProfilesConnection
   created_at: String
   id: String
   matched_at: String
