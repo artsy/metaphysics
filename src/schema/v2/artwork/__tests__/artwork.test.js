@@ -123,7 +123,7 @@ describe("Artwork type", () => {
       expect(data).toEqual({
         artwork: {
           condition: {
-            value: "very_good",
+            value: "VERY_GOOD",
             displayText: "Very good",
             description: "No visible damage",
           },
