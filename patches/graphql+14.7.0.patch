@@ -1,7 +1,8 @@
-patch-package
+diff --git a/node_modules/graphql/type/definition.d.ts b/node_modules/graphql/type/definition.d.ts
+index 1d1b10e..35a767c 100644
 --- a/node_modules/graphql/type/definition.d.ts
 +++ b/node_modules/graphql/type/definition.d.ts
-@@ -615,15 +615,16 @@ export interface GraphQLInterfaceTypeConfig<
+@@ -616,15 +616,16 @@ export interface GraphQLInterfaceTypeConfig<
   *     });
   *
   */
@@ -21,6 +22,8 @@ patch-package
  
    getTypes(): GraphQLObjectType[];
  
+diff --git a/node_modules/graphql/utilities/assertValidName.js b/node_modules/graphql/utilities/assertValidName.js
+index abed985..204bdea 100644
 --- a/node_modules/graphql/utilities/assertValidName.js
 +++ b/node_modules/graphql/utilities/assertValidName.js
 @@ -34,9 +34,9 @@ function assertValidName(name) {
@@ -36,6 +39,8 @@ patch-package
  
    if (!NAME_RX.test(name)) {
      return new _GraphQLError.GraphQLError("Names must match /^[_a-zA-Z][_a-zA-Z0-9]*$/ but \"".concat(name, "\" does not."), node);
+diff --git a/node_modules/graphql/utilities/assertValidName.mjs b/node_modules/graphql/utilities/assertValidName.mjs
+index 607f9d1..033b2ed 100644
 --- a/node_modules/graphql/utilities/assertValidName.mjs
 +++ b/node_modules/graphql/utilities/assertValidName.mjs
 @@ -21,9 +21,9 @@ export function assertValidName(name) {
