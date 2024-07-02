@@ -66,7 +66,7 @@
     "google-libphonenumber": "^3.2.25",
     "graphql": "15.8.0",
     "graphql-depth-limit": "1.1.0",
-    "graphql-middleware": "1.2.6",
+    "graphql-middleware": "^4.0.3",
     "graphql-parse-resolve-info": "^4.12.3",
     "graphql-relay": "0.7.0",
     "graphql-tools": "4.0.8",
@@ -169,8 +169,5 @@
       "pre-commit": "lint-staged; yarn dump:staging; git add _schemaV2.graphql",
       "pre-push": "yarn run type-check"
     }
-  },
-  "resolutions": {
-    "graphql-tools": "4.0.8"
   }
 }
