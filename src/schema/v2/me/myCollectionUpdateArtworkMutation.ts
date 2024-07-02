@@ -20,6 +20,7 @@ import {
   ArtworkSignatureTypeEnum,
   transformSignatureFieldsToGravityFields,
 } from "../artwork/artworkSignatureTypes"
+import { ArtworkConditionEnum } from "../artwork/artworkCondition"
 
 interface MyCollectionArtworkUpdateMutationInput {
   additionalInformation?: string
@@ -29,6 +30,7 @@ interface MyCollectionArtworkUpdateMutationInput {
   category?: string
   coaByAuthenticatingBody?: boolean
   coaByGallery?: boolean
+  condition?: string
   conditionDescription?: string
   confidentialNotes?: string
   costCurrencyCode?: string
@@ -83,6 +85,9 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
     },
     coaByGallery: {
       type: GraphQLBoolean,
+    },
+    condition: {
+      type: ArtworkConditionEnum,
     },
     conditionDescription: {
       type: GraphQLString,
@@ -192,6 +197,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       coaByAuthenticatingBody,
       coaByGallery,
       collectorLocation,
+      condition,
       conditionDescription,
       confidentialNotes,
       costCurrencyCode,
@@ -246,6 +252,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
         artists: artistIds,
         coa_by_authenticating_body: coaByAuthenticatingBody,
         coa_by_gallery: coaByGallery,
+        condition: condition,
         condition_description: conditionDescription,
         confidential_notes: confidentialNotes,
         cost_currency_code: costCurrencyCode,
