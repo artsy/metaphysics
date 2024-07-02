@@ -5201,12 +5201,12 @@ graphql-depth-limit@1.1.0:
   dependencies:
     arrify "^1.0.1"
 
-graphql-middleware@1.2.6:
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/graphql-middleware/-/graphql-middleware-1.2.6.tgz#11392687aaa2ef7cc90d46b8ac883d60b526b56d"
-  integrity sha512-+agrI6GvkRx0jZTBAjzcmA49qE2B5y7RJBHolPO5EpZpBXSRw+vrHniXxfuXJyZo47uEsgTIfM2mTR9U2fKVvw==
+graphql-middleware@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/graphql-middleware/-/graphql-middleware-4.0.3.tgz#37fcf10ac95b71d8f1064b2cfef902d327f40846"
+  integrity sha512-qKN3vLNd2fzaUczxQTR7WIB05L+b1xHLHRP5cdK9yboRckqTrFsW2Ot2rKqmXRwxaNCLJD7WEeg1ggdPSpGstg==
   dependencies:
-    graphql-tools "^3.0.2"
+    graphql-tools "^4.0.8"
 
 graphql-parse-resolve-info@^4.12.3:
   version "4.12.3"
@@ -5221,7 +5221,7 @@ graphql-relay@0.7.0:
   resolved "https://registry.yarnpkg.com/graphql-relay/-/graphql-relay-0.7.0.tgz#e5c7a4bb52ede09e90e92dfd7b89d5947362278b"
   integrity sha512-P8eS3IbZRhbfbcfud1Q6VPrIru4hchkb15MuOij+WQo9r0chD5NBIxiVjuRE2iG2EMHxIOrZb8LnMe82+YdITA==
 
-graphql-tools@4.0.8, graphql-tools@^3.0.2:
+graphql-tools@4.0.8, graphql-tools@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/graphql-tools/-/graphql-tools-4.0.8.tgz#e7fb9f0d43408fb0878ba66b522ce871bafe9d30"
   integrity sha512-MW+ioleBrwhRjalKjYaLQbr+920pHBgy9vM/n47sswtns8+96sRn5M/G+J1eu7IMeKWiN/9p6tmwCHU7552VJg==
