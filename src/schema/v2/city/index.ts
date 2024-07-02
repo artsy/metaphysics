@@ -74,7 +74,7 @@ export const CityType = new GraphQLObjectType<TCity, ResolverContext>({
           },
           status: {
             type: EventStatus.type,
-            defaultValue: "CURRENT",
+            defaultValue: "current",
             description: "Filter shows by chronological event status",
           },
           partnerType: {
