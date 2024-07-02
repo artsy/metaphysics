@@ -28,7 +28,7 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
     },
     sort: {
       type: ShowSorts,
-      defaultValue: "-created_at",
+      defaultValue: ShowSorts.getValue("CREATED_AT_DESC")?.value,
     },
     status: {
       type: EventStatus.type,

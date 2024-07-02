@@ -1,0 +1,79 @@
+diff --git a/node_modules/graphql/type/definition.d.ts b/node_modules/graphql/type/definition.d.ts
+index b304d22..784c6df 100644
+--- a/node_modules/graphql/type/definition.d.ts
++++ b/node_modules/graphql/type/definition.d.ts
+@@ -705,15 +705,16 @@ export interface GraphQLUnionTypeExtensions {
+  *     });
+  *
+  */
+-export class GraphQLUnionType {
++// TODO: Remove `any` defaults before submitting upstream.
++export class GraphQLUnionType<TSource = any, TContext = any> {
+   name: string;
+   description: Maybe<string>;
+-  resolveType: Maybe<GraphQLTypeResolver<any, any>>;
++  resolveType: Maybe<GraphQLTypeResolver<TSource, TContext>>;  
+   extensions: Maybe<Readonly<GraphQLUnionTypeExtensions>>;
+   astNode: Maybe<UnionTypeDefinitionNode>;
+   extensionASTNodes: Maybe<ReadonlyArray<UnionTypeExtensionNode>>;
+ 
+-  constructor(config: Readonly<GraphQLUnionTypeConfig<any, any>>);
++  constructor(config: GraphQLUnionTypeConfig<TSource, TContext>);  
+   getTypes(): Array<GraphQLObjectType>;
+ 
+   toConfig(): GraphQLUnionTypeConfig<any, any> & {
+diff --git a/node_modules/graphql/utilities/assertValidName.js b/node_modules/graphql/utilities/assertValidName.js
+index 5affb00..7c79a3b 100644
+--- a/node_modules/graphql/utilities/assertValidName.js
++++ b/node_modules/graphql/utilities/assertValidName.js
+@@ -34,9 +34,9 @@ function assertValidName(name) {
+ function isValidNameError(name) {
+   typeof name === 'string' || (0, _devAssert.default)(0, 'Expected name to be a string.');
+ 
+-  if (name.length > 1 && name[0] === '_' && name[1] === '_') {
+-    return new _GraphQLError.GraphQLError("Name \"".concat(name, "\" must not begin with \"__\", which is reserved by GraphQL introspection."));
+-  }
++  // if (name.length > 1 && name[0] === '_' && name[1] === '_') {
++  //   return new _GraphQLError.GraphQLError("Name \"".concat(name, "\" must not begin with \"__\", which is reserved by GraphQL introspection."));
++  // }
+ 
+   if (!NAME_RX.test(name)) {
+     return new _GraphQLError.GraphQLError("Names must match /^[_a-zA-Z][_a-zA-Z0-9]*$/ but \"".concat(name, "\" does not."));
+diff --git a/node_modules/graphql/utilities/assertValidName.js.flow b/node_modules/graphql/utilities/assertValidName.js.flow
+index 2e2493a..b117f3d 100644
+--- a/node_modules/graphql/utilities/assertValidName.js.flow
++++ b/node_modules/graphql/utilities/assertValidName.js.flow
+@@ -21,11 +21,11 @@ export function assertValidName(name: string): string {
+  */
+ export function isValidNameError(name: string): GraphQLError | void {
+   devAssert(typeof name === 'string', 'Expected name to be a string.');
+-  if (name.length > 1 && name[0] === '_' && name[1] === '_') {
+-    return new GraphQLError(
+-      `Name "${name}" must not begin with "__", which is reserved by GraphQL introspection.`,
+-    );
+-  }
++  // if (name.length > 1 && name[0] === '_' && name[1] === '_') {
++  //   return new GraphQLError(
++  //     `Name "${name}" must not begin with "__", which is reserved by GraphQL introspection.`,
++  //   );
++  // }
+   if (!NAME_RX.test(name)) {
+     return new GraphQLError(
+       `Names must match /^[_a-zA-Z][_a-zA-Z0-9]*$/ but "${name}" does not.`,
+diff --git a/node_modules/graphql/utilities/assertValidName.mjs b/node_modules/graphql/utilities/assertValidName.mjs
+index d504d22..7fd641b 100644
+--- a/node_modules/graphql/utilities/assertValidName.mjs
++++ b/node_modules/graphql/utilities/assertValidName.mjs
+@@ -21,9 +21,9 @@ export function assertValidName(name) {
+ export function isValidNameError(name) {
+   typeof name === 'string' || devAssert(0, 'Expected name to be a string.');
+ 
+-  if (name.length > 1 && name[0] === '_' && name[1] === '_') {
+-    return new GraphQLError("Name \"".concat(name, "\" must not begin with \"__\", which is reserved by GraphQL introspection."));
+-  }
++  // if (name.length > 1 && name[0] === '_' && name[1] === '_') {
++  //   return new GraphQLError("Name \"".concat(name, "\" must not begin with \"__\", which is reserved by GraphQL introspection."));
++  // }
+ 
+   if (!NAME_RX.test(name)) {
+     return new GraphQLError("Names must match /^[_a-zA-Z][_a-zA-Z0-9]*$/ but \"".concat(name, "\" does not."));

@@ -64,12 +64,12 @@
     "express-ipfilter": "0.3.1",
     "express-rate-limit": "3.2.0",
     "google-libphonenumber": "^3.2.25",
-    "graphql": "14.7.0",
+    "graphql": "15.8.0",
     "graphql-depth-limit": "1.1.0",
     "graphql-middleware": "1.2.6",
     "graphql-parse-resolve-info": "^4.12.3",
     "graphql-relay": "0.7.0",
-    "graphql-tools": "4.0.5",
+    "graphql-tools": "4.0.8",
     "graphql-type-json": "0.1.4",
     "hot-shots": "5.6.1",
     "http-shutdown": "1.2.1",
@@ -169,5 +169,8 @@
       "pre-commit": "lint-staged; yarn dump:staging; git add _schemaV2.graphql",
       "pre-push": "yarn run type-check"
     }
+  },
+  "resolutions": {
+    "graphql-tools": "4.0.8"
   }
 }

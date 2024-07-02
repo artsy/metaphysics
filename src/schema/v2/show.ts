@@ -343,7 +343,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           format: {
             type: ExhibitionPeriodFormatEnum,
             description: "Formatting option to apply to exhibition period",
-            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG"),
+            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG")?.value,
           },
         },
         resolve: ({ start_at, end_at }, args) => {
@@ -512,7 +512,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           },
           status: {
             type: EventStatus.type,
-            defaultValue: "CURRENT",
+            defaultValue: "current",
             description: "By default show only current shows",
           },
           discoverable: {
