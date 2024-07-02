@@ -155,18 +155,93 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       nodeType: ArtistType,
     }).connectionType
 
+    const PartnerAlertsCollectorProfilesConnectionType = connectionWithCursorInfo(
+      {
+        name: "PartnerAlertsCollectorProfiles",
+        nodeType: CollectorProfileType,
+      }
+    ).connectionType
+
     const PartnerAlertType = new GraphQLObjectType({
       name: "PartnerAlert",
       fields: {
         id: { type: GraphQLString },
-        search_criteria_id: { type: GraphQLString },
-        partner_id: { type: GraphQLString },
+        searchCriteriaId: {
+          type: GraphQLString,
+          resolve: ({ search_criteria_id }) => search_criteria_id,
+        },
+        partnerId: {
+          type: GraphQLString,
+          resolve: ({ partner_id }) => partner_id,
+        },
         score: { type: GraphQLString },
-        matched_at: { type: GraphQLString },
-        created_at: { type: GraphQLString },
-        updated_at: { type: GraphQLString },
-        user_ids: { type: new GraphQLList(GraphQLString) },
-        artist_id: { type: GraphQLString },
+        matchedAt: {
+          type: GraphQLString,
+          resolve: ({ matched_at }) => matched_at,
+        },
+        userIds: {
+          type: new GraphQLList(GraphQLString),
+          resolve: ({ user_ids }) => user_ids,
+        },
+        artistId: {
+          type: GraphQLString,
+          resolve: ({ artist_id }) => artist_id,
+        },
+        collectorProfilesConnection: {
+          type: PartnerAlertsCollectorProfilesConnectionType,
+          args: pageable({
+            totalCount: {
+              type: GraphQLBoolean,
+            },
+          }),
+          resolve: async (
+            parent,
+            args,
+            { partnerSearchCriteriaCollectorProfilesLoader }
+          ) => {
+            if (!partnerSearchCriteriaCollectorProfilesLoader) return null
+
+            const { page, size, offset } = convertConnectionArgsToGravityArgs(
+              args
+            )
+            console.log(args)
+            console.log("parent", parent)
+
+            // TODO: Add typing and fix casing
+            const gravityArgs = {
+              page,
+              size,
+              total_count: args.totalCount,
+              partner_id: parent.partner_id,
+              user_ids: parent.user_ids,
+            }
+
+            console.log(gravityArgs)
+
+            const data = await partnerSearchCriteriaCollectorProfilesLoader(
+              gravityArgs
+            )
+
+            const collectorProfiles = data.body.flatMap((item) =>
+              item.collector_profile ? [item.collector_profile].flat() : []
+            )
+
+            console.log(data)
+            console.log("CP:", collectorProfiles)
+
+            return {
+              totalCount: collectorProfiles.length,
+              pageCursors: createPageCursors(
+                { ...args, page, size },
+                collectorProfiles.length
+              ),
+              ...connectionFromArraySlice(collectorProfiles, args, {
+                arrayLength: collectorProfiles.length,
+                sliceStart: offset,
+              }),
+            }
+          },
+        },
       },
     })
 
@@ -175,13 +250,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       // edgeFields: PartnerAlertsSummaryFields,
       nodeType: PartnerAlertType,
     }).connectionType
-
-    const PartnerAlertsCollectorProfilesConnectionType = connectionWithCursorInfo(
-      {
-        name: "PartnerAlertsCollectorProfiles",
-        nodeType: CollectorProfileType,
-      }
-    ).connectionType
 
     return {
       ...SlugAndInternalIDFields,
@@ -285,7 +353,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             partner_search_criteria_id: args.partnerSearchCriteriaId,
           }
 
-          // const { results, count } = await articlesLoader(articleArgs)
           const data = await partnerSearchCriteriaCollectorProfilesLoader?.({
             partnerId: _id,
             partnerSearchCriteriaId: args.partnerSearchCriteriaId,

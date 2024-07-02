@@ -650,10 +650,17 @@ export default (accessToken, userID, opts) => {
     ),
     partnerSearchCriteriaCollectorProfilesLoader: gravityLoader<
       any,
-      { partnerId: string; partnerSearchCriteriaId: string }
+      { partner_id: string; user_ids: string[] }
     >(
-      ({ partnerId, partnerSearchCriteriaId }) =>
-        `partner/${partnerId}/partner_search_criterias/${partnerSearchCriteriaId}/users`
+      ({ partner_id, user_ids }) => {
+        console.log("im in")
+        console.log("partnerid", partner_id)
+        console.log("userIds", user_ids)
+        const userIdsParams = user_ids.map((id) => `user_ids[]=${id}`).join("&")
+        return `/partner_collector_profiles?partner_id=${partner_id}&${userIdsParams}`
+      },
+      {},
+      { headers: true }
     ),
     partnerShowsLoader: gravityLoader(
       (partner_id) => `partner/${partner_id}/shows`,

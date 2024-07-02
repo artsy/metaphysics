@@ -14772,15 +14772,20 @@ type PartnerAgreement {
 union PartnerAgreementOrErrorsUnion = Errors | PartnerAgreement
 
 type PartnerAlert {
-  artist_id: String
-  created_at: String
+  artistId: String
+  collectorProfilesConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    totalCount: Boolean
+  ): PartnerAlertsCollectorProfilesConnection
   id: String
-  matched_at: String
-  partner_id: String
+  matchedAt: String
+  partnerId: String
   score: String
-  search_criteria_id: String
-  updated_at: String
-  user_ids: [String]
+  searchCriteriaId: String
+  userIds: [String]
 }
 
 # A connection to a list of items.
