@@ -26,7 +26,11 @@ const StaticContent: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { staticContentLoader }) => {
-    if (!id) return {}
+    if (!id)
+      return {
+        id: "static-content",
+        slug: "static-content",
+      }
 
     return staticContentLoader(id)
   },
