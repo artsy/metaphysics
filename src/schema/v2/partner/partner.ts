@@ -204,19 +204,22 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             const { page, size, offset } = convertConnectionArgsToGravityArgs(
               args
             )
-            console.log(args)
-            console.log("parent", parent)
 
-            // TODO: Add typing and fix casing
-            const gravityArgs = {
+            type GravityArgs = {
+              page: number
+              size: number
+              partner_id: string
+              user_ids: string[]
+              total_count?: number
+            }
+
+            const gravityArgs: GravityArgs = {
               page,
               size,
               total_count: args.totalCount,
               partner_id: parent.partner_id,
               user_ids: parent.user_ids,
             }
-
-            console.log(gravityArgs)
 
             const data = await partnerSearchCriteriaCollectorProfilesLoader(
               gravityArgs
@@ -225,9 +228,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             const collectorProfiles = data.body.flatMap((item) =>
               item.collector_profile ? [item.collector_profile].flat() : []
             )
-
-            console.log(data)
-            console.log("CP:", collectorProfiles)
 
             return {
               totalCount: collectorProfiles.length,
@@ -247,7 +247,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
     const PartnerAlertsConnectionType = connectionWithCursorInfo({
       name: "PartnerAlerts",
-      // edgeFields: PartnerAlertsSummaryFields,
       nodeType: PartnerAlertType,
     }).connectionType
 
@@ -319,76 +318,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      partnerAlertsCollectorProfilesConnection: {
-        type: PartnerAlertsCollectorProfilesConnectionType,
-        args: pageable({
-          partnerSearchCriteriaId: {
-            type: GraphQLString,
-          },
-        }),
-        // partnerSearchCriteriaCollectorProfilesLoader
-        resolve: async (
-          { _id },
-          args,
-          { partnerSearchCriteriaCollectorProfilesLoader }
-        ) => {
-          if (!partnerSearchCriteriaCollectorProfilesLoader) return null
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            args
-          )
-
-          console.log("were args", args)
-
-          type GravityArgs = {
-            page: number
-            size: number
-            total_count: number
-            partner_search_criteria_id: string
-          }
-
-          const gravityArgs: GravityArgs = {
-            page,
-            size,
-            total_count: args.totalCount,
-            partner_search_criteria_id: args.partnerSearchCriteriaId,
-          }
-
-          const data = await partnerSearchCriteriaCollectorProfilesLoader?.({
-            partnerId: _id,
-            partnerSearchCriteriaId: args.partnerSearchCriteriaId,
-          })
-
-          console.log("CP endpoint", data)
-          console.log("CP count", data.collector_profiles.length)
-
-          // totalCount: count,
-          //   pageCursors: createPageCursors({ ...args, page, size }, count),
-          //   ...connectionFromArraySlice(results, args, {
-          //     arrayLength: count,
-          //     sliceStart: offset,
-          //   }),
-
-          return {
-            totalCount: 10,
-            pageCursors: createPageCursors({ ...args, page, size }, 10),
-            ...connectionFromArraySlice(data.collector_profiles, args, {
-              arrayLength: 10,
-              sliceStart: offset,
-            }),
-          }
-
-          // const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-          // return paginationResolver({
-          //   offset,
-          //   page,
-          //   size,
-          //   body: body.collector_profiles,
-          //   args,
-          //   resolveNode: (node) => node,
-          // })
-        },
-      },
       partnerAlertsConnection: {
         type: PartnerAlertsConnectionType,
         args: pageable({
@@ -411,7 +340,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           type GravityArgs = {
             page: number
             size: number
-            total_count: number
+            total_count?: number
           }
 
           const gravityArgs: GravityArgs = {

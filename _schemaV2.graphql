@@ -14682,13 +14682,6 @@ type Partner implements Node {
   ): LocationConnection
   meta: PartnerMeta
   name: String
-  partnerAlertsCollectorProfilesConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    partnerSearchCriteriaId: String
-  ): PartnerAlertsCollectorProfilesConnection
   partnerAlertsConnection(
     after: String
     before: String
