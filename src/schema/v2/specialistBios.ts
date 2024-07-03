@@ -1,6 +1,7 @@
 import {
   GraphQLFieldConfig,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
@@ -21,13 +22,13 @@ const SpecialistBioType = new GraphQLObjectType<specialistBio, ResolverContext>(
   {
     name: "SpecialistBio",
     fields: {
-      bio: { type: GraphQLString },
-      email: { type: GraphQLString },
+      bio: { type: new GraphQLNonNull(GraphQLString) },
+      email: { type: new GraphQLNonNull(GraphQLString) },
       firstName: {
-        type: GraphQLString,
+        type: new GraphQLNonNull(GraphQLString),
       },
       image: {
-        type: ImageType,
+        type: new GraphQLNonNull(ImageType),
         resolve: ({ imageUrl }) => {
           if (!imageUrl) return null
 
@@ -36,14 +37,14 @@ const SpecialistBioType = new GraphQLObjectType<specialistBio, ResolverContext>(
           }
         },
       },
-      jobTitle: { type: GraphQLString },
-      name: { type: GraphQLString },
+      jobTitle: { type: new GraphQLNonNull(GraphQLString) },
+      name: { type: new GraphQLNonNull(GraphQLString) },
     },
   }
 )
 
 export const SpecialistBios: GraphQLFieldConfig<void, ResolverContext> = {
   description: "A list of specialists",
-  type: new GraphQLList(SpecialistBioType),
+  type: new GraphQLList(new GraphQLNonNull(SpecialistBioType)),
   resolve: () => specialistBiosData,
 }
