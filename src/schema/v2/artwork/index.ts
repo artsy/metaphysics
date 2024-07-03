@@ -96,6 +96,7 @@ import { PartnerOfferType } from "../partnerOffer"
 import currencyCodes from "lib/currency_codes.json"
 import { date } from "../fields/date"
 import { ArtworkVisibility } from "./artworkVisibility"
+import { ArtworkConditionType } from "./artworkCondition"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -1787,6 +1788,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             details: capitalizeFirstCharacter(detailsParts.join(", ")),
           }
         },
+      },
+      condition: {
+        type: ArtworkConditionType,
+        resolve: (artwork) => artwork,
       },
       conditionDescription: {
         type: ArtworkInfoRowType,
