@@ -14,18 +14,20 @@ index 5c18b05..1aaa8af 100644
          info: info,
          transforms: transforms,
 diff --git a/node_modules/graphql-tools/dist/stitching/schemaRecreation.js b/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
-index b2bdfdc..a44552f 100644
+index b2bdfdc..07ac440 100644
 --- a/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
 +++ b/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
-@@ -62,6 +62,8 @@ function recreateType(type, resolveType, keepResolvers) {
+@@ -62,7 +62,9 @@ function recreateType(type, resolveType, keepResolvers) {
          var newValues_1 = {};
          values.forEach(function (value) {
              newValues_1[value.name] = {
+-                value: value.value,
 +                // Simply pass-through the name of the enum entry such that the enum type in the original schema will
 +                // receive that and will be able to do its work as if it were never proxied.
-                 value: value.value,
++                value: value.name,
                  deprecationReason: value.deprecationReason,
                  description: value.description,
+                 astNode: value.astNode,
 diff --git a/node_modules/graphql-tools/dist/transforms/FilterTypes.js b/node_modules/graphql-tools/dist/transforms/FilterTypes.js
 index c947a4d..e0273d7 100644
 --- a/node_modules/graphql-tools/dist/transforms/FilterTypes.js

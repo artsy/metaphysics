@@ -172,7 +172,7 @@ type Admin {
   # A list of feature flags
   featureFlags(
     # The sort order of the results
-    sortBy: FeatureFlagsSortBy = NAME
+    sortBy: FeatureFlagEnums
   ): [FeatureFlag]
 }
 
@@ -192,7 +192,7 @@ type AdminCreateFeatureFlagPayload {
   # A list of feature flags
   featureFlags(
     # The sort order of the results
-    sortBy: FeatureFlagsSortBy = NAME
+    sortBy: FeatureFlagEnums
   ): [FeatureFlag]
 }
 
@@ -207,7 +207,7 @@ type AdminDeleteFeatureFlagPayload {
   # A list of feature flags
   featureFlags(
     # The sort order of the results
-    sortBy: FeatureFlagsSortBy = NAME
+    sortBy: FeatureFlagEnums
   ): [FeatureFlag]
   success: Boolean
 }
@@ -230,7 +230,7 @@ type AdminToggleFeatureFlagPayload {
   # A list of feature flags
   featureFlags(
     # The sort order of the results
-    sortBy: FeatureFlagsSortBy = NAME
+    sortBy: FeatureFlagEnums
   ): [FeatureFlag]
   success: Boolean
 }
@@ -249,7 +249,7 @@ type AdminUpdateFeatureFlagPayload {
   # A list of feature flags
   featureFlags(
     # The sort order of the results
-    sortBy: FeatureFlagsSortBy = NAME
+    sortBy: FeatureFlagEnums
   ): [FeatureFlag]
 }
 
@@ -9725,6 +9725,11 @@ type FeatureFlag {
   variants: [FeatureFlagVariantType]
 }
 
+enum FeatureFlagEnums {
+  EXPERIMENT
+  RELEASE
+}
+
 type FeatureFlagEnvironments {
   enabled: Boolean!
   name: String!
@@ -9764,11 +9769,6 @@ type FeatureFlagVariantType {
 
 enum FeatureFlagVariantWeightType {
   VARIABLE
-}
-
-enum FeatureFlagsSortBy {
-  CREATED_AT
-  NAME
 }
 
 enum FeatureLayouts {

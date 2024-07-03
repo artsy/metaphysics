@@ -76,7 +76,7 @@ const Conversations: GraphQLFieldConfig<
     },
     type: {
       type: ConversationsInputModeEnum,
-      defaultValue: ConversationsInputModeEnum.getValue("USER")?.value,
+      defaultValue: ConversationsInputModeEnum.getValue("USER")?.name,
     },
     toBeReplied: {
       type: GraphQLBoolean,

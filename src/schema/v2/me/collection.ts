@@ -29,7 +29,7 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
           sort: {
             type: CollectionArtworkSorts,
             defaultValue: CollectionArtworkSorts.getValue("SAVED_AT_DESC")!
-              .value,
+              .name,
           },
           page: { type: GraphQLInt },
           forSale: { type: GraphQLBoolean },
