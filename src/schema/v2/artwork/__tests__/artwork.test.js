@@ -94,6 +94,44 @@ describe("Artwork type", () => {
     }
   })
 
+  describe("#condition", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          condition {
+            value
+            displayText
+            description
+          }
+        }
+      }
+    `
+
+    it("returns the artwork's condition", async () => {
+      artwork = {
+        ...artwork,
+        condition: "very_good",
+        condition_description: "no visible damage",
+      }
+
+      context = {
+        artworkLoader: () => Promise.resolve(artwork),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          condition: {
+            value: "VERY_GOOD",
+            displayText: "Very good",
+            description: "No visible damage",
+          },
+        },
+      })
+    })
+  })
+
   describe("#importSource", () => {
     const query = `
       {
