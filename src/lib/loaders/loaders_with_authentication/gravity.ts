@@ -648,14 +648,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerSearchCriteriaCollectorProfilesLoader: gravityLoader<
+    partnerCollectorProfilesLoader: gravityLoader<
       any,
       { partner_id: string; user_ids: string[] }
     >(
       ({ partner_id, user_ids }) => {
-        console.log("im in")
-        console.log("partnerid", partner_id)
-        console.log("userIds", user_ids)
         const userIdsParams = user_ids.map((id) => `user_ids[]=${id}`).join("&")
         return `/partner_collector_profiles?partner_id=${partner_id}&${userIdsParams}`
       },

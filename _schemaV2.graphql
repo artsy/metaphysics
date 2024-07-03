@@ -14772,33 +14772,13 @@ type PartnerAlert {
     first: Int
     last: Int
     totalCount: Boolean
-  ): PartnerAlertsCollectorProfilesConnection
+  ): PartnerCollectorProfilesConnection
   id: String
   matchedAt: String
   partnerId: String
   score: String
   searchCriteriaId: String
   userIds: [String]
-}
-
-# A connection to a list of items.
-type PartnerAlertsCollectorProfilesConnection {
-  # A list of edges.
-  edges: [PartnerAlertsCollectorProfilesEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type PartnerAlertsCollectorProfilesEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: CollectorProfileType
 }
 
 # A connection to a list of items.
@@ -15035,6 +15015,26 @@ enum PartnerClassification {
   INSTITUTIONAL_SELLER
   PRIVATE_COLLECTOR
   PRIVATE_DEALER
+}
+
+# A connection to a list of items.
+type PartnerCollectorProfilesConnection {
+  # A list of edges.
+  edges: [PartnerCollectorProfilesEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerCollectorProfilesEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: CollectorProfileType
 }
 
 # A connection to a list of items.

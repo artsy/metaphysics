@@ -51,7 +51,7 @@ import {
   ArtworkVisibility,
   ArtworkVisibilityEnumValues,
 } from "schema/v2/artwork/artworkVisibility"
-import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
+import { PartnerAlertType } from "./partnerAlerts"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -154,96 +154,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       edgeFields: AlertsSummaryFields,
       nodeType: ArtistType,
     }).connectionType
-
-    const PartnerAlertsCollectorProfilesConnectionType = connectionWithCursorInfo(
-      {
-        name: "PartnerAlertsCollectorProfiles",
-        nodeType: CollectorProfileType,
-      }
-    ).connectionType
-
-    const PartnerAlertType = new GraphQLObjectType({
-      name: "PartnerAlert",
-      fields: {
-        id: { type: GraphQLString },
-        searchCriteriaId: {
-          type: GraphQLString,
-          resolve: ({ search_criteria_id }) => search_criteria_id,
-        },
-        partnerId: {
-          type: GraphQLString,
-          resolve: ({ partner_id }) => partner_id,
-        },
-        score: { type: GraphQLString },
-        matchedAt: {
-          type: GraphQLString,
-          resolve: ({ matched_at }) => matched_at,
-        },
-        userIds: {
-          type: new GraphQLList(GraphQLString),
-          resolve: ({ user_ids }) => user_ids,
-        },
-        artistId: {
-          type: GraphQLString,
-          resolve: ({ artist_id }) => artist_id,
-        },
-        collectorProfilesConnection: {
-          type: PartnerAlertsCollectorProfilesConnectionType,
-          args: pageable({
-            totalCount: {
-              type: GraphQLBoolean,
-            },
-          }),
-          resolve: async (
-            parent,
-            args,
-            { partnerSearchCriteriaCollectorProfilesLoader }
-          ) => {
-            if (!partnerSearchCriteriaCollectorProfilesLoader) return null
-
-            const { page, size, offset } = convertConnectionArgsToGravityArgs(
-              args
-            )
-
-            type GravityArgs = {
-              page: number
-              size: number
-              partner_id: string
-              user_ids: string[]
-              total_count?: number
-            }
-
-            const gravityArgs: GravityArgs = {
-              page,
-              size,
-              total_count: args.totalCount,
-              partner_id: parent.partner_id,
-              user_ids: parent.user_ids,
-            }
-
-            const data = await partnerSearchCriteriaCollectorProfilesLoader(
-              gravityArgs
-            )
-
-            const collectorProfiles = data.body.flatMap((item) =>
-              item.collector_profile ? [item.collector_profile].flat() : []
-            )
-
-            return {
-              totalCount: collectorProfiles.length,
-              pageCursors: createPageCursors(
-                { ...args, page, size },
-                collectorProfiles.length
-              ),
-              ...connectionFromArraySlice(collectorProfiles, args, {
-                arrayLength: collectorProfiles.length,
-                sliceStart: offset,
-              }),
-            }
-          },
-        },
-      },
-    })
 
     const PartnerAlertsConnectionType = connectionWithCursorInfo({
       name: "PartnerAlerts",
@@ -353,7 +263,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             _id,
             gravityArgs
           )
-
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
           return paginationResolver({
