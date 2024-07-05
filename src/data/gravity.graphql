@@ -247,11 +247,6 @@ type Artwork {
   id: ID!
 
   """
-  Artwork location
-  """
-  location: PartnerLocation
-
-  """
   Description of the work's medium
   """
   medium: String
@@ -1111,6 +1106,10 @@ type MarketingCollection {
   category: String!
   createdAt: ISO8601DateTime!
   credit: String
+
+  """
+  HTML description, derived from the markdown description
+  """
   description: String
   descriptionMarkdown: String
   featuredArtistExclusionIds: [String!]!
@@ -1235,81 +1234,215 @@ union MoneyOrErrorUnion = Error | Money
 
 type Mutation {
   acceptPartnerAgreement(
+    """
+    Parameters for AcceptPartnerAgreement
+    """
     input: AcceptPartnerAgreementInput!
   ): AcceptPartnerAgreementPayload
-  captureHold(input: CaptureHoldInput!): CaptureHoldPayload
-  confirmPassword(input: ConfirmPasswordInput!): ConfirmPasswordPayload
+  captureHold(
+    """
+    Parameters for CaptureHold
+    """
+    input: CaptureHoldInput!
+  ): CaptureHoldPayload
+  confirmPassword(
+    """
+    Parameters for ConfirmPassword
+    """
+    input: ConfirmPasswordInput!
+  ): ConfirmPasswordPayload
   createAndSendBackupSecondFactor(
+    """
+    Parameters for CreateAndSendBackupSecondFactor
+    """
     input: CreateAndSendBackupSecondFactorInput!
   ): CreateAndSendBackupSecondFactorPayload
   createAppSecondFactor(
+    """
+    Parameters for CreateAppSecondFactor
+    """
     input: CreateAppSecondFactorInput!
   ): CreateAppSecondFactorPayload
   createBackupSecondFactors(
+    """
+    Parameters for CreateBackupSecondFactors
+    """
     input: CreateBackupSecondFactorsInput!
   ): CreateBackupSecondFactorsPayload
   createBankDebitSetup(
+    """
+    Parameters for CreateBankDebitSetup
+    """
     input: CreateBankDebitSetupInput!
   ): CreateBankDebitSetupPayload
-  createImage(input: CreateImageInput!): CreateImagePayload
-  createSavedSearch(input: CreateSavedSearchInput!): CreateSavedSearchPayload
+  createImage(
+    """
+    Parameters for CreateImage
+    """
+    input: CreateImageInput!
+  ): CreateImagePayload
+  createSavedSearch(
+    """
+    Parameters for CreateSavedSearch
+    """
+    input: CreateSavedSearchInput!
+  ): CreateSavedSearchPayload
   createSmsSecondFactor(
+    """
+    Parameters for CreateSmsSecondFactor
+    """
     input: CreateSmsSecondFactorInput!
   ): CreateSmsSecondFactorPayload
-  createUserAddress(input: CreateUserAddressInput!): CreateUserAddressPayload
-  createViewingRoom(input: CreateViewingRoomInput!): CreateViewingRoomPayload
+  createUserAddress(
+    """
+    Parameters for CreateUserAddress
+    """
+    input: CreateUserAddressInput!
+  ): CreateUserAddressPayload
+  createViewingRoom(
+    """
+    Parameters for CreateViewingRoom
+    """
+    input: CreateViewingRoomInput!
+  ): CreateViewingRoomPayload
 
   """
   Deduct from the partner's exemption balance, against which they can make sales and not pay commission
   """
   debitCommissionExemption(
+    """
+    Parameters for DebitCommissionExemption
+    """
     input: DebitCommissionExemptionInput!
   ): DebitCommissionExemptionPayload
-  deleteUserAddress(input: DeleteUserAddressInput!): DeleteUserAddressPayload
-  deleteViewingRoom(input: DeleteViewingRoomInput!): DeleteViewingRoomPayload
+  deleteUserAddress(
+    """
+    Parameters for DeleteUserAddress
+    """
+    input: DeleteUserAddressInput!
+  ): DeleteUserAddressPayload
+  deleteViewingRoom(
+    """
+    Parameters for DeleteViewingRoom
+    """
+    input: DeleteViewingRoomInput!
+  ): DeleteViewingRoomPayload
   deliverSecondFactor(
+    """
+    Parameters for DeliverSecondFactor
+    """
     input: DeliverSecondFactorInput!
   ): DeliverSecondFactorPayload
-  disableSavedSearch(input: DisableSavedSearchInput!): DisableSavedSearchPayload
+  disableSavedSearch(
+    """
+    Parameters for DisableSavedSearch
+    """
+    input: DisableSavedSearchInput!
+  ): DisableSavedSearchPayload
   disableSecondFactor(
+    """
+    Parameters for DisableSecondFactor
+    """
     input: DisableSecondFactorInput!
   ): DisableSecondFactorPayload
-  enableSecondFactor(input: EnableSecondFactorInput!): EnableSecondFactorPayload
-  holdInventory(input: HoldInventoryInput!): HoldInventoryPayload
-  publishViewingRoom(input: PublishViewingRoomInput!): PublishViewingRoomPayload
-  recordArtworkView(input: RecordArtworkViewInput!): RecordArtworkViewPayload
+  enableSecondFactor(
+    """
+    Parameters for EnableSecondFactor
+    """
+    input: EnableSecondFactorInput!
+  ): EnableSecondFactorPayload
+  holdInventory(
+    """
+    Parameters for HoldInventory
+    """
+    input: HoldInventoryInput!
+  ): HoldInventoryPayload
+  publishViewingRoom(
+    """
+    Parameters for PublishViewingRoom
+    """
+    input: PublishViewingRoomInput!
+  ): PublishViewingRoomPayload
+  recordArtworkView(
+    """
+    Parameters for RecordArtworkView
+    """
+    input: RecordArtworkViewInput!
+  ): RecordArtworkViewPayload
 
   """
   Refund commission exemption for a previous transaction
   """
   refundCommissionExemption(
+    """
+    Parameters for RefundCommissionExemption
+    """
     input: RefundCommissionExemptionInput!
   ): RefundCommissionExemptionPayload
   requestConditionReport(
+    """
+    Parameters for RequestConditionReport
+    """
     input: RequestConditionReportInput!
   ): RequestConditionReportPayload
   transferMyCollection(
+    """
+    Parameters for TransferMyCollection
+    """
     input: TransferMyCollectionInput!
   ): TransferMyCollectionPayload
   unpublishViewingRoom(
+    """
+    Parameters for UnpublishViewingRoom
+    """
     input: UnpublishViewingRoomInput!
   ): UnpublishViewingRoomPayload
   updateAppSecondFactor(
+    """
+    Parameters for UpdateAppSecondFactor
+    """
     input: UpdateAppSecondFactorInput!
   ): UpdateAppSecondFactorPayload
-  updateSavedSearch(input: UpdateSavedSearchInput!): UpdateSavedSearchPayload
+  updateSavedSearch(
+    """
+    Parameters for UpdateSavedSearch
+    """
+    input: UpdateSavedSearchInput!
+  ): UpdateSavedSearchPayload
   updateSmsSecondFactor(
+    """
+    Parameters for UpdateSmsSecondFactor
+    """
     input: UpdateSmsSecondFactorInput!
   ): UpdateSmsSecondFactorPayload
-  updateUserAddress(input: UpdateUserAddressInput!): UpdateUserAddressPayload
+  updateUserAddress(
+    """
+    Parameters for UpdateUserAddress
+    """
+    input: UpdateUserAddressInput!
+  ): UpdateUserAddressPayload
   updateUserDefaultAddress(
+    """
+    Parameters for UpdateUserDefaultAddress
+    """
     input: UpdateUserDefaultAddressInput!
   ): UpdateUserDefaultAddressPayload
-  updateViewingRoom(input: UpdateViewingRoomInput!): UpdateViewingRoomPayload
+  updateViewingRoom(
+    """
+    Parameters for UpdateViewingRoom
+    """
+    input: UpdateViewingRoomInput!
+  ): UpdateViewingRoomPayload
   updateViewingRoomArtworks(
+    """
+    Parameters for UpdateViewingRoomArtworks
+    """
     input: UpdateViewingRoomArtworksInput!
   ): UpdateViewingRoomArtworksPayload
   updateViewingRoomSubsections(
+    """
+    Parameters for UpdateViewingRoomSubsections
+    """
     input: UpdateViewingRoomSubsectionsInput!
   ): UpdateViewingRoomSubsectionsPayload
 }
@@ -1460,19 +1593,6 @@ type PartnerAgreement {
 A partner agreement or errors object
 """
 union PartnerAgreementOrErrorsUnion = Errors | PartnerAgreement
-
-"""
-A location
-"""
-type PartnerLocation {
-  address: String
-  address2: String
-  city: String
-  country: String
-  id: ID!
-  postalCode: String
-  state: String
-}
 
 """
 Autogenerated input type of PublishViewingRoom
