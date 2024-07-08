@@ -54,20 +54,6 @@ export const PartnerAlertType = new GraphQLObjectType({
 
         const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-        type GravityArgs = {
-          page: number
-          size: number
-          offset: number
-          total_count: boolean
-        }
-
-        const gravityArgs: GravityArgs = {
-          page,
-          size,
-          offset,
-          total_count: true,
-        }
-
         const { partner_id, user_ids } = parent
         if (!partner_id || !user_ids) {
           throw new Error(
@@ -75,8 +61,25 @@ export const PartnerAlertType = new GraphQLObjectType({
           )
         }
 
+        type GravityArgs = {
+          page: number
+          size: number
+          offset: number
+          total_count: boolean
+          partner_id: string
+          user_ids: string[]
+        }
+
+        const gravityArgs: GravityArgs = {
+          page,
+          size,
+          offset,
+          total_count: true,
+          partner_id: parent.partner_id,
+          user_ids: parent.user_ids,
+        }
+
         const { body, headers } = await partnerCollectorProfilesLoader(
-          { partner_id, user_ids },
           gravityArgs
         )
 
@@ -85,7 +88,6 @@ export const PartnerAlertType = new GraphQLObjectType({
         )
 
         const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
         return paginationResolver({
           totalCount,
           offset,
@@ -93,7 +95,6 @@ export const PartnerAlertType = new GraphQLObjectType({
           size,
           body: collectorProfiles,
           args,
-          resolveNode: (node) => node,
         })
       },
     },

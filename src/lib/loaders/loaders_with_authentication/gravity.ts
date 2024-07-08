@@ -597,6 +597,11 @@ export default (accessToken, userID, opts) => {
       ({ partnerId, userId }) =>
         `partner_collector_profile?partner_id=${partnerId}&user_id=${userId}`
     ),
+    partnerCollectorProfilesLoader: gravityLoader(
+      "partner_collector_profiles",
+      {},
+      { headers: true }
+    ),
     partnerCollectorProfileArtworkInquiryCountLoader: gravityLoader<
       any,
       { partnerID: string; collectorProfileID: string }
@@ -645,17 +650,6 @@ export default (accessToken, userID, opts) => {
     ),
     partnerSearchCriteriaLoader: gravityLoader(
       (id) => `/partner/${id}/partner_search_criterias`,
-      {},
-      { headers: true }
-    ),
-    partnerCollectorProfilesLoader: gravityLoader<
-      any,
-      { partner_id: string; user_ids: string[] }
-    >(
-      ({ partner_id, user_ids }) => {
-        const userIdsParams = user_ids.map((id) => `user_ids[]=${id}`).join("&")
-        return `/partner_collector_profiles?partner_id=${partner_id}&${userIdsParams}`
-      },
       {},
       { headers: true }
     ),
