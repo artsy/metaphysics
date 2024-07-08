@@ -55,26 +55,23 @@ export const PartnerAlertType = new GraphQLObjectType({
 
         const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-        console.log("inside seconds api call")
         type GravityArgs = {
           page: number
           size: number
           partner_id: string
           user_ids: string[]
-          total_count?: number
+          total_count?: boolean
         }
 
         const gravityArgs: GravityArgs = {
           page,
           size,
-          total_count: args.totalCount,
+          total_count: true,
           partner_id: parent.partner_id,
           user_ids: parent.user_ids,
         }
 
         const data = await partnerCollectorProfilesLoader(gravityArgs)
-
-        console.log("data", data)
 
         const collectorProfiles = data.body.flatMap((item) =>
           item.collector_profile ? [item.collector_profile].flat() : []

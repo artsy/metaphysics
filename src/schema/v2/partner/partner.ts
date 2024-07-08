@@ -237,9 +237,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           size: {
             type: GraphQLInt,
           },
-          totalCount: {
-            type: GraphQLBoolean,
-          },
         }),
         resolve: async ({ _id }, args, { partnerSearchCriteriaLoader }) => {
           if (!partnerSearchCriteriaLoader) return null
@@ -250,13 +247,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           type GravityArgs = {
             page: number
             size: number
-            total_count?: number
+            total_count: boolean
           }
 
           const gravityArgs: GravityArgs = {
             page,
             size,
-            total_count: args.totalCount,
+            total_count: true,
           }
 
           const { body, headers } = await partnerSearchCriteriaLoader?.(

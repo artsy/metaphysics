@@ -14689,7 +14689,6 @@ type Partner implements Node {
     last: Int
     page: Int
     size: Int
-    totalCount: Boolean
   ): PartnerAlertsConnection
   partnerPageEligible: Boolean
   partnerType: String
