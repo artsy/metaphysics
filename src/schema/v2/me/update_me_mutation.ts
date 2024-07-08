@@ -177,6 +177,11 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: GraphQLString,
     },
     profession: { type: GraphQLString, description: "Profession." },
+    promptedForUpdate: {
+      type: GraphQLBoolean,
+      description:
+        "Since we don't want to ask a collector to update their profile too often, set this to record they've been prompted",
+    },
     otherRelevantPositions: {
       type: GraphQLString,
       description: "Collector's positions with relevant institutions",
