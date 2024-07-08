@@ -7,9 +7,8 @@ import {
 } from "graphql"
 import {
   connectionWithCursorInfo,
-  createPageCursors,
+  paginationResolver,
 } from "schema/v2/fields/pagination"
-import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { CollectorProfileType } from "schema/v2/CollectorProfile/collectorProfile"
 
@@ -58,39 +57,45 @@ export const PartnerAlertType = new GraphQLObjectType({
         type GravityArgs = {
           page: number
           size: number
-          partner_id: string
-          user_ids: string[]
-          total_count?: boolean
+          offset: number
+          total_count: boolean
         }
 
         const gravityArgs: GravityArgs = {
           page,
           size,
+          offset,
           total_count: true,
-          partner_id: parent.partner_id,
-          user_ids: parent.user_ids,
         }
 
-        const data = await partnerCollectorProfilesLoader(gravityArgs)
+        const { partner_id, user_ids } = parent
+        if (!partner_id || !user_ids) {
+          throw new Error(
+            "partnerId or userIds is undefined in the parent object"
+          )
+        }
 
-        const collectorProfiles = data.body.flatMap((item) =>
+        const { body, headers } = await partnerCollectorProfilesLoader(
+          { partner_id, user_ids },
+          gravityArgs
+        )
+
+        const collectorProfiles = body.flatMap((item) =>
           item.collector_profile ? [item.collector_profile].flat() : []
         )
 
-        return {
-          totalCount: collectorProfiles.length,
-          pageCursors: createPageCursors(
-            { ...args, page, size },
-            collectorProfiles.length
-          ),
-          ...connectionFromArraySlice(collectorProfiles, args, {
-            arrayLength: collectorProfiles.length,
-            sliceStart: offset,
-          }),
-        }
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+        return paginationResolver({
+          totalCount,
+          offset,
+          page,
+          size,
+          body: collectorProfiles,
+          args,
+          resolveNode: (node) => node,
+        })
       },
     },
   },
 })
-
-// export default PartnerAlertType
