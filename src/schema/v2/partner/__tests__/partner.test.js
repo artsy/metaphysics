@@ -1422,7 +1422,7 @@ describe("Partner type", () => {
   })
 
   describe("#partnerAlertsConnection", () => {
-    it("returns the summary of artists with recently enabled user search criteria", async () => {  
+    it("returns partner search criteria details", async () => {  
      const response = 
        {
         body: {
@@ -1431,12 +1431,19 @@ describe("Partner type", () => {
             id: '8754ff90-b020-425b-8dae-894ce5ad9d1f',
             search_criteria_id: '3f980bbe-7b9b-4fa9-beb1-69d13e94fb0c',
             partner_id: '5f80bfefe8d808000ea212c1',
-          
+            search_criteria: {
+              id: '3f980bbe-7b9b-4fa9-beb1-69d13e94fb0c',
+              price_range: "1-2"
+            }
           },
           {
             id: 'b4adc50d-a584-4820-9140-4d49d7b6c7dc',
             search_criteria_id: '614af56c-88cb-4ea7-bec5-fbdf9b67c24a',
             partner_id: '5f80bfefe8d808000ea212c1',
+            search_criteria: {
+              id: '614af56c-88cb-4ea7-bec5-fbdf9b67c24a',
+              price_range: "1000-5000"
+            }
           },
         ],
         },
@@ -1451,7 +1458,7 @@ describe("Partner type", () => {
             partnerAlertsConnection(first: 10) {
               edges {
                 node {
-                  id
+                  priceRange
                 }
               }
             }
@@ -1469,12 +1476,12 @@ describe("Partner type", () => {
             edges: [
               {
                 node: {
-                  id: "8754ff90-b020-425b-8dae-894ce5ad9d1f",
+                  priceRange: "1-2",
                 },
               },
               {
                 node: {
-                  id: "b4adc50d-a584-4820-9140-4d49d7b6c7dc"
+                  priceRange: "1000-5000"
                 }
               }
             ],

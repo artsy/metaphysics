@@ -46,12 +46,11 @@ import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
-import { AlertsSummaryFields } from "../Alerts"
+import { AlertType, AlertsSummaryFields, PartnerAlertsFields } from "../Alerts"
 import {
   ArtworkVisibility,
   ArtworkVisibilityEnumValues,
 } from "schema/v2/artwork/artworkVisibility"
-import { PartnerAlertType } from "./partnerAlerts"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -157,7 +156,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
     const PartnerAlertsConnectionType = connectionWithCursorInfo({
       name: "PartnerAlerts",
-      nodeType: PartnerAlertType,
+      edgeFields: PartnerAlertsFields,
+      nodeType: AlertType,
     }).connectionType
 
     return {
@@ -260,6 +260,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             _id,
             gravityArgs
           )
+
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
           return paginationResolver({
@@ -269,7 +270,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             body: body.hits,
             args,
-            resolveNode: (node) => node,
+            resolveNode: ({ search_criteria }) => search_criteria,
           })
         },
       },

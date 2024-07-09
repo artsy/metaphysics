@@ -484,3 +484,32 @@ export const AlertsSummaryFields = {
     resolve: (resp) => resp,
   },
 }
+
+export const PartnerAlertsFields = {
+  id: { type: GraphQLString },
+  searchCriteriaId: {
+    type: GraphQLString,
+    resolve: ({ search_criteria_id }) => search_criteria_id,
+  },
+  partnerId: {
+    type: GraphQLString,
+    resolve: ({ partner_id }) => partner_id,
+  },
+  score: { type: GraphQLString },
+  matchedAt: {
+    type: GraphQLString,
+    resolve: ({ matched_at }) => matched_at,
+  },
+  alert: {
+    type: AlertType,
+    resolve: ({ search_criteria }) => search_criteria,
+  },
+  userIds: {
+    type: new GraphQLList(GraphQLString),
+    resolve: ({ user_ids }) => user_ids,
+  },
+  artistId: {
+    type: GraphQLString,
+    resolve: ({ artist_id }) => artist_id,
+  },
+}

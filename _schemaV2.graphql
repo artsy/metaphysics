@@ -14763,23 +14763,6 @@ type PartnerAgreement {
 # A partner agreement or errors object
 union PartnerAgreementOrErrorsUnion = Errors | PartnerAgreement
 
-type PartnerAlert {
-  artistId: String
-  collectorProfilesConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    totalCount: Boolean
-  ): PartnerCollectorProfilesConnection
-  id: String
-  matchedAt: String
-  partnerId: String
-  score: String
-  searchCriteriaId: String
-  userIds: [String]
-}
-
 # A connection to a list of items.
 type PartnerAlertsConnection {
   # A list of edges.
@@ -14793,11 +14776,27 @@ type PartnerAlertsConnection {
 
 # An edge in a connection.
 type PartnerAlertsEdge {
+  alert: Alert
+  artistId: String
+  collectorProfilesConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    totalCount: Boolean
+  ): PartnerCollectorProfilesConnection
+
   # A cursor for use in pagination
   cursor: String!
+  id: String
+  matchedAt: String
 
   # The item at the end of the edge
-  node: PartnerAlert
+  node: Alert
+  partnerId: String
+  score: String
+  searchCriteriaId: String
+  userIds: [String]
 }
 
 type PartnerArtist {
