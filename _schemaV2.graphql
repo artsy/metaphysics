@@ -14788,7 +14788,12 @@ type PartnerAlertsEdge {
 
   # A cursor for use in pagination
   cursor: String!
-  id: String
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID.
+  internalID: ID!
   matchedAt: String
 
   # The item at the end of the edge
