@@ -14776,7 +14776,6 @@ type PartnerAlertsConnection {
 
 # An edge in a connection.
 type PartnerAlertsEdge {
-  alert: Alert
   artistId: String
   collectorProfilesConnection(
     after: String

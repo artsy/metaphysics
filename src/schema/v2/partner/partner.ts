@@ -46,7 +46,11 @@ import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
-import { AlertType, AlertsSummaryFields, PartnerAlertsFields } from "../Alerts"
+import {
+  AlertType,
+  AlertsSummaryFields,
+  PartnerAlertsEdgeFields,
+} from "../Alerts"
 import {
   ArtworkVisibility,
   ArtworkVisibilityEnumValues,
@@ -156,7 +160,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
     const PartnerAlertsConnectionType = connectionWithCursorInfo({
       name: "PartnerAlerts",
-      edgeFields: PartnerAlertsFields,
+      edgeFields: PartnerAlertsEdgeFields,
       nodeType: AlertType,
     }).connectionType
 
