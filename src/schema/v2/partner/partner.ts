@@ -46,7 +46,11 @@ import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
-import { AlertsSummaryFields } from "../Alerts"
+import {
+  AlertType,
+  AlertsSummaryFields,
+  PartnerAlertsEdgeFields,
+} from "../Alerts"
 import {
   ArtworkVisibility,
   ArtworkVisibilityEnumValues,
@@ -154,6 +158,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       nodeType: ArtistType,
     }).connectionType
 
+    const PartnerAlertsConnectionType = connectionWithCursorInfo({
+      name: "PartnerAlerts",
+      edgeFields: PartnerAlertsEdgeFields,
+      nodeType: AlertType,
+    }).connectionType
+
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -219,6 +229,52 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             body,
             args,
             resolveNode: ({ artist }) => artist,
+          })
+        },
+      },
+      alertsConnection: {
+        type: PartnerAlertsConnectionType,
+        args: pageable({
+          page: {
+            type: GraphQLInt,
+          },
+          size: {
+            type: GraphQLInt,
+          },
+        }),
+        resolve: async ({ _id }, args, { partnerSearchCriteriaLoader }) => {
+          if (!partnerSearchCriteriaLoader) return null
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          type GravityArgs = {
+            page: number
+            size: number
+            total_count: boolean
+          }
+
+          const gravityArgs: GravityArgs = {
+            page,
+            size,
+            total_count: true,
+          }
+
+          const { body, headers } = await partnerSearchCriteriaLoader?.(
+            _id,
+            gravityArgs
+          )
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body: body.hits,
+            args,
+            resolveNode: ({ search_criteria }) => search_criteria,
           })
         },
       },
