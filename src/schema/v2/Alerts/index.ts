@@ -12,6 +12,7 @@ import {
   connectionWithCursorInfo,
   createPageCursors,
   emptyConnection,
+  paginationResolver,
 } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
 import { IDFields } from "../object_identification"
@@ -26,6 +27,7 @@ import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArray } from "graphql-relay"
 import { generateDisplayName } from "../previewSavedSearch/generateDisplayName"
+import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
 
 type GravityAlertSettingsJSON = {
   name: string
@@ -34,6 +36,11 @@ type GravityAlertSettingsJSON = {
   details: string
   frequency: string
 }
+
+const PartnerCollectorProfilesConnectionType = connectionWithCursorInfo({
+  name: "PartnerCollectorProfiles",
+  nodeType: CollectorProfileType,
+}).connectionType
 
 export const AlertSettingsFrequencyType = new GraphQLEnumType({
   name: "AlertSettingsFrequency",
@@ -482,5 +489,86 @@ export const AlertsSummaryFields = {
       },
     }),
     resolve: (resp) => resp,
+  },
+}
+
+export const PartnerAlertsEdgeFields = {
+  ...IDFields,
+  searchCriteriaId: {
+    type: GraphQLString,
+    resolve: ({ search_criteria_id }) => search_criteria_id,
+  },
+  partnerId: {
+    type: GraphQLString,
+    resolve: ({ partner_id }) => partner_id,
+  },
+  score: { type: GraphQLString },
+  matchedAt: {
+    type: GraphQLString,
+    resolve: ({ matched_at }) => matched_at,
+  },
+  userIds: {
+    type: new GraphQLList(GraphQLString),
+    resolve: ({ user_ids }) => user_ids,
+  },
+  artistId: {
+    type: GraphQLString,
+    resolve: ({ artist_id }) => artist_id,
+  },
+  collectorProfilesConnection: {
+    type: PartnerCollectorProfilesConnectionType,
+    args: pageable({
+      totalCount: {
+        type: GraphQLBoolean,
+      },
+    }),
+    resolve: async (parent, args, { partnerCollectorProfilesLoader }) => {
+      if (!partnerCollectorProfilesLoader) return null
+
+      const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+      const { partner_id, user_ids } = parent
+      if (!partner_id || !user_ids) {
+        throw new Error(
+          "partnerId or userIds is undefined in the parent object"
+        )
+      }
+
+      type GravityArgs = {
+        page: number
+        size: number
+        offset: number
+        total_count: boolean
+        partner_id: string
+        user_ids: string[]
+      }
+
+      const gravityArgs: GravityArgs = {
+        page,
+        size,
+        offset,
+        total_count: true,
+        partner_id: parent.partner_id,
+        user_ids: parent.user_ids,
+      }
+
+      const { body, headers } = await partnerCollectorProfilesLoader(
+        gravityArgs
+      )
+
+      const collectorProfiles = body.flatMap((item) =>
+        item.collector_profile ? [item.collector_profile].flat() : []
+      )
+
+      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+      return paginationResolver({
+        totalCount,
+        offset,
+        page,
+        size,
+        body: collectorProfiles,
+        args,
+      })
+    },
   },
 }
