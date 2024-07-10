@@ -14438,6 +14438,14 @@ type PartialArtwork {
 }
 
 type Partner implements Node {
+  alertsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): PartnerAlertsConnection
   alertsSummaryArtistsConnection(
     activeInventory: Boolean
     after: String
@@ -14682,14 +14690,6 @@ type Partner implements Node {
   ): LocationConnection
   meta: PartnerMeta
   name: String
-  partnerAlertsConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-    page: Int
-    size: Int
-  ): PartnerAlertsConnection
   partnerPageEligible: Boolean
   partnerType: String
   profile: Profile

@@ -228,7 +228,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      partnerAlertsConnection: {
+      alertsConnection: {
         type: PartnerAlertsConnectionType,
         args: pageable({
           page: {

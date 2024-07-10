@@ -1421,8 +1421,8 @@ describe("Partner type", () => {
     })
   })
 
-  describe("#partnerAlertsConnection", () => {
-    it("returns partner search criteria details", async () => {  
+  describe("#alertsConnection", () => {
+    it("returns partner search criteria details and associated search criteria details", async () => {  
      const response = 
        {
         body: {
@@ -1455,7 +1455,7 @@ describe("Partner type", () => {
       const query = gql`
         {
           partner(id: "catty-partner") {
-            partnerAlertsConnection(first: 10) {
+            alertsConnection(first: 10) {
               edges {
                 node {
                   priceRange
@@ -1466,13 +1466,14 @@ describe("Partner type", () => {
         }
       `
       const partnerSearchCriteriaLoader = () => Promise.resolve(response)
+
       const data = await runAuthenticatedQuery(query, {
         ...context,
         partnerSearchCriteriaLoader,
       })
       expect(data).toEqual({
         partner: {
-          partnerAlertsConnection: {
+          alertsConnection: {
             edges: [
               {
                 node: {
