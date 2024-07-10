@@ -10,6 +10,9 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
+const isInquireAboutAvailability = (saleMessage) =>
+  saleMessage == "Inquire about availability"
+
 const titleWithDate = ({ title, date }) =>
   join(" ", [title, date ? `(${date})` : undefined])
 
@@ -17,14 +20,20 @@ export const artistNames = (artwork) =>
   artwork.cultural_maker || map(artwork.artists, "name").join(", ")
 
 const forSaleIndication = (artwork) =>
-  artwork.forsale ? "Available for Sale" : undefined
+  artwork.forsale && !isInquireAboutAvailability(artwork.sale_message)
+    ? "Available for Sale"
+    : undefined
 
 const dimensions = (artwork) => artwork.dimensions[artwork.metric]
 
-const partnerDescription = ({ partner, forsale }, expanded = true) => {
+const partnerDescription = (
+  { partner, forsale, sale_message },
+  expanded = true
+) => {
   const name = partner && partner.name
   if (isEmpty(name)) return undefined
-  return forsale && expanded
+
+  return forsale && expanded && !isInquireAboutAvailability(sale_message)
     ? `Available for sale from ${name}`
     : `From ${name}`
 }
