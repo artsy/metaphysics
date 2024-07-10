@@ -14506,6 +14506,7 @@ type PartialArtwork {
 type Partner implements Node {
   alertsConnection(
     after: String
+    artistID: String
     before: String
     first: Int
     last: Int
