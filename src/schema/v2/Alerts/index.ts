@@ -494,11 +494,11 @@ export const AlertsSummaryFields = {
 
 export const PartnerAlertsEdgeFields = {
   ...IDFields,
-  searchCriteriaId: {
+  searchCriteriaID: {
     type: GraphQLString,
     resolve: ({ search_criteria_id }) => search_criteria_id,
   },
-  partnerId: {
+  partnerID: {
     type: GraphQLString,
     resolve: ({ partner_id }) => partner_id,
   },
@@ -507,11 +507,11 @@ export const PartnerAlertsEdgeFields = {
     type: GraphQLString,
     resolve: ({ matched_at }) => matched_at,
   },
-  userIds: {
+  userIDs: {
     type: new GraphQLList(GraphQLString),
     resolve: ({ user_ids }) => user_ids,
   },
-  artistId: {
+  artistID: {
     type: GraphQLString,
     resolve: ({ artist_id }) => artist_id,
   },
