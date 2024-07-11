@@ -60,7 +60,7 @@ export const QuizType = new GraphQLObjectType<any, ResolverContext>({
           /* Get artwork ids from a nearObject "user-as-query" weaviate search */
 
           const artworkIds = await fetch(
-            `http://${process.env.FORCE_URL}/api/advisor/8/artworks/quiz_results?userId=${userID}`
+            `${process.env.FORCE_URL}/api/advisor/8/artworks/quiz_results?userId=${userID}`
           )
             .then((res) => res.json())
             .then((data) => {
