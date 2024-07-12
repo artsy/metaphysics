@@ -152,7 +152,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           format: {
             type: ExhibitionPeriodFormatEnum,
             description: "Formatting option to apply to exhibition period",
-            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG")?.name,
+            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG")?.value,
           },
         },
         resolve: ({ start_at, end_at }, args) => {

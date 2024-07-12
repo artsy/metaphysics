@@ -1,20 +1,20 @@
 import {
-  GraphQLNonNull,
-  GraphQLList,
-  GraphQLString,
   GraphQLBoolean,
   GraphQLInputObjectType,
+  GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLString,
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
-import { CollectionType } from "./collection"
 import {
   GravityMutationErrorType,
   formatGravityError,
 } from "lib/gravityErrorHandler"
 import { snakeCase } from "lodash"
+import { ResolverContext } from "types/graphql"
+import { CollectionType } from "./collection"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "UpdateMeCollectionsSuccess",

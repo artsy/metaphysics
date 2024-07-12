@@ -186,3 +186,36 @@ index c4915e0..5c457a6 100644
 +export function mutationWithClientMutationId<TInput, TOutput, TContext>(
 +  config: MutationConfig<TInput, TOutput, TContext>
  ): GraphQLFieldConfig<any, any>;
+diff --git a/node_modules/graphql-relay/mutation/mutation.js b/node_modules/graphql-relay/mutation/mutation.js
+index f80ef11..67239b2 100644
+--- a/node_modules/graphql-relay/mutation/mutation.js
++++ b/node_modules/graphql-relay/mutation/mutation.js
+@@ -51,6 +51,7 @@ function mutationWithClientMutationId(config) {
+     }
+   });
+ 
++
+   const outputType = new _graphql.GraphQLObjectType({
+     name: name + 'Payload',
+     fields: augmentedOutputFields
+@@ -78,14 +79,14 @@ function mutationWithClientMutationId(config) {
+       const payload = mutateAndGetPayload(input, context, info);
+ 
+       if (isPromise(payload)) {
+-        return payload.then(data => ({ ...data,
+-          clientMutationId
+-        }));
++        return payload.then(data => {
++          data.clientMutationId = clientMutationId
++          return data
++        });
+       }
+ 
+-      return { ...payload,
+-        clientMutationId
+-      };
++      payload.clientMutationId = clientMutationId
++      return payload
+     }
+   };
+ }

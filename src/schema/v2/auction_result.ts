@@ -70,7 +70,7 @@ const AuctionResultsStateEnums = new GraphQLEnumType({
 })
 export const AuctionResultsState: GraphQLArgumentConfig = {
   type: AuctionResultsStateEnums,
-  defaultValue: AuctionResultsStateEnums.getValue("ALL")?.name,
+  defaultValue: AuctionResultsStateEnums.getValue("ALL")?.value,
   description:
     "State of the returned auction results (can be past, upcoming, or all)",
 }

@@ -82,15 +82,21 @@ export const createUserInterestsMutation = mutationWithClientMutationId<
       },
     },
   },
-  mutateAndGetPayload: async (args, { meCreateUserInterestLoader }) => {
-    if (!meCreateUserInterestLoader) {
+  mutateAndGetPayload: async (
+    args,
+    { meCreateUserInterestLoader, meLoader }
+  ) => {
+    if (!meCreateUserInterestLoader || !meLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     const userInterestResponses = Promise.all(
       args.userInterests.map(async (userInterest) => {
         const gravityPayload = Object.keys(userInterest).reduce(
-          (acc, key) => ({ ...acc, [snakeCase(key)]: userInterest[key] }),
+          (acc, key) => ({
+            ...acc,
+            [snakeCase(key)]: userInterest[key],
+          }),
           {}
         )
         try {
@@ -101,7 +107,10 @@ export const createUserInterestsMutation = mutationWithClientMutationId<
           if (formattedErr) {
             return { ...formattedErr, _type: "GravityMutationError" }
           } else {
-            return { message: error.message, _type: "GravityMutationError" }
+            return {
+              message: error.message,
+              _type: "GravityMutationError",
+            }
           }
         }
       })

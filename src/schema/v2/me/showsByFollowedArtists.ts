@@ -14,11 +14,11 @@ export const ShowsByFollowedArtists: GraphQLFieldConfig<
   args: pageable({
     sort: {
       type: ShowSorts,
-      defaultValue: ShowSorts.getValue("CREATED_AT_DESC")?.name,
+      defaultValue: ShowSorts.getValue("CREATED_AT_DESC")?.value,
     },
     status: {
       type: EventStatus.type,
-      defaultValue: EventStatusEnums.getValue("CURRENT")?.name,
+      defaultValue: EventStatusEnums.getValue("CURRENT")?.value,
       description: "Filter shows by chronological event status",
     },
   }),

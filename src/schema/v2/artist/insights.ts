@@ -42,7 +42,7 @@ export const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
       args: {
         format: {
           ...Format,
-          defaultValue: FormatEnums.getValue("PLAIN")?.name,
+          defaultValue: FormatEnums.getValue("PLAIN")?.value,
         },
       },
       resolve: ({ description }, { format }) => {

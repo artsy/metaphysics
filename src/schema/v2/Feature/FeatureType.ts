@@ -49,7 +49,7 @@ export const FeatureType = new GraphQLObjectType<
       args: pageable({
         sort: {
           type: OrderedSetSortsEnum,
-          defaultValue: OrderedSetSortsEnum.getValue("KEY_ASC")?.name,
+          defaultValue: OrderedSetSortsEnum.getValue("KEY_ASC")?.value,
         },
       }),
       description:

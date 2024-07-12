@@ -95,7 +95,7 @@ export const FeatureFlags: GraphQLFieldConfig<void, ResolverContext> = {
   args: {
     sortBy: {
       description: "The sort order of the results",
-      defaultValue: FeatureFlagEnums.getValue("NAME")?.name,
+      defaultValue: FeatureFlagEnums.getValue("NAME")?.value,
       type: FeatureFlagEnums,
     },
   },
