@@ -1842,12 +1842,20 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   isShareable: Boolean
   last: String
   location: String
+
+  # A list of MarketingCollections
   marketingCollections(
+    after: String
+    artistId: String
+    before: String
     category: String
+    first: Int
     isFeaturedArtistContent: Boolean
+    last: Int
     size: Int
-    slugs: [String!]
-  ): [MarketingCollection]
+    slugs: [String]
+    sort: MarketingCollectionsSorts
+  ): MarketingCollectionTypeConnection
   meta(page: ArtistPage = ABOUT): ArtistMeta!
   middle: String
   name: String
@@ -9951,7 +9959,20 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
   isPublished: Boolean
   links(format: Format): String
   location: Location
-  marketingCollections(size: Int): [MarketingCollection]!
+
+  # A list of MarketingCollections
+  marketingCollections(
+    after: String
+    artistId: String
+    before: String
+    category: String
+    first: Int
+    isFeaturedArtistContent: Boolean
+    last: Int
+    size: Int
+    slugs: [String]
+    sort: MarketingCollectionsSorts
+  ): MarketingCollectionTypeConnection
   marketingCollectionSlugs: [String]!
   mobileImage: Image
   name: String
@@ -12274,6 +12295,62 @@ type MarketingCollectionQuery {
   internalID: ID
   keyword: String
   tagID: String
+}
+
+enum MarketingCollectionsSorts {
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  UPDATED_AT_ASC
+  UPDATED_AT_DESC
+}
+
+type MarketingCollectionType implements Node {
+  artistIds: [String]
+  artworkIds: [String]
+  category: String
+  createdAt: String
+  credit: String
+  description: String
+  descriptionMarkdown: String
+  featuredArtistExclusionIds: [String]
+  geneIds: [String]
+  headerImageId: String
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID.
+  internalID: ID!
+  isFeaturedArtistContent: Boolean
+  keyword: String
+  priceGuidance: String
+  published: Boolean
+  showFeaturedArtists: Boolean
+  showHeaderArtworksRail: Boolean
+  slug: String
+  thumbnailId: String
+  title: String
+  updatedAt: String
+}
+
+# A connection to a list of items.
+type MarketingCollectionTypeConnection {
+  # A list of edges.
+  edges: [MarketingCollectionTypeEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type MarketingCollectionTypeEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: MarketingCollectionType
 }
 
 # Market Price Insights
@@ -16035,6 +16112,15 @@ type Query {
   ): AuctionsLotStandingConnection!
   _unused_gravity_devices(userId: ID!): [Device!]!
 
+  # An array of marketing collections. Defaults to returning all available collections if no args are passed
+  _unused_gravity_marketingCollections(
+    artistID: String
+    category: String
+    isFeaturedArtistContent: Boolean
+    size: Int
+    slugs: [String!]
+  ): [MarketingCollection!]
+
   # Autocomplete resolvers.
   _unused_gravity_match_partners(
     match_type: String
@@ -16845,14 +16931,19 @@ type Query {
   # Find a marketing collection by ID or slug
   marketingCollection(slug: String!): MarketingCollection
 
-  # An array of marketing collections. Defaults to returning all available collections if no args are passed
+  # A list of MarketingCollections
   marketingCollections(
-    artistID: String
+    after: String
+    artistId: String
+    before: String
     category: String
+    first: Int
     isFeaturedArtistContent: Boolean
+    last: Int
     size: Int
-    slugs: [String!]
-  ): [MarketingCollection!]
+    slugs: [String]
+    sort: MarketingCollectionsSorts
+  ): MarketingCollectionTypeConnection
 
   # Get price insights for a market.
   marketPriceInsights(artistId: ID!, medium: String!): MarketPriceInsights
@@ -21822,13 +21913,20 @@ type Viewer {
   job(id: ID!): Job!
   jobs: [Job!]!
   markdown(content: String!): MarkdownContent
+
+  # A list of MarketingCollections
   marketingCollections(
-    artistID: String
+    after: String
+    artistId: String
+    before: String
     category: String
+    first: Int
     isFeaturedArtistContent: Boolean
+    last: Int
     size: Int
-    slugs: [String!]
-  ): [MarketingCollection]
+    slugs: [String]
+    sort: MarketingCollectionsSorts
+  ): MarketingCollectionTypeConnection
 
   # A Search for Artists
   matchArtist(
