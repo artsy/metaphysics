@@ -1842,20 +1842,12 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   isShareable: Boolean
   last: String
   location: String
-
-  # A list of MarketingCollections
   marketingCollections(
-    after: String
-    artistId: String
-    before: String
     category: String
-    first: Int
     isFeaturedArtistContent: Boolean
-    last: Int
     size: Int
-    slugs: [String]
-    sort: MarketingCollectionsSorts
-  ): MarketingCollectionTypeConnection
+    slugs: [String!]
+  ): [MarketingCollection]
   meta(page: ArtistPage = ABOUT): ArtistMeta!
   middle: String
   name: String
@@ -9959,20 +9951,7 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
   isPublished: Boolean
   links(format: Format): String
   location: Location
-
-  # A list of MarketingCollections
-  marketingCollections(
-    after: String
-    artistId: String
-    before: String
-    category: String
-    first: Int
-    isFeaturedArtistContent: Boolean
-    last: Int
-    size: Int
-    slugs: [String]
-    sort: MarketingCollectionsSorts
-  ): MarketingCollectionTypeConnection
+  marketingCollections(size: Int): [MarketingCollection]!
   marketingCollectionSlugs: [String]!
   mobileImage: Image
   name: String
@@ -12321,12 +12300,12 @@ type MarketingCollectionType implements Node {
 
   # A type-specific ID.
   internalID: ID!
-  isFeaturedArtistContent: Boolean
+  isFeaturedArtistContent: Boolean!
   keyword: String
   priceGuidance: String
-  published: Boolean
-  showFeaturedArtists: Boolean
-  showHeaderArtworksRail: Boolean
+  published: Boolean!
+  showFeaturedArtists: Boolean!
+  showHeaderArtworksRail: Boolean!
   slug: String
   thumbnailId: String
   title: String
@@ -16112,15 +16091,6 @@ type Query {
   ): AuctionsLotStandingConnection!
   _unused_gravity_devices(userId: ID!): [Device!]!
 
-  # An array of marketing collections. Defaults to returning all available collections if no args are passed
-  _unused_gravity_marketingCollections(
-    artistID: String
-    category: String
-    isFeaturedArtistContent: Boolean
-    size: Int
-    slugs: [String!]
-  ): [MarketingCollection!]
-
   # Autocomplete resolvers.
   _unused_gravity_match_partners(
     match_type: String
@@ -16931,8 +16901,17 @@ type Query {
   # Find a marketing collection by ID or slug
   marketingCollection(slug: String!): MarketingCollection
 
-  # A list of MarketingCollections
+  # An array of marketing collections. Defaults to returning all available collections if no args are passed
   marketingCollections(
+    artistID: String
+    category: String
+    isFeaturedArtistContent: Boolean
+    size: Int
+    slugs: [String!]
+  ): [MarketingCollection!]
+
+  # A list of MarketingCollections
+  marketingCollectionsConnection(
     after: String
     artistId: String
     before: String
@@ -21913,9 +21892,16 @@ type Viewer {
   job(id: ID!): Job!
   jobs: [Job!]!
   markdown(content: String!): MarkdownContent
+  marketingCollections(
+    artistID: String
+    category: String
+    isFeaturedArtistContent: Boolean
+    size: Int
+    slugs: [String!]
+  ): [MarketingCollection]
 
   # A list of MarketingCollections
-  marketingCollections(
+  marketingCollectionsConnection(
     after: String
     artistId: String
     before: String

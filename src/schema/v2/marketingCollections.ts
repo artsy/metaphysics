@@ -5,6 +5,7 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLInt,
+  GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
@@ -52,7 +53,7 @@ const MarketingCollectionType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ price_guidance }) => price_guidance,
     },
     published: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
       resolve: ({ published }) => published,
     },
     title: {
@@ -72,7 +73,7 @@ const MarketingCollectionType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ keyword }) => keyword,
     },
     isFeaturedArtistContent: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
       resolve: ({ is_featured_artist_content }) => is_featured_artist_content,
     },
     featuredArtistExclusionIds: {
@@ -89,11 +90,11 @@ const MarketingCollectionType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ thumbnail_id }) => thumbnail_id,
     },
     showHeaderArtworksRail: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
       resolve: ({ show_header_artworks_rail }) => show_header_artworks_rail,
     },
     showFeaturedArtists: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
       resolve: ({ show_featured_artists }) => show_featured_artists,
     },
     artworkIds: {
@@ -103,12 +104,15 @@ const MarketingCollectionType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-export const MarketingCollectionsConnection = connectionWithCursorInfo({
+export const MarketingCollectionsConnectionType = connectionWithCursorInfo({
   nodeType: MarketingCollectionType,
 })
 
-export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
-  type: MarketingCollectionsConnection.connectionType,
+export const MarketingCollectionsConnection: GraphQLFieldConfig<
+  void,
+  ResolverContext
+> = {
+  type: MarketingCollectionsConnectionType.connectionType,
   description: "A list of MarketingCollections",
   args: pageable({
     slugs: {
