@@ -7,6 +7,7 @@ import {
   RenameRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
+import config from "config"
 
 const rootFieldsAllowList = [
   "agreement",
@@ -14,11 +15,14 @@ const rootFieldsAllowList = [
   "artistSeriesConnection",
   "curatedMarketingCollections",
   "marketingCategories",
-  "marketingCollection",
   "marketingCollections",
   "viewingRoom",
   "viewingRooms",
-]
+].concat(
+  config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
+    ? []
+    : ["marketingCollection"]
+)
 
 export const executableGravitySchema = () => {
   const gravityTypeDefs = readFileSync("src/data/gravity.graphql", "utf8")

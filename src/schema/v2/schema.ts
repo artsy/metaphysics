@@ -224,6 +224,8 @@ import { createCareerHighlightMutation } from "./careerHighlight/createCareerHig
 import { deleteCareerHighlightMutation } from "./careerHighlight/deleteCareerHighlightMutation"
 import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHighlightMutation"
 import { updatePartnerShowMutation } from "./partner/updatePartnerShowMutation"
+import { MarketingCollection } from "./marketingCollection"
+import config from "config"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -234,6 +236,12 @@ const OptionalFieldDirective = new GraphQLDirective({
   name: "optionalField",
   locations: [DirectiveLocation.FIELD],
 })
+
+const marketingCollectionUnstitchedRootField = config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
+  ? {
+      marketingCollection: MarketingCollection,
+    }
+  : ({} as any)
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -305,6 +313,7 @@ const rootFields = {
   markdown: MarkdownContent,
   matchArtist: MatchArtist,
   matchConnection: MatchConnection,
+  ...marketingCollectionUnstitchedRootField,
   me: Me,
   node: ObjectIdentification.NodeField,
   notificationPreferences,
