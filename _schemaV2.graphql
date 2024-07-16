@@ -2402,6 +2402,9 @@ type Artwork implements Node & Searchable & Sellable {
   # The location of the artwork in My Collection
   collectorLocation: MyLocation
 
+  # List of collector signals
+  collectorSignals: CollectorSignals
+
   # Comparable auction results
   comparableAuctionResults(
     after: String
@@ -4426,6 +4429,18 @@ type CollectorResume {
 
   # Collector's ID used to stitch buyerActivity with the Exchange schema
   userId: String!
+}
+
+# Collector signals available to the artwork
+type CollectorSignals {
+  # Lot bid count
+  bidCount: Int
+
+  # Lot watcher count
+  lotWatcherCount: Int
+
+  # Partner offer available to collector
+  partnerOffer: PartnerOfferToCollector
 }
 
 # Represents either an action or a potential failure
