@@ -10,9 +10,10 @@ input AddAssetToConsignmentSubmissionInput {
   clientMutationId: String
   externalSubmissionId: ID
   filename: String
-  geminiToken: String!
+  geminiToken: String
   sessionID: String
   size: String
+  source: UploadSource
   submissionID: ID
 }
 
@@ -40,9 +41,10 @@ input AddAssetsToConsignmentSubmissionInput {
   clientMutationId: String
   externalSubmissionId: ID
   filename: String
-  geminiTokens: [String!]!
+  geminiTokens: [String!]
   sessionID: String
   size: String
+  sources: UploadSources
   submissionID: ID
 }
 
@@ -90,6 +92,11 @@ type Asset {
   assetType: String!
 
   """
+  path to document
+  """
+  documentPath: String
+
+  """
   original image name
   """
   filename: String
@@ -108,9 +115,16 @@ type Asset {
   known image urls
   """
   imageUrls: JSON
+  s3Bucket: String
+  s3Path: String
   size: String
   submissionID: ID
   submissionId: ID!
+}
+
+enum AssetType {
+  ADDITIONAL_FILE
+  IMAGE
 }
 
 enum AttributionClass {
@@ -520,6 +534,8 @@ input CreateSubmissionMutationInput {
   editionSize: Int
   editionSizeFormatted: String
   height: String
+  locationAddress: String
+  locationAddress2: String
   locationCity: String
   locationCountry: String
   locationCountryCode: String
@@ -1337,7 +1353,7 @@ Consignment Submission
 type Submission {
   additionalInfo: String
   artistId: String!
-  assets: [Asset]
+  assets(assetType: [AssetType!] = []): [Asset]
   attributionClass: AttributionClass
   authenticityCertificate: Boolean
   category: String
@@ -1360,6 +1376,8 @@ type Submission {
   """
   id: ID!
   internalID: ID
+  locationAddress: String
+  locationAddress2: String
   locationCity: String
   locationCountry: String
   locationCountryCode: String
@@ -1753,6 +1771,26 @@ enum SubmissionSort {
   sort by literature in descending order
   """
   LITERATURE_DESC
+
+  """
+  sort by location_address2 in ascending order
+  """
+  LOCATION_ADDRESS2_ASC
+
+  """
+  sort by location_address2 in descending order
+  """
+  LOCATION_ADDRESS2_DESC
+
+  """
+  sort by location_address in ascending order
+  """
+  LOCATION_ADDRESS_ASC
+
+  """
+  sort by location_address in descending order
+  """
+  LOCATION_ADDRESS_DESC
 
   """
   sort by location_city in ascending order
@@ -2171,6 +2209,8 @@ input UpdateSubmissionMutationInput {
   externalId: ID
   height: String
   id: ID
+  locationAddress: String
+  locationAddress2: String
   locationCity: String
   locationCountry: String
   locationCountryCode: String
@@ -2202,4 +2242,14 @@ type UpdateSubmissionMutationPayload {
   """
   clientMutationId: String
   consignmentSubmission: Submission
+}
+
+input UploadSource {
+  bucket: String
+  key: String
+}
+
+input UploadSources {
+  buckets: [String!]
+  keys: [String!]
 }
