@@ -534,6 +534,8 @@ input CreateSubmissionMutationInput {
   editionSize: Int
   editionSizeFormatted: String
   height: String
+  locationAddress: String
+  locationAddress2: String
   locationCity: String
   locationCountry: String
   locationCountryCode: String
@@ -1374,6 +1376,8 @@ type Submission {
   """
   id: ID!
   internalID: ID
+  locationAddress: String
+  locationAddress2: String
   locationCity: String
   locationCountry: String
   locationCountryCode: String
@@ -1767,6 +1771,26 @@ enum SubmissionSort {
   sort by literature in descending order
   """
   LITERATURE_DESC
+
+  """
+  sort by location_address2 in ascending order
+  """
+  LOCATION_ADDRESS2_ASC
+
+  """
+  sort by location_address2 in descending order
+  """
+  LOCATION_ADDRESS2_DESC
+
+  """
+  sort by location_address in ascending order
+  """
+  LOCATION_ADDRESS_ASC
+
+  """
+  sort by location_address in descending order
+  """
+  LOCATION_ADDRESS_DESC
 
   """
   sort by location_city in ascending order
@@ -2185,6 +2209,8 @@ input UpdateSubmissionMutationInput {
   externalId: ID
   height: String
   id: ID
+  locationAddress: String
+  locationAddress2: String
   locationCity: String
   locationCountry: String
   locationCountryCode: String
