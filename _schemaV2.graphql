@@ -11282,10 +11282,10 @@ type HomePageSalesModule {
 # Experimental schema for new home view
 type HomeView {
   # Hello, world
-  hello: String
+  hello: String!
 
   # A list of sections on the home view
-  sections: [Section]
+  sections: [Section!]!
 }
 
 type IdentityVerification {
@@ -16703,7 +16703,7 @@ type Query {
   homePage: HomePage
 
   # Home view content
-  homeView: HomeView
+  homeView: HomeView!
 
   # An identity verification that the user has access to
   identityVerification(
@@ -18459,7 +18459,7 @@ union SecondFactorOrErrorsUnion = AppSecondFactor | Errors | SmsSecondFactor
 # A generic section in the home view
 type Section {
   # The title of the section
-  title: String
+  title: String!
 }
 
 # A piece that can be sold
@@ -21691,7 +21691,7 @@ type Viewer {
   homePage: HomePage
 
   # Home view content
-  homeView: HomeView
+  homeView: HomeView!
 
   # An identity verification that the user has access to
   identityVerification(
