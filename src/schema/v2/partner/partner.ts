@@ -423,6 +423,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           hasPublishedArtworks: {
             type: GraphQLBoolean,
           },
+          representedByOrHasPublishedArtworks: {
+            type: GraphQLBoolean,
+            description:
+              "Include artists that are represented or have published artworks, should not be used in conjunction with hasPublishedArtworks or representedBy.",
+          },
           artistIDs: {
             type: new GraphQLList(GraphQLString),
           },
@@ -449,6 +454,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             display_on_partner_profile: boolean
             artist_ids: [string]
             has_published_artworks: boolean
+            represented_by_or_has_published_artworks: boolean
           }
 
           const gravityArgs: GravityArgs = {
@@ -460,6 +466,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             display_on_partner_profile: args.displayOnPartnerProfile,
             artist_ids: args.artistIDs,
             has_published_artworks: args.hasPublishedArtworks,
+            represented_by_or_has_published_artworks:
+              args.representedByOrHasPublishedArtworks,
           }
 
           const partnerArtistsLoader = (() => {
