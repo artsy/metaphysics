@@ -11279,6 +11279,12 @@ type HomePageSalesModule {
   results: [Sale]!
 }
 
+# Experimental schema for new home view
+type HomeView {
+  # Hello, world
+  hello: String
+}
+
 type IdentityVerification {
   createdAt(
     format: String
@@ -16697,6 +16703,9 @@ type Query {
   # Home screen content
   homePage: HomePage
 
+  # Home view content
+  homeView: HomeView
+
   # An identity verification that the user has access to
   identityVerification(
     # ID of the IdentityVerification
@@ -21675,6 +21684,9 @@ type Viewer {
 
   # Home screen content
   homePage: HomePage
+
+  # Home view content
+  homeView: HomeView
 
   # An identity verification that the user has access to
   identityVerification(
