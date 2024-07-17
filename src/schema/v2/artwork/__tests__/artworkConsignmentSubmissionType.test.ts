@@ -6,7 +6,7 @@ describe("ArtworkConsignmentSubmissionType", () => {
     id: "richard-prince-untitled-portrait",
     consignmentSubmission: {
       state: "draft",
-      internalID: "someID",
+      id: "someID",
     },
   }
 
