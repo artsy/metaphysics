@@ -30,7 +30,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
     return {
       internalID: {
         type: GraphQLString,
-        resolver: ({ id }) => id,
+        resolve: ({ id }) => id,
       },
       displayText: {
         type: GraphQLString,
