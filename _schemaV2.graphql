@@ -11283,6 +11283,9 @@ type HomePageSalesModule {
 type HomeView {
   # Hello, world
   hello: String
+
+  # A list of sections on the home view
+  sections: [Section]
 }
 
 type IdentityVerification {
@@ -18456,6 +18459,12 @@ enum SecondFactorKind {
 
 # A second factor or errors
 union SecondFactorOrErrorsUnion = AppSecondFactor | Errors | SmsSecondFactor
+
+# A generic section in the home view
+type Section {
+  # The title of the section
+  title: String
+}
 
 # A piece that can be sold
 interface Sellable {
