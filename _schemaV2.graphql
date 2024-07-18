@@ -11281,9 +11281,6 @@ type HomePageSalesModule {
 
 # Experimental schema for new home view
 type HomeView {
-  # Hello, world
-  hello: String!
-
   # A list of sections on the home view
   sections: [Section!]!
 }
