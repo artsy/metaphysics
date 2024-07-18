@@ -2287,6 +2287,18 @@ enum ArtistSorts {
   TRENDING_DESC
 }
 
+# An artists rail section in the home view
+type ArtistsRailSection implements GenericSection {
+  # The component that is prescribed for this section
+  component: Component
+
+  # A stable identifier for this section
+  key: String!
+
+  # A display title for this section
+  title: String!
+}
+
 type ArtistStatuses {
   articles: Boolean
   artists: Boolean
@@ -3130,6 +3142,18 @@ enum ArtworkSorts {
   RECENT_SAVES_COUNT_DESC
   TITLE_ASC
   TITLE_DESC
+}
+
+# An artwork rail section in the home view
+type ArtworksRailSection implements GenericSection {
+  # The component that is prescribed for this section
+  component: Component
+
+  # A stable identifier for this section
+  key: String!
+
+  # A display title for this section
+  title: String!
 }
 
 type ArtworkVersion implements Node {
@@ -6435,6 +6459,21 @@ type CommerceUpdateImpulseConversationIdPayload {
 
 type CommerceUser {
   id: String!
+}
+
+# A component specification
+type Component {
+  # Which component type to render
+  type: ComponentType
+}
+
+# Known component types for use in home view
+enum ComponentType {
+  # A standard rail of artists
+  ARTISTS_RAIL
+
+  # A standard rail of artworks
+  ARTWORKS_RAIL
 }
 
 type ConditionReportRequest {
@@ -10928,6 +10967,18 @@ type GeneFamilyEdge {
 # Meta tags for Gene pages
 type GeneMeta {
   description: String!
+}
+
+# Abstract interface shared by every kind of home view section
+interface GenericSection {
+  # The component that is prescribed for this section
+  component: Component
+
+  # A stable identifier for this section
+  key: String!
+
+  # A display title for this section
+  title: String!
 }
 
 type GravityMutationError {
@@ -18457,11 +18508,7 @@ enum SecondFactorKind {
 # A second factor or errors
 union SecondFactorOrErrorsUnion = AppSecondFactor | Errors | SmsSecondFactor
 
-# A generic section in the home view
-type Section {
-  # The title of the section
-  title: String!
-}
+union Section = ArtistsRailSection | ArtworksRailSection
 
 # A piece that can be sold
 interface Sellable {
