@@ -31,7 +31,7 @@ export const collectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
 
 interface EnrichedSignals {
   bidCount?: number
-  recentSavesCount?: number
+  lotWatcherCount?: number
   partnerOffer?: { endAt: string }
 }
 
@@ -41,9 +41,9 @@ export const enrichArtworkWithCollectorSignals = async (artwork, ctx) => {
 
   const artworkId = artwork._id
 
-  // Is this an auction artwork?
   const inSale = artwork.sale_ids?.length > 0
 
+  // Handle signals for auction artworks
   if (inSale) {
     const activeAuctions = await activeAuctionsForArtwork(artwork, ctx)
     const activeAuction = activeAuctions[0]
@@ -55,13 +55,17 @@ export const enrichArtworkWithCollectorSignals = async (artwork, ctx) => {
       })
       const [activeSaleArtwork] = await Promise.all([saleArtworkRequest])
 
-      // }
       if (activeSaleArtwork) {
-        enrichedSignals.bidCount = activeSaleArtwork.bidder_positions_count
+        if (artwork.recent_saves_count) {
+          enrichedSignals.lotWatcherCount = artwork.recent_saves_count
+        }
+        if (activeSaleArtwork.bidder_positions_count) {
+          enrichedSignals.bidCount = activeSaleArtwork.bidder_positions_count
+        }
       }
     }
 
-    // handle signals for non-auction acquirable artworks
+    // Handle signals for non-auction acquirable artworks
   } else if (artwork.acquireable) {
     if (ctx.mePartnerOffersLoader) {
       const partnerOffer = await ctx

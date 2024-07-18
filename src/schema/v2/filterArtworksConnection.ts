@@ -52,6 +52,8 @@ import numeral from "./fields/numeral"
 import { ArtworkType } from "./artwork"
 import { deprecate } from "lib/deprecation"
 import ArtworkSizes from "./artwork/artworkSizes"
+import { enrichArtworkWithCollectorSignals } from "./artwork/collectorSignals"
+import { isFieldRequested } from "lib/ifFieldRequested"
 
 interface ContextSource {
   context_type: GraphQLObjectType<any, ResolverContext>
@@ -476,10 +478,8 @@ const filterArtworksConnectionTypeFactory = (
   type: filterArtworksConnectionType,
   description: "Artworks Elastic Search results",
   args: pageableFilterArtworksArgsWithInput,
-  resolve: (
-    root,
-    { input, ...rootArguments },
-    {
+  resolve: (root, { input, ...rootArguments }, ctx, info) => {
+    const {
       unauthenticatedLoaders: {
         filterArtworksLoader: filterArtworksUnauthenticatedLoader,
       },
@@ -487,9 +487,7 @@ const filterArtworksConnectionTypeFactory = (
         filterArtworksLoader: filterArtworksAuthenticatedLoader,
       },
       filterArtworksUncachedLoader,
-    },
-    info
-  ) => {
+    } = ctx
     const argsProvidedAtRoot = convertFilterArgs(rootArguments as any)
     removeEmptyValues(argsProvidedAtRoot)
     const argsProvidedInInput = convertFilterArgs(input ?? {})
@@ -575,39 +573,49 @@ const filterArtworksConnectionTypeFactory = (
         )
       }
 
-      const totalPages = computeTotalPages(
-        aggregations.total.value,
-        gravityOptions.size
+      const hasRequestedCollectorSignals = isFieldRequested(
+        "edges.node.collectorSignals",
+        info
       )
+      const collectorSignalsRequests = hasRequestedCollectorSignals
+        ? hits.map((artwork) => enrichArtworkWithCollectorSignals(artwork, ctx))
+        : [Promise.resolve()]
 
-      const connection = connectionFromArraySlice(
-        hits,
-        { first, last, after, before },
-        {
-          arrayLength: Math.min(
-            aggregations.total.value,
-            totalPages * gravityOptions.size
-          ),
-          sliceStart: gravityOptions.offset,
-        }
-      )
+      return Promise.all(collectorSignalsRequests).then(() => {
+        const totalPages = computeTotalPages(
+          aggregations.total.value,
+          gravityOptions.size
+        )
 
-      connection.pageInfo.endCursor = pageToCursor(
-        gravityOptions.page + 1,
-        gravityOptions.size
-      )
+        const connection = connectionFromArraySlice(
+          hits,
+          { first, last, after, before },
+          {
+            arrayLength: Math.min(
+              aggregations.total.value,
+              totalPages * gravityOptions.size
+            ),
+            sliceStart: gravityOptions.offset,
+          }
+        )
 
-      return Object.assign(
-        {
-          pageCursors: createPageCursors(
-            gravityOptions,
-            aggregations.total.value
-          ),
-          aggregations,
-          gravityOptions, // include for convenience in nested resolvers
-        },
-        connection
-      )
+        connection.pageInfo.endCursor = pageToCursor(
+          gravityOptions.page + 1,
+          gravityOptions.size
+        )
+
+        return Object.assign(
+          {
+            pageCursors: createPageCursors(
+              gravityOptions,
+              aggregations.total.value
+            ),
+            aggregations,
+            gravityOptions, // include for convenience in nested resolvers
+          },
+          connection
+        )
+      })
     })
   },
 })

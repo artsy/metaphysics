@@ -14,7 +14,7 @@ type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
 
 let unleashClient: Unleash
 
-export function initilizeFeatureFlags() {
+export function initializeFeatureFlags() {
   unleashClient = initialize({
     url: UNLEASH_API,
     appName: UNLEASH_APP_NAME,
