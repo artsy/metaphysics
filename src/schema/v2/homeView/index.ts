@@ -6,6 +6,7 @@ import {
   GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { stubDataResolver } from "./stubDataResolver"
 
 // homeView.hello -- hello world
 
@@ -31,13 +32,7 @@ const SectionType = new GraphQLObjectType<any, ResolverContext>({
 const Sections: GraphQLFieldConfig<void, ResolverContext> = {
   type: GraphQLNonNull(GraphQLList(GraphQLNonNull(SectionType))),
   description: "A list of sections on the home view",
-  resolve: () => {
-    return Array.from({ length: 10 }).map((_, i) => {
-      return {
-        title: `Section ${i}`,
-      }
-    })
-  },
+  resolve: stubDataResolver,
 }
 
 // root homeView field
