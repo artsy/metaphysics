@@ -103,6 +103,10 @@ export default (opts) => {
     ),
     incrementsLoader: gravityLoader("increments"),
     inquiryRequestQuestionsLoader: gravityLoader(`inquiry_request_questions`),
+    marketingCollectionLoader: gravityLoader<any, { id: string; size: string }>(
+      ({ id, size }) =>
+        `marketing_collections/${id}${size ? `?size=${size}` : ""}`
+    ),
     marketingCollectionsLoader: gravityLoader(
       "marketing_collections",
       {},

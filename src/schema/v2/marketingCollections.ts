@@ -10,31 +10,24 @@ import {
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { connectionFromArraySlice } from "graphql-relay"
 import { MarketingCollectionsSorts } from "./sorts/marketingCollectionsSort"
-import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
-import { IDFields, NodeInterface } from "./object_identification"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "schema/v2/fields/pagination"
+import { SlugAndInternalIDFields, NodeInterface } from "./object_identification"
 
-const MarketingCollectionType = new GraphQLObjectType<any, ResolverContext>({
-  name: "MarketingCollectionType",
+export const MarketingCollectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "MarketingCollection",
   interfaces: [NodeInterface],
   fields: {
-    ...IDFields,
-    slug: {
-      type: GraphQLString,
-      resolve: ({ slug }) => slug,
-    },
+    ...SlugAndInternalIDFields,
     description: {
       type: GraphQLString,
       resolve: ({ description }) => description,
-    },
-    createdAt: {
-      type: GraphQLString,
-      resolve: ({ created_at }) => created_at,
-    },
-    updatedAt: {
-      type: GraphQLString,
-      resolve: ({ updated_at }) => updated_at,
     },
     descriptionMarkdown: {
       type: GraphQLString,
@@ -104,6 +97,25 @@ const MarketingCollectionType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
+export const MarketingCollection: GraphQLFieldConfig<void, ResolverContext> = {
+  type: MarketingCollectionType,
+  description: "Marketing Collection",
+  args: {
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The slug or ID of the Marketing Collection",
+    },
+  },
+  resolve: (_root, { id, size }, { marketingCollectionLoader }) => {
+    if (!marketingCollectionLoader)
+      throw new Error(
+        "You need to pass a X-Access-Token header to perform this action"
+      )
+
+    return marketingCollectionLoader({ id, size })
+  },
+}
+
 export const MarketingCollectionsConnectionType = connectionWithCursorInfo({
   nodeType: MarketingCollectionType,
 })
@@ -142,25 +154,27 @@ export const MarketingCollectionsConnection: GraphQLFieldConfig<
         "You need to pass a X-Access-Token header to perform this action"
       )
 
-    const { body, headers } = await marketingCollectionsLoader({
-      total_count: true,
-      page,
-      size,
-      is_featured_artist_content: args.isFeaturedArtistContent,
-      artist_id: args.artistId,
-      slugs: args.slugs,
-      category: args.category,
-      sort: args.sort,
-    })
+    const gravityArgs: {
+      page?: number
+      size: number
+      total_count: boolean
+      is_featured_artist_content?: boolean
+      artist_id?: string
+      slugs?: string
+      category?: string
+      sort?: string
+    } = { size, total_count: true, ...args }
 
+    const { body, headers } = await marketingCollectionsLoader(gravityArgs)
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-    return {
+    return paginationResolver({
+      args,
+      body,
+      offset,
+      page,
+      size,
       totalCount,
-      ...connectionFromArraySlice(body, args, {
-        arrayLength: totalCount,
-        sliceStart: offset,
-      }),
-    }
+    })
   },
 }
