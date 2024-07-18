@@ -8,14 +8,6 @@ import {
 import { ResolverContext } from "types/graphql"
 import { stubDataResolver } from "./stubDataResolver"
 
-// homeView.hello -- hello world
-
-const Hello: GraphQLFieldConfig<void, ResolverContext> = {
-  type: GraphQLNonNull(GraphQLString),
-  description: "Hello, world",
-  resolve: () => "world",
-}
-
 // homeView.sections -- a list of blank-slate sections
 
 const SectionType = new GraphQLObjectType<any, ResolverContext>({
@@ -41,7 +33,6 @@ const HomeViewType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomeView",
   description: "Experimental schema for new home view",
   fields: {
-    hello: Hello,
     sections: Sections,
   },
 })
