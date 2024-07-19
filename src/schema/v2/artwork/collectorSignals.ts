@@ -2,6 +2,7 @@ import { GraphQLFieldConfig } from "graphql"
 import { GraphQLInt, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 export const collectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLObjectType({
@@ -43,8 +44,15 @@ export const enrichArtworkWithCollectorSignals = async (artwork, ctx) => {
 
   const inSale = artwork.sale_ids?.length > 0
 
+  const partnerOfferCollectorSignalsEnabled = isFeatureFlagEnabled(
+    "emerald_signals-partner-offers"
+  )
+  const auctionsCollectorSignalsEnabled = isFeatureFlagEnabled(
+    "emerald_signals-auction-improvements"
+  )
+
   // Handle signals for auction artworks
-  if (inSale) {
+  if (inSale && auctionsCollectorSignalsEnabled) {
     const activeAuctions = await activeAuctionsForArtwork(artwork, ctx)
     const activeAuction = activeAuctions[0]
 
@@ -66,7 +74,7 @@ export const enrichArtworkWithCollectorSignals = async (artwork, ctx) => {
     }
 
     // Handle signals for non-auction acquirable artworks
-  } else if (artwork.acquireable) {
+  } else if (artwork.purchasable && partnerOfferCollectorSignalsEnabled) {
     if (ctx.mePartnerOffersLoader) {
       const partnerOffer = await ctx
         .mePartnerOffersLoader({
