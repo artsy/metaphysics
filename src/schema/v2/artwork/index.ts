@@ -1995,7 +1995,6 @@ export const artworkResolver = async (_source, args, context, resolveInfo) => {
     "collectorSignals",
     resolveInfo
   )
-  console.log({ hasRequestedCollectorSignals })
 
   const artwork = await artworkLoader(id)
 

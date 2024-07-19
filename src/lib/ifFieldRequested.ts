@@ -18,8 +18,22 @@ export const isFieldRequested = (
       resolveInfo.returnType
     )
 
-    return !!Object.values(requestedFields).find(
-      (requestedField) => (requestedField as ResolveTree).name === field
+    return recursivelyFindField(field.split("."), requestedFields)
+  }
+  return false
+}
+
+const recursivelyFindField = (fields: string[], requestedFields) => {
+  const [firstField, ...restFields] = fields
+  const foundField = Object.values<ResolveTree>(requestedFields).find(
+    (requestedField) => requestedField.name === firstField
+  )
+  if (foundField) {
+    if (restFields.length === 0) {
+      return true
+    }
+    return !!Object.values(foundField.fieldsByTypeName).find((subField) =>
+      recursivelyFindField(restFields, subField)
     )
   }
   return false

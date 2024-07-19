@@ -577,6 +577,7 @@ const filterArtworksConnectionTypeFactory = (
         "edges.node.collectorSignals",
         info
       )
+
       const collectorSignalsRequests = hasRequestedCollectorSignals
         ? hits.map((artwork) => enrichArtworkWithCollectorSignals(artwork, ctx))
         : [Promise.resolve()]
