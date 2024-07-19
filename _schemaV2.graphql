@@ -11357,7 +11357,7 @@ type HomeView {
     before: String
     first: Int
     last: Int
-  ): SectionsConnection
+  ): SectionConnection
 }
 
 type IdentityVerification {
@@ -18531,9 +18531,9 @@ union SecondFactorOrErrorsUnion = AppSecondFactor | Errors | SmsSecondFactor
 union Section = ArtistsRailSection | ArtworksRailSection
 
 # A connection to a list of items.
-type SectionsConnection {
+type SectionConnection {
   # A list of edges.
-  edges: [SectionsEdge]
+  edges: [SectionEdge]
   pageCursors: PageCursors!
 
   # Information to aid in pagination.
@@ -18542,7 +18542,7 @@ type SectionsConnection {
 }
 
 # An edge in a connection.
-type SectionsEdge {
+type SectionEdge {
   # A cursor for use in pagination
   cursor: String!
 

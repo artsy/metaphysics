@@ -134,11 +134,10 @@ const Sections: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 const SectionsConnectionType = connectionWithCursorInfo({
-  name: "Sections",
   nodeType: SectionType,
 }).connectionType
 
-const SectionsConnection: GraphQLFieldConfig<any, ResolverContext> = {
+const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
   type: SectionsConnectionType,
   args: pageable({}),
   resolve: async (_parent, args, _context, _info) => {
@@ -165,7 +164,7 @@ const HomeViewType = new GraphQLObjectType<any, ResolverContext>({
   description: "Experimental schema for new home view",
   fields: {
     sections: Sections,
-    sectionsConnection: SectionsConnection,
+    sectionsConnection: SectionConnection,
   },
 })
 
