@@ -9,7 +9,14 @@ import {
   GraphQLEnumType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { stubDataResolver } from "./stubDataResolver"
+import { STUB_SECTIONS, stubDataResolver } from "./stubDataResolver"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "../fields/pagination"
+import { pageable } from "relay-cursor-paging"
+import { InternalIDFields, NodeInterface } from "../object_identification"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 // known standard component types
 
@@ -47,6 +54,7 @@ const GenericSectionInterface = new GraphQLInterfaceType({
   name: "GenericSection",
   description: "Abstract interface shared by every kind of home view section",
   fields: {
+    ...InternalIDFields,
     key: {
       type: GraphQLNonNull(GraphQLString),
       description: "A stable identifier for this section",
@@ -67,8 +75,9 @@ const GenericSectionInterface = new GraphQLInterfaceType({
 const ArtworksRailSectionType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworksRailSection",
   description: "An artwork rail section in the home view",
-  interfaces: [GenericSectionInterface],
+  interfaces: [GenericSectionInterface, NodeInterface],
   fields: {
+    ...InternalIDFields,
     key: {
       type: GraphQLNonNull(GraphQLString),
       description: "A stable identifier for this section",
@@ -90,8 +99,9 @@ const ArtworksRailSectionType = new GraphQLObjectType<any, ResolverContext>({
 const ArtistsRailSectionType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistsRailSection",
   description: "An artists rail section in the home view",
-  interfaces: [GenericSectionInterface],
+  interfaces: [GenericSectionInterface, NodeInterface],
   fields: {
+    ...InternalIDFields,
     key: {
       type: GraphQLNonNull(GraphQLString),
       description: "A stable identifier for this section",
@@ -117,12 +127,34 @@ const SectionType = new GraphQLUnionType({
   types: [ArtworksRailSectionType, ArtistsRailSectionType],
 })
 
-// a list (TODO: connection) of sections
-
 const Sections: GraphQLFieldConfig<void, ResolverContext> = {
   type: GraphQLNonNull(GraphQLList(GraphQLNonNull(SectionType))),
   description: "A list of sections on the home view",
   resolve: stubDataResolver,
+}
+
+const SectionsConnectionType = connectionWithCursorInfo({
+  nodeType: SectionType,
+}).connectionType
+
+const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
+  type: SectionsConnectionType,
+  args: pageable({}),
+  resolve: async (_parent, args, _context, _info) => {
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    const totalCount = STUB_SECTIONS.length
+    const data = STUB_SECTIONS.slice(offset, offset + size)
+
+    return paginationResolver({
+      totalCount,
+      offset,
+      page,
+      size,
+      body: data,
+      args,
+    })
+  },
 }
 
 // root homeView field
@@ -132,6 +164,7 @@ const HomeViewType = new GraphQLObjectType<any, ResolverContext>({
   description: "Experimental schema for new home view",
   fields: {
     sections: Sections,
+    sectionsConnection: SectionConnection,
   },
 })
 
