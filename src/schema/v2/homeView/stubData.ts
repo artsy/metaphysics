@@ -1,6 +1,3 @@
-import { GraphQLFieldResolver } from "graphql"
-import { ResolverContext } from "types/graphql"
-
 export const STUB_SECTIONS = [
   {
     id: 1,
@@ -27,10 +24,3 @@ export const STUB_SECTIONS = [
     },
   },
 ]
-
-export const stubDataResolver: GraphQLFieldResolver<
-  void,
-  ResolverContext
-> = () => {
-  return STUB_SECTIONS
-}

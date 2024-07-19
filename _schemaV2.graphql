@@ -11350,8 +11350,6 @@ type HomePageSalesModule {
 
 # Experimental schema for new home view
 type HomeView {
-  # A list of sections on the home view
-  sections: [Section!]!
   sectionsConnection(
     after: String
     before: String

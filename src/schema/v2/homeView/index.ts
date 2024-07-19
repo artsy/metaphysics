@@ -2,14 +2,13 @@ import {
   GraphQLObjectType,
   GraphQLFieldConfig,
   GraphQLString,
-  GraphQLList,
   GraphQLNonNull,
   GraphQLInterfaceType,
   GraphQLUnionType,
   GraphQLEnumType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { STUB_SECTIONS, stubDataResolver } from "./stubDataResolver"
+import { STUB_SECTIONS } from "./stubData"
 import {
   connectionWithCursorInfo,
   paginationResolver,
@@ -127,12 +126,6 @@ const SectionType = new GraphQLUnionType({
   types: [ArtworksRailSectionType, ArtistsRailSectionType],
 })
 
-const Sections: GraphQLFieldConfig<void, ResolverContext> = {
-  type: GraphQLNonNull(GraphQLList(GraphQLNonNull(SectionType))),
-  description: "A list of sections on the home view",
-  resolve: stubDataResolver,
-}
-
 const SectionsConnectionType = connectionWithCursorInfo({
   nodeType: SectionType,
 }).connectionType
@@ -163,7 +156,6 @@ const HomeViewType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomeView",
   description: "Experimental schema for new home view",
   fields: {
-    sections: Sections,
     sectionsConnection: SectionConnection,
   },
 })
