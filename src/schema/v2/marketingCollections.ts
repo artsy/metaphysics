@@ -106,13 +106,8 @@ export const MarketingCollection: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The slug or ID of the Marketing Collection",
     },
   },
-  resolve: (_root, { id, size }, { marketingCollectionLoader }) => {
-    if (!marketingCollectionLoader)
-      throw new Error(
-        "You need to pass a X-Access-Token header to perform this action"
-      )
-
-    return marketingCollectionLoader({ id, size })
+  resolve: (_root, { id }, { marketingCollectionLoader }) => {
+    return marketingCollectionLoader(id)
   },
 }
 
@@ -148,12 +143,6 @@ export const MarketingCollectionsConnection: GraphQLFieldConfig<
   }),
   resolve: async (_root, args, { marketingCollectionsLoader }) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-
-    if (!marketingCollectionsLoader)
-      throw new Error(
-        "You need to pass a X-Access-Token header to perform this action"
-      )
-
     const gravityArgs: {
       page?: number
       size: number
@@ -163,7 +152,13 @@ export const MarketingCollectionsConnection: GraphQLFieldConfig<
       slugs?: string
       category?: string
       sort?: string
-    } = { size, total_count: true, ...args }
+    } = {
+      size,
+      total_count: true,
+      artist_id: args.artistId,
+      is_featured_artist_content: args.isFeaturedArtistContent,
+      ...args,
+    }
 
     const { body, headers } = await marketingCollectionsLoader(gravityArgs)
     const totalCount = parseInt(headers["x-total-count"] || "0", 10)
