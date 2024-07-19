@@ -94,8 +94,25 @@ export const MarketingCollectionType = new GraphQLObjectType<
       type: new GraphQLList(GraphQLString),
       resolve: ({ artwork_ids }) => artwork_ids,
     },
+    // @ts-ignore
+    relatedCollections,
   },
 })
+
+const relatedCollections: GraphQLFieldConfig<any, ResolverContext> = {
+  type: new GraphQLList(MarketingCollectionType),
+  description: "Related Collections",
+  resolve: async (
+    { id, size },
+    _args,
+    { relatedMarketingCollectionsLoader }
+  ) => {
+    const gravityArgs = {
+      size,
+    }
+    return await relatedMarketingCollectionsLoader(id, gravityArgs)
+  },
+}
 
 export const MarketingCollection: GraphQLFieldConfig<void, ResolverContext> = {
   type: MarketingCollectionType,
