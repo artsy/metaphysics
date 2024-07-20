@@ -44,60 +44,78 @@ export const enrichArtworkWithCollectorSignals = async (artwork, ctx) => {
 
   const inSale = artwork.sale_ids?.length > 0
 
+  const unleashContext = {
+    userId: ctx.userID,
+  }
   const partnerOfferCollectorSignalsEnabled = isFeatureFlagEnabled(
-    "emerald_signals-partner-offers"
+    "emerald_signals-partner-offers",
+    unleashContext
   )
   const auctionsCollectorSignalsEnabled = isFeatureFlagEnabled(
-    "emerald_signals-auction-improvements"
+    "emerald_signals-auction-improvements",
+    unleashContext
   )
 
   // Handle signals for auction artworks
   if (inSale && auctionsCollectorSignalsEnabled) {
-    const activeAuctions = await activeAuctionsForArtwork(artwork, ctx)
-    const activeAuction = activeAuctions[0]
+    const activeSaleArtwork = await getActiveSaleArtwork(
+      {
+        artworkId,
+        saleIds: artwork.sale_ids,
+      },
+      ctx
+    )
 
-    if (activeAuction) {
-      const saleArtworkRequest = ctx.saleArtworkLoader({
-        saleId: activeAuction.id, // _id?
-        saleArtworkId: artworkId,
-      })
-      const [activeSaleArtwork] = await Promise.all([saleArtworkRequest])
-
-      if (activeSaleArtwork) {
-        if (artwork.recent_saves_count) {
-          enrichedSignals.lotWatcherCount = artwork.recent_saves_count
-        }
-        if (activeSaleArtwork.bidder_positions_count) {
-          enrichedSignals.bidCount = activeSaleArtwork.bidder_positions_count
-        }
+    if (activeSaleArtwork) {
+      if (artwork.recent_saves_count) {
+        enrichedSignals.lotWatcherCount = artwork.recent_saves_count
+      }
+      if (activeSaleArtwork.bidder_positions_count) {
+        enrichedSignals.bidCount = activeSaleArtwork.bidder_positions_count
       }
     }
+    return artwork
+  }
 
-    // Handle signals for non-auction acquirable artworks
-  } else if (artwork.purchasable && partnerOfferCollectorSignalsEnabled) {
+  // Handle signals for non-auction artworks
+  if (artwork.purchasable && partnerOfferCollectorSignalsEnabled) {
     if (ctx.mePartnerOffersLoader) {
-      const partnerOffer = await ctx
-        .mePartnerOffersLoader({
-          artwork_id: artworkId,
-          sort: "-created_at",
-          size: 1,
-        })
-        .then(({ body }) => body[0])
+      const partnerOffers = await ctx.mePartnerOffersLoader({
+        artwork_id: artworkId,
+        sort: "-created_at",
+        size: 1,
+      })
+
+      const partnerOffer = partnerOffers.body[0]
+
       enrichedSignals.partnerOffer = partnerOffer
     }
   }
   return artwork
 }
 
-const activeAuctionsForArtwork = async (artwork, ctx) => {
-  if (artwork.sale_ids?.length > 0) {
+const getActiveSaleArtwork = async ({ artworkId, saleIds }, ctx) => {
+  if (saleIds?.length > 0) {
     const { salesLoader } = ctx
     const sales = await salesLoader({
-      id: artwork.sale_ids,
+      id: saleIds,
       is_auction: true,
       live: true,
     })
-    return sales
+
+    const activeAuction = sales[0]
+    if (!activeAuction) {
+      return null
+    }
+
+    if (activeAuction) {
+      const saleArtwork = await ctx.saleArtworkLoader({
+        saleId: activeAuction.id,
+        saleArtworkId: artworkId,
+      })
+
+      return saleArtwork
+    }
   }
-  return []
+  return null
 }
