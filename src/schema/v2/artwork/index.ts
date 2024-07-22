@@ -97,10 +97,8 @@ import currencyCodes from "lib/currency_codes.json"
 import { date } from "../fields/date"
 import { ArtworkVisibility } from "./artworkVisibility"
 import { ArtworkConditionType } from "./artworkCondition"
-import {
-  collectorSignals,
-  enrichArtworkWithCollectorSignals,
-} from "./collectorSignals"
+import { CollectorSignals } from "./collectorSignals"
+import { fetchCollectorSignals } from "lib/fillers/fetchCollectorSignals"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -421,7 +419,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ collecting_institution }) =>
           existyValue(collecting_institution),
       },
-      collectorSignals,
+      collectorSignals: CollectorSignals,
       comparableAuctionResults: ComparableAuctionResults,
       confidentialNotes: {
         type: GraphQLString,
@@ -2008,13 +2006,10 @@ export const artworkResolver = async (_source, args, context, resolveInfo) => {
     return enrichedArtworks?.[0]
   }
 
-  if (hasRequestedCollectorSignals && artwork) {
-    const enrichedArtwork = await enrichArtworkWithCollectorSignals(
-      artwork,
-      context
-    )
-    return enrichedArtwork
-  }
+  const collectorSignals = hasRequestedCollectorSignals
+    ? await fetchCollectorSignals(artwork, context)
+    : {}
+  artwork.collectorSignals = collectorSignals
 
   return artwork
 }

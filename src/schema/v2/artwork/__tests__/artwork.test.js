@@ -6,8 +6,12 @@ import { getMicrofunnelDataByArtworkInternalID } from "schema/v2/artist/targetSu
 import { runQuery } from "schema/v2/test/utils"
 import { CHECKOUT_TAXES_DOC_URL } from "../taxInfo"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import { fetchCollectorSignals } from "lib/fillers/fetchCollectorSignals"
 
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
+jest.mock("lib/fillers/fetchCollectorSignals", () => ({
+  fetchCollectorSignals: jest.fn(),
+}))
 
 describe("Artwork type", () => {
   const sale = { id: "existy" }
@@ -68,6 +72,8 @@ describe("Artwork type", () => {
   ]
 
   beforeEach(() => {
+    fetchCollectorSignals.mockClear()
+
     artwork = {
       id: "richard-prince-untitled-portrait",
       artist: {
@@ -4551,6 +4557,61 @@ describe("Artwork type", () => {
           },
         })
       })
+    })
+  })
+
+  describe("loading collectorSignals", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          collectorSignals {
+            bidCount
+            lotWatcherCount
+            partnerOffer {
+              endAt
+            }
+          }
+        }
+      }
+    `
+    it("fetches & returns the collector signals for an artwork if requested", async () => {
+      const collectorSignalsResult = {
+        partnerOffer: { endAt: "2021-01-01T00:00:00.000Z" },
+        bidCount: 1,
+        lotWatcherCount: 2,
+      }
+      fetchCollectorSignals.mockResolvedValue(collectorSignalsResult)
+
+      const data = await runQuery(query, context)
+
+      expect(fetchCollectorSignals).toHaveBeenCalledWith(
+        artwork,
+        expect.objectContaining(context)
+      )
+      expect(data).toEqual({
+        artwork: {
+          collectorSignals: {
+            bidCount: 1,
+            lotWatcherCount: 2,
+            partnerOffer: { endAt: "2021-01-01T00:00:00.000Z" },
+          },
+        },
+      })
+    })
+
+    it("skips fetching if collectorSignals are not requested", async () => {
+      await runQuery(
+        `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            title
+          }
+        }
+        `,
+        context
+      )
+
+      expect(fetchCollectorSignals).not.toHaveBeenCalled()
     })
   })
 })
