@@ -583,20 +583,20 @@ const filterArtworksConnectionTypeFactory = (
             return fetchCollectorSignals(artwork, ctx).then(
               (collectorSignals) => {
                 artwork.collectorSignals = collectorSignals
-                return null
+                return artwork
               }
             )
           })
-        : []
+        : hits
 
-      return Promise.all(collectorSignalsRequests).then(() => {
+      return Promise.all(collectorSignalsRequests).then((artworks) => {
         const totalPages = computeTotalPages(
           aggregations.total.value,
           gravityOptions.size
         )
 
         const connection = connectionFromArraySlice(
-          hits,
+          artworks,
           { first, last, after, before },
           {
             arrayLength: Math.min(

@@ -88,11 +88,9 @@ const getActiveSaleArtwork = async (
     return null
   }
 
-  const { salesLoader } = ctx
-
   let activeAuction
   try {
-    const sales = await salesLoader({
+    const sales = await ctx.salesLoader({
       id: saleIds,
       is_auction: true,
       live: true,
@@ -106,15 +104,15 @@ const getActiveSaleArtwork = async (
     return null
   }
 
+  let saleArtwork = null
   try {
-    const saleArtwork = await ctx.saleArtworkLoader({
-      saleId: activeAuction.id,
-      saleArtworkId: artworkId,
-    })
-
-    return saleArtwork
+    saleArtwork =
+      (await ctx.saleArtworkLoader({
+        saleId: activeAuction.id,
+        saleArtworkId: artworkId,
+      })) ?? null
   } catch (error) {
     console.error("fetchCollectorSignals: Error fetching sale artwork", error)
   }
-  return null
+  return saleArtwork
 }
