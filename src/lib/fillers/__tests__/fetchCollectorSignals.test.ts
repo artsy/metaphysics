@@ -1,12 +1,6 @@
 import { fetchCollectorSignals } from "lib/fillers/fetchCollectorSignals"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 
-jest.mock("lib/featureFlags", () => {
-  return {
-    isFeatureFlagEnabled: jest.fn(),
-  }
-})
-
 const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
 // Mock context and artwork setup
@@ -24,11 +18,10 @@ const artwork = {
   recent_saves_count: 10,
 }
 
-beforeEach(() => {
-  jest.clearAllMocks()
-})
-
 describe("fetchCollectorSignals", () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
   it("returns empty signals when feature flags are disabled", async () => {
     mockIsFeatureFlagEnabled.mockReturnValue(false)
 

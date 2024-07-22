@@ -9,7 +9,12 @@ export const isFieldRequested = (
   field: string,
   resolveInfo: GraphQLResolveInfo
 ) => {
-  const parsedResolveInfoFragment = parseResolveInfo(resolveInfo)
+  let parsedResolveInfoFragment
+  try {
+    parsedResolveInfoFragment = parseResolveInfo(resolveInfo)
+  } catch (e) {
+    console.error("Error parsing resolve info fragment", e)
+  }
   if (parsedResolveInfoFragment) {
     const {
       fields: requestedFields,
@@ -20,6 +25,7 @@ export const isFieldRequested = (
 
     return recursivelyFindField(field.split("."), requestedFields)
   }
+
   return false
 }
 

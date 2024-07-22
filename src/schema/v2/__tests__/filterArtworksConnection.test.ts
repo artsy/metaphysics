@@ -7,6 +7,7 @@ import { fetchCollectorSignals } from "lib/fillers/fetchCollectorSignals"
 jest.mock("lib/fillers/fetchCollectorSignals", () => ({
   fetchCollectorSignals: jest.fn(),
 }))
+
 describe("artworksConnection", () => {
   let context
 
@@ -153,6 +154,13 @@ describe("artworksConnection", () => {
         {
           node(id: "${generatedId}") {
             id
+            ...on FilterArtworksConnection {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
           }
         }
       `
