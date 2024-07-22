@@ -53,7 +53,7 @@ import { ArtworkType } from "./artwork"
 import { deprecate } from "lib/deprecation"
 import ArtworkSizes from "./artwork/artworkSizes"
 import { isFieldRequested } from "lib/isFieldRequested"
-import { fetchCollectorSignals } from "lib/fillers/fetchCollectorSignals"
+import { collectorSignalsLoader } from "lib/loaders/collectorSignalsLoader"
 
 interface ContextSource {
   context_type: GraphQLObjectType<any, ResolverContext>
@@ -580,7 +580,7 @@ const filterArtworksConnectionTypeFactory = (
 
       const collectorSignalsRequests = hasRequestedCollectorSignals
         ? hits.map((artwork) => {
-            return fetchCollectorSignals(artwork, ctx).then(
+            return collectorSignalsLoader(artwork, ctx).then(
               (collectorSignals) => {
                 artwork.collectorSignals = collectorSignals
                 return artwork

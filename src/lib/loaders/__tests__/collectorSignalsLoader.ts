@@ -1,4 +1,4 @@
-import { fetchCollectorSignals } from "lib/fillers/fetchCollectorSignals"
+import { collectorSignalsLoader } from "lib/loaders/collectorSignalsLoader"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
@@ -18,14 +18,14 @@ const artwork = {
   recent_saves_count: 10,
 }
 
-describe("fetchCollectorSignals", () => {
+describe("collectorSignalsLoader", () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
   it("returns empty signals when feature flags are disabled", async () => {
     mockIsFeatureFlagEnabled.mockReturnValue(false)
 
-    const signals = await fetchCollectorSignals(artwork, ctx)
+    const signals = await collectorSignalsLoader(artwork, ctx)
 
     expect(signals).toEqual({})
   })
@@ -45,7 +45,7 @@ describe("fetchCollectorSignals", () => {
       bidder_positions_count: 5,
     })
 
-    const signals = await fetchCollectorSignals(artwork, ctx)
+    const signals = await collectorSignalsLoader(artwork, ctx)
 
     expect(ctx.salesLoader).toHaveBeenCalledWith({
       id: ["sale1"],
@@ -77,7 +77,7 @@ describe("fetchCollectorSignals", () => {
 
     ctx.saleArtworkLoader.mockResolvedValue(null)
 
-    const signals = await fetchCollectorSignals(artwork, ctx)
+    const signals = await collectorSignalsLoader(artwork, ctx)
 
     expect(ctx.salesLoader).toHaveBeenCalledWith({
       id: ["sale1"],
@@ -104,7 +104,7 @@ describe("fetchCollectorSignals", () => {
       body: [{ endAt: "2023-01-01T00:00:00Z" }],
     })
 
-    const signals = await fetchCollectorSignals(artwork, ctx)
+    const signals = await collectorSignalsLoader(artwork, ctx)
 
     expect(signals).toEqual({
       partnerOffer: { endAt: "2023-01-01T00:00:00Z" },
@@ -120,7 +120,7 @@ describe("fetchCollectorSignals", () => {
     })
 
     artwork.purchasable = false
-    const signals = await fetchCollectorSignals(artwork, ctx)
+    const signals = await collectorSignalsLoader(artwork, ctx)
 
     expect(signals).toEqual({
       partnerOffer: undefined,

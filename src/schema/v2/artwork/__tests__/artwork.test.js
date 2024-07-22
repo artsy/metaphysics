@@ -6,11 +6,11 @@ import { getMicrofunnelDataByArtworkInternalID } from "schema/v2/artist/targetSu
 import { runQuery } from "schema/v2/test/utils"
 import { CHECKOUT_TAXES_DOC_URL } from "../taxInfo"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import { fetchCollectorSignals } from "lib/fillers/fetchCollectorSignals"
+import { collectorSignalsLoader } from "lib/loaders/collectorSignalsLoader"
 
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
-jest.mock("lib/fillers/fetchCollectorSignals", () => ({
-  fetchCollectorSignals: jest.fn(),
+jest.mock("lib/loaders/collectorSignalsLoader", () => ({
+  collectorSignalsLoader: jest.fn(),
 }))
 
 describe("Artwork type", () => {
@@ -72,7 +72,7 @@ describe("Artwork type", () => {
   ]
 
   beforeEach(() => {
-    fetchCollectorSignals.mockClear()
+    collectorSignalsLoader.mockClear()
 
     artwork = {
       id: "richard-prince-untitled-portrait",
@@ -4580,11 +4580,11 @@ describe("Artwork type", () => {
         bidCount: 1,
         lotWatcherCount: 2,
       }
-      fetchCollectorSignals.mockResolvedValue(collectorSignalsResult)
+      collectorSignalsLoader.mockResolvedValue(collectorSignalsResult)
 
       const data = await runQuery(query, context)
 
-      expect(fetchCollectorSignals).toHaveBeenCalledWith(
+      expect(collectorSignalsLoader).toHaveBeenCalledWith(
         artwork,
         expect.objectContaining(context)
       )
@@ -4611,7 +4611,7 @@ describe("Artwork type", () => {
         context
       )
 
-      expect(fetchCollectorSignals).not.toHaveBeenCalled()
+      expect(collectorSignalsLoader).not.toHaveBeenCalled()
     })
   })
 })

@@ -6,8 +6,8 @@ interface EnrichedSignals {
   partnerOffer?: { endAt: string }
 }
 
-// Fetch data for an artwork to fulfill the CollectorSignals resolver
-export const fetchCollectorSignals = async (
+// Compound loader that fetches signals for a given artwork using the provided context
+export const collectorSignalsLoader = async (
   artwork,
   ctx
 ): Promise<EnrichedSignals> => {
@@ -62,7 +62,7 @@ export const fetchCollectorSignals = async (
         partnerOffer = partnerOffers.body[0]
       } catch (error) {
         console.error(
-          "fetchCollectorSignals: Error fetching partner offers",
+          "collectorSignalsLoader: Error fetching partner offers",
           error
         )
       }
@@ -97,7 +97,10 @@ const getActiveSaleArtwork = async (
     })
     activeAuction = sales[0]
   } catch (error) {
-    console.error("fetchCollectorSignals: Error fetching active auction", error)
+    console.error(
+      "collectorSignalsLoader: Error fetching active auction",
+      error
+    )
   }
 
   if (!activeAuction) {
@@ -112,7 +115,7 @@ const getActiveSaleArtwork = async (
         saleArtworkId: artworkId,
       })) ?? null
   } catch (error) {
-    console.error("fetchCollectorSignals: Error fetching sale artwork", error)
+    console.error("collectorSignalsLoader: Error fetching sale artwork", error)
   }
   return saleArtwork
 }

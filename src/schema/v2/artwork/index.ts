@@ -98,7 +98,7 @@ import { date } from "../fields/date"
 import { ArtworkVisibility } from "./artworkVisibility"
 import { ArtworkConditionType } from "./artworkCondition"
 import { CollectorSignals } from "./collectorSignals"
-import { fetchCollectorSignals } from "lib/fillers/fetchCollectorSignals"
+import { collectorSignalsLoader } from "lib/loaders/collectorSignalsLoader"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -2007,7 +2007,7 @@ export const artworkResolver = async (_source, args, context, resolveInfo) => {
   }
 
   const collectorSignals = hasRequestedCollectorSignals
-    ? await fetchCollectorSignals(artwork, context)
+    ? await collectorSignalsLoader(artwork, context)
     : {}
   artwork.collectorSignals = collectorSignals
 

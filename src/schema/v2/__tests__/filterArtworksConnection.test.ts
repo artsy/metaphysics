@@ -2,10 +2,10 @@ import { runQuery } from "schema/v2/test/utils"
 import { toGlobalId } from "graphql-relay"
 import gql from "lib/gql"
 import sinon from "sinon"
-import { fetchCollectorSignals } from "lib/fillers/fetchCollectorSignals"
+import { collectorSignalsLoader } from "lib/loaders/collectorSignalsLoader"
 
-jest.mock("lib/fillers/fetchCollectorSignals", () => ({
-  fetchCollectorSignals: jest.fn(),
+jest.mock("lib/loaders/collectorSignalsLoader", () => ({
+  collectorSignalsLoader: jest.fn(),
 }))
 
 describe("artworksConnection", () => {
@@ -805,10 +805,10 @@ describe("artworksConnection", () => {
   })
 
   describe("loading collectorSignals", () => {
-    const mockFetchCollectorSignals = fetchCollectorSignals as jest.Mock
+    const mockcollectorSignalsLoader = collectorSignalsLoader as jest.Mock
 
     beforeEach(() => {
-      mockFetchCollectorSignals.mockClear()
+      mockcollectorSignalsLoader.mockClear()
       context = {
         authenticatedLoaders: {},
         unauthenticatedLoaders: {
@@ -843,7 +843,7 @@ describe("artworksConnection", () => {
         bidCount: 1,
         lotWatcherCount: 2,
       }
-      mockFetchCollectorSignals.mockResolvedValue(collectorSignalsResult)
+      mockcollectorSignalsLoader.mockResolvedValue(collectorSignalsResult)
 
       const data = await runQuery(
         `
@@ -866,7 +866,7 @@ describe("artworksConnection", () => {
         context
       )
 
-      expect(mockFetchCollectorSignals).toHaveBeenCalledWith(
+      expect(mockcollectorSignalsLoader).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining(context)
       )
@@ -895,7 +895,7 @@ describe("artworksConnection", () => {
         context
       )
 
-      expect(mockFetchCollectorSignals).not.toHaveBeenCalled()
+      expect(mockcollectorSignalsLoader).not.toHaveBeenCalled()
     })
   })
 })
