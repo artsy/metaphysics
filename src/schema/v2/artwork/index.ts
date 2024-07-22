@@ -22,7 +22,7 @@ import { enrichArtworksWithPriceInsights } from "lib/fillers/enrichArtworksWithP
 import { formatLargeNumber } from "lib/formatLargeNumber"
 import { getDemandRankDisplayText } from "lib/getDemandRank"
 import { capitalizeFirstCharacter, enhance, existyValue } from "lib/helpers"
-import { isFieldRequested } from "lib/ifFieldRequested"
+import { isFieldRequested } from "lib/isFieldRequested"
 import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
 import _ from "lodash"
 import Article from "schema/v2/article"

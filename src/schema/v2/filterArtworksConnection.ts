@@ -53,7 +53,7 @@ import { ArtworkType } from "./artwork"
 import { deprecate } from "lib/deprecation"
 import ArtworkSizes from "./artwork/artworkSizes"
 import { enrichArtworkWithCollectorSignals } from "./artwork/collectorSignals"
-import { isFieldRequested } from "lib/ifFieldRequested"
+import { isFieldRequested } from "lib/isFieldRequested"
 
 interface ContextSource {
   context_type: GraphQLObjectType<any, ResolverContext>
