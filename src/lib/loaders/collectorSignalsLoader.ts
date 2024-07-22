@@ -1,6 +1,6 @@
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 
-interface EnrichedSignals {
+interface CollectorSignals {
   bidCount?: number
   lotWatcherCount?: number
   partnerOffer?: { endAt: string }
@@ -10,7 +10,7 @@ interface EnrichedSignals {
 export const collectorSignalsLoader = async (
   artwork,
   ctx
-): Promise<EnrichedSignals> => {
+): Promise<CollectorSignals> => {
   let bidCount, lotWatcherCount, partnerOffer
 
   const artworkId = artwork._id

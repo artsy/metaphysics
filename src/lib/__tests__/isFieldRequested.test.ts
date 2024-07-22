@@ -11,13 +11,13 @@ jest.mock("graphql-parse-resolve-info", () => ({
 }))
 
 describe("isFieldRequested", () => {
+  const mockParseResolveInfo = parseResolveInfo as jest.Mock
+  const mockSimplifyParsedResolveInfoFragmentWithType = simplifyParsedResolveInfoFragmentWithType as jest.Mock
   const mockResolveInfo: GraphQLResolveInfo = {} as any // Mocked, as the actual value is not used due to mocking of dependencies
 
   beforeEach(() => {
-    ;(parseResolveInfo as jest.Mock).mockReturnValue({})
-    ;(simplifyParsedResolveInfoFragmentWithType as jest.Mock).mockReturnValue(
-      {}
-    )
+    mockParseResolveInfo.mockReturnValue({})
+    mockSimplifyParsedResolveInfoFragmentWithType.mockReturnValue({})
   })
 
   afterEach(() => {
@@ -25,7 +25,7 @@ describe("isFieldRequested", () => {
   })
 
   it("should return true for a root level field", () => {
-    ;(simplifyParsedResolveInfoFragmentWithType as jest.Mock).mockReturnValue({
+    mockSimplifyParsedResolveInfoFragmentWithType.mockReturnValue({
       fields: {
         TopField: {
           name: "topField",
@@ -37,7 +37,7 @@ describe("isFieldRequested", () => {
   })
 
   it("should return true for a nested field", () => {
-    ;(simplifyParsedResolveInfoFragmentWithType as jest.Mock).mockReturnValue({
+    mockSimplifyParsedResolveInfoFragmentWithType.mockReturnValue({
       fields: {
         ParentType: {
           name: "parentField",
@@ -65,7 +65,7 @@ describe("isFieldRequested", () => {
   })
 
   it("should return true for a requested field with sub-field selections", () => {
-    ;(simplifyParsedResolveInfoFragmentWithType as jest.Mock).mockReturnValue({
+    mockSimplifyParsedResolveInfoFragmentWithType.mockReturnValue({
       fields: {
         ParentType: {
           name: "parentField",
@@ -91,7 +91,7 @@ describe("isFieldRequested", () => {
   })
 
   it("should return false for a non-existent nested field", () => {
-    ;(simplifyParsedResolveInfoFragmentWithType as jest.Mock).mockReturnValue({
+    mockSimplifyParsedResolveInfoFragmentWithType.mockReturnValue({
       fields: {
         ParentField: {
           name: "parentField",

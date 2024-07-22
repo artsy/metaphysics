@@ -478,7 +478,7 @@ const filterArtworksConnectionTypeFactory = (
   type: filterArtworksConnectionType,
   description: "Artworks Elastic Search results",
   args: pageableFilterArtworksArgsWithInput,
-  resolve: (root, { input, ...rootArguments }, ctx, info) => {
+  resolve: async (root, { input, ...rootArguments }, ctx, info) => {
     const {
       unauthenticatedLoaders: {
         filterArtworksLoader: filterArtworksUnauthenticatedLoader,
@@ -505,7 +505,7 @@ const filterArtworksConnectionTypeFactory = (
       before,
       size,
       include_artworks_by_followed_artists,
-      aggregations = [],
+      aggregations: aggregationOptions = [],
     } = options
 
     // Check if connection args missing.
@@ -513,18 +513,18 @@ const filterArtworksConnectionTypeFactory = (
       throw new Error("You must pass either `first`, `last` or `size`.")
     }
 
-    const requestedPersonalizedAggregation = aggregations.includes(
+    const requestedPersonalizedAggregation = aggregationOptions.includes(
       "followed_artists"
     )
 
-    if (!aggregations.includes("total")) {
-      aggregations.push("total")
+    if (!aggregationOptions.includes("total")) {
+      aggregationOptions.push("total")
     }
 
     const gravityOptions = {
       ...convertConnectionArgsToGravityArgs(options),
       ...mapRootToFilterParams(root),
-      aggregations,
+      aggregations: aggregationOptions,
     }
 
     // Support queries that show all mediums using the medium param.
@@ -566,65 +566,65 @@ const filterArtworksConnectionTypeFactory = (
       return { hits: null, aggregations: null, gravityOptions }
     }
 
-    return loader(gravityOptions).then(({ aggregations, hits }) => {
-      if (!aggregations || !aggregations.total) {
-        throw new Error(
-          "Expected filter results to contain a `total` aggregation"
-        )
-      }
-
-      const hasRequestedCollectorSignals = isFieldRequested(
-        "edges.node.collectorSignals",
-        info
+    const { aggregations, hits } = await loader(gravityOptions)
+    if (!aggregations || !aggregations.total) {
+      throw new Error(
+        "Expected filter results to contain a `total` aggregation"
       )
+    }
 
-      const collectorSignalsRequests = hasRequestedCollectorSignals
+    const hasRequestedCollectorSignals = isFieldRequested(
+      "edges.node.collectorSignals",
+      info
+    )
+
+    const artworks = await Promise.all(
+      hasRequestedCollectorSignals
         ? hits.map((artwork) => {
             return collectorSignalsLoader(artwork, ctx).then(
               (collectorSignals) => {
                 artwork.collectorSignals = collectorSignals
+
                 return artwork
               }
             )
           })
         : hits
+    )
 
-      return Promise.all(collectorSignalsRequests).then((artworks) => {
-        const totalPages = computeTotalPages(
+    const totalPages = computeTotalPages(
+      aggregations.total.value,
+      gravityOptions.size
+    )
+
+    const connection = connectionFromArraySlice(
+      artworks,
+      { first, last, after, before },
+      {
+        arrayLength: Math.min(
           aggregations.total.value,
-          gravityOptions.size
-        )
+          totalPages * gravityOptions.size
+        ),
+        sliceStart: gravityOptions.offset,
+      }
+    )
 
-        const connection = connectionFromArraySlice(
-          artworks,
-          { first, last, after, before },
-          {
-            arrayLength: Math.min(
-              aggregations.total.value,
-              totalPages * gravityOptions.size
-            ),
-            sliceStart: gravityOptions.offset,
-          }
-        )
+    connection.pageInfo.endCursor = pageToCursor(
+      gravityOptions.page + 1,
+      gravityOptions.size
+    )
 
-        connection.pageInfo.endCursor = pageToCursor(
-          gravityOptions.page + 1,
-          gravityOptions.size
-        )
-
-        return Object.assign(
-          {
-            pageCursors: createPageCursors(
-              gravityOptions,
-              aggregations.total.value
-            ),
-            aggregations,
-            gravityOptions, // include for convenience in nested resolvers
-          },
-          connection
-        )
-      })
-    })
+    return Object.assign(
+      {
+        pageCursors: createPageCursors(
+          gravityOptions,
+          aggregations.total.value
+        ),
+        aggregations,
+        gravityOptions, // include for convenience in nested resolvers
+      },
+      connection
+    )
   },
 })
 
