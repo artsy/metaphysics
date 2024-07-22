@@ -52,20 +52,13 @@ export const collectorSignalsLoader = async (
   // Handle signals for non-auction artworks
   if (artwork.purchasable && partnerOfferCollectorSignalsEnabled) {
     if (ctx.mePartnerOffersLoader) {
-      try {
-        const partnerOffers = await ctx.mePartnerOffersLoader({
-          artwork_id: artworkId,
-          sort: "-created_at",
-          size: 1,
-        })
+      const partnerOffers = await ctx.mePartnerOffersLoader({
+        artwork_id: artworkId,
+        sort: "-created_at",
+        size: 1,
+      })
 
-        partnerOffer = partnerOffers.body[0]
-      } catch (error) {
-        console.error(
-          "collectorSignalsLoader: Error fetching partner offers",
-          error
-        )
-      }
+      partnerOffer = partnerOffers.body[0]
     }
   }
 
@@ -97,6 +90,7 @@ const getActiveSaleArtwork = async (
     })
     activeAuction = sales[0]
   } catch (error) {
+    // Possible if the auction is unpublished
     console.error(
       "collectorSignalsLoader: Error fetching active auction",
       error
@@ -107,15 +101,9 @@ const getActiveSaleArtwork = async (
     return null
   }
 
-  let saleArtwork = null
-  try {
-    saleArtwork =
-      (await ctx.saleArtworkLoader({
-        saleId: activeAuction.id,
-        saleArtworkId: artworkId,
-      })) ?? null
-  } catch (error) {
-    console.error("collectorSignalsLoader: Error fetching sale artwork", error)
-  }
-  return saleArtwork
+  const saleArtwork = await ctx.saleArtworkLoader({
+    saleId: activeAuction.id,
+    saleArtworkId: artworkId,
+  })
+  return saleArtwork ?? null
 }
