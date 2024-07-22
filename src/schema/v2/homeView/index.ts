@@ -19,8 +19,8 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 // known standard component types
 
-const ComponentTypeType = new GraphQLEnumType({
-  name: "ComponentType",
+const HomeViewComponentTypeType = new GraphQLEnumType({
+  name: "HomeViewComponentType",
   description: "Known component types for use in home view",
   values: {
     ARTWORKS_RAIL: {
@@ -36,12 +36,12 @@ const ComponentTypeType = new GraphQLEnumType({
 
 // a component spec, to be prescribed by each section
 
-const Component = new GraphQLObjectType({
-  name: "Component",
+const HomeViewComponent = new GraphQLObjectType({
+  name: "HomeViewComponent",
   description: "A component specification",
   fields: {
     type: {
-      type: ComponentTypeType,
+      type: HomeViewComponentTypeType,
       description: "Which component type to render",
     },
   },
@@ -49,8 +49,8 @@ const Component = new GraphQLObjectType({
 
 // section interface
 
-const GenericSectionInterface = new GraphQLInterfaceType({
-  name: "GenericSection",
+const GenericHomeViewSectionInterface = new GraphQLInterfaceType({
+  name: "GenericHomeViewSection",
   description: "Abstract interface shared by every kind of home view section",
   fields: {
     ...InternalIDFields,
@@ -63,7 +63,7 @@ const GenericSectionInterface = new GraphQLInterfaceType({
       description: "A display title for this section",
     },
     component: {
-      type: Component,
+      type: HomeViewComponent,
       description: "The component that is prescribed for this section",
     },
   },
@@ -74,7 +74,7 @@ const GenericSectionInterface = new GraphQLInterfaceType({
 const ArtworksRailSectionType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworksRailSection",
   description: "An artwork rail section in the home view",
-  interfaces: [GenericSectionInterface, NodeInterface],
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...InternalIDFields,
     key: {
@@ -86,7 +86,7 @@ const ArtworksRailSectionType = new GraphQLObjectType<any, ResolverContext>({
       description: "A display title for this section",
     },
     component: {
-      type: Component,
+      type: HomeViewComponent,
       description: "The component that is prescribed for this section",
     },
   },
@@ -98,7 +98,7 @@ const ArtworksRailSectionType = new GraphQLObjectType<any, ResolverContext>({
 const ArtistsRailSectionType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistsRailSection",
   description: "An artists rail section in the home view",
-  interfaces: [GenericSectionInterface, NodeInterface],
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...InternalIDFields,
     key: {
@@ -110,7 +110,7 @@ const ArtistsRailSectionType = new GraphQLObjectType<any, ResolverContext>({
       description: "A display title for this section",
     },
     component: {
-      type: Component,
+      type: HomeViewComponent,
       description: "The component that is prescribed for this section",
     },
   },
@@ -121,13 +121,13 @@ const ArtistsRailSectionType = new GraphQLObjectType<any, ResolverContext>({
 
 // the Section union type of all concrete sections
 
-const SectionType = new GraphQLUnionType({
-  name: "Section",
+const HomeViewSectionType = new GraphQLUnionType({
+  name: "HomeViewSection",
   types: [ArtworksRailSectionType, ArtistsRailSectionType],
 })
 
 const SectionsConnectionType = connectionWithCursorInfo({
-  nodeType: SectionType,
+  nodeType: HomeViewSectionType,
 }).connectionType
 
 const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
