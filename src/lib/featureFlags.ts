@@ -8,13 +8,17 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
  * Feature flags are defined within Unleash.
  * @see https://tools.artsy.net/feature-flags
  */
-const FEATURE_FLAGS_LIST = ["diamond_blurhash-enabled-globally"] as const
+const FEATURE_FLAGS_LIST = [
+  "diamond_blurhash-enabled-globally",
+  "emerald_signals-partner-offers",
+  "emerald_signals-auction-improvements",
+] as const
 
 type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
 
 let unleashClient: Unleash
 
-export function initilizeFeatureFlags() {
+export function initializeFeatureFlags() {
   unleashClient = initialize({
     url: UNLEASH_API,
     appName: UNLEASH_APP_NAME,

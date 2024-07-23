@@ -22,7 +22,7 @@ import { enrichArtworksWithPriceInsights } from "lib/fillers/enrichArtworksWithP
 import { formatLargeNumber } from "lib/formatLargeNumber"
 import { getDemandRankDisplayText } from "lib/getDemandRank"
 import { capitalizeFirstCharacter, enhance, existyValue } from "lib/helpers"
-import { isFieldRequested } from "lib/ifFieldRequested"
+import { isFieldRequested } from "lib/isFieldRequested"
 import { priceDisplayText, priceRangeDisplayText } from "lib/moneyHelpers"
 import _ from "lodash"
 import Article from "schema/v2/article"
@@ -97,6 +97,8 @@ import currencyCodes from "lib/currency_codes.json"
 import { date } from "../fields/date"
 import { ArtworkVisibility } from "./artworkVisibility"
 import { ArtworkConditionType } from "./artworkCondition"
+import { CollectorSignals } from "./collectorSignals"
+import { collectorSignalsLoader } from "lib/loaders/collectorSignalsLoader"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -417,6 +419,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ collecting_institution }) =>
           existyValue(collecting_institution),
       },
+      collectorSignals: CollectorSignals,
       comparableAuctionResults: ComparableAuctionResults,
       confidentialNotes: {
         type: GraphQLString,
@@ -1986,6 +1989,11 @@ export const artworkResolver = async (_source, args, context, resolveInfo) => {
     resolveInfo
   )
 
+  const hasRequestedCollectorSignals = isFieldRequested(
+    "collectorSignals",
+    resolveInfo
+  )
+
   const artwork = await artworkLoader(id)
 
   // // We don't want to query for the price insights unless the user has requested them
@@ -1997,6 +2005,11 @@ export const artworkResolver = async (_source, args, context, resolveInfo) => {
 
     return enrichedArtworks?.[0]
   }
+
+  const collectorSignals = hasRequestedCollectorSignals
+    ? await collectorSignalsLoader(artwork, context)
+    : {}
+  artwork.collectorSignals = collectorSignals
 
   return artwork
 }

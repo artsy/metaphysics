@@ -55,5 +55,5 @@ jest.mock("debug", () => () => jest.fn())
  */
 jest.mock("lib/featureFlags", () => ({
   isFeatureFlagEnabled: jest.fn(),
-  initilizeFeatureFlags: jest.fn(),
+  initializeFeatureFlags: jest.fn(),
 }))
