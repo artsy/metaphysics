@@ -78,13 +78,13 @@ export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FeatureFlagEnums = new GraphQLEnumType({
-  name: "FeatureFlagEnums",
+  name: "FeatureFlagsSortBy",
   values: {
-    RELEASE: {
-      value: "release",
+    NAME: {
+      value: "name",
     },
-    EXPERIMENT: {
-      value: "experiment",
+    CREATED_AT: {
+      value: "createdAt",
     },
   },
 })
