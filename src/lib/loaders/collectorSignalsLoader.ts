@@ -31,13 +31,21 @@ export const collectorSignalsLoader = async (
 
   // Handle signals for auction artworks
   if (isInSale && auctionsCollectorSignalsEnabled) {
-    const activeSaleArtwork = await getActiveSaleArtwork(
-      {
-        artworkId,
-        saleIds: artwork.sale_ids,
-      },
-      ctx
-    )
+    let activeSaleArtwork
+    try {
+      activeSaleArtwork = await getActiveSaleArtwork(
+        {
+          artworkId,
+          saleIds: artwork.sale_ids,
+        },
+        ctx
+      )
+    } catch (error) {
+      console.error(
+        "collectorSignalsLoader: Error fetching active sale artwork",
+        error
+      )
+    }
 
     if (activeSaleArtwork) {
       if (artwork.recent_saves_count) {
@@ -52,13 +60,20 @@ export const collectorSignalsLoader = async (
   // Handle signals for non-auction artworks
   if (artwork.purchasable && partnerOfferCollectorSignalsEnabled) {
     if (ctx.mePartnerOffersLoader) {
-      const partnerOffers = await ctx.mePartnerOffersLoader({
-        artwork_id: artworkId,
-        sort: "-created_at",
-        size: 1,
-      })
+      try {
+        const partnerOffers = await ctx.mePartnerOffersLoader({
+          artwork_id: artworkId,
+          sort: "-created_at",
+          size: 1,
+        })
 
-      partnerOffer = partnerOffers.body[0]
+        partnerOffer = partnerOffers.body[0]
+      } catch (error) {
+        console.error(
+          "collectorSignalsLoader: Error fetching partner offers",
+          error
+        )
+      }
     }
   }
 
@@ -90,7 +105,6 @@ const getActiveSaleArtwork = async (
     })
     activeAuction = sales[0]
   } catch (error) {
-    // Possible if the auction is unpublished
     console.error(
       "collectorSignalsLoader: Error fetching active auction",
       error
@@ -101,9 +115,15 @@ const getActiveSaleArtwork = async (
     return null
   }
 
-  const saleArtwork = await ctx.saleArtworkLoader({
-    saleId: activeAuction.id,
-    saleArtworkId: artworkId,
-  })
-  return saleArtwork ?? null
+  let saleArtwork = null
+  try {
+    saleArtwork =
+      (await ctx.saleArtworkLoader({
+        saleId: activeAuction.id,
+        saleArtworkId: artworkId,
+      })) ?? null
+  } catch (error) {
+    console.error("collectorSignalsLoader: Error fetching sale artwork", error)
+  }
+  return saleArtwork
 }
