@@ -56,7 +56,7 @@ const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
     },
   },
   isTypeOf: (value) => {
-    return value.component.type === "artworks_rail"
+    return value.component.type === "ArtworksRail"
   },
 })
 
@@ -83,7 +83,7 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
     },
   },
   isTypeOf: (value) => {
-    return value.component.type === "artists_rail"
+    return value.component.type === "ArtistsRail"
   },
 })
 

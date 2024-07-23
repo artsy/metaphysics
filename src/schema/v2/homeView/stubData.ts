@@ -4,7 +4,7 @@ export const STUB_SECTIONS = [
     key: "RECENTLY_VIEWED_ARTWORKS",
     title: "Recently viewed works",
     component: {
-      type: "artworks_rail",
+      type: "ArtworksRail",
     },
   },
   {
@@ -12,7 +12,7 @@ export const STUB_SECTIONS = [
     key: "SUGGESTED_ARTISTS",
     title: "Suggested artists for you",
     component: {
-      type: "artists_rail",
+      type: "ArtistsRail",
     },
   },
   {
@@ -20,7 +20,7 @@ export const STUB_SECTIONS = [
     key: "AUCTION_LOTS_FOR_YOU",
     title: "Auction lots for you",
     component: {
-      type: "artworks_rail",
+      type: "ArtworksRail",
     },
   },
 ]

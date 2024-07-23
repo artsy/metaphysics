@@ -7,11 +7,11 @@ const HomeViewComponentTypeType = new GraphQLEnumType({
   description: "Known component types for use in home view",
   values: {
     ARTWORKS_RAIL: {
-      value: "artworks_rail",
+      value: "ArtworksRail",
       description: "A standard rail of artworks",
     },
     ARTISTS_RAIL: {
-      value: "artists_rail",
+      value: "ArtistsRail",
       description: "A standard rail of artists",
     },
   },
