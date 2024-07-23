@@ -33,8 +33,11 @@ const GenericHomeViewSectionInterface = new GraphQLInterfaceType({
 
 // concrete sections
 
-const ArtworksRailSectionType = new GraphQLObjectType<any, ResolverContext>({
-  name: "ArtworksRailSection",
+const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ArtworksRailHomeViewSection",
   description: "An artwork rail section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
@@ -57,8 +60,11 @@ const ArtworksRailSectionType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-const ArtistsRailSectionType = new GraphQLObjectType<any, ResolverContext>({
-  name: "ArtistsRailSection",
+const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ArtistsRailHomeViewSection",
   description: "An artists rail section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
@@ -85,5 +91,5 @@ const ArtistsRailSectionType = new GraphQLObjectType<any, ResolverContext>({
 
 export const HomeViewSectionType = new GraphQLUnionType({
   name: "HomeViewSection",
-  types: [ArtworksRailSectionType, ArtistsRailSectionType],
+  types: [ArtworksRailHomeViewSectionType, ArtistsRailHomeViewSectionType],
 })
