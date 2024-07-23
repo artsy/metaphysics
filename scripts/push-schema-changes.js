@@ -89,7 +89,6 @@ async function main() {
           "vendor/graphql/schema/metaphysics.json",
         ],
       },
-      { repo: "volt-v2" },
     ]
 
     const updatePromises = reposToUpdate.map((repo) => updateSchemaFile(repo))
