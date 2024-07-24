@@ -61,6 +61,7 @@ import GeneFamilies from "./gene_families"
 import Genes from "./genes"
 import { HighlightsField } from "./Highlights"
 import HomePage from "./home"
+import { HomeView } from "./homeView"
 import Image from "./image"
 import Me from "./me"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
@@ -304,6 +305,7 @@ const rootFields = {
   heroUnit,
   highlights: HighlightsField,
   homePage: HomePage,
+  homeView: HomeView,
   identityVerification: IdentityVerification,
   identityVerificationsConnection,
   job,
