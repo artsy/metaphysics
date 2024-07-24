@@ -86,13 +86,60 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
         description: "Submission state label visible to the user.",
         resolve: ({ state }) => {
           switch (state.toLowerCase()) {
-            case "approved":
-            case "rejected":
+            case "draft":
+            case "hold":
             case "closed":
-            case "published":
-              return "Evaluation Complete"
+              return null
+            case "approved":
+              return "Approved"
+            case "rejected":
+              return "Submission Unsuccessful"
             default:
               return "In Progress"
+          }
+        },
+      },
+      stateLabelColor: {
+        type: GraphQLString,
+        resolve: ({ state }) => {
+          switch (state.toLowerCase()) {
+            case "rejected":
+              return "black60"
+            default:
+              return "black100"
+          }
+        },
+      },
+      actionLabel: {
+        type: GraphQLString,
+        description:
+          "Action label asks the user to poseed with the submission.",
+        resolve: ({ state }) => {
+          switch (state.toLowerCase()) {
+            case "draft":
+              return "Complete Submission"
+            case "approved":
+              return "Complete Listing"
+            default:
+              return null
+          }
+        },
+      },
+      buttonLable: {
+        type: GraphQLString,
+        description: "Button label visible to the user.",
+        resolve: ({ state }) => {
+          switch (state.toLowerCase()) {
+            case "draft":
+              return "Complete Submission"
+            case "approved":
+              return "Add Additional Information"
+            case "submitted":
+            case "published":
+              /* case "RESUBMITTED": */
+              return "Edit Submission"
+            default:
+              return null
           }
         },
       },
@@ -101,13 +148,22 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
         description: "More information about the submission state.",
         resolve: ({ state }) => {
           switch (state.toLowerCase()) {
+            case "draft":
+              return "You’ve started a submission to sell with Artsy but have not yet completed it."
+            case "submitted":
+              return "Your submission is currently being reviewed by our team. You will receive a response within 3 to 5 days."
             case "approved":
-            case "rejected":
-            case "closed":
+              return "Congratulations, your submission has been approved. Please provide additional information so we can list your work and match it with the best selling opportunity."
             case "published":
+              /* case "RESUBMITTED": */
+              return "Thank you for the information. Your submission is being assessed for sales opportunities. Our specialists will contact you via email or phone to coordinate the next steps."
+            case "rejected":
               return "Our specialists have reviewed this submission and determined that we do not currently have a market for it."
+            case "hold":
+            case "closed":
+              return null
             default:
-              return "The artwork is being reviewed or is in the sale process."
+              return "The artwork is currently being reviewed by our team."
           }
         },
       },
