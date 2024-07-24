@@ -182,7 +182,7 @@ export const gravityStitchingEnvironment = (
         !useUnstitchedMarketingCollections
           ? `
             extend type Query {
-              curatedMarketingCollections: [MarketingCollection]
+              curatedMarketingCollections(size: Int): [MarketingCollection]
             }
           `
           : ""
