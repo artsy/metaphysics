@@ -13,14 +13,17 @@ const rootFieldsAllowList = [
   "agreement",
   "artistSeries",
   "artistSeriesConnection",
-  "curatedMarketingCollections",
   "marketingCategories",
   "viewingRoom",
   "viewingRooms",
 ].concat(
   config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
     ? []
-    : ["marketingCollection", "marketingCollections"]
+    : [
+        "marketingCollection",
+        "marketingCollections",
+        "curatedMarketingCollections",
+      ]
 )
 
 export const executableGravitySchema = () => {

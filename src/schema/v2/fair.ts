@@ -43,6 +43,13 @@ import {
 } from "schema/v2/fields/pagination"
 import { FairOrganizerType } from "./fair_organizer"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
+import {
+  MarketingCollectionType,
+  fetchMarketingCollections,
+} from "./marketingCollections"
+import config from "config"
+
+const useUnstitchedMarketingCollections = !!config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -199,6 +206,25 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         // field in Gravity and then update it here.
         resolve: ({ kaws_collection_slugs }) => kaws_collection_slugs,
       },
+      ...(useUnstitchedMarketingCollections && {
+        marketingCollections: {
+          type: new GraphQLList(MarketingCollectionType),
+          args: {
+            size: {
+              type: GraphQLInt,
+              description: "Number of artworks to return",
+            },
+          },
+          resolve: async (
+            { kaws_collection_slugs },
+            args,
+            { marketingCollectionsLoader }
+          ) => {
+            args.slugs = kaws_collection_slugs
+            return fetchMarketingCollections(args, marketingCollectionsLoader)
+          },
+        },
+      }),
       links: markdown(),
       mobileImage: {
         /**

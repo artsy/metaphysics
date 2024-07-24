@@ -16637,7 +16637,7 @@ type Query {
     # The ID of the Credit Card
     id: String!
   ): CreditCard
-  curatedMarketingCollections(size: Int): [MarketingCollection]
+  curatedMarketingCollections: [MarketingCollection]
 
   # A list of trending artists. Inferred from a manually curated collection of trending artworks.
   curatedTrendingArtists(

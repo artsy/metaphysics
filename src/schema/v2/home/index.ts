@@ -6,9 +6,14 @@ import HomePageHeroUnits from "./home_page_hero_units"
 import HomePageFairsModule from "./home_page_fairs_module"
 import HomePageSalesModule from "./home_page_sales_module"
 import HomePageMyCollectionOnboardingModule from "./home_page_my_collection_onboarding_module"
+import HomePageMarketingModule from "./home_page_marketing_collections_module"
 
 import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+
+import config from "config"
+
+const useUnstitchedMarketingCollections = !!config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
 
 const HomePageType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomePage",
@@ -21,6 +26,9 @@ const HomePageType = new GraphQLObjectType<any, ResolverContext>({
     fairsModule: HomePageFairsModule,
     onboardingModule: HomePageMyCollectionOnboardingModule,
     salesModule: HomePageSalesModule,
+    ...(useUnstitchedMarketingCollections && {
+      marketingCollectionsModule: HomePageMarketingModule,
+    }),
   },
 })
 

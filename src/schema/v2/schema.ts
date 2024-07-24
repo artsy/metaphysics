@@ -223,7 +223,8 @@ import { SaleAgreementsConnection } from "./SaleAgreements/saleAgreementsConnect
 import { SaleAgreement } from "./SaleAgreements/SaleAgreement"
 import {
   MarketingCollection,
-  MarketingCollectionsConnection,
+  MarketingCollections,
+  CuratedMarketingCollections,
 } from "./marketingCollections"
 import { createCareerHighlightMutation } from "./careerHighlight/createCareerHighlightMutation"
 import { deleteCareerHighlightMutation } from "./careerHighlight/deleteCareerHighlightMutation"
@@ -244,7 +245,8 @@ const OptionalFieldDirective = new GraphQLDirective({
 const marketingCollectionUnstitchedRootField = config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
   ? {
       marketingCollection: MarketingCollection,
-      marketingCollections: MarketingCollectionsConnection,
+      marketingCollections: MarketingCollections,
+      curatedMarketingCollections: CuratedMarketingCollections,
     }
   : ({} as any)
 

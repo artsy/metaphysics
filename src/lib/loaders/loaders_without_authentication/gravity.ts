@@ -111,11 +111,6 @@ export default (opts) => {
       {},
       { headers: true }
     ),
-    relatedMarketingCollectionsLoader: gravityLoader(
-      (id) => `marketing_collections/${id}/related`,
-      {},
-      { headers: true }
-    ),
     matchArtistsLoader: gravityLoader("match/artists", {}, { headers: true }),
     matchGenesLoader: gravityLoader("match/genes"),
     anonNotificationPreferencesLoader: gravityLoader(
