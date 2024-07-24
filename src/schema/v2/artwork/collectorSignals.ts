@@ -2,6 +2,7 @@ import { GraphQLFieldConfig } from "graphql"
 import { GraphQLInt, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
+import { collectorSignalsLoader } from "lib/loaders/collectorSignalsLoader"
 
 export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLObjectType({
@@ -22,9 +23,14 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       },
     },
   }),
-  description: "List of collector signals",
+  description: "Collector signals on artwork",
 
-  resolve: async (artwork, {}, _ctx) => {
-    return artwork.collectorSignals
+  resolve: async (artwork, {}, ctx) => {
+    try {
+      const collectorSignals = await collectorSignalsLoader(artwork, ctx)
+      return collectorSignals
+    } catch (e) {
+      console.error("Error in CollectorSignals resolver: ", e)
+    }
   },
 }
