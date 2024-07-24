@@ -444,12 +444,12 @@ describe("ArtworkConsignmentSubmissionType", () => {
     })
   })
 
-  describe("#buttonLable", () => {
+  describe("#buttonLabel", () => {
     const query = `
     {
       artwork(id: "richard-prince-untitled-portrait") {
         consignmentSubmission {
-          buttonLable
+          buttonLabel
         }
       }
     }
@@ -458,25 +458,25 @@ describe("ArtworkConsignmentSubmissionType", () => {
     it("returns correct button lable", async () => {
       artwork.consignmentSubmission.state = "DRAFT"
       let data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.buttonLable).toEqual(
+      expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(
         "Complete Submission"
       )
 
       artwork.consignmentSubmission.state = "SUBMITTED"
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.buttonLable).toEqual(
+      expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(
         "Edit Submission"
       )
 
       artwork.consignmentSubmission.state = "APPROVED"
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.buttonLable).toEqual(
+      expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(
         "Add Additional Information"
       )
 
       artwork.consignmentSubmission.state = "PUBLISHED"
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.buttonLable).toEqual(
+      expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(
         "Edit Submission"
       )
 
@@ -484,15 +484,15 @@ describe("ArtworkConsignmentSubmissionType", () => {
 
       artwork.consignmentSubmission.state = "REJECTED"
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.buttonLable).toEqual(null)
+      expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(null)
 
       artwork.consignmentSubmission.state = "HOLD"
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.buttonLable).toEqual(null)
+      expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(null)
 
       artwork.consignmentSubmission.state = "CLOSED"
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.buttonLable).toEqual(null)
+      expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(null)
     })
   })
 

@@ -125,7 +125,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
           }
         },
       },
-      buttonLable: {
+      buttonLabel: {
         type: GraphQLString,
         description: "Button label visible to the user.",
         resolve: ({ state }) => {
