@@ -450,7 +450,7 @@ describe("Partner type", () => {
     })
   })
 
-  describe("#LocationsConnection", () => {
+  describe("#locationsConnection", () => {
     let locationsResponse
 
     beforeEach(() => {
@@ -481,15 +481,83 @@ describe("Partner type", () => {
         },
       ]
       context = {
-        partnerLocationsConnectionLoader: () =>
-          Promise.resolve({
-            body: locationsResponse,
-            headers: {
-              "x-total-count": locationsResponse.length,
-            },
-          }),
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          partnerLocationsConnectionLoader: () =>
+            Promise.resolve({
+              body: locationsResponse,
+              headers: {
+                "x-total-count": locationsResponse.length,
+              },
+            }),
+        },
         partnerLoader: () => Promise.resolve(partnerData),
       }
+    })
+
+    describe("authentication", () => {
+      it("throws error if private=true, yet not authenticated", () => {
+        const query = `
+          {
+            partner(id:"bau-xi-gallery") {
+              locationsConnection(first:3, private:true) {
+                totalCount
+              }
+            }
+          }
+        `
+        return runQuery(query, context).catch((error) => {
+          expect(error.message).toEqual(
+            "You need to pass a X-Access-Token header to perform this action"
+          )
+        })
+      })
+
+      it("returns locations", async () => {
+        context.authenticatedLoaders = context.unauthenticatedLoaders
+
+        const query = `
+          {
+            partner(id:"bau-xi-gallery") {
+              locationsConnection(first:3, private: true) {
+                totalCount
+                edges {
+                  node {
+                    city
+                  }
+                }
+              }
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          partner: {
+            locationsConnection: {
+              totalCount: 3,
+              edges: [
+                {
+                  node: {
+                    city: "New York",
+                  },
+                },
+                {
+                  node: {
+                    city: "Detroit",
+                  },
+                },
+                {
+                  node: {
+                    city: "Tokyo",
+                  },
+                },
+              ],
+            },
+          },
+        })
+      })
     })
 
     it("returns locations", async () => {
@@ -1422,36 +1490,35 @@ describe("Partner type", () => {
   })
 
   describe("#alertsConnection", () => {
-    it("returns partner search criteria details and associated search criteria details", async () => {  
-     const response = 
-       {
+    it("returns partner search criteria details and associated search criteria details", async () => {
+      const response = {
         body: {
           hits: [
-          {
-            id: '8754ff90-b020-425b-8dae-894ce5ad9d1f',
-            search_criteria_id: '3f980bbe-7b9b-4fa9-beb1-69d13e94fb0c',
-            partner_id: '5f80bfefe8d808000ea212c1',
-            search_criteria: {
-              id: '3f980bbe-7b9b-4fa9-beb1-69d13e94fb0c',
-              price_range: "1-2"
-            }
-          },
-          {
-            id: 'b4adc50d-a584-4820-9140-4d49d7b6c7dc',
-            search_criteria_id: '614af56c-88cb-4ea7-bec5-fbdf9b67c24a',
-            partner_id: '5f80bfefe8d808000ea212c1',
-            search_criteria: {
-              id: '614af56c-88cb-4ea7-bec5-fbdf9b67c24a',
-              price_range: "1000-5000"
-            }
-          },
-        ],
+            {
+              id: "8754ff90-b020-425b-8dae-894ce5ad9d1f",
+              search_criteria_id: "3f980bbe-7b9b-4fa9-beb1-69d13e94fb0c",
+              partner_id: "5f80bfefe8d808000ea212c1",
+              search_criteria: {
+                id: "3f980bbe-7b9b-4fa9-beb1-69d13e94fb0c",
+                price_range: "1-2",
+              },
+            },
+            {
+              id: "b4adc50d-a584-4820-9140-4d49d7b6c7dc",
+              search_criteria_id: "614af56c-88cb-4ea7-bec5-fbdf9b67c24a",
+              partner_id: "5f80bfefe8d808000ea212c1",
+              search_criteria: {
+                id: "614af56c-88cb-4ea7-bec5-fbdf9b67c24a",
+                price_range: "1000-5000",
+              },
+            },
+          ],
         },
-         headers: {
-           "x-total-count": 2,
-         },
-       }
-     
+        headers: {
+          "x-total-count": 2,
+        },
+      }
+
       const query = gql`
         {
           partner(id: "catty-partner") {
@@ -1482,9 +1549,9 @@ describe("Partner type", () => {
               },
               {
                 node: {
-                  priceRange: "1000-5000"
-                }
-              }
+                  priceRange: "1000-5000",
+                },
+              },
             ],
           },
         },

@@ -828,14 +828,32 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         args: pageable({
           page: { type: GraphQLInt },
           size: { type: GraphQLInt },
+          private: {
+            type: GraphQLBoolean,
+            description: "Return all partner-authenticated locations.",
+          },
         }),
-        resolve: async ({ id }, args, { partnerLocationsConnectionLoader }) => {
+        resolve: async (
+          { id },
+          args,
+          { authenticatedLoaders, unauthenticatedLoaders }
+        ) => {
+          const partnerLocationsConnectionLoader = args.private
+            ? authenticatedLoaders.partnerLocationsConnectionLoader
+            : unauthenticatedLoaders.partnerLocationsConnectionLoader
+
+          if (!partnerLocationsConnectionLoader) {
+            throw new Error(
+              "You need to pass a X-Access-Token header to perform this action"
+            )
+          }
+
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )
 
           const { body, headers } = await partnerLocationsConnectionLoader(id, {
-            private: false,
+            private: args.private,
             total_count: true,
             offset,
             size,
