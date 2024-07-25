@@ -3,10 +3,6 @@ import { toGlobalId } from "graphql-relay"
 import gql from "lib/gql"
 import sinon from "sinon"
 
-jest.mock("lib/loaders/collectorSignalsLoader", () => ({
-  collectorSignalsLoader: jest.fn(),
-}))
-
 describe("artworksConnection", () => {
   let context
 
