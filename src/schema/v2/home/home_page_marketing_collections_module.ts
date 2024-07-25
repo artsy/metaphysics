@@ -5,11 +5,11 @@ import {
 import { GraphQLList, GraphQLObjectType, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-export const HomePageMarketingModuleType = new GraphQLObjectType<
+export const HomePageMarketingCollectionsModuleType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "HomePageMarketingModule",
+  name: "HomePageMarketingCollectionsModule",
   fields: {
     results: {
       type: new GraphQLNonNull(new GraphQLList(MarketingCollectionType)),
@@ -33,9 +33,9 @@ export const HomePageMarketingModuleType = new GraphQLObjectType<
   },
 })
 
-const HomePageMarketingModule = {
-  type: HomePageMarketingModuleType,
+const HomePageMarketingCollectionModule = {
+  type: HomePageMarketingCollectionsModuleType,
   resolve: (_root, obj) => obj,
 }
 
-export default HomePageMarketingModule
+export default HomePageMarketingCollectionModule

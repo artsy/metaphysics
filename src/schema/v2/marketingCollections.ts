@@ -51,15 +51,15 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
   thumbnailImage: {
     type: Image.type,
     resolve: async (
-      { representativeArtworkID, image_url },
+      { representative_artwork_id, thumbnail: image_url },
       _args,
       { artworkLoader }
     ) => {
       let imageData: unknown
       if (image_url) {
         imageData = normalizeImageData(image_url)
-      } else if (representativeArtworkID) {
-        const { images } = await artworkLoader(representativeArtworkID)
+      } else if (representative_artwork_id) {
+        const { images } = await artworkLoader(representative_artwork_id)
         imageData = normalizeImageData(getDefault(images))
       }
       return imageData
@@ -141,6 +141,10 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
   artworkIds: {
     type: new GraphQLList(GraphQLString),
     resolve: ({ artwork_ids }) => artwork_ids,
+  },
+  representativeArtworkID: {
+    type: GraphQLString,
+    resolve: ({ representative_artwork_id }) => representative_artwork_id,
   },
 }
 
@@ -276,7 +280,7 @@ export const MarketingCollection: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
-  type: GraphQLList(MarketingCollectionType),
+  type: GraphQLNonNull(GraphQLList(GraphQLNonNull(MarketingCollectionType))),
   description: "A list of MarketingCollections",
   args: pageable({
     slugs: {
@@ -348,9 +352,6 @@ export const CuratedMarketingCollections: GraphQLFieldConfig<
   type: new GraphQLList(MarketingCollectionType),
   description: "Curated Marketing Collections",
   args: {
-    slugs: {
-      type: new GraphQLList(GraphQLString),
-    },
     size: {
       type: GraphQLInt,
     },

@@ -6,7 +6,7 @@ import HomePageHeroUnits from "./home_page_hero_units"
 import HomePageFairsModule from "./home_page_fairs_module"
 import HomePageSalesModule from "./home_page_sales_module"
 import HomePageMyCollectionOnboardingModule from "./home_page_my_collection_onboarding_module"
-import HomePageMarketingModule from "./home_page_marketing_collections_module"
+import HomePageMarketingCollectionModule from "./home_page_marketing_collections_module"
 
 import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
@@ -27,7 +27,7 @@ const HomePageType = new GraphQLObjectType<any, ResolverContext>({
     onboardingModule: HomePageMyCollectionOnboardingModule,
     salesModule: HomePageSalesModule,
     ...(useUnstitchedMarketingCollections && {
-      marketingCollectionsModule: HomePageMarketingModule,
+      marketingCollectionsModule: HomePageMarketingCollectionModule,
     }),
   },
 })
