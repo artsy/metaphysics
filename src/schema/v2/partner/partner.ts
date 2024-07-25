@@ -1,5 +1,6 @@
 import { CursorPageable, pageable } from "relay-cursor-paging"
 import {
+  GraphQLEnumType,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -832,6 +833,16 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
             description: "Return all partner-authenticated locations.",
           },
+          addressType: {
+            type: new GraphQLEnumType({
+              name: "addressType",
+              values: {
+                BUSINESS: { value: "Business" },
+                TEMPORARY: { value: "Temporary" },
+                OTHER: { value: "Other" },
+              },
+            }),
+          },
         }),
         resolve: async (
           { id },
@@ -854,6 +865,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           const { body, headers } = await partnerLocationsConnectionLoader(id, {
             private: args.private,
+            address_type: args.addressType,
             total_count: true,
             offset,
             size,
