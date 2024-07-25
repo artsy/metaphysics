@@ -98,7 +98,6 @@ import { date } from "../fields/date"
 import { ArtworkVisibility } from "./artworkVisibility"
 import { ArtworkConditionType } from "./artworkCondition"
 import { CollectorSignals } from "./collectorSignals"
-import { collectorSignalsLoader } from "lib/loaders/collectorSignalsLoader"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -1989,11 +1988,6 @@ export const artworkResolver = async (_source, args, context, resolveInfo) => {
     resolveInfo
   )
 
-  const hasRequestedCollectorSignals = isFieldRequested(
-    "collectorSignals",
-    resolveInfo
-  )
-
   const artwork = await artworkLoader(id)
 
   // // We don't want to query for the price insights unless the user has requested them
@@ -2005,11 +1999,6 @@ export const artworkResolver = async (_source, args, context, resolveInfo) => {
 
     return enrichedArtworks?.[0]
   }
-
-  const collectorSignals = hasRequestedCollectorSignals
-    ? await collectorSignalsLoader(artwork, context)
-    : {}
-  artwork.collectorSignals = collectorSignals
 
   return artwork
 }

@@ -52,8 +52,6 @@ import numeral from "./fields/numeral"
 import { ArtworkType } from "./artwork"
 import { deprecate } from "lib/deprecation"
 import ArtworkSizes from "./artwork/artworkSizes"
-import { isFieldRequested } from "lib/isFieldRequested"
-import { collectorSignalsLoader } from "lib/loaders/collectorSignalsLoader"
 
 interface ContextSource {
   context_type: GraphQLObjectType<any, ResolverContext>
@@ -573,32 +571,13 @@ const filterArtworksConnectionTypeFactory = (
       )
     }
 
-    const hasRequestedCollectorSignals = isFieldRequested(
-      "edges.node.collectorSignals",
-      info
-    )
-
-    const artworks = await Promise.all(
-      hasRequestedCollectorSignals
-        ? hits.map((artwork) => {
-            return collectorSignalsLoader(artwork, ctx).then(
-              (collectorSignals) => {
-                artwork.collectorSignals = collectorSignals
-
-                return artwork
-              }
-            )
-          })
-        : hits
-    )
-
     const totalPages = computeTotalPages(
       aggregations.total.value,
       gravityOptions.size
     )
 
     const connection = connectionFromArraySlice(
-      artworks,
+      hits,
       { first, last, after, before },
       {
         arrayLength: Math.min(
