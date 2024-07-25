@@ -982,8 +982,8 @@ describe("gravity/stitching", () => {
 
     it("returns an array even if the marketingCollections request fails", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const resultsResolver =
-        resolvers.HomePageMarketingCollectionsModule.results.resolve
+      const resultsResolver = resolvers.HomePageMarketingCollectionsModule!
+        .results.resolve
       const delegateToSchemaMock = jest.fn()
       delegateToSchemaMock.mockRejectedValue(
         "simulating a marketingCollections request failure"
@@ -1008,8 +1008,8 @@ describe("gravity/stitching", () => {
 
       it("passes through slugs when stitched under a fair", async () => {
         const { resolvers } = await getGravityStitchedSchema()
-        const marketingCollectionsResolver =
-          resolvers.Fair.marketingCollections.resolve
+        const marketingCollectionsResolver = resolvers.Fair!
+          .marketingCollections.resolve
         const mergeInfo = { delegateToSchema: jest.fn() }
 
         await marketingCollectionsResolver(
@@ -1029,8 +1029,8 @@ describe("gravity/stitching", () => {
 
       it("returns an empty list when there are no marketingCollectionSlugs", async () => {
         const { resolvers } = await getGravityStitchedSchema()
-        const marketingCollectionsResolver =
-          resolvers.Fair.marketingCollections.resolve
+        const marketingCollectionsResolver = resolvers.Fair!
+          .marketingCollections.resolve
         const mergeInfo = { delegateToSchema: jest.fn() }
 
         const result = await marketingCollectionsResolver(
@@ -1058,7 +1058,7 @@ describe("gravity/stitching", () => {
 
       it("resolves the artworksConnection field on MarketingCollection for the V2 schema", async () => {
         const { resolvers } = await getGravityStitchedSchema()
-        const { artworksConnection } = resolvers.MarketingCollection
+        const { artworksConnection } = resolvers.MarketingCollection!
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
         artworksConnection.resolve(
@@ -1085,7 +1085,7 @@ describe("gravity/stitching", () => {
     describe("#thumbnailImage", () => {
       it("resolves the thumbnailImage field with a copy of the request context", async () => {
         const { resolvers } = await getGravityStitchedSchema()
-        const { thumbnailImage } = resolvers.MarketingCollection
+        const { thumbnailImage } = resolvers.MarketingCollection!
 
         const parent = {
           image_url: "https://www.example.com/image.jpg",
@@ -1110,7 +1110,7 @@ describe("gravity/stitching", () => {
 
       it("resolves the thumbnailImage field with a fallback image from representative artwork ID if imageURL is empty", async () => {
         const { resolvers } = await getGravityStitchedSchema()
-        const { thumbnailImage } = resolvers.MarketingCollection
+        const { thumbnailImage } = resolvers.MarketingCollection!
 
         const parent = {
           image_url: null,

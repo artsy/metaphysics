@@ -221,11 +221,15 @@ import { CreateSaleAgreementMutation } from "./SaleAgreements/createSaleAgreemen
 import { UpdateSaleAgreementMutation } from "./SaleAgreements/updateSaleAgreementMutation"
 import { SaleAgreementsConnection } from "./SaleAgreements/saleAgreementsConnection"
 import { SaleAgreement } from "./SaleAgreements/SaleAgreement"
+import {
+  MarketingCollection,
+  MarketingCollections,
+  CuratedMarketingCollections,
+} from "./marketingCollections"
 import { createCareerHighlightMutation } from "./careerHighlight/createCareerHighlightMutation"
 import { deleteCareerHighlightMutation } from "./careerHighlight/deleteCareerHighlightMutation"
 import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHighlightMutation"
 import { updatePartnerShowMutation } from "./partner/updatePartnerShowMutation"
-import { MarketingCollection } from "./marketingCollection"
 import config from "config"
 
 const PrincipalFieldDirective = new GraphQLDirective({
@@ -241,6 +245,8 @@ const OptionalFieldDirective = new GraphQLDirective({
 const marketingCollectionUnstitchedRootField = config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
   ? {
       marketingCollection: MarketingCollection,
+      marketingCollections: MarketingCollections,
+      curatedMarketingCollections: CuratedMarketingCollections,
     }
   : ({} as any)
 

@@ -103,6 +103,14 @@ export default (opts) => {
     ),
     incrementsLoader: gravityLoader("increments"),
     inquiryRequestQuestionsLoader: gravityLoader(`inquiry_request_questions`),
+    marketingCollectionLoader: gravityLoader(
+      (id) => `marketing_collections/${id}`
+    ),
+    marketingCollectionsLoader: gravityLoader(
+      "marketing_collections",
+      {},
+      { headers: true }
+    ),
     matchArtistsLoader: gravityLoader("match/artists", {}, { headers: true }),
     matchGenesLoader: gravityLoader("match/genes"),
     anonNotificationPreferencesLoader: gravityLoader(
