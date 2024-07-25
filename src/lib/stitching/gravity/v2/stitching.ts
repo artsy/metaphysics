@@ -12,6 +12,7 @@ import { dateRange } from "lib/date"
 import { resolveSearchCriteriaLabels } from "schema/v2/previewSavedSearch/searchCriteriaLabel"
 import { generateDisplayName } from "schema/v2/previewSavedSearch/generateDisplayName"
 import { amount, amountSDL } from "schema/v2/fields/money"
+import config from "config"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -59,6 +60,7 @@ function argsToSDL(args: GraphQLFieldConfigArgumentMap) {
   })
   return result
 }
+const useUnstitchedMarketingCollections = !!config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
 
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
@@ -107,16 +109,40 @@ export const gravityStitchingEnvironment = (
         artworksCountMessage: String
       }
 
-      extend type Fair {
-        marketingCollections(size: Int): [MarketingCollection]!
+      ${
+        !useUnstitchedMarketingCollections
+          ? `
+            extend type Fair {
+              marketingCollections(size: Int): [MarketingCollection]!
+            }`
+          : ""
       }
 
-      extend type HomePage {
-        marketingCollectionsModule: HomePageMarketingCollectionsModule
+      ${
+        !useUnstitchedMarketingCollections
+          ? `
+            extend type HomePage {
+              marketingCollectionsModule: HomePageMarketingCollectionsModule
+            }`
+          : ""
       }
 
+      ${
+        !useUnstitchedMarketingCollections
+          ? `
+            type HomePageMarketingCollectionsModule {
+              results: [MarketingCollection]!
+            }`
+          : ""
+      }
+
+      ${
+        !useUnstitchedMarketingCollections
+          ? `
       type HomePageMarketingCollectionsModule {
         results: [MarketingCollection]!
+      }`
+          : ""
       }
 
       extend type MarketingCollection {
@@ -152,8 +178,14 @@ export const gravityStitchingEnvironment = (
         viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
       }
 
-      extend type Query {
-        curatedMarketingCollections(size: Int): [MarketingCollection]
+      ${
+        !useUnstitchedMarketingCollections
+          ? `
+            extend type Query {
+              curatedMarketingCollections(size: Int): [MarketingCollection]
+            }
+          `
+          : ""
       }
 
       extend type SearchCriteria {
@@ -209,13 +241,19 @@ export const gravityStitchingEnvironment = (
 
       extend type Viewer {
         viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!], partnerID: ID): ViewingRoomsConnection
-        marketingCollections(
-          slugs: [String!]
-          category: String
-          size: Int
-          isFeaturedArtistContent: Boolean
-          artistID: String
-        ): [MarketingCollection]
+        ${
+          !useUnstitchedMarketingCollections
+            ? `
+              marketingCollections(
+                slugs: [String!]
+                category: String
+                size: Int
+                isFeaturedArtistContent: Boolean
+                artistID: String
+              ): [MarketingCollection]
+            `
+            : ""
+        }
       }
 
       # Mutation Payloads
@@ -477,146 +515,154 @@ export const gravityStitchingEnvironment = (
           },
         },
       },
-      Fair: {
-        marketingCollections: {
-          fragment: `
+      ...(!useUnstitchedMarketingCollections && {
+        Fair: {
+          marketingCollections: {
+            fragment: `
             ... on Fair {
               marketingCollectionSlugs
             }
           `,
-          resolve: (
-            { marketingCollectionSlugs: slugs },
-            args,
-            context,
-            info
-          ) => {
-            if (slugs.length === 0) return []
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "marketingCollections",
-
-              args: {
-                slugs,
-                ...args,
-              },
+            resolve: (
+              { marketingCollectionSlugs: slugs },
+              args,
               context,
-              info,
-            })
-          },
-        },
-      },
-      HomePage: {
-        marketingCollectionsModule: {
-          fragment: gql`
-                ... on HomePage {
-                  __typename
-                }
-              `,
-          resolve: () => {
-            return {}
-          },
-        },
-      },
-      HomePageMarketingCollectionsModule: {
-        results: {
-          fragment: gql`
-              ... on HomePageMarketingCollectionsModule {
-                __typename
-              }
-            `,
-          resolve: async (_parent, _args, context, info) => {
-            try {
-              // We hard-code the collections slugs here in MP so that the app
-              // can display different collections based only on an MP change
-              // (and not an app deploy).
-              return await info.mergeInfo.delegateToSchema({
+              info
+            ) => {
+              if (slugs.length === 0) return []
+              return info.mergeInfo.delegateToSchema({
                 schema: gravitySchema,
                 operation: "query",
                 fieldName: "marketingCollections",
+
                 args: {
-                  slugs: [
-                    "trending-now",
-                    "top-auction-lots",
-                    "new-this-week",
-                    "curators-picks-blue-chip",
-                    "finds-under-1000-dollars",
-                    "best-of-prints-and-editions",
-                  ],
+                  slugs,
+                  ...args,
                 },
                 context,
                 info,
               })
-            } catch (error) {
-              // The schema guarantees a present array for results, so fall back
-              // to an empty one if the request fails. Note that we
-              // still bubble-up any errors in the GraphQL response.
-              return []
-            }
+            },
           },
         },
-      },
-      MarketingCollection: {
-        thumbnailImage: {
-          fragment: gql`
+      }),
+      ...(!useUnstitchedMarketingCollections && {
+        HomePage: {
+          marketingCollectionsModule: {
+            fragment: gql`
+                ... on HomePage {
+                  __typename
+                }
+              `,
+            resolve: () => {
+              return {}
+            },
+          },
+        },
+      }),
+      ...(!useUnstitchedMarketingCollections && {
+        HomePageMarketingCollectionsModule: {
+          results: {
+            fragment: gql`
+              ... on HomePageMarketingCollectionsModule {
+                __typename
+              }
+            `,
+            resolve: async (_parent, _args, context, info) => {
+              try {
+                // We hard-code the collections slugs here in MP so that the app
+                // can display different collections based only on an MP change
+                // (and not an app deploy).
+                return await info.mergeInfo.delegateToSchema({
+                  schema: gravitySchema,
+                  operation: "query",
+                  fieldName: "marketingCollections",
+                  args: {
+                    slugs: [
+                      "trending-now",
+                      "top-auction-lots",
+                      "new-this-week",
+                      "curators-picks-blue-chip",
+                      "finds-under-1000-dollars",
+                      "best-of-prints-and-editions",
+                    ],
+                  },
+                  context,
+                  info,
+                })
+              } catch (error) {
+                // The schema guarantees a present array for results, so fall back
+                // to an empty one if the request fails. Note that we
+                // still bubble-up any errors in the GraphQL response.
+                return []
+              }
+            },
+          },
+        },
+      }),
+      ...(!useUnstitchedMarketingCollections && {
+        MarketingCollection: {
+          thumbnailImage: {
+            fragment: gql`
           ... on MarketingCollection {
             image_url: thumbnail
             representativeArtworkID
           }
           `,
-          resolve: async (
-            { representativeArtworkID, image_url },
-            args,
-            context,
-            info
-          ) => {
-            let imageData: unknown
-            if (image_url) {
-              imageData = normalizeImageData(image_url)
-            } else if (representativeArtworkID) {
-              const { artworkLoader } = context
-              const { images } = await artworkLoader(representativeArtworkID)
-              imageData = normalizeImageData(getDefault(images))
-            }
-            return info.mergeInfo.delegateToSchema({
+            resolve: async (
+              { representativeArtworkID, image_url },
               args,
-              schema: localSchema,
-              operation: "query",
-              fieldName: "_do_not_use_image",
-              context: {
-                ...context,
-                imageData,
-              },
-              info,
-            })
+              context,
+              info
+            ) => {
+              let imageData: unknown
+              if (image_url) {
+                imageData = normalizeImageData(image_url)
+              } else if (representativeArtworkID) {
+                const { artworkLoader } = context
+                const { images } = await artworkLoader(representativeArtworkID)
+                imageData = normalizeImageData(getDefault(images))
+              }
+              return info.mergeInfo.delegateToSchema({
+                args,
+                schema: localSchema,
+                operation: "query",
+                fieldName: "_do_not_use_image",
+                context: {
+                  ...context,
+                  imageData,
+                },
+                info,
+              })
+            },
           },
-        },
-        artworksConnection: {
-          fragment: `
+          artworksConnection: {
+            fragment: `
               ... on MarketingCollection {
                 internalID
               }
             `,
-          resolve: (
-            { internalID: marketingCollectionID },
-            args,
-            context,
-            info
-          ) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: localSchema,
-              operation: "query",
-              fieldName: "artworksConnection",
-              args: {
-                marketingCollectionID,
-                ...args,
-              },
+            resolve: (
+              { internalID: marketingCollectionID },
+              args,
               context,
-              info,
-            })
+              info
+            ) => {
+              return info.mergeInfo.delegateToSchema({
+                schema: localSchema,
+                operation: "query",
+                fieldName: "artworksConnection",
+                args: {
+                  marketingCollectionID,
+                  ...args,
+                },
+                context,
+                info,
+              })
+            },
           },
         },
-      },
+      }),
       Me: {
         savedSearch: {
           resolve: (_parent, args, context, info) => {
@@ -694,38 +740,40 @@ export const gravityStitchingEnvironment = (
           },
         },
       },
-      Query: {
-        curatedMarketingCollections: {
-          fragment: gql`
-            ...on Query {
-              __typename
-            }
-          `,
-          resolve: async (_parent, args, context, info) => {
-            try {
-              return await info.mergeInfo.delegateToSchema({
-                schema: gravitySchema,
-                operation: "query",
-                fieldName: "marketingCollections",
-                args: {
-                  slugs: [
-                    "trending-now",
-                    "top-auction-lots",
-                    "new-this-week",
-                    "curators-picks-blue-chip",
-                    "curators-picks-emerging",
-                  ],
-                  ...args,
-                },
-                context,
-                info,
-              })
-            } catch (error) {
-              return []
-            }
+      ...(!useUnstitchedMarketingCollections && {
+        Query: {
+          curatedMarketingCollections: {
+            fragment: gql`
+              ...on Query {
+                __typename
+              }
+            `,
+            resolve: async (_parent, args, context, info) => {
+              try {
+                return await info.mergeInfo.delegateToSchema({
+                  schema: gravitySchema,
+                  operation: "query",
+                  fieldName: "marketingCollections",
+                  args: {
+                    slugs: [
+                      "trending-now",
+                      "top-auction-lots",
+                      "new-this-week",
+                      "curators-picks-blue-chip",
+                      "curators-picks-emerging",
+                    ],
+                    ...args,
+                  },
+                  context,
+                  info,
+                })
+              } catch (error) {
+                return []
+              }
+            },
           },
         },
-      },
+      }),
       SearchCriteria: {
         artistsConnection: {
           fragment: gql`
@@ -1066,23 +1114,25 @@ export const gravityStitchingEnvironment = (
             })
           },
         },
-        marketingCollections: {
-          fragment: gql`
+        ...(!useUnstitchedMarketingCollections && {
+          marketingCollections: {
+            fragment: gql`
               ...on Viewer {
                 __typename
               }
             `,
-          resolve: async (_parent, args, context, info) => {
-            return await info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "marketingCollections",
-              args,
-              context,
-              info,
-            })
+            resolve: async (_parent, args, context, info) => {
+              return await info.mergeInfo.delegateToSchema({
+                schema: gravitySchema,
+                operation: "query",
+                fieldName: "marketingCollections",
+                args,
+                context,
+                info,
+              })
+            },
           },
-        },
+        }),
       },
 
       // Mutations
