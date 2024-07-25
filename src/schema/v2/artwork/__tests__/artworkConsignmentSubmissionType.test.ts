@@ -326,19 +326,27 @@ describe("ArtworkConsignmentSubmissionType", () => {
         "In Progress"
       )
 
-      artwork.consignmentSubmission.state = "REJECTED"
-      data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
-        "Submission Unsuccessful"
-      )
-
       artwork.consignmentSubmission.state = "PUBLISHED"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
         "In Progress"
       )
 
-      // RESUBMITTED same as PUBLISHED
+      artwork.consignmentSubmission.state = "RESUBMITTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
+        "In Progress"
+      )
+
+      artwork.consignmentSubmission.state = "LISTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual("Listed")
+
+      artwork.consignmentSubmission.state = "REJECTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
+        "Submission Unsuccessful"
+      )
     })
   })
 
@@ -378,7 +386,17 @@ describe("ArtworkConsignmentSubmissionType", () => {
         "Thank you for the information. Your submission is being assessed for sales opportunities. Our specialists will contact you via email or phone to coordinate the next steps."
       )
 
-      // RESUBMITTED same as PUBLISHED
+      artwork.consignmentSubmission.state = "RESUBMITTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
+        "Thank you for the information. Your submission is being assessed for sales opportunities. Our specialists will contact you via email or phone to coordinate the next steps."
+      )
+
+      artwork.consignmentSubmission.state = "LISTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
+        "Your artwork has been successfully listed on Artsy."
+      )
 
       artwork.consignmentSubmission.state = "REJECTED"
       data = await runQuery(query, context)
@@ -428,7 +446,9 @@ describe("ArtworkConsignmentSubmissionType", () => {
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.actionLabel).toEqual(null)
 
-      // RESUBMITTED same as PUBLISHED
+      artwork.consignmentSubmission.state = "RESUBMITTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.actionLabel).toEqual(null)
 
       artwork.consignmentSubmission.state = "REJECTED"
       data = await runQuery(query, context)
@@ -480,7 +500,17 @@ describe("ArtworkConsignmentSubmissionType", () => {
         "Edit Submission"
       )
 
-      // RESUBMITTED same as PUBLISHED
+      artwork.consignmentSubmission.state = "RESUBMITTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(
+        "Edit Submission"
+      )
+
+      artwork.consignmentSubmission.state = "LISTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(
+        "View Listing"
+      )
 
       artwork.consignmentSubmission.state = "REJECTED"
       data = await runQuery(query, context)
@@ -539,19 +569,23 @@ describe("ArtworkConsignmentSubmissionType", () => {
         "black100"
       )
 
-      artwork.consignmentSubmission.state = "REJECTED"
-      data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.stateLabelColor).toEqual(
-        "black60"
-      )
-
       artwork.consignmentSubmission.state = "PUBLISHED"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.stateLabelColor).toEqual(
         "black100"
       )
 
-      // RESUBMITTED same as PUBLISHED
+      artwork.consignmentSubmission.state = "RESUBMITTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabelColor).toEqual(
+        "black100"
+      )
+
+      artwork.consignmentSubmission.state = "REJECTED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabelColor).toEqual(
+        "black60"
+      )
     })
   })
 })
