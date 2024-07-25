@@ -4522,6 +4522,67 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#isListed", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          isListed
+        }
+      }
+    `
+
+    it("true if listed_artworks_ids length is > 0", async () => {
+      const context = {
+        artworkLoader: () =>
+          Promise.resolve({
+            listed_artwork_ids: ["foo-bar", "bar-foo"],
+          }),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          isListed: true,
+        },
+      })
+    })
+
+    it("false if listed_artworks_ids is empty", async () => {
+      const context = {
+        artworkLoader: () =>
+          Promise.resolve({
+            listed_artwork_ids: [],
+          }),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          isListed: false,
+        },
+      })
+    })
+
+    it("false if listed_artworks_ids is null", async () => {
+      const context = {
+        artworkLoader: () =>
+          Promise.resolve({
+            listed_artwork_ids: null,
+          }),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          isListed: false,
+        },
+      })
+    })
+  })
+
   describe("#priceListed", () => {
     const query = `
       {
