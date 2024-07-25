@@ -1,6 +1,5 @@
 import { GraphQLObjectType, GraphQLFieldConfig, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { STUB_SECTIONS } from "./stubData"
 import {
   connectionWithCursorInfo,
   paginationResolver,
@@ -8,6 +7,7 @@ import {
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { HomeViewSectionType } from "./HomeViewSection"
+import { getSectionsForUser } from "./getSectionsForUser"
 
 const SectionsConnectionType = connectionWithCursorInfo({
   nodeType: HomeViewSectionType,
@@ -16,11 +16,12 @@ const SectionsConnectionType = connectionWithCursorInfo({
 const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
   type: SectionsConnectionType,
   args: pageable({}),
-  resolve: async (_parent, args, _context, _info) => {
+  resolve: async (_parent, args, context, _info) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const totalCount = STUB_SECTIONS.length
-    const data = STUB_SECTIONS.slice(offset, offset + size)
+    const sections = await getSectionsForUser(context)
+    const totalCount = sections.length
+    const data = sections.slice(offset, offset + size)
 
     return paginationResolver({
       totalCount,
