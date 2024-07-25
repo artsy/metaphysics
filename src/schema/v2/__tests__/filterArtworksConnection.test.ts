@@ -2,7 +2,6 @@ import { runQuery } from "schema/v2/test/utils"
 import { toGlobalId } from "graphql-relay"
 import gql from "lib/gql"
 import sinon from "sinon"
-import { collectorSignalsLoader } from "lib/loaders/collectorSignalsLoader"
 
 jest.mock("lib/loaders/collectorSignalsLoader", () => ({
   collectorSignalsLoader: jest.fn(),
@@ -801,101 +800,6 @@ describe("artworksConnection", () => {
       expect(artworksConnection.edges).toEqual([
         { node: { slug: "kaws-toys" } },
       ])
-    })
-  })
-
-  describe("loading collectorSignals", () => {
-    const mockcollectorSignalsLoader = collectorSignalsLoader as jest.Mock
-
-    beforeEach(() => {
-      mockcollectorSignalsLoader.mockClear()
-      context = {
-        authenticatedLoaders: {},
-        unauthenticatedLoaders: {
-          filterArtworksLoader: sinon
-            .stub()
-            .withArgs("filter/artworks", {
-              gene_id: "500-1000-ce",
-              aggregations: ["total"],
-              for_sale: true,
-              page: 20,
-              size: 30,
-            })
-            .returns(
-              Promise.resolve({
-                hits: [
-                  {
-                    id: "oseberg-norway-queens-ship",
-                    title: "Queen's Ship",
-                    artists: [],
-                  },
-                ],
-                aggregations: { total: { value: 1000 } },
-              })
-            ),
-        },
-      }
-    })
-
-    it("fetches & returns the collector signals for artworks in a connection if requested", async () => {
-      const collectorSignalsResult = {
-        partnerOffer: { endAt: "2021-01-01T00:00:00.000Z" },
-        bidCount: 1,
-        lotWatcherCount: 2,
-      }
-      mockcollectorSignalsLoader.mockResolvedValue(collectorSignalsResult)
-
-      const data = await runQuery(
-        `
-        {
-          artworksConnection(first: 10) {
-            edges {
-              node {
-                collectorSignals {
-                  bidCount
-                  lotWatcherCount
-                  partnerOffer {
-                    endAt
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-        context
-      )
-
-      expect(mockcollectorSignalsLoader).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining(context)
-      )
-      expect(data.artworksConnection.edges[0].node).toEqual({
-        collectorSignals: {
-          bidCount: 1,
-          lotWatcherCount: 2,
-          partnerOffer: { endAt: "2021-01-01T00:00:00.000Z" },
-        },
-      })
-    })
-
-    it("skips fetching collector signals for artworks in a connection if not requested", async () => {
-      await runQuery(
-        `
-        {
-          artworksConnection(first: 10) {
-            edges {
-              node {
-                title
-              }
-            }
-          }
-        }
-      `,
-        context
-      )
-
-      expect(mockcollectorSignalsLoader).not.toHaveBeenCalled()
     })
   })
 })

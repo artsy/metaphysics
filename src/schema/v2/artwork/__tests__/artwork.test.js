@@ -6,12 +6,16 @@ import { getMicrofunnelDataByArtworkInternalID } from "schema/v2/artist/targetSu
 import { runQuery } from "schema/v2/test/utils"
 import { CHECKOUT_TAXES_DOC_URL } from "../taxInfo"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import { collectorSignalsLoader } from "lib/loaders/collectorSignalsLoader"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
-jest.mock("lib/loaders/collectorSignalsLoader", () => ({
-  collectorSignalsLoader: jest.fn(),
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn(),
 }))
+/**
+ * @type {jest.Mock}
+ */
+const mockIsFeatureFlagEnabled = isFeatureFlagEnabled
 
 describe("Artwork type", () => {
   const sale = { id: "existy" }
@@ -72,8 +76,6 @@ describe("Artwork type", () => {
   ]
 
   beforeEach(() => {
-    collectorSignalsLoader.mockClear()
-
     artwork = {
       id: "richard-prince-untitled-portrait",
       artist: {
@@ -4574,44 +4576,107 @@ describe("Artwork type", () => {
         }
       }
     `
-    it("fetches & returns the collector signals for an artwork if requested", async () => {
-      const collectorSignalsResult = {
-        partnerOffer: { endAt: "2021-01-01T00:00:00.000Z" },
-        bidCount: 1,
-        lotWatcherCount: 2,
+
+    beforeEach(() => {
+      context = {
+        userID: "testUser",
+        mePartnerOffersLoader: jest.fn(),
+        salesLoader: jest.fn(),
+        saleArtworkLoader: jest.fn(),
+        artworkLoader: jest.fn(),
       }
-      collectorSignalsLoader.mockResolvedValue(collectorSignalsResult)
+      context.artworkLoader.mockResolvedValue(artwork)
+    })
+
+    it("fetches & returns the user-specific collector signals for a purchasable artwork if requested by a logged-in user", async () => {
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
+
+      artwork.purchasable = true
+      artwork.sale_ids = []
+
+      context.userID = "user-id"
+      context.mePartnerOffersLoader.mockResolvedValue({
+        body: [{ endAt: "2023-01-01T00:00:00Z" }],
+      })
 
       const data = await runQuery(query, context)
 
-      expect(collectorSignalsLoader).toHaveBeenCalledWith(
-        artwork,
-        expect.objectContaining(context)
-      )
+      expect(context.mePartnerOffersLoader).toHaveBeenCalledWith({
+        artwork_id: "richard-prince-untitled-portrait",
+        size: 1,
+        sort: "-created_at",
+      })
+
       expect(data).toEqual({
         artwork: {
           collectorSignals: {
-            bidCount: 1,
-            lotWatcherCount: 2,
-            partnerOffer: { endAt: "2021-01-01T00:00:00.000Z" },
+            bidCount: null,
+            lotWatcherCount: null,
+            partnerOffer: {
+              endAt: "2023-01-01T00:00:00Z",
+            },
           },
         },
       })
     })
 
-    it("skips fetching if collectorSignals are not requested", async () => {
-      await runQuery(
-        `
-        {
-          artwork(id: "richard-prince-untitled-portrait") {
-            title
-          }
-        }
-        `,
-        context
-      )
+    it("fetches & returns the auction collector signals for an artwork if requested", async () => {
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
 
-      expect(collectorSignalsLoader).not.toHaveBeenCalled()
+      artwork.recent_saves_count = 123
+      context.salesLoader.mockResolvedValue([
+        {
+          id: "sale1",
+        },
+      ])
+
+      context.saleArtworkLoader.mockResolvedValue({
+        bidder_positions_count: 5,
+      })
+
+      const data = await runQuery(query, context)
+
+      expect(context.salesLoader).toHaveBeenCalledWith({
+        id: ["sale-id-not-auction", "sale-id-auction"],
+        is_auction: true,
+        live: true,
+      })
+
+      expect(context.saleArtworkLoader).toHaveBeenCalledWith({
+        saleArtworkId: "richard-prince-untitled-portrait",
+        saleId: "sale1",
+      })
+
+      expect(data).toEqual({
+        artwork: {
+          collectorSignals: {
+            bidCount: 5,
+            lotWatcherCount: 123,
+            partnerOffer: null,
+          },
+        },
+      })
+    })
+    it("does not query signal loaders if the artwork has no sale_ids", async () => {
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
+
+      artwork.sale_ids = []
+      artwork.purchasable = false
+
+      const data = await runQuery(query, context)
+
+      expect(context.salesLoader).not.toHaveBeenCalled()
+      expect(context.mePartnerOffersLoader).not.toHaveBeenCalled()
+
+      expect(data).toEqual({
+        artwork: {
+          collectorSignals: {
+            bidCount: null,
+            lotWatcherCount: null,
+            partnerOffer: null,
+          },
+        },
+      })
     })
   })
 })
