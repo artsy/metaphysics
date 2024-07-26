@@ -92,8 +92,6 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
               return null
             case "approved":
               return "Approved"
-            case "listed":
-              return "Listed"
             case "rejected":
               return "Submission Unsuccessful"
             default:
@@ -140,8 +138,6 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
             case "published":
             case "resubmitted":
               return "Edit Submission"
-            case "listed":
-              return "View Listing"
             default:
               return null
           }
@@ -161,8 +157,6 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
             case "published":
             case "resubmitted":
               return "Thank you for the information. Your submission is being assessed for sales opportunities. Our specialists will contact you via email or phone to coordinate the next steps."
-            case "listed":
-              return "Your artwork has been successfully listed on Artsy."
             case "rejected":
               return "Our specialists have reviewed this submission and determined that we do not currently have a market for it."
             case "hold":
