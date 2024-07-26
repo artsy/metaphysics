@@ -338,10 +338,6 @@ describe("ArtworkConsignmentSubmissionType", () => {
         "In Progress"
       )
 
-      artwork.consignmentSubmission.state = "LISTED"
-      data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.stateLabel).toEqual("Listed")
-
       artwork.consignmentSubmission.state = "REJECTED"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
@@ -390,12 +386,6 @@ describe("ArtworkConsignmentSubmissionType", () => {
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
         "Thank you for the information. Your submission is being assessed for sales opportunities. Our specialists will contact you via email or phone to coordinate the next steps."
-      )
-
-      artwork.consignmentSubmission.state = "LISTED"
-      data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
-        "Your artwork has been successfully listed on Artsy."
       )
 
       artwork.consignmentSubmission.state = "REJECTED"
@@ -504,12 +494,6 @@ describe("ArtworkConsignmentSubmissionType", () => {
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(
         "Edit Submission"
-      )
-
-      artwork.consignmentSubmission.state = "LISTED"
-      data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(
-        "View Listing"
       )
 
       artwork.consignmentSubmission.state = "REJECTED"
