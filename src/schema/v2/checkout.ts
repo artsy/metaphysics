@@ -69,6 +69,13 @@ const CheckoutType: GraphQLObjectType = new GraphQLObjectType({
         return checkout.checkoutStages
       },
     },
+    requiredActions: {
+      type: GraphQLList(CheckoutStageType),
+      description: "Actions required to complete order",
+      resolve: (checkout) => {
+        return checkout.requiredActions
+      },
+    },
     featuredImageUrl: {
       type: GraphQLString,
       description: "The cover image URL for the stage",
@@ -89,10 +96,11 @@ export const Checkout: GraphQLFieldConfig<any, ResolverContext> = {
   },
 
   resolve: async (_root, args, context) => {
-    const { userID, exchangeGraphQLLoader } = context
+    const { accessToken } = context
     const { orderId } = args
 
-    if (!(userID && exchangeGraphQLLoader)) {
+    const isLoggedOut = !accessToken
+    if (isLoggedOut) {
       return null
     }
 
@@ -114,7 +122,7 @@ export const Checkout: GraphQLFieldConfig<any, ResolverContext> = {
 
 class CheckoutPresenter {
   private order: OrderData
-  private user?: UserData // move to presenter model
+  private user?: UserData
 
   constructor(order: OrderData, userData: UserData) {
     this.order = order
@@ -127,6 +135,30 @@ class CheckoutPresenter {
 
   get featuredImageUrl(): string {
     return this.firstArtwork.imageUrl
+  }
+
+  get orderState() {
+    return this.order.state
+  }
+
+  get requiredActions(): OrderStage[] {
+    const stages: OrderStage[] = []
+    if (this.order.lastTransactionFailed && this.orderState === "PENDING") {
+      stages.push({
+        stage: "TRANSACTION_FAILED",
+        knownRequired: true,
+        options: {
+          availablePaymentMethods: this.availablePaymentMethods,
+        },
+      })
+    }
+    // if (this.order.requiresIdentityVerification) {
+    stages.push({
+      stage: "IDENTITY_VERIFICATION",
+      knownRequired: true,
+    })
+    // }
+    return stages
   }
 
   get checkoutStages(): any[] {
@@ -154,7 +186,6 @@ class CheckoutPresenter {
       if (this.shippingAvailability.artsyShippingCountries.length > 0) {
         const includeStage =
           !this.savedFulfillmentValues || this.isArtsyShipping
-        console.log({ includeStage })
         includeStage &&
           stages.push({
             stage: "ARTSY_SHIPPING",
@@ -172,16 +203,16 @@ class CheckoutPresenter {
         knownRequired: true,
         savedValues: this.savedPaymentValues,
         options: {
-          availablePaymentMethods: [
-            "CREDIT_CARD",
-            "US_BANK_ACCOUNT",
-            "DUBLOONS",
-          ],
+          availablePaymentMethods: this.availablePaymentMethods,
         },
       })
     }
 
     return stages
+  }
+
+  get availablePaymentMethods() {
+    return this.order.availablePaymentMethods
   }
 
   get shippingAvailability() {
@@ -273,12 +304,15 @@ interface OrderStage {
   savedValues?: any
   options?: any
 }
+
 interface OrderData {
   internalID: string
   state: string
   mode: string
   requestedFulfillment: any
   myLastOffer?: any
+  lastTransactionFailed: boolean
+  availablePaymentMethods: string[]
   lineItems: {
     edges: Array<{
       node: {
@@ -354,6 +388,8 @@ const checkoutOrderQuery = gql`
       internalID
       state
       mode
+      lastTransactionFailed
+      availablePaymentMethods
       ... on CommerceOfferOrder {
         myLastOffer {
           amount

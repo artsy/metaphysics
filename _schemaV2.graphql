@@ -4204,6 +4204,9 @@ type Checkout {
   # The ID of the order
   orderId: String
 
+  # Actions required to complete order
+  requiredActions: [CheckoutStage]
+
   # The stages of the checkout
   stages: [CheckoutStage]
 }
