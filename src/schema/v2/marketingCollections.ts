@@ -249,18 +249,23 @@ export const MarketingCollectionType = new GraphQLObjectType<
 >({
   name: "MarketingCollection",
   interfaces: () => {
-    const {
-      EntityWithArtworksConnectionInterface,
-    } = require("./filterArtworksConnection")
-    return [NodeInterface, EntityWithArtworksConnectionInterface]
+    return [NodeInterface]
   },
   fields: () => {
-    const { filterArtworksConnection } = require("./filterArtworksConnection")
+    const {
+      filterArtworksConnectionWithParams,
+    } = require("./filterArtworksConnection")
     return {
       ...MarketingCollectionFields,
       relatedCollections: RelatedCollections,
       linkedCollections: LinkedCollections,
-      artworksConnection: filterArtworksConnection("marketing_collection_id"),
+      artworksConnection: filterArtworksConnectionWithParams((args) => {
+        const filterArtworksArgs = {
+          marketing_collection_id: args.id,
+          partner_id: args.partner_id,
+        }
+        return filterArtworksArgs
+      }),
     }
   },
 })
@@ -274,7 +279,7 @@ export const MarketingCollection: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The slug or ID of the Marketing Collection",
     },
   },
-  resolve: (_root, { slug }, { marketingCollectionLoader }) => {
+  resolve: async (_root, { slug }, { marketingCollectionLoader }) => {
     return marketingCollectionLoader(slug)
   },
 }

@@ -71,4 +71,84 @@ describe("MarketingCollections", () => {
       marketingCollection: { ...expected, internalID: payload.id },
     })
   })
+  it("return marketing collection artworks by partnerID", async () => {
+    const query = gql`
+      {
+        marketingCollections {
+          artworksConnection(first: 2, partnerID: "partner-id") {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context: any = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: () =>
+          Promise.resolve({
+            hits: [
+              {
+                id: "percy-1",
+                title: "Percy's Ship",
+                artists: [],
+              },
+              {
+                id: "fiby-2",
+                title: "Fibi's Ship",
+                artists: [],
+              },
+            ],
+            aggregations: { total: { value: 999 } },
+          }),
+      },
+      marketingCollectionsLoader: () =>
+        Promise.resolve({ body: marketingCollectionsData }),
+    }
+
+    const data = await runQuery(query, context)
+
+    expect(data).toMatchInlineSnapshot(`
+      Object {
+        "marketingCollections": Array [
+          Object {
+            "artworksConnection": Object {
+              "edges": Array [
+                Object {
+                  "node": Object {
+                    "slug": "percy-1",
+                  },
+                },
+                Object {
+                  "node": Object {
+                    "slug": "fiby-2",
+                  },
+                },
+              ],
+            },
+          },
+          Object {
+            "artworksConnection": Object {
+              "edges": Array [
+                Object {
+                  "node": Object {
+                    "slug": "percy-1",
+                  },
+                },
+                Object {
+                  "node": Object {
+                    "slug": "fiby-2",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      }
+    `)
+  })
 })

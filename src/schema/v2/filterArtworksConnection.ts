@@ -638,14 +638,3 @@ export const EntityWithFilterArtworksConnectionInterface = new GraphQLInterfaceT
     },
   }
 )
-
-export const EntityWithArtworksConnectionInterface = new GraphQLInterfaceType({
-  name: "EntityWithArtworksConnectionInterface",
-  fields: {
-    id: GlobalIDField,
-    artworksConnection: {
-      type: filterArtworksConnectionType,
-      args: pageable(filterArtworksArgs),
-    },
-  },
-})

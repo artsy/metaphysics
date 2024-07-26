@@ -56,6 +56,9 @@ export const executableGravitySchema = () => {
     "UsersConnectionEdge",
   ]
 
+  if (config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA) {
+    duplicatedTypes.push("MarketingCollection")
+  }
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
   const unusedTypes = [
