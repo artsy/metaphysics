@@ -231,6 +231,7 @@ import { deleteCareerHighlightMutation } from "./careerHighlight/deleteCareerHig
 import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHighlightMutation"
 import { updatePartnerShowMutation } from "./partner/updatePartnerShowMutation"
 import config from "config"
+import { Checkout } from "./checkout"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -286,6 +287,7 @@ const rootFields = {
   authenticationStatus,
   bankAccount: BankAccount,
   channel,
+  checkout: Checkout,
   cities,
   city: City,
   collectorProfile: CollectorProfileForUser,

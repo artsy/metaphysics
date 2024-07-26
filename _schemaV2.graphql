@@ -4194,6 +4194,34 @@ enum ChannelType {
   Team
 }
 
+type Checkout {
+  # The cover image URL for the stage
+  featuredImageUrl: String
+
+  # Hello to the order
+  helloOrder: String
+
+  # The ID of the order
+  orderId: String
+
+  # The stages of the checkout
+  stages: [CheckoutStage]
+}
+
+type CheckoutStage {
+  # Indicates if the stage is known to be required based on current order data
+  knownRequired: Boolean
+
+  # The options for the stage
+  options: String
+
+  # The currently saved values for the stage
+  savedValues: String
+
+  # The stage of the checkout
+  stage: String
+}
+
 type City {
   coordinates: LatLng
   fairsConnection(
@@ -16466,6 +16494,9 @@ type Query {
   ): BankAccount
   channel(id: ID!): Channel!
 
+  # Checkout flow
+  checkout(orderId: String): Checkout
+
   # A list of cities
   cities(featured: Boolean = false): [City!]!
 
@@ -21558,6 +21589,9 @@ type Viewer {
     id: String!
   ): BankAccount
   channel(id: ID!): Channel!
+
+  # Checkout flow
+  checkout(orderId: String): Checkout
 
   # A list of cities
   cities(featured: Boolean = false): [City!]!
