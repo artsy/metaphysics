@@ -156,14 +156,6 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
   },
 }
 
-export const MarketingCollectionBaseType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "MarketingCollectionBase",
-  fields: MarketingCollectionFields,
-})
-
 export const MarketingCollectionType = new GraphQLObjectType<
   any,
   ResolverContext
