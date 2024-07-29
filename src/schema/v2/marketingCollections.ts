@@ -335,7 +335,7 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
 
 export const fetchMarketingCollections = async (args, loader) => {
   const { size } = convertConnectionArgsToGravityArgs(args)
-  const gravityArgs: { size?: number; slugs?: string[] } = {
+  const gravityArgs: { size?: number; slugs?: string[]; artist_id?: string } = {
     size,
     ...args,
   }
