@@ -1061,6 +1061,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return connectionFromArray(artworks, args)
         },
       },
+      isListed: {
+        type: GraphQLNonNull(GraphQLBoolean),
+        resolve: ({ listed_artwork_ids }) => {
+          return (
+            Array.isArray(listed_artwork_ids) && listed_artwork_ids.length > 0
+          )
+        },
+      },
       literature: markdown(({ literature }) =>
         literature.replace(/^literature:\s+/i, "")
       ),

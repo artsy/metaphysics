@@ -36,6 +36,14 @@ const MarketingCollectionQuery = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ tag_id }) => tag_id,
     },
+    id: {
+      type: GraphQLString,
+      resolve: () => null,
+    },
+    internalID: {
+      type: GraphQLID,
+      resolve: () => null,
+    },
   },
 })
 
@@ -122,11 +130,11 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     resolve: ({ featured_artist_exclusion_ids }) =>
       featured_artist_exclusion_ids,
   },
-  headerImageId: {
+  headerImage: {
     type: GraphQLString,
     resolve: ({ header_image_id }) => header_image_id,
   },
-  thumbnailId: {
+  thumbnail: {
     type: GraphQLString,
     resolve: ({ thumbnail_id }) => thumbnail_id,
   },
@@ -148,38 +156,32 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
   },
 }
 
-export const MarketingCollectionBaseType = new GraphQLObjectType<
+export const MarketingCollectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "MarketingCollectionBase",
-  fields: MarketingCollectionFields,
+  name: "MarketingCollection",
+  interfaces: () => {
+    return [NodeInterface]
+  },
+  fields: () => {
+    const {
+      filterArtworksConnectionWithParams,
+    } = require("./filterArtworksConnection")
+    return {
+      ...MarketingCollectionFields,
+      relatedCollections: RelatedCollections,
+      linkedCollections: LinkedCollections,
+      artworksConnection: filterArtworksConnectionWithParams((args) => {
+        const filterArtworksArgs = {
+          marketing_collection_id: args.id,
+          partner_id: args.partner_id,
+        }
+        return filterArtworksArgs
+      }),
+    }
+  },
 })
-
-const RelatedCollections: GraphQLFieldConfig<any, ResolverContext> = {
-  type: GraphQLList(MarketingCollectionBaseType),
-  description: "Related Collections",
-  args: {
-    size: {
-      type: GraphQLInt,
-      description: "The number of Related Marketing Collections to return",
-    },
-  },
-  resolve: async ({ slug }, _args, { marketingCollectionsLoader }) => {
-    const gravityArgs = {
-      size: _args.size,
-      related_to_collection_id: slug,
-    }
-
-    try {
-      const { body } = await marketingCollectionsLoader(gravityArgs)
-      return body
-    } catch (error) {
-      console.error(error)
-      return null
-    }
-  },
-}
 
 const MarketingCollectionGroupTypeEnum = new GraphQLEnumType({
   name: "MarketingCollectionGroupTypeEnum",
@@ -195,7 +197,6 @@ const MarketingCollectionGroupTypeEnum = new GraphQLEnumType({
     },
   },
 })
-
 const MarketingCollectionGroupType = new GraphQLObjectType<
   any,
   ResolverContext
@@ -211,7 +212,7 @@ const MarketingCollectionGroupType = new GraphQLObjectType<
       resolve: ({ internalID }) => internalID,
     },
     members: {
-      type: GraphQLList(MarketingCollectionBaseType),
+      type: GraphQLList(MarketingCollectionType),
       resolve: async (
         { member_ids },
         _args,
@@ -243,27 +244,30 @@ const LinkedCollections: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
-export const MarketingCollectionType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "MarketingCollection",
-  interfaces: () => {
-    const {
-      EntityWithArtworksConnectionInterface,
-    } = require("./filterArtworksConnection")
-    return [NodeInterface, EntityWithArtworksConnectionInterface]
+const RelatedCollections: GraphQLFieldConfig<any, ResolverContext> = {
+  type: GraphQLList(MarketingCollectionType),
+  description: "Related Collections",
+  args: {
+    size: {
+      type: GraphQLInt,
+      description: "The number of Related Marketing Collections to return",
+    },
   },
-  fields: () => {
-    const { filterArtworksConnection } = require("./filterArtworksConnection")
-    return {
-      ...MarketingCollectionFields,
-      relatedCollections: RelatedCollections,
-      linkedCollections: LinkedCollections,
-      artworksConnection: filterArtworksConnection("marketing_collection_id"),
+  resolve: async ({ slug }, _args, { marketingCollectionsLoader }) => {
+    const gravityArgs = {
+      size: _args.size,
+      related_to_collection_id: slug,
+    }
+
+    try {
+      const { body } = await marketingCollectionsLoader(gravityArgs)
+      return body
+    } catch (error) {
+      console.error(error)
+      return null
     }
   },
-})
+}
 
 export const MarketingCollection: GraphQLFieldConfig<void, ResolverContext> = {
   type: MarketingCollectionType,
