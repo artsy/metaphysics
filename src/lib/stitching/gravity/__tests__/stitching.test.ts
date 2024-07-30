@@ -736,8 +736,8 @@ describe("gravity/stitching", () => {
 
       it("passes artist internalID to marketingCollections' artistID arg when querying `... on Artist`", async () => {
         const { resolvers } = await getGravityStitchedSchema()
-        const marketingCollectionsResolver =
-          resolvers.Artist.marketingCollections.resolve
+        const marketingCollectionsResolver = resolvers.Artist
+          .marketingCollections!.resolve
         const mergeInfo = { delegateToSchema: jest.fn() }
 
         await marketingCollectionsResolver(

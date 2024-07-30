@@ -58,6 +58,7 @@ export const executableGravitySchema = () => {
 
   if (config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA) {
     duplicatedTypes.push("MarketingCollection")
+    duplicatedTypes.push("MarketingCollectionGroup")
   }
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.

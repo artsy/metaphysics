@@ -76,12 +76,18 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
           ): ArtistSeriesConnection
-        marketingCollections(
-          slugs: [String!]
-          category: String
-          size: Int
-          isFeaturedArtistContent: Boolean
-        ): [MarketingCollection]
+        ${
+          !useUnstitchedMarketingCollections
+            ? `
+          marketingCollections(
+            slugs: [String!]
+            category: String
+            size: Int
+            isFeaturedArtistContent: Boolean
+          ): [MarketingCollection]
+        `
+            : ""
+        }
       }
 
       extend type Artwork {
@@ -145,11 +151,16 @@ export const gravityStitchingEnvironment = (
           : ""
       }
 
-      extend type MarketingCollection {
-        thumbnailImage: Image
-        artworksConnection(${argsToSDL(
-          pageableFilterArtworksArgsWithInput
-        ).join("\n")}): FilterArtworksConnection
+      ${
+        !useUnstitchedMarketingCollections
+          ? `
+          extend type MarketingCollection {
+            thumbnailImage: Image
+            artworksConnection(${argsToSDL(
+              pageableFilterArtworksArgsWithInput
+            ).join("\n")}): FilterArtworksConnection
+          }`
+          : ""
       }
 
       extend type Me {
@@ -305,26 +316,28 @@ export const gravityStitchingEnvironment = (
             })
           },
         },
-        marketingCollections: {
-          fragment: `
+        ...(!useUnstitchedMarketingCollections && {
+          marketingCollections: {
+            fragment: `
               ... on Artist {
                 internalID
               }
             `,
-          resolve: ({ internalID: artistID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "marketingCollections",
-              args: {
-                artistID,
-                ...args,
-              },
-              context,
-              info,
-            })
+            resolve: ({ internalID: artistID }, args, context, info) => {
+              return info.mergeInfo.delegateToSchema({
+                schema: gravitySchema,
+                operation: "query",
+                fieldName: "marketingCollections",
+                args: {
+                  artistID,
+                  ...args,
+                },
+                context,
+                info,
+              })
+            },
           },
-        },
+        }),
       },
       Artwork: {
         artistSeriesConnection: {
