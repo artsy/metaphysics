@@ -77,24 +77,26 @@ export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
+const FeatureFlagEnums = new GraphQLEnumType({
+  name: "FeatureFlagsSortBy",
+  values: {
+    NAME: {
+      value: "name",
+    },
+    CREATED_AT: {
+      value: "createdAt",
+    },
+  },
+})
+
 export const FeatureFlags: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(FeatureFlagType),
   description: "A list of feature flags",
   args: {
     sortBy: {
       description: "The sort order of the results",
-      defaultValue: "name",
-      type: new GraphQLEnumType({
-        name: "FeatureFlagsSortBy",
-        values: {
-          NAME: {
-            value: "name",
-          },
-          CREATED_AT: {
-            value: "createdAt",
-          },
-        },
-      }),
+      defaultValue: FeatureFlagEnums.getValue("NAME")?.value,
+      type: FeatureFlagEnums,
     },
   },
   resolve: async (
