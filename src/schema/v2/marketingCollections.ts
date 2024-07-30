@@ -197,6 +197,7 @@ const MarketingCollectionGroupTypeEnum = new GraphQLEnumType({
     },
   },
 })
+
 const MarketingCollectionGroupType = new GraphQLObjectType<
   any,
   ResolverContext
