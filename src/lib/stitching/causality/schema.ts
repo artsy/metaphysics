@@ -31,10 +31,6 @@ export const executableCausalitySchema = () => {
   return transformSchema(schema, [
     new FilterTypes((type) => !allowlistedTypes.includes(type.name)),
     new FilterRootFields((_operation, name, _field) => {
-      if (!name) {
-        return false
-      }
-
       return permittedRootFields.includes(name)
     }),
     new RenameTypes((name) => {

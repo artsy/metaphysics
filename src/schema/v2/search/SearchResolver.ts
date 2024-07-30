@@ -1,11 +1,10 @@
-import { GraphQLResolveInfo, visit } from "graphql"
-import { connectionFromArraySlice } from "graphql-relay"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import compact from "lodash/compact"
-import { SearchableItem } from "schema/v2/SearchableItem"
+import { convertConnectionArgsToGravityArgs, removeNulls } from "lib/helpers"
 import { createPageCursors, pageToCursor } from "schema/v2/fields/pagination"
-import { Searchable } from "schema/v2/searchable"
+import { connectionFromArraySlice } from "graphql-relay"
+import { GraphQLResolveInfo, visit } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { Searchable } from "schema/v2/searchable"
+import { SearchableItem } from "schema/v2/SearchableItem"
 
 export class SearchResolver {
   private args: { [argName: string]: any }
@@ -132,9 +131,9 @@ export class SearchResolver {
       ).then((processedSearchResults) => {
         // Filter out nulls due to a search result item being returned,
         // but the item not being found.
-        const filteredSearchResults = compact(processedSearchResults)
+        removeNulls(processedSearchResults)
         const connection = connectionFromArraySlice(
-          filteredSearchResults,
+          processedSearchResults,
           this.args,
           {
             arrayLength: totalCount,

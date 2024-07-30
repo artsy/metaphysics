@@ -6,13 +6,11 @@ export const FORMATS = {
   MARKDOWN: { value: "markdown" },
 } as const
 
-export const FormatEnums = new GraphQLEnumType({
-  name: "Format",
-  values: FORMATS,
-})
-
 const Format = {
-  type: FormatEnums,
+  type: new GraphQLEnumType({
+    name: "Format",
+    values: FORMATS,
+  }),
 }
 
 export type FormatType = typeof FORMATS[keyof typeof FORMATS]["value"]

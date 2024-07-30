@@ -11,9 +11,7 @@ import { printSchema } from "graphql/utilities"
 import path from "path"
 import { schema } from "../src/schema/v2"
 import prettier from "prettier"
-import { graphql, getIntrospectionQuery } from "graphql"
-
-const introspectionQuery = getIntrospectionQuery()
+import { graphql, introspectionQuery } from "graphql"
 
 const message =
   "Usage: dump-schema.js /path/to/output/directory or /path/to/filename.graphql or /path/to/schema.json"

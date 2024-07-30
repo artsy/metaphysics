@@ -1,0 +1,76 @@
+patch-package
+--- a/node_modules/@types/graphql-relay/index.d.ts
++++ b/node_modules/@types/graphql-relay/index.d.ts
+@@ -70,8 +70,11 @@ export interface ConnectionConfig {
+     nodeType: ConnectionConfigNodeType;
+     resolveNode?: GraphQLFieldResolver<any, any> | null;
+     resolveCursor?: GraphQLFieldResolver<any, any> | null;
++    edgeType?: GraphQLObjectType | null;
+     edgeFields?: Thunk<GraphQLFieldConfigMap<any, any>> | null;
++    edgeInterfaces?: GraphQLInterfaceType[];
+     connectionFields?: Thunk<GraphQLFieldConfigMap<any, any>> | null;
++    connectionInterfaces?: GraphQLInterfaceType[];
+ }
+ 
+ export interface GraphQLConnectionDefinitions {
+@@ -104,6 +107,8 @@ export interface PageInfo {
+     hasNextPage?: boolean | null;
+ }
+ 
++export const PageInfoType: GraphQLObjectType<any, any>
++
+ /**
+  * A flow type designed to be exposed as a `Connection` over GraphQL.
+  */
+@@ -135,6 +140,8 @@ export interface ConnectionArguments {
+ export interface ArraySliceMetaInfo {
+     sliceStart: number;
+     arrayLength: number;
++    useValueAsEdge?: boolean;
++    resolveNode?: GraphQLFieldResolver<any, any> | null;
+ }
+ 
+ /**
+@@ -211,11 +218,11 @@ export function getOffsetWithDefault(
+ 
+ // mutation/mutation.js
+ 
+-export type mutationFn = (
+-    object: any,
+-    ctx: any,
++export type mutationFn<TInput, TOutput, TContext> = (
++    object: TInput,
++    ctx: TContext,
+     info: GraphQLResolveInfo
+-) => Promise<any> | any;
++) => Promise<TOutput> | TOutput;
+ 
+ /**
+  * A description of a mutation consumable by mutationWithClientMutationId
+@@ -231,12 +238,12 @@ export type mutationFn = (
+  * input field, and it should return an Object with a key for each
+  * output field. It may return synchronously, or return a Promise.
+  */
+-export interface MutationConfig {
++export interface MutationConfig<TInput, TOutput, TContext> {
+     name: string;
+     description?: string;
+     inputFields: Thunk<GraphQLInputFieldConfigMap>;
+-    outputFields: Thunk<GraphQLFieldConfigMap<any, any>>;
+-    mutateAndGetPayload: mutationFn;
++    outputFields: Thunk<GraphQLFieldConfigMap<TOutput, TContext>>;
++    mutateAndGetPayload: mutationFn<TInput, TOutput, TContext>;
+     deprecationReason?: string;
+ }
+ 
+@@ -244,8 +251,8 @@ export interface MutationConfig {
+  * Returns a GraphQLFieldConfig for the mutation described by the
+  * provided MutationConfig.
+  */
+-export function mutationWithClientMutationId(
+-    config: MutationConfig
++export function mutationWithClientMutationId<TInput, TOutput, TContext>(
++    config: MutationConfig<TInput, TOutput, TContext>
+ ): GraphQLFieldConfig<any, any>;
+ 
+ // node/node.js

@@ -13,7 +13,6 @@ import { resolveSearchCriteriaLabels } from "schema/v2/previewSavedSearch/search
 import { generateDisplayName } from "schema/v2/previewSavedSearch/generateDisplayName"
 import { amount, amountSDL } from "schema/v2/fields/money"
 import config from "config"
-import { GraphQLSchemaWithTransforms } from "graphql-tools"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -65,7 +64,7 @@ const useUnstitchedMarketingCollections = !!config.USE_UNSTITCHED_MARKETING_COLL
 
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
-  gravitySchema: GraphQLSchemaWithTransforms
+  gravitySchema: GraphQLSchema & { transforms: any }
 ) => {
   return {
     // The SDL used to declare how to stitch an object

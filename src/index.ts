@@ -140,7 +140,7 @@ app.use(
 
 const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
 
-const { graphqlHTTP } = require("express-graphql")
+const graphqlHTTP = require("express-graphql")
 const graphqlServer = graphqlHTTP((req, res, params) => {
   const accessToken = req.headers["x-access-token"] as string | undefined
   const appToken = req.headers["x-xapp-token"] as string | undefined

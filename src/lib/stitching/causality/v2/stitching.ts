@@ -1,13 +1,12 @@
-import { GraphQLSchema } from "graphql"
-import { GraphQLSchemaWithTransforms } from "graphql-tools"
 import gql from "lib/gql"
+import { GraphQLSchema } from "graphql"
 import { resolveLotCentsFieldToMoney } from "schema/v2/fields/money"
 
 export const causalityStitchingEnvironment = ({
   causalitySchema,
   localSchema,
 }: {
-  causalitySchema: GraphQLSchemaWithTransforms
+  causalitySchema: GraphQLSchema & { transforms: any }
   localSchema: GraphQLSchema
 }) => {
   return {
@@ -167,10 +166,7 @@ export const causalityStitchingEnvironment = ({
                   },
                   []
                 )
-                return {
-                  ...lotStandingsConnection,
-                  edges: availableEdges,
-                }
+                return { ...lotStandingsConnection, edges: availableEdges }
               })
           },
         },

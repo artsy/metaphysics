@@ -1,7 +1,6 @@
 import { GraphQLEnumType } from "graphql"
 
 const SHOW_SORTS = {
-  CREATED_AT_DESC: { value: "-created_at" },
   END_AT_ASC: { value: "end_at" },
   END_AT_DESC: { value: "-end_at" },
   FEATURED_ASC: { value: "featured" },
