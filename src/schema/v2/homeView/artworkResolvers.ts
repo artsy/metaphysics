@@ -1,5 +1,4 @@
 import type { GraphQLFieldResolver } from "graphql"
-import type { HomeViewSectionKey } from "./getSectionsForUser"
 import type { ResolverContext } from "types/graphql"
 import { artworksForUser } from "../artworksForUser"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -11,7 +10,7 @@ import { paginationResolver } from "../fields/pagination"
 
 // the resolvers
 
-const newWorksForYouResolver: GraphQLFieldResolver<
+export const NewWorksForYouResolver: GraphQLFieldResolver<
   any,
   ResolverContext
 > = async (parent, args, context, info) => {
@@ -37,7 +36,7 @@ const newWorksForYouResolver: GraphQLFieldResolver<
   return result
 }
 
-const recentlyViewedArtworksResolver: GraphQLFieldResolver<
+export const RecentlyViewedArtworksResolver: GraphQLFieldResolver<
   any,
   ResolverContext
 > = (_parent, args, _context, _info) => {
@@ -58,7 +57,7 @@ const recentlyViewedArtworksResolver: GraphQLFieldResolver<
   })
 }
 
-const auctionLotsForYouResolver: GraphQLFieldResolver<
+export const AuctionLotsForYouResolver: GraphQLFieldResolver<
   any,
   ResolverContext
 > = async (_parent, args, _context, _info) => {
@@ -77,16 +76,4 @@ const auctionLotsForYouResolver: GraphQLFieldResolver<
     body: data,
     args,
   })
-}
-
-// the section-to-resolver mapping
-
-type SectionResolverMap = Partial<
-  Record<HomeViewSectionKey, GraphQLFieldResolver<any, ResolverContext>>
->
-
-export const ARTWORK_RESOLVERS: SectionResolverMap = {
-  NEW_WORKS_FOR_YOU: newWorksForYouResolver,
-  AUCTION_LOTS_FOR_YOU: auctionLotsForYouResolver,
-  RECENTLY_VIEWED_ARTWORKS: recentlyViewedArtworksResolver,
 }

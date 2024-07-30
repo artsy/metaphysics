@@ -1,4 +1,10 @@
 import { ResolverContext } from "types/graphql"
+import {
+  AuctionLotsForYouResolver,
+  NewWorksForYouResolver,
+  RecentlyViewedArtworksResolver,
+} from "./artworkResolvers"
+import { GraphQLFieldResolver } from "graphql"
 
 export async function getSectionsForUser(
   context: ResolverContext
@@ -35,53 +41,46 @@ export async function getSectionsForUser(
 
 // stub sections
 
-export type HomeViewSectionKey =
-  | "NEW_WORKS_FOR_YOU"
-  | "RECENTLY_VIEWED_ARTWORKS"
-  | "AUCTION_LOTS_FOR_YOU"
-  | "SUGGESTED_ARTISTS"
-
 type HomeViewSection = {
-  id: number
-  key: HomeViewSectionKey
-  title: string
+  id: string
+  type: string
   component: {
-    type: string
+    title: string
   }
+  resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
 
 const RECENTLY_VIEWED_ARTWORKS: HomeViewSection = {
-  id: 1,
-  key: "RECENTLY_VIEWED_ARTWORKS",
-  title: "Recently viewed works",
+  id: "home-view-section-recently-viewed-artworks",
+  type: "ArtworksRailHomeViewSection",
   component: {
-    type: "ArtworksRail",
+    title: "Recently viewed works",
   },
+  resolver: RecentlyViewedArtworksResolver,
 }
 
 const SUGGESTED_ARTISTS: HomeViewSection = {
-  id: 2,
-  key: "SUGGESTED_ARTISTS",
-  title: "Suggested artists for you",
+  id: "home-view-section-suggested-artists",
+  type: "ArtistsRailHomeViewSection",
   component: {
-    type: "ArtistsRail",
+    title: "Suggested artists for you",
   },
 }
 
 const AUCTION_LOTS_FOR_YOU: HomeViewSection = {
-  id: 3,
-  key: "AUCTION_LOTS_FOR_YOU",
-  title: "Auction lots for you",
+  id: "home-view-section-auction-lots-for-you",
+  type: "ArtworksRailHomeViewSection",
   component: {
-    type: "ArtworksRail",
+    title: "Auction lots for you",
   },
+  resolver: AuctionLotsForYouResolver,
 }
 
 const NEW_WORKS_FOR_YOU: HomeViewSection = {
-  id: 4,
-  key: "NEW_WORKS_FOR_YOU",
-  title: "New works for you",
+  id: "home-view-section-new-works-for-you",
+  type: "ArtworksRailHomeViewSection",
   component: {
-    type: "ArtworksRail",
+    title: "New works for you",
   },
+  resolver: NewWorksForYouResolver,
 }
