@@ -82,11 +82,8 @@ export const createUserInterestsMutation = mutationWithClientMutationId<
       },
     },
   },
-  mutateAndGetPayload: async (
-    args,
-    { meCreateUserInterestLoader, meLoader }
-  ) => {
-    if (!meCreateUserInterestLoader || !meLoader) {
+  mutateAndGetPayload: async (args, { meCreateUserInterestLoader }) => {
+    if (!meCreateUserInterestLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
