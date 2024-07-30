@@ -1,9 +1,10 @@
-import { GraphQLSchemaWithTransforms, mergeSchemas } from "graphql-tools"
-import localSchema from "schema/v2/schema"
-import { executableGravitySchema } from "../schema"
+import { mergeSchemas } from "graphql-tools"
 import { gravityStitchingEnvironment as gravityStitchingEnvironmentV2 } from "../v2/stitching"
+import { GraphQLSchema } from "graphql"
+import { executableGravitySchema } from "../schema"
+import localSchema from "schema/v2/schema"
 
-let cachedSchema: GraphQLSchemaWithTransforms
+let cachedSchema: GraphQLSchema & { transforms: any }
 
 /** Gets a cached copy of the transformed gravity schema  */
 export const getGravityTransformedSchema = async () => {
@@ -30,7 +31,7 @@ export const getGravityMergedSchema = async () => {
   const mergedSchema = mergeSchemas({
     schemas: [localSchema, cachedSchema, extensionSchema],
     resolvers: resolvers,
-  }) as GraphQLSchemaWithTransforms
+  }) as GraphQLSchema & { transforms: any }
 
   const anyMergedSchema = mergedSchema as any
   anyMergedSchema.__allowedLegacyNames = ["__id"]

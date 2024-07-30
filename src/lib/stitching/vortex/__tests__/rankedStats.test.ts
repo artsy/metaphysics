@@ -33,7 +33,11 @@ describe("AnalyticsRankedStats type", () => {
     query($id: String!) {
       partner(id: $id) {
         analytics {
-          rankedStats(first: 1, objectType: ARTWORK, period: ONE_YEAR) {
+          topArtworks: rankedStats(
+            first: 1
+            objectType: ARTWORK
+            period: ONE_YEAR
+          ) {
             edges {
               node {
                 entity {
@@ -64,7 +68,7 @@ describe("AnalyticsRankedStats type", () => {
         Object {
           "partner": Object {
             "analytics": Object {
-              "rankedStats": Object {
+              "topArtworks": Object {
                 "edges": Array [
                   Object {
                     "node": Object {
@@ -97,7 +101,7 @@ describe("AnalyticsRankedStats type", () => {
         Object {
           "partner": Object {
             "analytics": Object {
-              "rankedStats": Object {
+              "topArtworks": Object {
                 "edges": Array [
                   Object {
                     "node": Object {

@@ -63,7 +63,7 @@ describe("returns followed shows for a user", () => {
       await expect(
         runAuthenticatedQuery(query, { followedShowsLoader })
       ).rejects.toMatchInlineSnapshot(
-        `[GraphQLError: Value "RANDOM_INVALID_STATUS" does not exist in "EventStatus" enum.]`
+        `[GraphQLError: Expected type EventStatus, found RANDOM_INVALID_STATUS.]`
       )
     }
 

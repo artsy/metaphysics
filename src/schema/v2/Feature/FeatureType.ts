@@ -13,7 +13,10 @@ import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import { markdown } from "schema/v2/fields/markdown"
 import { OrderedSetConnection } from "../OrderedSet"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { OrderedSetSortsEnum } from "../OrderedSet/OrderedSetSortsEnum"
+import {
+  OrderedSetSortsEnum,
+  ORDERED_SET_SORTS,
+} from "../OrderedSet/OrderedSetSortsEnum"
 import Image from "../image"
 import { FeatureMetaType } from "./FeatureMeta"
 import { FeatureLayoutsEnum } from "./FeatureLayoutsEnum"
@@ -49,7 +52,7 @@ export const FeatureType = new GraphQLObjectType<
       args: pageable({
         sort: {
           type: OrderedSetSortsEnum,
-          defaultValue: OrderedSetSortsEnum.getValue("KEY_ASC")?.value,
+          defaultValue: ORDERED_SET_SORTS.KEY_ASC.value,
         },
       }),
       description:

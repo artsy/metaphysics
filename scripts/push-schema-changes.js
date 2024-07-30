@@ -3,10 +3,8 @@
 const { updateRepo } = require("@artsy/update-repo")
 const { execSync } = require("child_process")
 const path = require("path")
-const { buildSchema, getIntrospectionQuery, graphqlSync } = require("graphql")
+const { buildSchema, introspectionQuery, graphqlSync } = require("graphql")
 const { readFileSync, writeFileSync } = require("fs")
-
-const introspectionQuery = getIntrospectionQuery()
 
 const defaultBody =
   "Greetings human :robot: this PR was automatically created as part of metaphysics' deploy process."
