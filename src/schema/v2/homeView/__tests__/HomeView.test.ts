@@ -9,10 +9,8 @@ describe("homeView", () => {
           edges {
             node {
               ... on GenericHomeViewSection {
-                key
-                title
                 component {
-                  type
+                  title
                 }
               }
             }
@@ -43,19 +41,15 @@ describe("homeView", () => {
           Object {
             "node": Object {
               "component": Object {
-                "type": "ARTWORKS_RAIL",
+                "title": "New works for you",
               },
-              "key": "NEW_WORKS_FOR_YOU",
-              "title": "New works for you",
             },
           },
           Object {
             "node": Object {
               "component": Object {
-                "type": "ARTWORKS_RAIL",
+                "title": "Auction lots for you",
               },
-              "key": "AUCTION_LOTS_FOR_YOU",
-              "title": "Auction lots for you",
             },
           },
         ],
