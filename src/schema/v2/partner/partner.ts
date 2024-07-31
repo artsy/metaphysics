@@ -17,7 +17,9 @@ import cached from "schema/v2/fields/cached"
 import initials from "schema/v2/fields/initials"
 import Profile from "schema/v2/profile"
 import { locationsConnection, LocationType } from "schema/v2/location"
-import EventStatus from "schema/v2/input_fields/event_status"
+import EventStatus, {
+  EventStatusEnums,
+} from "schema/v2/input_fields/event_status"
 import {
   NodeInterface,
   SlugAndInternalIDFields,
@@ -934,7 +936,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           },
           status: {
             type: EventStatus.type,
-            defaultValue: "current",
+            defaultValue: EventStatusEnums.getValue("CURRENT")?.value,
             description: "Filter shows by chronological event status",
           },
           isDisplayable: {

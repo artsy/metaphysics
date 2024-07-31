@@ -6,9 +6,12 @@ import {
   GraphQLString,
   GraphQLUnionType,
 } from "graphql"
+import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields, NodeInterface } from "../object_identification"
 import { HomeViewComponent } from "./HomeViewComponent"
+import { artworkConnection } from "../artwork"
+import { ARTWORK_RESOLVERS } from "./artworkResolvers"
 
 // section interface
 
@@ -45,6 +48,13 @@ const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
+
+    artworksConnection: {
+      type: artworkConnection.connectionType,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        ARTWORK_RESOLVERS[parent.key](parent, ...rest),
+    },
   },
   isTypeOf: (value) => {
     return value.component.type === "ArtworksRail"

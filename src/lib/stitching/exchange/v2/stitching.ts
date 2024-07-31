@@ -1,10 +1,10 @@
-import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
-import { amountSDL, amount } from "schema/v2/fields/money"
-import gql from "lib/gql"
-import { toGlobalId } from "graphql-relay"
 import { delegateToSchema } from "@graphql-tools/delegate"
+import { GraphQLError, GraphQLSchema, Kind, SelectionSetNode } from "graphql"
+import { toGlobalId } from "graphql-relay"
+import { GraphQLSchemaWithTransforms, WrapQuery } from "graphql-tools"
+import gql from "lib/gql"
 import { ArtworkVersionType } from "schema/v2/artwork_version"
-import { WrapQuery } from "graphql-tools"
+import { amount, amountSDL } from "schema/v2/fields/money"
 
 const orderTotals = [
   "itemsTotal",
@@ -33,7 +33,7 @@ export const exchangeStitchingEnvironment = ({
   exchangeSchema,
 }: {
   localSchema: GraphQLSchema
-  exchangeSchema: GraphQLSchema & { transforms: any }
+  exchangeSchema: GraphQLSchemaWithTransforms
 }) => {
   type DetailsFactoryInput = { from: string; to: string }
 
@@ -924,7 +924,10 @@ export const exchangeStitchingEnvironment = ({
                         },
                       },
                     ]
-                    return { ...selectionSet, selections: newSelections }
+                    return {
+                      ...selectionSet,
+                      selections: newSelections,
+                    }
                   },
                   (result) => {
                     return result

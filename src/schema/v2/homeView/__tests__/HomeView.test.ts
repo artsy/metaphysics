@@ -22,14 +22,20 @@ describe("homeView", () => {
     }
   `
 
+  const context = {
+    authenticatedLoaders: {
+      meLoader: jest.fn().mockReturnValue({ type: "User" }),
+    },
+  }
+
   it("returns a connection of home view sections", async () => {
-    const { homeView } = await runQuery(query)
+    const { homeView } = await runQuery(query, context)
 
     expect(homeView.sectionsConnection.edges).toHaveLength(2)
   })
 
   it("returns requested data for each section", async () => {
-    const { homeView } = await runQuery(query)
+    const { homeView } = await runQuery(query, context)
 
     expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
       Object {
@@ -39,17 +45,17 @@ describe("homeView", () => {
               "component": Object {
                 "type": "ARTWORKS_RAIL",
               },
-              "key": "RECENTLY_VIEWED_ARTWORKS",
-              "title": "Recently viewed works",
+              "key": "NEW_WORKS_FOR_YOU",
+              "title": "New works for you",
             },
           },
           Object {
             "node": Object {
               "component": Object {
-                "type": "ARTISTS_RAIL",
+                "type": "ARTWORKS_RAIL",
               },
-              "key": "SUGGESTED_ARTISTS",
-              "title": "Suggested artists for you",
+              "key": "AUCTION_LOTS_FOR_YOU",
+              "title": "Auction lots for you",
             },
           },
         ],
