@@ -4408,8 +4408,14 @@ type CollectorResume {
 
 # Collector signals available to the artwork
 type CollectorSignals {
+  # Show the artwork is currently in
+  activeShow: Show
+
   # Lot bid count
   bidCount: Int
+
+  # Curated collections the artwork is a member of
+  curatedCollectionSlugs: [String]
 
   # Lot watcher count
   lotWatcherCount: Int

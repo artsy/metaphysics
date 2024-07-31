@@ -1,8 +1,10 @@
-import { GraphQLFieldConfig } from "graphql"
+import { GraphQLFieldConfig, GraphQLList, GraphQLString } from "graphql"
 import { GraphQLInt, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import Show from "../show"
+import { fetchMarketingCollections } from "../marketingCollections"
 
 export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLObjectType({
@@ -21,6 +23,14 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         type: PartnerOfferToCollectorType,
         description: "Partner offer available to collector",
       },
+      activeShow: {
+        type: Show.type,
+        description: "Show the artwork is currently in",
+      },
+      curatedCollectionSlugs: {
+        type: new GraphQLList(GraphQLString),
+        description: "Curated collections the artwork is a member of",
+      },
     },
   }),
   description: "Collector signals on artwork",
@@ -35,15 +45,22 @@ interface CollectorSignals {
   bidCount?: number
   lotWatcherCount?: number
   partnerOffer?: { endAt: string }
+  activeShow?: any
+  curatedCollectionSlugs?: string[]
 }
 
 const collectorSignalsLoader = async (
   artwork,
   ctx
 ): Promise<CollectorSignals> => {
-  let bidCount, lotWatcherCount, partnerOffer
+  let bidCount,
+    lotWatcherCount,
+    partnerOffer,
+    activeShow,
+    curatedCollectionSlugs
 
-  const artworkId = artwork.id
+  const artworkSlug = artwork.id
+  const artworkId = artwork._id
 
   const isInSale = artwork.sale_ids?.length > 0
 
@@ -63,7 +80,7 @@ const collectorSignalsLoader = async (
   if (isInSale && auctionsCollectorSignalsEnabled) {
     const activeSaleArtwork = await getActiveSaleArtwork(
       {
-        artworkId,
+        artworkSlug,
         saleIds: artwork.sale_ids,
       },
       ctx
@@ -83,7 +100,7 @@ const collectorSignalsLoader = async (
   if (artwork.purchasable && partnerOfferCollectorSignalsEnabled) {
     if (ctx.mePartnerOffersLoader) {
       const partnerOffers = await ctx.mePartnerOffersLoader({
-        artwork_id: artworkId,
+        artwork_id: artworkSlug,
         sort: "-created_at",
         size: 1,
       })
@@ -92,10 +109,20 @@ const collectorSignalsLoader = async (
     }
   }
 
+  // Temporary
+  const experimentalCollectorSignalsEnabled = auctionsCollectorSignalsEnabled
+  if (experimentalCollectorSignalsEnabled) {
+    curatedCollectionSlugs = await getCuratedCollectionSlugs({ artworkId }, ctx)
+    activeShow = await getActiveShow({ artworkId }, ctx)
+  }
+
   return {
     bidCount,
     lotWatcherCount,
     partnerOffer,
+    activeShow: activeShow ?? undefined,
+    // using undefined for now to follow existing pattern
+    curatedCollectionSlugs: curatedCollectionSlugs ?? undefined,
   }
 }
 
@@ -104,7 +131,7 @@ interface SaleArtwork {
 }
 
 const getActiveSaleArtwork = async (
-  { artworkId, saleIds },
+  { artworkSlug, saleIds },
   ctx
 ): Promise<SaleArtwork | null> => {
   if (!saleIds?.length) {
@@ -125,8 +152,65 @@ const getActiveSaleArtwork = async (
   const saleArtwork =
     (await ctx.saleArtworkLoader({
       saleId: activeAuction.id,
-      saleArtworkId: artworkId,
+      saleArtworkId: artworkSlug,
     })) ?? null
 
   return saleArtwork
 }
+
+// Get signal-enabled marketing collections the artwork is a member of
+
+// https://github.com/artsy/metaphysics/blob/a3fbb272bfd9ca69a5ce3c4874327bc66b204a22/src/schema/v2/marketingCollections.ts#L353-L377
+// does something similar for the Curated Marketing Connections Loader
+const CURATED_COLLECTION_SLUGS = [
+  "curators-picks-blue-chip-artists",
+  "curators-picks-emerging-artists",
+  "trending-now",
+]
+const getCuratedCollectionSlugs = async (
+  { artworkId },
+  ctx
+): Promise<string[] | null> => {
+  const marketingCollections = await fetchMarketingCollections(
+    {
+      slugs: CURATED_COLLECTION_SLUGS,
+      size: CURATED_COLLECTION_SLUGS.length,
+      page: 1,
+    },
+    ctx.marketingCollectionsLoader
+  )
+  const collectionsForArtwork = (marketingCollections as Array<{
+    slug: string
+    artwork_ids: string[]
+  }>).reduce<string[]>((acc, marketingCollection) => {
+    if (marketingCollection.artwork_ids.includes(artworkId)) {
+      acc.push(marketingCollection.slug)
+    }
+    return acc
+  }, [] as string[])
+
+  return collectionsForArtwork.length ? collectionsForArtwork : null
+}
+
+const getActiveShow = async ({ artworkId }, ctx): Promise<string[] | null> => {
+  const shows = await await ctx.relatedShowsLoader({
+    artwork: [artworkId],
+    size: 1,
+    status: "running", // could also include "upcoming" but i think that is another query
+    // active: true, // need to investigate what active means here - part of FilteredSearch
+    // maybe it is the same as status: "running" + 'upcoming
+  })
+
+  // TODO: Do we need to check fairs as well?
+
+  console.log(shows)
+  return shows.body[0]
+}
+
+// // get related shows (does not include upcoming shows)
+// const relatedShows = await ctx.relatedShowsLoader({
+//   artwork: [artworkId],
+//   size: 1,
+//   active: true,
+// })
+// const activeShow = relatedShows.body[0] ?? null
