@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLList, GraphQLString } from "graphql"
+import { GraphQLFieldConfig, GraphQLList } from "graphql"
 import { GraphQLInt, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
