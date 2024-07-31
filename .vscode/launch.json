@@ -9,7 +9,6 @@
       "address": "localhost",
       "stopOnEntry": false,
       "runtimeExecutable": null,
-      "runtimeVersion": "8.4.0",
       "runtimeArgs": ["--inspect-brk", "./node_modules/.bin/jest", "-i"],
       "cwd": "${workspaceRoot}"
     },

@@ -54,22 +54,23 @@ export const AuctionResultSorts = {
   }),
 }
 
-export const AuctionResultsState: GraphQLArgumentConfig = {
-  type: new GraphQLEnumType({
-    name: "AuctionResultsState",
-    values: {
-      ALL: {
-        value: "all",
-      },
-      PAST: {
-        value: "past",
-      },
-      UPCOMING: {
-        value: "upcoming",
-      },
+const AuctionResultsStateEnums = new GraphQLEnumType({
+  name: "AuctionResultsState",
+  values: {
+    ALL: {
+      value: "all",
     },
-  }),
-  defaultValue: "all",
+    PAST: {
+      value: "past",
+    },
+    UPCOMING: {
+      value: "upcoming",
+    },
+  },
+})
+export const AuctionResultsState: GraphQLArgumentConfig = {
+  type: AuctionResultsStateEnums,
+  defaultValue: AuctionResultsStateEnums.getValue("ALL")?.value,
   description:
     "State of the returned auction results (can be past, upcoming, or all)",
 }

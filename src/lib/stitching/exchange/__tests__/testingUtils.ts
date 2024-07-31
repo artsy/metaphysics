@@ -1,12 +1,11 @@
-import { mergeSchemas } from "graphql-tools"
-import { exchangeStitchingEnvironment } from "../v2/stitching"
-import { GraphQLSchema } from "graphql"
-import { executableExchangeSchema, transformsForExchange } from "../schema"
+import { GraphQLSchemaWithTransforms, mergeSchemas } from "graphql-tools"
 import localSchema from "schema/v2/schema"
+import { executableExchangeSchema, transformsForExchange } from "../schema"
+import { exchangeStitchingEnvironment } from "../v2/stitching"
 
-let cachedSchema: GraphQLSchema & { transforms: any }
+let cachedSchema: GraphQLSchemaWithTransforms
 let stitchedSchema: ReturnType<typeof exchangeStitchingEnvironment>
-let mergedSchema: GraphQLSchema & { transforms: any }
+let mergedSchema: GraphQLSchemaWithTransforms
 
 /** Gets a cached copy of the transformed exchange schema  */
 export const getExchangeTransformedSchema = async () => {
@@ -40,7 +39,7 @@ export const getExchangeMergedSchema = async () => {
     mergedSchema = mergeSchemas({
       schemas: [localSchema, cachedSchema, extensionSchema],
       resolvers: resolvers,
-    }) as GraphQLSchema & { transforms: any }
+    }) as GraphQLSchemaWithTransforms
 
     const anyMergedSchema = mergedSchema as any
     anyMergedSchema.__allowedLegacyNames = ["__id"]

@@ -390,6 +390,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           const [{ total_count, _embedded }, aggregations] = await Promise.all(
             requests
           )
+
           const totalPages = Math.ceil(total_count / size)
           return merge(
             {

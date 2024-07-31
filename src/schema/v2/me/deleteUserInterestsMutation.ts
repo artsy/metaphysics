@@ -84,7 +84,10 @@ export const deleteUserInterestsMutation = mutationWithClientMutationId<
           if (formattedErr) {
             return { ...formattedErr, _type: "GravityMutationError" }
           } else {
-            return { message: error.message, _type: "GravityMutationError" }
+            return {
+              message: error.message,
+              _type: "GravityMutationError",
+            }
           }
         }
       })
