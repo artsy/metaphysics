@@ -4,7 +4,10 @@ import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import Show from "../show"
-import { fetchMarketingCollections } from "../marketingCollections"
+import {
+  fetchMarketingCollections,
+  MarketingCollection,
+} from "../marketingCollections"
 
 export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLObjectType({
@@ -27,8 +30,8 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         type: Show.type,
         description: "Show the artwork is currently in",
       },
-      curatedCollectionSlugs: {
-        type: new GraphQLList(GraphQLString),
+      curatedCollections: {
+        type: new GraphQLList(MarketingCollection.type),
         description: "Curated collections the artwork is a member of",
       },
     },
@@ -46,18 +49,14 @@ interface CollectorSignals {
   lotWatcherCount?: number
   partnerOffer?: { endAt: string }
   activeShow?: any
-  curatedCollectionSlugs?: string[]
+  curatedCollections?: any[]
 }
 
 const collectorSignalsLoader = async (
   artwork,
   ctx
 ): Promise<CollectorSignals> => {
-  let bidCount,
-    lotWatcherCount,
-    partnerOffer,
-    activeShow,
-    curatedCollectionSlugs
+  let bidCount, lotWatcherCount, partnerOffer, activeShow, curatedCollections
 
   const artworkSlug = artwork.id
   const artworkId = artwork._id
@@ -112,7 +111,7 @@ const collectorSignalsLoader = async (
   // Temporary
   const experimentalCollectorSignalsEnabled = auctionsCollectorSignalsEnabled
   if (experimentalCollectorSignalsEnabled) {
-    curatedCollectionSlugs = await getCuratedCollectionSlugs({ artworkId }, ctx)
+    curatedCollections = await getcuratedCollections({ artworkId }, ctx)
     activeShow = await getActiveShow({ artworkId }, ctx)
   }
 
@@ -122,7 +121,7 @@ const collectorSignalsLoader = async (
     partnerOffer,
     activeShow: activeShow ?? undefined,
     // using undefined for now to follow existing pattern
-    curatedCollectionSlugs: curatedCollectionSlugs ?? undefined,
+    curatedCollections: curatedCollections ?? undefined,
   }
 }
 
@@ -167,7 +166,7 @@ const CURATED_COLLECTION_SLUGS = [
   "curators-picks-emerging-artists",
   "trending-now",
 ]
-const getCuratedCollectionSlugs = async (
+const getcuratedCollections = async (
   { artworkId },
   ctx
 ): Promise<string[] | null> => {
@@ -182,12 +181,12 @@ const getCuratedCollectionSlugs = async (
   const collectionsForArtwork = (marketingCollections as Array<{
     slug: string
     artwork_ids: string[]
-  }>).reduce<string[]>((acc, marketingCollection) => {
+  }>).reduce<any[]>((acc, marketingCollection) => {
     if (marketingCollection.artwork_ids.includes(artworkId)) {
-      acc.push(marketingCollection.slug)
+      acc.push(marketingCollection)
     }
     return acc
-  }, [] as string[])
+  }, [] as any[])
 
   return collectionsForArtwork.length ? collectionsForArtwork : null
 }
@@ -202,8 +201,6 @@ const getActiveShow = async ({ artworkId }, ctx): Promise<string[] | null> => {
   })
 
   // TODO: Do we need to check fairs as well?
-
-  console.log(shows)
   return shows.body[0]
 }
 

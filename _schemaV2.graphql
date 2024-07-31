@@ -4393,7 +4393,7 @@ type CollectorSignals {
   bidCount: Int
 
   # Curated collections the artwork is a member of
-  curatedCollectionSlugs: [String]
+  curatedCollections: [MarketingCollection]
 
   # Lot watcher count
   lotWatcherCount: Int
