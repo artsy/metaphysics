@@ -160,6 +160,13 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           return dateRange(start_at, end_at, "UTC", format)
         },
       },
+      featuredKeywords: {
+        type: new GraphQLNonNull(
+          GraphQLList(new GraphQLNonNull(GraphQLString))
+        ),
+        description: "Suggested filters for associated artworks",
+        resolve: ({ featured_keywords }) => featured_keywords,
+      },
       formattedOpeningHours: {
         type: GraphQLString,
         description:
