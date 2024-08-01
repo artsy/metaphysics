@@ -54,7 +54,7 @@ const Section: GraphQLFieldConfig<void, ResolverContext> = {
 
     if (!meLoader) throw new Error("You must be signed in to see this content.")
 
-    if (id.length === 0) {
+    if (!id) {
       return null
     }
     return registry[id]

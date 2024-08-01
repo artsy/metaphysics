@@ -11,6 +11,11 @@ export type HomeViewSection = {
   type: string
   component: {
     title: string
+    // The full list of available routes in Eigen is here:
+    // https://github.com/artsy/eigen/blob/main/src/app/routes.ts#L122
+    // If you add a route that Eigen doesn't know, users will be navigated to
+    // a webview page
+    href?: string
   }
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
@@ -20,6 +25,7 @@ export const RecentlyViewedArtworks: HomeViewSection = {
   type: "ArtworksRailHomeViewSection",
   component: {
     title: "Recently viewed works",
+    href: "/recently-viewed",
   },
   resolver: RecentlyViewedArtworksResolver,
 }
@@ -29,6 +35,7 @@ export const AuctionLotsForYou: HomeViewSection = {
   type: "ArtworksRailHomeViewSection",
   component: {
     title: "Auction lots for you",
+    href: "/auctions/lots-for-you-ending-soon",
   },
   resolver: AuctionLotsForYouResolver,
 }
@@ -38,6 +45,7 @@ export const NewWorksForYou: HomeViewSection = {
   type: "ArtworksRailHomeViewSection",
   component: {
     title: "New works for you",
+    href: "/new-for-you",
   },
   resolver: NewWorksForYouResolver,
 }

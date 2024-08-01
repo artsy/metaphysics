@@ -8,5 +8,9 @@ export const HomeViewComponent = new GraphQLObjectType({
       type: GraphQLNonNull(GraphQLString),
       description: "A display title for this section",
     },
+    href: {
+      type: GraphQLString,
+      description: "A URL to navigate to when clicked",
+    },
   },
 })
