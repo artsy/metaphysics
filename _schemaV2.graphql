@@ -2286,7 +2286,7 @@ enum ArtistTargetSupplyType {
 # An artists rail section in the home view
 type ArtistsRailHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
-  component: HomeViewComponent
+  component: HomeViewComponent!
 
   # A globally unique ID.
   id: ID!
@@ -3133,7 +3133,7 @@ type ArtworksRailHomeViewSection implements GenericHomeViewSection & Node {
   ): ArtworkConnection
 
   # The component that is prescribed for this section
-  component: HomeViewComponent
+  component: HomeViewComponent!
 
   # A globally unique ID.
   id: ID!
@@ -10490,7 +10490,7 @@ type GeneMeta {
 # Abstract interface shared by every kind of home view section
 interface GenericHomeViewSection {
   # The component that is prescribed for this section
-  component: HomeViewComponent
+  component: HomeViewComponent!
 
   # A globally unique ID.
   id: ID!

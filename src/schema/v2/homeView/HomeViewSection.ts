@@ -1,6 +1,7 @@
 import {
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
@@ -15,7 +16,7 @@ import { artworkConnection } from "../artwork"
 const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   ...InternalIDFields,
   component: {
-    type: HomeViewComponent,
+    type: new GraphQLNonNull(HomeViewComponent),
     description: "The component that is prescribed for this section",
   },
 }
