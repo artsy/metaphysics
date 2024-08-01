@@ -10842,6 +10842,11 @@ type HomePageSalesModule {
 
 # Experimental schema for new home view
 type HomeView {
+  # A home view section
+  section(
+    # The ID of the section
+    id: String!
+  ): HomeViewSection
   sectionsConnection(
     after: String
     before: String
