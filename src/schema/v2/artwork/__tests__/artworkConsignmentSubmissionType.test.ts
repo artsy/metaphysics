@@ -309,12 +309,15 @@ describe("ArtworkConsignmentSubmissionType", () => {
 
       artwork.consignmentSubmission.state = "HOLD"
       data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
+        "In Progress"
+      )
 
-      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(null)
       artwork.consignmentSubmission.state = "CLOSED"
-
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(null)
+      expect(data.artwork.consignmentSubmission.stateLabel).toEqual(
+        "In Progress"
+      )
 
       artwork.consignmentSubmission.state = "APPROVED"
       data = await runQuery(query, context)
@@ -396,11 +399,15 @@ describe("ArtworkConsignmentSubmissionType", () => {
 
       artwork.consignmentSubmission.state = "HOLD"
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(null)
+      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
+        "The artwork is currently being reviewed by our team."
+      )
 
       artwork.consignmentSubmission.state = "CLOSED"
       data = await runQuery(query, context)
-      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(null)
+      expect(data.artwork.consignmentSubmission.stateHelpMessage).toEqual(
+        "The artwork is currently being reviewed by our team."
+      )
     })
   })
 
