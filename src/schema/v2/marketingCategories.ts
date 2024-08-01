@@ -30,7 +30,7 @@ export const MarketingCategories: GraphQLFieldConfig<any, ResolverContext> = {
   ),
   description: "Marketing Categories",
   resolve: async (_root, _args, { marketingCategoriesLoader }) => {
-    const { body } = await marketingCategoriesLoader()
+    const body = await marketingCategoriesLoader()
     return body
   },
 }

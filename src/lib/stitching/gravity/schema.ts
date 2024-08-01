@@ -13,7 +13,6 @@ const rootFieldsAllowList = [
   "agreement",
   "artistSeries",
   "artistSeriesConnection",
-  "marketingCategories",
   "viewingRoom",
   "viewingRooms",
 ].concat(
@@ -23,6 +22,7 @@ const rootFieldsAllowList = [
         "marketingCollection",
         "marketingCollections",
         "curatedMarketingCollections",
+        "marketingCategories",
       ]
 )
 

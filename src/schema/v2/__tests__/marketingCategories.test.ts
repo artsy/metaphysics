@@ -52,8 +52,7 @@ describe("MarketingCategories", () => {
       }
     `
     const context = {
-      marketingCategoriesLoader: () =>
-        Promise.resolve({ body: marketingCategoriesData }),
+      marketingCategoriesLoader: () => Promise.resolve(marketingCategoriesData),
     } as any
 
     const data = await runQuery(query, context)
