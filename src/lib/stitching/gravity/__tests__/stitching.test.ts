@@ -869,7 +869,7 @@ describe("gravity/stitching", () => {
       const { descriptionFormatted } = resolvers.ArtistSeries
       const formattedDescription = await descriptionFormatted.resolve(
         { description: "**Bold Type**" },
-        { format: "HTML" }
+        { format: "html" }
       )
       expect(formattedDescription).toEqual(
         "<p><strong>Bold Type</strong></p>\n"
