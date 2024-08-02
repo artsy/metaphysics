@@ -14,6 +14,7 @@ export const ArtworkConsignmentSubmissionStateType = new GraphQLEnumType({
     DRAFT: { value: "draft" },
     SUBMITTED: { value: "submitted" },
     APPROVED: { value: "approved" },
+    RESUBMITTED: { value: "resubmitted" },
     PUBLISHED: { value: "published" },
     REJECTED: { value: "rejected" },
     HOLD: { value: "hold" },
