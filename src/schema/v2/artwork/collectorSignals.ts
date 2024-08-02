@@ -111,7 +111,7 @@ const collectorSignalsLoader = async (
   // Temporary
   const experimentalCollectorSignalsEnabled = auctionsCollectorSignalsEnabled
   if (experimentalCollectorSignalsEnabled) {
-    curatedCollections = await getcuratedCollections({ artworkId }, ctx)
+    curatedCollections = await getCuratedCollections({ artworkId }, ctx)
     activeShow = await getActiveShow({ artworkId }, ctx)
   }
 
@@ -166,7 +166,7 @@ const CURATED_COLLECTION_SLUGS = [
   "curators-picks-emerging-artists",
   "trending-now",
 ]
-const getcuratedCollections = async (
+const getCuratedCollections = async (
   { artworkId },
   ctx
 ): Promise<string[] | null> => {
@@ -182,7 +182,8 @@ const getcuratedCollections = async (
     slug: string
     artwork_ids: string[]
   }>).reduce<any[]>((acc, marketingCollection) => {
-    if (marketingCollection.artwork_ids.includes(artworkId)) {
+    console.log(marketingCollection)
+    if (marketingCollection?.artwork_ids?.includes(artworkId)) {
       acc.push(marketingCollection)
     }
     return acc
@@ -195,6 +196,7 @@ const getActiveShow = async ({ artworkId }, ctx): Promise<string[] | null> => {
   const shows = await await ctx.relatedShowsLoader({
     artwork: [artworkId],
     size: 1,
+    // status: "running_and_upcoming", // requires api/v1/related/shows update
     status: "running", // could also include "upcoming" but i think that is another query
     // active: true, // need to investigate what active means here - part of FilteredSearch
     // maybe it is the same as status: "running" + 'upcoming
