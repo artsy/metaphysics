@@ -3,6 +3,7 @@ import type { ResolverContext } from "types/graphql"
 import { artworksForUser } from "../artworksForUser"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { paginationResolver } from "../fields/pagination"
+import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
 
 /*
  * Resolvers for home view artwork sections
@@ -39,22 +40,13 @@ export const NewWorksForYouResolver: GraphQLFieldResolver<
 export const RecentlyViewedArtworksResolver: GraphQLFieldResolver<
   any,
   ResolverContext
-> = (_parent, args, _context, _info) => {
-  // TODO: use actual loader
+> = async (_parent, args, context, info) => {
+  if (!context.meLoader)
+    throw new Error("You need to be signed in to perform this action")
 
-  const stubData = [{ id: "TODO-recently_viewed_artworks" }]
-  const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-  const data = stubData.slice(offset, offset + size)
-  const totalCount = stubData.length
+  const me = await context.meLoader()
 
-  return paginationResolver({
-    totalCount,
-    offset,
-    page,
-    size,
-    body: data,
-    args,
-  })
+  return RecentlyViewedArtworks.resolve!(me, args, context, info)
 }
 
 export const AuctionLotsForYouResolver: GraphQLFieldResolver<
