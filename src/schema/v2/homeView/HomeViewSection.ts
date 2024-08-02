@@ -1,6 +1,7 @@
 import {
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
@@ -16,7 +17,7 @@ import { artistsConnection } from "../artists"
 const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   ...InternalIDFields,
   component: {
-    type: HomeViewComponent,
+    type: new GraphQLNonNull(HomeViewComponent),
     description: "The component that is prescribed for this section",
   },
 }
@@ -40,7 +41,7 @@ const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
     ...standardSectionFields,
 
     artworksConnection: {
-      type: artworkConnection.connectionType,
+      type: new GraphQLNonNull(artworkConnection.connectionType),
       args: pageable({}),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : [],
@@ -59,7 +60,7 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
     ...standardSectionFields,
 
     artistsConnection: {
-      type: artistsConnection.type,
+      type: new GraphQLNonNull(artistsConnection.type),
       args: pageable({}),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : [],

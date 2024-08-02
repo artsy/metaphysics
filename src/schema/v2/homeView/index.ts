@@ -20,7 +20,7 @@ const SectionsConnectionType = connectionWithCursorInfo({
 }).connectionType
 
 const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
-  type: SectionsConnectionType,
+  type: new GraphQLNonNull(SectionsConnectionType),
   args: pageable({}),
   resolve: async (_parent, args, context, _info) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
