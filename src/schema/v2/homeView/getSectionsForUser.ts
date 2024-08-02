@@ -4,7 +4,7 @@ import {
   HomeViewSection,
   NewWorksForYou,
   RecentlyViewedArtworks,
-  SuggestedArtists,
+  TrendingArtists,
 } from "./sections"
 
 export async function getSectionsForUser(
@@ -24,7 +24,7 @@ export async function getSectionsForUser(
   if (me.type === "Admin") {
     sections = [
       RecentlyViewedArtworks,
-      SuggestedArtists,
+      TrendingArtists,
       AuctionLotsForYou,
       NewWorksForYou,
     ]
@@ -32,7 +32,7 @@ export async function getSectionsForUser(
     sections = [
       NewWorksForYou,
       AuctionLotsForYou,
-      SuggestedArtists,
+      TrendingArtists,
       RecentlyViewedArtworks,
     ]
   }

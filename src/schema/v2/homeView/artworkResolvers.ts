@@ -2,6 +2,8 @@ import type { GraphQLFieldResolver } from "graphql"
 import type { ResolverContext } from "types/graphql"
 import { artworksForUser } from "../artworksForUser"
 import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
+import { getCuratedArtists } from "../artists/curatedTrending"
+import { connectionFromArray } from "graphql-relay"
 
 /*
  * Resolvers for home view artwork sections
@@ -68,4 +70,12 @@ export const AuctionLotsForYouResolver: GraphQLFieldResolver<
   )
 
   return result
+}
+
+export const SuggestedArtistsResolver: GraphQLFieldResolver<
+  any,
+  ResolverContext
+> = async (_parent, args, context, _info) => {
+  const artistRecords = await getCuratedArtists(context)
+  return connectionFromArray(artistRecords, args)
 }

@@ -9,6 +9,7 @@ import { ResolverContext } from "types/graphql"
 import { InternalIDFields, NodeInterface } from "../object_identification"
 import { HomeViewComponent } from "./HomeViewComponent"
 import { artworkConnection } from "../artwork"
+import { artistsConnection } from "../artists"
 
 // section interface
 
@@ -56,6 +57,13 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
+
+    artistsConnection: {
+      type: artistsConnection.type,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
+    },
   },
 })
 
