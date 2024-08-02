@@ -1,15 +1,11 @@
 import type { GraphQLFieldResolver } from "graphql"
 import type { ResolverContext } from "types/graphql"
 import { artworksForUser } from "../artworksForUser"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { paginationResolver } from "../fields/pagination"
 import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
 
 /*
  * Resolvers for home view artwork sections
  */
-
-// the resolvers
 
 export const NewWorksForYouResolver: GraphQLFieldResolver<
   any,
@@ -52,20 +48,24 @@ export const RecentlyViewedArtworksResolver: GraphQLFieldResolver<
 export const AuctionLotsForYouResolver: GraphQLFieldResolver<
   any,
   ResolverContext
-> = async (_parent, args, _context, _info) => {
-  // TODO: use actual loader
+> = async (parent, args, context, info) => {
+  const finalArgs = {
+    // formerly specified client-side
+    includeBackfill: true,
+    onlyAtAuction: true,
+    first: args.first,
+    excludeDislikedArtworks: true,
+    excludeArtworkIds: [],
 
-  const stubData = [{ id: "TODO-auction_lots_for_you" }]
-  const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-  const data = stubData.slice(offset, offset + size)
-  const totalCount = stubData.length
+    ...args,
+  }
 
-  return paginationResolver({
-    totalCount,
-    offset,
-    page,
-    size,
-    body: data,
-    args,
-  })
+  const result = await artworksForUser.resolve!(
+    parent,
+    finalArgs,
+    context,
+    info
+  )
+
+  return result
 }
