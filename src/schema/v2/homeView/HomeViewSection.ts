@@ -1,9 +1,7 @@
 import {
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
-  GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
   GraphQLUnionType,
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
@@ -11,20 +9,12 @@ import { ResolverContext } from "types/graphql"
 import { InternalIDFields, NodeInterface } from "../object_identification"
 import { HomeViewComponent } from "./HomeViewComponent"
 import { artworkConnection } from "../artwork"
-import { ARTWORK_RESOLVERS } from "./artworkResolvers"
+import { artistsConnection } from "../artists"
 
 // section interface
 
 const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   ...InternalIDFields,
-  key: {
-    type: GraphQLNonNull(GraphQLString),
-    description: "A stable identifier for this section",
-  },
-  title: {
-    type: GraphQLNonNull(GraphQLString),
-    description: "A display title for this section",
-  },
   component: {
     type: HomeViewComponent,
     description: "The component that is prescribed for this section",
@@ -53,11 +43,8 @@ const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
       type: artworkConnection.connectionType,
       args: pageable({}),
       resolve: (parent, ...rest) =>
-        ARTWORK_RESOLVERS[parent.key](parent, ...rest),
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
     },
-  },
-  isTypeOf: (value) => {
-    return value.component.type === "ArtworksRail"
   },
 })
 
@@ -70,9 +57,13 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
-  },
-  isTypeOf: (value) => {
-    return value.component.type === "ArtistsRail"
+
+    artistsConnection: {
+      type: artistsConnection.type,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
+    },
   },
 })
 
@@ -81,4 +72,7 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
 export const HomeViewSectionType = new GraphQLUnionType({
   name: "HomeViewSection",
   types: [ArtworksRailHomeViewSectionType, ArtistsRailHomeViewSectionType],
+  resolveType: (value) => {
+    return value.type
+  },
 })

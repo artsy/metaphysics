@@ -1,17 +1,15 @@
 import type { GraphQLFieldResolver } from "graphql"
-import type { HomeViewSectionKey } from "./getSectionsForUser"
 import type { ResolverContext } from "types/graphql"
 import { artworksForUser } from "../artworksForUser"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { paginationResolver } from "../fields/pagination"
+import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
+import { getCuratedArtists } from "../artists/curatedTrending"
+import { connectionFromArray } from "graphql-relay"
 
 /*
  * Resolvers for home view artwork sections
  */
 
-// the resolvers
-
-const newWorksForYouResolver: GraphQLFieldResolver<
+export const NewWorksForYouResolver: GraphQLFieldResolver<
   any,
   ResolverContext
 > = async (parent, args, context, info) => {
@@ -37,56 +35,47 @@ const newWorksForYouResolver: GraphQLFieldResolver<
   return result
 }
 
-const recentlyViewedArtworksResolver: GraphQLFieldResolver<
+export const RecentlyViewedArtworksResolver: GraphQLFieldResolver<
   any,
   ResolverContext
-> = (_parent, args, _context, _info) => {
-  // TODO: use actual loader
+> = async (_parent, args, context, info) => {
+  if (!context.meLoader)
+    throw new Error("You need to be signed in to perform this action")
 
-  const stubData = [{ id: "TODO-recently_viewed_artworks" }]
-  const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-  const data = stubData.slice(offset, offset + size)
-  const totalCount = stubData.length
+  const me = await context.meLoader()
 
-  return paginationResolver({
-    totalCount,
-    offset,
-    page,
-    size,
-    body: data,
-    args,
-  })
+  return RecentlyViewedArtworks.resolve!(me, args, context, info)
 }
 
-const auctionLotsForYouResolver: GraphQLFieldResolver<
+export const AuctionLotsForYouResolver: GraphQLFieldResolver<
   any,
   ResolverContext
-> = async (_parent, args, _context, _info) => {
-  // TODO: use actual loader
+> = async (parent, args, context, info) => {
+  const finalArgs = {
+    // formerly specified client-side
+    includeBackfill: true,
+    onlyAtAuction: true,
+    first: args.first,
+    excludeDislikedArtworks: true,
+    excludeArtworkIds: [],
 
-  const stubData = [{ id: "TODO-auction_lots_for_you" }]
-  const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-  const data = stubData.slice(offset, offset + size)
-  const totalCount = stubData.length
+    ...args,
+  }
 
-  return paginationResolver({
-    totalCount,
-    offset,
-    page,
-    size,
-    body: data,
-    args,
-  })
+  const result = await artworksForUser.resolve!(
+    parent,
+    finalArgs,
+    context,
+    info
+  )
+
+  return result
 }
 
-// the section-to-resolver mapping
-
-type SectionResolverMap = Partial<
-  Record<HomeViewSectionKey, GraphQLFieldResolver<any, ResolverContext>>
->
-
-export const ARTWORK_RESOLVERS: SectionResolverMap = {
-  NEW_WORKS_FOR_YOU: newWorksForYouResolver,
-  AUCTION_LOTS_FOR_YOU: auctionLotsForYouResolver,
-  RECENTLY_VIEWED_ARTWORKS: recentlyViewedArtworksResolver,
+export const SuggestedArtistsResolver: GraphQLFieldResolver<
+  any,
+  ResolverContext
+> = async (_parent, args, context, _info) => {
+  const artistRecords = await getCuratedArtists(context)
+  return connectionFromArray(artistRecords, args)
 }

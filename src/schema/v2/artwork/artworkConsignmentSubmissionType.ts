@@ -14,6 +14,7 @@ export const ArtworkConsignmentSubmissionStateType = new GraphQLEnumType({
     DRAFT: { value: "draft" },
     SUBMITTED: { value: "submitted" },
     APPROVED: { value: "approved" },
+    RESUBMITTED: { value: "resubmitted" },
     PUBLISHED: { value: "published" },
     REJECTED: { value: "rejected" },
     HOLD: { value: "hold" },
@@ -87,8 +88,6 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
         resolve: ({ state }) => {
           switch (state.toLowerCase()) {
             case "draft":
-            case "hold":
-            case "closed":
               return null
             case "approved":
               return "Approved"
@@ -159,9 +158,6 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
               return "Thank you for the information. Your submission is being assessed for sales opportunities. Our specialists will contact you via email or phone to coordinate the next steps."
             case "rejected":
               return "Our specialists have reviewed this submission and determined that we do not currently have a market for it."
-            case "hold":
-            case "closed":
-              return null
             default:
               return "The artwork is currently being reviewed by our team."
           }
