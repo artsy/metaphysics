@@ -132,7 +132,7 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
   },
   headerImage: {
     type: GraphQLString,
-    resolve: ({ header_image_id }) => header_image_id,
+    resolve: ({ header_image }) => header_image,
   },
   thumbnail: {
     type: GraphQLString,

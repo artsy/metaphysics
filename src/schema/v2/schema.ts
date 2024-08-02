@@ -226,6 +226,7 @@ import {
   MarketingCollections,
   CuratedMarketingCollections,
 } from "./marketingCollections"
+import { MarketingCategories } from "./marketingCategories"
 import { createCareerHighlightMutation } from "./careerHighlight/createCareerHighlightMutation"
 import { deleteCareerHighlightMutation } from "./careerHighlight/deleteCareerHighlightMutation"
 import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHighlightMutation"
@@ -247,6 +248,7 @@ const marketingCollectionUnstitchedRootField = config.USE_UNSTITCHED_MARKETING_C
       marketingCollection: MarketingCollection,
       marketingCollections: MarketingCollections,
       curatedMarketingCollections: CuratedMarketingCollections,
+      marketingCategories: MarketingCategories,
     }
   : ({} as any)
 
