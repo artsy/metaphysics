@@ -1917,6 +1917,11 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
   years: String
 }
 
+enum ArtistAlertsSort {
+  SORTABLE_ID_ASC
+  SORTABLE_ID_DESC
+}
+
 type ArtistArtworkGrid implements ArtworkContextGrid {
   artworksConnection(
     after: String
@@ -14766,6 +14771,7 @@ type Partner implements Node {
     last: Int
     page: Int
     size: Int
+    sort: ArtistAlertsSort
   ): ArtistsWithAlertCountsConnection
 
   # A connection of artworks from a Partner.

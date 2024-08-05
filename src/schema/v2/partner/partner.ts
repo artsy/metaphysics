@@ -132,6 +132,20 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   page: { type: GraphQLInt },
 }
 
+const ArtistAlertsSort = {
+  type: new GraphQLEnumType({
+    name: "ArtistAlertsSort",
+    values: {
+      SORTABLE_ID_ASC: {
+        value: "sortable_id",
+      },
+      SORTABLE_ID_DESC: {
+        value: "-sortable_id",
+      },
+    },
+  }),
+}
+
 export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
@@ -255,8 +269,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           size: {
             type: GraphQLInt,
           },
+          sort: ArtistAlertsSort,
         }),
-        // TODO: support sort args
         resolve: async ({ _id }, args, { partnerArtistsWithAlertCounts }) => {
           if (!partnerArtistsWithAlertCounts) return null
 
@@ -268,12 +282,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page: number
             size: number
             total_count: boolean
+            sort?: string
           }
 
           const gravityArgs: GravityArgs = {
             page,
             size,
             total_count: true,
+            sort: args.sort,
           }
 
           const { body, headers } = await partnerArtistsWithAlertCounts(
