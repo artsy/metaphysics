@@ -134,6 +134,20 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   page: { type: GraphQLInt },
 }
 
+const ArtistAlertsSort = {
+  type: new GraphQLEnumType({
+    name: "ArtistAlertsSort",
+    values: {
+      SORTABLE_ID_ASC: {
+        value: "sortable_id",
+      },
+      SORTABLE_ID_DESC: {
+        value: "-sortable_id",
+      },
+    },
+  }),
+}
+
 export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
@@ -158,6 +172,19 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     const AlertsSummaryArtistConnectionType = connectionWithCursorInfo({
       name: "AlertsSummaryArtist",
       edgeFields: AlertsSummaryFields,
+      nodeType: ArtistType,
+    }).connectionType
+
+    const PartnerArtistsSummaryEdgeFields = {
+      totalAlertCount: {
+        type: GraphQLInt,
+        resolve: ({ total_alert_count }) => total_alert_count,
+      },
+    }
+
+    const artistsWithAlertCountsConnectionType = connectionWithCursorInfo({
+      name: "ArtistsWithAlertCounts",
+      edgeFields: PartnerArtistsSummaryEdgeFields,
       nodeType: ArtistType,
     }).connectionType
 
@@ -230,6 +257,60 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             body,
+            args,
+            resolveNode: ({ artist }) => artist,
+          })
+        },
+      },
+      artistsWithAlertCountsConnection: {
+        type: artistsWithAlertCountsConnectionType,
+        args: pageable({
+          page: {
+            type: GraphQLInt,
+          },
+          size: {
+            type: GraphQLInt,
+          },
+          sort: ArtistAlertsSort,
+        }),
+        resolve: async (
+          { _id },
+          args,
+          { partnerArtistsWithAlertCountsLoader }
+        ) => {
+          if (!partnerArtistsWithAlertCountsLoader) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          type GravityArgs = {
+            page: number
+            size: number
+            total_count: boolean
+            sort?: string
+          }
+
+          const gravityArgs: GravityArgs = {
+            page,
+            size,
+            total_count: true,
+            sort: args.sort,
+          }
+
+          const { body, headers } = await partnerArtistsWithAlertCountsLoader?.(
+            _id,
+            gravityArgs
+          )
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body: body.hits,
             args,
             resolveNode: ({ artist }) => artist,
           })

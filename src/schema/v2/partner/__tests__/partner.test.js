@@ -1489,6 +1489,77 @@ describe("Partner type", () => {
     })
   })
 
+  describe("#artistWithAlertsConnection", () => {
+    it("returns partner artist details and total counts of alerts set for that partner's artist", async () => {
+      const response = {
+        body: {
+          hits: [
+            {
+              artist: {
+                name: "Molly D",
+                id: "5f80bfefe8d808000ea212c2"
+              },
+              total_alert_count: 1
+            },
+            {
+              artist: { 
+                name: "Percy Z",
+                id: "5f80bfefe8d808000ea212c1"
+              },
+              total_alert_count: 12
+            }
+          ]  
+        },
+        headers: {
+          "x-total-count": 2,
+        },
+      }
+      
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            artistsWithAlertCountsConnection(first: 10) {
+              totalCount
+              edges {
+                totalAlertCount
+                node {
+                  name
+                }
+              }
+            }
+          }
+        }
+      `
+      const partnerArtistsWithAlertCountsLoader = () => Promise.resolve(response)
+
+      const data = await runAuthenticatedQuery(query, {
+        ...context,
+        partnerArtistsWithAlertCountsLoader,
+      })
+      expect(data).toEqual({
+        partner: {
+          artistsWithAlertCountsConnection: {
+            totalCount: 2,
+              edges: [
+              {
+                totalAlertCount: 1,
+                node: {
+                  name: "Molly D",
+                },
+              },
+              {
+                totalAlertCount: 12,
+                node: {
+                  name: "Percy Z",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
+
   describe("#alertsConnection", () => {
     it("returns partner search criteria details and associated search criteria details", async () => {
       const response = {
