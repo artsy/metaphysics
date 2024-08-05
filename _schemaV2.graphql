@@ -2248,27 +2248,6 @@ type ArtistStatuses {
   shows: Boolean
 }
 
-# A connection to a list of items.
-type ArtistsWithAlertCountsConnection {
-  # A list of edges.
-  edges: [ArtistsWithAlertCountsEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type ArtistsWithAlertCountsEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: Artist
-  totalAlertCount: Int
-}
-
 type ArtistTargetSupply {
   # True if an artist is in the microfunnel list.
   isInMicrofunnel: Boolean
@@ -2326,6 +2305,27 @@ type ArtistsRailHomeViewSection implements GenericHomeViewSection & Node {
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
+}
+
+# A connection to a list of items.
+type ArtistsWithAlertCountsConnection {
+  # A list of edges.
+  edges: [ArtistsWithAlertCountsEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type ArtistsWithAlertCountsEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Artist
+  totalAlertCount: Int
 }
 
 type Artwork implements Node & Searchable & Sellable {
