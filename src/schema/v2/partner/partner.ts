@@ -298,8 +298,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             sort: args.sort,
           }
 
-          console.log("Hello?")
-
           const { body, headers } = await partnerArtistsWithAlertCountsLoader?.(
             _id,
             gravityArgs
