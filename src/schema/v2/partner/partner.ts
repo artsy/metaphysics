@@ -159,6 +159,19 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       nodeType: ArtistType,
     }).connectionType
 
+    const partnerAlertsSummaryEdgeFields = {
+      totalAlertCount: {
+        type: GraphQLInt,
+        resolve: ({ total_alert_count }) => total_alert_count,
+      },
+    }
+
+    const partnerAlertsSummaryArtistConnectionType = connectionWithCursorInfo({
+      name: "PartnerAlertsSummaryArtist",
+      edgeFields: partnerAlertsSummaryEdgeFields,
+      nodeType: ArtistType,
+    }).connectionType
+
     const PartnerAlertsConnectionType = connectionWithCursorInfo({
       name: "PartnerAlerts",
       edgeFields: PartnerAlertsEdgeFields,
@@ -228,6 +241,58 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             body,
+            args,
+            resolveNode: ({ artist }) => artist,
+          })
+        },
+      },
+      artistsWithAlertCounts: {
+        // TODO: rename all this stuff + clean up
+        type: partnerAlertsSummaryArtistConnectionType,
+        args: pageable({
+          page: {
+            type: GraphQLInt,
+          },
+          size: {
+            type: GraphQLInt,
+          },
+        }),
+        // TODO: support sort args
+        resolve: async ({ _id }, args, { partnerArtistsWithAlertCounts }) => {
+          if (!partnerArtistsWithAlertCounts) return null
+
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          type GravityArgs = {
+            page: number
+            size: number
+            total_count: boolean
+          }
+
+          const gravityArgs: GravityArgs = {
+            page,
+            size,
+            total_count: true,
+          }
+
+          const { body, headers } = await partnerArtistsWithAlertCounts(
+            _id,
+            gravityArgs
+          )
+
+          // console.log(headers)
+          // // console.log(hits)
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body: body.hits,
             args,
             resolveNode: ({ artist }) => artist,
           })

@@ -14738,6 +14738,14 @@ type Partner implements Node {
     query: String!
     size: Int = 10
   ): ArtistConnection
+  artistsWithAlertCounts(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    page: Int
+    size: Int
+  ): PartnerAlertsSummaryArtistConnection
 
   # A connection of artworks from a Partner.
   artworksConnection(
@@ -15034,6 +15042,27 @@ type PartnerAlertsEdge {
   score: String
   searchCriteriaID: String
   userIDs: [String]
+}
+
+# A connection to a list of items.
+type PartnerAlertsSummaryArtistConnection {
+  # A list of edges.
+  edges: [PartnerAlertsSummaryArtistEdge]
+  pageCursors: PageCursors!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type PartnerAlertsSummaryArtistEdge {
+  # A cursor for use in pagination
+  cursor: String!
+
+  # The item at the end of the edge
+  node: Artist
+  totalAlertCount: Int
 }
 
 type PartnerArtist {

@@ -554,6 +554,11 @@ export default (accessToken, userID, opts) => {
     partnerAlertsSummaryLoader: gravityLoader(
       (id) => `partner/${id}/alert_summary`
     ),
+    partnerArtistsWithAlertCounts: gravityLoader(
+      (id) => `partner/${id}/artists_with_alert_counts`,
+      {},
+      { headers: true }
+    ),
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
     partnerArtistDocumentsLoader: gravityLoader<
       any,
@@ -631,11 +636,6 @@ export default (accessToken, userID, opts) => {
     >(
       ({ partnerId, inquiryId }) =>
         `partner/${partnerId}/inquiry_request/${inquiryId}`
-    ),
-    partnerLocationsConnectionLoader: gravityLoader(
-      (id) => `partner/${id}/locations`,
-      {},
-      { headers: true }
     ),
     partnerOffersLoader: gravityLoader("partner_offers", {}, { headers: true }),
     partnerSearchArtistsLoader: gravityLoader(
