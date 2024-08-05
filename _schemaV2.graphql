@@ -14764,7 +14764,7 @@ type Partner implements Node {
     query: String!
     size: Int = 10
   ): ArtistConnection
-  artistsWithAlertCounts(
+  artistsWithAlertCountsConnection(
     after: String
     before: String
     first: Int

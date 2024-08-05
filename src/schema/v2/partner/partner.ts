@@ -260,7 +260,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      artistsWithAlertCounts: {
+      artistsWithAlertCountsConnection: {
         type: artistsWithAlertCountsConnectionType,
         args: pageable({
           page: {
