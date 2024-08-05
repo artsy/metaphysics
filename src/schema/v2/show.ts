@@ -42,7 +42,7 @@ import { totalViaLoader } from "lib/total"
 import { find, flatten } from "lodash"
 
 import ShowSorts from "./sorts/show_sorts"
-import EventStatus from "./input_fields/event_status"
+import EventStatus, { EventStatusEnums } from "./input_fields/event_status"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
@@ -343,7 +343,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           format: {
             type: ExhibitionPeriodFormatEnum,
             description: "Formatting option to apply to exhibition period",
-            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG"),
+            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG")?.value,
           },
         },
         resolve: ({ start_at, end_at }, args) => {
@@ -512,7 +512,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           },
           status: {
             type: EventStatus.type,
-            defaultValue: "CURRENT",
+            defaultValue: EventStatusEnums.getValue("CURRENT")?.value,
             description: "By default show only current shows",
           },
           discoverable: {

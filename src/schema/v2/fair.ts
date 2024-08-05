@@ -152,13 +152,20 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           format: {
             type: ExhibitionPeriodFormatEnum,
             description: "Formatting option to apply to exhibition period",
-            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG"),
+            defaultValue: ExhibitionPeriodFormatEnum.getValue("LONG")?.value,
           },
         },
         resolve: ({ start_at, end_at }, args) => {
           const { format } = args
           return dateRange(start_at, end_at, "UTC", format)
         },
+      },
+      featuredKeywords: {
+        type: new GraphQLNonNull(
+          GraphQLList(new GraphQLNonNull(GraphQLString))
+        ),
+        description: "Suggested filters for associated artworks",
+        resolve: ({ featured_keywords }) => featured_keywords,
       },
       formattedOpeningHours: {
         type: GraphQLString,

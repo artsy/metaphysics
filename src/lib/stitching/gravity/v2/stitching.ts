@@ -5,7 +5,6 @@ import { defineCustomLocale, isExisty } from "lib/helpers"
 import { pageableFilterArtworksArgsWithInput } from "schema/v2/filterArtworksConnection"
 import { normalizeImageData, getDefault } from "schema/v2/image"
 import { formatMarkdownValue } from "schema/v2/fields/markdown"
-import Format from "schema/v2/input_fields/format"
 import { toGlobalId } from "graphql-relay"
 import { printType } from "lib/stitching/lib/printType"
 import { dateRange } from "lib/date"
@@ -13,6 +12,7 @@ import { resolveSearchCriteriaLabels } from "schema/v2/previewSavedSearch/search
 import { generateDisplayName } from "schema/v2/previewSavedSearch/generateDisplayName"
 import { amount, amountSDL } from "schema/v2/fields/money"
 import config from "config"
+import { GraphQLSchemaWithTransforms } from "graphql-tools"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -64,7 +64,7 @@ const useUnstitchedMarketingCollections = !!config.USE_UNSTITCHED_MARKETING_COLL
 
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
-  gravitySchema: GraphQLSchema & { transforms: any }
+  gravitySchema: GraphQLSchemaWithTransforms
 ) => {
   return {
     // The SDL used to declare how to stitch an object
@@ -76,12 +76,18 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
           ): ArtistSeriesConnection
-        marketingCollections(
-          slugs: [String!]
-          category: String
-          size: Int
-          isFeaturedArtistContent: Boolean
-        ): [MarketingCollection]
+        ${
+          !useUnstitchedMarketingCollections
+            ? `
+          marketingCollections(
+            slugs: [String!]
+            category: String
+            size: Int
+            isFeaturedArtistContent: Boolean
+          ): [MarketingCollection]
+        `
+            : ""
+        }
       }
 
       extend type Artwork {
@@ -145,11 +151,16 @@ export const gravityStitchingEnvironment = (
           : ""
       }
 
-      extend type MarketingCollection {
-        thumbnailImage: Image
-        artworksConnection(${argsToSDL(
-          pageableFilterArtworksArgsWithInput
-        ).join("\n")}): FilterArtworksConnection
+      ${
+        !useUnstitchedMarketingCollections
+          ? `
+          extend type MarketingCollection {
+            thumbnailImage: Image
+            artworksConnection(${argsToSDL(
+              pageableFilterArtworksArgsWithInput
+            ).join("\n")}): FilterArtworksConnection
+          }`
+          : ""
       }
 
       extend type Me {
@@ -305,26 +316,28 @@ export const gravityStitchingEnvironment = (
             })
           },
         },
-        marketingCollections: {
-          fragment: `
+        ...(!useUnstitchedMarketingCollections && {
+          marketingCollections: {
+            fragment: `
               ... on Artist {
                 internalID
               }
             `,
-          resolve: ({ internalID: artistID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "marketingCollections",
-              args: {
-                artistID,
-                ...args,
-              },
-              context,
-              info,
-            })
+            resolve: ({ internalID: artistID }, args, context, info) => {
+              return info.mergeInfo.delegateToSchema({
+                schema: gravitySchema,
+                operation: "query",
+                fieldName: "marketingCollections",
+                args: {
+                  artistID,
+                  ...args,
+                },
+                context,
+                info,
+              })
+            },
           },
-        },
+        }),
       },
       Artwork: {
         artistSeriesConnection: {
@@ -387,12 +400,7 @@ export const gravityStitchingEnvironment = (
             if (!isExisty(description) || typeof description !== "string")
               return null
 
-            const { type: formatType } = Format
-            const desiredFormat = formatType
-              ?.getValues()
-              ?.find((e) => e.name === format)?.value
-
-            return formatMarkdownValue(description, desiredFormat)
+            return formatMarkdownValue(description, format)
           },
         },
         artworksCountMessage: {

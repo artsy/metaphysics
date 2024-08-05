@@ -138,9 +138,9 @@ describe("PricingContext type", () => {
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
       Object {
-        "_v1_artistId": "artist-id",
-        "_v2_category": "DRAWING_COLLAGE_OTHER_WORK_ON_PAPER",
-        "_v3_sizeScore": 225,
+        "_v0_artistId": "artist-id",
+        "_v0_category": "DRAWING_COLLAGE_OTHER_WORK_ON_PAPER",
+        "_v0_sizeScore": 225,
       }
     `)
   })
@@ -168,9 +168,9 @@ describe("PricingContext type", () => {
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
       Object {
-        "_v1_artistId": "artist-id",
-        "_v2_category": "PAINTING",
-        "_v3_sizeScore": 10300,
+        "_v0_artistId": "artist-id",
+        "_v0_category": "PAINTING",
+        "_v0_sizeScore": 10300,
       }
     `)
     mockFetch.mockClear()
@@ -196,9 +196,9 @@ describe("PricingContext type", () => {
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
       Object {
-        "_v1_artistId": "artist-id",
-        "_v2_category": "PAINTING",
-        "_v3_sizeScore": 3000,
+        "_v0_artistId": "artist-id",
+        "_v0_category": "PAINTING",
+        "_v0_sizeScore": 3000,
       }
     `)
   })

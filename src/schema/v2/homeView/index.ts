@@ -1,6 +1,10 @@
-import { GraphQLObjectType, GraphQLFieldConfig, GraphQLNonNull } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLFieldConfig,
+  GraphQLNonNull,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
-import { STUB_SECTIONS } from "./stubData"
 import {
   connectionWithCursorInfo,
   paginationResolver,
@@ -8,19 +12,22 @@ import {
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { HomeViewSectionType } from "./HomeViewSection"
+import { getSectionsForUser } from "./getSectionsForUser"
+import { registry } from "./sections"
 
 const SectionsConnectionType = connectionWithCursorInfo({
   nodeType: HomeViewSectionType,
 }).connectionType
 
 const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
-  type: SectionsConnectionType,
+  type: new GraphQLNonNull(SectionsConnectionType),
   args: pageable({}),
-  resolve: async (_parent, args, _context, _info) => {
+  resolve: async (_parent, args, context, _info) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const totalCount = STUB_SECTIONS.length
-    const data = STUB_SECTIONS.slice(offset, offset + size)
+    const sections = await getSectionsForUser(context)
+    const totalCount = sections.length
+    const data = sections.slice(offset, offset + size)
 
     return paginationResolver({
       totalCount,
@@ -33,6 +40,27 @@ const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
+const Section: GraphQLFieldConfig<void, ResolverContext> = {
+  type: HomeViewSectionType,
+  description: "A home view section",
+  args: {
+    id: {
+      description: "The ID of the section",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+  resolve: (_root, { id }, context) => {
+    const { meLoader } = context.authenticatedLoaders
+
+    if (!meLoader) throw new Error("You must be signed in to see this content.")
+
+    if (id.length === 0) {
+      return null
+    }
+    return registry[id]
+  },
+}
+
 // root homeView field
 
 const HomeViewType = new GraphQLObjectType<any, ResolverContext>({
@@ -40,6 +68,7 @@ const HomeViewType = new GraphQLObjectType<any, ResolverContext>({
   description: "Experimental schema for new home view",
   fields: {
     sectionsConnection: SectionConnection,
+    section: Section,
   },
 })
 

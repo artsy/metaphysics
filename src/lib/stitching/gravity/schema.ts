@@ -13,7 +13,6 @@ const rootFieldsAllowList = [
   "agreement",
   "artistSeries",
   "artistSeriesConnection",
-  "marketingCategories",
   "viewingRoom",
   "viewingRooms",
 ].concat(
@@ -23,6 +22,7 @@ const rootFieldsAllowList = [
         "marketingCollection",
         "marketingCollections",
         "curatedMarketingCollections",
+        "marketingCategories",
       ]
 )
 
@@ -58,6 +58,8 @@ export const executableGravitySchema = () => {
 
   if (config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA) {
     duplicatedTypes.push("MarketingCollection")
+    duplicatedTypes.push("MarketingCollectionGroup")
+    duplicatedTypes.push("MarketingCollectionCategory")
   }
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.

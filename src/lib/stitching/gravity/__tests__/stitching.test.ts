@@ -736,8 +736,8 @@ describe("gravity/stitching", () => {
 
       it("passes artist internalID to marketingCollections' artistID arg when querying `... on Artist`", async () => {
         const { resolvers } = await getGravityStitchedSchema()
-        const marketingCollectionsResolver =
-          resolvers.Artist.marketingCollections.resolve
+        const marketingCollectionsResolver = resolvers.Artist
+          .marketingCollections!.resolve
         const mergeInfo = { delegateToSchema: jest.fn() }
 
         await marketingCollectionsResolver(
@@ -869,7 +869,7 @@ describe("gravity/stitching", () => {
       const { descriptionFormatted } = resolvers.ArtistSeries
       const formattedDescription = await descriptionFormatted.resolve(
         { description: "**Bold Type**" },
-        { format: "HTML" }
+        { format: "html" }
       )
       expect(formattedDescription).toEqual(
         "<p><strong>Bold Type</strong></p>\n"

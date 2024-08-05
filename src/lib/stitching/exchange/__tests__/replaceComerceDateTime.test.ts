@@ -1,7 +1,11 @@
 import { GraphQLSchema, GraphQLObjectType, GraphQLScalarType } from "graphql"
 import { runQueryOrThrow } from "schema/v2/test/utils"
 import gql from "lib/gql"
-import { transformSchema } from "graphql-tools"
+import {
+  TransformInterfaceFields,
+  TransformObjectFields,
+  transformSchema,
+} from "graphql-tools"
 import { ReplaceCommerceDateTimeType } from "../transformers/replaceCommerceDateTimeType"
 
 const originalSchema = new GraphQLSchema({
@@ -26,7 +30,8 @@ const originalSchema = new GraphQLSchema({
 })
 
 const schema = transformSchema(originalSchema, [
-  new ReplaceCommerceDateTimeType(),
+  new TransformInterfaceFields(ReplaceCommerceDateTimeType),
+  new TransformObjectFields(ReplaceCommerceDateTimeType),
 ])
 
 describe("ReplaceCommerceDateTimeType", () => {

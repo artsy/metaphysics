@@ -3,27 +3,21 @@ import {
   GraphQLInterfaceType,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
   GraphQLUnionType,
 } from "graphql"
+import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields, NodeInterface } from "../object_identification"
 import { HomeViewComponent } from "./HomeViewComponent"
+import { artworkConnection } from "../artwork"
+import { artistsConnection } from "../artists"
 
 // section interface
 
 const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   ...InternalIDFields,
-  key: {
-    type: GraphQLNonNull(GraphQLString),
-    description: "A stable identifier for this section",
-  },
-  title: {
-    type: GraphQLNonNull(GraphQLString),
-    description: "A display title for this section",
-  },
   component: {
-    type: HomeViewComponent,
+    type: new GraphQLNonNull(HomeViewComponent),
     description: "The component that is prescribed for this section",
   },
 }
@@ -45,9 +39,13 @@ const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
-  },
-  isTypeOf: (value) => {
-    return value.component.type === "ArtworksRail"
+
+    artworksConnection: {
+      type: new GraphQLNonNull(artworkConnection.connectionType),
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
+    },
   },
 })
 
@@ -60,9 +58,13 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
-  },
-  isTypeOf: (value) => {
-    return value.component.type === "ArtistsRail"
+
+    artistsConnection: {
+      type: new GraphQLNonNull(artistsConnection.type),
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
+    },
   },
 })
 
@@ -71,4 +73,7 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
 export const HomeViewSectionType = new GraphQLUnionType({
   name: "HomeViewSection",
   types: [ArtworksRailHomeViewSectionType, ArtistsRailHomeViewSectionType],
+  resolveType: (value) => {
+    return value.type
+  },
 })

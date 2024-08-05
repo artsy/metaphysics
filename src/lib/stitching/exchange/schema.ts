@@ -1,11 +1,13 @@
-import { createExchangeLink } from "./link"
+import { readFileSync } from "fs"
 import {
+  RenameRootFields,
+  RenameTypes,
+  TransformInterfaceFields,
+  TransformObjectFields,
   makeRemoteExecutableSchema,
   transformSchema,
-  RenameTypes,
-  RenameRootFields,
 } from "graphql-tools"
-import { readFileSync } from "fs"
+import { createExchangeLink } from "./link"
 import { ReplaceCommerceDateTimeType } from "./transformers/replaceCommerceDateTimeType"
 
 export const executableExchangeSchema = (transforms) => {
@@ -33,7 +35,8 @@ export const transformsForExchange = [
       `commerce${name.charAt(0).toUpperCase() + name.slice(1)}`
   ),
   // replace CommerceDateTime field with MP's dateField
-  new ReplaceCommerceDateTimeType(),
+  new TransformInterfaceFields(ReplaceCommerceDateTimeType),
+  new TransformObjectFields(ReplaceCommerceDateTimeType),
 ]
 
 export const legacyTransformsForExchange = [

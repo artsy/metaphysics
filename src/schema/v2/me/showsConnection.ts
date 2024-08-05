@@ -3,7 +3,7 @@ import { getLocationArgs } from "lib/locationHelpers"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { paginationResolver } from "../fields/pagination"
-import EventStatus from "../input_fields/event_status"
+import EventStatus, { EventStatusEnums } from "../input_fields/event_status"
 import Near from "../input_fields/near"
 import { ShowsConnection as ShowsConnectionType } from "../show"
 import ShowSorts from "../sorts/show_sorts"
@@ -28,11 +28,11 @@ export const ShowsConnection: GraphQLFieldConfig<void, ResolverContext> = {
     },
     sort: {
       type: ShowSorts,
-      defaultValue: "-created_at",
+      defaultValue: ShowSorts.getValue("CREATED_AT_DESC")?.value,
     },
     status: {
       type: EventStatus.type,
-      defaultValue: "current",
+      defaultValue: EventStatusEnums.getValue("CURRENT")?.value,
       description: "Filter shows by chronological event status",
     },
   }),

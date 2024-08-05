@@ -1,9 +1,11 @@
 import {
-  introspectionQuery,
+  getIntrospectionQuery,
   buildClientSchema,
   printSchema,
   buildSchema,
 } from "graphql"
+
+const introspectionQuery = getIntrospectionQuery()
 
 /* eslint-disable import/no-unresolved */
 // @ts-ignore (this is in the Peril runtime only)
