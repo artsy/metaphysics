@@ -159,16 +159,16 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       nodeType: ArtistType,
     }).connectionType
 
-    const partnerAlertsSummaryEdgeFields = {
+    const PartnerArtistsSummaryEdgeFields = {
       totalAlertCount: {
         type: GraphQLInt,
         resolve: ({ total_alert_count }) => total_alert_count,
       },
     }
 
-    const partnerAlertsSummaryArtistConnectionType = connectionWithCursorInfo({
-      name: "PartnerAlertsSummaryArtist",
-      edgeFields: partnerAlertsSummaryEdgeFields,
+    const artistsWithAlertCountsConnectionType = connectionWithCursorInfo({
+      name: "ArtistsWithAlertCounts",
+      edgeFields: PartnerArtistsSummaryEdgeFields,
       nodeType: ArtistType,
     }).connectionType
 
@@ -247,8 +247,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       artistsWithAlertCounts: {
-        // TODO: rename all this stuff + clean up
-        type: partnerAlertsSummaryArtistConnectionType,
+        type: artistsWithAlertCountsConnectionType,
         args: pageable({
           page: {
             type: GraphQLInt,
@@ -281,9 +280,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             _id,
             gravityArgs
           )
-
-          // console.log(headers)
-          // // console.log(hits)
 
           const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
