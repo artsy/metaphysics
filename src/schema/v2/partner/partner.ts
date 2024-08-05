@@ -271,8 +271,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           },
           sort: ArtistAlertsSort,
         }),
-        resolve: async ({ _id }, args, { partnerArtistsWithAlertCounts }) => {
-          if (!partnerArtistsWithAlertCounts) return null
+        resolve: async (
+          { _id },
+          args,
+          { partnerArtistsWithAlertCountsLoader }
+        ) => {
+          if (!partnerArtistsWithAlertCountsLoader) return null
 
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
@@ -292,7 +296,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             sort: args.sort,
           }
 
-          const { body, headers } = await partnerArtistsWithAlertCounts(
+          console.log("Hello?")
+
+          const { body, headers } = await partnerArtistsWithAlertCountsLoader?.(
             _id,
             gravityArgs
           )

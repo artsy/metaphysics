@@ -554,7 +554,7 @@ export default (accessToken, userID, opts) => {
     partnerAlertsSummaryLoader: gravityLoader(
       (id) => `partner/${id}/alert_summary`
     ),
-    partnerArtistsWithAlertCounts: gravityLoader(
+    partnerArtistsWithAlertCountsLoader: gravityLoader(
       (id) => `partner/${id}/artists_with_alert_counts`,
       {},
       { headers: true }
