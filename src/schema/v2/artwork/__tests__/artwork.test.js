@@ -4632,7 +4632,7 @@ describe("Artwork type", () => {
             lotWatcherCount
             registrationEndsAt
             lotClosesAt
-            liveAuctionBiddingStarted
+            liveBiddingStarted
             onlineBiddingExtended
             partnerOffer {
               endAt
@@ -4793,7 +4793,7 @@ describe("Artwork type", () => {
           lotWatcherCount: null,
           registrationEndsAt: null,
           lotClosesAt: null,
-          liveAuctionBiddingStarted: null,
+          liveBiddingStarted: null,
           onlineBiddingExtended: null,
           partnerOffer: null,
         })

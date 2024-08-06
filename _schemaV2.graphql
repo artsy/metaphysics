@@ -4413,7 +4413,10 @@ type CollectorSignals {
   bidCount: Int
 
   # Auction live bidding status
-  liveAuctionBiddingStarted: Boolean
+  liveBiddingStarted: Boolean
+
+  # Auction live bidding start time
+  liveStartAt: String
 
   # Auction lot close time
   lotClosesAt: String

@@ -4,6 +4,19 @@ import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 
+interface ActiveLotData {
+  saleArtwork: {
+    bidder_positions_count: number
+    extended_bidding_end_at?: string
+    end_at?: string
+  }
+  sale: {
+    registration_ends_at: string
+    live_start_at: string
+    ended_at?: string
+  }
+}
+
 export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLObjectType({
     description: "Collector signals available to the artwork",
@@ -29,7 +42,11 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         type: GraphQLBoolean,
         description: "Auction bidding extension status",
       },
-      liveAuctionBiddingStarted: {
+      liveStartAt: {
+        type: GraphQLString,
+        description: "Auction live bidding start time",
+      },
+      liveBiddingStarted: {
         type: GraphQLBoolean,
         description: "Auction live bidding status",
       },
@@ -52,13 +69,24 @@ interface CollectorSignals {
   lotWatcherCount?: number
   partnerOffer?: { endAt: string }
   registrationEndsAt?: string // ISO8601
+  liveStartAt?: string // ISO8601
+  liveBiddingStarted?: boolean
+  onlineBiddingExtended?: boolean
+  lotClosesAt?: string // ISO8601
 }
 
 const collectorSignalsLoader = async (
   artwork,
   ctx
 ): Promise<CollectorSignals> => {
-  let bidCount, lotWatcherCount, partnerOffer, registrationEndsAt
+  let bidCount,
+    lotWatcherCount,
+    partnerOffer,
+    registrationEndsAt,
+    liveStartAt,
+    liveBiddingStarted,
+    lotClosesAt,
+    onlineBiddingExtended
 
   const artworkId = artwork.id
 
@@ -86,16 +114,42 @@ const collectorSignalsLoader = async (
       ctx
     )
 
-    if (activeLotData) {
+    const activeAuctionLot = activeLotData && !activeLotData.sale.ended_at
+    if (activeAuctionLot) {
       const { saleArtwork, sale } = activeLotData
+
       if (artwork.recent_saves_count) {
         lotWatcherCount = artwork.recent_saves_count
       }
+
       if (saleArtwork.bidder_positions_count) {
         bidCount = saleArtwork.bidder_positions_count
       }
-      if (sale.registration_ends_at) {
-        registrationEndsAt = sale.registration_ends_at
+
+      const futureRegistrationEndTime = ifFutureDate(sale.registration_ends_at)
+      if (futureRegistrationEndTime) {
+        registrationEndsAt = futureRegistrationEndTime
+      }
+
+      const saleLiveStartAt = sale.live_start_at
+      if (saleLiveStartAt) {
+        const futureLiveStartTime = ifFutureDate(saleLiveStartAt)
+
+        if (futureLiveStartTime) {
+          liveBiddingStarted = false
+          liveStartAt = futureLiveStartTime
+        } else {
+          liveBiddingStarted = true
+        }
+      }
+
+      const extendedBiddingEndAt = saleArtwork.extended_bidding_end_at
+      if (extendedBiddingEndAt && extendedBiddingEndAt.length > 0) {
+        onlineBiddingExtended = true
+        lotClosesAt = extendedBiddingEndAt
+      } else {
+        onlineBiddingExtended = false
+        lotClosesAt = saleArtwork.end_at
       }
     }
   }
@@ -114,19 +168,16 @@ const collectorSignalsLoader = async (
   }
 
   return {
+    // auction signals
     bidCount,
+    liveBiddingStarted,
+    liveStartAt,
+    lotClosesAt,
     lotWatcherCount,
-    partnerOffer,
+    onlineBiddingExtended,
     registrationEndsAt,
-  }
-}
-
-interface ActiveLotData {
-  saleArtwork: {
-    bidder_positions_count: number
-  }
-  sale: {
-    registration_ends_at: string
+    // purchasable signals
+    partnerOffer,
   }
 }
 
@@ -156,4 +207,12 @@ const getActiveSaleArtwork = async (
     })) ?? null
 
   return { saleArtwork, sale: activeAuction }
+}
+
+const NOW = new Date()
+const ifFutureDate = (date?: string): string | null => {
+  if (!date) {
+    return null
+  }
+  return new Date(date) > NOW ? date : null
 }
