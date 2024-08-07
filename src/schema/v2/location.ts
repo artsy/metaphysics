@@ -10,6 +10,7 @@ import {
   GraphQLList,
   GraphQLFieldConfig,
   GraphQLUnionType,
+  GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
@@ -76,6 +77,10 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
     },
     country: {
       type: GraphQLString,
+    },
+    euShippingLocation: {
+      type: GraphQLBoolean,
+      resolve: ({ eu_shipping_location }) => eu_shipping_location,
     },
     displayCountry: {
       type: GraphQLString,

@@ -766,6 +766,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ default_profile_id }) => default_profile_id,
       },
       documentsConnection: PartnerDocumentsConnection,
+      featuredKeywords: {
+        type: new GraphQLNonNull(
+          GraphQLList(new GraphQLNonNull(GraphQLString))
+        ),
+        description: "Suggested filters for associated artworks",
+        resolve: ({ featured_keywords }) => featured_keywords ?? [],
+      },
       featuredShow: {
         type: ShowType,
         resolve: async ({ id }, _args, { partnerShowsLoader }) => {
