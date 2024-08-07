@@ -13,6 +13,7 @@ export const loadSubmissions = async (
             edges {
               node {
                 id
+                externalId
                 state
                 saleState
                 rejectionReason
