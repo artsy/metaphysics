@@ -518,8 +518,11 @@ export const PartnerAlertsEdgeFields = {
   collectorProfilesConnection: {
     type: PartnerCollectorProfilesConnectionType,
     args: pageable({
-      totalCount: {
-        type: GraphQLBoolean,
+      page: {
+        type: GraphQLInt,
+      },
+      size: {
+        type: GraphQLInt,
       },
     }),
     resolve: async (parent, args, { partnerCollectorProfilesLoader }) => {
@@ -533,6 +536,9 @@ export const PartnerAlertsEdgeFields = {
           "partnerId or userIds is undefined in the parent object"
         )
       }
+
+      // Make API call to fetch the first X collector profile records
+      const slicedUserIds = parent.user_ids.slice(0, 20)
 
       type GravityArgs = {
         page: number
@@ -549,18 +555,17 @@ export const PartnerAlertsEdgeFields = {
         offset,
         total_count: true,
         partner_id: parent.partner_id,
-        user_ids: parent.user_ids,
+        user_ids: slicedUserIds,
       }
 
-      const { body, headers } = await partnerCollectorProfilesLoader(
-        gravityArgs
-      )
+      const { body } = await partnerCollectorProfilesLoader(gravityArgs)
 
       const collectorProfiles = body.flatMap((item) =>
         item.collector_profile ? [item.collector_profile].flat() : []
       )
 
-      const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+      const totalCount = parent.user_ids.length
+
       return paginationResolver({
         totalCount,
         offset,
