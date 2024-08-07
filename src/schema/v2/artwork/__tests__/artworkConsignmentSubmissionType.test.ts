@@ -7,6 +7,7 @@ describe("ArtworkConsignmentSubmissionType", () => {
     consignmentSubmission: {
       state: "draft",
       id: "someID",
+      externalId: "someExternalID",
     },
   }
 
@@ -28,13 +29,17 @@ describe("ArtworkConsignmentSubmissionType", () => {
           slug
           consignmentSubmission {
             internalID
+            externalID
           }
         }
       }
     `
-    it("returns internalID if present", async () => {
+    it("returns IDs if present", async () => {
       const data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.internalID).toEqual("someID")
+      expect(data.artwork.consignmentSubmission.externalID).toEqual(
+        "someExternalID"
+      )
     })
   })
 

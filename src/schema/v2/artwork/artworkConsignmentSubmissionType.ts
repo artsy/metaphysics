@@ -33,6 +33,10 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
         type: GraphQLString,
         resolve: ({ id }) => id,
       },
+      externalID: {
+        type: GraphQLString,
+        resolve: ({ externalId }) => externalId,
+      },
       displayText: {
         type: GraphQLString,
         deprecationReason: "Prefer `stateLabel` field.",
