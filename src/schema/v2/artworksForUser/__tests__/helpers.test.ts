@@ -1,7 +1,7 @@
 import {
   getBackfillArtworks,
-  getNewForYouArtworks,
   getNewForYouArtworkIDs,
+  getNewForYouArtworks,
 } from "../helpers"
 
 const mockLoaderFactory = (affinities) => {
@@ -31,7 +31,8 @@ describe("getNewForYouArtworkIDs", () => {
 
     const artworkIds = await getNewForYouArtworkIDs(
       { excludeArtworkIds: [] },
-      context
+      context,
+      100
     )
 
     expect(artworkIds).toEqual(["banksy"])

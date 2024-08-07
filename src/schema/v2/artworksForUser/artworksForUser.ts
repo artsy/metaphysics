@@ -8,17 +8,18 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { uniqBy } from "lodash"
 import { CursorPageable, pageable } from "relay-cursor-paging"
+import { artworkConnection } from "schema/v2/artwork"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { artworkConnection } from "schema/v2/artwork"
 import {
   getBackfillArtworks,
-  getNewForYouArtworks,
   getNewForYouArtworkIDs,
+  getNewForYouArtworks,
 } from "./helpers"
-import { uniqBy } from "lodash"
 
+// Because we're currently not able to use pagination with the Vortex API GraphQL endpoint.
 const MAX_ARTWORKS = 100
 
 export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
@@ -45,13 +46,17 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
-    const newForYouArtworkIds = await getNewForYouArtworkIDs(args, context)
+    const gravityArgs = convertConnectionArgsToGravityArgs(args)
+    const { page, size, offset } = gravityArgs
+
+    const newForYouArtworkIds = await getNewForYouArtworkIDs(
+      gravityArgs,
+      context,
+      MAX_ARTWORKS
+    )
     const filteredArtworkIds = newForYouArtworkIds.filter(
       (artworkId) => !args.excludeArtworkIds.includes(artworkId)
     )
-
-    const gravityArgs = convertConnectionArgsToGravityArgs(args)
-    const { page, size, offset } = gravityArgs
 
     const newForYouArtworks = await getNewForYouArtworks(
       {
