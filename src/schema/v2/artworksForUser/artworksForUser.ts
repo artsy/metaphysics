@@ -8,16 +8,16 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { uniqBy } from "lodash"
 import { CursorPageable, pageable } from "relay-cursor-paging"
+import { artworkConnection } from "schema/v2/artwork"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { artworkConnection } from "schema/v2/artwork"
 import {
   getBackfillArtworks,
-  getNewForYouArtworks,
   getNewForYouArtworkIDs,
+  getNewForYouArtworks,
 } from "./helpers"
-import { uniqBy } from "lodash"
 
 const MAX_ARTWORKS = 100
 
@@ -45,17 +45,23 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     },
   }),
   resolve: async (_root, args: CursorPageable, context) => {
-    const newForYouArtworkIds = await getNewForYouArtworkIDs(args, context)
+    const gravityArgs = convertConnectionArgsToGravityArgs(args)
+    const { page, size, offset } = gravityArgs
+
+    const newForYouArtworkIds = await getNewForYouArtworkIDs(
+      { ...args, ...gravityArgs },
+      context
+    )
+
     const filteredArtworkIds = newForYouArtworkIds.filter(
       (artworkId) => !args.excludeArtworkIds.includes(artworkId)
     )
 
-    const gravityArgs = convertConnectionArgsToGravityArgs(args)
-    const { page, size, offset } = gravityArgs
+    const slicedArtworkIds = filteredArtworkIds.slice(offset, offset + size)
 
     const newForYouArtworks = await getNewForYouArtworks(
       {
-        ids: filteredArtworkIds,
+        ids: slicedArtworkIds,
         marketable: args.marketable,
         excludeDislikedArtworks: args.excludeDislikedArtworks,
       },
@@ -76,15 +82,14 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       "id"
     ).slice(0, size)
 
-    // TODO: get count from artworks loader to optimize pagination
-    const count = artworks.length === 0 ? 0 : MAX_ARTWORKS
+    const totalCount = filteredArtworkIds.length + backfillArtworks.length
 
     return {
-      totalCount: count,
-      pageCursors: createPageCursors({ ...args, page, size }, count),
+      totalCount,
+      pageCursors: createPageCursors({ ...args, page, size }, totalCount),
       ...connectionFromArraySlice(artworks, args, {
-        arrayLength: count,
-        sliceStart: offset ?? 0,
+        arrayLength: totalCount,
+        sliceStart: offset,
       }),
     }
   },
