@@ -19,8 +19,6 @@ import {
   getNewForYouArtworks,
 } from "./helpers"
 
-const MAX_ARTWORKS = 100
-
 export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
   description: "A connection of artworks for a user.",
   type: artworkConnection.connectionType,
