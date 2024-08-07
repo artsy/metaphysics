@@ -181,6 +181,8 @@ type GravitySearchCriteriaJSON = {
   search_criteria_id: string
 }
 
+const DEFAULT_COLLECTOR_PROFILES_BATCH_SIZE = 20
+
 export const AlertType = new GraphQLObjectType<
   GravitySearchCriteriaJSON,
   ResolverContext
@@ -538,7 +540,8 @@ export const PartnerAlertsEdgeFields = {
       }
 
       // Make API call to fetch the first X collector profile records
-      const slicedUserIds = parent.user_ids.slice(0, 20)
+      const first = args.first ?? DEFAULT_COLLECTOR_PROFILES_BATCH_SIZE
+      const slicedUserIds = parent.user_ids.slice(0, first)
 
       type GravityArgs = {
         page: number
