@@ -11106,11 +11106,14 @@ union HomeViewSection =
     ActivityRailHomeViewSection
   | ArticlesRailHomeViewSection
   | ArtistsRailHomeViewSection
+  | ArtistsRailHomeViewSection
+  | ArtworksRailHomeViewSection
   | ArtworksRailHomeViewSection
   | AuctionResultsRailHomeViewSection
   | FairsRailHomeViewSection
   | HeroUnitsHomeViewSection
   | MarketingCollectionsRailHomeViewSection
+  | PartnersHomeViewSection
   | SalesRailHomeViewSection
   | ShowsRailHomeViewSection
   | ViewingRoomsRailHomeViewSection
@@ -15407,6 +15410,24 @@ enum PartnersAggregation {
 type PartnersAggregationResults {
   counts: [AggregationCount]
   slice: PartnersAggregation
+}
+
+# A section containing a list of galleries
+type PartnersHomeViewSection {
+  # The component that is prescribed for this section
+  component: HomeViewComponent
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  partnersConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): PartnerConnection!
 }
 
 enum PartnersSortType {

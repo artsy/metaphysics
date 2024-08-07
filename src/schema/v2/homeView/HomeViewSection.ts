@@ -1,6 +1,7 @@
 import {
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
@@ -9,15 +10,16 @@ import { ResolverContext } from "types/graphql"
 import ArticlesConnection from "../articlesConnection"
 import { artistsConnection } from "../artists"
 import { artworkConnection } from "../artwork"
+import { auctionResultConnection } from "../auction_result"
 import { fairsConnection } from "../fairs"
 import { connectionWithCursorInfo, emptyConnection } from "../fields/pagination"
 import { heroUnitsConnection } from "../HeroUnit/heroUnitsConnection"
 import { MarketingCollectionType } from "../marketingCollections"
 import { NotificationsConnection } from "../notifications"
 import { InternalIDFields, NodeInterface } from "../object_identification"
-import { HomeViewComponent } from "./HomeViewComponent"
-import { auctionResultConnection } from "../auction_result"
+import { PartnersConnection } from "../partner/partners"
 import { SalesConnectionField } from "../sales"
+import { HomeViewComponent } from "./HomeViewComponent"
 
 // section interface
 
@@ -237,22 +239,43 @@ const SalesRailHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
-// the Section union type of all concrete sections
+export const GalleriesHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "PartnersHomeViewSection",
+  description: "A section containing a list of galleries",
+  fields: {
+    ...standardSectionFields,
 
+    partnersConnection: {
+      type: new GraphQLNonNull(PartnersConnection.type),
+      args: pageable({}),
+      resolve: (parent, ...rest) => {
+        return parent.resolver ? parent.resolver(parent, ...rest) : []
+      },
+    },
+  },
+})
+
+// the Section union type of all concrete sections
 export const HomeViewSectionType = new GraphQLUnionType({
   name: "HomeViewSection",
   types: [
     ActivityRailHomeViewSectionType,
     ArticlesRailHomeViewSectionType,
     ArtistsRailHomeViewSectionType,
+    ArtistsRailHomeViewSectionType,
+    ArtworksRailHomeViewSectionType,
     ArtworksRailHomeViewSectionType,
     AuctionResultsRailHomeViewSectionType,
     FairsRailHomeViewSectionType,
     HeroUnitsHomeViewSectionType,
     MarketingCollectionsRailHomeViewSectionType,
+    GalleriesHomeViewSectionType,
+    SalesRailHomeViewSectionType,
     ShowsRailHomeViewSectionType,
     ViewingRoomsRailHomeViewSectionType,
-    SalesRailHomeViewSectionType,
   ],
   resolveType: (value) => {
     return value.type
