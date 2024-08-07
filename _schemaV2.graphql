@@ -10506,6 +10506,24 @@ type FormattedDaySchedules {
 # The `FormattedNumber` type represents a number that can optionally be returnedas a formatted String. It does not try to coerce the type.
 scalar FormattedNumber
 
+# A section containing a list of galleries
+type GalleriesHomeViewSection {
+  # The component that is prescribed for this section
+  component: HomeViewComponent
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  partnersConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): PartnerConnection!
+}
+
 # An entry from gemini
 type GeminiEntry {
   # The token that represents the gemini entry.
@@ -11071,6 +11089,9 @@ type HomeViewComponent {
   # Behaviors for the view
   behaviors: HomeViewComponentBehaviors
 
+  # Text for the CTA
+  buttonText: String
+
   # A description for this section
   description: String
 
@@ -11111,9 +11132,9 @@ union HomeViewSection =
   | ArtworksRailHomeViewSection
   | AuctionResultsRailHomeViewSection
   | FairsRailHomeViewSection
+  | GalleriesHomeViewSection
   | HeroUnitsHomeViewSection
   | MarketingCollectionsRailHomeViewSection
-  | PartnersHomeViewSection
   | SalesRailHomeViewSection
   | ShowsRailHomeViewSection
   | ViewingRoomsRailHomeViewSection
@@ -15410,24 +15431,6 @@ enum PartnersAggregation {
 type PartnersAggregationResults {
   counts: [AggregationCount]
   slice: PartnersAggregation
-}
-
-# A section containing a list of galleries
-type PartnersHomeViewSection {
-  # The component that is prescribed for this section
-  component: HomeViewComponent
-
-  # A globally unique ID.
-  id: ID!
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-  partnersConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): PartnerConnection!
 }
 
 enum PartnersSortType {

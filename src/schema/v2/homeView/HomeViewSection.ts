@@ -243,7 +243,7 @@ export const GalleriesHomeViewSectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "PartnersHomeViewSection",
+  name: "GalleriesHomeViewSection",
   description: "A section containing a list of galleries",
   fields: {
     ...standardSectionFields,
