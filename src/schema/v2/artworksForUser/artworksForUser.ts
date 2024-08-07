@@ -47,7 +47,7 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
     const { page, size, offset } = gravityArgs
 
     const newForYouArtworkIds = await getNewForYouArtworkIDs(
-      { ...args, ...gravityArgs },
+      gravityArgs,
       context
     )
 
