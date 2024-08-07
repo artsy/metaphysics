@@ -10894,6 +10894,15 @@ type HomeView {
 
 # A component specification
 type HomeViewComponent {
+  # A background image URL for this section
+  backgroundImageURL: String
+
+  # Text for the CTA
+  buttonText: String
+
+  # A description for this section
+  description: String
+
   # A display title for this section
   title: String!
 }

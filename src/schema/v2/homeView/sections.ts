@@ -14,6 +14,9 @@ export type HomeViewSection = {
   type: HomeViewSectionT
   component: {
     title: string
+    description?: string
+    backgroundImageURL?: string
+    buttonText?: string
   }
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
@@ -59,6 +62,10 @@ export const GalleriesNearYou: HomeViewSection = {
   type: "PartnersHomeViewSection",
   component: {
     title: "Galleries Near You",
+    description:
+      "Follow these local galleries for updates on artists you love.",
+    backgroundImageURL: "https://files.artsy.net/images/galleries_for_you.webp",
+    buttonText: "Explore",
   },
   resolver: GalleriesNearYouResolver,
 }
