@@ -4,10 +4,40 @@ import { artworksForUser } from "../artworksForUser"
 import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
 import { getCuratedArtists } from "../artists/curatedTrending"
 import { connectionFromArray } from "graphql-relay"
+import { SimilarToRecentlyViewed } from "../me/similarToRecentlyViewed"
 
 /*
  * Resolvers for home view artwork sections
  */
+
+export const SimilarToRecentlyViewedArtworksResolver: GraphQLFieldResolver<
+  any,
+  ResolverContext
+> = async (parent, args, context, info) => {
+  if (!context.meLoader) return []
+
+  const { recently_viewed_artwork_ids, id } = await context.meLoader()
+
+  if (recently_viewed_artwork_ids.length === 0) {
+    return []
+  }
+  const recentlyViewedIds = recently_viewed_artwork_ids.slice(0, 7)
+
+  const result = await SimilarToRecentlyViewed.resolve!(
+    {
+      ...parent,
+      recently_viewed_artwork_ids: recentlyViewedIds,
+    },
+    args,
+    {
+      ...context,
+      userID: id,
+    },
+    info
+  )
+
+  return result
+}
 
 export const NewWorksForYouResolver: GraphQLFieldResolver<
   any,

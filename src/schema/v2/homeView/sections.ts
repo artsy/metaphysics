@@ -1,11 +1,12 @@
 import { GraphQLFieldResolver } from "graphql"
+import { ResolverContext } from "types/graphql"
 import {
   AuctionLotsForYouResolver,
   NewWorksForYouResolver,
   RecentlyViewedArtworksResolver,
+  SimilarToRecentlyViewedArtworksResolver,
   SuggestedArtistsResolver,
 } from "./artworkResolvers"
-import { ResolverContext } from "types/graphql"
 
 export type HomeViewSection = {
   id: string
@@ -16,6 +17,14 @@ export type HomeViewSection = {
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
 
+export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
+  id: "home-view-section-similar-to-recently-viewed-artworks",
+  type: "ArtworksRailHomeViewSection",
+  component: {
+    title: "Similar to Works You’ve Viewed",
+  },
+  resolver: SimilarToRecentlyViewedArtworksResolver,
+}
 export const RecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-recently-viewed-artworks",
   type: "ArtworksRailHomeViewSection",
@@ -57,6 +66,7 @@ const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   NewWorksForYou,
   TrendingArtists,
+  SimilarToRecentlyViewedArtworks,
 ]
 
 export const registry = sections.reduce(
