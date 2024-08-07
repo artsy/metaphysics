@@ -7,10 +7,11 @@ import {
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields, NodeInterface } from "../object_identification"
-import { HomeViewComponent } from "./HomeViewComponent"
-import { artworkConnection } from "../artwork"
 import { artistsConnection } from "../artists"
+import { artworkConnection } from "../artwork"
+import { InternalIDFields, NodeInterface } from "../object_identification"
+import { PartnersConnection } from "../partner/partners"
+import { HomeViewComponent } from "./HomeViewComponent"
 
 // section interface
 
@@ -30,11 +31,19 @@ const GenericHomeViewSectionInterface = new GraphQLInterfaceType({
 
 // concrete sections
 
+const HOME_VIEW_SECTION_TYPES = {
+  ArtworksRailHomeViewSection: "ArtworksRailHomeViewSection",
+  ArtistsRailHomeViewSection: "ArtistsRailHomeViewSection",
+  PartnersHomeViewSection: "PartnersHomeViewSection",
+} as const
+
+export type HomeViewSectionT = typeof HOME_VIEW_SECTION_TYPES[keyof typeof HOME_VIEW_SECTION_TYPES]
+
 const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "ArtworksRailHomeViewSection",
+  name: HOME_VIEW_SECTION_TYPES.ArtworksRailHomeViewSection,
   description: "An artwork rail section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
@@ -53,7 +62,7 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "ArtistsRailHomeViewSection",
+  name: HOME_VIEW_SECTION_TYPES.ArtistsRailHomeViewSection,
   description: "An artists rail section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
@@ -68,11 +77,33 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
-// the Section union type of all concrete sections
+export const PartnersHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: HOME_VIEW_SECTION_TYPES.PartnersHomeViewSection,
+  description: "A section containing a list of galleries",
+  fields: {
+    ...standardSectionFields,
 
+    partnersConnection: {
+      type: new GraphQLNonNull(PartnersConnection.type),
+      args: pageable({}),
+      resolve: (parent, ...rest) => {
+        return parent.resolver ? parent.resolver(parent, ...rest) : []
+      },
+    },
+  },
+})
+
+// the Section union type of all concrete sections
 export const HomeViewSectionType = new GraphQLUnionType({
   name: "HomeViewSection",
-  types: [ArtworksRailHomeViewSectionType, ArtistsRailHomeViewSectionType],
+  types: [
+    ArtworksRailHomeViewSectionType,
+    ArtistsRailHomeViewSectionType,
+    PartnersHomeViewSectionType,
+  ],
   resolveType: (value) => {
     return value.type
   },

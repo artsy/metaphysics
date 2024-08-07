@@ -6,10 +6,12 @@ import {
   SuggestedArtistsResolver,
 } from "./artworkResolvers"
 import { ResolverContext } from "types/graphql"
+import { HomeViewSectionT } from "./HomeViewSection"
+import { GalleriesNearYouResolver } from "./partnerResolvers"
 
 export type HomeViewSection = {
   id: string
-  type: string
+  type: HomeViewSectionT
   component: {
     title: string
   }
@@ -52,10 +54,20 @@ export const TrendingArtists: HomeViewSection = {
   resolver: SuggestedArtistsResolver,
 }
 
+export const GalleriesNearYou: HomeViewSection = {
+  id: "home-view-section-galleries-near-you",
+  type: "PartnersHomeViewSection",
+  component: {
+    title: "Galleries Near You",
+  },
+  resolver: GalleriesNearYouResolver,
+}
+
 const sections: HomeViewSection[] = [
-  RecentlyViewedArtworks,
   AuctionLotsForYou,
+  GalleriesNearYou,
   NewWorksForYou,
+  RecentlyViewedArtworks,
   TrendingArtists,
 ]
 

@@ -19,6 +19,39 @@ import PartnerTypeType from "schema/v2/input_fields/partner_type_type"
 import Partner, { PartnerType } from "schema/v2/partner/partner"
 import { ResolverContext } from "types/graphql"
 
+export const PartnerSorts = new GraphQLEnumType({
+  name: "PartnersSortType",
+  values: {
+    CREATED_AT_ASC: {
+      value: "created_at",
+    },
+    CREATED_AT_DESC: {
+      value: "-created_at",
+    },
+    DISTANCE: {
+      value: "distance",
+    },
+    SORTABLE_ID_ASC: {
+      value: "sortable_id",
+    },
+    SORTABLE_ID_DESC: {
+      value: "-sortable_id",
+    },
+    RELATIVE_SIZE_ASC: {
+      value: "relative_size",
+    },
+    RELATIVE_SIZE_DESC: {
+      value: "-relative_size",
+    },
+    PUBLISHED_AT_DESC: {
+      value: "-published_at",
+    },
+    RANDOM_SCORE_DESC: {
+      value: "-random_score",
+    },
+  },
+})
+
 const DISTANCE_FALLBACK_SORT = "-created_at"
 
 export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
@@ -88,38 +121,7 @@ export const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLInt,
     },
     sort: {
-      type: new GraphQLEnumType({
-        name: "PartnersSortType",
-        values: {
-          CREATED_AT_ASC: {
-            value: "created_at",
-          },
-          CREATED_AT_DESC: {
-            value: "-created_at",
-          },
-          DISTANCE: {
-            value: "distance",
-          },
-          SORTABLE_ID_ASC: {
-            value: "sortable_id",
-          },
-          SORTABLE_ID_DESC: {
-            value: "-sortable_id",
-          },
-          RELATIVE_SIZE_ASC: {
-            value: "relative_size",
-          },
-          RELATIVE_SIZE_DESC: {
-            value: "-relative_size",
-          },
-          PUBLISHED_AT_DESC: {
-            value: "-published_at",
-          },
-          RANDOM_SCORE_DESC: {
-            value: "-random_score",
-          },
-        },
-      }),
+      type: PartnerSorts,
     },
     term: {
       type: GraphQLString,
