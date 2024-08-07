@@ -165,7 +165,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           GraphQLList(new GraphQLNonNull(GraphQLString))
         ),
         description: "Suggested filters for associated artworks",
-        resolve: ({ featured_keywords }) => featured_keywords,
+        resolve: ({ featured_keywords }) => featured_keywords ?? [],
       },
       formattedOpeningHours: {
         type: GraphQLString,
