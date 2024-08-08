@@ -14,6 +14,11 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { HomeViewSectionType } from "./HomeViewSection"
 import { getSectionsForUser } from "./getSectionsForUser"
 import { registry } from "./sections"
+import config from "../../../config"
+
+const { NODE_ENV } = config
+
+const isDevelopment = NODE_ENV === "development"
 
 const SectionsConnectionType = connectionWithCursorInfo({
   nodeType: HomeViewSectionType,
@@ -57,6 +62,13 @@ const Section: GraphQLFieldConfig<void, ResolverContext> = {
     if (id.length === 0) {
       return null
     }
+
+    // In development, we want to be able to tell if we are querying for a deleted section
+    // or using one that is not yet implemented.
+    if (!registry[id] && isDevelopment) {
+      throw new Error(`Unknown home view section: ${id}`)
+    }
+
     return registry[id]
   },
 }

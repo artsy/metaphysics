@@ -6,12 +6,17 @@ import {
   SuggestedArtistsResolver,
 } from "./artworkResolvers"
 import { ResolverContext } from "types/graphql"
+import { HomeViewSectionT } from "./HomeViewSection"
+import { GalleriesNearYouResolver } from "./partnerResolvers"
 
 export type HomeViewSection = {
   id: string
-  type: string
+  type: HomeViewSectionT
   component: {
     title: string
+    description?: string
+    backgroundImageURL?: string
+    buttonText?: string
   }
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
@@ -52,10 +57,24 @@ export const TrendingArtists: HomeViewSection = {
   resolver: SuggestedArtistsResolver,
 }
 
+export const GalleriesNearYou: HomeViewSection = {
+  id: "home-view-section-galleries-near-you",
+  type: "PartnersHomeViewSection",
+  component: {
+    title: "Galleries Near You",
+    description:
+      "Follow these local galleries for updates on artists you love.",
+    backgroundImageURL: "https://files.artsy.net/images/galleries_for_you.webp",
+    buttonText: "Explore",
+  },
+  resolver: GalleriesNearYouResolver,
+}
+
 const sections: HomeViewSection[] = [
-  RecentlyViewedArtworks,
   AuctionLotsForYou,
+  GalleriesNearYou,
   NewWorksForYou,
+  RecentlyViewedArtworks,
   TrendingArtists,
 ]
 
