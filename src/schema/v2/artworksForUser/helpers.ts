@@ -1,7 +1,10 @@
-import { ResolverContext } from "types/graphql"
-import { CursorPageable } from "relay-cursor-paging"
-import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
 import gql from "lib/gql"
+import { convertConnectionArgsToGravityArgs, extractNodes } from "lib/helpers"
+import { CursorPageable } from "relay-cursor-paging"
+import { ResolverContext } from "types/graphql"
+
+// Because we're currently not able to use pagination with the Vortex API GraphQL endpoint.
+const MAX_ARTWORKS = 50
 
 export const getNewForYouArtworkIDs = async (
   args: CursorPageable,
@@ -53,13 +56,11 @@ export const getNewForYouArtworkIDs = async (
     ? `maxWorksPerArtist: ${args.maxWorksPerArtist}`
     : ""
 
-  const first = args.first + args.excludeArtworkIds.length
-
   const query = {
     query: gql`
         query newForYouRecommendationsQuery {
           newForYouRecommendations(
-            first: ${first}
+            first: ${MAX_ARTWORKS}
             ${userIdArgument}
             ${versionArgument}
             ${maxWorksPerArtistArgument}
