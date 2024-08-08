@@ -4412,11 +4412,26 @@ type CollectorSignals {
   # Lot bid count
   bidCount: Int
 
+  # Auction live bidding status
+  liveBiddingStarted: Boolean
+
+  # Auction live bidding start time
+  liveStartAt: String
+
+  # Auction lot close time
+  lotClosesAt: String
+
   # Lot watcher count
   lotWatcherCount: Int
 
+  # Auction bidding extension status
+  onlineBiddingExtended: Boolean
+
   # Partner offer available to collector
   partnerOffer: PartnerOfferToCollector
+
+  # Auction registration end time
+  registrationEndsAt: String
 }
 
 # Represents either an action or a potential failure
