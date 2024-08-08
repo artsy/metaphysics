@@ -1,0 +1,17 @@
+diff --git a/node_modules/express-graphql/index.js b/node_modules/express-graphql/index.js
+index 609aba7..572a7d1 100644
+--- a/node_modules/express-graphql/index.js
++++ b/node_modules/express-graphql/index.js
+@@ -167,6 +167,12 @@ function graphqlHTTP(options) {
+         };
+       }
+     }).then(result => {
++      const { errors } = result
++      if (errors) {
++        if (errors.find(error => error.message === "Braze rate limit reached")) {
++          response.statusCode = 429;
++        }
++      }
+       // Collect and apply any metadata extensions if a function was provided.
+       // https://graphql.github.io/graphql-spec/#sec-Response-Format
+       if (result && extensionsFn) {
