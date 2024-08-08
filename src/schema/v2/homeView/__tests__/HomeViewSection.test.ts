@@ -73,4 +73,104 @@ describe("HomeViewSection", () => {
       `)
     })
   })
+
+  describe("RecommendedArtists", () => {
+    it("returns lists of artists with the right title", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-recommended-artists") {
+              __typename
+              ... on ArtistsRailHomeViewSection {
+                component {
+                  title
+                }
+                artistsConnection(first: 2) {
+                  edges {
+                    node {
+                      id
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const mockVortexResponse = {
+        data: {
+          artistRecommendations: {
+            edges: [
+              {
+                node: {
+                  artistId: "artist-1",
+                },
+              },
+              {
+                node: {
+                  artistId: "artist-2",
+                },
+              },
+            ],
+            totalCount: 2,
+          },
+        },
+      }
+
+      const mockArtistsResponse = {
+        body: [
+          {
+            _id: "artist-1",
+            id: "banksy",
+            name: "Artist 1",
+          },
+          {
+            _id: "artist-2",
+            id: "1-plus-1-plus-1",
+            name: "Artist 2",
+          },
+        ],
+      }
+
+      const context = {
+        authenticatedLoaders: {
+          meLoader: jest.fn().mockReturnValue({ type: "User" }),
+          vortexGraphqlLoader: jest.fn(() => async () => mockVortexResponse),
+        },
+        unauthenticatedLoaders: {
+          vortexGraphqlLoader: jest.fn(() => async () => []),
+        },
+        artistsLoader: jest.fn().mockReturnValue(mockArtistsResponse),
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ArtistsRailHomeViewSection",
+          "artistsConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "id": "QXJ0aXN0OmFydGlzdC0x",
+                  "name": "Artist 1",
+                },
+              },
+              Object {
+                "node": Object {
+                  "id": "QXJ0aXN0OmFydGlzdC0y",
+                  "name": "Artist 2",
+                },
+              },
+            ],
+          },
+          "component": Object {
+            "title": "Recommended Artists",
+          },
+        }
+      `)
+    })
+  })
 })

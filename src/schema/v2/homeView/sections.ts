@@ -6,8 +6,11 @@ import {
   NewWorksFromGalleriesYouFollowResolver,
   RecentlyViewedArtworksResolver,
   SimilarToRecentlyViewedArtworksResolver,
-  SuggestedArtistsResolver,
 } from "./artworkResolvers"
+import {
+  RecommendedArtistsResolver,
+  SuggestedArtistsResolver,
+} from "./artistResolvers"
 
 export type HomeViewSection = {
   id: string
@@ -62,6 +65,8 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
   resolver: NewWorksFromGalleriesYouFollowResolver,
 }
 
+// Artists Rails
+
 export const TrendingArtists: HomeViewSection = {
   id: "home-view-section-trending-artists",
   type: "ArtistsRailHomeViewSection",
@@ -71,11 +76,21 @@ export const TrendingArtists: HomeViewSection = {
   resolver: SuggestedArtistsResolver,
 }
 
+export const RecommendedArtists: HomeViewSection = {
+  id: "home-view-section-recommended-artists",
+  type: "ArtistsRailHomeViewSection",
+  component: {
+    title: "Recommended Artists",
+  },
+  resolver: RecommendedArtistsResolver,
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,
+  RecommendedArtists,
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
 ]
