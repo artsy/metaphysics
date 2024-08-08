@@ -76,8 +76,8 @@ const sections: HomeViewSection[] = [
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,
-  TrendingArtists,
   SimilarToRecentlyViewedArtworks,
+  TrendingArtists,
 ]
 
 export const registry = sections.reduce(
