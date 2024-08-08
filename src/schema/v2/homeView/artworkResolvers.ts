@@ -3,6 +3,7 @@ import { connectionFromArray } from "graphql-relay"
 import type { ResolverContext } from "types/graphql"
 import { getCuratedArtists } from "../artists/curatedTrending"
 import { artworksForUser } from "../artworksForUser"
+import { newWorksFromGalleriesYouFollow } from "../me/newWorksFromGalleriesYouFollow"
 import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
 import { SimilarToRecentlyViewed } from "../me/similarToRecentlyViewed"
 
@@ -56,6 +57,11 @@ export const NewWorksForYouResolver: GraphQLFieldResolver<
 
   return result
 }
+
+export const NewWorksFromGalleriesYouFollowResolver: GraphQLFieldResolver<
+  any,
+  ResolverContext
+> = newWorksFromGalleriesYouFollow.resolve!
 
 export const RecentlyViewedArtworksResolver: GraphQLFieldResolver<
   any,

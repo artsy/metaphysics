@@ -3,6 +3,7 @@ import { ResolverContext } from "types/graphql"
 import {
   AuctionLotsForYouResolver,
   NewWorksForYouResolver,
+  NewWorksFromGalleriesYouFollowResolver,
   RecentlyViewedArtworksResolver,
   SimilarToRecentlyViewedArtworksResolver,
   SuggestedArtistsResolver,
@@ -52,6 +53,15 @@ export const NewWorksForYou: HomeViewSection = {
   resolver: NewWorksForYouResolver,
 }
 
+export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
+  id: "home-view-section-new-works-from-galleries-you-follow",
+  type: "ArtworksRailHomeViewSection",
+  component: {
+    title: "New Works from Galleries You Follow",
+  },
+  resolver: NewWorksFromGalleriesYouFollowResolver,
+}
+
 export const TrendingArtists: HomeViewSection = {
   id: "home-view-section-trending-artists",
   type: "ArtistsRailHomeViewSection",
@@ -62,11 +72,12 @@ export const TrendingArtists: HomeViewSection = {
 }
 
 const sections: HomeViewSection[] = [
-  RecentlyViewedArtworks,
   AuctionLotsForYou,
   NewWorksForYou,
-  TrendingArtists,
+  NewWorksFromGalleriesYouFollow,
+  RecentlyViewedArtworks,
   SimilarToRecentlyViewedArtworks,
+  TrendingArtists,
 ]
 
 export const registry = sections.reduce(
