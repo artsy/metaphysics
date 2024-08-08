@@ -1,6 +1,6 @@
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import { extractNodes } from "lib/helpers"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 const buildQuery = (args: any = {}) => {
   const first = args.first || 10
@@ -11,6 +11,10 @@ const buildQuery = (args: any = {}) => {
   const query = gql`
       {
         artworksForUser(first: ${first}, includeBackfill: ${includeBackfill}, userId: "${userId}", excludeDislikedArtworks: ${excludeDislikedArtworks}) {
+          pageInfo {
+            hasPreviousPage
+            hasNextPage
+          }
           edges {
             node {
               title
@@ -65,6 +69,13 @@ describe("artworksForUser", () => {
 
       const artworks = extractNodes(response.artworksForUser)
       expect(artworks.length).toEqual(0)
+
+      expect(response.artworksForUser.pageInfo).toMatchInlineSnapshot(`
+        Object {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+        }
+      `)
     })
   })
 
@@ -81,6 +92,13 @@ describe("artworksForUser", () => {
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(0)
+
+      expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
+        Object {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+        }
+      `)
     })
   })
 
@@ -99,6 +117,13 @@ describe("artworksForUser", () => {
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(1)
+
+      expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
+        Object {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+        }
+      `)
     })
   })
 
@@ -117,6 +142,13 @@ describe("artworksForUser", () => {
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(1)
+
+      expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
+        Object {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+        }
+      `)
     })
   })
 
@@ -139,6 +171,13 @@ describe("artworksForUser", () => {
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(1)
+
+      expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
+        Object {
+          "hasNextPage": true,
+          "hasPreviousPage": false,
+        }
+      `)
     })
   })
 
@@ -161,6 +200,13 @@ describe("artworksForUser", () => {
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(2)
+
+      expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
+        Object {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+        }
+      `)
     })
   })
 
@@ -179,6 +225,13 @@ describe("artworksForUser", () => {
       const { artworksForUser } = await runAuthenticatedQuery(query, context)
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(1)
+
+      expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
+        Object {
+          "hasNextPage": false,
+          "hasPreviousPage": false,
+        }
+      `)
     })
   })
 

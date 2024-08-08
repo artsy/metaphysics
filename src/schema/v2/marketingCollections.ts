@@ -136,7 +136,7 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
   },
   thumbnail: {
     type: GraphQLString,
-    resolve: ({ thumbnail_id }) => thumbnail_id,
+    resolve: ({ thumbnail }) => thumbnail,
   },
   showHeaderArtworksRail: {
     type: GraphQLNonNull(GraphQLBoolean),

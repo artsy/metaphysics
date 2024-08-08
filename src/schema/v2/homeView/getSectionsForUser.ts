@@ -3,7 +3,9 @@ import {
   AuctionLotsForYou,
   HomeViewSection,
   NewWorksForYou,
+  NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,
+  SimilarToRecentlyViewedArtworks,
   TrendingArtists,
 } from "./sections"
 
@@ -25,14 +27,18 @@ export async function getSectionsForUser(
     sections = [
       RecentlyViewedArtworks,
       TrendingArtists,
+      SimilarToRecentlyViewedArtworks,
       AuctionLotsForYou,
       NewWorksForYou,
+      NewWorksFromGalleriesYouFollow,
     ]
   } else {
     sections = [
+      SimilarToRecentlyViewedArtworks,
       NewWorksForYou,
       AuctionLotsForYou,
       TrendingArtists,
+      NewWorksFromGalleriesYouFollow,
       RecentlyViewedArtworks,
     ]
   }

@@ -6,7 +6,7 @@ describe("homeView", () => {
     const query = gql`
       {
         homeView {
-          sectionsConnection(first: 2) {
+          sectionsConnection(first: 3) {
             edges {
               node {
                 __typename
@@ -31,7 +31,7 @@ describe("homeView", () => {
     it("returns a connection of home view sections", async () => {
       const { homeView } = await runQuery(query, context)
 
-      expect(homeView.sectionsConnection.edges).toHaveLength(2)
+      expect(homeView.sectionsConnection.edges).toHaveLength(3)
     })
 
     it("returns requested data for each section", async () => {
@@ -40,6 +40,14 @@ describe("homeView", () => {
       expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
         Object {
           "edges": Array [
+            Object {
+              "node": Object {
+                "__typename": "ArtworksRailHomeViewSection",
+                "component": Object {
+                  "title": "Similar to Works You’ve Viewed",
+                },
+              },
+            },
             Object {
               "node": Object {
                 "__typename": "ArtworksRailHomeViewSection",

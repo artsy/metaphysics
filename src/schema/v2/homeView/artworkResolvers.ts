@@ -1,13 +1,36 @@
 import type { GraphQLFieldResolver } from "graphql"
-import type { ResolverContext } from "types/graphql"
-import { artworksForUser } from "../artworksForUser"
-import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
-import { getCuratedArtists } from "../artists/curatedTrending"
 import { connectionFromArray } from "graphql-relay"
+import type { ResolverContext } from "types/graphql"
+import { getCuratedArtists } from "../artists/curatedTrending"
+import { artworksForUser } from "../artworksForUser"
+import { newWorksFromGalleriesYouFollow } from "../me/newWorksFromGalleriesYouFollow"
+import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
+import { SimilarToRecentlyViewed } from "../me/similarToRecentlyViewed"
 
 /*
  * Resolvers for home view artwork sections
  */
+
+export const SimilarToRecentlyViewedArtworksResolver: GraphQLFieldResolver<
+  any,
+  ResolverContext
+> = async (parent, args, context, info) => {
+  if (!context.meLoader) return []
+
+  const { recently_viewed_artwork_ids } = await context.meLoader()
+
+  if (recently_viewed_artwork_ids.length === 0) {
+    return []
+  }
+  const recentlyViewedIds = recently_viewed_artwork_ids.slice(0, 7)
+
+  return SimilarToRecentlyViewed.resolve!(
+    { ...parent, recently_viewed_artwork_ids: recentlyViewedIds },
+    args,
+    context,
+    info
+  )
+}
 
 export const NewWorksForYouResolver: GraphQLFieldResolver<
   any,
@@ -34,6 +57,11 @@ export const NewWorksForYouResolver: GraphQLFieldResolver<
 
   return result
 }
+
+export const NewWorksFromGalleriesYouFollowResolver: GraphQLFieldResolver<
+  any,
+  ResolverContext
+> = newWorksFromGalleriesYouFollow.resolve!
 
 export const RecentlyViewedArtworksResolver: GraphQLFieldResolver<
   any,

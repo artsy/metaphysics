@@ -1,11 +1,13 @@
 import { GraphQLFieldResolver } from "graphql"
+import { ResolverContext } from "types/graphql"
 import {
   AuctionLotsForYouResolver,
   NewWorksForYouResolver,
+  NewWorksFromGalleriesYouFollowResolver,
   RecentlyViewedArtworksResolver,
+  SimilarToRecentlyViewedArtworksResolver,
   SuggestedArtistsResolver,
 } from "./artworkResolvers"
-import { ResolverContext } from "types/graphql"
 
 export type HomeViewSection = {
   id: string
@@ -16,6 +18,14 @@ export type HomeViewSection = {
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
 
+export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
+  id: "home-view-section-similar-to-recently-viewed-artworks",
+  type: "ArtworksRailHomeViewSection",
+  component: {
+    title: "Similar to Works You’ve Viewed",
+  },
+  resolver: SimilarToRecentlyViewedArtworksResolver,
+}
 export const RecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-recently-viewed-artworks",
   type: "ArtworksRailHomeViewSection",
@@ -43,6 +53,15 @@ export const NewWorksForYou: HomeViewSection = {
   resolver: NewWorksForYouResolver,
 }
 
+export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
+  id: "home-view-section-new-works-from-galleries-you-follow",
+  type: "ArtworksRailHomeViewSection",
+  component: {
+    title: "New Works from Galleries You Follow",
+  },
+  resolver: NewWorksFromGalleriesYouFollowResolver,
+}
+
 export const TrendingArtists: HomeViewSection = {
   id: "home-view-section-trending-artists",
   type: "ArtistsRailHomeViewSection",
@@ -53,9 +72,11 @@ export const TrendingArtists: HomeViewSection = {
 }
 
 const sections: HomeViewSection[] = [
-  RecentlyViewedArtworks,
   AuctionLotsForYou,
   NewWorksForYou,
+  NewWorksFromGalleriesYouFollow,
+  RecentlyViewedArtworks,
+  SimilarToRecentlyViewedArtworks,
   TrendingArtists,
 ]
 
