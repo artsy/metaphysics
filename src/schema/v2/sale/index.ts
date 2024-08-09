@@ -256,6 +256,13 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ extended_bidding_period_minutes }) =>
           extended_bidding_period_minutes,
       },
+      featuredKeywords: {
+        type: new GraphQLNonNull(
+          GraphQLList(new GraphQLNonNull(GraphQLString))
+        ),
+        description: "Suggested filters for associated artworks",
+        resolve: ({ featured_keywords }) => featured_keywords ?? [],
+      },
       formattedStartDateTime: {
         type: GraphQLString,
         description:
