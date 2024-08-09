@@ -11,6 +11,7 @@ import {
   RecommendedArtistsResolver,
   SuggestedArtistsResolver,
 } from "./artistResolvers"
+import { LatestArticlesResolvers } from "./articlesResolvers"
 
 export type HomeViewSection = {
   id: string
@@ -85,8 +86,18 @@ export const RecommendedArtists: HomeViewSection = {
   resolver: RecommendedArtistsResolver,
 }
 
+export const LatestArticles: HomeViewSection = {
+  id: "home-view-section-latest-articles",
+  type: "ArticlesRailHomeViewSection",
+  component: {
+    title: "Artsy Editorial",
+  },
+  resolver: LatestArticlesResolvers,
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
+  LatestArticles,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,

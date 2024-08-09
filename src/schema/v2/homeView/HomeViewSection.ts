@@ -11,6 +11,7 @@ import { InternalIDFields, NodeInterface } from "../object_identification"
 import { HomeViewComponent } from "./HomeViewComponent"
 import { artworkConnection } from "../artwork"
 import { artistsConnection } from "../artists"
+import ArticlesConnection from "../articlesConnection"
 
 // section interface
 
@@ -68,11 +69,33 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
+const ArticlesRailHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ArticlesRailHomeViewSection",
+  description: "An articles rail section in the home view",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+
+    articlesConnection: {
+      type: new GraphQLNonNull(ArticlesConnection.type),
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
+    },
+  },
+})
 // the Section union type of all concrete sections
 
 export const HomeViewSectionType = new GraphQLUnionType({
   name: "HomeViewSection",
-  types: [ArtworksRailHomeViewSectionType, ArtistsRailHomeViewSectionType],
+  types: [
+    ArticlesRailHomeViewSectionType,
+    ArtworksRailHomeViewSectionType,
+    ArtistsRailHomeViewSectionType,
+  ],
   resolveType: (value) => {
     return value.type
   },
