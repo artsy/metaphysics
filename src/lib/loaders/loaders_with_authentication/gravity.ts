@@ -602,6 +602,11 @@ export default (accessToken, userID, opts) => {
       ({ partnerId, userId }) =>
         `partner_collector_profile?partner_id=${partnerId}&user_id=${userId}`
     ),
+    // https://github.com/artsy/gravity/pull/18008
+    partnerAlertMatchOrWhateverYouWannaCallItLoader: gravityLoader<
+      any,
+      { partnerId; userId }
+    >(({ partnerId }) => `wire in jon's endpoint here`),
     partnerCollectorProfilesLoader: gravityLoader(
       "partner_collector_profiles",
       {},

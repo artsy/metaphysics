@@ -262,6 +262,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
+      // TODO: add connection type here
+      // Call the partnerAlertMatchOrWhateverYouWannaCallItLoader here
       artistsWithAlertCountsConnection: {
         type: artistsWithAlertCountsConnectionType,
         args: pageable({
