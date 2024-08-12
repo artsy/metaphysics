@@ -10629,12 +10629,6 @@ type HeroUnitsHomeViewSection implements GenericHomeViewSection & Node {
     before: String
     first: Int
     last: Int
-
-    # If true will include inactive hero units.
-    private: Boolean = false
-
-    # If present will search by term.
-    term: String
   ): HeroUnitConnection!
 
   # A globally unique ID.

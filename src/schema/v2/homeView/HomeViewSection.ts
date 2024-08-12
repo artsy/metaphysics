@@ -1,10 +1,8 @@
 import {
-  GraphQLBoolean,
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
   GraphQLUnionType,
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
@@ -83,17 +81,7 @@ const HeroUnitsHomeViewSectionType = new GraphQLObjectType<
 
     heroUnitsConnection: {
       type: new GraphQLNonNull(heroUnitsConnection.type),
-      args: pageable({
-        private: {
-          type: GraphQLBoolean,
-          description: "If true will include inactive hero units.",
-          defaultValue: false,
-        },
-        term: {
-          type: GraphQLString,
-          description: "If present will search by term.",
-        },
-      }),
+      args: pageable({}),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : [],
     },

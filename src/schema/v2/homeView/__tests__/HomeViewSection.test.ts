@@ -183,7 +183,7 @@ describe("HomeViewSection", () => {
               __typename
 
               ... on HeroUnitsHomeViewSection {
-                heroUnitsConnection(first: 2, private: false) {
+                heroUnitsConnection(first: 2) {
                   edges {
                     node {
                       title
