@@ -227,8 +227,16 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             args,
             { marketingCollectionsLoader }
           ) => {
-            args.slugs = kaws_collection_slugs
-            return fetchMarketingCollections(args, marketingCollectionsLoader)
+            const slugs = kaws_collection_slugs || []
+
+            if (slugs.length === 0) {
+              return []
+            }
+
+            return fetchMarketingCollections(
+              { ...args, slugs },
+              marketingCollectionsLoader
+            )
           },
         },
       }),
