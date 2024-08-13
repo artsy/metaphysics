@@ -11,13 +11,14 @@ import { InternalIDFields, NodeInterface } from "../object_identification"
 import { HomeViewComponent } from "./HomeViewComponent"
 import { artworkConnection } from "../artwork"
 import { artistsConnection } from "../artists"
+import { heroUnitsConnection } from "../HeroUnit/heroUnitsConnection"
 
 // section interface
 
 const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   ...InternalIDFields,
   component: {
-    type: new GraphQLNonNull(HomeViewComponent),
+    type: HomeViewComponent,
     description: "The component that is prescribed for this section",
   },
 }
@@ -68,11 +69,34 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
+const HeroUnitsHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "HeroUnitsHomeViewSection",
+  description: "Hero units rail section",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+
+    heroUnitsConnection: {
+      type: new GraphQLNonNull(heroUnitsConnection.type),
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
+    },
+  },
+})
+
 // the Section union type of all concrete sections
 
 export const HomeViewSectionType = new GraphQLUnionType({
   name: "HomeViewSection",
-  types: [ArtworksRailHomeViewSectionType, ArtistsRailHomeViewSectionType],
+  types: [
+    ArtworksRailHomeViewSectionType,
+    ArtistsRailHomeViewSectionType,
+    HeroUnitsHomeViewSectionType,
+  ],
   resolveType: (value) => {
     return value.type
   },
