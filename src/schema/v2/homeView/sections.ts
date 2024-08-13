@@ -11,13 +11,14 @@ import {
   RecommendedArtistsResolver,
   SuggestedArtistsResolver,
 } from "./artistResolvers"
+import { HeroUnitsResolver } from "./heroUnitsResolver"
 
 export type HomeViewSection = {
   id: string
   type: string
-  component: {
-    title: string
-  }
+  component?: {
+    title?: string | null
+  } | null
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
 
@@ -85,8 +86,15 @@ export const RecommendedArtists: HomeViewSection = {
   resolver: RecommendedArtistsResolver,
 }
 
+export const HeroUnits: HomeViewSection = {
+  id: "home-view-section-hero-units",
+  type: "HeroUnitsHomeViewSection",
+  resolver: HeroUnitsResolver,
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
+  HeroUnits,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,

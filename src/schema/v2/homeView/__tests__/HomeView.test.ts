@@ -6,7 +6,7 @@ describe("homeView", () => {
     const query = gql`
       {
         homeView {
-          sectionsConnection(first: 3) {
+          sectionsConnection(first: 10) {
             edges {
               node {
                 __typename
@@ -31,7 +31,7 @@ describe("homeView", () => {
     it("returns a connection of home view sections", async () => {
       const { homeView } = await runQuery(query, context)
 
-      expect(homeView.sectionsConnection.edges).toHaveLength(3)
+      expect(homeView.sectionsConnection.edges).toHaveLength(8)
     })
 
     it("returns requested data for each section", async () => {
@@ -58,9 +58,47 @@ describe("homeView", () => {
             },
             Object {
               "node": Object {
+                "__typename": "HeroUnitsHomeViewSection",
+                "component": null,
+              },
+            },
+            Object {
+              "node": Object {
                 "__typename": "ArtworksRailHomeViewSection",
                 "component": Object {
                   "title": "Auction lots for you",
+                },
+              },
+            },
+            Object {
+              "node": Object {
+                "__typename": "ArtistsRailHomeViewSection",
+                "component": Object {
+                  "title": "Recommended Artists",
+                },
+              },
+            },
+            Object {
+              "node": Object {
+                "__typename": "ArtistsRailHomeViewSection",
+                "component": Object {
+                  "title": "Trending Artists on Artsy",
+                },
+              },
+            },
+            Object {
+              "node": Object {
+                "__typename": "ArtworksRailHomeViewSection",
+                "component": Object {
+                  "title": "New Works from Galleries You Follow",
+                },
+              },
+            },
+            Object {
+              "node": Object {
+                "__typename": "ArtworksRailHomeViewSection",
+                "component": Object {
+                  "title": "Recently viewed works",
                 },
               },
             },

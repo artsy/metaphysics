@@ -1,6 +1,7 @@
 import { ResolverContext } from "types/graphql"
 import {
   AuctionLotsForYou,
+  HeroUnits,
   HomeViewSection,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
@@ -31,6 +32,7 @@ export async function getSectionsForUser(
       SimilarToRecentlyViewedArtworks,
       AuctionLotsForYou,
       NewWorksForYou,
+      HeroUnits,
       NewWorksFromGalleriesYouFollow,
       RecommendedArtists,
     ]
@@ -38,6 +40,7 @@ export async function getSectionsForUser(
     sections = [
       SimilarToRecentlyViewedArtworks,
       NewWorksForYou,
+      HeroUnits,
       AuctionLotsForYou,
       RecommendedArtists,
       TrendingArtists,
