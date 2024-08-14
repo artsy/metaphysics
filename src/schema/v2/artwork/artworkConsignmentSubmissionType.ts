@@ -136,7 +136,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
             case "draft":
               return "Complete Submission"
             case "approved":
-              return "Add Additional Information"
+              return "Complete Listing"
             case "submitted":
             case "published":
             case "resubmitted":
