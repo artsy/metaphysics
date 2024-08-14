@@ -8,5 +8,13 @@ export const HomeViewComponent = new GraphQLObjectType({
       type: GraphQLString,
       description: "A display title for this section",
     },
+    subtitle: {
+      type: GraphQLString,
+      description: "A display subtitle for this section",
+    },
+    backgroundColor: {
+      type: GraphQLString,
+      description: "A background color for this section",
+    },
   },
 })

@@ -9809,6 +9809,25 @@ enum FeatureSorts {
   NAME_DESC
 }
 
+# A featured collection section in the home view
+type FeaturedCollectionHomeViewSection implements GenericHomeViewSection & Node {
+  artworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): ArtworkConnection!
+
+  # The component that is prescribed for this section
+  component: HomeViewComponent
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+}
+
 # An illustrated link chosen to highlight a Gene from a given GeneFamily
 type FeaturedGeneLink {
   href: String!
@@ -10913,6 +10932,12 @@ type HomeView {
 
 # A component specification
 type HomeViewComponent {
+  # A background color for this section
+  backgroundColor: String
+
+  # A display subtitle for this section
+  subtitle: String
+
   # A display title for this section
   title: String
 }
@@ -10920,6 +10945,7 @@ type HomeViewComponent {
 union HomeViewSection =
     ArtistsRailHomeViewSection
   | ArtworksRailHomeViewSection
+  | FeaturedCollectionHomeViewSection
   | HeroUnitsHomeViewSection
 
 # A connection to a list of items.

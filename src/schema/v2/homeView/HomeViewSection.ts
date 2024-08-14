@@ -88,6 +88,25 @@ const HeroUnitsHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
+const FeaturedCollectionHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "FeaturedCollectionHomeViewSection",
+  description: "A featured collection section in the home view",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+
+    artworksConnection: {
+      type: new GraphQLNonNull(artworkConnection.connectionType),
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
+    },
+  },
+})
+
 // the Section union type of all concrete sections
 
 export const HomeViewSectionType = new GraphQLUnionType({
@@ -96,6 +115,7 @@ export const HomeViewSectionType = new GraphQLUnionType({
     ArtworksRailHomeViewSectionType,
     ArtistsRailHomeViewSectionType,
     HeroUnitsHomeViewSectionType,
+    FeaturedCollectionHomeViewSectionType,
   ],
   resolveType: (value) => {
     return value.type

@@ -12,15 +12,26 @@ import {
   SuggestedArtistsResolver,
 } from "./artistResolvers"
 import { HeroUnitsResolver } from "./heroUnitsResolver"
+import { featuredCollectionArtworksResolver } from "./featuredCollectionArtworksResolver"
+
+export type HomeViewSectionOrResolver =
+  | HomeViewSection
+  | HomeViewSectionResolver
 
 export type HomeViewSection = {
   id: string
   type: string
   component?: {
     title?: string | null
+    subtitle?: string | null
+    backgroundColor?: string | null
   } | null
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
+
+export type HomeViewSectionResolver = (
+  context: ResolverContext
+) => Promise<HomeViewSection>
 
 export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-similar-to-recently-viewed-artworks",
@@ -92,7 +103,29 @@ export const HeroUnits: HomeViewSection = {
   resolver: HeroUnitsResolver,
 }
 
-const sections: HomeViewSection[] = [
+export const featuredCollection = (
+  heroUnitID,
+  marketingCollectionID
+): HomeViewSectionResolver => {
+  return async (context: ResolverContext): Promise<HomeViewSection> => {
+    const { siteHeroUnitLoader } = context
+
+    const heroUnit = await siteHeroUnitLoader(heroUnitID)
+
+    return {
+      id: `home-view-section-featured-collection-${heroUnitID}`,
+      type: "FeaturedCollectionHomeViewSection",
+      component: {
+        title: heroUnit.app_title,
+        subtitle: heroUnit.app_description,
+        backgroundColor: "black100",
+      },
+      resolver: featuredCollectionArtworksResolver(marketingCollectionID),
+    }
+  }
+}
+
+const sections: HomeViewSectionOrResolver[] = [
   AuctionLotsForYou,
   HeroUnits,
   NewWorksForYou,
@@ -101,9 +134,15 @@ const sections: HomeViewSection[] = [
   RecommendedArtists,
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
+  featuredCollection("curators-picks-emerging-app", "curators-picks-emerging"),
 ]
 
-export const registry = sections.reduce(
-  (acc, section) => ({ ...acc, [section.id]: section }),
-  {}
-)
+export const registry = async (context: ResolverContext) => {
+  return sections.reduce(async (acc, section) => {
+    if (typeof section === "function") {
+      section = await section(context)
+    }
+
+    return { ...acc, [section.id]: section }
+  }, {})
+}

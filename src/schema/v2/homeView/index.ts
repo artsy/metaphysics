@@ -27,7 +27,15 @@ const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
 
     const sections = await getSectionsForUser(context)
     const totalCount = sections.length
-    const data = sections.slice(offset, offset + size)
+    const sectionsSlice = sections.slice(offset, offset + size)
+
+    const data = sectionsSlice.map((section) => {
+      if (typeof section === "function") {
+        return section(context)
+      } else {
+        return section
+      }
+    })
 
     return paginationResolver({
       totalCount,
@@ -49,7 +57,7 @@ const Section: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, context) => {
+  resolve: async (_root, { id }, context) => {
     const { meLoader } = context.authenticatedLoaders
 
     if (!meLoader) throw new Error("You must be signed in to see this content.")
@@ -57,7 +65,10 @@ const Section: GraphQLFieldConfig<void, ResolverContext> = {
     if (id.length === 0) {
       return null
     }
-    return registry[id]
+
+    const sections = await registry(context)
+
+    return sections[id]
   },
 }
 

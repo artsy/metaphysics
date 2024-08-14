@@ -1,8 +1,9 @@
 import { ResolverContext } from "types/graphql"
 import {
   AuctionLotsForYou,
+  featuredCollection,
   HeroUnits,
-  HomeViewSection,
+  HomeViewSectionOrResolver,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,
@@ -13,7 +14,7 @@ import {
 
 export async function getSectionsForUser(
   context: ResolverContext
-): Promise<HomeViewSection[]> {
+): Promise<HomeViewSectionOrResolver[]> {
   /*
    * FAKE temporary placeholder logic for determining the sections that a user will see
    */
@@ -23,10 +24,14 @@ export async function getSectionsForUser(
 
   const me = await meLoader()
 
-  let sections: HomeViewSection[] = []
+  let sections: HomeViewSectionOrResolver[] = []
 
   if (me.type === "Admin") {
     sections = [
+      featuredCollection(
+        "curators-picks-emerging-app",
+        "curators-picks-emerging"
+      ),
       RecentlyViewedArtworks,
       TrendingArtists,
       SimilarToRecentlyViewedArtworks,
@@ -38,6 +43,10 @@ export async function getSectionsForUser(
     ]
   } else {
     sections = [
+      featuredCollection(
+        "curators-picks-emerging-app",
+        "curators-picks-emerging"
+      ),
       SimilarToRecentlyViewedArtworks,
       NewWorksForYou,
       HeroUnits,
