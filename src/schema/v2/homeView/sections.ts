@@ -30,6 +30,7 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
   },
   resolver: SimilarToRecentlyViewedArtworksResolver,
 }
+
 export const RecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-recently-viewed-artworks",
   type: "ArtworksRailHomeViewSection",
