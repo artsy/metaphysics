@@ -88,7 +88,9 @@ const collectorSignalsLoader = async (
         size: 1,
       })
 
-      partnerOffer = partnerOffers.body[0]
+      const activePartnerOffers = partnerOffers.body?.filter((po) => po.active)
+
+      partnerOffer = activePartnerOffers?.[0]
     }
   }
 

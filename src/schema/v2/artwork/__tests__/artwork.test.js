@@ -4657,7 +4657,7 @@ describe("Artwork type", () => {
 
       context.userID = "user-id"
       context.mePartnerOffersLoader.mockResolvedValue({
-        body: [{ endAt: "2023-01-01T00:00:00Z" }],
+        body: [{ endAt: "2023-01-01T00:00:00Z", active: true }],
       })
 
       const data = await runQuery(query, context)
@@ -4676,6 +4676,29 @@ describe("Artwork type", () => {
             partnerOffer: {
               endAt: "2023-01-01T00:00:00Z",
             },
+          },
+        },
+      })
+    })
+    it("only returns active partner offer signal", async () => {
+      mockIsFeatureFlagEnabled.mockReturnValue(true)
+
+      artwork.purchasable = true
+      artwork.sale_ids = []
+
+      context.userID = "user-id"
+      context.mePartnerOffersLoader.mockResolvedValue({
+        body: [{ endAt: "2023-01-01T00:00:00Z", active: false }],
+      })
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          collectorSignals: {
+            bidCount: null,
+            lotWatcherCount: null,
+            partnerOffer: null,
           },
         },
       })
