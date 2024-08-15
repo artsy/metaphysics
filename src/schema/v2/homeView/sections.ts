@@ -12,6 +12,7 @@ import {
   SuggestedArtistsResolver,
 } from "./artistResolvers"
 import { HeroUnitsResolver } from "./heroUnitsResolver"
+import { connectionFromArray } from "graphql-relay"
 
 export type HomeViewSection = {
   id: string
@@ -29,6 +30,22 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
     title: "Similar to Works You’ve Viewed",
   },
   resolver: SimilarToRecentlyViewedArtworksResolver,
+}
+
+export const CuratorsPicksEmerging: HomeViewSection = {
+  id: "home-view-section-curators-picks-emerging",
+  type: "ArtworksRailHomeViewSection",
+  component: {
+    title: async (context: ResolverContext) => {
+      const { app_title } = await context.siteHeroUnitLoader(
+        "curators-picks-emerging-app"
+      )
+      return app_title
+    },
+  },
+  resolver: async (_parent, args) => {
+    return connectionFromArray([{ id: "TODO" }], args)
+  },
 }
 
 export const RecentlyViewedArtworks: HomeViewSection = {
@@ -95,6 +112,7 @@ export const HeroUnits: HomeViewSection = {
 
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
+  CuratorsPicksEmerging,
   HeroUnits,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
