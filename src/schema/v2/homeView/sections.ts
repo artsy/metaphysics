@@ -22,6 +22,7 @@ export type HomeViewSection = {
   component?: {
     title?: MaybeResolved<string>
     description?: MaybeResolved<string>
+    backgroundColor?: MaybeResolved<string>
   }
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
@@ -51,6 +52,7 @@ export const CuratorsPicksEmerging: HomeViewSection = {
       )
       return app_description
     },
+    backgroundColor: "black100",
   },
   resolver: CuratorsPicksEmergingArtworksResolver,
 }

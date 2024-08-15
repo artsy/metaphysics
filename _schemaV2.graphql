@@ -10913,6 +10913,9 @@ type HomeView {
 
 # A component specification
 type HomeViewComponent {
+  # A background color for this section
+  backgroundColor: String
+
   # A description for this section
   description: String
 

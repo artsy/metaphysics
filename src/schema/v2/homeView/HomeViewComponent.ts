@@ -36,5 +36,21 @@ export const HomeViewComponent = new GraphQLObjectType({
         }
       },
     },
+    backgroundColor: {
+      type: GraphQLString,
+      description: "A background color for this section",
+      resolve: async (parent, _args, context, _info) => {
+        const { backgroundColor } = parent
+
+        if (typeof backgroundColor === "string") {
+          return backgroundColor
+        }
+
+        if (typeof backgroundColor === "function") {
+          const color = await backgroundColor(context)
+          return color
+        }
+      },
+    },
   },
 })
