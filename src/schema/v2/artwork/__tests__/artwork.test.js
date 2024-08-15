@@ -4630,6 +4630,11 @@ describe("Artwork type", () => {
           collectorSignals {
             bidCount
             lotWatcherCount
+            registrationEndsAt
+            lotClosesAt
+            liveBiddingStarted
+            liveStartAt
+            onlineBiddingExtended
             partnerOffer {
               endAt
             }
@@ -4637,106 +4642,318 @@ describe("Artwork type", () => {
         }
       }
     `
+    let supportingLoaders = {}
 
     beforeEach(() => {
-      context = {
-        userID: "testUser",
+      supportingLoaders = {
         mePartnerOffersLoader: jest.fn(),
         salesLoader: jest.fn(),
         saleArtworkLoader: jest.fn(),
+      }
+      context = {
+        userID: "testUser",
         artworkLoader: jest.fn(),
+        ...supportingLoaders,
       }
       context.artworkLoader.mockResolvedValue(artwork)
     })
 
-    it("fetches & returns the user-specific collector signals for a purchasable artwork if requested by a logged-in user", async () => {
-      mockIsFeatureFlagEnabled.mockReturnValue(true)
-
-      artwork.purchasable = true
-      artwork.sale_ids = []
-
-      context.userID = "user-id"
-      context.mePartnerOffersLoader.mockResolvedValue({
-        body: [{ endAt: "2023-01-01T00:00:00Z" }],
+    describe("feature flags enabled", () => {
+      beforeEach(() => {
+        mockIsFeatureFlagEnabled.mockReturnValue(true)
       })
 
-      const data = await runQuery(query, context)
+      describe("purchasable artwork", () => {
+        beforeEach(() => {
+          artwork.purchasable = true
+          artwork.sale_ids = []
+        })
+        it("fetches & returns the user-specific collector signals for a purchasable artwork if requested by a logged-in user", async () => {
+          context.userID = "user-id"
+          context.mePartnerOffersLoader.mockResolvedValue({
+            body: [{ endAt: "2023-01-01T00:00:00Z", active: true }],
+          })
 
-      expect(context.mePartnerOffersLoader).toHaveBeenCalledWith({
-        artwork_id: "richard-prince-untitled-portrait",
-        size: 1,
-        sort: "-created_at",
+          const data = await runQuery(query, context)
+
+          expect(context.mePartnerOffersLoader).toHaveBeenCalledWith({
+            artwork_id: "richard-prince-untitled-portrait",
+            size: 1,
+            sort: "-created_at",
+          })
+
+          expect(data.artwork.collectorSignals.partnerOffer).toEqual({
+            endAt: "2023-01-01T00:00:00Z",
+          })
+        })
+
+        it("only returns active partner offer signal", async () => {
+          mockIsFeatureFlagEnabled.mockReturnValue(true)
+
+          artwork.purchasable = true
+          artwork.sale_ids = []
+
+          context.userID = "user-id"
+          context.mePartnerOffersLoader.mockResolvedValue({
+            body: [{ endAt: "2023-01-01T00:00:00Z", active: false }],
+          })
+
+          const data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.partnerOffer).toBeNull()
+        })
+
+        it("does not query partner offer signal loaders if the user is not logged in", async () => {
+          context.mePartnerOffersLoader = null
+
+          const data = await runQuery(query, context)
+
+          expect(data).toEqual({
+            artwork: {
+              collectorSignals: expect.objectContaining({
+                partnerOffer: null,
+              }),
+            },
+          })
+        })
       })
 
-      expect(data).toEqual({
-        artwork: {
-          collectorSignals: {
-            bidCount: null,
-            lotWatcherCount: null,
-            partnerOffer: {
-              endAt: "2023-01-01T00:00:00Z",
+      describe("auction artwork", () => {
+        beforeEach(() => {
+          artwork.purchasable = false
+          artwork.sale_ids = ["sale-id-not-auction", "sale-id-auction"]
+        })
+
+        const futureTime = moment().add(1, "day").toISOString()
+        const pastTime = moment().subtract(1, "day").toISOString()
+
+        it("returns the registration end time if it is in the future, `null` if in the past", async () => {
+          context.salesLoader.mockResolvedValue([
+            { id: "sale-id-auction", registration_ends_at: futureTime },
+          ])
+
+          context.saleArtworkLoader.mockResolvedValue({})
+
+          let data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.registrationEndsAt).toEqual(
+            futureTime
+          )
+
+          context.salesLoader.mockResolvedValue([
+            { id: "sale-id-auction", registration_ends_at: pastTime },
+          ])
+          context.saleArtworkLoader.mockResolvedValue({})
+
+          data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.registrationEndsAt).toEqual(null)
+        })
+
+        it("returns correct values for a lot with an end time and no extended bidding", async () => {
+          context.salesLoader.mockResolvedValue([{ id: "sale-id-auction" }])
+
+          context.saleArtworkLoader.mockResolvedValue({
+            end_at: futureTime,
+            extended_bidding_end_at: null,
+          })
+
+          const data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.lotClosesAt).toEqual(futureTime)
+          expect(data.artwork.collectorSignals.onlineBiddingExtended).toEqual(
+            false
+          )
+        })
+        it("returns correct values for a lot with an end time and extended bidding", async () => {
+          context.salesLoader.mockResolvedValue([{ id: "sale-id-auction" }])
+
+          context.saleArtworkLoader.mockResolvedValue({
+            end_at: pastTime,
+            extended_bidding_end_at: futureTime,
+          })
+
+          const data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.lotClosesAt).toEqual(futureTime)
+          expect(data.artwork.collectorSignals.onlineBiddingExtended).toEqual(
+            true
+          )
+        })
+        it("returns correct values for a lot with a future live start time", async () => {
+          context.salesLoader.mockResolvedValue([
+            { id: "sale-id-auction", live_start_at: futureTime },
+          ])
+
+          // live start at not set on sale artwork
+          context.saleArtworkLoader.mockResolvedValue({})
+          const data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.liveBiddingStarted).toEqual(
+            false
+          )
+          expect(data.artwork.collectorSignals.lotClosesAt).toEqual(null)
+          expect(data.artwork.collectorSignals.liveStartAt).toEqual(futureTime)
+        })
+        it("returns correct values for an auction that has started live bidding", async () => {
+          context.salesLoader.mockResolvedValue([
+            { id: "sale-id-auction", live_start_at: pastTime },
+          ])
+
+          // live start at not set on sale artwork
+          context.saleArtworkLoader.mockResolvedValue({})
+          const data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.liveBiddingStarted).toEqual(true)
+          expect(data.artwork.collectorSignals.lotClosesAt).toEqual(null)
+          expect(data.artwork.collectorSignals.liveStartAt).toEqual(null)
+        })
+        it("returns correct values for an auction which has ended", async () => {
+          context.salesLoader.mockResolvedValue([
+            { id: "sale-id-auction", ended_at: pastTime },
+          ])
+
+          context.saleArtworkLoader.mockResolvedValue({})
+
+          const data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.lotClosesAt).toEqual(null)
+        })
+
+        it("fetches & returns the lot watcher and bid count signals for an auction lot artwork if requested", async () => {
+          artwork.recent_saves_count = 123
+          context.salesLoader.mockResolvedValue([
+            {
+              id: "sale-id-auction",
+            },
+          ])
+
+          context.saleArtworkLoader.mockResolvedValue({
+            bidder_positions_count: 5,
+          })
+
+          const data = await runQuery(query, context)
+
+          expect(context.salesLoader).toHaveBeenCalledWith({
+            id: ["sale-id-not-auction", "sale-id-auction"],
+            is_auction: true,
+            live: true,
+          })
+
+          expect(context.saleArtworkLoader).toHaveBeenCalledWith({
+            saleArtworkId: "richard-prince-untitled-portrait",
+            saleId: "sale-id-auction",
+          })
+
+          expect(data.artwork.collectorSignals.bidCount).toEqual(5)
+          expect(data.artwork.collectorSignals.lotWatcherCount).toEqual(123)
+        })
+
+        it("does not query auction signal loaders if the artwork has no sale_ids", async () => {
+          artwork.sale_ids = []
+
+          const data = await runQuery(query, context)
+
+          expect(context.salesLoader).not.toHaveBeenCalled()
+          expect(context.saleArtworkLoader).not.toHaveBeenCalled()
+
+          expect(data).toEqual({
+            artwork: {
+              collectorSignals: expect.objectContaining({
+                bidCount: null,
+                lotWatcherCount: null,
+                partnerOffer: null,
+              }),
+            },
+          })
+        })
+      })
+
+      it("does not query partner offer signal loaders if the artwork is not purchasable", async () => {
+        artwork.purchasable = false
+        context.salesLoader.mockResolvedValue([])
+
+        const data = await runQuery(query, context)
+
+        expect(context.mePartnerOffersLoader).not.toHaveBeenCalled()
+
+        expect(data).toEqual({
+          artwork: {
+            collectorSignals: expect.objectContaining({
+              partnerOffer: null,
+            }),
+          },
+        })
+      })
+
+      it("does not query partner offer signal loaders if the partnerOffer field is not requested", async () => {
+        context.salesLoader.mockResolvedValue([])
+
+        const noPartnerOfferQuery = `
+          
+          {
+            artwork(id: "richard-prince-untitled-portrait") {
+              collectorSignals {
+                bidCount
+              }
+            }
+          }`
+
+        const data = await runQuery(noPartnerOfferQuery, context)
+
+        expect(context.mePartnerOffersLoader).not.toHaveBeenCalled()
+
+        expect(data).toEqual({
+          artwork: {
+            collectorSignals: {
+              bidCount: null,
             },
           },
-        },
+        })
       })
-    })
 
-    it("fetches & returns the auction collector signals for an artwork if requested", async () => {
-      mockIsFeatureFlagEnabled.mockReturnValue(true)
-
-      artwork.recent_saves_count = 123
-      context.salesLoader.mockResolvedValue([
+      it("does not query auction loaders if the partnerOffer field is not requested", async () => {
+        const noAuctionFieldsQuery = `
+        
         {
-          id: "sale1",
-        },
-      ])
+          artwork(id: "richard-prince-untitled-portrait") {
+            collectorSignals {
+              partnerOffer { endAt }
+            }
+          }
+        }`
 
-      context.saleArtworkLoader.mockResolvedValue({
-        bidder_positions_count: 5,
-      })
+        const data = await runQuery(noAuctionFieldsQuery, context)
 
-      const data = await runQuery(query, context)
+        expect(context.salesLoader).not.toHaveBeenCalled()
 
-      expect(context.salesLoader).toHaveBeenCalledWith({
-        id: ["sale-id-not-auction", "sale-id-auction"],
-        is_auction: true,
-        live: true,
-      })
-
-      expect(context.saleArtworkLoader).toHaveBeenCalledWith({
-        saleArtworkId: "richard-prince-untitled-portrait",
-        saleId: "sale1",
-      })
-
-      expect(data).toEqual({
-        artwork: {
-          collectorSignals: {
-            bidCount: 5,
-            lotWatcherCount: 123,
-            partnerOffer: null,
+        expect(data).toEqual({
+          artwork: {
+            collectorSignals: {
+              partnerOffer: null,
+            },
           },
-        },
+        })
       })
-    })
-    it("does not query signal loaders if the artwork has no sale_ids", async () => {
-      mockIsFeatureFlagEnabled.mockReturnValue(true)
+      it("does not use any loaders if feature flag is disabled", async () => {
+        mockIsFeatureFlagEnabled.mockReturnValue(false)
 
-      artwork.sale_ids = []
-      artwork.purchasable = false
+        const data = await runQuery(query, context)
 
-      const data = await runQuery(query, context)
+        Object.values(supportingLoaders).forEach((loader) =>
+          expect(loader).not.toHaveBeenCalled()
+        )
 
-      expect(context.salesLoader).not.toHaveBeenCalled()
-      expect(context.mePartnerOffersLoader).not.toHaveBeenCalled()
-
-      expect(data).toEqual({
-        artwork: {
-          collectorSignals: {
-            bidCount: null,
-            lotWatcherCount: null,
-            partnerOffer: null,
-          },
-        },
+        expect(data.artwork.collectorSignals).toEqual({
+          bidCount: null,
+          lotWatcherCount: null,
+          registrationEndsAt: null,
+          lotClosesAt: null,
+          liveStartAt: null,
+          liveBiddingStarted: null,
+          onlineBiddingExtended: null,
+          partnerOffer: null,
+        })
       })
     })
   })

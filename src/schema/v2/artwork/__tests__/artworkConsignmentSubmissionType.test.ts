@@ -493,7 +493,7 @@ describe("ArtworkConsignmentSubmissionType", () => {
       artwork.consignmentSubmission.state = "APPROVED"
       data = await runQuery(query, context)
       expect(data.artwork.consignmentSubmission.buttonLabel).toEqual(
-        "Add Additional Information"
+        "Complete Listing"
       )
 
       artwork.consignmentSubmission.state = "PUBLISHED"
