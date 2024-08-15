@@ -21,6 +21,7 @@ export type HomeViewSection = {
   type: string
   component?: {
     title?: MaybeResolved<string>
+    description?: MaybeResolved<string>
   }
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
@@ -43,6 +44,12 @@ export const CuratorsPicksEmerging: HomeViewSection = {
         "curators-picks-emerging-app"
       )
       return app_title
+    },
+    description: async (context: ResolverContext) => {
+      const { app_description } = await context.siteHeroUnitLoader(
+        "curators-picks-emerging-app"
+      )
+      return app_description
     },
   },
   resolver: CuratorsPicksEmergingArtworksResolver,

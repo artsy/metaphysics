@@ -20,5 +20,21 @@ export const HomeViewComponent = new GraphQLObjectType({
         }
       },
     },
+    description: {
+      type: GraphQLString,
+      description: "A description for this section",
+      resolve: async (parent, _args, context, _info) => {
+        const { description: _description } = parent
+
+        if (typeof _description === "string") {
+          return _description
+        }
+
+        if (typeof _description === "function") {
+          const description = await _description(context)
+          return description
+        }
+      },
+    },
   },
 })
