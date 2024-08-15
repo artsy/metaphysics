@@ -17,7 +17,7 @@ export type HomeViewSection = {
   id: string
   type: string
   component?: {
-    title?: string | null
+    title?: string | ((context: ResolverContext) => Promise<string>)
   } | null
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
