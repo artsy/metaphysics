@@ -91,6 +91,7 @@ export default (opts) => {
     geneFamiliesLoader: gravityLoader("gene_families"),
     geneLoader: gravityLoader((id) => `gene/${id}`),
     genesLoader: gravityLoader("genes"),
+    siteHeroUnitLoader: gravityLoader((id) => `site_hero_unit/${id}`),
     siteHeroUnitsLoader: gravityLoader("site_hero_units"),
     heroUnitsLoader: gravityLoader("hero_units", {}, { headers: true }),
     heroUnitLoader: gravityLoader(
