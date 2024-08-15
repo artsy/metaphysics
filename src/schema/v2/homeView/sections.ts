@@ -14,12 +14,14 @@ import {
 } from "./artistResolvers"
 import { HeroUnitsResolver } from "./heroUnitsResolver"
 
+type MaybeResolved<T> = T | ((context: ResolverContext) => Promise<T>)
+
 export type HomeViewSection = {
   id: string
   type: string
   component?: {
-    title?: string | ((context: ResolverContext) => Promise<string>)
-  } | null
+    title?: MaybeResolved<string>
+  }
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
 
