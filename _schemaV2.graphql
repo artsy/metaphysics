@@ -14526,7 +14526,7 @@ type PartnerAlertsConnection {
 }
 
 # An edge in a connection.
-type PartnerAlertsEdge {
+type PartnerAlertsEdge implements Node {
   artistID: String
   collectorProfilesConnection(
     after: String
@@ -14540,7 +14540,7 @@ type PartnerAlertsEdge {
   # A cursor for use in pagination
   cursor: String!
 
-  # A globally unique ID.
+  # The ID of the object.
   id: ID!
 
   # A type-specific ID.

@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLID,
   GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
@@ -25,7 +26,7 @@ import {
 import { ArtistType, artistConnection } from "../artist"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { connectionFromArray } from "graphql-relay"
+import { connectionFromArray, toGlobalId } from "graphql-relay"
 import { generateDisplayName } from "../previewSavedSearch/generateDisplayName"
 import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
 
@@ -496,6 +497,16 @@ export const AlertsSummaryFields = {
 
 export const PartnerAlertsEdgeFields = {
   ...IDFields,
+  id: {
+    type: new GraphQLNonNull(GraphQLID),
+    description: "The ID of the object.",
+    resolve: ({ partner_id, id }) =>
+      toGlobalId(
+        "PartnerAlertsEdge",
+        JSON.stringify({ partnerID: partner_id, id: id })
+      ),
+  },
+
   searchCriteriaID: {
     type: GraphQLString,
     resolve: ({ search_criteria_id }) => search_criteria_id,

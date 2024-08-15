@@ -192,6 +192,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       name: "PartnerAlerts",
       edgeFields: PartnerAlertsEdgeFields,
       nodeType: AlertType,
+      edgeInterfaces: [NodeInterface],
     }).connectionType
 
     return {

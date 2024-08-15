@@ -57,6 +57,7 @@ const SupportedTypes: any = {
     "./sale",
     "./sale_artwork",
     "./user",
+    "./Alerts/partnerAlertsEdge",
   ],
 }
 
@@ -97,7 +98,9 @@ const isSupportedType = _.includes.bind(null, SupportedTypes.types)
 
 function argumentsForChild(type, id) {
   const isFilterType =
-    type === "FilterArtworks" || type === "filterArtworksConnection"
+    type === "FilterArtworks" ||
+    type === "filterArtworksConnection" ||
+    type === "PartnerAlertsEdge"
   return isFilterType || type.startsWith("HomePage") ? JSON.parse(id) : { id }
 }
 
