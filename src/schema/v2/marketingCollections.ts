@@ -291,7 +291,7 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
     slugs: {
       type: new GraphQLList(GraphQLString),
     },
-    artistId: {
+    artistID: {
       type: GraphQLString,
     },
     category: {

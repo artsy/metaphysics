@@ -1,6 +1,5 @@
 import gql from "lib/gql"
 import { runQuery } from "../test/utils"
-import config from "config"
 
 const marketingCategoriesData = [
   {
@@ -29,14 +28,6 @@ const marketingCategoriesData = [
     ],
   },
 ]
-
-beforeAll(() => {
-  config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA = true
-})
-
-afterAll(() => {
-  config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA = false
-})
 
 describe("MarketingCategories", () => {
   it("returns a list of marketing categories", async () => {

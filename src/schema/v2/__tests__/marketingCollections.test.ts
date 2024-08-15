@@ -1,6 +1,5 @@
 import gql from "lib/gql"
 import { runQuery } from "../test/utils"
-import config from "config"
 
 const marketingCollectionsData = [
   {
@@ -14,14 +13,6 @@ const marketingCollectionsData = [
     title: "Fiby Z Collection 2",
   },
 ]
-
-beforeAll(() => {
-  config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA = true
-})
-
-afterAll(() => {
-  config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA = false
-})
 
 describe("MarketingCollections", () => {
   it("returns a list of marketing collections", async () => {
