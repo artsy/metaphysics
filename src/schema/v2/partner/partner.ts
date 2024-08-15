@@ -52,7 +52,9 @@ import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
 import {
   AlertType,
   AlertsSummaryFields,
+  PartnerAlertsEdge,
   PartnerAlertsEdgeFields,
+  PartnerAlertsEdgeType,
 } from "../Alerts"
 import {
   ArtworkVisibility,
@@ -193,6 +195,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       edgeFields: PartnerAlertsEdgeFields,
       nodeType: AlertType,
     }).connectionType
+
+    // const PartnerAlertsConnectionType = connectionWithCursorInfo({
+    //   name: "PartnerAlerts",
+    //   edgeFields: PartnerAlertsEdgeFields,
+    //   nodeType: AlertType,
+    // }).connectionType
 
     return {
       ...SlugAndInternalIDFields,

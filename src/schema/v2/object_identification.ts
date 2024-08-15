@@ -52,6 +52,7 @@ const SupportedTypes: any = {
     "./conversation",
     "./conversation/invoice",
     "./partner/partner",
+    "./alert", // Look into if you need this
     "./show",
     "./fair",
     "./sale",

@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLID,
   GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
@@ -15,7 +16,11 @@ import {
   paginationResolver,
 } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { IDFields } from "../object_identification"
+import {
+  GlobalIDField,
+  IDFields,
+  NodeInterface,
+} from "../object_identification"
 import GraphQLJSON from "graphql-type-json"
 import {
   SearchCriteriaFields,
@@ -25,7 +30,7 @@ import {
 import { ArtistType, artistConnection } from "../artist"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { connectionFromArray } from "graphql-relay"
+import { connectionFromArray, globalIdField, toGlobalId } from "graphql-relay"
 import { generateDisplayName } from "../previewSavedSearch/generateDisplayName"
 import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
 
@@ -495,79 +500,73 @@ export const AlertsSummaryFields = {
 }
 
 export const PartnerAlertsEdgeFields = {
-  ...IDFields,
+  id: {
+    type: new GraphQLNonNull(GraphQLID),
+    resolve: (source) =>
+      toGlobalId(
+        "PartnerAlertsEdge",
+        `${source.partner_id}:${source.search_criteria_id}`
+      ),
+  },
   searchCriteriaID: {
     type: GraphQLString,
-    resolve: ({ search_criteria_id }) => search_criteria_id,
+    resolve: (source) => source.search_criteria_id,
   },
   partnerID: {
     type: GraphQLString,
-    resolve: ({ partner_id }) => partner_id,
+    resolve: (source) => source.partner_id,
   },
-  score: { type: GraphQLString },
+  score: {
+    type: GraphQLString,
+    resolve: (source) => source.score,
+  },
   matchedAt: {
     type: GraphQLString,
-    resolve: ({ matched_at }) => matched_at,
+    resolve: (source) => source.matched_at,
   },
   userIDs: {
     type: new GraphQLList(GraphQLString),
-    resolve: ({ user_ids }) => user_ids,
+    resolve: (source) => source.user_ids,
   },
   artistID: {
     type: GraphQLString,
-    resolve: ({ artist_id }) => artist_id,
+    resolve: (source) => source.artist_id,
   },
   collectorProfilesConnection: {
     type: PartnerCollectorProfilesConnectionType,
     args: pageable({
-      page: {
-        type: GraphQLInt,
-      },
-      size: {
-        type: GraphQLInt,
-      },
+      page: { type: GraphQLInt },
+      size: { type: GraphQLInt },
     }),
-    resolve: async (parent, args, { partnerCollectorProfilesLoader }) => {
+    resolve: async (source, args, { partnerCollectorProfilesLoader }) => {
       if (!partnerCollectorProfilesLoader) return null
 
       const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-
-      const { partner_id, user_ids } = parent
+      const { partner_id, user_ids } = source
       if (!partner_id || !user_ids) {
         throw new Error(
           "partnerId or userIds is undefined in the parent object"
         )
       }
 
-      // Make API call to fetch the first X collector profile records
-      const first = args.first ?? DEFAULT_COLLECTOR_PROFILES_BATCH_SIZE
-      const slicedUserIds = parent.user_ids.slice(0, first)
+      const first = args.first ?? 20
+      const slicedUserIds = user_ids.slice(0, first)
 
-      type GravityArgs = {
-        page: number
-        size: number
-        offset: number
-        total_count: boolean
-        partner_id: string
-        user_ids: string[]
-      }
-
-      const gravityArgs: GravityArgs = {
+      const gravityArgs = {
         page,
         size,
         offset,
         total_count: true,
-        partner_id: parent.partner_id,
+        partner_id,
         user_ids: slicedUserIds,
       }
 
       const { body } = await partnerCollectorProfilesLoader(gravityArgs)
-
       const collectorProfiles = body.flatMap((item) =>
         item.collector_profile ? [item.collector_profile].flat() : []
       )
 
-      const totalCount = parent.user_ids.length
+      const totalCount = user_ids.length
 
       return paginationResolver({
         totalCount,
@@ -580,3 +579,9 @@ export const PartnerAlertsEdgeFields = {
     },
   },
 }
+export const PartnerAlertsEdge = new GraphQLObjectType({
+  name: "PartnerAlertsEdge",
+  interfaces: [NodeInterface], // Implement NodeInterface
+  fields: PartnerAlertsEdgeFields,
+  isTypeOf: (value) => value.partner_id && value.search_criteria_id, // Type resolution
+})
