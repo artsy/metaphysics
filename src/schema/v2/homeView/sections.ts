@@ -2,6 +2,7 @@ import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
   AuctionLotsForYouResolver,
+  CuratorsPicksEmergingArtworksResolver,
   NewWorksForYouResolver,
   NewWorksFromGalleriesYouFollowResolver,
   RecentlyViewedArtworksResolver,
@@ -12,7 +13,6 @@ import {
   SuggestedArtistsResolver,
 } from "./artistResolvers"
 import { HeroUnitsResolver } from "./heroUnitsResolver"
-import { connectionFromArray } from "graphql-relay"
 
 export type HomeViewSection = {
   id: string
@@ -43,9 +43,7 @@ export const CuratorsPicksEmerging: HomeViewSection = {
       return app_title
     },
   },
-  resolver: async (_parent, args) => {
-    return connectionFromArray([{ id: "TODO" }], args)
-  },
+  resolver: CuratorsPicksEmergingArtworksResolver,
 }
 
 export const RecentlyViewedArtworks: HomeViewSection = {
