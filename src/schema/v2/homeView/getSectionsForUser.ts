@@ -30,13 +30,13 @@ export async function getSectionsForUser(
     sections = [
       RecentlyViewedArtworks,
       TrendingArtists,
+      CuratorsPicksEmerging,
       SimilarToRecentlyViewedArtworks,
       AuctionLotsForYou,
       NewWorksForYou,
       HeroUnits,
       NewWorksFromGalleriesYouFollow,
       RecommendedArtists,
-      CuratorsPicksEmerging,
     ]
   } else {
     sections = [

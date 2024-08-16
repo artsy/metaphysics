@@ -10913,14 +10913,27 @@ type HomeView {
 
 # A component specification
 type HomeViewComponent {
-  # A background color for this section
-  backgroundColor: String
+  # A background image for this section
+  backgroundImageURL(
+    version: HomeViewComponentBackgroundImageURLVersion
+  ): String
 
   # A description for this section
   description: String
 
+  # A screen to navigate to when this component is clicked
+  href: String
+
   # A display title for this section
   title: String
+
+  # How this component should be rendered
+  type: String
+}
+
+enum HomeViewComponentBackgroundImageURLVersion {
+  NARROW
+  WIDE
 }
 
 union HomeViewSection =

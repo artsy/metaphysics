@@ -14,15 +14,19 @@ import {
 } from "./artistResolvers"
 import { HeroUnitsResolver } from "./heroUnitsResolver"
 
-type MaybeResolved<T> = T | ((context: ResolverContext) => Promise<T>)
+type MaybeResolved<T> =
+  | T
+  | ((context: ResolverContext, args: any) => Promise<T>)
 
 export type HomeViewSection = {
   id: string
   type: string
   component?: {
     title?: MaybeResolved<string>
+    type?: MaybeResolved<string>
     description?: MaybeResolved<string>
-    backgroundColor?: MaybeResolved<string>
+    backgroundImageURL?: MaybeResolved<string>
+    href?: MaybeResolved<string>
   }
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
@@ -40,6 +44,7 @@ export const CuratorsPicksEmerging: HomeViewSection = {
   id: "home-view-section-curators-picks-emerging",
   type: "ArtworksRailHomeViewSection",
   component: {
+    type: "FeaturedCollection",
     title: async (context: ResolverContext) => {
       const { app_title } = await context.siteHeroUnitLoader(
         "curators-picks-emerging-app"
@@ -52,7 +57,19 @@ export const CuratorsPicksEmerging: HomeViewSection = {
       )
       return app_description
     },
-    backgroundColor: "black100",
+    backgroundImageURL: async (context: ResolverContext, args) => {
+      const {
+        background_image_app_phone_url,
+        background_image_app_tablet_url,
+      } = await context.siteHeroUnitLoader("curators-picks-emerging-app")
+
+      if (args.version === "wide") {
+        return background_image_app_tablet_url
+      }
+
+      return background_image_app_phone_url
+    },
+    href: "/collection/curators-picks-emerging",
   },
   resolver: CuratorsPicksEmergingArtworksResolver,
 }
