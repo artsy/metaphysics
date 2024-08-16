@@ -669,6 +669,16 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    // TODO: rename
+    singlePartnerSearchCriteriaLoader: gravityLoader<
+      any,
+      { partner_id: string; id: string }
+    >(
+      ({ partner_id, id }) =>
+        `/partner/${partner_id}/partner_search_criterias/${id}`,
+      {},
+      { headers: true }
+    ),
     partnerShowsLoader: gravityLoader(
       (partner_id) => `partner/${partner_id}/shows`,
       {},
