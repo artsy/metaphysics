@@ -7,6 +7,7 @@ import {
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields, NodeInterface } from "../object_identification"
+import { emptyConnection } from "../fields/pagination"
 import { HomeViewComponent } from "./HomeViewComponent"
 import { artworkConnection } from "../artwork"
 import { artistsConnection } from "../artists"
@@ -44,7 +45,7 @@ const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
       type: artworkConnection.connectionType,
       args: pageable({}),
       resolve: (parent, ...rest) =>
-        parent.resolver ? parent.resolver(parent, ...rest) : [],
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
     },
   },
 })
@@ -63,7 +64,7 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
       type: artistsConnection.type,
       args: pageable({}),
       resolve: (parent, ...rest) =>
-        parent.resolver ? parent.resolver(parent, ...rest) : [],
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
     },
   },
 })
@@ -82,7 +83,7 @@ const HeroUnitsHomeViewSectionType = new GraphQLObjectType<
       type: heroUnitsConnection.type,
       args: pageable({}),
       resolve: (parent, ...rest) =>
-        parent.resolver ? parent.resolver(parent, ...rest) : [],
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
     },
   },
 })
