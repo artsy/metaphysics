@@ -1,7 +1,6 @@
 import {
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
-  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
@@ -42,7 +41,7 @@ const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
     ...standardSectionFields,
 
     artworksConnection: {
-      type: new GraphQLNonNull(artworkConnection.connectionType),
+      type: artworkConnection.connectionType,
       args: pageable({}),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : [],
@@ -61,7 +60,7 @@ const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
     ...standardSectionFields,
 
     artistsConnection: {
-      type: new GraphQLNonNull(artistsConnection.type),
+      type: artistsConnection.type,
       args: pageable({}),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : [],
@@ -80,7 +79,7 @@ const HeroUnitsHomeViewSectionType = new GraphQLObjectType<
     ...standardSectionFields,
 
     heroUnitsConnection: {
-      type: new GraphQLNonNull(heroUnitsConnection.type),
+      type: heroUnitsConnection.type,
       args: pageable({}),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : [],
