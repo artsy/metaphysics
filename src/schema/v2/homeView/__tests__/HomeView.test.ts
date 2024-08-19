@@ -6,7 +6,7 @@ describe("homeView", () => {
     const query = gql`
       {
         homeView {
-          sectionsConnection(first: 10) {
+          sectionsConnection(first: 20) {
             edges {
               node {
                 __typename
@@ -31,12 +31,6 @@ describe("homeView", () => {
       }),
     }
 
-    it("returns a connection of home view sections", async () => {
-      const { homeView } = await runQuery(query, context)
-
-      expect(homeView.sectionsConnection.edges).toHaveLength(9)
-    })
-
     it("returns requested data for each section", async () => {
       const { homeView } = await runQuery(query, context)
 
@@ -56,6 +50,14 @@ describe("homeView", () => {
                 "__typename": "ArtworksRailHomeViewSection",
                 "component": Object {
                   "title": "Similar to Works You’ve Viewed",
+                },
+              },
+            },
+            Object {
+              "node": Object {
+                "__typename": "FairsRailHomeViewSection",
+                "component": Object {
+                  "title": "Featured Fairs",
                 },
               },
             },
