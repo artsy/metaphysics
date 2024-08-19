@@ -5,6 +5,8 @@ import { newWorksFromGalleriesYouFollow } from "../me/newWorksFromGalleriesYouFo
 import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
 import { SimilarToRecentlyViewed } from "../me/similarToRecentlyViewed"
 import { filterArtworksConnectionWithParams } from "../filterArtworksConnection"
+import { connectionFromArray } from "graphql-relay"
+import { withTimeout } from "lib/loaders/helpers"
 
 /*
  * Resolvers for home view artwork sections
@@ -29,6 +31,34 @@ export const SimilarToRecentlyViewedArtworksResolver: GraphQLFieldResolver<
     context,
     info
   )
+}
+
+export const SlowArtworksResolver: GraphQLFieldResolver<
+  any,
+  ResolverContext
+> = async (parent, args, context, info) => {
+  if (!context.meLoader) return []
+
+  /* example slow resolver that would be imported from somewhere in MP */
+  const verySlowResolver: GraphQLFieldResolver<any, ResolverContext> = (
+    _parent,
+    args,
+    _context,
+    _info
+  ) => {
+    return new Promise((resolve) => {
+      setTimeout(
+        () => {
+          resolve(connectionFromArray([{ id: "well-that-took-a-while" }], args))
+        },
+        2000 // takes 2 seconds to resolve
+      )
+    })
+  }
+
+  const result = await verySlowResolver(parent, args, context, info)
+
+  return result
 }
 
 export const CuratorsPicksEmergingArtworksResolver: GraphQLFieldResolver<

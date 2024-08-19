@@ -7,6 +7,7 @@ import {
   NewWorksFromGalleriesYouFollowResolver,
   RecentlyViewedArtworksResolver,
   SimilarToRecentlyViewedArtworksResolver,
+  SlowArtworksResolver,
 } from "./artworkResolvers"
 import {
   RecommendedArtistsResolver,
@@ -136,6 +137,12 @@ export const HeroUnits: HomeViewSection = {
   resolver: HeroUnitsResolver,
 }
 
+export const SlowSection: HomeViewSection = {
+  id: "home-view-section-slow",
+  type: "ArtworksRailHomeViewSection",
+  resolver: SlowArtworksResolver,
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   CuratorsPicksEmerging,
@@ -145,6 +152,7 @@ const sections: HomeViewSection[] = [
   RecentlyViewedArtworks,
   RecommendedArtists,
   SimilarToRecentlyViewedArtworks,
+  SlowSection,
   TrendingArtists,
 ]
 

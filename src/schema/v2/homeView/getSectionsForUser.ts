@@ -9,6 +9,7 @@ import {
   RecentlyViewedArtworks,
   RecommendedArtists,
   SimilarToRecentlyViewedArtworks,
+  SlowSection,
   TrendingArtists,
 } from "./sections"
 
@@ -37,9 +38,11 @@ export async function getSectionsForUser(
       HeroUnits,
       NewWorksFromGalleriesYouFollow,
       RecommendedArtists,
+      SlowSection,
     ]
   } else {
     sections = [
+      SlowSection,
       CuratorsPicksEmerging,
       SimilarToRecentlyViewedArtworks,
       NewWorksForYou,
