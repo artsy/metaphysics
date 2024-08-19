@@ -49,7 +49,7 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   },
 
   type: new GraphQLObjectType({
-    name: "auctionCollectorSignals",
+    name: "AuctionCollectorSignals",
     description: "Collector signals on a biddable auction lot",
     fields: {
       bidCount: {

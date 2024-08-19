@@ -3234,6 +3234,45 @@ type AuctionArtworkGrid implements ArtworkContextGrid {
   title: String
 }
 
+# Collector signals on a biddable auction lot
+type AuctionCollectorSignals {
+  # Bid count
+  bidCount: Int
+
+  # Live bidding has started on this lot's auction
+  liveBiddingStarted: Boolean
+
+  # Auction live bidding start time
+  liveStartAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+
+  # Pending auction lot end time for bidding
+  lotClosesAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+
+  # Lot watcher count
+  lotWatcherCount: Int
+
+  # Lot bidding period extended due to last-minute bids
+  onlineBiddingExtended: Boolean
+
+  # Pending auction registration end time
+  registrationEndsAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+}
+
 # In centimeters.
 type AuctionLotDimensions {
   depth: Float
@@ -4409,7 +4448,7 @@ type CollectorResume {
 
 # Collector signals available to the artwork
 type CollectorSignals {
-  auction: auctionCollectorSignals
+  auction: AuctionCollectorSignals
 
   # Bid count on lots open for bidding
   bidCount: Int @deprecated(reason: "Use nested field in `auction` instead")
@@ -21800,45 +21839,6 @@ enum addressType {
   BUSINESS
   OTHER
   TEMPORARY
-}
-
-# Collector signals on a biddable auction lot
-type auctionCollectorSignals {
-  # Bid count
-  bidCount: Int
-
-  # Live bidding has started on this lot's auction
-  liveBiddingStarted: Boolean
-
-  # Auction live bidding start time
-  liveStartAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
-
-  # Pending auction lot end time for bidding
-  lotClosesAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
-
-  # Lot watcher count
-  lotWatcherCount: Int
-
-  # Lot bidding period extended due to last-minute bids
-  onlineBiddingExtended: Boolean
-
-  # Pending auction registration end time
-  registrationEndsAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
 }
 
 input createAlertInput {
