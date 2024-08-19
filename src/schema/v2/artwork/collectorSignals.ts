@@ -56,12 +56,12 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       bidCount: {
         type: new GraphQLNonNull(GraphQLInt),
         description: "Bid count",
-        resolve: ({ saleArtwork }) => saleArtwork.bidder_positions_count,
+        resolve: ({ saleArtwork }) => saleArtwork.bidder_positions_count ?? 0,
       },
       lotWatcherCount: {
         type: new GraphQLNonNull(GraphQLInt),
         description: "Lot watcher count",
-        resolve: ({ artwork }) => artwork.recent_saves_count,
+        resolve: ({ artwork }) => artwork.recent_saves_count ?? 0,
       },
       liveBiddingStarted: {
         type: new GraphQLNonNull(GraphQLBoolean),
