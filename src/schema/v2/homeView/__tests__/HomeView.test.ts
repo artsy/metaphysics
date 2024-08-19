@@ -26,12 +26,15 @@ describe("homeView", () => {
       authenticatedLoaders: {
         meLoader: jest.fn().mockReturnValue({ type: "User" }),
       },
+      siteHeroUnitLoader: jest.fn().mockReturnValue({
+        app_title: "Curators' Picks Emerging",
+      }),
     }
 
     it("returns a connection of home view sections", async () => {
       const { homeView } = await runQuery(query, context)
 
-      expect(homeView.sectionsConnection.edges).toHaveLength(8)
+      expect(homeView.sectionsConnection.edges).toHaveLength(9)
     })
 
     it("returns requested data for each section", async () => {
@@ -40,6 +43,14 @@ describe("homeView", () => {
       expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
         Object {
           "edges": Array [
+            Object {
+              "node": Object {
+                "__typename": "ArtworksRailHomeViewSection",
+                "component": Object {
+                  "title": "Curators' Picks Emerging",
+                },
+              },
+            },
             Object {
               "node": Object {
                 "__typename": "ArtworksRailHomeViewSection",

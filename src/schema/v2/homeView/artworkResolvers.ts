@@ -4,6 +4,7 @@ import { artworksForUser } from "../artworksForUser"
 import { newWorksFromGalleriesYouFollow } from "../me/newWorksFromGalleriesYouFollow"
 import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
 import { SimilarToRecentlyViewed } from "../me/similarToRecentlyViewed"
+import { filterArtworksConnectionWithParams } from "../filterArtworksConnection"
 
 /*
  * Resolvers for home view artwork sections
@@ -28,6 +29,26 @@ export const SimilarToRecentlyViewedArtworksResolver: GraphQLFieldResolver<
     context,
     info
   )
+}
+
+export const CuratorsPicksEmergingArtworksResolver: GraphQLFieldResolver<
+  any,
+  ResolverContext
+> = async (parent, args, context, info) => {
+  const loader = filterArtworksConnectionWithParams((_args) => {
+    return {
+      marketing_collection_id: "curators-picks-emerging",
+      sort: "-decayed_merch",
+    }
+  })
+
+  if (!loader?.resolve) {
+    return
+  }
+
+  const result = await loader.resolve(parent, args, context, info)
+
+  return result
 }
 
 export const NewWorksForYouResolver: GraphQLFieldResolver<

@@ -238,4 +238,96 @@ describe("HomeViewSection", () => {
       `)
     })
   })
+
+  describe("CuratorsPicksEmerging", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-curators-picks-emerging") {
+              __typename
+
+              ... on ArtworksRailHomeViewSection {
+                component {
+                  title
+                  description
+                  href
+                  backgroundImageURL
+                }
+
+                artworksConnection(first: 2) {
+                  edges {
+                    node {
+                      id
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const artworks = [
+        { _id: "percy", title: "Percy the Cat" },
+        { _id: "matt", title: "Matt the Person" },
+      ]
+
+      const context = {
+        authenticatedLoaders: {
+          meLoader: jest.fn().mockReturnValue({ type: "User" }),
+        },
+        unauthenticatedLoaders: {
+          filterArtworksLoader: jest.fn().mockReturnValue(
+            Promise.resolve({
+              hits: artworks,
+              aggregations: {
+                total: {
+                  value: 2,
+                },
+              },
+            })
+          ),
+        },
+        siteHeroUnitLoader: jest.fn().mockReturnValue({
+          app_title: "Curators' Picks Emerging",
+          app_description:
+            "The best works by rising talents on Artsy, available now.",
+          background_image_app_phone_url: "image.jpg",
+          background_image_app_tablet_url: "image.jpg",
+        }),
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ArtworksRailHomeViewSection",
+          "artworksConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "id": "QXJ0d29yazpwZXJjeQ==",
+                  "title": "Percy the Cat",
+                },
+              },
+              Object {
+                "node": Object {
+                  "id": "QXJ0d29yazptYXR0",
+                  "title": "Matt the Person",
+                },
+              },
+            ],
+          },
+          "component": Object {
+            "backgroundImageURL": "image.jpg",
+            "description": "The best works by rising talents on Artsy, available now.",
+            "href": "/collection/curators-picks-emerging",
+            "title": "Curators' Picks Emerging",
+          },
+        }
+      `)
+    })
+  })
 })
