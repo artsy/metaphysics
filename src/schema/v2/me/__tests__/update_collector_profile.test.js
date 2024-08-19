@@ -1,20 +1,35 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
+import gql from "lib/gql"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("UpdateCollectorProfile", () => {
   it("calls the expected loader with correctly formatted params", async () => {
-    const mutation = `
+    const mutation = gql`
       mutation {
-        updateCollectorProfile(input: { professionalBuyer: true, loyaltyApplicant: true, selfReportedPurchases: "trust me i buy art", intents: [BUY_ART_AND_DESIGN], institutionalAffiliations: "example", companyName: "Cool Art Stuff", companyWebsite: "https://artsy.net", promptedForUpdate: true }) {
-          internalID
-          name
-          email
-          selfReportedPurchases
-          intents
-          companyName
-          companyWebsite
-          professionalBuyerAt
-          lastUpdatePromptAt
+        updateCollectorProfile(
+          input: {
+            professionalBuyer: true
+            loyaltyApplicant: true
+            selfReportedPurchases: "trust me i buy art"
+            intents: [BUY_ART_AND_DESIGN]
+            institutionalAffiliations: "example"
+            companyName: "Cool Art Stuff"
+            companyWebsite: "https://artsy.net"
+            promptedForUpdate: true
+          }
+        ) {
+          collectorProfileOrError {
+            __typename
+            ... on UpdateCollectorProfileSuccess {
+              collectorProfile {
+                internalID
+                name
+                email
+                intents
+                lastUpdatePromptAt
+              }
+            }
+          }
         }
       }
     `
@@ -38,18 +53,17 @@ describe("UpdateCollectorProfile", () => {
     }
 
     const expectedProfileData = {
-      companyName: "Cool Art Stuff",
-      companyWebsite: "https://artsy.net",
-      professionalBuyerAt: "2022-08-15T11:14:55+00:00",
-      internalID: "3",
-      name: "Percy",
-      email: "percy@cat.com",
-      selfReportedPurchases: "treats",
-      intents: ["buy art & design"],
-      lastUpdatePromptAt: "2022-08-15T11:14:55+00:00",
+      collectorProfileOrError: {
+        __typename: "UpdateCollectorProfileSuccess",
+        collectorProfile: {
+          internalID: "3",
+          name: "Percy",
+          email: "percy@cat.com",
+          intents: ["buy art & design"],
+          lastUpdatePromptAt: "2022-08-15T11:14:55+00:00",
+        },
+      },
     }
-
-    expect.assertions(2)
 
     const { updateCollectorProfile } = await runAuthenticatedQuery(
       mutation,
@@ -70,30 +84,46 @@ describe("UpdateCollectorProfile", () => {
     })
   })
 
-  it("throws error when data loader is missing", async () => {
-    const mutation = `
+  it("returns updateClientId", async () => {
+    const mutation = gql`
       mutation {
-        updateCollectorProfile(input: { professionalBuyer: true, loyaltyApplicant: true, selfReportedPurchases: "trust me i buy art" }) {
-          internalID
-          name
-          email
-          selfReportedPurchases
-          intents
+        updateCollectorProfile(
+          input: { professionalBuyer: true, clientMutationId: "mutation-id" }
+        ) {
+          clientMutationId
         }
       }
     `
 
-    const errorResponse =
-      "Missing Update Collector Profile Loader. Check your access token."
-
-    expect.assertions(1)
-
-    try {
-      await runQuery(mutation)
-      throw new Error("An error was not thrown but was expected.")
-    } catch (error) {
-      // eslint-disable-next-line jest/no-conditional-expect, jest/no-try-expect
-      expect(error.message).toEqual(errorResponse)
+    const context = {
+      meUpdateCollectorProfileLoader: jest.fn().mockReturnValue({}),
     }
+
+    const { updateCollectorProfile } = await runAuthenticatedQuery(
+      mutation,
+      context
+    )
+
+    expect(updateCollectorProfile).toEqual({ clientMutationId: "mutation-id" })
+  })
+
+  it("throws an error given a missing data loader", async () => {
+    const mutation = gql`
+      mutation {
+        updateCollectorProfile(input: { professionalBuyer: true }) {
+          collectorProfileOrError {
+            __typename
+          }
+        }
+      }
+    `
+
+    const context = { meUpdateCollectorProfileLoader: undefined }
+
+    await expect(
+      runAuthenticatedQuery(mutation, context)
+    ).rejects.toMatchInlineSnapshot(
+      "[Error: Missing Update Collector Profile Loader. Check your access token.]"
+    )
   })
 })

@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
-import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("UpdateCollectorProfileWithID", () => {
   it("calls the expected loader with correctly formatted params", async () => {
@@ -83,30 +83,29 @@ describe("UpdateCollectorProfileWithID", () => {
   })
 
   it("throws error when data loader is missing", async () => {
-    const mutation = `
+    const mutation = gql`
       mutation {
-        updateCollectorProfile(input: { professionalBuyer: true, loyaltyApplicant: true, selfReportedPurchases: "trust me i buy art" }) {
-          internalID
-          name
-          email
-          selfReportedPurchases
-          intents
+        updateCollectorProfileWithID(
+          input: {
+            professionalBuyer: true
+            loyaltyApplicant: true
+            selfReportedPurchases: "trust me i buy art"
+          }
+        ) {
+          collectorProfileOrError {
+            __typename
+          }
         }
       }
     `
 
-    const errorResponse =
-      "Missing Update Collector Profile Loader. Check your access token."
+    const context = { updateCollectorProfileLoader: undefined }
 
-    expect.assertions(1)
-
-    try {
-      await runQuery(mutation)
-      throw new Error("An error was not thrown but was expected.")
-    } catch (error) {
-      // eslint-disable-next-line jest/no-conditional-expect, jest/no-try-expect
-      expect(error.message).toEqual(errorResponse)
-    }
+    await expect(
+      runAuthenticatedQuery(mutation, context)
+    ).rejects.toMatchInlineSnapshot(
+      "[Error: Missing Update Collector Profile Loader. Check your access token.]"
+    )
   })
 
   it("returns a GravityMutationError when invalid param is used", async () => {
