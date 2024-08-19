@@ -3259,7 +3259,7 @@ type AuctionCollectorSignals {
   ): String
 
   # Lot watcher count
-  lotWatcherCount: Int
+  lotWatcherCount: Int!
 
   # Lot bidding period extended due to last-minute bids
   onlineBiddingExtended: Boolean!

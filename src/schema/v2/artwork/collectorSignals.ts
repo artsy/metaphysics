@@ -59,7 +59,7 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         resolve: ({ saleArtwork }) => saleArtwork.bidder_positions_count,
       },
       lotWatcherCount: {
-        type: GraphQLInt,
+        type: new GraphQLNonNull(GraphQLInt),
         description: "Lot watcher count",
         resolve: ({ artwork }) => artwork.recent_saves_count,
       },
