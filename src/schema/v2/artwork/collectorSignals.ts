@@ -76,8 +76,11 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       },
       lotClosesAt: {
         ...date(
-          ({ saleArtwork }) =>
-            saleArtwork.extended_bidding_end_at || saleArtwork.end_at
+          ({ saleArtwork, sale }) =>
+            !sale.live_start_at &&
+            (saleArtwork.extended_bidding_end_at ||
+              saleArtwork.end_at ||
+              sale.end_at)
         ),
         description: "Pending auction lot end time for bidding",
       },
