@@ -3237,10 +3237,10 @@ type AuctionArtworkGrid implements ArtworkContextGrid {
 # Collector signals on a biddable auction lot
 type AuctionCollectorSignals {
   # Bid count
-  bidCount: Int
+  bidCount: Int!
 
   # Live bidding has started on this lot's auction
-  liveBiddingStarted: Boolean
+  liveBiddingStarted: Boolean!
 
   # Auction live bidding start time
   liveStartAt(
@@ -3262,7 +3262,7 @@ type AuctionCollectorSignals {
   lotWatcherCount: Int
 
   # Lot bidding period extended due to last-minute bids
-  onlineBiddingExtended: Boolean
+  onlineBiddingExtended: Boolean!
 
   # Pending auction registration end time
   registrationEndsAt(

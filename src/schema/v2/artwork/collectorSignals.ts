@@ -4,6 +4,7 @@ import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { date } from "../fields/date"
+import { GraphQLNonNull } from "graphql"
 
 interface ActiveLotData {
   saleArtwork: {
@@ -53,7 +54,7 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
     description: "Collector signals on a biddable auction lot",
     fields: {
       bidCount: {
-        type: GraphQLInt,
+        type: new GraphQLNonNull(GraphQLInt),
         description: "Bid count",
         resolve: ({ saleArtwork }) => saleArtwork.bidder_positions_count,
       },
@@ -63,13 +64,13 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         resolve: ({ artwork }) => artwork.recent_saves_count,
       },
       liveBiddingStarted: {
-        type: GraphQLBoolean,
+        type: new GraphQLNonNull(GraphQLBoolean),
         description: "Live bidding has started on this lot's auction",
         resolve: ({ sale }) =>
           !!sale.live_start_at && new Date(sale.live_start_at) <= new Date(),
       },
       onlineBiddingExtended: {
-        type: GraphQLBoolean,
+        type: new GraphQLNonNull(GraphQLBoolean),
         description: "Lot bidding period extended due to last-minute bids",
         resolve: ({ saleArtwork }) => !!saleArtwork.extended_bidding_end_at,
       },
