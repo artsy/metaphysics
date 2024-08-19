@@ -4628,13 +4628,15 @@ describe("Artwork type", () => {
       {
         artwork(id: "richard-prince-untitled-portrait") {
           collectorSignals {
-            bidCount
-            lotWatcherCount
-            registrationEndsAt
-            lotClosesAt
-            liveBiddingStarted
-            liveStartAt
-            onlineBiddingExtended
+            auction {
+              bidCount
+              lotWatcherCount
+              registrationEndsAt
+              lotClosesAt
+              liveBiddingStarted
+              liveStartAt
+              onlineBiddingExtended
+            }
             partnerOffer {
               endAt
             }
@@ -4727,7 +4729,7 @@ describe("Artwork type", () => {
         const futureTime = moment().add(1, "day").toISOString()
         const pastTime = moment().subtract(1, "day").toISOString()
 
-        it("returns the registration end time if it is in the future, `null` if in the past", async () => {
+        it("returns the registration end time if present, whether future or past", async () => {
           context.salesLoader.mockResolvedValue([
             { id: "sale-id-auction", registration_ends_at: futureTime },
           ])
@@ -4736,9 +4738,9 @@ describe("Artwork type", () => {
 
           let data = await runQuery(query, context)
 
-          expect(data.artwork.collectorSignals.registrationEndsAt).toEqual(
-            futureTime
-          )
+          expect(
+            data.artwork.collectorSignals.auction.registrationEndsAt
+          ).toEqual(futureTime)
 
           context.salesLoader.mockResolvedValue([
             { id: "sale-id-auction", registration_ends_at: pastTime },
@@ -4747,7 +4749,9 @@ describe("Artwork type", () => {
 
           data = await runQuery(query, context)
 
-          expect(data.artwork.collectorSignals.registrationEndsAt).toEqual(null)
+          expect(
+            data.artwork.collectorSignals.auction.registrationEndsAt
+          ).toEqual(pastTime)
         })
 
         it("returns correct values for a lot with an end time and no extended bidding", async () => {
@@ -4760,11 +4764,14 @@ describe("Artwork type", () => {
 
           const data = await runQuery(query, context)
 
-          expect(data.artwork.collectorSignals.lotClosesAt).toEqual(futureTime)
-          expect(data.artwork.collectorSignals.onlineBiddingExtended).toEqual(
-            false
+          expect(data.artwork.collectorSignals.auction.lotClosesAt).toEqual(
+            futureTime
           )
+          expect(
+            data.artwork.collectorSignals.auction.onlineBiddingExtended
+          ).toEqual(false)
         })
+
         it("returns correct values for a lot with an end time and extended bidding", async () => {
           context.salesLoader.mockResolvedValue([{ id: "sale-id-auction" }])
 
@@ -4775,10 +4782,12 @@ describe("Artwork type", () => {
 
           const data = await runQuery(query, context)
 
-          expect(data.artwork.collectorSignals.lotClosesAt).toEqual(futureTime)
-          expect(data.artwork.collectorSignals.onlineBiddingExtended).toEqual(
-            true
+          expect(data.artwork.collectorSignals.auction.lotClosesAt).toEqual(
+            futureTime
           )
+          expect(
+            data.artwork.collectorSignals.auction.onlineBiddingExtended
+          ).toEqual(true)
         })
         it("returns correct values for a lot with a future live start time", async () => {
           context.salesLoader.mockResolvedValue([
@@ -4789,11 +4798,15 @@ describe("Artwork type", () => {
           context.saleArtworkLoader.mockResolvedValue({})
           const data = await runQuery(query, context)
 
-          expect(data.artwork.collectorSignals.liveBiddingStarted).toEqual(
-            false
+          expect(
+            data.artwork.collectorSignals.auction.liveBiddingStarted
+          ).toEqual(false)
+          expect(data.artwork.collectorSignals.auction.lotClosesAt).toEqual(
+            null
           )
-          expect(data.artwork.collectorSignals.lotClosesAt).toEqual(null)
-          expect(data.artwork.collectorSignals.liveStartAt).toEqual(futureTime)
+          expect(data.artwork.collectorSignals.auction.liveStartAt).toEqual(
+            futureTime
+          )
         })
         it("returns correct values for an auction that has started live bidding", async () => {
           context.salesLoader.mockResolvedValue([
@@ -4804,20 +4817,13 @@ describe("Artwork type", () => {
           context.saleArtworkLoader.mockResolvedValue({})
           const data = await runQuery(query, context)
 
-          expect(data.artwork.collectorSignals.liveBiddingStarted).toEqual(true)
-          expect(data.artwork.collectorSignals.lotClosesAt).toEqual(null)
-          expect(data.artwork.collectorSignals.liveStartAt).toEqual(null)
-        })
-        it("returns correct values for an auction which has ended", async () => {
-          context.salesLoader.mockResolvedValue([
-            { id: "sale-id-auction", ended_at: pastTime },
-          ])
+          expect(
+            data.artwork.collectorSignals.auction.liveBiddingStarted
+          ).toEqual(true)
 
-          context.saleArtworkLoader.mockResolvedValue({})
-
-          const data = await runQuery(query, context)
-
-          expect(data.artwork.collectorSignals.lotClosesAt).toEqual(null)
+          expect(data.artwork.collectorSignals.auction.liveStartAt).toEqual(
+            pastTime
+          )
         })
 
         it("fetches & returns the lot watcher and bid count signals for an auction lot artwork if requested", async () => {
@@ -4845,8 +4851,10 @@ describe("Artwork type", () => {
             saleId: "sale-id-auction",
           })
 
-          expect(data.artwork.collectorSignals.bidCount).toEqual(5)
-          expect(data.artwork.collectorSignals.lotWatcherCount).toEqual(123)
+          expect(data.artwork.collectorSignals.auction.bidCount).toEqual(5)
+          expect(data.artwork.collectorSignals.auction.lotWatcherCount).toEqual(
+            123
+          )
         })
 
         it("does not query auction signal loaders if the artwork has no sale_ids", async () => {
@@ -4860,9 +4868,7 @@ describe("Artwork type", () => {
           expect(data).toEqual({
             artwork: {
               collectorSignals: expect.objectContaining({
-                bidCount: null,
-                lotWatcherCount: null,
-                partnerOffer: null,
+                auction: null,
               }),
             },
           })
@@ -4945,13 +4951,7 @@ describe("Artwork type", () => {
         )
 
         expect(data.artwork.collectorSignals).toEqual({
-          bidCount: null,
-          lotWatcherCount: null,
-          registrationEndsAt: null,
-          lotClosesAt: null,
-          liveStartAt: null,
-          liveBiddingStarted: null,
-          onlineBiddingExtended: null,
+          auction: null,
           partnerOffer: null,
         })
       })

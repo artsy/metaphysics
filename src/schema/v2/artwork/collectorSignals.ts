@@ -3,8 +3,7 @@ import { GraphQLInt, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
-
-const NOW = new Date()
+import { date } from "../fields/date"
 
 interface ActiveLotData {
   saleArtwork: {
@@ -19,245 +18,121 @@ interface ActiveLotData {
   }
 }
 
+const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
+  resolve: async (artwork, {}, ctx) => {
+    const isInSale = artwork.sale_ids?.length > 0
+    if (
+      !checkFeatureFlag("emerald_signals-auction-improvements", ctx) ||
+      !isInSale
+    ) {
+      return null
+    }
+
+    const activeLotData = await getActiveSaleArtwork(
+      {
+        artworkId: artwork.id,
+        saleIds: artwork.sale_ids,
+      },
+      ctx
+    )
+
+    if (!activeLotData) {
+      return null
+    }
+
+    // Resolve all associated auctions data in one object
+    return {
+      artwork,
+      saleArtwork: activeLotData.saleArtwork,
+      sale: activeLotData.sale,
+    }
+  },
+
+  type: new GraphQLObjectType({
+    name: "auctionCollectorSignals",
+    description: "Collector signals on a biddable auction lot",
+    fields: {
+      bidCount: {
+        type: GraphQLInt,
+        description: "Bid count",
+        resolve: ({ saleArtwork }) => saleArtwork.bidder_positions_count,
+      },
+      lotWatcherCount: {
+        type: GraphQLInt,
+        description: "Lot watcher count",
+        resolve: ({ artwork }) => artwork.recent_saves_count,
+      },
+      liveBiddingStarted: {
+        type: GraphQLBoolean,
+        description: "Live bidding has started on this lot's auction",
+        resolve: ({ sale }) =>
+          !!sale.live_start_at && new Date(sale.live_start_at) <= new Date(),
+      },
+      onlineBiddingExtended: {
+        type: GraphQLBoolean,
+        description: "Lot bidding period extended due to last-minute bids",
+        resolve: ({ saleArtwork }) => !!saleArtwork.extended_bidding_end_at,
+      },
+      lotClosesAt: {
+        ...date(
+          ({ saleArtwork }) =>
+            saleArtwork.extended_bidding_end_at || saleArtwork.end_at
+        ),
+        description: "Pending auction lot end time for bidding",
+      },
+      liveStartAt: {
+        ...date(({ sale }) => sale.live_start_at),
+        description: "Auction live bidding start time",
+      },
+      registrationEndsAt: {
+        ...date(({ sale }) => sale.registration_ends_at),
+        description: "Pending auction registration end time",
+      },
+    },
+  }),
+}
+
 export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLObjectType({
     description: "Collector signals available to the artwork",
     name: "CollectorSignals",
     fields: {
+      auction: AuctionCollectorSignals,
       bidCount: {
         type: GraphQLInt,
         description: "Bid count on lots open for bidding",
-        resolve: async (artwork, {}, ctx) => {
-          const isInSale = artwork.sale_ids?.length > 0
-
-          if (
-            !checkFeatureFlag("emerald_signals-auction-improvements", ctx) ||
-            !isInSale
-          ) {
-            return null
-          }
-
-          const activeLotData = await getActiveSaleArtwork(
-            {
-              artworkId: artwork.id,
-              saleIds: artwork.sale_ids,
-            },
-            ctx
-          )
-
-          if (activeLotData) {
-            return activeLotData.saleArtwork.bidder_positions_count
-          }
-
-          return null
-        },
+        deprecationReason: "Use nested field in `auction` instead",
       },
       lotWatcherCount: {
         type: GraphQLInt,
         description: "Lot watcher count on lots open for bidding",
-        resolve: async (artwork, {}, ctx) => {
-          const isInSale = artwork.sale_ids?.length > 0
-
-          if (
-            !checkFeatureFlag("emerald_signals-auction-improvements", ctx) ||
-            !isInSale
-          ) {
-            return null
-          }
-
-          const activeLotData = await getActiveSaleArtwork(
-            {
-              artworkId: artwork.id,
-              saleIds: artwork.sale_ids,
-            },
-            ctx
-          )
-
-          if (activeLotData) {
-            return artwork.recent_saves_count
-          }
-
-          return null
-        },
+        deprecationReason: "Use nested field in `auction` instead",
       },
       registrationEndsAt: {
         type: GraphQLString,
         description: "Pending auction registration end time",
-        resolve: async (artwork, {}, ctx) => {
-          const isInSale = artwork.sale_ids?.length > 0
-
-          if (
-            !checkFeatureFlag("emerald_signals-auction-improvements", ctx) ||
-            !isInSale
-          ) {
-            return null
-          }
-
-          const activeLotData = await getActiveSaleArtwork(
-            {
-              artworkId: artwork.id,
-              saleIds: artwork.sale_ids,
-            },
-            ctx
-          )
-
-          if (activeLotData) {
-            const registrationEndAtDate =
-              activeLotData.sale.registration_ends_at &&
-              new Date(activeLotData.sale.registration_ends_at)
-
-            if (registrationEndAtDate && registrationEndAtDate > NOW) {
-              return registrationEndAtDate.toISOString()
-            }
-          }
-
-          return null
-        },
+        deprecationReason: "Use nested field in `auction` instead",
       },
       lotClosesAt: {
         type: GraphQLString,
         description: "Pending auction lot end time for bidding",
-        resolve: async (artwork, {}, ctx) => {
-          const isInSale = artwork.sale_ids?.length > 0
-
-          if (
-            !checkFeatureFlag("emerald_signals-auction-improvements", ctx) ||
-            !isInSale
-          ) {
-            return null
-          }
-
-          const activeLotData = await getActiveSaleArtwork(
-            {
-              artworkId: artwork.id,
-              saleIds: artwork.sale_ids,
-            },
-            ctx
-          )
-
-          if (activeLotData) {
-            const extendedBiddingEndAtDate =
-              activeLotData.saleArtwork.extended_bidding_end_at &&
-              new Date(activeLotData.saleArtwork.extended_bidding_end_at)
-
-            if (extendedBiddingEndAtDate && extendedBiddingEndAtDate > NOW) {
-              return extendedBiddingEndAtDate.toISOString()
-            }
-
-            const lotClosesAtDate =
-              activeLotData.saleArtwork.end_at &&
-              new Date(activeLotData.saleArtwork.end_at)
-
-            return lotClosesAtDate && lotClosesAtDate.toISOString()
-          }
-
-          return null
-        },
+        deprecationReason: "Use nested field in `auction` instead",
       },
       onlineBiddingExtended: {
         type: GraphQLBoolean,
         description:
           "Auction lot bidding period extended due to last-minute bids",
-        resolve: async (artwork, {}, ctx) => {
-          const isInSale = artwork.sale_ids?.length > 0
-
-          if (
-            !checkFeatureFlag("emerald_signals-auction-improvements", ctx) ||
-            !isInSale
-          ) {
-            return null
-          }
-
-          const activeLotData = await getActiveSaleArtwork(
-            {
-              artworkId: artwork.id,
-              saleIds: artwork.sale_ids,
-            },
-            ctx
-          )
-
-          if (activeLotData) {
-            const extendedBiddingEndAtDate =
-              activeLotData.saleArtwork.extended_bidding_end_at &&
-              new Date(activeLotData.saleArtwork.extended_bidding_end_at)
-
-            return !!(
-              extendedBiddingEndAtDate && extendedBiddingEndAtDate > NOW
-            )
-          }
-
-          return null
-        },
+        deprecationReason: "Use nested field in `auction` instead",
       },
       liveStartAt: {
         type: GraphQLString,
         description: "Auction live bidding start time",
-        resolve: async (artwork, {}, ctx) => {
-          const isInSale = artwork.sale_ids?.length > 0
-
-          if (
-            !checkFeatureFlag("emerald_signals-auction-improvements", ctx) ||
-            !isInSale
-          ) {
-            return null
-          }
-
-          const activeLotData = await getActiveSaleArtwork(
-            {
-              artworkId: artwork.id,
-              saleIds: artwork.sale_ids,
-            },
-            ctx
-          )
-
-          if (activeLotData) {
-            const saleLiveStartAtDate =
-              activeLotData.sale.live_start_at &&
-              new Date(activeLotData.sale.live_start_at)
-
-            if (saleLiveStartAtDate) {
-              if (saleLiveStartAtDate > NOW) {
-                return saleLiveStartAtDate.toISOString()
-              }
-            }
-          }
-
-          return null
-        },
+        deprecationReason: "Use nested field in `auction` instead",
       },
       liveBiddingStarted: {
         type: GraphQLBoolean,
         description: "Live bidding has started on this lot's auction",
-        resolve: async (artwork, {}, ctx) => {
-          const isInSale = artwork.sale_ids?.length > 0
-
-          if (
-            !checkFeatureFlag("emerald_signals-auction-improvements", ctx) ||
-            !isInSale
-          ) {
-            return null
-          }
-
-          const activeLotData = await getActiveSaleArtwork(
-            {
-              artworkId: artwork.id,
-              saleIds: artwork.sale_ids,
-            },
-            ctx
-          )
-
-          if (activeLotData) {
-            const saleLiveStartAtDate =
-              activeLotData.sale.live_start_at &&
-              new Date(activeLotData.sale.live_start_at)
-
-            if (saleLiveStartAtDate) {
-              return saleLiveStartAtDate <= NOW
-            }
-          }
-
-          return null
-        },
+        deprecationReason: "Use nested field in `auction` instead",
       },
       partnerOffer: {
         type: PartnerOfferToCollectorType,
@@ -288,17 +163,6 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   }),
   description: "Collector signals on artwork",
   resolve: (artwork) => artwork,
-}
-
-interface CollectorSignals {
-  bidCount?: number
-  lotWatcherCount?: number
-  partnerOffer?: { endAt: string }
-  registrationEndsAt?: string
-  liveStartAt?: string
-  liveBiddingStarted?: boolean
-  onlineBiddingExtended?: boolean
-  lotClosesAt?: string
 }
 
 const checkFeatureFlag = (flag: any, context: any) => {
