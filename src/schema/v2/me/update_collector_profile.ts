@@ -2,7 +2,10 @@ import { GraphQLBoolean, GraphQLString, GraphQLList } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { snakeCase } from "lodash"
-import { CollectorProfileFields } from "../CollectorProfile/collectorProfile"
+import {
+  CollectorProfileFields,
+  CollectorProfileType,
+} from "../CollectorProfile/collectorProfile"
 import { IntentsType } from "../CollectorProfile/types/IntentsType"
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({
@@ -37,7 +40,13 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: GraphQLString,
     },
   },
-  outputFields: CollectorProfileFields,
+  outputFields: {
+    ...CollectorProfileFields,
+    collectorProfile: {
+      type: CollectorProfileType,
+      resolve: (collectorProfile) => collectorProfile,
+    },
+  },
   mutateAndGetPayload: (args, { meUpdateCollectorProfileLoader }) => {
     // snake_case keys for Gravity (keys are the same otherwise)
     const options = Object.keys(args).reduce(

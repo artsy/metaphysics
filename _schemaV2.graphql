@@ -19147,6 +19147,7 @@ type UpdateCollectorProfilePayload {
   clientMutationId: String
   collectedArtworksCount: Int!
   collectorLevel: Int
+  collectorProfile: CollectorProfileType
   companyName: String
   companyWebsite: String
   confirmedBuyerAt(

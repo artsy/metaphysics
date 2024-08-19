@@ -15,6 +15,10 @@ describe("UpdateCollectorProfile", () => {
           companyWebsite
           professionalBuyerAt
           lastUpdatePromptAt
+          collectorProfile {
+            email
+            internalID
+          }
         }
       }
     `
@@ -47,6 +51,10 @@ describe("UpdateCollectorProfile", () => {
       selfReportedPurchases: "treats",
       intents: ["buy art & design"],
       lastUpdatePromptAt: "2022-08-15T11:14:55+00:00",
+      collectorProfile: {
+        internalID: "3",
+        email: "percy@cat.com",
+      },
     }
 
     expect.assertions(2)
