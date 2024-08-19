@@ -56,7 +56,10 @@ export const SlowArtworksResolver: GraphQLFieldResolver<
     })
   }
 
-  const result = await verySlowResolver(parent, args, context, info)
+  const result = await withTimeout(
+    verySlowResolver(parent, args, context, info),
+    500 // bail if taking longer than 0.5 second
+  )
 
   return result
 }
