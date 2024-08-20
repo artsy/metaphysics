@@ -6,27 +6,32 @@ export const loadSubmissions = async (
   convectionGraphQLLoader: any
 ) => {
   if (submissionIds.length) {
-    const response = await convectionGraphQLLoader({
-      query: gql`
-        query LoadSubmissions($ids: [ID!]) {
-          submissions(ids: $ids) {
-            edges {
-              node {
-                id
-                externalId
-                state
-                saleState
-                rejectionReason
+    try {
+      const response = await convectionGraphQLLoader({
+        query: gql`
+          query LoadSubmissions($ids: [ID!]) {
+            submissions(ids: $ids) {
+              edges {
+                node {
+                  id
+                  externalId
+                  state
+                  saleState
+                  rejectionReason
+                }
               }
             }
           }
-        }
-      `,
-      variables: {
-        ids: submissionIds,
-      },
-    })
+        `,
+        variables: {
+          ids: submissionIds,
+        },
+      })
 
-    return extractNodes(response?.submissions)
+      return extractNodes(response?.submissions)
+    } catch (error) {
+      console.error("Error fetching submissions:", error)
+      return []
+    }
   }
 }

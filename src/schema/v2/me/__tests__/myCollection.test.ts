@@ -188,7 +188,7 @@ describe("me.myCollection", () => {
     })
   })
 
-  it("enriches artwork with consignment submissions data", async () => {
+  describe("submission status", () => {
     const query = gql`
       {
         me {
@@ -248,7 +248,7 @@ describe("me.myCollection", () => {
             "x-total-count": "10",
           },
         }),
-      convectionGraphQLLoader: () =>
+      convectionGraphQLLoader: ({ query: {}, variables: { ids } }) =>
         Promise.resolve({
           submissions: {
             edges: [
@@ -269,29 +269,48 @@ describe("me.myCollection", () => {
         }),
     }
 
-    const data = await runAuthenticatedQuery(query, context)
+    it("enriches artwork with consignment submissions data", async () => {
+      const data = await runAuthenticatedQuery(query, context)
 
-    expect(data.me.myCollectionConnection.edges[0].node.title).toBe(
-      "some title"
-    )
-    expect(
-      data.me.myCollectionConnection.edges[0].node.consignmentSubmission
-        .displayText
-    ).toBe("Submission in progress")
+      expect(data.me.myCollectionConnection.edges[0].node.title).toBe(
+        "some title"
+      )
+      expect(
+        data.me.myCollectionConnection.edges[0].node.consignmentSubmission
+          .displayText
+      ).toBe("Submission in progress")
 
-    expect(data.me.myCollectionConnection.edges[1].node.title).toBe(
-      "some title 2"
-    )
-    expect(
-      data.me.myCollectionConnection.edges[1].node.consignmentSubmission
-    ).toBeFalsy()
+      expect(data.me.myCollectionConnection.edges[1].node.title).toBe(
+        "some title 2"
+      )
+      expect(
+        data.me.myCollectionConnection.edges[1].node.consignmentSubmission
+      ).toBeFalsy()
 
-    expect(data.me.myCollectionConnection.edges[2].node.title).toBe(
-      "some title 3"
-    )
-    expect(
-      data.me.myCollectionConnection.edges[2].node.consignmentSubmission
-    ).toBeFalsy()
+      expect(data.me.myCollectionConnection.edges[2].node.title).toBe(
+        "some title 3"
+      )
+      expect(
+        data.me.myCollectionConnection.edges[2].node.consignmentSubmission
+      ).toBeFalsy()
+    })
+
+    describe("when loading a submission fails", async () => {
+      const failingContext: Partial<ResolverContext> = {
+        ...context,
+        convectionGraphQLLoader: () =>
+          Promise.reject(new Error("Submission not found")),
+      }
+
+      const data = await runAuthenticatedQuery(query, failingContext)
+
+      expect(data.me.myCollectionConnection.edges[0].node.title).toBe(
+        "some title"
+      )
+      expect(
+        data.me.myCollectionConnection.edges[0].node.consignmentSubmission
+      ).toBeNull()
+    })
   })
 
   it("returns artworks without submission information if submissions not found", async () => {
