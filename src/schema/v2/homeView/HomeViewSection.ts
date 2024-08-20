@@ -1,6 +1,7 @@
 import {
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
