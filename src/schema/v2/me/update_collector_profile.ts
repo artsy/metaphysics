@@ -1,13 +1,50 @@
-import { GraphQLBoolean, GraphQLString, GraphQLList } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLString,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { snakeCase } from "lodash"
-import { CollectorProfileFields } from "../CollectorProfile/collectorProfile"
+import { CollectorProfileType } from "../CollectorProfile/collectorProfile"
 import { IntentsType } from "../CollectorProfile/types/IntentsType"
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
+
+const Success = new GraphQLObjectType<any, ResolverContext>({
+  name: "UpdateCollectorProfileSuccess",
+  isTypeOf: (data) => data.id,
+  fields: () => ({
+    collectorProfile: {
+      type: CollectorProfileType,
+      resolve: (result) => result,
+    },
+  }),
+})
+
+const Failure = new GraphQLObjectType<any, ResolverContext>({
+  name: "UpdateCollectorProfileFailure",
+  isTypeOf: (data) => data._type === "GravityMutationError",
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: (err) => err,
+    },
+  }),
+})
+
+const ResponseOrError = new GraphQLUnionType({
+  name: "updateCollectorProfileResponseOrError",
+  types: [Success, Failure],
+})
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "UpdateCollectorProfile",
-  description: "Updating a collector profile (loyalty applicant status).",
+  description: "Update a collector profile.",
   inputFields: {
     affiliatedAuctionHouseIds: {
       description: "List of affiliated auction house ids, referencing Galaxy.",
@@ -37,7 +74,13 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       type: GraphQLString,
     },
   },
-  outputFields: CollectorProfileFields,
+  outputFields: {
+    collectorProfileOrError: {
+      type: ResponseOrError,
+      description: "On success: the updated collector profile.",
+      resolve: (result) => result,
+    },
+  },
   mutateAndGetPayload: (args, { meUpdateCollectorProfileLoader }) => {
     // snake_case keys for Gravity (keys are the same otherwise)
     const options = Object.keys(args).reduce(
@@ -51,6 +94,15 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       )
     }
 
-    return meUpdateCollectorProfileLoader(options)
+    try {
+      return meUpdateCollectorProfileLoader(options)
+    } catch (error) {
+      const formattedErr = formatGravityError(error)
+      if (formattedErr) {
+        return { ...formattedErr, _type: "GravityMutationError" }
+      } else {
+        throw new Error(error)
+      }
+    }
   },
 })

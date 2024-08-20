@@ -2295,7 +2295,7 @@ type ArtistsRailHomeViewSection implements GenericHomeViewSection & Node {
     before: String
     first: Int
     last: Int
-  ): ArtistConnection!
+  ): ArtistConnection
 
   # The component that is prescribed for this section
   component: HomeViewComponent
@@ -3165,7 +3165,7 @@ type ArtworksRailHomeViewSection implements GenericHomeViewSection & Node {
     before: String
     first: Int
     last: Int
-  ): ArtworkConnection!
+  ): ArtworkConnection
 
   # The component that is prescribed for this section
   component: HomeViewComponent
@@ -3232,6 +3232,45 @@ type AuctionArtworkGrid implements ArtworkContextGrid {
   ctaHref: String
   ctaTitle: String
   title: String
+}
+
+# Collector signals on a biddable auction lot
+type AuctionCollectorSignals {
+  # Bid count
+  bidCount: Int!
+
+  # Live bidding has started on this lot's auction
+  liveBiddingStarted: Boolean!
+
+  # Auction live bidding start time
+  liveStartAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+
+  # Pending auction lot end time for bidding
+  lotClosesAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
+
+  # Lot watcher count
+  lotWatcherCount: Int!
+
+  # Lot bidding period extended due to last-minute bids
+  onlineBiddingExtended: Boolean!
+
+  # Pending auction registration end time
+  registrationEndsAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 }
 
 # In centimeters.
@@ -4409,29 +4448,37 @@ type CollectorResume {
 
 # Collector signals available to the artwork
 type CollectorSignals {
+  auction: AuctionCollectorSignals
+
   # Bid count on lots open for bidding
-  bidCount: Int
+  bidCount: Int @deprecated(reason: "Use nested field in `auction` instead")
 
   # Live bidding has started on this lot's auction
   liveBiddingStarted: Boolean
+    @deprecated(reason: "Use nested field in `auction` instead")
 
   # Auction live bidding start time
   liveStartAt: String
+    @deprecated(reason: "Use nested field in `auction` instead")
 
   # Pending auction lot end time for bidding
   lotClosesAt: String
+    @deprecated(reason: "Use nested field in `auction` instead")
 
   # Lot watcher count on lots open for bidding
   lotWatcherCount: Int
+    @deprecated(reason: "Use nested field in `auction` instead")
 
   # Auction lot bidding period extended due to last-minute bids
   onlineBiddingExtended: Boolean
+    @deprecated(reason: "Use nested field in `auction` instead")
 
   # Partner offer available to collector
   partnerOffer: PartnerOfferToCollector
 
   # Pending auction registration end time
   registrationEndsAt: String
+    @deprecated(reason: "Use nested field in `auction` instead")
 }
 
 # Represents either an action or a potential failure
@@ -10644,7 +10691,7 @@ type HeroUnitsHomeViewSection implements GenericHomeViewSection & Node {
     before: String
     first: Int
     last: Int
-  ): HeroUnitConnection!
+  ): HeroUnitConnection
 
   # A globally unique ID.
   id: ID!
@@ -10928,8 +10975,27 @@ type HomeView {
 
 # A component specification
 type HomeViewComponent {
+  # A background image for this section
+  backgroundImageURL(
+    version: HomeViewComponentBackgroundImageURLVersion
+  ): String
+
+  # A description for this section
+  description: String
+
+  # A screen to navigate to when this component is clicked
+  href: String
+
   # A display title for this section
   title: String
+
+  # How this component should be rendered
+  type: String
+}
+
+enum HomeViewComponentBackgroundImageURLVersion {
+  NARROW
+  WIDE
 }
 
 union HomeViewSection =
@@ -13440,7 +13506,7 @@ type Mutation {
   # Update a collection
   updateCollection(input: updateCollectionInput!): updateCollectionPayload
 
-  # Updating a collector profile (loyalty applicant status).
+  # Update a collector profile.
   updateCollectorProfile(
     input: UpdateCollectorProfileInput!
   ): UpdateCollectorProfilePayload
@@ -19112,6 +19178,10 @@ type UpdateCollectionSuccess {
   collection: Collection
 }
 
+type UpdateCollectorProfileFailure {
+  mutationError: GravityMutationError
+}
+
 input UpdateCollectorProfileInput {
   # List of affiliated auction house ids, referencing Galaxy.
   affiliatedAuctionHouseIds: [String]
@@ -19137,109 +19207,14 @@ input UpdateCollectorProfileInput {
 }
 
 type UpdateCollectorProfilePayload {
-  artsyUserSince(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
-  bio: String
   clientMutationId: String
-  collectedArtworksCount: Int!
-  collectorLevel: Int
-  companyName: String
-  companyWebsite: String
-  confirmedBuyerAt(
-    format: String
 
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
-  email: String
-  emailConfirmed: Boolean
-    @deprecated(
-      reason: "emailConfirmed is going to be removed, use isEmailConfirmed instead"
-    )
-  firstNameLastInitial: String
-  followedArtistsCount: Int!
-  icon: Image
+  # On success: the updated collector profile.
+  collectorProfileOrError: updateCollectorProfileResponseOrError
+}
 
-  # A globally unique ID.
-  id: ID!
-  identityVerified: Boolean
-    @deprecated(
-      reason: "identityVerified is going to be removed, use isIdentityVerified instead"
-    )
-  initials(length: Int = 3): String
-  inquiryRequestsCount: Int!
-  institutionalAffiliations: String
-  intents: [String]
-  interestsConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): UserInterestConnection
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-  isActiveBidder: Boolean
-  isActiveInquirer: Boolean
-  isEmailConfirmed: Boolean
-  isIdentityVerified: Boolean
-  isProfileComplete: Boolean
-  lastUpdatePromptAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
-  location: MyLocation
-  loyaltyApplicantAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
-  name: String
-
-  # Collector's position with relevant institutions
-  otherRelevantPositions: String
-  owner: User!
-
-  # User ID of the collector profile's owner
-  ownerID: ID!
-
-  # Holds information about the engagement a collector profile has with a given partner
-  partnerEngagement(
-    # The ID of the partner to check for engagement
-    partnerID: ID!
-  ): PartnerEngagement
-  privacy: String
-  profession: String
-  professionalBuyerAppliedAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
-  professionalBuyerAt(
-    format: String
-
-    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    timezone: String
-  ): String
-  savedArtworksCount: Int!
-  selfReportedPurchases: String
-
-  # An artwork-specific paragraph describing the collector.
-  summaryParagraph(
-    # This can be specified, and is injected in a conversation context for convenience.
-    artworkID: String
-  ): String
-  totalBidsCount: Int!
-  userInterests: [UserInterest]!
-    @deprecated(reason: "Use \"owner#interestsConnection\" field instead.")
+type UpdateCollectorProfileSuccess {
+  collectorProfile: CollectorProfileType
 }
 
 type UpdateCollectorProfileWithIDFailure {
@@ -22241,6 +22216,10 @@ type updateCollectionPayload {
   clientMutationId: String
   responseOrError: UpdateCollectionResponseOrError
 }
+
+union updateCollectorProfileResponseOrError =
+    UpdateCollectorProfileFailure
+  | UpdateCollectorProfileSuccess
 
 type updateHeroUnitFailure {
   mutationError: GravityMutationError

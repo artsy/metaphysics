@@ -2,6 +2,7 @@ import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
   AuctionLotsForYouResolver,
+  CuratorsPicksEmergingArtworksResolver,
   NewWorksForYouResolver,
   NewWorksFromGalleriesYouFollowResolver,
   RecentlyViewedArtworksResolver,
@@ -13,12 +14,20 @@ import {
 } from "./artistResolvers"
 import { HeroUnitsResolver } from "./heroUnitsResolver"
 
+type MaybeResolved<T> =
+  | T
+  | ((context: ResolverContext, args: any) => Promise<T>)
+
 export type HomeViewSection = {
   id: string
   type: string
   component?: {
-    title?: string | null
-  } | null
+    title?: MaybeResolved<string>
+    type?: MaybeResolved<string>
+    description?: MaybeResolved<string>
+    backgroundImageURL?: MaybeResolved<string>
+    href?: MaybeResolved<string>
+  }
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
 
@@ -30,6 +39,41 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
   },
   resolver: SimilarToRecentlyViewedArtworksResolver,
 }
+
+export const CuratorsPicksEmerging: HomeViewSection = {
+  id: "home-view-section-curators-picks-emerging",
+  type: "ArtworksRailHomeViewSection",
+  component: {
+    type: "FeaturedCollection",
+    title: async (context: ResolverContext) => {
+      const { app_title } = await context.siteHeroUnitLoader(
+        "curators-picks-emerging-app"
+      )
+      return app_title
+    },
+    description: async (context: ResolverContext) => {
+      const { app_description } = await context.siteHeroUnitLoader(
+        "curators-picks-emerging-app"
+      )
+      return app_description
+    },
+    backgroundImageURL: async (context: ResolverContext, args) => {
+      const {
+        background_image_app_phone_url,
+        background_image_app_tablet_url,
+      } = await context.siteHeroUnitLoader("curators-picks-emerging-app")
+
+      if (args.version === "wide") {
+        return background_image_app_tablet_url
+      }
+
+      return background_image_app_phone_url
+    },
+    href: "/collection/curators-picks-emerging",
+  },
+  resolver: CuratorsPicksEmergingArtworksResolver,
+}
+
 export const RecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-recently-viewed-artworks",
   type: "ArtworksRailHomeViewSection",
@@ -94,6 +138,7 @@ export const HeroUnits: HomeViewSection = {
 
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
+  CuratorsPicksEmerging,
   HeroUnits,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,

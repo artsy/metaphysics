@@ -3,10 +3,8 @@ import { GraphQLInt, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
-import { some } from "lodash"
-import { isFieldRequested } from "lib/isFieldRequested"
-
-const NOW = new Date()
+import { date } from "../fields/date"
+import { GraphQLNonNull } from "graphql"
 
 interface ActiveLotData {
   saleArtwork: {
@@ -21,202 +19,161 @@ interface ActiveLotData {
   }
 }
 
-export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
-  type: new GraphQLObjectType({
-    description: "Collector signals available to the artwork",
-    name: "CollectorSignals",
-    fields: {
-      bidCount: {
-        type: GraphQLInt,
-        description: "Bid count on lots open for bidding",
-      },
-      lotWatcherCount: {
-        type: GraphQLInt,
-        description: "Lot watcher count on lots open for bidding",
-      },
-      registrationEndsAt: {
-        type: GraphQLString,
-        description: "Pending auction registration end time",
-      },
-      lotClosesAt: {
-        type: GraphQLString,
-        description: "Pending auction lot end time for bidding",
-      },
-      onlineBiddingExtended: {
-        type: GraphQLBoolean,
-        description:
-          "Auction lot bidding period extended due to last-minute bids",
-      },
-      liveStartAt: {
-        type: GraphQLString,
-        description: "Auction live bidding start time",
-      },
-      liveBiddingStarted: {
-        type: GraphQLBoolean,
-        description: "Live bidding has started on this lot's auction",
-      },
-      partnerOffer: {
-        type: PartnerOfferToCollectorType,
-        description: "Partner offer available to collector",
-      },
-    },
-  }),
-  description: "Collector signals on artwork",
+const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
+  resolve: async (artwork, {}, ctx) => {
+    const isInSale = artwork.sale_ids?.length > 0
+    if (
+      !checkFeatureFlag("emerald_signals-auction-improvements", ctx) ||
+      !isInSale
+    ) {
+      return null
+    }
 
-  resolve: async (artwork, {}, ctx, resolveInfo) => {
-    const collectorSignals = await collectorSignalsLoader(
-      artwork,
-      ctx,
-      resolveInfo
-    )
-    return collectorSignals
-  },
-}
-
-interface CollectorSignals {
-  bidCount?: number
-  lotWatcherCount?: number
-  partnerOffer?: { endAt: string }
-  registrationEndsAt?: string
-  liveStartAt?: string
-  liveBiddingStarted?: boolean
-  onlineBiddingExtended?: boolean
-  lotClosesAt?: string
-}
-
-const AUCTION_FIELDS = [
-  "bidCount",
-  "lotWatcherCount",
-  "registrationEndsAt",
-  "liveStartAt",
-  "liveBiddingStarted",
-  "lotClosesAt",
-  "onlineBiddingExtended",
-]
-
-const collectorSignalsLoader = async (
-  artwork,
-  ctx,
-  resolveInfo
-): Promise<CollectorSignals> => {
-  let bidCount,
-    lotWatcherCount,
-    partnerOffer,
-    registrationEndsAt,
-    liveStartAt,
-    liveBiddingStarted,
-    lotClosesAt,
-    onlineBiddingExtended
-
-  const artworkId = artwork.id
-
-  const isInSale = artwork.sale_ids?.length > 0
-
-  const unleashContext = {
-    userId: ctx.userID,
-  }
-  const partnerOfferCollectorSignalsEnabled = isFeatureFlagEnabled(
-    "emerald_signals-partner-offers",
-    unleashContext
-  )
-  const auctionsCollectorSignalsEnabled = isFeatureFlagEnabled(
-    "emerald_signals-auction-improvements",
-    unleashContext
-  )
-
-  const auctionSignalsRequested =
-    auctionsCollectorSignalsEnabled &&
-    isInSale &&
-    some(AUCTION_FIELDS, (key) => isFieldRequested(key, resolveInfo))
-
-  const partnerOfferSignalsRequested =
-    partnerOfferCollectorSignalsEnabled &&
-    isFieldRequested("partnerOffer", resolveInfo)
-
-  // Handle signals for auction artworks
-  if (auctionSignalsRequested) {
     const activeLotData = await getActiveSaleArtwork(
       {
-        artworkId,
+        artworkId: artwork.id,
         saleIds: artwork.sale_ids,
       },
       ctx
     )
 
-    const activeAuctionLot = activeLotData && !activeLotData.sale.ended_at
-    if (activeAuctionLot) {
-      const { saleArtwork, sale } = activeLotData
-
-      if (artwork.recent_saves_count) {
-        lotWatcherCount = artwork.recent_saves_count
-      }
-
-      if (saleArtwork.bidder_positions_count) {
-        bidCount = saleArtwork.bidder_positions_count
-      }
-
-      const registrationEndAtDate =
-        sale.registration_ends_at && new Date(sale.registration_ends_at)
-
-      if (registrationEndAtDate && registrationEndAtDate > NOW) {
-        registrationEndsAt = registrationEndAtDate.toISOString()
-      }
-
-      const saleLiveStartAtDate =
-        sale.live_start_at && new Date(sale.live_start_at)
-      if (saleLiveStartAtDate) {
-        if (saleLiveStartAtDate > NOW) {
-          liveBiddingStarted = false
-          liveStartAt = saleLiveStartAtDate.toISOString()
-        } else {
-          liveBiddingStarted = true
-        }
-      }
-
-      const extendedBiddingEndAtDate =
-        saleArtwork.extended_bidding_end_at &&
-        new Date(saleArtwork.extended_bidding_end_at)
-
-      if (extendedBiddingEndAtDate && extendedBiddingEndAtDate > NOW) {
-        onlineBiddingExtended = true
-        lotClosesAt = extendedBiddingEndAtDate.toISOString()
-      } else {
-        onlineBiddingExtended = false
-
-        const lotClosesAtDate =
-          saleArtwork.end_at && new Date(saleArtwork.end_at)
-        lotClosesAt = lotClosesAtDate && lotClosesAtDate.toISOString()
-      }
+    if (!activeLotData) {
+      return null
     }
-  }
 
-  // Handle signals for non-auction artworks
-  if (artwork.purchasable && partnerOfferSignalsRequested) {
-    if (ctx.mePartnerOffersLoader) {
-      const partnerOffers = await ctx.mePartnerOffersLoader({
-        artwork_id: artworkId,
-        sort: "-created_at",
-        size: 1,
-      })
-
-      const activePartnerOffers = partnerOffers.body?.filter((po) => po.active)
-
-      partnerOffer = activePartnerOffers?.[0]
+    // Resolve all associated auctions data in one object
+    return {
+      artwork,
+      saleArtwork: activeLotData.saleArtwork,
+      sale: activeLotData.sale,
     }
-  }
+  },
 
-  return {
-    // auction signals
-    bidCount,
-    liveBiddingStarted,
-    liveStartAt,
-    lotClosesAt,
-    lotWatcherCount,
-    onlineBiddingExtended,
-    registrationEndsAt,
-    // purchasable signals
-    partnerOffer,
+  type: new GraphQLObjectType({
+    name: "AuctionCollectorSignals",
+    description: "Collector signals on a biddable auction lot",
+    fields: {
+      bidCount: {
+        type: new GraphQLNonNull(GraphQLInt),
+        description: "Bid count",
+        resolve: ({ saleArtwork }) => saleArtwork.bidder_positions_count ?? 0,
+      },
+      lotWatcherCount: {
+        type: new GraphQLNonNull(GraphQLInt),
+        description: "Lot watcher count",
+        resolve: ({ artwork }) => artwork.recent_saves_count ?? 0,
+      },
+      liveBiddingStarted: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: "Live bidding has started on this lot's auction",
+        resolve: ({ sale }) =>
+          !!sale.live_start_at && new Date(sale.live_start_at) <= new Date(),
+      },
+      onlineBiddingExtended: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: "Lot bidding period extended due to last-minute bids",
+        resolve: ({ saleArtwork }) => !!saleArtwork.extended_bidding_end_at,
+      },
+      lotClosesAt: {
+        ...date(
+          ({ saleArtwork, sale }) =>
+            !sale.live_start_at &&
+            (saleArtwork.extended_bidding_end_at ||
+              saleArtwork.end_at ||
+              sale.end_at)
+        ),
+        description: "Pending auction lot end time for bidding",
+      },
+      liveStartAt: {
+        ...date(({ sale }) => sale.live_start_at),
+        description: "Auction live bidding start time",
+      },
+      registrationEndsAt: {
+        ...date(({ sale }) => sale.registration_ends_at),
+        description: "Pending auction registration end time",
+      },
+    },
+  }),
+}
+
+export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
+  type: new GraphQLObjectType({
+    description: "Collector signals available to the artwork",
+    name: "CollectorSignals",
+    fields: {
+      auction: AuctionCollectorSignals,
+      bidCount: {
+        type: GraphQLInt,
+        description: "Bid count on lots open for bidding",
+        deprecationReason: "Use nested field in `auction` instead",
+      },
+      lotWatcherCount: {
+        type: GraphQLInt,
+        description: "Lot watcher count on lots open for bidding",
+        deprecationReason: "Use nested field in `auction` instead",
+      },
+      registrationEndsAt: {
+        type: GraphQLString,
+        description: "Pending auction registration end time",
+        deprecationReason: "Use nested field in `auction` instead",
+      },
+      lotClosesAt: {
+        type: GraphQLString,
+        description: "Pending auction lot end time for bidding",
+        deprecationReason: "Use nested field in `auction` instead",
+      },
+      onlineBiddingExtended: {
+        type: GraphQLBoolean,
+        description:
+          "Auction lot bidding period extended due to last-minute bids",
+        deprecationReason: "Use nested field in `auction` instead",
+      },
+      liveStartAt: {
+        type: GraphQLString,
+        description: "Auction live bidding start time",
+        deprecationReason: "Use nested field in `auction` instead",
+      },
+      liveBiddingStarted: {
+        type: GraphQLBoolean,
+        description: "Live bidding has started on this lot's auction",
+        deprecationReason: "Use nested field in `auction` instead",
+      },
+      partnerOffer: {
+        type: PartnerOfferToCollectorType,
+        description: "Partner offer available to collector",
+        resolve: async (artwork, {}, ctx) => {
+          if (
+            !checkFeatureFlag("emerald_signals-partner-offers", ctx) ||
+            !ctx.mePartnerOffersLoader ||
+            !artwork.purchasable
+          ) {
+            return null
+          }
+
+          const partnerOffers = await ctx.mePartnerOffersLoader({
+            artwork_id: artwork.id,
+            sort: "-created_at",
+            size: 1,
+          })
+
+          const activePartnerOffers = partnerOffers.body?.filter(
+            (po) => po.active
+          )
+
+          return activePartnerOffers?.[0]
+        },
+      },
+    },
+  }),
+  description: "Collector signals on artwork",
+  resolve: (artwork) => artwork,
+}
+
+const checkFeatureFlag = (flag: any, context: any) => {
+  const unleashContext = {
+    userId: context.userId,
   }
+  return isFeatureFlagEnabled(flag, unleashContext)
 }
 
 const getActiveSaleArtwork = async (
