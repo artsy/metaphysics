@@ -296,20 +296,22 @@ describe("me.myCollection", () => {
     })
 
     describe("when loading a submission fails", async () => {
-      const failingContext: Partial<ResolverContext> = {
-        ...context,
-        convectionGraphQLLoader: () =>
-          Promise.reject(new Error("Submission not found")),
-      }
+      it("returns the artwork without submission information", async () => {
+        const failingContext: Partial<ResolverContext> = {
+          ...context,
+          convectionGraphQLLoader: () =>
+            Promise.reject(new Error("Submission not found")),
+        }
 
-      const data = await runAuthenticatedQuery(query, failingContext)
+        const data = await runAuthenticatedQuery(query, failingContext)
 
-      expect(data.me.myCollectionConnection.edges[0].node.title).toBe(
-        "some title"
-      )
-      expect(
-        data.me.myCollectionConnection.edges[0].node.consignmentSubmission
-      ).toBeNull()
+        expect(data.me.myCollectionConnection.edges[0].node.title).toBe(
+          "some title"
+        )
+        expect(
+          data.me.myCollectionConnection.edges[0].node.consignmentSubmission
+        ).toBeNull()
+      })
     })
   })
 
