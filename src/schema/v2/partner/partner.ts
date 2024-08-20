@@ -59,6 +59,7 @@ import {
   ArtworkVisibility,
   ArtworkVisibilityEnumValues,
 } from "schema/v2/artwork/artworkVisibility"
+import { date } from "../fields/date"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -201,10 +202,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           type: Artwork.type,
           resolve: ({ artwork }) => artwork,
         },
-        createdAt: {
-          type: GraphQLString,
-          resolve: ({ created_at }) => created_at,
-        },
+        createdAt: date(),
         userIDs: {
           type: new GraphQLList(GraphQLString),
           resolve: ({ user_ids }) => user_ids,
