@@ -295,7 +295,7 @@ describe("me.myCollection", () => {
       ).toBeFalsy()
     })
 
-    describe("when loading a submission fails", async () => {
+    describe("when loading a submission fails", () => {
       it("returns the artwork without submission information", async () => {
         const failingContext: Partial<ResolverContext> = {
           ...context,
