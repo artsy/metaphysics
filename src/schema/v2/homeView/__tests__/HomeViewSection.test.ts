@@ -330,4 +330,81 @@ describe("HomeViewSection", () => {
       `)
     })
   })
+
+  describe("FairsRailHomeViewSection", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-featured-fairs") {
+              __typename
+
+              ... on FairsRailHomeViewSection {
+                component {
+                  title
+                }
+
+                fairsConnection(first: 2) {
+                  edges {
+                    node {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const fairs = {
+        body: [
+          {
+            id: "fair-1",
+            name: "Fair 1",
+            start_at: "2024-05-23T11:00:00+00:00",
+            end_at: "2024-06-23T11:00:00+00:00",
+          },
+          {
+            id: "fair-2",
+            name: "Fair 2",
+            start_at: "2024-05-23T11:00:00+00:00",
+            end_at: "2024-06-23T11:00:00+00:00",
+          },
+        ],
+      }
+
+      const context = {
+        authenticatedLoaders: {
+          meLoader: jest.fn().mockReturnValue({ type: "User" }),
+        },
+        fairsLoader: jest.fn().mockResolvedValue(fairs),
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "FairsRailHomeViewSection",
+          "component": Object {
+            "title": "Featured Fairs",
+          },
+          "fairsConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "name": "Fair 1",
+                },
+              },
+              Object {
+                "node": Object {
+                  "name": "Fair 2",
+                },
+              },
+            ],
+          },
+        }
+      `)
+    })
+  })
 })
