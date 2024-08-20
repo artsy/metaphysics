@@ -1,6 +1,7 @@
 import {
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
@@ -12,6 +13,7 @@ import { HomeViewComponent } from "./HomeViewComponent"
 import { artworkConnection } from "../artwork"
 import { artistsConnection } from "../artists"
 import { heroUnitsConnection } from "../HeroUnit/heroUnitsConnection"
+import { fairsConnection } from "../fairs"
 
 // section interface
 
@@ -88,6 +90,25 @@ const HeroUnitsHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
+const FairsRailHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "FairsRailHomeViewSection",
+  description: "Fairs rail section",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+
+    fairsConnection: {
+      type: new GraphQLNonNull(fairsConnection.type),
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
+    },
+  },
+})
+
 // the Section union type of all concrete sections
 
 export const HomeViewSectionType = new GraphQLUnionType({
@@ -96,6 +117,7 @@ export const HomeViewSectionType = new GraphQLUnionType({
     ArtworksRailHomeViewSectionType,
     ArtistsRailHomeViewSectionType,
     HeroUnitsHomeViewSectionType,
+    FairsRailHomeViewSectionType,
   ],
   resolveType: (value) => {
     return value.type

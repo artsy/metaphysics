@@ -13,6 +13,7 @@ import {
   SuggestedArtistsResolver,
 } from "./artistResolvers"
 import { HeroUnitsResolver } from "./heroUnitsResolver"
+import { FeaturedFairsResolver } from "./featuredFairsResolver"
 
 type MaybeResolved<T> =
   | T
@@ -23,7 +24,7 @@ export type HomeViewSection = {
   type: string
   component?: {
     title?: MaybeResolved<string>
-    type?: MaybeResolved<string>
+    type?: string
     description?: MaybeResolved<string>
     backgroundImageURL?: MaybeResolved<string>
     href?: MaybeResolved<string>
@@ -136,9 +137,20 @@ export const HeroUnits: HomeViewSection = {
   resolver: HeroUnitsResolver,
 }
 
+export const FeaturedFairs: HomeViewSection = {
+  id: "home-view-section-featured-fairs",
+  type: "FairsRailHomeViewSection",
+  component: {
+    title: "Featured Fairs",
+    description: "See Works in Top Art Fairs",
+  },
+  resolver: FeaturedFairsResolver,
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   CuratorsPicksEmerging,
+  FeaturedFairs,
   HeroUnits,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
