@@ -5,6 +5,7 @@ import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { date } from "../fields/date"
 import { GraphQLNonNull } from "graphql"
+import { logFeatureFlagCheck } from "lib/loaders/api/featureFlagLogger"
 
 interface ActiveLotData {
   saleArtwork: {
@@ -22,6 +23,7 @@ interface ActiveLotData {
 const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (artwork, {}, ctx) => {
     const isInSale = artwork.sale_ids?.length > 0
+    console.log("ff precheck")
     if (
       !checkFeatureFlag("emerald_signals-auction-improvements", ctx) ||
       !isInSale
@@ -144,8 +146,8 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         resolve: async (artwork, {}, ctx) => {
           if (
             !checkFeatureFlag("emerald_signals-partner-offers", ctx) ||
-            !ctx.mePartnerOffersLoader ||
-            !artwork.purchasable
+            !artwork.purchasable ||
+            !ctx.mePartnerOffersLoader
           ) {
             return null
           }
@@ -166,14 +168,20 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
     },
   }),
   description: "Collector signals on artwork",
-  resolve: (artwork) => artwork,
+  resolve: (artwork) => {
+    return artwork
+  },
 }
 
 const checkFeatureFlag = (flag: any, context: any) => {
   const unleashContext = {
     userId: context.userId,
   }
-  return isFeatureFlagEnabled(flag, unleashContext)
+
+  const result = isFeatureFlagEnabled(flag, unleashContext)
+  console.log("Feature flag check", flag, result)
+  logFeatureFlagCheck(context.requestIDs.requestID, flag, result)
+  return result
 }
 
 const getActiveSaleArtwork = async (

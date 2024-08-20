@@ -38,6 +38,10 @@ import { principalFieldDirectiveValidation } from "directives/principleField/pri
 import * as Sentry from "@sentry/node"
 import { bodyParserMiddleware } from "lib/bodyParserMiddleware"
 import { initializeFeatureFlags } from "lib/featureFlags"
+import {
+  featureFlagLoggerRequestDone,
+  featureFlagLoggerSetup,
+} from "lib/loaders/api/featureFlagLogger"
 
 // Initialize Unleash feature flags as early as possible
 initializeFeatureFlags()
@@ -50,10 +54,13 @@ const {
   RESOLVER_TIMEOUT_MS,
   SENTRY_PRIVATE_DSN,
   INTROSPECT_TOKEN,
+  // ENABLE_FEATURE_FLAG_LOGGING,
 } = config
 
 const enableSentry = !!SENTRY_PRIVATE_DSN
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
+const enableFeatureFlagLogging = true // ENABLE_FEATURE_FLAG_LOGGING === "true"
+
 const logQueryDetailsThreshold =
   (LOG_QUERY_DETAILS_THRESHOLD && parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10)) ||
   null // null by default
@@ -84,10 +91,15 @@ function createExtensions(document, result, requestID, userAgent) {
     ? fetchLoggerRequestDone(requestID, userAgent)
     : {}
 
+  const featureFlagLoggerExtensions = enableFeatureFlagLogging
+    ? featureFlagLoggerRequestDone(requestID, userAgent)
+    : {}
+
   const extensions = {
     ...optionalFieldsExtensions,
     ...principalFieldExtensions,
     ...requestLoggerExtensions,
+    ...featureFlagLoggerExtensions,
   }
 
   // Instead of an empty hash, which will include `extensions: {}`
@@ -161,6 +173,10 @@ const graphqlServer = graphqlHTTP((req, res, params) => {
 
   if (enableRequestLogging) {
     fetchLoggerSetup(requestID)
+  }
+
+  if (enableFeatureFlagLogging) {
+    featureFlagLoggerSetup(requestID)
   }
 
   // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
