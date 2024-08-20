@@ -248,7 +248,7 @@ describe("me.myCollection", () => {
             "x-total-count": "10",
           },
         }),
-      convectionGraphQLLoader: ({ query: {}, variables: { ids } }) =>
+      convectionGraphQLLoader: () =>
         Promise.resolve({
           submissions: {
             edges: [
