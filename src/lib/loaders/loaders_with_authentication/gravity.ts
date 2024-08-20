@@ -559,6 +559,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+
     partnerAllLoader: gravityLoader((id) => `partner/${id}/all`),
     partnerArtistDocumentsLoader: gravityLoader<
       any,
@@ -660,6 +661,11 @@ export default (accessToken, userID, opts) => {
     ),
     partnerSearchCriteriaLoader: gravityLoader(
       (id) => `/partner/${id}/partner_search_criterias`,
+      {},
+      { headers: true }
+    ),
+    partnerSearchCriteriaHitsLoader: gravityLoader(
+      (id) => `partner/${id}/partner_search_criteria_hits`,
       {},
       { headers: true }
     ),
