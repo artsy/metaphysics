@@ -171,7 +171,7 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
 
 const checkFeatureFlag = (flag: any, context: any) => {
   const unleashContext = {
-    userId: context.userId,
+    userId: context.userID,
   }
   return isFeatureFlagEnabled(flag, unleashContext)
 }
