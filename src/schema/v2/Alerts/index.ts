@@ -168,6 +168,7 @@ type GravitySearchCriteriaJSON = {
   count_7d?: number // only present when data is returned from ElasticSearch
   artist_ids: string[]
   artist_series_ids: string[]
+  artist_series_names: string[]
   partner_ids: string[]
   location_cities: string[]
   major_periods: string[]
@@ -267,6 +268,10 @@ export const AlertType = new GraphQLObjectType<
       artistSeriesIDs: {
         type: new GraphQLList(GraphQLString),
         resolve: ({ artist_series_ids }) => artist_series_ids,
+      },
+      artistSeriesNames: {
+        type: new GraphQLList(GraphQLString),
+        resolve: ({ artist_series_names }) => artist_series_names,
       },
       atAuction: {
         type: GraphQLBoolean,

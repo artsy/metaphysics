@@ -21,10 +21,11 @@ import EventStatus, {
   EventStatusEnums,
 } from "schema/v2/input_fields/event_status"
 import {
+  IDFields,
   NodeInterface,
   SlugAndInternalIDFields,
 } from "schema/v2/object_identification"
-import { artworkConnection } from "schema/v2/artwork"
+import Artwork, { artworkConnection } from "schema/v2/artwork"
 import numeral from "schema/v2/fields/numeral"
 import { ShowsConnection, ShowType } from "schema/v2/show"
 import { ArtistType } from "schema/v2/artist"
@@ -58,6 +59,7 @@ import {
   ArtworkVisibility,
   ArtworkVisibilityEnumValues,
 } from "schema/v2/artwork/artworkVisibility"
+import { date } from "../fields/date"
 
 const isFairOrganizer = (type) => type === "FairOrganizer"
 const isGallery = (type) => type === "PartnerGallery"
@@ -175,22 +177,37 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       nodeType: ArtistType,
     }).connectionType
 
-    const PartnerArtistsSummaryEdgeFields = {
-      totalAlertCount: {
-        type: GraphQLInt,
-        resolve: ({ total_alert_count }) => total_alert_count,
-      },
-    }
-
-    const artistsWithAlertCountsConnectionType = connectionWithCursorInfo({
+    const ArtistsWithAlertCountsConnectionType = connectionWithCursorInfo({
       name: "ArtistsWithAlertCounts",
-      edgeFields: PartnerArtistsSummaryEdgeFields,
+      edgeFields: {
+        totalAlertCount: {
+          type: GraphQLInt,
+          resolve: ({ total_alert_count }) => total_alert_count,
+        },
+      },
       nodeType: ArtistType,
     }).connectionType
 
     const PartnerAlertsConnectionType = connectionWithCursorInfo({
       name: "PartnerAlerts",
       edgeFields: PartnerAlertsEdgeFields,
+      nodeType: AlertType,
+    }).connectionType
+
+    const PartnerAlertHitsConnection = connectionWithCursorInfo({
+      name: "PartnerAlertHits",
+      edgeFields: {
+        ...IDFields,
+        artwork: {
+          type: Artwork.type,
+          resolve: ({ artwork }) => artwork,
+        },
+        createdAt: date(),
+        userIDs: {
+          type: new GraphQLList(GraphQLString),
+          resolve: ({ user_ids }) => user_ids,
+        },
+      },
       nodeType: AlertType,
     }).connectionType
 
@@ -263,7 +280,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       artistsWithAlertCountsConnection: {
-        type: artistsWithAlertCountsConnectionType,
+        type: ArtistsWithAlertCountsConnectionType,
         args: pageable({
           page: {
             type: GraphQLInt,
@@ -362,6 +379,53 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             body: body.hits,
+            args,
+            resolveNode: ({ search_criteria }) => search_criteria,
+          })
+        },
+      },
+      partnerAlertHitsConnection: {
+        description: "A connection of search criteria hits from a Partner.",
+        type: PartnerAlertHitsConnection,
+        args: pageable({
+          page: {
+            type: GraphQLInt,
+          },
+          size: {
+            type: GraphQLInt,
+          },
+        }),
+        resolve: async ({ _id }, args, { partnerSearchCriteriaHitsLoader }) => {
+          if (!partnerSearchCriteriaHitsLoader) return null
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          type GravityArgs = {
+            page: number
+            size: number
+            total_count: boolean
+          }
+
+          const gravityArgs: GravityArgs = {
+            page,
+            size,
+            total_count: true,
+          }
+
+          const { body, headers } = await partnerSearchCriteriaHitsLoader?.(
+            _id,
+            gravityArgs
+          )
+
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+          return paginationResolver({
+            totalCount,
+            offset,
+            page,
+            size,
+            body,
             args,
             resolveNode: ({ search_criteria }) => search_criteria,
           })

@@ -14,7 +14,6 @@ describe("Partner type", () => {
       type: "Gallery",
       has_full_profile: true,
       inquireable: false,
-      profile_banner_display: true,
       distinguish_represented_artists: true,
       profile_banner_display: "Artworks",
       claimed: true,
@@ -1497,24 +1496,24 @@ describe("Partner type", () => {
             {
               artist: {
                 name: "Molly D",
-                id: "5f80bfefe8d808000ea212c2"
+                id: "5f80bfefe8d808000ea212c2",
               },
-              total_alert_count: 1
+              total_alert_count: 1,
             },
             {
-              artist: { 
+              artist: {
                 name: "Percy Z",
-                id: "5f80bfefe8d808000ea212c1"
+                id: "5f80bfefe8d808000ea212c1",
               },
-              total_alert_count: 12
-            }
-          ]  
+              total_alert_count: 12,
+            },
+          ],
         },
         headers: {
           "x-total-count": 2,
         },
       }
-      
+
       const query = gql`
         {
           partner(id: "catty-partner") {
@@ -1530,7 +1529,8 @@ describe("Partner type", () => {
           }
         }
       `
-      const partnerArtistsWithAlertCountsLoader = () => Promise.resolve(response)
+      const partnerArtistsWithAlertCountsLoader = () =>
+        Promise.resolve(response)
 
       const data = await runAuthenticatedQuery(query, {
         ...context,
@@ -1540,7 +1540,7 @@ describe("Partner type", () => {
         partner: {
           artistsWithAlertCountsConnection: {
             totalCount: 2,
-              edges: [
+            edges: [
               {
                 totalAlertCount: 1,
                 node: {
@@ -1551,6 +1551,79 @@ describe("Partner type", () => {
                 totalAlertCount: 12,
                 node: {
                   name: "Percy Z",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
+
+  describe("#partnerAlertHitsConnection", () => {
+    it("returns connection of matching partner_alert_hits", async () => {
+      const response = {
+        body: [
+          {
+            id: "some-id",
+            artwork: {
+              title: "Some Artwork",
+              _id: "5f80bfefe8d808000ea212c2",
+            },
+            created_at: "foo",
+            user_ids: ["foo", "bar"],
+            search_criteria: {
+              id: "3f980bbe-7b9b-4fa9-beb1-69d13e94fb0c",
+            },
+          },
+        ],
+        headers: {
+          "x-total-count": 1,
+        },
+      }
+
+      const query = gql`
+        {
+          partner(id: "cypress-test-partner-for-automated-testing-purposes") {
+            partnerAlertHitsConnection(first: 10) {
+              totalCount
+              edges {
+                internalID
+                artwork {
+                  internalID
+                  title
+                }
+                userIDs
+                createdAt
+                node {
+                  internalID
+                }
+              }
+            }
+          }
+        }
+      `
+      const partnerSearchCriteriaHitsLoader = () => Promise.resolve(response)
+
+      const data = await runAuthenticatedQuery(query, {
+        ...context,
+        partnerSearchCriteriaHitsLoader,
+      })
+      expect(data).toEqual({
+        partner: {
+          partnerAlertHitsConnection: {
+            totalCount: 1,
+            edges: [
+              {
+                internalID: "some-id",
+                userIDs: ["foo", "bar"],
+                createdAt: "foo",
+                artwork: {
+                  internalID: "5f80bfefe8d808000ea212c2",
+                  title: "Some Artwork",
+                },
+                node: {
+                  internalID: "3f980bbe-7b9b-4fa9-beb1-69d13e94fb0c",
                 },
               },
             ],
