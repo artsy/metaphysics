@@ -7,6 +7,7 @@ import {
   NewWorksForYouResolver,
   NewWorksFromGalleriesYouFollowResolver,
   RecentlyViewedArtworksResolver,
+  RecommendedArtworksResolver,
   SimilarToRecentlyViewedArtworksResolver,
 } from "./artworkResolvers"
 import {
@@ -118,6 +119,17 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
   },
   resolver: NewWorksFromGalleriesYouFollowResolver,
 }
+
+export const RecommendedArtworks: HomeViewSection = {
+  id: "home-view-section-recommended-artworks",
+  type: "ArtworksRailHomeViewSection",
+  component: {
+    title: "Artwork Recommendations",
+  },
+  resolver: RecommendedArtworksResolver,
+}
+
+// Artists Rails
 
 export const TrendingArtists: HomeViewSection = {
   id: "home-view-section-trending-artists",
@@ -249,8 +261,8 @@ export const ActiveBids: HomeViewSection = {
 
 const sections: HomeViewSection[] = [
   ActiveBids,
-  Auctions,
   AuctionLotsForYou,
+  Auctions,
   CuratorsPicksEmerging,
   FeaturedFairs,
   HeroUnits,
@@ -260,11 +272,12 @@ const sections: HomeViewSection[] = [
   MarketingCollections,
   MarketingCollections,
   MarketingCollections,
+  News,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
-  News,
   RecentlyViewedArtworks,
   RecommendedArtists,
+  RecommendedArtworks,
   ShowsForYou,
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
