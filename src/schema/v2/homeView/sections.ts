@@ -18,6 +18,7 @@ import { FeaturedFairsResolver } from "./featuredFairsResolver"
 type MaybeResolved<T> =
   | T
   | ((context: ResolverContext, args: any) => Promise<T>)
+import { LatestArticlesResolvers } from "./articlesResolvers"
 
 export type HomeViewSection = {
   id: string
@@ -147,11 +148,21 @@ export const FeaturedFairs: HomeViewSection = {
   resolver: FeaturedFairsResolver,
 }
 
+export const LatestArticles: HomeViewSection = {
+  id: "home-view-section-latest-articles",
+  type: "ArticlesRailHomeViewSection",
+  component: {
+    title: "Artsy Editorial",
+  },
+  resolver: LatestArticlesResolvers,
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   CuratorsPicksEmerging,
   FeaturedFairs,
   HeroUnits,
+  LatestArticles,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,

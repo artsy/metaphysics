@@ -5,6 +5,7 @@ import {
   FeaturedFairs,
   HeroUnits,
   HomeViewSection,
+  LatestArticles,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,
@@ -29,6 +30,7 @@ export async function getSectionsForUser(
 
   if (me.type === "Admin") {
     sections = [
+      LatestArticles,
       RecentlyViewedArtworks,
       TrendingArtists,
       FeaturedFairs,
@@ -48,6 +50,7 @@ export async function getSectionsForUser(
       NewWorksForYou,
       HeroUnits,
       AuctionLotsForYou,
+      LatestArticles,
       RecommendedArtists,
       TrendingArtists,
       NewWorksFromGalleriesYouFollow,

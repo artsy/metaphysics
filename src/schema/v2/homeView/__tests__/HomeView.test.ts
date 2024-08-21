@@ -85,6 +85,14 @@ describe("homeView", () => {
             },
             Object {
               "node": Object {
+                "__typename": "ArticlesRailHomeViewSection",
+                "component": Object {
+                  "title": "Artsy Editorial",
+                },
+              },
+            },
+            Object {
+              "node": Object {
                 "__typename": "ArtistsRailHomeViewSection",
                 "component": Object {
                   "title": "Recommended Artists",
