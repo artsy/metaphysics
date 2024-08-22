@@ -659,12 +659,12 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerSearchCriteriaLoader: gravityLoader(
+    partnerSearchCriteriasLoader: gravityLoader(
       (id) => `/partner/${id}/partner_search_criterias`,
       {},
       { headers: true }
     ),
-    partnerSearchCriteriaSingleLoader: gravityLoader<
+    partnerSearchCriteriaLoader: gravityLoader<
       any,
       { partner_id: string; id: string }
     >(

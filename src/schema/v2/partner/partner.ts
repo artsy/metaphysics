@@ -352,12 +352,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async (
           { _id },
           args,
-          { partnerSearchCriteriaSingleLoader, partnerSearchCriteriaLoader }
+          { partnerSearchCriteriaLoader, partnerSearchCriteriasLoader }
         ) => {
-          if (
-            !partnerSearchCriteriaLoader ||
-            !partnerSearchCriteriaSingleLoader
-          )
+          if (!partnerSearchCriteriasLoader || !partnerSearchCriteriaLoader)
             return null
 
           if (args.id && !args.first) {
@@ -387,7 +384,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           let body, totalCount
 
           if (args.id) {
-            const singleResult = await partnerSearchCriteriaSingleLoader({
+            const singleResult = await partnerSearchCriteriaLoader({
               partner_id: _id,
               id: args.id,
             })
@@ -395,8 +392,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             body = singleResult ? [singleResult.body] : []
             totalCount = body.length
           } else {
-            // Otherwise, use the partnerSearchCriteriaLoader list endpoint
-            const response = await partnerSearchCriteriaLoader(_id, gravityArgs)
+            // Otherwise, use the partnerSearchCriteriasLoader list endpoint
+            const response = await partnerSearchCriteriasLoader(
+              _id,
+              gravityArgs
+            )
             body = response.body.hits
             totalCount = parseInt(response.headers["x-total-count"] || "0", 10)
           }

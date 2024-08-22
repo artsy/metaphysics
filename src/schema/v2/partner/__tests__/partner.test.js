@@ -1660,11 +1660,11 @@ describe("Partner type", () => {
           }
         }
       `
-      const partnerSearchCriteriaSingleLoader = () => Promise.resolve(response)
+      const partnerSearchCriteriaLoader = () => Promise.resolve(response)
 
       const data = await runAuthenticatedQuery(query, {
         ...context,
-        partnerSearchCriteriaSingleLoader,
+        partnerSearchCriteriaLoader,
       })
 
       expect(data).toEqual({
@@ -1724,11 +1724,11 @@ describe("Partner type", () => {
           }
         }
       `
-      const partnerSearchCriteriaLoader = () => Promise.resolve(response)
+      const partnerSearchCriteriasLoader = () => Promise.resolve(response)
 
       const data = await runAuthenticatedQuery(query, {
         ...context,
-        partnerSearchCriteriaLoader,
+        partnerSearchCriteriasLoader,
       })
       expect(data).toEqual({
         partner: {
