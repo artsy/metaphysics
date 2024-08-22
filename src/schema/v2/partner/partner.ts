@@ -337,7 +337,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: PartnerAlertsConnectionType,
         args: pageable({
           id: {
-            type: GraphQLString, // errr, or ID type?
+            type: GraphQLString,
           },
           page: {
             type: GraphQLInt,
@@ -359,6 +359,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             !partnerSearchCriteriaSingleLoader
           )
             return null
+
+          if (args.id && !args.first) {
+            args.first = 1
+          }
 
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args

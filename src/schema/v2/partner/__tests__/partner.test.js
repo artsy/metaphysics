@@ -1650,10 +1650,7 @@ describe("Partner type", () => {
       const query = gql`
         {
           partner(id: "catty-partner") {
-            alertsConnection(
-              first: 1
-              id: "8754ff90-b020-425b-8dae-894ce5ad9d1f"
-            ) {
+            alertsConnection(id: "8754ff90-b020-425b-8dae-894ce5ad9d1f") {
               edges {
                 node {
                   priceRange
