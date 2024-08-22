@@ -407,4 +407,75 @@ describe("HomeViewSection", () => {
       `)
     })
   })
+
+  describe("MarketingCollectionsRailHomeViewSection", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-marketing-collections") {
+              __typename
+
+              ... on MarketingCollectionsRailHomeViewSection {
+                component {
+                  title
+                }
+
+                marketingCollectionsConnection(first: 2) {
+                  edges {
+                    node {
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const collections = {
+        body: [
+          {
+            title: "Trending Now",
+          },
+          {
+            title: "Top Auction Works",
+          },
+        ],
+      }
+
+      const context = {
+        authenticatedLoaders: {
+          meLoader: jest.fn().mockReturnValue({ type: "User" }),
+        },
+        marketingCollectionsLoader: jest.fn().mockResolvedValue(collections),
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "MarketingCollectionsRailHomeViewSection",
+          "component": Object {
+            "title": "Collections",
+          },
+          "marketingCollectionsConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "title": "Trending Now",
+                },
+              },
+              Object {
+                "node": Object {
+                  "title": "Top Auction Works",
+                },
+              },
+            ],
+          },
+        }
+      `)
+    })
+  })
 })

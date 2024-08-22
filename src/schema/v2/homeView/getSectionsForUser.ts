@@ -6,6 +6,7 @@ import {
   HeroUnits,
   HomeViewSection,
   LatestArticles,
+  MarketingCollections,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,
@@ -32,6 +33,7 @@ export async function getSectionsForUser(
     sections = [
       LatestArticles,
       RecentlyViewedArtworks,
+      MarketingCollections,
       TrendingArtists,
       FeaturedFairs,
       CuratorsPicksEmerging,
@@ -46,6 +48,7 @@ export async function getSectionsForUser(
     sections = [
       CuratorsPicksEmerging,
       SimilarToRecentlyViewedArtworks,
+      MarketingCollections,
       FeaturedFairs,
       NewWorksForYou,
       HeroUnits,
