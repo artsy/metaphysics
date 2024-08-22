@@ -515,4 +515,44 @@ describe("HomeViewSection", () => {
       })
     })
   })
+
+  describe("ActivityRailHomeViewSectionType", () => {
+    it("returns the latest activity", async () => {
+      const query = `
+        {
+          homeView {
+            section(id: "home-view-section-latest-activity") {
+              __typename
+              ... on ActivityRailHomeViewSectionType {
+                component {
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        authenticatedLoaders: {
+          meLoader: jest.fn().mockReturnValue({ type: "User" }),
+        },
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "homeView": Object {
+            "section": Object {
+              "__typename": "ActivityRailHomeViewSectionType",
+              "component": Object {
+                "title": "Latest Activity",
+              },
+            },
+          },
+        }
+      `)
+    })
+  })
 })

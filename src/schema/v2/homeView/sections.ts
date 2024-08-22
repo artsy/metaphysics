@@ -183,12 +183,22 @@ export const ViewingRooms: HomeViewSection = {
   },
 }
 
+export const LatestActivity: HomeViewSection = {
+  id: "home-view-section-latest-activity",
+  type: "ActivityRailHomeViewSection",
+  component: {
+    title: "Latest Activity",
+  },
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   CuratorsPicksEmerging,
   FeaturedFairs,
   HeroUnits,
+  LatestActivity,
   LatestArticles,
+  MarketingCollections,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,

@@ -168,6 +168,19 @@ export const ViewingRoomsRailHomeViewSectionType = new GraphQLObjectType<
 >({
   name: "ViewingRoomsRailHomeViewSection",
   description: "A viewing rooms rail section in the home view",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+  },
+})
+
+const ActivityRailHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ActivityRailHomeViewSection",
+  description: "An rail to show a list of user activity",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
   },
@@ -186,6 +199,7 @@ export const HomeViewSectionType = new GraphQLUnionType({
     MarketingCollectionsRailHomeViewSectionType,
     ShowsRailHomeViewSectionType,
     ViewingRoomsRailHomeViewSectionType,
+    ActivityRailHomeViewSectionType,
   ],
   resolveType: (value) => {
     return value.type
