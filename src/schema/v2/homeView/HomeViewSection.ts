@@ -1,20 +1,20 @@
 import {
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
-  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields, NodeInterface } from "../object_identification"
-import { emptyConnection } from "../fields/pagination"
+import { connectionWithCursorInfo, emptyConnection } from "../fields/pagination"
 import { HomeViewComponent } from "./HomeViewComponent"
 import { artworkConnection } from "../artwork"
 import { artistsConnection } from "../artists"
 import { heroUnitsConnection } from "../HeroUnit/heroUnitsConnection"
 import { fairsConnection } from "../fairs"
 import ArticlesConnection from "../articlesConnection"
+import { MarketingCollectionType } from "../marketingCollections"
 
 // section interface
 
@@ -102,7 +102,7 @@ const FairsRailHomeViewSectionType = new GraphQLObjectType<
     ...standardSectionFields,
 
     fairsConnection: {
-      type: new GraphQLNonNull(fairsConnection.type),
+      type: fairsConnection.type,
       args: pageable({}),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : [],
@@ -121,13 +121,35 @@ const ArticlesRailHomeViewSectionType = new GraphQLObjectType<
     ...standardSectionFields,
 
     articlesConnection: {
-      type: new GraphQLNonNull(ArticlesConnection.type),
+      type: ArticlesConnection.type,
       args: pageable({}),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : [],
     },
   },
 })
+
+const MarketingCollectionsRailHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "MarketingCollectionsRailHomeViewSection",
+  description: "A marketing collections rail section in the home view",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+
+    marketingCollectionsConnection: {
+      type: connectionWithCursorInfo({
+        nodeType: MarketingCollectionType,
+      }).connectionType,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
+    },
+  },
+})
+
 // the Section union type of all concrete sections
 
 export const HomeViewSectionType = new GraphQLUnionType({
@@ -138,6 +160,7 @@ export const HomeViewSectionType = new GraphQLUnionType({
     ArtworksRailHomeViewSectionType,
     FairsRailHomeViewSectionType,
     HeroUnitsHomeViewSectionType,
+    MarketingCollectionsRailHomeViewSectionType,
   ],
   resolveType: (value) => {
     return value.type
