@@ -664,18 +664,17 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerSearchCriteriaHitsLoader: gravityLoader(
-      (id) => `partner/${id}/partner_search_criteria_hits`,
-      {},
-      { headers: true }
-    ),
-    // TODO: rename
-    singlePartnerSearchCriteriaLoader: gravityLoader<
+    partnerSearchCriteriaSingleLoader: gravityLoader<
       any,
       { partner_id: string; id: string }
     >(
       ({ partner_id, id }) =>
         `/partner/${partner_id}/partner_search_criterias/${id}`,
+      {},
+      { headers: true }
+    ),
+    partnerSearchCriteriaHitsLoader: gravityLoader(
+      (id) => `partner/${id}/partner_search_criteria_hits`,
       {},
       { headers: true }
     ),

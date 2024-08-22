@@ -349,16 +349,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLString,
           },
         }),
-        // TODO: clean up naming
-        // TODO: make gravity endpoint
         resolve: async (
           { _id },
           args,
-          { singlePartnerSearchCriteriaLoader, partnerSearchCriteriaLoader }
+          { partnerSearchCriteriaSingleLoader, partnerSearchCriteriaLoader }
         ) => {
           if (
             !partnerSearchCriteriaLoader ||
-            !singlePartnerSearchCriteriaLoader
+            !partnerSearchCriteriaSingleLoader
           )
             return null
 
@@ -366,7 +364,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             args
           )
 
-          console.log("made it past")
           type GravityArgs = {
             page: number
             size: number
@@ -387,20 +384,19 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           if (args.id) {
             // If id is present, call the singlePartnerSearchCriteriaLoader
-            const singleResult = await singlePartnerSearchCriteriaLoader({
+            const singleResult = await partnerSearchCriteriaSingleLoader({
               partner_id: _id,
               id: args.id,
             })
             body = singleResult ? [singleResult] : []
             totalCount = body.length
           } else {
-            // Otherwise, use the partnerSearchCriteriaLoader
+            // Otherwise, use the partnerSearchCriteriaLoader list endpoint
             const response = await partnerSearchCriteriaLoader(_id, gravityArgs)
             body = response.body.hits
             totalCount = parseInt(response.headers["x-total-count"] || "0", 10)
           }
 
-          console.log("hello?")
           return paginationResolver({
             totalCount,
             offset,
