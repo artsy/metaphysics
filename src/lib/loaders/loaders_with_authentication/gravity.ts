@@ -669,7 +669,7 @@ export default (accessToken, userID, opts) => {
       { partner_id: string; id: string }
     >(
       ({ partner_id, id }) =>
-        `/partner/${partner_id}/partner_search_criterias/${id}`,
+        `/partner/${partner_id}/partner_search_criteria/${id}`,
       {},
       { headers: true }
     ),

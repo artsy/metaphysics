@@ -383,12 +383,12 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           let body, totalCount
 
           if (args.id) {
-            // If id is present, call the singlePartnerSearchCriteriaLoader
             const singleResult = await partnerSearchCriteriaSingleLoader({
               partner_id: _id,
               id: args.id,
             })
-            body = singleResult ? [singleResult] : []
+
+            body = singleResult ? [singleResult.body] : []
             totalCount = body.length
           } else {
             // Otherwise, use the partnerSearchCriteriaLoader list endpoint

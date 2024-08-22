@@ -1634,6 +1634,57 @@ describe("Partner type", () => {
   })
 
   describe("#alertsConnection", () => {
+    it("returns a single partner alert", async () => {
+      const response = {
+        body: {
+          id: "8754ff90-b020-425b-8dae-894ce5ad9d1f",
+          search_criteria_id: "3f980bbe-7b9b-4fa9-beb1-69d13e94fb0c",
+          partner_id: "5f80bfefe8d808000ea212c1",
+          search_criteria: {
+            id: "3f980bbe-7b9b-4fa9-beb1-69d13e94fb0c",
+            price_range: "1-2",
+          },
+        },
+      }
+
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            alertsConnection(
+              first: 1
+              id: "8754ff90-b020-425b-8dae-894ce5ad9d1f"
+            ) {
+              edges {
+                node {
+                  priceRange
+                }
+              }
+            }
+          }
+        }
+      `
+      const partnerSearchCriteriaSingleLoader = () => Promise.resolve(response)
+
+      const data = await runAuthenticatedQuery(query, {
+        ...context,
+        partnerSearchCriteriaSingleLoader,
+      })
+
+      expect(data).toEqual({
+        partner: {
+          alertsConnection: {
+            edges: [
+              {
+                node: {
+                  priceRange: "1-2",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
     it("returns partner search criteria details and associated search criteria details", async () => {
       const response = {
         body: {
