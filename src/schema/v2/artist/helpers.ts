@@ -24,6 +24,7 @@ export const ARTIST_INSIGHT_KINDS = [
   "REVIEWED",
   "AWARDS", // Not ranked
   "RESIDENCIES", // Not ranked
+  "FOUNDATIONS",
 ] as const
 
 type ArtistInsightKind = typeof ARTIST_INSIGHT_KINDS[number]
@@ -162,6 +163,12 @@ export const ARTIST_INSIGHT_MAPPING: Record<
       `Winner of ${
         count === 1 ? "a top industry award" : `${count} top industry awards`
       }`,
+  },
+  FOUNDATIONS: {
+    getDescription: (artist) =>
+      formatFoundationsDescription(artist.foundations),
+    getEntities: (artist) => splitEntities(artist.foundations) && [],
+    getLabel: (artist) => formatFoundationsLabel(artist.foundations),
   },
 }
 
@@ -309,4 +316,36 @@ export const getRecentShow = (artist): string | null => {
   const title = `${year} ${show}`
 
   return title
+}
+
+const formatFoundationsLabel = (foundationsArr) => {
+  const foundations = splitEntities(foundationsArr)
+
+  if (!foundations || foundations.length === 0) {
+    return "Foundations"
+  }
+
+  const allButLast = foundations.slice(0, -1).join(", ")
+  const lastItem = foundations[foundations.length - 1]
+
+  return `Foundations ${
+    allButLast ? `${allButLast} and ${lastItem}` : lastItem
+  }`
+}
+
+const formatFoundationsDescription = (foundationsArr) => {
+  if (!foundationsArr || !foundationsArr.length) return null
+
+  const foundations = splitEntities(foundationsArr) || []
+
+  const foundationsUrls = {
+    "Summer 2023": "/fair/foundations",
+    "Winter 2024": "/fair/foundations-winter-2024",
+    "Summer 2024": "/fair/foundations-summer-2024",
+  }
+
+  const lastFoundation = foundations[foundations.length - 1]
+  const lastFoundationUrl = foundationsUrls[lastFoundation]
+
+  return `Featured in [Foundations](${lastFoundationUrl}), the online fair for emerging art, curated by Artsy.`
 }
