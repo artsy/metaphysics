@@ -232,6 +232,7 @@ import { deleteCareerHighlightMutation } from "./careerHighlight/deleteCareerHig
 import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHighlightMutation"
 import { updatePartnerShowMutation } from "./partner/updatePartnerShowMutation"
 import config from "config"
+import { VerifyUser } from "./verifyUser"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -362,6 +363,7 @@ const rootFields = {
   usersConnection: Users,
   vanityURLEntity: VanityURLEntity,
   verifyAddress: VerifyAddress,
+  verifyUser: VerifyUser,
 }
 
 // FIXME: Remove type once Reaction MPv2 migration is complete
