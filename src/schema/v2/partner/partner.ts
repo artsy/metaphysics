@@ -336,6 +336,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       alertsConnection: {
         type: PartnerAlertsConnectionType,
         args: pageable({
+          id: {
+            type: GraphQLString,
+          },
           page: {
             type: GraphQLInt,
           },
@@ -346,8 +349,18 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLString,
           },
         }),
-        resolve: async ({ _id }, args, { partnerSearchCriteriaLoader }) => {
-          if (!partnerSearchCriteriaLoader) return null
+        resolve: async (
+          { _id },
+          args,
+          { partnerSearchCriteriaLoader, partnerSearchCriteriasLoader }
+        ) => {
+          if (!partnerSearchCriteriasLoader || !partnerSearchCriteriaLoader)
+            return null
+
+          if (args.id && !args.first) {
+            args.first = 1
+          }
+
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )
@@ -357,6 +370,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size: number
             total_count: boolean
             artist_id?: string
+            id?: string
           }
 
           const gravityArgs: GravityArgs = {
@@ -364,21 +378,35 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size,
             total_count: true,
             artist_id: args.artistID,
+            id: args.id,
           }
 
-          const { body, headers } = await partnerSearchCriteriaLoader?.(
-            _id,
-            gravityArgs
-          )
+          let body, totalCount
 
-          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+          if (args.id) {
+            const singleResult = await partnerSearchCriteriaLoader({
+              partner_id: _id,
+              id: args.id,
+            })
+
+            body = singleResult ? [singleResult.body] : []
+            totalCount = body.length
+          } else {
+            // Otherwise, use the partnerSearchCriteriasLoader list endpoint
+            const response = await partnerSearchCriteriasLoader(
+              _id,
+              gravityArgs
+            )
+            body = response.body.hits
+            totalCount = parseInt(response.headers["x-total-count"] || "0", 10)
+          }
 
           return paginationResolver({
             totalCount,
             offset,
             page,
             size,
-            body: body.hits,
+            body: body,
             args,
             resolveNode: ({ search_criteria }) => search_criteria,
           })

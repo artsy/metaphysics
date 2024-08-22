@@ -659,8 +659,17 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    partnerSearchCriteriaLoader: gravityLoader(
+    partnerSearchCriteriasLoader: gravityLoader(
       (id) => `/partner/${id}/partner_search_criterias`,
+      {},
+      { headers: true }
+    ),
+    partnerSearchCriteriaLoader: gravityLoader<
+      any,
+      { partner_id: string; id: string }
+    >(
+      ({ partner_id, id }) =>
+        `/partner/${partner_id}/partner_search_criteria/${id}`,
       {},
       { headers: true }
     ),
