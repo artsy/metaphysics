@@ -19,6 +19,7 @@ type MaybeResolved<T> =
   | T
   | ((context: ResolverContext, args: any) => Promise<T>)
 import { LatestArticlesResolvers } from "./articlesResolvers"
+import { MarketingCollectionsResolver } from "./marketingCollectionsResolver"
 
 export type HomeViewSection = {
   id: string
@@ -157,6 +158,15 @@ export const LatestArticles: HomeViewSection = {
   resolver: LatestArticlesResolvers,
 }
 
+export const MarketingCollections: HomeViewSection = {
+  id: "home-view-section-marketing-collections",
+  type: "MarketingCollectionsRailHomeViewSection",
+  component: {
+    title: "Collections",
+  },
+  resolver: MarketingCollectionsResolver,
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   CuratorsPicksEmerging,
@@ -169,6 +179,7 @@ const sections: HomeViewSection[] = [
   RecommendedArtists,
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
+  MarketingCollections,
 ]
 
 export const registry = sections.reduce(
