@@ -7,7 +7,7 @@ export const FeaturedFairsResolver: GraphQLFieldResolver<
   any,
   ResolverContext
 > = async (parent, args, context, info) => {
-  const resolver = HomePageFairsModuleType.getFields().results
+  const { results: resolver } = HomePageFairsModuleType.getFields()
 
   if (!resolver?.resolve) {
     return []

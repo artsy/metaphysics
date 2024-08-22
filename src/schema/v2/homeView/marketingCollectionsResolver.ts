@@ -7,7 +7,9 @@ export const MarketingCollectionsResolver: GraphQLFieldResolver<
   any,
   ResolverContext
 > = async (parent, args, context, info) => {
-  const resolver = HomePageMarketingCollectionsModuleType.getFields().results
+  const {
+    results: resolver,
+  } = HomePageMarketingCollectionsModuleType.getFields()
 
   if (!resolver?.resolve) {
     return []
