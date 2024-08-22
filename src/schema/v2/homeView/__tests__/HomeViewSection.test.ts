@@ -516,14 +516,14 @@ describe("HomeViewSection", () => {
     })
   })
 
-  describe("ActivityRailHomeViewSectionType", () => {
+  describe("ActivityRailHomeViewSection", () => {
     it("returns the latest activity", async () => {
       const query = `
         {
           homeView {
             section(id: "home-view-section-latest-activity") {
               __typename
-              ... on ActivityRailHomeViewSectionType {
+              ... on ActivityRailHomeViewSection {
                 component {
                   title
                 }
@@ -545,7 +545,7 @@ describe("HomeViewSection", () => {
         Object {
           "homeView": Object {
             "section": Object {
-              "__typename": "ActivityRailHomeViewSectionType",
+              "__typename": "ActivityRailHomeViewSection",
               "component": Object {
                 "title": "Latest Activity",
               },

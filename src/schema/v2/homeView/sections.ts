@@ -20,6 +20,7 @@ type MaybeResolved<T> =
   | ((context: ResolverContext, args: any) => Promise<T>)
 import { LatestArticlesResolvers } from "./articlesResolvers"
 import { MarketingCollectionsResolver } from "./marketingCollectionsResolver"
+import { LatestActivityResolver } from "./activityResolvers"
 
 export type HomeViewSection = {
   id: string
@@ -189,6 +190,7 @@ export const LatestActivity: HomeViewSection = {
   component: {
     title: "Latest Activity",
   },
+  resolver: LatestActivityResolver,
 }
 
 const sections: HomeViewSection[] = [

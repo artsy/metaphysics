@@ -39,7 +39,7 @@ describe("homeView", () => {
           "edges": Array [
             Object {
               "node": Object {
-                "__typename": "ActivityRailHomeViewSectionType",
+                "__typename": "ActivityRailHomeViewSection",
                 "component": Object {
                   "title": "Latest Activity",
                 },

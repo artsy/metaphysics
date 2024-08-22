@@ -6,15 +6,16 @@ import {
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields, NodeInterface } from "../object_identification"
-import { connectionWithCursorInfo, emptyConnection } from "../fields/pagination"
-import { HomeViewComponent } from "./HomeViewComponent"
-import { artworkConnection } from "../artwork"
-import { artistsConnection } from "../artists"
-import { heroUnitsConnection } from "../HeroUnit/heroUnitsConnection"
-import { fairsConnection } from "../fairs"
 import ArticlesConnection from "../articlesConnection"
+import { artistsConnection } from "../artists"
+import { artworkConnection } from "../artwork"
+import { fairsConnection } from "../fairs"
+import { connectionWithCursorInfo, emptyConnection } from "../fields/pagination"
+import { heroUnitsConnection } from "../HeroUnit/heroUnitsConnection"
 import { MarketingCollectionType } from "../marketingCollections"
+import { NotificationsConnection } from "../notifications"
+import { InternalIDFields, NodeInterface } from "../object_identification"
+import { HomeViewComponent } from "./HomeViewComponent"
 
 // section interface
 
@@ -183,6 +184,15 @@ const ActivityRailHomeViewSectionType = new GraphQLObjectType<
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
+
+    notificationsConnection: {
+      type: NotificationsConnection.type,
+
+      args: pageable({}),
+      resolve: (parent, ...rest) => {
+        return parent.resolver ? parent.resolver(parent, ...rest) : []
+      },
+    },
   },
 })
 
