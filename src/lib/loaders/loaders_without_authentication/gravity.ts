@@ -302,6 +302,11 @@ export default (opts) => {
     trendingArtistsLoader: gravityLoader("artists/trending"),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
     userByIDLoader: gravityLoader((id) => `user/${id}`, {}, { method: "GET" }),
+    userIdentificationLoader: gravityLoader(
+      "user/identify",
+      {},
+      { method: "POST" } // Un-cached
+    ),
     verifiedRepresentativesLoader: gravityLoader<any, { artist_id: string }>(
       ({ artist_id }) => `verified_representatives?artist_id=${artist_id}`,
       {},
