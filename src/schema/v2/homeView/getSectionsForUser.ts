@@ -11,6 +11,7 @@ import {
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,
   RecommendedArtists,
+  ShowsForYou,
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
 } from "./sections"
@@ -33,6 +34,7 @@ export async function getSectionsForUser(
     sections = [
       LatestArticles,
       RecentlyViewedArtworks,
+      ShowsForYou,
       MarketingCollections,
       TrendingArtists,
       FeaturedFairs,
@@ -48,6 +50,7 @@ export async function getSectionsForUser(
     sections = [
       CuratorsPicksEmerging,
       SimilarToRecentlyViewedArtworks,
+      ShowsForYou,
       MarketingCollections,
       FeaturedFairs,
       NewWorksForYou,
