@@ -175,6 +175,14 @@ export const ShowsForYou: HomeViewSection = {
   },
 }
 
+export const ViewingRooms: HomeViewSection = {
+  id: "home-view-section-viewing-rooms",
+  type: "ViewingRoomsRailHomeViewSection",
+  component: {
+    title: "Viewing Rooms",
+  },
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   CuratorsPicksEmerging,
@@ -189,6 +197,7 @@ const sections: HomeViewSection[] = [
   TrendingArtists,
   MarketingCollections,
   ShowsForYou,
+  ViewingRooms,
 ]
 
 export const registry = sections.reduce(

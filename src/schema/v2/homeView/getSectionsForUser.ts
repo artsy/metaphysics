@@ -14,6 +14,7 @@ import {
   ShowsForYou,
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
+  ViewingRooms,
 } from "./sections"
 
 export async function getSectionsForUser(
@@ -45,6 +46,7 @@ export async function getSectionsForUser(
       HeroUnits,
       NewWorksFromGalleriesYouFollow,
       RecommendedArtists,
+      ViewingRooms,
     ]
   } else {
     sections = [
@@ -61,6 +63,7 @@ export async function getSectionsForUser(
       TrendingArtists,
       NewWorksFromGalleriesYouFollow,
       RecentlyViewedArtworks,
+      ViewingRooms,
     ]
   }
 

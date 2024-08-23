@@ -477,5 +477,42 @@ describe("HomeViewSection", () => {
         }
       `)
     })
+
+    describe("ViewingRoomsRailHomeViewSection", () => {
+      it("returns correct data", async () => {
+        const query = gql`
+          {
+            homeView {
+              section(id: "home-view-section-viewing-rooms") {
+                __typename
+
+                ... on ViewingRoomsRailHomeViewSection {
+                  component {
+                    title
+                  }
+                }
+              }
+            }
+          }
+        `
+
+        const context = {
+          authenticatedLoaders: {
+            meLoader: jest.fn().mockReturnValue({ type: "User" }),
+          },
+        }
+
+        const data = await runQuery(query, context)
+
+        expect(data.homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ViewingRoomsRailHomeViewSection",
+          "component": Object {
+            "title": "Viewing Rooms",
+          },
+        }
+      `)
+      })
+    })
   })
 })
