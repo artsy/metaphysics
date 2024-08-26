@@ -12065,13 +12065,12 @@ type MarketingCollection implements Node {
   # Linked Collections
   linkedCollections: [MarketingCollectionGroup!]!
   priceGuidance: Float
-  published: Boolean!
   query: MarketingCollectionQuery!
 
   # Related Collections
   relatedCollections(
     # The number of Related Marketing Collections to return
-    size: Int
+    size: Int = 10
   ): [MarketingCollection!]!
   representativeArtworkID: String
   showFeaturedArtists: Boolean!

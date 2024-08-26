@@ -97,10 +97,6 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     type: GraphQLFloat,
     resolve: ({ price_guidance }) => price_guidance,
   },
-  published: {
-    type: GraphQLNonNull(GraphQLBoolean),
-    resolve: ({ published }) => published,
-  },
   title: {
     type: GraphQLNonNull(GraphQLString),
     resolve: ({ title }) => title,
@@ -258,6 +254,7 @@ const RelatedCollections: GraphQLFieldConfig<any, ResolverContext> = {
     size: {
       type: GraphQLInt,
       description: "The number of Related Marketing Collections to return",
+      defaultValue: 10,
     },
   },
   resolve: async ({ slug }, _args, { marketingCollectionsLoader }) => {
