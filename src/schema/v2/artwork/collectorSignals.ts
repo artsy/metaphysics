@@ -166,7 +166,7 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       increasedInterest: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Increased interest in the artwork",
-        resolve: (artwork, {}) => {
+        resolve: (artwork) => {
           return !!artwork.increased_interest_signal
         },
       },
