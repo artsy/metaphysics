@@ -149,6 +149,14 @@ describe("homeView", () => {
             },
             Object {
               "node": Object {
+                "__typename": "AuctionResultsRailHomeViewSection",
+                "component": Object {
+                  "title": "Latest Auction Results",
+                },
+              },
+            },
+            Object {
+              "node": Object {
                 "__typename": "ViewingRoomsRailHomeViewSection",
                 "component": Object {
                   "title": "Viewing Rooms",

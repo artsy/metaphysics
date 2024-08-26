@@ -21,6 +21,7 @@ type MaybeResolved<T> =
 import { LatestArticlesResolvers } from "./articlesResolvers"
 import { MarketingCollectionsResolver } from "./marketingCollectionsResolver"
 import { LatestActivityResolver } from "./activityResolvers"
+import { LatestAuctionResultsResolver } from "./auctionResultsResolvers"
 
 export type HomeViewSection = {
   id: string
@@ -193,6 +194,15 @@ export const LatestActivity: HomeViewSection = {
   resolver: LatestActivityResolver,
 }
 
+export const LatestAuctionResults: HomeViewSection = {
+  id: "home-view-section-latest-auction-results",
+  type: "AuctionResultsRailHomeViewSection",
+  component: {
+    title: "Latest Auction Results",
+  },
+  resolver: LatestAuctionResultsResolver,
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   CuratorsPicksEmerging,
@@ -200,15 +210,16 @@ const sections: HomeViewSection[] = [
   HeroUnits,
   LatestActivity,
   LatestArticles,
+  LatestAuctionResults,
+  MarketingCollections,
   MarketingCollections,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,
   RecommendedArtists,
+  ShowsForYou,
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
-  MarketingCollections,
-  ShowsForYou,
   ViewingRooms,
 ]
 
