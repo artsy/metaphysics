@@ -67,7 +67,10 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       context
     )
 
-    const backfillArtworks = await getBackfillArtworks(
+    const {
+      artworks: backfillArtworks,
+      totalCount: backfillArtworksTotalCount,
+    } = await getBackfillArtworks(
       size || 0,
       args.includeBackfill,
       context,
@@ -80,7 +83,8 @@ export const artworksForUser: GraphQLFieldConfig<void, ResolverContext> = {
       "id"
     ).slice(0, size)
 
-    const totalCount = filteredArtworkIds.length + backfillArtworks.length
+    const totalCount =
+      filteredArtworkIds.length + (backfillArtworksTotalCount ?? 0)
 
     return {
       totalCount,

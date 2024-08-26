@@ -124,8 +124,8 @@ export const getBackfillArtworks = async (
   context: ResolverContext,
   onlyAtAuction = false,
   excludeDislikedArtworks = false
-): Promise<any[]> => {
-  if (!includeBackfill || size < 1) return []
+): Promise<{ artworks: any[]; totalCount: number | null }> => {
+  if (!includeBackfill || size < 1) return { artworks: [], totalCount: 0 }
 
   const {
     setItemsLoader,
@@ -151,20 +151,25 @@ export const getBackfillArtworks = async (
       marketing_collection_id: "top-auction-lots",
     })
 
-    return hits
+    return { artworks: hits, totalCount: hits.length }
   }
 
-  const { body: setsBody } = await setsLoader({
+  const data = await setsLoader({
     key: "artwork-backfill",
     sort: "internal_name",
   })
+
+  const { body: setsBody } = data
   const backfillSetId = setsBody?.map((set) => set.id)[0]
 
-  if (!backfillSetId) return []
+  if (!backfillSetId) return { artworks: [], totalCount: 0 }
 
   const { body: itemsBody } = await setItemsLoader(backfillSetId, {
     exclude_disliked_artworks: excludeDislikedArtworks,
   })
 
-  return (itemsBody || []).slice(0, size)
+  return {
+    artworks: (itemsBody || []).slice(0, size),
+    totalCount: itemsBody?.length,
+  }
 }
