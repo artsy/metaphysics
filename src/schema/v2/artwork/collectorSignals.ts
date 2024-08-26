@@ -163,10 +163,23 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
           return activePartnerOffers?.[0]
         },
       },
+      increasedInterest: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+        description: "Increased interest in the artwork",
+        resolve: (artwork, {}, ctx) => {
+          return !!(
+            checkFeatureFlag("emerald_signals-increased-interest", ctx) &&
+            artwork.increased_interest_signal
+          )
+        },
+      },
     },
   }),
   description: "Collector signals on artwork",
-  resolve: (artwork) => artwork,
+  resolve: (artwork) => {
+    const canSendSignals = artwork.purchasable || artwork.sale_ids?.length > 0
+    return canSendSignals ? artwork : null
+  },
 }
 
 const checkFeatureFlag = (flag: any, context: any) => {
