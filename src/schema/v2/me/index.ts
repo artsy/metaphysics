@@ -142,7 +142,7 @@ export const LengthUnitPreference = new GraphQLEnumType({
 export const meType = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
   interfaces: [NodeInterface],
-  fields: {
+  fields: () => ({
     ...IDFields,
     alert: {
       type: AlertType,
@@ -733,7 +733,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     },
     userInterest: UserInterest,
     watchedLotConnection: WatchedLotConnection,
-  },
+  }),
 })
 
 const MeField: GraphQLFieldConfig<void, ResolverContext> = {

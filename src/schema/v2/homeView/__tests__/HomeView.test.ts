@@ -39,6 +39,14 @@ describe("homeView", () => {
           "edges": Array [
             Object {
               "node": Object {
+                "__typename": "ActivityRailHomeViewSection",
+                "component": Object {
+                  "title": "Latest Activity",
+                },
+              },
+            },
+            Object {
+              "node": Object {
                 "__typename": "ArtworksRailHomeViewSection",
                 "component": Object {
                   "title": "Curators' Picks Emerging",
@@ -142,6 +150,9 @@ describe("homeView", () => {
             Object {
               "node": Object {
                 "__typename": "ViewingRoomsRailHomeViewSection",
+                "component": Object {
+                  "title": "Viewing Rooms",
+                },
               },
             },
           ],
