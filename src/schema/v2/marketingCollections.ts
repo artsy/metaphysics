@@ -90,7 +90,7 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     resolve: ({ credit }) => credit,
   },
   category: {
-    type: GraphQLString,
+    type: GraphQLNonNull(GraphQLString),
     resolve: ({ category }) => category,
   },
   priceGuidance: {
@@ -213,7 +213,9 @@ const MarketingCollectionGroupType = new GraphQLObjectType<
       resolve: ({ internalID }) => internalID,
     },
     members: {
-      type: GraphQLNonNull(GraphQLList(MarketingCollectionType)),
+      type: GraphQLNonNull(
+        GraphQLList(GraphQLNonNull(MarketingCollectionType))
+      ),
       resolve: async (
         { member_ids },
         _args,

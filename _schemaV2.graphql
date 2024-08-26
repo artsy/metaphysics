@@ -12039,7 +12039,7 @@ type MarketingCollection implements Node {
     tagID: String
     width: String
   ): FilterArtworksConnection
-  category: String
+  category: String!
   createdAt(
     format: String
 
@@ -12115,7 +12115,7 @@ type MarketingCollectionEdge {
 type MarketingCollectionGroup {
   groupType: MarketingCollectionGroupTypeEnum!
   internalID: ID!
-  members: [MarketingCollection]!
+  members: [MarketingCollection!]!
   name: String!
 }
 
