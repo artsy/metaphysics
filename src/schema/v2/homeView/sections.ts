@@ -189,6 +189,7 @@ export const LatestActivity: HomeViewSection = {
   type: "ActivityRailHomeViewSection",
   component: {
     title: "Latest Activity",
+    href: "/notifications",
   },
   resolver: LatestActivityResolver,
 }

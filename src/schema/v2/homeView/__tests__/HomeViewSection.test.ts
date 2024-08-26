@@ -526,6 +526,7 @@ describe("HomeViewSection", () => {
               ... on ActivityRailHomeViewSection {
                 component {
                   title
+                  href
                 }
                 notificationsConnection(first: 1) {
                   edges {
@@ -592,6 +593,7 @@ describe("HomeViewSection", () => {
             "section": Object {
               "__typename": "ActivityRailHomeViewSection",
               "component": Object {
+                "href": "/notifications",
                 "title": "Latest Activity",
               },
               "notificationsConnection": Object {
