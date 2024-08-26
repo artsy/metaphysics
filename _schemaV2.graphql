@@ -21949,7 +21949,7 @@ type ViewingRoomsEdge {
 }
 
 # A viewing rooms rail section in the home view
-type ViewingRoomsRailHomeViewSection {
+type ViewingRoomsRailHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent
 

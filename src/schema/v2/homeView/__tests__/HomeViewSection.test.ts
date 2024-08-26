@@ -527,16 +527,61 @@ describe("HomeViewSection", () => {
                 component {
                   title
                 }
+                notificationsConnection(first: 1) {
+                  edges {
+                    node {
+                      internalID
+                      isUnread
+                      createdAt(format: "YYYY")
+                      notificationType
+                      title
+                      message
+                      targetHref
+                      objectsCount
+                    }
+                  }
+                }
               }
             }
           }
         }
       `
 
+      const notificationsFeedLoader = jest.fn(() =>
+        Promise.resolve({
+          feed: [
+            {
+              id: "6303f205b54941000843419a",
+              actors: "Works by Damien Hirst",
+              message: "8 Works Added",
+              status: "unread",
+              date: "2022-08-22T21:15:49.000Z",
+              object_ids: [
+                "63036fafbe5cfc000cf358e3",
+                "630392514f13a5000b55ecec",
+              ],
+              objects_count: 2,
+              object: {
+                artist: {
+                  id: "damien-hirst",
+                  _id: "4d8b926a4eb68a1b2c0000ae",
+                },
+              },
+              activity_type: "ArtworkPublishedActivity",
+              target_href: "/artist/damien-hirst/works-for-sale",
+            },
+          ],
+          total: 100,
+          total_unread: 10,
+          total_unseen: 10,
+        })
+      )
+
       const context = {
         authenticatedLoaders: {
           meLoader: jest.fn().mockReturnValue({ type: "User" }),
         },
+        notificationsFeedLoader,
       }
 
       const data = await runQuery(query, context)
@@ -548,6 +593,22 @@ describe("HomeViewSection", () => {
               "__typename": "ActivityRailHomeViewSection",
               "component": Object {
                 "title": "Latest Activity",
+              },
+              "notificationsConnection": Object {
+                "edges": Array [
+                  Object {
+                    "node": Object {
+                      "createdAt": "2022",
+                      "internalID": "6303f205b54941000843419a",
+                      "isUnread": true,
+                      "message": "8 Works Added",
+                      "notificationType": "ARTWORK_PUBLISHED",
+                      "objectsCount": 2,
+                      "targetHref": "/artist/damien-hirst/works-for-sale",
+                      "title": "Works by Damien Hirst",
+                    },
+                  },
+                ],
               },
             },
           },
