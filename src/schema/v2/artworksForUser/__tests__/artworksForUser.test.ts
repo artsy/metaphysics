@@ -11,6 +11,7 @@ const buildQuery = (args: any = {}) => {
   const query = gql`
       {
         artworksForUser(first: ${first}, includeBackfill: ${includeBackfill}, userId: "${userId}", excludeDislikedArtworks: ${excludeDislikedArtworks}) {
+          totalCount
           pageInfo {
             hasPreviousPage
             hasNextPage
@@ -70,6 +71,7 @@ describe("artworksForUser", () => {
       const artworks = extractNodes(response.artworksForUser)
       expect(artworks.length).toEqual(0)
 
+      expect(response.artworksForUser.totalCount).toBe(0)
       expect(response.artworksForUser.pageInfo).toMatchInlineSnapshot(`
         Object {
           "hasNextPage": false,
@@ -93,6 +95,7 @@ describe("artworksForUser", () => {
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(0)
 
+      expect(artworksForUser.totalCount).toBe(0)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
         Object {
           "hasNextPage": false,
@@ -118,6 +121,7 @@ describe("artworksForUser", () => {
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(1)
 
+      expect(artworksForUser.totalCount).toBe(1)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
         Object {
           "hasNextPage": false,
@@ -143,6 +147,7 @@ describe("artworksForUser", () => {
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(1)
 
+      expect(artworksForUser.totalCount).toBe(1)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
         Object {
           "hasNextPage": false,
@@ -172,6 +177,7 @@ describe("artworksForUser", () => {
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(1)
 
+      expect(artworksForUser.totalCount).toBe(2)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
         Object {
           "hasNextPage": true,
@@ -201,6 +207,7 @@ describe("artworksForUser", () => {
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(2)
 
+      expect(artworksForUser.totalCount).toBe(2)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
         Object {
           "hasNextPage": false,
@@ -226,6 +233,7 @@ describe("artworksForUser", () => {
       const artworks = extractNodes(artworksForUser)
       expect(artworks.length).toEqual(1)
 
+      expect(artworksForUser.totalCount).toBe(1)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
         Object {
           "hasNextPage": false,
@@ -255,7 +263,7 @@ describe("artworksForUser", () => {
         setItems,
       })
 
-      await runAuthenticatedQuery(query, context)
+      const response = await runAuthenticatedQuery(query, context)
 
       expect(context.artworksLoader).toBeCalledWith(
         expect.objectContaining({
@@ -266,6 +274,8 @@ describe("artworksForUser", () => {
       expect(context.setItemsLoader).toBeCalledWith("valid-id", {
         exclude_disliked_artworks: true,
       })
+
+      expect(response.artworksForUser.totalCount).toBe(2)
     })
   })
 })
