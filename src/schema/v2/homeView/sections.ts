@@ -117,8 +117,6 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
   resolver: NewWorksFromGalleriesYouFollowResolver,
 }
 
-// Artists Rails
-
 export const TrendingArtists: HomeViewSection = {
   id: "home-view-section-trending-artists",
   type: "ArtistsRailHomeViewSection",
@@ -220,6 +218,7 @@ const sections: HomeViewSection[] = [
   LatestActivity,
   LatestArticles,
   LatestAuctionResults,
+  MarketingCollections,
   MarketingCollections,
   MarketingCollections,
   NewWorksForYou,
