@@ -167,6 +167,14 @@ export const MarketingCollections: HomeViewSection = {
   resolver: MarketingCollectionsResolver,
 }
 
+export const ShowsForYou: HomeViewSection = {
+  id: "home-view-section-shows-for-you",
+  type: "ShowsRailHomeViewSection",
+  component: {
+    title: "Shows for You",
+  },
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   CuratorsPicksEmerging,
@@ -180,6 +188,7 @@ const sections: HomeViewSection[] = [
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
   MarketingCollections,
+  ShowsForYou,
 ]
 
 export const registry = sections.reduce(
