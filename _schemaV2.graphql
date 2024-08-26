@@ -9637,7 +9637,7 @@ type Fair implements EntityWithFilterArtworksConnectionInterface & Node {
   marketingCollections(
     # Number of artworks to return
     size: Int
-  ): [MarketingCollection]
+  ): [MarketingCollection]!
   mobileImage: Image
   name: String
   organizer: FairOrganizer
@@ -12040,10 +12040,16 @@ type MarketingCollection implements Node {
     width: String
   ): FilterArtworksConnection
   category: String
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
   credit: String
   description: String
   descriptionMarkdown: String
-  featuredArtistExclusionIds: [String]
+  featuredArtistExclusionIds: [String!]!
   geneIds: [String]
   headerImage: String
 
@@ -12057,28 +12063,34 @@ type MarketingCollection implements Node {
   keyword: String
 
   # Linked Collections
-  linkedCollections: [MarketingCollectionGroup]
-  priceGuidance: String
+  linkedCollections: [MarketingCollectionGroup!]!
+  priceGuidance: Float
   published: Boolean!
-  query: MarketingCollectionQuery
+  query: MarketingCollectionQuery!
 
   # Related Collections
   relatedCollections(
     # The number of Related Marketing Collections to return
     size: Int
-  ): [MarketingCollection]
+  ): [MarketingCollection!]!
   representativeArtworkID: String
   showFeaturedArtists: Boolean!
   showHeaderArtworksRail: Boolean!
   slug: String!
   thumbnail: String
   thumbnailImage: Image
-  title: String
+  title: String!
+  updatedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to "X-TIMEZONE" header. See http://www.iana.org/time-zones, https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    timezone: String
+  ): String
 }
 
 type MarketingCollectionCategory {
-  collections: [MarketingCollection]
-  name: String
+  collections: [MarketingCollection!]!
+  name: String!
 }
 
 # A connection to a list of items.
@@ -12102,10 +12114,10 @@ type MarketingCollectionEdge {
 }
 
 type MarketingCollectionGroup {
-  groupType: MarketingCollectionGroupTypeEnum
+  groupType: MarketingCollectionGroupTypeEnum!
   internalID: ID!
-  members: [MarketingCollection]
-  name: String
+  members: [MarketingCollection]!
+  name: String!
 }
 
 enum MarketingCollectionGroupTypeEnum {

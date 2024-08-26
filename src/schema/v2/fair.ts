@@ -211,7 +211,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ kaws_collection_slugs }) => kaws_collection_slugs,
       },
       marketingCollections: {
-        type: new GraphQLList(MarketingCollectionType),
+        type: new GraphQLNonNull(new GraphQLList(MarketingCollectionType)),
         args: {
           size: {
             type: GraphQLInt,

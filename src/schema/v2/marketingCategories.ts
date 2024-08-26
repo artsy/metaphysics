@@ -13,11 +13,13 @@ const MarketingCollectionCategory = new GraphQLObjectType<any, ResolverContext>(
     name: "MarketingCollectionCategory",
     fields: {
       collections: {
-        type: new GraphQLList(MarketingCollectionType),
+        type: GraphQLNonNull(
+          new GraphQLList(GraphQLNonNull(MarketingCollectionType))
+        ),
         resolve: ({ collections }) => collections,
       },
       name: {
-        type: GraphQLString,
+        type: GraphQLNonNull(GraphQLString),
         resolve: ({ name }) => name,
       },
     },
