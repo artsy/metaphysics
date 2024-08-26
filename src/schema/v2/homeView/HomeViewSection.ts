@@ -150,6 +150,18 @@ const MarketingCollectionsRailHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
+const ShowsRailHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ShowsRailHomeViewSection",
+  description: "A shows rail section in the home view",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+  },
+})
+
 // the Section union type of all concrete sections
 
 export const HomeViewSectionType = new GraphQLUnionType({
@@ -161,6 +173,7 @@ export const HomeViewSectionType = new GraphQLUnionType({
     FairsRailHomeViewSectionType,
     HeroUnitsHomeViewSectionType,
     MarketingCollectionsRailHomeViewSectionType,
+    ShowsRailHomeViewSectionType,
   ],
   resolveType: (value) => {
     return value.type
