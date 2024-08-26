@@ -154,12 +154,11 @@ export const getBackfillArtworks = async (
     return { artworks: hits, totalCount: hits.length }
   }
 
-  const data = await setsLoader({
+  const { body: setsBody } = await setsLoader({
     key: "artwork-backfill",
     sort: "internal_name",
   })
 
-  const { body: setsBody } = data
   const backfillSetId = setsBody?.map((set) => set.id)[0]
 
   if (!backfillSetId) return { artworks: [], totalCount: 0 }
