@@ -1,5 +1,6 @@
 import { ResolverContext } from "types/graphql"
 import {
+  LatestActivity,
   AuctionLotsForYou,
   CuratorsPicksEmerging,
   FeaturedFairs,
@@ -14,6 +15,7 @@ import {
   ShowsForYou,
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
+  ViewingRooms,
 } from "./sections"
 
 export async function getSectionsForUser(
@@ -32,6 +34,7 @@ export async function getSectionsForUser(
 
   if (me.type === "Admin") {
     sections = [
+      LatestActivity,
       LatestArticles,
       RecentlyViewedArtworks,
       ShowsForYou,
@@ -45,9 +48,11 @@ export async function getSectionsForUser(
       HeroUnits,
       NewWorksFromGalleriesYouFollow,
       RecommendedArtists,
+      ViewingRooms,
     ]
   } else {
     sections = [
+      LatestActivity,
       CuratorsPicksEmerging,
       SimilarToRecentlyViewedArtworks,
       ShowsForYou,
@@ -61,6 +66,7 @@ export async function getSectionsForUser(
       TrendingArtists,
       NewWorksFromGalleriesYouFollow,
       RecentlyViewedArtworks,
+      ViewingRooms,
     ]
   }
 
