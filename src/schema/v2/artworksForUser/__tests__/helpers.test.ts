@@ -1,7 +1,7 @@
 import {
   getBackfillArtworks,
-  getNewForYouArtworks,
   getNewForYouArtworkIDs,
+  getNewForYouArtworks,
 } from "../helpers"
 
 const mockLoaderFactory = (affinities) => {
@@ -100,13 +100,14 @@ describe("getBackfillArtworks", () => {
     const includeBackfill = false
     const context = {} as any
 
-    const backfillArtworks = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks(
       size,
       includeBackfill,
       context
     )
 
-    expect(backfillArtworks).toEqual([])
+    expect(artworks).toEqual([])
+    expect(totalCount).toEqual(0)
   })
 
   it("returns an empty array with zero remaining size", async () => {
@@ -114,13 +115,14 @@ describe("getBackfillArtworks", () => {
     const includeBackfill = true
     const context = {} as any
 
-    const backfillArtworks = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks(
       size,
       includeBackfill,
       context
     )
 
-    expect(backfillArtworks).toEqual([])
+    expect(artworks).toEqual([])
+    expect(totalCount).toEqual(0)
   })
 
   it("returns an empty array with no backfill id", async () => {
@@ -131,13 +133,14 @@ describe("getBackfillArtworks", () => {
       setsLoader: mockSetsLoader,
     } as any
 
-    const backfillArtworks = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks(
       size,
       includeBackfill,
       context
     )
 
-    expect(backfillArtworks).toEqual([])
+    expect(artworks).toEqual([])
+    expect(totalCount).toEqual(0)
   })
 
   it("returns backfill with a remaining size", async () => {
@@ -152,7 +155,7 @@ describe("getBackfillArtworks", () => {
       unauthenticatedLoaders: {},
     } as any
 
-    const backfillArtworks = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks(
       size,
       includeBackfill,
       context
@@ -161,7 +164,8 @@ describe("getBackfillArtworks", () => {
     expect(mockSetItemsLoader).toBeCalledWith("valid_id", {
       exclude_disliked_artworks: false,
     })
-    expect(backfillArtworks.length).toEqual(1)
+    expect(artworks.length).toEqual(1)
+    expect(totalCount).toEqual(1)
   })
 
   it("passes exclude_disliked_artworks parameter to Gravity setItemsLoader", async () => {
@@ -204,7 +208,7 @@ describe("getBackfillArtworks", () => {
       },
     } as any
 
-    const backfillArtworks = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks(
       size,
       includeBackfill,
       context,
@@ -217,9 +221,10 @@ describe("getBackfillArtworks", () => {
       sort: "-decayed_merch",
       marketing_collection_id: "top-auction-lots",
     })
-    expect(backfillArtworks.map((artwork) => artwork.id)).toEqual([
+    expect(artworks.map((artwork) => artwork.id)).toEqual([
       "backfill-artwork-id",
     ])
+    expect(totalCount).toEqual(1)
   })
 
   it("passes exclude_disliked_artworks to Gravity filterArtworksLoader", async () => {
@@ -237,7 +242,7 @@ describe("getBackfillArtworks", () => {
       },
     } as any
 
-    const backfillArtworks = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks(
       remainingSize,
       includeBackfill,
       context,
@@ -251,9 +256,10 @@ describe("getBackfillArtworks", () => {
       sort: "-decayed_merch",
       marketing_collection_id: "top-auction-lots",
     })
-    expect(backfillArtworks.map((artwork) => artwork.id)).toEqual([
+    expect(artworks.map((artwork) => artwork.id)).toEqual([
       "backfill-artwork-id",
     ])
+    expect(totalCount).toEqual(1)
   })
 
   it("returns no more backfill than the remaining size asks for", async () => {
@@ -268,12 +274,13 @@ describe("getBackfillArtworks", () => {
       unauthenticatedLoaders: {},
     } as any
 
-    const backfillArtworks = await getBackfillArtworks(
+    const { artworks, totalCount } = await getBackfillArtworks(
       size,
       includeBackfill,
       context
     )
 
-    expect(backfillArtworks.length).toEqual(1)
+    expect(artworks.length).toEqual(1)
+    expect(totalCount).toEqual(2)
   })
 })
