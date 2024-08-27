@@ -142,4 +142,34 @@ describe("MarketingCollections", () => {
       }
     `)
   })
+
+  it("returns curated marketing collections", async () => {
+    const query = gql`
+      {
+        curatedMarketingCollections(size: 2) {
+          slug
+        }
+      }
+    `
+
+    const payload = [
+      {
+        slug: "percys-z-collection-1",
+      },
+      {
+        slug: "fiby-z-collection-2",
+      },
+    ]
+
+    const context = {
+      authenticatedLoaders: {},
+      marketingCollectionsLoader: () => Promise.resolve({ body: payload }),
+    } as any
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      curatedMarketingCollections: payload,
+    })
+  })
 })

@@ -974,4 +974,84 @@ describe("Fair", () => {
       })
     })
   })
+
+  describe("marketingCollections", () => {
+    it("should return empty marketing collections", async () => {
+      const mockFair = {
+        id: "this-fair-is-active",
+        active_start_at: moment().subtract(7, "days").toISOString(),
+        end_at: moment().add(7, "days").toISOString(),
+        kaws_collection_slugs: null,
+      }
+
+      const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+
+      context = {
+        fairLoader: mockFairLoader,
+      }
+
+      const query = gql`
+        {
+          fair(id: "this-fair-is-active") {
+            isActive
+            marketingCollections {
+              __typename
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        fair: {
+          isActive: true,
+          marketingCollections: [],
+        },
+      })
+    })
+
+    it("should return marketing collections", async () => {
+      const mockFair = {
+        id: "fair-cats",
+        active_start_at: moment().subtract(7, "days").toISOString(),
+        end_at: moment().add(7, "days").toISOString(),
+        kaws_collection_slugs: ["fiby-z-collection"],
+      }
+
+      const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+
+      const marketingCollectionsPayload = [
+        {
+          slug: "fiby-z-collection",
+        },
+      ]
+
+      context = {
+        fairLoader: mockFairLoader,
+        marketingCollectionsLoader: () =>
+          Promise.resolve({ body: marketingCollectionsPayload }),
+      }
+
+      const query = gql`
+        {
+          fair(id: "fair-cats") {
+            isActive
+            marketingCollections {
+              slug
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        fair: {
+          isActive: true,
+          marketingCollections: marketingCollectionsPayload,
+        },
+      })
+    })
+  })
 })
