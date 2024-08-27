@@ -199,6 +199,7 @@ export const LatestAuctionResults: HomeViewSection = {
   type: "AuctionResultsRailHomeViewSection",
   component: {
     title: "Latest Auction Results",
+    href: "/auction-results-for-artists-you-follow",
   },
   resolver: LatestAuctionResultsResolver,
 }
