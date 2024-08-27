@@ -4628,6 +4628,7 @@ describe("Artwork type", () => {
       {
         artwork(id: "richard-prince-untitled-portrait") {
           collectorSignals {
+            increasedInterest
             auction {
               bidCount
               lotWatcherCount
@@ -4658,6 +4659,8 @@ describe("Artwork type", () => {
         ...supportingLoaders,
       }
       context.artworkLoader.mockResolvedValue(artwork)
+      context.mePartnerOffersLoader.mockResolvedValue({ body: [] })
+      context.salesLoader.mockResolvedValue([])
     })
 
     describe("feature flags enabled", () => {
@@ -4669,6 +4672,19 @@ describe("Artwork type", () => {
         beforeEach(() => {
           artwork.purchasable = true
           artwork.sale_ids = []
+        })
+        it("returns the increasedInterest signal", async () => {
+          artwork.increased_interest_signal = true
+
+          let data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.increasedInterest).toEqual(true)
+
+          artwork.increased_interest_signal = false
+
+          data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.increasedInterest).toEqual(false)
         })
         it("fetches & returns the user-specific collector signals for a purchasable artwork if requested by a logged-in user", async () => {
           context.userID = "user-id"
@@ -4729,7 +4745,20 @@ describe("Artwork type", () => {
         const futureTime = moment().add(1, "day").toISOString()
         const pastTime = moment().subtract(1, "day").toISOString()
 
-        it("returns the registration end time if present, whether future or past", async () => {
+        it("returns the increasedInterest signal", async () => {
+          artwork.increased_interest_signal = true
+
+          let data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.increasedInterest).toEqual(true)
+
+          artwork.increased_interest_signal = false
+
+          data = await runQuery(query, context)
+
+          expect(data.artwork.collectorSignals.increasedInterest).toEqual(false)
+        })
+        it("returns the nested registration end time if present, whether future or past", async () => {
           context.salesLoader.mockResolvedValue([
             { id: "sale-id-auction", registration_ends_at: futureTime },
           ])
@@ -4754,7 +4783,7 @@ describe("Artwork type", () => {
           ).toEqual(pastTime)
         })
 
-        it("returns correct values for a lot with an end time and no extended bidding", async () => {
+        it("returns correct nested values for a lot with an end time and no extended bidding", async () => {
           context.salesLoader.mockResolvedValue([{ id: "sale-id-auction" }])
 
           context.saleArtworkLoader.mockResolvedValue({
@@ -4772,7 +4801,7 @@ describe("Artwork type", () => {
           ).toEqual(false)
         })
 
-        it("returns correct values for a lot with an end time and extended bidding", async () => {
+        it("returns correct nested values for a lot with an end time and extended bidding", async () => {
           context.salesLoader.mockResolvedValue([{ id: "sale-id-auction" }])
 
           context.saleArtworkLoader.mockResolvedValue({
@@ -4789,7 +4818,7 @@ describe("Artwork type", () => {
             data.artwork.collectorSignals.auction.onlineBiddingExtended
           ).toEqual(true)
         })
-        it("returns correct values for a lot with a future live start time", async () => {
+        it("returns correct nested values for a lot with a future live start time", async () => {
           context.salesLoader.mockResolvedValue([
             { id: "sale-id-auction", live_start_at: futureTime },
           ])
@@ -4808,7 +4837,7 @@ describe("Artwork type", () => {
             futureTime
           )
         })
-        it("returns correct values for an auction that has started live bidding", async () => {
+        it("returns correct nested values for an auction that has started live bidding", async () => {
           context.salesLoader.mockResolvedValue([
             { id: "sale-id-auction", live_start_at: pastTime },
           ])
@@ -4826,7 +4855,7 @@ describe("Artwork type", () => {
           )
         })
 
-        it("fetches & returns the lot watcher and bid count signals for an auction lot artwork if requested", async () => {
+        it("fetches & returns the nested lot watcher and bid count signals for an auction lot artwork if requested", async () => {
           artwork.recent_saves_count = 123
           context.salesLoader.mockResolvedValue([
             {
@@ -4859,37 +4888,36 @@ describe("Artwork type", () => {
 
         it("does not query auction signal loaders if the artwork has no sale_ids", async () => {
           artwork.sale_ids = []
+          artwork.purchasable = true
 
           const data = await runQuery(query, context)
 
           expect(context.salesLoader).not.toHaveBeenCalled()
           expect(context.saleArtworkLoader).not.toHaveBeenCalled()
 
-          expect(data).toEqual({
-            artwork: {
-              collectorSignals: expect.objectContaining({
-                auction: null,
-              }),
-            },
-          })
+          expect(data.artwork.collectorSignals.auction).toBeNull()
         })
       })
 
-      it("does not query partner offer signal loaders if the artwork is not purchasable", async () => {
+      it("is null if the artwork has never been in auction and is not purchasable", async () => {
         artwork.purchasable = false
-        context.salesLoader.mockResolvedValue([])
+        artwork.sale_ids = []
 
         const data = await runQuery(query, context)
 
         expect(context.mePartnerOffersLoader).not.toHaveBeenCalled()
 
-        expect(data).toEqual({
-          artwork: {
-            collectorSignals: expect.objectContaining({
-              partnerOffer: null,
-            }),
-          },
-        })
+        expect(data.artwork.collectorSignals).toBeNull()
+      })
+
+      it("does not query partner offer signal loaders if the artwork is not purchasable", async () => {
+        artwork.purchasable = false
+
+        const data = await runQuery(query, context)
+
+        expect(context.mePartnerOffersLoader).not.toHaveBeenCalled()
+
+        expect(data.artwork.collectorSignals.partnerOffer).toBeNull()
       })
 
       it("does not query partner offer signal loaders if the partnerOffer field is not requested", async () => {
@@ -4900,7 +4928,7 @@ describe("Artwork type", () => {
           {
             artwork(id: "richard-prince-untitled-portrait") {
               collectorSignals {
-                bidCount
+                increasedInterest
               }
             }
           }`
@@ -4912,13 +4940,13 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             collectorSignals: {
-              bidCount: null,
+              increasedInterest: false,
             },
           },
         })
       })
 
-      it("does not query auction loaders if the partnerOffer field is not requested", async () => {
+      it("does not query auction loaders if the auction field is not requested", async () => {
         const noAuctionFieldsQuery = `
         
         {
@@ -4953,6 +4981,7 @@ describe("Artwork type", () => {
         expect(data.artwork.collectorSignals).toEqual({
           auction: null,
           partnerOffer: null,
+          increasedInterest: false,
         })
       })
     })
