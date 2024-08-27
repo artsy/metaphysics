@@ -505,13 +505,13 @@ describe("HomeViewSection", () => {
         const data = await runQuery(query, context)
 
         expect(data.homeView.section).toMatchInlineSnapshot(`
-        Object {
-          "__typename": "ViewingRoomsRailHomeViewSection",
-          "component": Object {
-            "title": "Viewing Rooms",
-          },
-        }
-      `)
+                  Object {
+                    "__typename": "ViewingRoomsRailHomeViewSection",
+                    "component": Object {
+                      "title": "Viewing Rooms",
+                    },
+                  }
+              `)
       })
     })
   })
@@ -727,6 +727,87 @@ describe("HomeViewSection", () => {
                 "title": "Latest Auction Results",
               },
             },
+          },
+        }
+      `)
+    })
+  })
+
+  describe("News", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-news") {
+              __typename
+
+              ... on ArticlesRailHomeViewSection {
+                component {
+                  title
+                  href
+                  type
+                }
+
+                articlesConnection(first: 3) {
+                  edges {
+                    node {
+                      title
+                      href
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const articles = [
+        {
+          title: "Bored apes stolen",
+          slug: "stolen-apes",
+        },
+        {
+          title: "More apes stolen",
+          slug: "more-apes",
+        },
+      ]
+
+      const context = {
+        articlesLoader: jest.fn().mockReturnValue({
+          count: articles.length,
+          results: articles,
+        }),
+        authenticatedLoaders: {
+          meLoader: jest.fn().mockReturnValue({ type: "User" }),
+        },
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ArticlesRailHomeViewSection",
+          "articlesConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "href": "/article/stolen-apes",
+                  "title": "Bored apes stolen",
+                },
+              },
+              Object {
+                "node": Object {
+                  "href": "/article/more-apes",
+                  "title": "More apes stolen",
+                },
+              },
+            ],
+          },
+          "component": Object {
+            "href": "/news",
+            "title": "News",
+            "type": "ArticlesCard",
           },
         }
       `)
