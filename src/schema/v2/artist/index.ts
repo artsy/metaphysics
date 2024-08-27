@@ -850,6 +850,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       nationality: { type: GraphQLString },
       name: { type: GraphQLString },
       first: { type: GraphQLString },
+      foundations: {
+        type: GraphQLString,
+        resolve: ({ foundations }) => foundations,
+      },
       last: { type: GraphQLString },
       displayName: {
         type: GraphQLString,
