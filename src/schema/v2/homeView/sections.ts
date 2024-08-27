@@ -18,7 +18,7 @@ import { FeaturedFairsResolver } from "./featuredFairsResolver"
 type MaybeResolved<T> =
   | T
   | ((context: ResolverContext, args: any) => Promise<T>)
-import { LatestArticlesResolvers } from "./articlesResolvers"
+import { LatestArticlesResolvers, NewsResolver } from "./articlesResolvers"
 import { MarketingCollectionsResolver } from "./marketingCollectionsResolver"
 import { LatestActivityResolver } from "./activityResolvers"
 import { LatestAuctionResultsResolver } from "./auctionResultsResolvers"
@@ -117,8 +117,6 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
   resolver: NewWorksFromGalleriesYouFollowResolver,
 }
 
-// Artists Rails
-
 export const TrendingArtists: HomeViewSection = {
   id: "home-view-section-trending-artists",
   type: "ArtistsRailHomeViewSection",
@@ -212,6 +210,17 @@ export const LatestAuctionResults: HomeViewSection = {
   resolver: LatestAuctionResultsResolver,
 }
 
+export const News: HomeViewSection = {
+  id: "home-view-section-news",
+  type: "ArticlesRailHomeViewSection",
+  component: {
+    title: "News",
+    href: "/news",
+    type: "ArticlesCard",
+  },
+  resolver: NewsResolver,
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   CuratorsPicksEmerging,
@@ -222,8 +231,10 @@ const sections: HomeViewSection[] = [
   LatestAuctionResults,
   MarketingCollections,
   MarketingCollections,
+  MarketingCollections,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
+  News,
   RecentlyViewedArtworks,
   RecommendedArtists,
   ShowsForYou,

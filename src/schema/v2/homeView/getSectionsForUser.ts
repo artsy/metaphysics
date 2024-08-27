@@ -17,6 +17,7 @@ import {
   TrendingArtists,
   ViewingRooms,
   LatestAuctionResults,
+  News,
 } from "./sections"
 
 export async function getSectionsForUser(
@@ -51,9 +52,11 @@ export async function getSectionsForUser(
       NewWorksFromGalleriesYouFollow,
       RecommendedArtists,
       ViewingRooms,
+      News,
     ]
   } else {
     sections = [
+      News,
       LatestActivity,
       CuratorsPicksEmerging,
       SimilarToRecentlyViewedArtworks,
