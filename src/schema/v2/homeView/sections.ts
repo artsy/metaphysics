@@ -22,6 +22,7 @@ import { LatestArticlesResolvers } from "./articlesResolvers"
 import { MarketingCollectionsResolver } from "./marketingCollectionsResolver"
 import { LatestActivityResolver } from "./activityResolvers"
 import { LatestAuctionResultsResolver } from "./auctionResultsResolvers"
+import { HomeViewComponentBehaviors } from "./HomeViewComponent"
 
 export type HomeViewSection = {
   id: string
@@ -32,6 +33,7 @@ export type HomeViewSection = {
     description?: MaybeResolved<string>
     backgroundImageURL?: MaybeResolved<string>
     href?: MaybeResolved<string>
+    behaviors?: HomeViewComponentBehaviors
   }
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
@@ -200,6 +202,12 @@ export const LatestAuctionResults: HomeViewSection = {
   component: {
     title: "Latest Auction Results",
     href: "/auction-results-for-artists-you-follow",
+    behaviors: {
+      viewAll: {
+        href: "/auction-results-for-artists-you-follow",
+        buttonText: "Browse All Results",
+      },
+    },
   },
   resolver: LatestAuctionResultsResolver,
 }

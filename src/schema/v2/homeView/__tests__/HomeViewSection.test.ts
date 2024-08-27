@@ -627,6 +627,13 @@ describe("HomeViewSection", () => {
               ... on AuctionResultsRailHomeViewSection {
                 component {
                   title
+                  href
+                  behaviors {
+                    viewAll {
+                      href
+                      buttonText
+                    }
+                  }
                 }
                 auctionResultsConnection(first: 2) {
                   edges {
@@ -710,6 +717,13 @@ describe("HomeViewSection", () => {
                 ],
               },
               "component": Object {
+                "behaviors": Object {
+                  "viewAll": Object {
+                    "buttonText": "Browse All Results",
+                    "href": "/auction-results-for-artists-you-follow",
+                  },
+                },
+                "href": "/auction-results-for-artists-you-follow",
                 "title": "Latest Auction Results",
               },
             },
