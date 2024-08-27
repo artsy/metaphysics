@@ -616,4 +616,120 @@ describe("HomeViewSection", () => {
       `)
     })
   })
+
+  describe("AuctionResultsRailHomeViewSection", () => {
+    it("returns the latest activity", async () => {
+      const query = `
+        {
+          homeView {
+            section(id: "home-view-section-latest-auction-results") {
+              __typename
+              ... on AuctionResultsRailHomeViewSection {
+                component {
+                  title
+                  href
+                  behaviors {
+                    viewAll {
+                      href
+                      buttonText
+                    }
+                  }
+                }
+                auctionResultsConnection(first: 2) {
+                  edges {
+                    node {
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const auctionLotsLoader = jest.fn(async () => ({
+        total_count: 2,
+        _embedded: {
+          items: [
+            {
+              title: "Auction Result 1",
+              artist_id: "artist-1",
+            },
+            {
+              title: "Auction Result 2",
+              artist_id: "artist-2",
+            },
+            {
+              title: "Auction Result Without Artist ID",
+            },
+          ],
+        },
+      }))
+
+      const followedArtistsLoader = jest.fn(async () => ({
+        headers: { "x-total-count": 2 },
+        body: [
+          {
+            id: "followartist-1",
+            artist: {
+              _id: "artist-1",
+              name: "Artist 1",
+            },
+          },
+          {
+            id: "followartist-2",
+            artist: {
+              _id: "artist-2",
+              name: "Artist 2",
+            },
+          },
+        ],
+      }))
+
+      const context = {
+        authenticatedLoaders: {
+          meLoader: jest.fn().mockReturnValue({ type: "User" }),
+        },
+        followedArtistsLoader,
+        auctionLotsLoader,
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "homeView": Object {
+            "section": Object {
+              "__typename": "AuctionResultsRailHomeViewSection",
+              "auctionResultsConnection": Object {
+                "edges": Array [
+                  Object {
+                    "node": Object {
+                      "title": "Auction Result 1",
+                    },
+                  },
+                  Object {
+                    "node": Object {
+                      "title": "Auction Result 2",
+                    },
+                  },
+                ],
+              },
+              "component": Object {
+                "behaviors": Object {
+                  "viewAll": Object {
+                    "buttonText": "Browse All Results",
+                    "href": "/auction-results-for-artists-you-follow",
+                  },
+                },
+                "href": "/auction-results-for-artists-you-follow",
+                "title": "Latest Auction Results",
+              },
+            },
+          },
+        }
+      `)
+    })
+  })
 })

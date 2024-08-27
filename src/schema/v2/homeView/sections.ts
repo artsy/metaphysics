@@ -21,6 +21,8 @@ type MaybeResolved<T> =
 import { LatestArticlesResolvers } from "./articlesResolvers"
 import { MarketingCollectionsResolver } from "./marketingCollectionsResolver"
 import { LatestActivityResolver } from "./activityResolvers"
+import { LatestAuctionResultsResolver } from "./auctionResultsResolvers"
+import { HomeViewComponentBehaviors } from "./HomeViewComponent"
 
 export type HomeViewSection = {
   id: string
@@ -31,6 +33,7 @@ export type HomeViewSection = {
     description?: MaybeResolved<string>
     backgroundImageURL?: MaybeResolved<string>
     href?: MaybeResolved<string>
+    behaviors?: HomeViewComponentBehaviors
   }
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
@@ -193,6 +196,22 @@ export const LatestActivity: HomeViewSection = {
   resolver: LatestActivityResolver,
 }
 
+export const LatestAuctionResults: HomeViewSection = {
+  id: "home-view-section-latest-auction-results",
+  type: "AuctionResultsRailHomeViewSection",
+  component: {
+    title: "Latest Auction Results",
+    href: "/auction-results-for-artists-you-follow",
+    behaviors: {
+      viewAll: {
+        href: "/auction-results-for-artists-you-follow",
+        buttonText: "Browse All Results",
+      },
+    },
+  },
+  resolver: LatestAuctionResultsResolver,
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   CuratorsPicksEmerging,
@@ -200,15 +219,16 @@ const sections: HomeViewSection[] = [
   HeroUnits,
   LatestActivity,
   LatestArticles,
+  LatestAuctionResults,
+  MarketingCollections,
   MarketingCollections,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   RecentlyViewedArtworks,
   RecommendedArtists,
+  ShowsForYou,
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
-  MarketingCollections,
-  ShowsForYou,
   ViewingRooms,
 ]
 

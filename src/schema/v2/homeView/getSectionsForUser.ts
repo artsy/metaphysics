@@ -16,6 +16,7 @@ import {
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
   ViewingRooms,
+  LatestAuctionResults,
 } from "./sections"
 
 export async function getSectionsForUser(
@@ -35,6 +36,7 @@ export async function getSectionsForUser(
   if (me.type === "Admin") {
     sections = [
       LatestActivity,
+      LatestAuctionResults,
       LatestArticles,
       RecentlyViewedArtworks,
       ShowsForYou,
@@ -66,6 +68,7 @@ export async function getSectionsForUser(
       TrendingArtists,
       NewWorksFromGalleriesYouFollow,
       RecentlyViewedArtworks,
+      LatestAuctionResults,
       ViewingRooms,
     ]
   }

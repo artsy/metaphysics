@@ -34,27 +34,29 @@ import { InternalIDFields, NodeInterface } from "./object_identification"
 import { YearRange } from "./types/yearRange"
 import { GraphQLError } from "graphql"
 
-export const AuctionResultSorts = {
-  type: new GraphQLEnumType({
-    name: "AuctionResultSorts",
-    values: {
-      DATE_DESC: {
-        value: "-sale_date",
-      },
-      DATE_ASC: {
-        value: "sale_date",
-      },
-      PRICE_AND_DATE_DESC: {
-        value: "-price_realized_cents_usd,-sale_date",
-      },
-      ESTIMATE_AND_DATE_DESC: {
-        value: "-high_estimate_cents_usd,-sale_date",
-      },
+export const AuctionResultSortEnum = new GraphQLEnumType({
+  name: "AuctionResultSorts",
+  values: {
+    DATE_DESC: {
+      value: "-sale_date",
     },
-  }),
+    DATE_ASC: {
+      value: "sale_date",
+    },
+    PRICE_AND_DATE_DESC: {
+      value: "-price_realized_cents_usd,-sale_date",
+    },
+    ESTIMATE_AND_DATE_DESC: {
+      value: "-high_estimate_cents_usd,-sale_date",
+    },
+  },
+})
+
+export const AuctionResultSorts = {
+  type: AuctionResultSortEnum,
 }
 
-const AuctionResultsStateEnums = new GraphQLEnumType({
+export const AuctionResultsStateEnums = new GraphQLEnumType({
   name: "AuctionResultsState",
   values: {
     ALL: {
