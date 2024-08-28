@@ -894,4 +894,81 @@ describe("HomeViewSection", () => {
       `)
     })
   })
+
+  describe("Your Active Bids", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-active-bids") {
+              __typename
+
+              ... on ArtworksRailHomeViewSection {
+                component {
+                  title
+                }
+
+                artworksConnection(first: 2) {
+                  edges {
+                    node {
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const lots = [
+        {
+          sale_artwork: {
+            artwork: {
+              title: "Artwork 1",
+            },
+          },
+        },
+        {
+          sale_artwork: {
+            artwork: {
+              title: "Artwork 2",
+            },
+          },
+        },
+      ]
+
+      const context = {
+        authenticatedLoaders: {
+          meLoader: jest.fn().mockReturnValue({ type: "User" }),
+        },
+        lotStandingLoader: jest.fn().mockResolvedValue(lots),
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ArtworksRailHomeViewSection",
+          "artworksConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "title": "Artwork 1",
+                },
+              },
+              Object {
+                "node": Object {
+                  "title": "Artwork 2",
+                },
+              },
+            ],
+          },
+          "component": Object {
+            "title": "Your Active Bids",
+          },
+        }
+      `)
+    })
+  })
 })
