@@ -276,38 +276,103 @@ describe("homeView", () => {
   })
 
   describe("section", () => {
-    const query = gql`
-      {
-        homeView {
-          section(id: "home-view-section-auction-lots-for-you") {
-            __typename
-            ... on GenericHomeViewSection {
-              component {
-                title
+    describe("with a section that requires authentication", () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-auction-lots-for-you") {
+              __typename
+              ... on GenericHomeViewSection {
+                component {
+                  title
+                }
               }
             }
           }
         }
-      }
-    `
+      `
 
-    const context = {
-      authenticatedLoaders: {
-        meLoader: jest.fn().mockReturnValue({ type: "User" }),
-      },
-    }
+      describe("with an unauthenticated user", () => {
+        const context: Partial<ResolverContext> = {}
 
-    it("returns the requested section", async () => {
-      const { homeView } = await runQuery(query, context)
+        it("throws an error", async () => {
+          await expect(runQuery(query, context)).rejects.toThrow(
+            "Section requires authenticated user"
+          )
+        })
+      })
 
-      expect(homeView.section).toMatchInlineSnapshot(`
-        Object {
-          "__typename": "ArtworksRailHomeViewSection",
-          "component": Object {
-            "title": "Auction lots for you",
-          },
+      describe("with an authenticated user", () => {
+        const context: Partial<ResolverContext> = {
+          accessToken: "424242",
         }
-      `)
+
+        it("returns the requested section", async () => {
+          const { homeView } = await runQuery(query, context)
+
+          expect(homeView.section).toMatchInlineSnapshot(`
+                      Object {
+                        "__typename": "ArtworksRailHomeViewSection",
+                        "component": Object {
+                          "title": "Auction lots for you",
+                        },
+                      }
+                  `)
+        })
+      })
+    })
+
+    describe("with a section that does not require authentication", () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-news") {
+              __typename
+              ... on GenericHomeViewSection {
+                component {
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+      describe("with an unauthenticated user", () => {
+        const context: Partial<ResolverContext> = {}
+
+        it("returns the requested section", async () => {
+          const { homeView } = await runQuery(query, context)
+
+          expect(homeView.section).toMatchInlineSnapshot(`
+            Object {
+              "__typename": "ArticlesRailHomeViewSection",
+              "component": Object {
+                "title": "News",
+              },
+            }
+          `)
+        })
+      })
+
+      describe("with an authenticated user", () => {
+        const context: Partial<ResolverContext> = {
+          accessToken: "424242",
+        }
+
+        it("returns the requested section", async () => {
+          const { homeView } = await runQuery(query, context)
+
+          expect(homeView.section).toMatchInlineSnapshot(`
+            Object {
+              "__typename": "ArticlesRailHomeViewSection",
+              "component": Object {
+                "title": "News",
+              },
+            }
+          `)
+        })
+      })
     })
   })
 })
