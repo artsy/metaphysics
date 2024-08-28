@@ -1,4 +1,9 @@
-import { GraphQLBoolean, GraphQLFieldConfig, GraphQLString } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLEnumType,
+  GraphQLFieldConfig,
+  GraphQLString,
+} from "graphql"
 import { GraphQLInt, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
@@ -96,6 +101,14 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   }),
 }
 
+const LabelSignalEnumType = new GraphQLEnumType({
+  name: "LabelSignalEnum",
+  values: {
+    PARTNER_OFFER: { value: "PARTNER_OFFER" },
+    INCREASED_INTEREST: { value: "INCREASED_INTEREST" },
+  },
+})
+
 export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLObjectType({
     description: "Collector signals available to the artwork",
@@ -157,36 +170,28 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         description: "Live bidding has started on this lot's auction",
         deprecationReason: "Use nested field in `auction` instead",
       },
+      primaryLabel: {
+        type: LabelSignalEnumType,
+        description: "Primary label signal available to collector",
+        resolve: async (artwork, {}, ctx) => {
+          const fields = await getLabelSignalFields(artwork, ctx)
+          return fields.primaryLabel
+        },
+      },
       partnerOffer: {
         type: PartnerOfferToCollectorType,
         description: "Partner offer available to collector",
         resolve: async (artwork, {}, ctx) => {
-          if (
-            !checkFeatureFlag("emerald_signals-partner-offers", ctx) ||
-            !ctx.mePartnerOffersLoader ||
-            !artwork.purchasable
-          ) {
-            return null
-          }
-
-          const partnerOffers = await ctx.mePartnerOffersLoader({
-            artwork_id: artwork.id,
-            sort: "-created_at",
-            size: 1,
-          })
-
-          const activePartnerOffers = partnerOffers.body?.filter(
-            (po) => po.active
-          )
-
-          return activePartnerOffers?.[0]
+          const fields = await getLabelSignalFields(artwork, ctx)
+          return fields.partnerOffer
         },
       },
       increasedInterest: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Increased interest in the artwork",
-        resolve: (artwork) => {
-          return !!artwork.increased_interest_signal
+        resolve: async (artwork, {}, ctx) => {
+          const fields = await getLabelSignalFields(artwork, ctx)
+          return fields.increasedInterest
         },
       },
     },
@@ -196,6 +201,57 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
     const canSendSignals = artwork.purchasable || artwork.sale_ids?.length > 0
     return canSendSignals ? artwork : null
   },
+}
+
+interface LabelSignalFields {
+  increasedInterest: boolean
+  // only a partial partner offer type
+  partnerOffer: { end_at: string; active: true } | null
+  primaryLabel: "PARTNER_OFFER" | "INCREASED_INTEREST" | null
+}
+
+// Single function to resolve mutually-exclusive label signals
+const getLabelSignalFields = async (
+  artwork,
+  ctx
+): Promise<LabelSignalFields> => {
+  const signals = {
+    increasedInterest: false,
+    partnerOffer: null,
+    primaryLabel: null,
+  } as LabelSignalFields
+
+  if (artwork.increased_interest_signal) {
+    signals.increasedInterest = true
+  }
+
+  if (
+    checkFeatureFlag("emerald_signals-partner-offers", ctx) &&
+    ctx.mePartnerOffersLoader &&
+    artwork.purchasable
+  ) {
+    const partnerOffers = await ctx.mePartnerOffersLoader({
+      artwork_id: artwork.id,
+      sort: "-created_at",
+      size: 1,
+    })
+
+    const activePartnerOffer = partnerOffers.body?.find((po) => po.active)
+
+    if (activePartnerOffer) {
+      signals.partnerOffer = activePartnerOffer
+    }
+  }
+
+  if (signals.partnerOffer) {
+    signals.primaryLabel = "PARTNER_OFFER"
+  } else if (signals.increasedInterest) {
+    signals.primaryLabel = "INCREASED_INTEREST"
+  } else {
+    signals.primaryLabel = null
+  }
+
+  return signals
 }
 
 const checkFeatureFlag = (flag: any, context: any) => {

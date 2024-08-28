@@ -4745,6 +4745,51 @@ describe("Artwork type", () => {
             },
           })
         })
+        describe("primaryLabel signal", () => {
+          const query = `
+            {
+              artwork(id: "richard-prince-untitled-portrait") {
+                collectorSignals {
+                  primaryLabel
+                  increasedInterest
+                  partnerOffer {
+                    endAt
+                  }
+                }
+              }
+            }
+          `
+          it("prefers 'PARTNER_OFFER' if there is an active partner offer", async () => {
+            context.mePartnerOffersLoader.mockResolvedValue({
+              body: [{ endAt: "2023-01-01", active: true }],
+            })
+            artwork.increased_interest_signal = true
+            const data = await runQuery(query, context)
+            expect(data.artwork.collectorSignals.primaryLabel).toEqual(
+              "PARTNER_OFFER"
+            )
+          })
+
+          it("shows 'INCREASED_INTEREST' if there is no active partner offer but increased interest", async () => {
+            context.mePartnerOffersLoader.mockResolvedValue({
+              body: [],
+            })
+            artwork.increased_interest_signal = true
+            const data = await runQuery(query, context)
+            expect(data.artwork.collectorSignals.primaryLabel).toEqual(
+              "INCREASED_INTEREST"
+            )
+          })
+
+          it("returns null if there is no active partner offer and no increased interest", async () => {
+            context.mePartnerOffersLoader.mockResolvedValue({
+              body: [],
+            })
+            artwork.increased_interest_signal = false
+            const data = await runQuery(query, context)
+            expect(data.artwork.collectorSignals.primaryLabel).toBeNull()
+          })
+        })
       })
 
       describe("auction artwork", () => {
