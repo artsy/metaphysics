@@ -17,6 +17,7 @@ import { NotificationsConnection } from "../notifications"
 import { InternalIDFields, NodeInterface } from "../object_identification"
 import { HomeViewComponent } from "./HomeViewComponent"
 import { auctionResultConnection } from "../auction_result"
+import { SalesConnectionField } from "../sales"
 
 // section interface
 
@@ -217,6 +218,25 @@ export const AuctionResultsRailHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
+const SalesRailHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "SalesRailHomeViewSection",
+  description: "A sales rail section in the home view",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+
+    salesConnection: {
+      type: SalesConnectionField.type,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
+    },
+  },
+})
+
 // the Section union type of all concrete sections
 
 export const HomeViewSectionType = new GraphQLUnionType({
@@ -232,6 +252,7 @@ export const HomeViewSectionType = new GraphQLUnionType({
     MarketingCollectionsRailHomeViewSectionType,
     ShowsRailHomeViewSectionType,
     ViewingRoomsRailHomeViewSectionType,
+    SalesRailHomeViewSectionType,
   ],
   resolveType: (value) => {
     return value.type

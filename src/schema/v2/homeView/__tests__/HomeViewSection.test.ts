@@ -813,4 +813,73 @@ describe("HomeViewSection", () => {
       `)
     })
   })
+
+  describe("SalesRailHomeViewSection", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-auctions") {
+              __typename
+
+              ... on SalesRailHomeViewSection {
+                component {
+                  title
+                }
+
+                salesConnection(first: 2) {
+                  edges {
+                    node {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const sales = [
+        {
+          name: "Auction 1",
+        },
+        {
+          name: "Auction 2",
+        },
+      ]
+
+      const context = {
+        authenticatedLoaders: {
+          meLoader: jest.fn().mockReturnValue({ type: "User" }),
+        },
+        salesLoader: jest.fn().mockResolvedValue(sales),
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "SalesRailHomeViewSection",
+          "component": Object {
+            "title": "Auctions",
+          },
+          "salesConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "name": "Auction 1",
+                },
+              },
+              Object {
+                "node": Object {
+                  "name": "Auction 2",
+                },
+              },
+            ],
+          },
+        }
+      `)
+    })
+  })
 })

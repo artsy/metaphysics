@@ -23,6 +23,7 @@ import { MarketingCollectionsResolver } from "./marketingCollectionsResolver"
 import { LatestActivityResolver } from "./activityResolvers"
 import { LatestAuctionResultsResolver } from "./auctionResultsResolvers"
 import { HomeViewComponentBehaviors } from "./HomeViewComponent"
+import { SalesResolver } from "./salesResolver"
 
 export type HomeViewSection = {
   id: string
@@ -221,7 +222,17 @@ export const News: HomeViewSection = {
   resolver: NewsResolver,
 }
 
+export const Auctions: HomeViewSection = {
+  id: "home-view-section-auctions",
+  type: "SalesRailHomeViewSection",
+  component: {
+    title: "Auctions",
+  },
+  resolver: SalesResolver,
+}
+
 const sections: HomeViewSection[] = [
+  Auctions,
   AuctionLotsForYou,
   CuratorsPicksEmerging,
   FeaturedFairs,
