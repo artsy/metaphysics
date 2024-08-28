@@ -1,14 +1,8 @@
-import {
-  GraphQLBoolean,
-  GraphQLFieldConfig,
-  GraphQLString,
-  GraphQLList,
-} from "graphql"
+import { GraphQLBoolean, GraphQLFieldConfig, GraphQLString } from "graphql"
 import { GraphQLInt, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
-import { fetchMarketingCollections } from "../marketingCollections"
 import { date } from "../fields/date"
 import { GraphQLNonNull } from "graphql"
 
