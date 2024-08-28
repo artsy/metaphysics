@@ -18,6 +18,7 @@ import {
   ViewingRooms,
   LatestAuctionResults,
   News,
+  Auctions,
 } from "./sections"
 
 export async function getSectionsForUser(
@@ -38,6 +39,7 @@ export async function getSectionsForUser(
     sections = [
       LatestActivity,
       LatestAuctionResults,
+      Auctions,
       LatestArticles,
       RecentlyViewedArtworks,
       ShowsForYou,
@@ -58,6 +60,7 @@ export async function getSectionsForUser(
     sections = [
       News,
       LatestActivity,
+      Auctions,
       CuratorsPicksEmerging,
       SimilarToRecentlyViewedArtworks,
       ShowsForYou,
