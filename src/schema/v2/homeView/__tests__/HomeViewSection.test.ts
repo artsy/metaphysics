@@ -825,6 +825,12 @@ describe("HomeViewSection", () => {
               ... on SalesRailHomeViewSection {
                 component {
                   title
+                  behaviors {
+                    viewAll {
+                      href
+                      buttonText
+                    }
+                  }
                 }
 
                 salesConnection(first: 2) {
@@ -862,6 +868,12 @@ describe("HomeViewSection", () => {
         Object {
           "__typename": "SalesRailHomeViewSection",
           "component": Object {
+            "behaviors": Object {
+              "viewAll": Object {
+                "buttonText": "Browse All Auctions",
+                "href": "/auctions",
+              },
+            },
             "title": "Auctions",
           },
           "salesConnection": Object {

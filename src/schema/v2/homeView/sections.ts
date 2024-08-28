@@ -227,6 +227,12 @@ export const Auctions: HomeViewSection = {
   type: "SalesRailHomeViewSection",
   component: {
     title: "Auctions",
+    behaviors: {
+      viewAll: {
+        href: "/auctions",
+        buttonText: "Browse All Auctions",
+      },
+    },
   },
   resolver: SalesResolver,
 }
