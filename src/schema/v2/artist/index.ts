@@ -68,12 +68,15 @@ import {
   fetchMarketingCollections,
 } from "../marketingCollections"
 import config from "config"
+import { ArtistSeriesConnectionType } from "../artistSeries"
 
 const useUnstitchedMarketingCollections = !!config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
 const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
   .artists
+
+const useUnstitchedArtistSeries = !!config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA
 
 export const artistArtworkArrayLength = (artist, filter) => {
   let length
@@ -197,6 +200,36 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
+      ...(useUnstitchedArtistSeries && {
+        artistSeriesConnection: {
+          type: ArtistSeriesConnectionType,
+          args: pageable(),
+          resolve: async ({ _id }, args, { artistSeriesListLoader }) => {
+            const { page, size, offset } = convertConnectionArgsToGravityArgs(
+              args
+            )
+
+            const { body, headers } = await artistSeriesListLoader({
+              artist_id: _id,
+              page,
+              size,
+              exclude_ids: args.excludeIDs,
+              total_count: true,
+            })
+
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+            return paginationResolver({
+              args,
+              body,
+              offset,
+              page,
+              size,
+              totalCount,
+            })
+          },
+        },
+      }),
       artworksConnection: {
         type: artworkConnection.connectionType,
         args: pageable({

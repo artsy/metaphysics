@@ -50,6 +50,12 @@ export default (opts) => {
       {},
       { headers: true }
     ),
+    artistSeriesLoader: gravityLoader((id) => `artist_series/${id}`),
+    artistSeriesListLoader: gravityLoader(
+      "artist_series",
+      {},
+      { headers: true }
+    ),
     artworkImageLoader: gravityLoader<
       any,
       { artwork_id: string; image_id: string }

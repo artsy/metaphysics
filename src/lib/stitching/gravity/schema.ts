@@ -9,22 +9,22 @@ import {
 import { readFileSync } from "fs"
 import config from "config"
 
-const rootFieldsAllowList = [
-  "agreement",
-  "artistSeries",
-  "artistSeriesConnection",
-  "viewingRoom",
-  "viewingRooms",
-].concat(
-  config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
-    ? []
-    : [
-        "marketingCollection",
-        "marketingCollections",
-        "curatedMarketingCollections",
-        "marketingCategories",
-      ]
-)
+const artistSeriesRootFields = config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA
+  ? []
+  : ["artistSeries", "artistSeriesConnection"]
+
+const rootFieldsAllowList = ["agreement", "viewingRoom", "viewingRooms"]
+  .concat(
+    config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
+      ? []
+      : [
+          "marketingCollection",
+          "marketingCollections",
+          "curatedMarketingCollections",
+          "marketingCategories",
+        ]
+  )
+  .concat(artistSeriesRootFields)
 
 export const executableGravitySchema = () => {
   const gravityTypeDefs = readFileSync("src/data/gravity.graphql", "utf8")
@@ -61,6 +61,13 @@ export const executableGravitySchema = () => {
     duplicatedTypes.push("MarketingCollectionGroup")
     duplicatedTypes.push("MarketingCollectionCategory")
   }
+
+  if (config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA) {
+    duplicatedTypes.push("ArtistSeries")
+    duplicatedTypes.push("ArtistSeriesEdge")
+    duplicatedTypes.push("ArtistSeriesConnection")
+  }
+
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
   const unusedTypes = [

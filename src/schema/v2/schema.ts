@@ -233,6 +233,7 @@ import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHig
 import { updatePartnerShowMutation } from "./partner/updatePartnerShowMutation"
 import config from "config"
 import { VerifyUser } from "./verifyUser"
+import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -252,6 +253,13 @@ const marketingCollectionUnstitchedRootField = config.USE_UNSTITCHED_MARKETING_C
       marketingCategories: MarketingCategories,
     }
   : ({} as any)
+
+const artistSeriesUnstitchedRootFields = config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA
+  ? {
+      artistSeries: ArtistSeries,
+      artistSeriesConnection: ArtistSeriesConnection,
+    }
+  : {}
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -278,6 +286,7 @@ const rootFields = {
   artist: Artist,
   artists: Artists,
   artistsConnection,
+  ...artistSeriesUnstitchedRootFields,
   artwork: Artwork,
   artworkAttributionClasses: ArtworkAttributionClasses,
   artworkMediums: ArtworkMediums,
