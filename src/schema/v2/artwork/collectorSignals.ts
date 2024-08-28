@@ -1,8 +1,14 @@
-import { GraphQLBoolean, GraphQLFieldConfig, GraphQLString } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLString,
+  GraphQLList,
+} from "graphql"
 import { GraphQLInt, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import { fetchMarketingCollections } from "../marketingCollections"
 import { date } from "../fields/date"
 import { GraphQLNonNull } from "graphql"
 
@@ -106,6 +112,25 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         type: GraphQLInt,
         description: "Bid count on lots open for bidding",
         deprecationReason: "Use nested field in `auction` instead",
+      },
+      curatorsPick: {
+        type: GraphQLBoolean,
+        description:
+          "Artwork is part of either the Curators' Pick Emerging or Blue Chip collections",
+        resolve: async (artwork, {}, ctx) => {
+          const CURATED_COLLECTION_SLUGS = [
+            "curators-picks-blue-chip-artists",
+            "curators-picks-emerging-artists",
+          ]
+
+          const checks = await Promise.all(
+            CURATED_COLLECTION_SLUGS.map(async (slug) => {
+              const collection = await ctx.marketingCollectionLoader(slug)
+              return collection.artwork_ids.includes(artwork._id)
+            })
+          )
+          return checks.includes(true)
+        },
       },
       lotWatcherCount: {
         type: GraphQLInt,
