@@ -81,11 +81,11 @@ describe("HomeViewSection", () => {
       const artworksLoader = jest.fn(async () => artworksResponse)
 
       const context: any = {
+        accessToken: "424242",
         artworksLoader,
         userID: "vortex-user-id",
         authenticatedLoaders: {
           vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
-          meLoader: () => Promise.resolve({}),
         },
         unauthenticatedLoaders: {
           vortexGraphqlLoader: null,
@@ -155,9 +155,7 @@ describe("HomeViewSection", () => {
       ]
 
       const context = {
-        authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
-        },
+        accessToken: "424242",
         followedProfilesArtworksLoader: jest
           .fn()
           .mockReturnValue({ body: artworks, headers: { "x-total-count": 2 } }),
@@ -253,8 +251,8 @@ describe("HomeViewSection", () => {
       }
 
       const context = {
+        accessToken: "424242",
         authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
           vortexGraphqlLoader: jest.fn(() => async () => mockVortexResponse),
         },
         unauthenticatedLoaders: {
@@ -327,9 +325,6 @@ describe("HomeViewSection", () => {
       }
 
       const context = {
-        authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
-        },
         heroUnitsLoader: jest.fn().mockReturnValue(mockHeroUnitsResponse),
       }
 
@@ -393,9 +388,7 @@ describe("HomeViewSection", () => {
       ]
 
       const context = {
-        authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
-        },
+        authenticatedLoaders: {},
         unauthenticatedLoaders: {
           filterArtworksLoader: jest.fn().mockReturnValue(
             Promise.resolve({
@@ -493,9 +486,6 @@ describe("HomeViewSection", () => {
       }
 
       const context = {
-        authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
-        },
         fairsLoader: jest.fn().mockResolvedValue(fairs),
       }
 
@@ -564,9 +554,6 @@ describe("HomeViewSection", () => {
       }
 
       const context = {
-        authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
-        },
         marketingCollectionsLoader: jest.fn().mockResolvedValue(collections),
       }
 
@@ -615,11 +602,7 @@ describe("HomeViewSection", () => {
         }
       `
 
-      const context = {
-        authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
-        },
-      }
+      const context = {}
 
       const data = await runQuery(query, context)
 
@@ -696,9 +679,7 @@ describe("HomeViewSection", () => {
       )
 
       const context = {
-        authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
-        },
+        accessToken: "424242",
         notificationsFeedLoader,
       }
 
@@ -806,9 +787,7 @@ describe("HomeViewSection", () => {
       }))
 
       const context = {
-        authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
-        },
+        accessToken: "424242",
         followedArtistsLoader,
         auctionLotsLoader,
       }
@@ -896,9 +875,6 @@ describe("HomeViewSection", () => {
           count: articles.length,
           results: articles,
         }),
-        authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
-        },
       }
 
       const { homeView } = await runQuery(query, context)
@@ -974,9 +950,6 @@ describe("HomeViewSection", () => {
       ]
 
       const context = {
-        authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
-        },
         salesLoader: jest.fn().mockResolvedValue(sales),
       }
 
@@ -1057,9 +1030,7 @@ describe("HomeViewSection", () => {
       ]
 
       const context = {
-        authenticatedLoaders: {
-          meLoader: jest.fn().mockReturnValue({ type: "User" }),
-        },
+        accessToken: "424242",
         lotStandingLoader: jest.fn().mockResolvedValue(lots),
       }
 
