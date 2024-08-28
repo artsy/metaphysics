@@ -12,6 +12,9 @@ import { resolveSearchCriteriaLabels } from "schema/v2/previewSavedSearch/search
 import { generateDisplayName } from "schema/v2/previewSavedSearch/generateDisplayName"
 import { amount, amountSDL } from "schema/v2/fields/money"
 import { GraphQLSchemaWithTransforms } from "graphql-tools"
+import config from "config"
+
+const useUnstitchedArtistSeries = !!config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -65,27 +68,37 @@ export const gravityStitchingEnvironment = (
   gravitySchema: GraphQLSchemaWithTransforms
 ) => {
   return {
-    // The SDL used to declare how to stitch an object
     extensionSchema: gql`
       extend type Artist {
-        artistSeriesConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-          ): ArtistSeriesConnection
+        ${
+          !useUnstitchedArtistSeries
+            ? `artistSeriesConnection(
+            first: Int
+            last: Int
+            after: String
+            before: String
+          ): ArtistSeriesConnection`
+            : ""
+        }
       }
 
       extend type Artwork {
-        artistSeriesConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-          ): ArtistSeriesConnection
+        ${
+          !useUnstitchedArtistSeries
+            ? `artistSeriesConnection(
+            first: Int
+            last: Int
+            after: String
+            before: String
+          ): ArtistSeriesConnection`
+            : ""
+        }
       }
 
-      extend type ArtistSeries {
+      ${
+        !useUnstitchedArtistSeries
+          ? `
+        extend type ArtistSeries {
         artists(page: Int, size: Int): [Artist]
         image: Image
         artworksConnection(first: Int, after: String): ArtworkConnection
@@ -99,6 +112,8 @@ export const gravityStitchingEnvironment = (
         (as a fallback) the number of works in general.
         """
         artworksCountMessage: String
+      }`
+          : ""
       }
 
       extend type Me {
@@ -109,9 +124,6 @@ export const gravityStitchingEnvironment = (
           after: String
           before: String
           sort: SavedSearchesSortEnum
-          """
-          Returns saved searches associated with the provided artist IDs
-          """
           artistIDs: [String!]
         ): SearchCriteriaConnection
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
@@ -124,17 +136,21 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Partner {
-        viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
+        viewingRoomsConnection(
+          first: Int
+          after: String
+          statuses: [ViewingRoomStatusEnum!]
+        ): ViewingRoomsConnection
       }
 
       extend type SearchCriteria {
         artistsConnection(
-          first: Int,
-          last: Int,
-          before: String,
-          after: String,
-          ids: [String],
-          sort: ArtistSorts,
+          first: Int
+          last: Int
+          before: String
+          after: String
+          ids: [String]
+          sort: ArtistSorts
           term: String
         ): ArtistConnection
         displayName: String!
@@ -175,14 +191,23 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type ViewingRoomPublishedNotificationItem {
-        viewingRoomsConnection(first: Int, after: String, last: Int, before: String): ViewingRoomsConnection
+        viewingRoomsConnection(
+          first: Int
+          after: String
+          last: Int
+          before: String
+        ): ViewingRoomsConnection
       }
 
       extend type Viewer {
-        viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!], partnerID: ID): ViewingRoomsConnection
+        viewingRoomsConnection(
+          first: Int
+          after: String
+          statuses: [ViewingRoomStatusEnum!]
+          partnerID: ID
+        ): ViewingRoomsConnection
       }
 
-      # Mutation Payloads
       extend type CreateUserAddressPayload {
         me: Me
       }
@@ -205,217 +230,235 @@ export const gravityStitchingEnvironment = (
     `,
     resolvers: {
       Artist: {
-        artistSeriesConnection: {
-          fragment: gql`
-            ... on Artist {
-              internalID
-            }
-          `,
-          resolve: ({ internalID: artistID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "artistSeriesConnection",
-              args: {
-                artistID,
-                ...args,
-                // Exclude the current artist series so that lists of
-                // artist series by the artist don't include the current series
-                // if there is one.
-                ...(!!context.currentArtistSeriesInternalID && {
-                  excludeIDs: [context.currentArtistSeriesInternalID],
-                }),
+        ...(useUnstitchedArtistSeries
+          ? {}
+          : {
+              artistSeriesConnection: {
+                fragment: gql`
+                  ... on Artist {
+                    internalID
+                  }
+                `,
+                resolve: ({ internalID: artistID }, args, context, info) => {
+                  return info.mergeInfo.delegateToSchema({
+                    schema: gravitySchema,
+                    operation: "query",
+                    fieldName: "artistSeriesConnection",
+                    args: {
+                      artistID,
+                      ...args,
+                      ...(context.currentArtistSeriesInternalID && {
+                        excludeIDs: [context.currentArtistSeriesInternalID],
+                      }),
+                    },
+                    context,
+                    info,
+                  })
+                },
               },
-              context,
-              info,
-            })
-          },
-        },
+            }),
       },
       Artwork: {
-        artistSeriesConnection: {
-          fragment: gql`
-            ... on Artwork {
-              internalID
-            }
-            `,
-          resolve: ({ internalID: artworkID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "artistSeriesConnection",
-              args: {
-                artworkID,
-                ...args,
+        ...(useUnstitchedArtistSeries
+          ? {}
+          : {
+              artistSeriesConnection: {
+                fragment: gql`
+                  ... on Artwork {
+                    internalID
+                  }
+                `,
+                resolve: ({ internalID: artworkID }, args, context, info) => {
+                  return info.mergeInfo.delegateToSchema({
+                    schema: gravitySchema,
+                    operation: "query",
+                    fieldName: "artistSeriesConnection",
+                    args: {
+                      artworkID,
+                      ...args,
+                    },
+                    context: {
+                      ...context,
+                      currentArtworkID: artworkID,
+                    },
+                    info,
+                  })
+                },
               },
-              context: {
-                ...context,
-                currentArtworkID: artworkID,
-              },
-              info,
-            })
-          },
-        },
+            }),
       },
-      ArtistSeries: {
-        artworksConnection: {
-          fragment: gql`
-          ... on ArtistSeries {
-            artworkIDs
-          }
-          `,
-          resolve: async ({ artworkIDs: ids }, _args, context, info) => {
-            // Exclude the current artwork in a series so that lists of
-            // other artworks in the same series don't show the artwork.
-            const filteredIDs = context.currentArtworkID
-              ? ids.filter((id) => id !== context.currentArtworkID)
-              : ids
-            return await info.mergeInfo.delegateToSchema({
-              args: {
-                ids: filteredIDs,
-                ..._args,
+      ...(useUnstitchedArtistSeries
+        ? {}
+        : {
+            ArtistSeries: {
+              artworksConnection: {
+                fragment: gql`
+                  ... on ArtistSeries {
+                    artworkIDs
+                  }
+                `,
+                resolve: async ({ artworkIDs: ids }, _args, context, info) => {
+                  const filteredIDs = context.currentArtworkID
+                    ? ids.filter((id) => id !== context.currentArtworkID)
+                    : ids
+                  return await info.mergeInfo.delegateToSchema({
+                    args: {
+                      ids: filteredIDs,
+                      ..._args,
+                    },
+                    schema: localSchema,
+                    operation: "query",
+                    fieldName: "artworks",
+                    context,
+                    info,
+                  })
+                },
               },
-              schema: localSchema,
-              operation: "query",
-              fieldName: "artworks",
-              context,
-              info,
-            })
-          },
-        },
-        descriptionFormatted: {
-          fragment: gql`
-            ... on ArtistSeries {
-              description
-            }
-          `,
-          resolve: async ({ description }, { format }) => {
-            if (!isExisty(description) || typeof description !== "string")
-              return null
+              descriptionFormatted: {
+                fragment: gql`
+                  ... on ArtistSeries {
+                    description
+                  }
+                `,
+                resolve: async ({ description }, { format }) => {
+                  if (!isExisty(description) || typeof description !== "string")
+                    return null
 
-            return formatMarkdownValue(description, format)
-          },
-        },
-        artworksCountMessage: {
-          fragment: gql`
-            ... on ArtistSeries {
-              forSaleArtworksCount
-              artworksCount
-            }
-          `,
-          resolve: async ({ forSaleArtworksCount, artworksCount }) => {
-            let artworksCountMessage
+                  return formatMarkdownValue(description, format)
+                },
+              },
+              artworksCountMessage: {
+                fragment: gql`
+                  ... on ArtistSeries {
+                    forSaleArtworksCount
+                    artworksCount
+                  }
+                `,
+                resolve: async ({ forSaleArtworksCount, artworksCount }) => {
+                  let artworksCountMessage
 
-            if (forSaleArtworksCount) {
-              artworksCountMessage = `${forSaleArtworksCount} available`
-            } else {
-              artworksCountMessage = `${artworksCount} ${
-                artworksCount === 1 ? "work" : "works"
-              }`
-            }
+                  if (forSaleArtworksCount) {
+                    artworksCountMessage = `${forSaleArtworksCount} available`
+                  } else {
+                    artworksCountMessage = `${artworksCount} ${
+                      artworksCount === 1 ? "work" : "works"
+                    }`
+                  }
 
-            return artworksCountMessage
-          },
-        },
-        image: {
-          fragment: gql`
-          ... on ArtistSeries {
-            image_url: imageURL
-            original_height: imageHeight
-            original_width: imageWidth
-            representativeArtworkID
-          }
-          `,
-          resolve: async (
-            {
-              representativeArtworkID,
-              image_url,
-              original_height,
-              original_width,
+                  return artworksCountMessage
+                },
+              },
+              image: {
+                fragment: gql`
+                  ... on ArtistSeries {
+                    image_url: imageURL
+                    original_height: imageHeight
+                    original_width: imageWidth
+                    representativeArtworkID
+                  }
+                `,
+                resolve: async (
+                  {
+                    representativeArtworkID,
+                    image_url,
+                    original_height,
+                    original_width,
+                  },
+                  args,
+                  context,
+                  info
+                ) => {
+                  let imageData: unknown
+                  if (image_url) {
+                    imageData = {
+                      image_url,
+                      original_width,
+                      original_height,
+                    }
+                  } else if (representativeArtworkID) {
+                    const { artworkLoader } = context
+                    const { images } = await artworkLoader(
+                      representativeArtworkID
+                    )
+                    imageData = normalizeImageData(getDefault(images))
+                  }
+
+                  return info.mergeInfo.delegateToSchema({
+                    args,
+                    schema: localSchema,
+                    operation: "query",
+                    fieldName: "_do_not_use_image",
+                    context: {
+                      ...context,
+                      imageData,
+                    },
+                    info,
+                  })
+                },
+              },
+              artists: {
+                fragment: gql`
+                  ... on ArtistSeries {
+                    artistIDs
+                    internalID
+                  }
+                `,
+                resolve: (
+                  { artistIDs: ids, internalID },
+                  args,
+                  context,
+                  info
+                ) => {
+                  if (ids.length === 0) {
+                    return []
+                  }
+
+                  return info.mergeInfo.delegateToSchema({
+                    schema: localSchema,
+                    operation: "query",
+                    fieldName: "artists",
+                    args: {
+                      ids,
+                      ...args,
+                    },
+                    context: {
+                      ...context,
+                      currentArtistSeriesInternalID: internalID,
+                    },
+                    info,
+                  })
+                },
+              },
+              filterArtworksConnection: {
+                fragment: gql`
+                  ... on ArtistSeries {
+                    internalID
+                  }
+                `,
+                resolve: (
+                  { internalID: artistSeriesID },
+                  args,
+                  context,
+                  info
+                ) => {
+                  return info.mergeInfo.delegateToSchema({
+                    schema: localSchema,
+                    operation: "query",
+                    fieldName: "artworksConnection",
+                    args: {
+                      artistSeriesID,
+                      ...(context.currentArtworkID && {
+                        excludeArtworkIDs: [context.currentArtworkID],
+                      }),
+                      ...args,
+                    },
+                    context,
+                    info,
+                  })
+                },
+              },
             },
-            args,
-            context,
-            info
-          ) => {
-            let imageData: unknown
-            if (image_url) {
-              imageData = {
-                image_url,
-                original_width,
-                original_height,
-              }
-            } else if (representativeArtworkID) {
-              const { artworkLoader } = context
-              const { images } = await artworkLoader(representativeArtworkID)
-              imageData = normalizeImageData(getDefault(images))
-            }
-
-            return info.mergeInfo.delegateToSchema({
-              args,
-              schema: localSchema,
-              operation: "query",
-              fieldName: "_do_not_use_image",
-              context: {
-                ...context,
-                imageData,
-              },
-              info,
-            })
-          },
-        },
-        artists: {
-          fragment: gql`
-          ... on ArtistSeries {
-            artistIDs
-            internalID
-          }
-        `,
-          resolve: ({ artistIDs: ids, internalID }, args, context, info) => {
-            if (ids.length === 0) {
-              return []
-            }
-
-            return info.mergeInfo.delegateToSchema({
-              schema: localSchema,
-              operation: "query",
-              fieldName: "artists",
-              args: {
-                ids,
-                ...args,
-              },
-              context: {
-                ...context,
-                currentArtistSeriesInternalID: internalID,
-              },
-              info,
-            })
-          },
-        },
-
-        filterArtworksConnection: {
-          fragment: `
-          ... on ArtistSeries {
-            internalID
-          }
-        `,
-          resolve: ({ internalID: artistSeriesID }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: localSchema,
-              operation: "query",
-              fieldName: "artworksConnection",
-              args: {
-                artistSeriesID,
-                ...(!!context.currentArtworkID && {
-                  excludeArtworkIDs: [context.currentArtworkID],
-                }),
-                ...args,
-              },
-              context,
-              info,
-            })
-          },
-        },
-      },
+          }),
       Me: {
         savedSearch: {
           resolve: (_parent, args, context, info) => {
@@ -455,9 +498,9 @@ export const gravityStitchingEnvironment = (
         },
         addressConnection: {
           fragment: gql`
-          ... on Me {
-            __typename
-          }
+            ... on Me {
+              __typename
+            }
           `,
           resolve: (_parent, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
@@ -533,7 +576,6 @@ export const gravityStitchingEnvironment = (
               majorPeriods
               colors
               partnerIDs
-
               userAlertSettings {
                 name
               }
@@ -561,7 +603,7 @@ export const gravityStitchingEnvironment = (
               colors
               partnerIDs
             }
-            `,
+          `,
           resolve: resolveSearchCriteriaLabels,
           description:
             "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
@@ -594,8 +636,8 @@ export const gravityStitchingEnvironment = (
         devices: {
           fragment: gql`
             ... on User {
-            internalID
-          }
+              internalID
+            }
           `,
           resolve: ({ internalID: userId }, _args, context, info) => {
             return info.mergeInfo.delegateToSchema({
@@ -612,9 +654,9 @@ export const gravityStitchingEnvironment = (
       UserAddress: {
         id: {
           fragment: gql`
-          ... on UserAddress {
-          internalID
-          }
+            ... on UserAddress {
+              internalID
+            }
           `,
           resolve: (parent, _args, _context, _info) => {
             const internalID = parent.internalID
@@ -630,14 +672,6 @@ export const gravityStitchingEnvironment = (
             }
           `,
           resolve: ({ artworkIDs: ids }, args, context, info) => {
-            // qs ignores empty array/object and prevents us from sending `?array[]=`.
-            // This is a workaround to map an empty array to `[null]` so it gets treated
-            // as an empty string.
-            // https://github.com/ljharb/qs/issues/362
-            //
-            // Note that we can't easily change this globally as there are multiple places
-            // clients are sending params of empty array but expecting Gravity to return
-            // non-empty data. This only fixes the issue for viewing room artworks.
             if (ids.length === 0) {
               ids = [null]
             }
@@ -688,11 +722,8 @@ export const gravityStitchingEnvironment = (
             ... on ViewingRoom {
               startAt
             }
-		  `,
-          resolve: (
-            { startAt: _startAt }: { startAt: string | null },
-            { short = false }: { short?: boolean }
-          ) => {
+          `,
+          resolve: ({ startAt: _startAt }, { short = false }) => {
             if (_startAt === null) {
               return null
             }
@@ -726,11 +757,8 @@ export const gravityStitchingEnvironment = (
             }
           `,
           resolve: (
-            {
-              startAt: _startAt,
-              endAt: _endAt,
-            }: { startAt: string | null; endAt: string | null },
-            { short = false }: { short?: boolean }
+            { startAt: _startAt, endAt: _endAt },
+            { short = false }
           ) => {
             if (_startAt === null || _endAt === null) {
               return null
@@ -785,18 +813,18 @@ export const gravityStitchingEnvironment = (
         },
         exhibitionPeriod: {
           fragment: gql`
-          ... on ViewingRoom {
-            startAt
-            endAt
-          }
-        `,
+            ... on ViewingRoom {
+              startAt
+              endAt
+            }
+          `,
           resolve: ({ startAt: _startAt, endAt: _endAt }) =>
             dateRange(_startAt, _endAt, "UTC"),
         },
       },
       ViewingRoomPublishedNotificationItem: {
         viewingRoomsConnection: {
-          fragment: `
+          fragment: gql`
             ... on ViewingRoomPublishedNotificationItem {
               viewingRoomIDs
             }
@@ -818,10 +846,11 @@ export const gravityStitchingEnvironment = (
       },
       Viewer: {
         viewingRoomsConnection: {
-          fragment: `
-          ... on Viewer {
-            __typename
-          }`,
+          fragment: gql`
+            ... on Viewer {
+              __typename
+            }
+          `,
           resolve: (_parent, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,
@@ -834,8 +863,6 @@ export const gravityStitchingEnvironment = (
           },
         },
       },
-
-      // Mutations
       CreateUserAddressPayload: {
         me: {
           resolve: (_parent, args, context, info) => {
