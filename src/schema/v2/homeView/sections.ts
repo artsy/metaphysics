@@ -16,16 +16,16 @@ import {
 } from "./artistResolvers"
 import { HeroUnitsResolver } from "./heroUnitsResolver"
 import { FeaturedFairsResolver } from "./featuredFairsResolver"
-
-type MaybeResolved<T> =
-  | T
-  | ((context: ResolverContext, args: any) => Promise<T>)
 import { LatestArticlesResolvers, NewsResolver } from "./articlesResolvers"
 import { MarketingCollectionsResolver } from "./marketingCollectionsResolver"
 import { LatestActivityResolver } from "./activityResolvers"
 import { LatestAuctionResultsResolver } from "./auctionResultsResolvers"
 import { HomeViewComponentBehaviors } from "./HomeViewComponent"
 import { SalesResolver } from "./salesResolver"
+
+type MaybeResolved<T> =
+  | T
+  | ((context: ResolverContext, args: any) => Promise<T>)
 
 export type HomeViewSection = {
   id: string
