@@ -1771,6 +1771,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
 
   # A string of the form "Nationality, Birthday (or Birthday-Deathday)"
   formattedNationalityAndBirthday: String
+  foundations: String
   gender: String
 
   # A list of genes associated with an artist
@@ -1805,6 +1806,7 @@ type Artist implements EntityWithFilterArtworksConnectionInterface & Node & Sear
       REVIEWED
       AWARDS
       RESIDENCIES
+      FOUNDATIONS
     ]
   ): [ArtistInsight!]!
 
@@ -2046,6 +2048,7 @@ enum ArtistInsightKind {
   COLLECTED
   CRITICALLY_ACCLAIMED
   CURATORS_PICK_EMERGING
+  FOUNDATIONS
   GAINING_FOLLOWERS
   GROUP_SHOW
   HIGH_AUCTION_RECORD
@@ -3503,6 +3506,25 @@ type AuctionResultsByArtistsEdge {
   node: AuctionResultsByArtists
 }
 
+# An auction results rail section in the home view
+type AuctionResultsRailHomeViewSection implements GenericHomeViewSection & Node {
+  auctionResultsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): AuctionResultConnection
+
+  # The component that is prescribed for this section
+  component: HomeViewComponent
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+}
+
 enum AuctionResultsState {
   ALL
   PAST
@@ -4490,6 +4512,9 @@ type CollectorSignals {
 
   # Bid count on lots open for bidding
   bidCount: Int @deprecated(reason: "Use nested field in `auction` instead")
+
+  # Increased interest in the artwork
+  increasedInterest: Boolean!
 
   # Live bidding has started on this lot's auction
   liveBiddingStarted: Boolean
@@ -11036,6 +11061,9 @@ type HomeViewComponent {
     version: HomeViewComponentBackgroundImageURLVersion
   ): String
 
+  # Behaviors for the view
+  behaviors: HomeViewComponentBehaviors
+
   # A description for this section
   description: String
 
@@ -11054,11 +11082,25 @@ enum HomeViewComponentBackgroundImageURLVersion {
   WIDE
 }
 
+type HomeViewComponentBehaviors {
+  # Represents the behavior of the view all button
+  viewAll: HomeViewComponentBehaviorsViewAll
+}
+
+type HomeViewComponentBehaviorsViewAll {
+  # Text for the CTA of the view all button
+  buttonText: String!
+
+  # href of the view all button
+  href: String!
+}
+
 union HomeViewSection =
     ActivityRailHomeViewSection
   | ArticlesRailHomeViewSection
   | ArtistsRailHomeViewSection
   | ArtworksRailHomeViewSection
+  | AuctionResultsRailHomeViewSection
   | FairsRailHomeViewSection
   | HeroUnitsHomeViewSection
   | MarketingCollectionsRailHomeViewSection

@@ -16,6 +16,7 @@ import { MarketingCollectionType } from "../marketingCollections"
 import { NotificationsConnection } from "../notifications"
 import { InternalIDFields, NodeInterface } from "../object_identification"
 import { HomeViewComponent } from "./HomeViewComponent"
+import { auctionResultConnection } from "../auction_result"
 
 // section interface
 
@@ -196,20 +197,41 @@ const ActivityRailHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
+export const AuctionResultsRailHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "AuctionResultsRailHomeViewSection",
+  description: "An auction results rail section in the home view",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+
+    auctionResultsConnection: {
+      type: auctionResultConnection.connectionType,
+      args: pageable({}),
+      resolve: (parent, ...rest) => {
+        return parent.resolver ? parent.resolver(parent, ...rest) : []
+      },
+    },
+  },
+})
+
 // the Section union type of all concrete sections
 
 export const HomeViewSectionType = new GraphQLUnionType({
   name: "HomeViewSection",
   types: [
+    ActivityRailHomeViewSectionType,
     ArticlesRailHomeViewSectionType,
     ArtistsRailHomeViewSectionType,
     ArtworksRailHomeViewSectionType,
+    AuctionResultsRailHomeViewSectionType,
     FairsRailHomeViewSectionType,
     HeroUnitsHomeViewSectionType,
     MarketingCollectionsRailHomeViewSectionType,
     ShowsRailHomeViewSectionType,
     ViewingRoomsRailHomeViewSectionType,
-    ActivityRailHomeViewSectionType,
   ],
   resolveType: (value) => {
     return value.type

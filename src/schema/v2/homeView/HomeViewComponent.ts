@@ -1,4 +1,41 @@
-import { GraphQLEnumType, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLEnumType,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
+
+export type HomeViewComponentBehaviors = {
+  viewAll?: {
+    href: string
+    buttonText: string
+  }
+}
+const HomeViewComponentBehaviors = new GraphQLObjectType<
+  HomeViewComponentBehaviors,
+  ResolverContext
+>({
+  name: "HomeViewComponentBehaviors",
+  fields: {
+    viewAll: {
+      type: new GraphQLObjectType({
+        name: "HomeViewComponentBehaviorsViewAll",
+        fields: {
+          href: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "href of the view all button",
+          },
+          buttonText: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: "Text for the CTA of the view all button",
+          },
+        },
+      }),
+      description: "Represents the behavior of the view all button",
+    },
+  },
+})
 
 export const HomeViewComponent = new GraphQLObjectType({
   name: "HomeViewComponent",
@@ -98,6 +135,10 @@ export const HomeViewComponent = new GraphQLObjectType({
           return description
         }
       },
+    },
+    behaviors: {
+      type: HomeViewComponentBehaviors,
+      description: "Behaviors for the view",
     },
   },
 })

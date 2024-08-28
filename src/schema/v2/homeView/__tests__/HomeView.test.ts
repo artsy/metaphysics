@@ -31,12 +31,20 @@ describe("homeView", () => {
       }),
     }
 
-    it("returns requested data for each section", async () => {
+    it("returns every section", async () => {
       const { homeView } = await runQuery(query, context)
 
       expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
         Object {
           "edges": Array [
+            Object {
+              "node": Object {
+                "__typename": "ArticlesRailHomeViewSection",
+                "component": Object {
+                  "title": "News",
+                },
+              },
+            },
             Object {
               "node": Object {
                 "__typename": "ActivityRailHomeViewSection",
@@ -144,6 +152,14 @@ describe("homeView", () => {
                 "__typename": "ArtworksRailHomeViewSection",
                 "component": Object {
                   "title": "Recently viewed works",
+                },
+              },
+            },
+            Object {
+              "node": Object {
+                "__typename": "AuctionResultsRailHomeViewSection",
+                "component": Object {
+                  "title": "Latest Auction Results",
                 },
               },
             },

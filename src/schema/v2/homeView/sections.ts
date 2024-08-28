@@ -18,9 +18,11 @@ import { FeaturedFairsResolver } from "./featuredFairsResolver"
 type MaybeResolved<T> =
   | T
   | ((context: ResolverContext, args: any) => Promise<T>)
-import { LatestArticlesResolvers } from "./articlesResolvers"
+import { LatestArticlesResolvers, NewsResolver } from "./articlesResolvers"
 import { MarketingCollectionsResolver } from "./marketingCollectionsResolver"
 import { LatestActivityResolver } from "./activityResolvers"
+import { LatestAuctionResultsResolver } from "./auctionResultsResolvers"
+import { HomeViewComponentBehaviors } from "./HomeViewComponent"
 
 export type HomeViewSection = {
   id: string
@@ -31,6 +33,7 @@ export type HomeViewSection = {
     description?: MaybeResolved<string>
     backgroundImageURL?: MaybeResolved<string>
     href?: MaybeResolved<string>
+    behaviors?: HomeViewComponentBehaviors
   }
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
@@ -114,8 +117,6 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
   resolver: NewWorksFromGalleriesYouFollowResolver,
 }
 
-// Artists Rails
-
 export const TrendingArtists: HomeViewSection = {
   id: "home-view-section-trending-artists",
   type: "ArtistsRailHomeViewSection",
@@ -193,6 +194,33 @@ export const LatestActivity: HomeViewSection = {
   resolver: LatestActivityResolver,
 }
 
+export const LatestAuctionResults: HomeViewSection = {
+  id: "home-view-section-latest-auction-results",
+  type: "AuctionResultsRailHomeViewSection",
+  component: {
+    title: "Latest Auction Results",
+    href: "/auction-results-for-artists-you-follow",
+    behaviors: {
+      viewAll: {
+        href: "/auction-results-for-artists-you-follow",
+        buttonText: "Browse All Results",
+      },
+    },
+  },
+  resolver: LatestAuctionResultsResolver,
+}
+
+export const News: HomeViewSection = {
+  id: "home-view-section-news",
+  type: "ArticlesRailHomeViewSection",
+  component: {
+    title: "News",
+    href: "/news",
+    type: "ArticlesCard",
+  },
+  resolver: NewsResolver,
+}
+
 const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   CuratorsPicksEmerging,
@@ -200,15 +228,18 @@ const sections: HomeViewSection[] = [
   HeroUnits,
   LatestActivity,
   LatestArticles,
+  LatestAuctionResults,
+  MarketingCollections,
+  MarketingCollections,
   MarketingCollections,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
+  News,
   RecentlyViewedArtworks,
   RecommendedArtists,
+  ShowsForYou,
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
-  MarketingCollections,
-  ShowsForYou,
   ViewingRooms,
 ]
 

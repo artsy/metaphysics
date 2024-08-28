@@ -228,4 +228,41 @@ describe("getArtistInsights", () => {
       expect(recentShow).toEqual(null)
     })
   })
+
+  describe("foundations", () => {
+    it("returns foundations insights", () => {
+      const field = {
+        kind: "FOUNDATIONS",
+        artist: {
+          foundations: "Summer 2023|Winter 2024",
+        },
+        value: "Summer 2023 and Winter 2024",
+      }
+
+      const artist = field.artist
+
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === field.kind)!
+      expect(insight.label).toEqual("Foundations Summer 2023 and Winter 2024")
+      expect(insight.description).toEqual(
+        "Featured in [Foundations](/fair/foundations-winter-2024), the online fair for emerging art, curated by Artsy."
+      )
+    })
+
+    it("with empty foundations", () => {
+      const field = {
+        kind: "FOUNDATIONS",
+        artist: {
+          foundations: null,
+        },
+        value: null,
+      }
+
+      const artist = field.artist
+
+      const insights = getArtistInsights(artist)
+      const insight = insights.find((insight) => insight.kind === field.kind)!
+      expect(insight).toBeUndefined()
+    })
+  })
 })
