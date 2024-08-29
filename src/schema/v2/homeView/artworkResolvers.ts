@@ -6,6 +6,7 @@ import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
 import { SimilarToRecentlyViewed } from "../me/similarToRecentlyViewed"
 import { filterArtworksConnectionWithParams } from "../filterArtworksConnection"
 import { connectionFromArray } from "graphql-relay"
+import { ArtworkRecommendations } from "../me/artworkRecommendations"
 
 /*
  * Resolvers for home view artwork sections
@@ -135,3 +136,8 @@ export const ActiveBidsResolver: GraphQLFieldResolver<
 
   return connectionFromArray(result, args)
 }
+
+export const RecommendedArtworksResolver: GraphQLFieldResolver<
+  any,
+  ResolverContext
+> = ArtworkRecommendations.resolve!
