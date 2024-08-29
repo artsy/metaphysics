@@ -2,6 +2,124 @@ import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
 describe("HomeViewSection", () => {
+  describe("RecommendedArtworks", () => {
+    it("returns lists of artworksConnection", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-recommended-artworks") {
+              __typename
+              ... on ArtworksRailHomeViewSection {
+                component {
+                  title
+                }
+                artworksConnection(first: 2) {
+                  edges {
+                    node {
+                      id
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const vortexResponse = {
+        data: {
+          artworkRecommendations: {
+            edges: [
+              {
+                node: {
+                  artworkId: "608a7417bdfbd1a789ba092a",
+                  score: 3.422242962512335,
+                },
+              },
+              {
+                node: {
+                  artworkId: "308a7416bdfbd1a789ba0911",
+                  score: 3.2225049587839654,
+                },
+              },
+              {
+                node: {
+                  artworkId: "208a7416bdfbd1a789ba0911",
+                  score: 4.2225049587839654,
+                },
+              },
+              {
+                node: {
+                  artworkId: "108a7416bdfbd1a789ba0911",
+                  score: 5.2225049587839654,
+                },
+              },
+            ],
+            totalCount: 4,
+          },
+        },
+      }
+
+      const vortexGraphQLAuthenticatedLoader = jest.fn(() => async () =>
+        vortexResponse
+      )
+
+      const artworksResponse = [
+        {
+          _id: "608a7417bdfbd1a789ba092a",
+          id: "gerhard-richter-abendstimmung-evening-calm-2",
+          slug: "gerhard-richter-abendstimmung-evening-calm-2",
+        },
+        {
+          _id: "308a7416bdfbd1a789ba0911",
+          id: "pablo-picasso-deux-femmes-nues-dans-un-arbre-2",
+          slug: "pablo-picasso-deux-femmes-nues-dans-un-arbre-2",
+        },
+      ]
+
+      const artworksLoader = jest.fn(async () => artworksResponse)
+
+      const context: any = {
+        artworksLoader,
+        userID: "vortex-user-id",
+        authenticatedLoaders: {
+          vortexGraphqlLoader: vortexGraphQLAuthenticatedLoader,
+          meLoader: () => Promise.resolve({}),
+        },
+        unauthenticatedLoaders: {
+          vortexGraphqlLoader: null,
+        },
+      }
+
+      const response = await runQuery(query, context)
+
+      expect(artworksLoader).toHaveBeenCalledWith({
+        ids: ["608a7417bdfbd1a789ba092a", "308a7416bdfbd1a789ba0911"],
+      })
+
+      expect(response.homeView.section.artworksConnection)
+        .toMatchInlineSnapshot(`
+      Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "id": "QXJ0d29yazo2MDhhNzQxN2JkZmJkMWE3ODliYTA5MmE=",
+              "title": "Untitled",
+            },
+          },
+          Object {
+            "node": Object {
+              "id": "QXJ0d29yazozMDhhNzQxNmJkZmJkMWE3ODliYTA5MTE=",
+              "title": "Untitled",
+            },
+          },
+        ],
+      }
+    `)
+    })
+  })
+
   describe("NewWorksFromGalleriesYouFollow", () => {
     it("returns lists of artworksConnection", async () => {
       const query = gql`

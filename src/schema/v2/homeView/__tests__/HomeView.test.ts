@@ -167,6 +167,14 @@ describe("homeView", () => {
               "node": Object {
                 "__typename": "ArtworksRailHomeViewSection",
                 "component": Object {
+                  "title": "Artwork Recommendations",
+                },
+              },
+            },
+            Object {
+              "node": Object {
+                "__typename": "ArtworksRailHomeViewSection",
+                "component": Object {
                   "title": "Recently viewed works",
                 },
               },
