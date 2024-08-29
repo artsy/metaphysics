@@ -69,18 +69,18 @@ export const gravityStitchingEnvironment = (
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
-      extend type Artist {
         ${
           !useUnstitchedArtistSeries
-            ? `artistSeriesConnection(
+            ? `extend type Artist {
+              artistSeriesConnection(
           first: Int
           last: Int
           after: String
           before: String
-          ): ArtistSeriesConnection`
+          ): ArtistSeriesConnection
+            }`
             : ""
         }
-      }
 
       ${
         !useUnstitchedArtistSeries
