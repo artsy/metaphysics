@@ -11,10 +11,6 @@ import HomePageMarketingCollectionModule from "./home_page_marketing_collections
 import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-import config from "config"
-
-const useUnstitchedMarketingCollections = !!config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
-
 const HomePageType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomePage",
   fields: {
@@ -26,9 +22,7 @@ const HomePageType = new GraphQLObjectType<any, ResolverContext>({
     fairsModule: HomePageFairsModule,
     onboardingModule: HomePageMyCollectionOnboardingModule,
     salesModule: HomePageSalesModule,
-    ...(useUnstitchedMarketingCollections && {
-      marketingCollectionsModule: HomePageMarketingCollectionModule,
-    }),
+    marketingCollectionsModule: HomePageMarketingCollectionModule,
   },
 })
 

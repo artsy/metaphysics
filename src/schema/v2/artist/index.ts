@@ -67,9 +67,7 @@ import {
   MarketingCollections,
   fetchMarketingCollections,
 } from "../marketingCollections"
-import config from "config"
 
-const useUnstitchedMarketingCollections = !!config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
 const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
@@ -834,19 +832,30 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       displayLabel: { type: GraphQLString, resolve: ({ name }) => name },
       location: { type: GraphQLString },
       meta: Meta,
-      ...(useUnstitchedMarketingCollections && {
-        marketingCollections: {
-          type: MarketingCollections.type,
-          args: pageable({}),
-          resolve: (artist, _args, { marketingCollectionsLoader }) => {
-            const args = {
-              artist_id: artist._id,
-              ..._args,
-            }
-            return fetchMarketingCollections(args, marketingCollectionsLoader)
+      marketingCollections: {
+        type: MarketingCollections.type,
+        args: pageable({
+          category: {
+            type: GraphQLString,
           },
+          isFeaturedArtistContent: {
+            type: GraphQLBoolean,
+          },
+          slugs: {
+            type: new GraphQLList(GraphQLNonNull(GraphQLString)),
+          },
+          size: {
+            type: GraphQLInt,
+          },
+        }),
+        resolve: (artist, _args, { marketingCollectionsLoader }) => {
+          const args = {
+            artist_id: artist._id,
+            ..._args,
+          }
+          return fetchMarketingCollections(args, marketingCollectionsLoader)
         },
-      }),
+      },
       nationality: { type: GraphQLString },
       name: { type: GraphQLString },
       first: { type: GraphQLString },

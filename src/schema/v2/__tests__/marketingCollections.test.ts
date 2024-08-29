@@ -1,6 +1,5 @@
 import gql from "lib/gql"
 import { runQuery } from "../test/utils"
-import config from "config"
 
 const marketingCollectionsData = [
   {
@@ -14,14 +13,6 @@ const marketingCollectionsData = [
     title: "Fiby Z Collection 2",
   },
 ]
-
-beforeAll(() => {
-  config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA = true
-})
-
-afterAll(() => {
-  config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA = false
-})
 
 describe("MarketingCollections", () => {
   it("returns a list of marketing collections", async () => {
@@ -150,5 +141,35 @@ describe("MarketingCollections", () => {
         ],
       }
     `)
+  })
+
+  it("returns curated marketing collections", async () => {
+    const query = gql`
+      {
+        curatedMarketingCollections(size: 2) {
+          slug
+        }
+      }
+    `
+
+    const payload = [
+      {
+        slug: "percys-z-collection-1",
+      },
+      {
+        slug: "fiby-z-collection-2",
+      },
+    ]
+
+    const context = {
+      authenticatedLoaders: {},
+      marketingCollectionsLoader: () => Promise.resolve({ body: payload }),
+    } as any
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      curatedMarketingCollections: payload,
+    })
   })
 })
