@@ -16,16 +16,16 @@ import {
 } from "./artistResolvers"
 import { HeroUnitsResolver } from "./heroUnitsResolver"
 import { FeaturedFairsResolver } from "./featuredFairsResolver"
-
-type MaybeResolved<T> =
-  | T
-  | ((context: ResolverContext, args: any) => Promise<T>)
 import { LatestArticlesResolvers, NewsResolver } from "./articlesResolvers"
 import { MarketingCollectionsResolver } from "./marketingCollectionsResolver"
 import { LatestActivityResolver } from "./activityResolvers"
 import { LatestAuctionResultsResolver } from "./auctionResultsResolvers"
 import { HomeViewComponentBehaviors } from "./HomeViewComponent"
 import { SalesResolver } from "./salesResolver"
+
+type MaybeResolved<T> =
+  | T
+  | ((context: ResolverContext, args: any) => Promise<T>)
 
 export type HomeViewSection = {
   id: string
@@ -38,6 +38,7 @@ export type HomeViewSection = {
     href?: MaybeResolved<string>
     behaviors?: HomeViewComponentBehaviors
   }
+  requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
 
@@ -47,6 +48,7 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
   component: {
     title: "Similar to Works You’ve Viewed",
   },
+  requiresAuthentication: true,
   resolver: SimilarToRecentlyViewedArtworksResolver,
 }
 
@@ -81,6 +83,7 @@ export const CuratorsPicksEmerging: HomeViewSection = {
     },
     href: "/collection/curators-picks-emerging",
   },
+  requiresAuthentication: false,
   resolver: CuratorsPicksEmergingArtworksResolver,
 }
 
@@ -90,6 +93,7 @@ export const RecentlyViewedArtworks: HomeViewSection = {
   component: {
     title: "Recently viewed works",
   },
+  requiresAuthentication: true,
   resolver: RecentlyViewedArtworksResolver,
 }
 
@@ -99,6 +103,7 @@ export const AuctionLotsForYou: HomeViewSection = {
   component: {
     title: "Auction lots for you",
   },
+  requiresAuthentication: true,
   resolver: AuctionLotsForYouResolver,
 }
 
@@ -108,6 +113,7 @@ export const NewWorksForYou: HomeViewSection = {
   component: {
     title: "New works for you",
   },
+  requiresAuthentication: true,
   resolver: NewWorksForYouResolver,
 }
 
@@ -117,6 +123,7 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
   component: {
     title: "New Works from Galleries You Follow",
   },
+  requiresAuthentication: true,
   resolver: NewWorksFromGalleriesYouFollowResolver,
 }
 
@@ -126,6 +133,7 @@ export const RecommendedArtworks: HomeViewSection = {
   component: {
     title: "Artwork Recommendations",
   },
+  requiresAuthentication: true,
   resolver: RecommendedArtworksResolver,
 }
 
@@ -137,6 +145,7 @@ export const TrendingArtists: HomeViewSection = {
   component: {
     title: "Trending Artists on Artsy",
   },
+  requiresAuthentication: false,
   resolver: SuggestedArtistsResolver,
 }
 
@@ -146,12 +155,14 @@ export const RecommendedArtists: HomeViewSection = {
   component: {
     title: "Recommended Artists",
   },
+  requiresAuthentication: true,
   resolver: RecommendedArtistsResolver,
 }
 
 export const HeroUnits: HomeViewSection = {
   id: "home-view-section-hero-units",
   type: "HeroUnitsHomeViewSection",
+  requiresAuthentication: false,
   resolver: HeroUnitsResolver,
 }
 
@@ -162,6 +173,7 @@ export const FeaturedFairs: HomeViewSection = {
     title: "Featured Fairs",
     description: "See Works in Top Art Fairs",
   },
+  requiresAuthentication: false,
   resolver: FeaturedFairsResolver,
 }
 
@@ -171,6 +183,7 @@ export const LatestArticles: HomeViewSection = {
   component: {
     title: "Artsy Editorial",
   },
+  requiresAuthentication: false,
   resolver: LatestArticlesResolvers,
 }
 
@@ -180,6 +193,7 @@ export const MarketingCollections: HomeViewSection = {
   component: {
     title: "Collections",
   },
+  requiresAuthentication: false,
   resolver: MarketingCollectionsResolver,
 }
 
@@ -189,6 +203,7 @@ export const ShowsForYou: HomeViewSection = {
   component: {
     title: "Shows for You",
   },
+  requiresAuthentication: true,
 }
 
 export const ViewingRooms: HomeViewSection = {
@@ -197,6 +212,7 @@ export const ViewingRooms: HomeViewSection = {
   component: {
     title: "Viewing Rooms",
   },
+  requiresAuthentication: false,
 }
 
 export const LatestActivity: HomeViewSection = {
@@ -205,6 +221,7 @@ export const LatestActivity: HomeViewSection = {
   component: {
     title: "Latest Activity",
   },
+  requiresAuthentication: true,
   resolver: LatestActivityResolver,
 }
 
@@ -221,6 +238,7 @@ export const LatestAuctionResults: HomeViewSection = {
       },
     },
   },
+  requiresAuthentication: true,
   resolver: LatestAuctionResultsResolver,
 }
 
@@ -232,6 +250,7 @@ export const News: HomeViewSection = {
     href: "/news",
     type: "ArticlesCard",
   },
+  requiresAuthentication: false,
   resolver: NewsResolver,
 }
 
@@ -247,6 +266,7 @@ export const Auctions: HomeViewSection = {
       },
     },
   },
+  requiresAuthentication: false,
   resolver: SalesResolver,
 }
 
@@ -256,6 +276,7 @@ export const ActiveBids: HomeViewSection = {
   component: {
     title: "Your Active Bids",
   },
+  requiresAuthentication: true,
   resolver: ActiveBidsResolver,
 }
 
