@@ -50,7 +50,6 @@ import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
-import { PartnerMerchantAccountsConnection } from "./partnerMerchantAccountsConnection"
 import {
   AlertType,
   AlertsSummaryFields,
@@ -859,7 +858,35 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ default_profile_id }) => default_profile_id,
       },
       documentsConnection: PartnerDocumentsConnection,
-      merchantAccountsConnection: PartnerMerchantAccountsConnection,
+      merchantAccount: {
+        type: new GraphQLObjectType<any, ResolverContext>({
+          name: "PartnerMerchantAccount",
+          fields: {
+            externalId: {
+              type: new GraphQLNonNull(GraphQLString),
+              resolve: ({ external_id }) => external_id,
+            },
+          },
+        }),
+        resolve: async ({ id }, _args, { partnerMerchantAccountsLoader }) => {
+          if (!partnerMerchantAccountsLoader) {
+            return null
+          }
+          const {
+            body: accounts,
+          }: { body: any[] } = await partnerMerchantAccountsLoader(
+            {
+              partnerId: id,
+            },
+            {
+              page: 1,
+              size: 1,
+            }
+          )
+
+          return accounts[0]
+        },
+      },
       featuredKeywords: {
         type: new GraphQLNonNull(
           GraphQLList(new GraphQLNonNull(GraphQLString))

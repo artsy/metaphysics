@@ -14648,14 +14648,7 @@ type Partner implements Node {
     private: Boolean
     size: Int
   ): LocationConnection
-
-  # Return partner merchant accounts.
-  merchantAccountsConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): PartnerMerchantAccountConnection
+  merchantAccount: PartnerMerchantAccount
   meta: PartnerMeta
   name: String
 
@@ -15193,32 +15186,6 @@ type PartnerInquiryRequest {
 
 type PartnerMerchantAccount {
   externalId: String!
-
-  # A globally unique ID.
-  id: ID!
-
-  # A type-specific Gravity Mongo Document ID.
-  internalID: ID!
-}
-
-# A connection to a list of items.
-type PartnerMerchantAccountConnection {
-  # A list of edges.
-  edges: [PartnerMerchantAccountEdge]
-  pageCursors: PageCursors!
-
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-  totalCount: Int
-}
-
-# An edge in a connection.
-type PartnerMerchantAccountEdge {
-  # A cursor for use in pagination
-  cursor: String!
-
-  # The item at the end of the edge
-  node: PartnerMerchantAccount
 }
 
 type PartnerMeta {
