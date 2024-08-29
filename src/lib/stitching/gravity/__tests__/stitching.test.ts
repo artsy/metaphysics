@@ -29,7 +29,7 @@ describe("gravity/stitching", () => {
 
     it("resolves the filterArtworksConnection field on ArtistSeries for the V2 schema", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { filterArtworksConnection } = resolvers.ArtistSeries
+      const { filterArtworksConnection } = resolvers.ArtistSeries as any
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
       filterArtworksConnection.resolve(
@@ -109,7 +109,7 @@ describe("gravity/stitching", () => {
     describe("ArtistSeries", () => {
       it("resolves the artworksConnection field on ArtistSeries for the V2 schema", async () => {
         const { resolvers } = await getGravityStitchedSchema()
-        const { artworksConnection } = resolvers.ArtistSeries
+        const { artworksConnection } = resolvers.ArtistSeries as any
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
         artworksConnection.resolve(
@@ -133,7 +133,7 @@ describe("gravity/stitching", () => {
         it("excludes the current artwork from the artworksConnection query", async () => {
           const context = { currentArtworkID: "xyz456" }
           const { resolvers } = await getGravityStitchedSchema()
-          const { artworksConnection } = resolvers.ArtistSeries
+          const { artworksConnection } = resolvers.ArtistSeries as any
           const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
           artworksConnection.resolve(
@@ -618,7 +618,7 @@ describe("gravity/stitching", () => {
 
     it("resolves the artists field on ArtistSeries", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { artists } = resolvers.ArtistSeries
+      const { artists } = resolvers.ArtistSeries as any
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
       const sharedContext = {}
 
@@ -652,7 +652,7 @@ describe("gravity/stitching", () => {
 
     it("resolves the artistSeriesConnection field on Artist", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { artistSeriesConnection } = resolvers.Artist
+      const { artistSeriesConnection } = resolvers.Artist as any
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
       artistSeriesConnection.resolve(
@@ -676,7 +676,7 @@ describe("gravity/stitching", () => {
       it("resolves the artistSeriesConnection and excludes the current artist series", async () => {
         const context = { currentArtistSeriesInternalID: "abc123" }
         const { resolvers } = await getGravityStitchedSchema()
-        const { artistSeriesConnection } = resolvers.Artist
+        const { artistSeriesConnection } = resolvers.Artist as any
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
         artistSeriesConnection.resolve(
@@ -708,7 +708,7 @@ describe("gravity/stitching", () => {
 
     it("resolves the artistSeriesConnection field on Artwork", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { artistSeriesConnection } = resolvers.Artwork
+      const { artistSeriesConnection } = resolvers.Artwork as any
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
       const sharedContext = {}
 
@@ -735,7 +735,7 @@ describe("gravity/stitching", () => {
   describe("#image", () => {
     it("includes an image for an artist series", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { image } = resolvers.ArtistSeries
+      const { image } = resolvers.ArtistSeries as any
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
       const artistSeriesData = {
         image_url: "cat.jpg",
@@ -767,7 +767,7 @@ describe("gravity/stitching", () => {
 
     it("uses the representative artwork for an artist series if no image is set", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { image } = resolvers.ArtistSeries
+      const { image } = resolvers.ArtistSeries as any
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
       const artistSeriesData = {
         image_url: null,
@@ -807,7 +807,7 @@ describe("gravity/stitching", () => {
   describe("#descriptionFormatted", () => {
     it("converts from markdown to HTML", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { descriptionFormatted } = resolvers.ArtistSeries
+      const { descriptionFormatted } = resolvers.ArtistSeries as any
       const formattedDescription = await descriptionFormatted.resolve(
         { description: "**Bold Type**" },
         { format: "html" }
@@ -819,7 +819,7 @@ describe("gravity/stitching", () => {
 
     it("keeps markdown", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { descriptionFormatted } = resolvers.ArtistSeries
+      const { descriptionFormatted } = resolvers.ArtistSeries as any
       const formattedDescription = await descriptionFormatted.resolve(
         { description: "**Bold Type**" },
         { format: "MARKDOWN" }
@@ -831,7 +831,7 @@ describe("gravity/stitching", () => {
   describe("#artworksCountMessage", () => {
     it("prefers for-sale artworks count", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { artworksCountMessage } = resolvers.ArtistSeries
+      const { artworksCountMessage } = resolvers.ArtistSeries as any
       const value = await artworksCountMessage.resolve({
         forSaleArtworksCount: 20,
         artworksCount: 10,
@@ -841,7 +841,7 @@ describe("gravity/stitching", () => {
 
     it("falls back to general artworks count", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { artworksCountMessage } = resolvers.ArtistSeries
+      const { artworksCountMessage } = resolvers.ArtistSeries as any
       const value = await artworksCountMessage.resolve({
         forSaleArtworksCount: 0,
         artworksCount: 10,
@@ -851,7 +851,7 @@ describe("gravity/stitching", () => {
 
     it("pluralizes correctly", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { artworksCountMessage } = resolvers.ArtistSeries
+      const { artworksCountMessage } = resolvers.ArtistSeries as any
 
       const zero = await artworksCountMessage.resolve({
         forSaleArtworksCount: 0,

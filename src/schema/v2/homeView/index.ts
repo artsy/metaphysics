@@ -49,15 +49,20 @@ const Section: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, context) => {
-    const { meLoader } = context.authenticatedLoaders
+  resolve: (_parent, args, context, _info) => {
+    const { id } = args
+    const section = registry[id]
+    const userIsAuthenticated = !!context.accessToken
 
-    if (!meLoader) throw new Error("You must be signed in to see this content.")
-
-    if (id.length === 0) {
-      return null
+    if (!section) {
+      throw new Error(`Section not found: ${id}`)
     }
-    return registry[id]
+
+    if (section.requiresAuthentication && !userIsAuthenticated) {
+      throw new Error(`Section requires authenticated user: ${id}`)
+    }
+
+    return section
   },
 }
 

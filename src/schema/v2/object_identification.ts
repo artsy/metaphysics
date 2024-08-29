@@ -41,6 +41,7 @@ const SupportedTypes: any = {
   files: [
     "./article",
     "./artist",
+    "./artistSeries",
     "./artwork",
     "./artwork_version",
     "./bidder",
