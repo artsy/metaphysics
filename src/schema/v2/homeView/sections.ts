@@ -1,6 +1,7 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
+  ActiveBidsResolver,
   AuctionLotsForYouResolver,
   CuratorsPicksEmergingArtworksResolver,
   NewWorksForYouResolver,
@@ -237,7 +238,17 @@ export const Auctions: HomeViewSection = {
   resolver: SalesResolver,
 }
 
+export const ActiveBids: HomeViewSection = {
+  id: "home-view-section-active-bids",
+  type: "ArtworksRailHomeViewSection",
+  component: {
+    title: "Your Active Bids",
+  },
+  resolver: ActiveBidsResolver,
+}
+
 const sections: HomeViewSection[] = [
+  ActiveBids,
   Auctions,
   AuctionLotsForYou,
   CuratorsPicksEmerging,
