@@ -50,6 +50,7 @@ import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
+import { PartnerMerchantAccountsConnection } from "./partnerMerchantAccountsConnection"
 import {
   AlertType,
   AlertsSummaryFields,
@@ -858,6 +859,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ default_profile_id }) => default_profile_id,
       },
       documentsConnection: PartnerDocumentsConnection,
+      merchantAccountsConnection: PartnerMerchantAccountsConnection,
       featuredKeywords: {
         type: new GraphQLNonNull(
           GraphQLList(new GraphQLNonNull(GraphQLString))
