@@ -9,7 +9,7 @@ import {
   GraphQLID,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { GravityIDFields } from "./object_identification"
+import { GravityIDFields, NodeInterface } from "./object_identification"
 import { ArtistType } from "./artist"
 import { markdown } from "./fields/markdown"
 import Image, { getDefault, normalizeImageData } from "./image"
@@ -22,6 +22,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 const ArtistSeriesType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistSeries",
+  interfaces: [NodeInterface],
   fields: () => {
     const {
       filterArtworksConnectionWithParams,
@@ -144,8 +145,16 @@ export const ArtistSeries: GraphQLFieldConfig<void, ResolverContext> = {
   },
 }
 
+export default ArtistSeries
+
 export const ArtistSeriesConnectionType = connectionWithCursorInfo({
   nodeType: ArtistSeriesType,
+  connectionFields: {
+    totalCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ totalCount }) => totalCount ?? 0,
+    },
+  },
 }).connectionType
 
 export const ArtistSeriesConnection = {
