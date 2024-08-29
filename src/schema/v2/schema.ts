@@ -250,7 +250,7 @@ const artistSeriesUnstitchedRootFields = config.USE_UNSTITCHED_ARTIST_SERIES_SCH
       artistSeries: ArtistSeries,
       artistSeriesConnection: ArtistSeriesConnection,
     }
-  : {}
+  : ({} as any)
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
