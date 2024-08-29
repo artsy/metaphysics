@@ -5,6 +5,7 @@ import { newWorksFromGalleriesYouFollow } from "../me/newWorksFromGalleriesYouFo
 import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
 import { SimilarToRecentlyViewed } from "../me/similarToRecentlyViewed"
 import { filterArtworksConnectionWithParams } from "../filterArtworksConnection"
+import { connectionFromArray } from "graphql-relay"
 
 /*
  * Resolvers for home view artwork sections
@@ -117,4 +118,20 @@ export const AuctionLotsForYouResolver: GraphQLFieldResolver<
   )
 
   return result
+}
+
+export const ActiveBidsResolver: GraphQLFieldResolver<
+  any,
+  ResolverContext
+> = async (_parent, args, context, _info) => {
+  const { lotStandingLoader } = context
+
+  if (!lotStandingLoader) return []
+
+  let result = await lotStandingLoader({
+    live: true,
+  })
+  result = result.map((res) => res.sale_artwork.artwork)
+
+  return connectionFromArray(result, args)
 }

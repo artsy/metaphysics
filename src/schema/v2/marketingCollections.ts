@@ -9,6 +9,7 @@ import {
   GraphQLFieldConfigMap,
   GraphQLEnumType,
   GraphQLID,
+  GraphQLFloat,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
@@ -16,6 +17,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { MarketingCollectionsSorts } from "./sorts/marketingCollectionsSort"
 import { NodeInterface, InternalIDFields } from "./object_identification"
 import Image, { normalizeImageData, getDefault } from "schema/v2/image"
+import { date } from "schema/v2/fields/date"
 
 const MarketingCollectionQuery = new GraphQLObjectType<any, ResolverContext>({
   name: "MarketingCollectionQuery",
@@ -56,6 +58,8 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     type: GraphQLNonNull(GraphQLString),
     resolve: ({ slug }) => slug,
   },
+  createdAt: date(({ created_at }) => created_at),
+  updatedAt: date(({ updated_at }) => updated_at),
   thumbnailImage: {
     type: Image.type,
     resolve: async (
@@ -86,19 +90,15 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     resolve: ({ credit }) => credit,
   },
   category: {
-    type: GraphQLString,
+    type: GraphQLNonNull(GraphQLString),
     resolve: ({ category }) => category,
   },
   priceGuidance: {
-    type: GraphQLString,
+    type: GraphQLFloat,
     resolve: ({ price_guidance }) => price_guidance,
   },
-  published: {
-    type: GraphQLNonNull(GraphQLBoolean),
-    resolve: ({ published }) => published,
-  },
   title: {
-    type: GraphQLString,
+    type: GraphQLNonNull(GraphQLString),
     resolve: ({ title }) => title,
   },
   geneIds: {
@@ -118,7 +118,7 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     resolve: ({ is_department }) => is_department,
   },
   query: {
-    type: MarketingCollectionQuery,
+    type: GraphQLNonNull(MarketingCollectionQuery),
     resolve: ({ query }) => query,
   },
   isFeaturedArtistContent: {
@@ -126,7 +126,7 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
     resolve: ({ is_featured_artist_content }) => is_featured_artist_content,
   },
   featuredArtistExclusionIds: {
-    type: new GraphQLList(GraphQLString),
+    type: GraphQLNonNull(new GraphQLList(GraphQLNonNull(GraphQLString))),
     resolve: ({ featured_artist_exclusion_ids }) =>
       featured_artist_exclusion_ids,
   },
@@ -205,7 +205,7 @@ const MarketingCollectionGroupType = new GraphQLObjectType<
   name: "MarketingCollectionGroup",
   fields: {
     groupType: {
-      type: MarketingCollectionGroupTypeEnum,
+      type: GraphQLNonNull(MarketingCollectionGroupTypeEnum),
       resolve: ({ group_type }) => group_type,
     },
     internalID: {
@@ -213,7 +213,9 @@ const MarketingCollectionGroupType = new GraphQLObjectType<
       resolve: ({ internalID }) => internalID,
     },
     members: {
-      type: GraphQLList(MarketingCollectionType),
+      type: GraphQLNonNull(
+        GraphQLList(GraphQLNonNull(MarketingCollectionType))
+      ),
       resolve: async (
         { member_ids },
         _args,
@@ -231,14 +233,16 @@ const MarketingCollectionGroupType = new GraphQLObjectType<
       },
     },
     name: {
-      type: GraphQLString,
+      type: GraphQLNonNull(GraphQLString),
       resolve: ({ name }) => name,
     },
   },
 })
 
 const LinkedCollections: GraphQLFieldConfig<any, ResolverContext> = {
-  type: GraphQLList(MarketingCollectionGroupType),
+  type: GraphQLNonNull(
+    GraphQLList(GraphQLNonNull(MarketingCollectionGroupType))
+  ),
   description: "Linked Collections",
   resolve: ({ linked_collections }) => {
     return linked_collections
@@ -246,12 +250,13 @@ const LinkedCollections: GraphQLFieldConfig<any, ResolverContext> = {
 }
 
 const RelatedCollections: GraphQLFieldConfig<any, ResolverContext> = {
-  type: GraphQLList(MarketingCollectionType),
+  type: GraphQLNonNull(GraphQLList(GraphQLNonNull(MarketingCollectionType))),
   description: "Related Collections",
   args: {
     size: {
       type: GraphQLInt,
       description: "The number of Related Marketing Collections to return",
+      defaultValue: 10,
     },
   },
   resolve: async ({ slug }, _args, { marketingCollectionsLoader }) => {
@@ -291,7 +296,7 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
     slugs: {
       type: new GraphQLList(GraphQLString),
     },
-    artistId: {
+    artistID: {
       type: GraphQLString,
     },
     category: {

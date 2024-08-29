@@ -7,7 +7,6 @@ import {
   RenameRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
-import config from "config"
 
 const rootFieldsAllowList = [
   "agreement",
@@ -15,16 +14,7 @@ const rootFieldsAllowList = [
   "artistSeriesConnection",
   "viewingRoom",
   "viewingRooms",
-].concat(
-  config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA
-    ? []
-    : [
-        "marketingCollection",
-        "marketingCollections",
-        "curatedMarketingCollections",
-        "marketingCategories",
-      ]
-)
+]
 
 export const executableGravitySchema = () => {
   const gravityTypeDefs = readFileSync("src/data/gravity.graphql", "utf8")
@@ -54,13 +44,11 @@ export const executableGravitySchema = () => {
     "User",
     "UsersConnection",
     "UsersConnectionEdge",
+    "MarketingCollection",
+    "MarketingCollectionGroup",
+    "MarketingCollectionCategory",
   ]
 
-  if (config.USE_UNSTITCHED_MARKETING_COLLECTION_SCHEMA) {
-    duplicatedTypes.push("MarketingCollection")
-    duplicatedTypes.push("MarketingCollectionGroup")
-    duplicatedTypes.push("MarketingCollectionCategory")
-  }
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
   const unusedTypes = [
