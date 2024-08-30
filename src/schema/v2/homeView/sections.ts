@@ -47,6 +47,12 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
   type: "ArtworksRailHomeViewSection",
   component: {
     title: "Similar to Works You’ve Viewed",
+    behaviors: {
+      viewAll: {
+        href: "/similar-to-recently-viewed",
+        buttonText: "Browse All Artworks",
+      },
+    },
   },
   requiresAuthentication: true,
   resolver: SimilarToRecentlyViewedArtworksResolver,
@@ -81,6 +87,12 @@ export const CuratorsPicksEmerging: HomeViewSection = {
 
       return background_image_app_phone_url
     },
+    behaviors: {
+      viewAll: {
+        href: "/collection/curators-picks-emerging",
+        buttonText: "Browse All Artworks",
+      },
+    },
     href: "/collection/curators-picks-emerging",
   },
   requiresAuthentication: false,
@@ -92,6 +104,12 @@ export const RecentlyViewedArtworks: HomeViewSection = {
   type: "ArtworksRailHomeViewSection",
   component: {
     title: "Recently viewed works",
+    behaviors: {
+      viewAll: {
+        href: "/recently-viewed",
+        buttonText: "Browse All Artworks",
+      },
+    },
   },
   requiresAuthentication: true,
   resolver: RecentlyViewedArtworksResolver,
@@ -102,6 +120,12 @@ export const AuctionLotsForYou: HomeViewSection = {
   type: "ArtworksRailHomeViewSection",
   component: {
     title: "Auction lots for you",
+    behaviors: {
+      viewAll: {
+        href: "/auctions/lots-for-you-ending-soon",
+        buttonText: "Browse All Artworks",
+      },
+    },
   },
   requiresAuthentication: true,
   resolver: AuctionLotsForYouResolver,
@@ -112,6 +136,12 @@ export const NewWorksForYou: HomeViewSection = {
   type: "ArtworksRailHomeViewSection",
   component: {
     title: "New works for you",
+    behaviors: {
+      viewAll: {
+        href: "/new-for-you",
+        buttonText: "Browse All Artworks",
+      },
+    },
   },
   requiresAuthentication: true,
   resolver: NewWorksForYouResolver,
@@ -122,6 +152,12 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
   type: "ArtworksRailHomeViewSection",
   component: {
     title: "New Works from Galleries You Follow",
+    behaviors: {
+      viewAll: {
+        href: "/new-works-from-galleries-you-follow",
+        buttonText: "Browse All Artworks",
+      },
+    },
   },
   requiresAuthentication: true,
   resolver: NewWorksFromGalleriesYouFollowResolver,
@@ -132,6 +168,12 @@ export const RecommendedArtworks: HomeViewSection = {
   type: "ArtworksRailHomeViewSection",
   component: {
     title: "Artwork Recommendations",
+    behaviors: {
+      viewAll: {
+        href: "/artwork-recommendations",
+        buttonText: "Browse All Artworks",
+      },
+    },
   },
   requiresAuthentication: true,
   resolver: RecommendedArtworksResolver,
@@ -143,7 +185,7 @@ export const TrendingArtists: HomeViewSection = {
   id: "home-view-section-trending-artists",
   type: "ArtistsRailHomeViewSection",
   component: {
-    title: "Trending Artists on Artsy",
+    title: "Trending Artists",
   },
   requiresAuthentication: false,
   resolver: SuggestedArtistsResolver,
@@ -182,6 +224,11 @@ export const LatestArticles: HomeViewSection = {
   type: "ArticlesRailHomeViewSection",
   component: {
     title: "Artsy Editorial",
+    behaviors: {
+      viewAll: {
+        href: "/articles",
+      },
+    },
   },
   requiresAuthentication: false,
   resolver: LatestArticlesResolvers,
@@ -211,6 +258,11 @@ export const ViewingRooms: HomeViewSection = {
   type: "ViewingRoomsRailHomeViewSection",
   component: {
     title: "Viewing Rooms",
+    behaviors: {
+      viewAll: {
+        href: "/viewing-rooms",
+      },
+    },
   },
   requiresAuthentication: false,
 }
@@ -220,6 +272,12 @@ export const LatestActivity: HomeViewSection = {
   type: "ActivityRailHomeViewSection",
   component: {
     title: "Latest Activity",
+    behaviors: {
+      viewAll: {
+        href: "/notifications",
+        buttonText: "See All",
+      },
+    },
   },
   requiresAuthentication: true,
   resolver: LatestActivityResolver,
@@ -249,6 +307,12 @@ export const News: HomeViewSection = {
     title: "News",
     href: "/news",
     type: "ArticlesCard",
+    behaviors: {
+      viewAll: {
+        href: "/news",
+        buttonText: "More in News",
+      },
+    },
   },
   requiresAuthentication: false,
   resolver: NewsResolver,

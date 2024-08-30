@@ -9,7 +9,7 @@ import { ResolverContext } from "types/graphql"
 export type HomeViewComponentBehaviors = {
   viewAll?: {
     href: string
-    buttonText: string
+    buttonText?: string
   }
 }
 const HomeViewComponentBehaviors = new GraphQLObjectType<
@@ -27,7 +27,7 @@ const HomeViewComponentBehaviors = new GraphQLObjectType<
             description: "href of the view all button",
           },
           buttonText: {
-            type: new GraphQLNonNull(GraphQLString),
+            type: GraphQLString,
             description: "Text for the CTA of the view all button",
           },
         },

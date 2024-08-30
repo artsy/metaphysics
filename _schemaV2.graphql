@@ -11096,7 +11096,7 @@ type HomeViewComponentBehaviors {
 
 type HomeViewComponentBehaviorsViewAll {
   # Text for the CTA of the view all button
-  buttonText: String!
+  buttonText: String
 
   # href of the view all button
   href: String!
