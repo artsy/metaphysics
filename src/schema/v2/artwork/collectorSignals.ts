@@ -107,6 +107,25 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         description: "Bid count on lots open for bidding",
         deprecationReason: "Use nested field in `auction` instead",
       },
+      curatorsPick: {
+        type: GraphQLBoolean,
+        description:
+          "Artwork is part of either the Curators' Pick Emerging or Blue Chip collections",
+        resolve: async (artwork, {}, ctx) => {
+          const CURATED_COLLECTION_SLUGS = [
+            "curators-picks-blue-chip-artists",
+            "curators-picks-emerging-artists",
+          ]
+
+          const checks = await Promise.all(
+            CURATED_COLLECTION_SLUGS.map(async (slug) => {
+              const collection = await ctx.marketingCollectionLoader(slug)
+              return collection.artwork_ids.includes(artwork._id)
+            })
+          )
+          return checks.includes(true)
+        },
+      },
       lotWatcherCount: {
         type: GraphQLInt,
         description: "Lot watcher count on lots open for bidding",
