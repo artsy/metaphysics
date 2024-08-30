@@ -20,6 +20,7 @@ describe("getLegacyZoneSections", () => {
           "home-view-section-auction-lots-for-you",
           "home-view-section-auctions",
           "home-view-section-latest-auction-results",
+          "home-view-section-galleries-near-you",
           "home-view-section-latest-articles",
           "home-view-section-news",
           "home-view-section-curators-picks-emerging",
@@ -51,6 +52,7 @@ describe("getLegacyZoneSections", () => {
         Array [
           "home-view-section-hero-units",
           "home-view-section-auctions",
+          "home-view-section-galleries-near-you",
           "home-view-section-latest-articles",
           "home-view-section-news",
           "home-view-section-curators-picks-emerging",
