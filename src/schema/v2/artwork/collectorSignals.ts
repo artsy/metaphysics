@@ -172,15 +172,12 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       partnerOffer: {
         type: PartnerOfferToCollectorType,
         description: "Partner offer available to collector",
-        resolve: async (artwork, {}, ctx) => {
-          const fields = await getLabelSignalFields(artwork, ctx)
-          return fields.partnerOffer
-        },
+        resolve: (artwork, {}, ctx) => getActivePartnerOffer(artwork, ctx),
       },
       increasedInterest: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Increased interest in the artwork",
-        resolve: (artwork, {}, ctx) => getActivePartnerOffer(artwork, ctx),
+        resolve: (artwork) => !!artwork.increased_interest_signal,
       },
     },
   }),
@@ -237,8 +234,6 @@ const getLabelSignalFields = async (
     signals.primaryLabel = "INCREASED_INTEREST"
   } else if (signals.curatorsPick) {
     signals.primaryLabel = "CURATORS_PICK"
-  } else {
-    signals.primaryLabel = null
   }
 
   return signals
