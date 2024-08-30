@@ -152,6 +152,14 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "ArtworksRailHomeViewSection",
                   "component": Object {
+                    "title": "Your Active Bids",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "ArtworksRailHomeViewSection",
+                  "component": Object {
                     "title": "Auction lots for you",
                   },
                 },
@@ -201,6 +209,14 @@ describe("homeView", () => {
                   "__typename": "MarketingCollectionsRailHomeViewSection",
                   "component": Object {
                     "title": "Collections",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "ArtworksRailHomeViewSection",
+                  "component": Object {
+                    "title": "Artwork Recommendations",
                   },
                 },
               },
