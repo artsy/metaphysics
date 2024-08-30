@@ -58,15 +58,32 @@ const SupportedTypes: any = {
     "./sale",
     "./sale_artwork",
     "./user",
+    "./homeView/index",
   ],
 }
 
 const typeNames = {
   "./filterArtworksConnection": "filterArtworksConnection",
+  "./homeView/index": "Section",
 }
 
 const exportNames = {
   filterArtworksConnection: "filterArtworksConnection",
+  Section: "Section",
+}
+
+const unionTypesRemap = {
+  ActivityRailHomeViewSection: "Section",
+  ArticlesRailHomeViewSection: "Section",
+  ArtistsRailHomeViewSection: "Section",
+  ArtworksRailHomeViewSection: "Section",
+  AuctionResultsRailHomeViewSection: "Section",
+  FairsRailHomeViewSection: "Section",
+  HeroUnitsHomeViewSection: "Section",
+  MarketingCollectionsRailHomeViewSection: "Section",
+  ShowsRailHomeViewSection: "Section",
+  ViewingRoomsRailHomeViewSection: "Section",
+  SalesRailHomeViewSection: "Section",
 }
 
 SupportedTypes.typeMap = SupportedTypes.files.reduce((typeMap, file) => {
@@ -141,13 +158,22 @@ const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
   },
   // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
   resolve: (_root, { id: globalID }, context, rootValue) => {
-    const { type: typeName, id } = fromGlobalId(globalID)
+    const { id } = fromGlobalId(globalID)
+    let { type: typeName } = fromGlobalId(globalID)
+
+    const originalTypeName = typeName
+
+    if (unionTypesRemap[typeName]) {
+      typeName = unionTypesRemap[typeName]
+    }
+
     if (isSupportedType(typeName)) {
       let exported = SupportedTypes.typeModules[typeName]
       if (typeof exported === "function") {
         exported = exported()
       }
-      const { resolve, type } = exported
+      const { resolve } = exported
+
       return Promise.resolve(
         resolve(
           null,
@@ -158,7 +184,7 @@ const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
       ).then((data) => {
         // Add the already known type so `NodeInterface` can pluck that out in
         // its `resolveType` implementation.
-        return { __type: type, ...data }
+        return { __type: originalTypeName, ...data }
       })
     }
   },
