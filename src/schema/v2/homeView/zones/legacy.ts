@@ -19,13 +19,15 @@ import {
   SimilarToRecentlyViewedArtworks,
   TrendingArtists,
   ViewingRooms,
+  RecommendedArtworks,
+  ActiveBids,
 } from "schema/v2/homeView/sections"
 
 const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
   LatestActivity,
   NewWorksForYou,
   HeroUnits,
-  // TK: active bids
+  ActiveBids,
   AuctionLotsForYou,
   Auctions,
   LatestAuctionResults,
@@ -34,7 +36,7 @@ const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
   News,
   CuratorsPicksEmerging,
   MarketingCollections,
-  // TK: artwork recs
+  RecommendedArtworks,
   NewWorksFromGalleriesYouFollow,
   RecommendedArtists,
   TrendingArtists,
