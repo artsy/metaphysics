@@ -106,6 +106,7 @@ const LabelSignalEnumType = new GraphQLEnumType({
   values: {
     PARTNER_OFFER: { value: "PARTNER_OFFER" },
     INCREASED_INTEREST: { value: "INCREASED_INTEREST" },
+    CURATORS_PICK: { value: "CURATORS_PICK" },
   },
 })
 
@@ -125,18 +126,8 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         description:
           "Artwork is part of either the Curators' Pick Emerging or Blue Chip collections",
         resolve: async (artwork, {}, ctx) => {
-          const CURATED_COLLECTION_SLUGS = [
-            "curators-picks-blue-chip-artists",
-            "curators-picks-emerging-artists",
-          ]
-
-          const checks = await Promise.all(
-            CURATED_COLLECTION_SLUGS.map(async (slug) => {
-              const collection = await ctx.marketingCollectionLoader(slug)
-              return collection.artwork_ids.includes(artwork._id)
-            })
-          )
-          return checks.includes(true)
+          const fields = await getLabelSignalFields(artwork, ctx)
+          return fields.curatorsPick
         },
       },
       lotWatcherCount: {
@@ -189,10 +180,7 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       increasedInterest: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Increased interest in the artwork",
-        resolve: async (artwork, {}, ctx) => {
-          const fields = await getLabelSignalFields(artwork, ctx)
-          return fields.increasedInterest
-        },
+        resolve: (artwork, {}, ctx) => getActivePartnerOffer(artwork, ctx),
       },
     },
   }),
@@ -205,9 +193,10 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
 
 interface LabelSignalFields {
   increasedInterest: boolean
+  curatorsPick: boolean
   // only a partial partner offer type
   partnerOffer: { end_at: string; active: true } | null
-  primaryLabel: "PARTNER_OFFER" | "INCREASED_INTEREST" | null
+  primaryLabel: "PARTNER_OFFER" | "INCREASED_INTEREST" | "CURATORS_PICK" | null
 }
 
 // Single function to resolve mutually-exclusive label signals
@@ -217,36 +206,37 @@ const getLabelSignalFields = async (
 ): Promise<LabelSignalFields> => {
   const signals = {
     increasedInterest: false,
+    curatorsPick: false,
     partnerOffer: null,
-    primaryLabel: null,
-  } as LabelSignalFields
+    primaryLabel: null as LabelSignalFields["primaryLabel"],
+  }
+
+  const partnerOfferPromise = getActivePartnerOffer(artwork, ctx)
+  const curatorsPickPromise = getIsCuratorsPick(artwork, ctx)
+
+  const [activePartnerOffer, curatorsPick] = await Promise.all([
+    partnerOfferPromise,
+    curatorsPickPromise,
+  ])
 
   if (artwork.increased_interest_signal) {
     signals.increasedInterest = true
   }
 
-  if (
-    checkFeatureFlag("emerald_signals-partner-offers", ctx) &&
-    ctx.mePartnerOffersLoader &&
-    artwork.purchasable
-  ) {
-    const partnerOffers = await ctx.mePartnerOffersLoader({
-      artwork_id: artwork.id,
-      sort: "-created_at",
-      size: 1,
-    })
+  if (curatorsPick) {
+    signals.curatorsPick = true
+  }
 
-    const activePartnerOffer = partnerOffers.body?.find((po) => po.active)
-
-    if (activePartnerOffer) {
-      signals.partnerOffer = activePartnerOffer
-    }
+  if (activePartnerOffer) {
+    signals.partnerOffer = activePartnerOffer
   }
 
   if (signals.partnerOffer) {
     signals.primaryLabel = "PARTNER_OFFER"
   } else if (signals.increasedInterest) {
     signals.primaryLabel = "INCREASED_INTEREST"
+  } else if (signals.curatorsPick) {
+    signals.primaryLabel = "CURATORS_PICK"
   } else {
     signals.primaryLabel = null
   }
@@ -259,6 +249,38 @@ const checkFeatureFlag = (flag: any, context: any) => {
     userId: context.userID,
   }
   return isFeatureFlagEnabled(flag, unleashContext)
+}
+
+const getActivePartnerOffer = async (artwork, ctx) => {
+  const partnerOfferEligible =
+    checkFeatureFlag("emerald_signals-partner-offers", ctx) &&
+    artwork.purchasable &&
+    ctx.mePartnerOffersLoader
+  if (!partnerOfferEligible) {
+    return null
+  }
+  const partnerOffers = await ctx.mePartnerOffersLoader({
+    artwork_id: artwork.id,
+    sort: "-created_at",
+    size: 1,
+  })
+
+  return partnerOffers.body?.find((po) => po.active)
+}
+
+const getIsCuratorsPick = async (artwork, ctx) => {
+  const CURATED_COLLECTION_SLUGS = [
+    "curators-picks-blue-chip-artists",
+    "curators-picks-emerging-artists",
+  ]
+
+  const checks = await Promise.all(
+    CURATED_COLLECTION_SLUGS.map(async (slug) => {
+      const collection = await ctx.marketingCollectionLoader(slug)
+      return collection.artwork_ids.includes(artwork._id)
+    })
+  )
+  return checks.includes(true)
 }
 
 const getActiveSaleArtwork = async (

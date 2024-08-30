@@ -11707,6 +11707,7 @@ type Job {
 }
 
 enum LabelSignalEnum {
+  CURATORS_PICK
   INCREASED_INTEREST
   PARTNER_OFFER
 }

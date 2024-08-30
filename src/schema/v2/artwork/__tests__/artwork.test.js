@@ -4789,6 +4789,19 @@ describe("Artwork type", () => {
             const data = await runQuery(query, context)
             expect(data.artwork.collectorSignals.primaryLabel).toBeNull()
           })
+          it("shows 'CURATORS_PICK' if there is no active partner offer, no increased interest, but the artwork is in a curators pick collection", async () => {
+            context.mePartnerOffersLoader.mockResolvedValue({
+              body: [],
+            })
+            artwork.increased_interest_signal = false
+            context.marketingCollectionLoader.mockResolvedValue({
+              artwork_ids: [artwork._id],
+            })
+            const data = await runQuery(query, context)
+            expect(data.artwork.collectorSignals.primaryLabel).toEqual(
+              "CURATORS_PICK"
+            )
+          })
         })
       })
 
