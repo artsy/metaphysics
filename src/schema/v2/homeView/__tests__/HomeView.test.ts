@@ -292,14 +292,6 @@ describe("homeView", () => {
                   },
                 },
               },
-              Object {
-                "node": Object {
-                  "__typename": "FairsRailHomeViewSection",
-                  "component": Object {
-                    "title": "Featured Fairs",
-                  },
-                },
-              },
             ],
           }
         `)
