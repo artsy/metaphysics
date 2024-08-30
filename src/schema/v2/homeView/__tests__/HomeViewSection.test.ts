@@ -1111,4 +1111,60 @@ describe("HomeViewSection", () => {
             `)
     })
   })
+
+  describe("implements the NodeInterface", () => {
+    it("returns the correct id", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-news") {
+              __typename
+              ... on ArticlesRailHomeViewSection {
+                id
+              }
+            }
+          }
+        }
+      `
+
+      const context = {}
+
+      const data = await runQuery(query, context)
+
+      expect(data.homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ArticlesRailHomeViewSection",
+          "id": "SG9tZVZpZXdTZWN0aW9uOmhvbWUtdmlldy1zZWN0aW9uLW5ld3M=",
+        }
+      `)
+    })
+
+    it("can query via the node interface", async () => {
+      const query = gql`
+        {
+          node(id: "SG9tZVZpZXdTZWN0aW9uOmhvbWUtdmlldy1zZWN0aW9uLW5ld3M=") {
+            __typename
+            ... on ArticlesRailHomeViewSection {
+              component {
+                title
+              }
+            }
+          }
+        }
+      `
+
+      const context = {}
+
+      const data = await runQuery(query, context)
+
+      expect(data.node).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ArticlesRailHomeViewSection",
+          "component": Object {
+            "title": "News",
+          },
+        }
+      `)
+    })
+  })
 })

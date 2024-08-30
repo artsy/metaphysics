@@ -58,15 +58,18 @@ const SupportedTypes: any = {
     "./sale",
     "./sale_artwork",
     "./user",
+    "./homeView/index",
   ],
 }
 
 const typeNames = {
   "./filterArtworksConnection": "filterArtworksConnection",
+  "./homeView/index": "HomeViewSection",
 }
 
 const exportNames = {
   filterArtworksConnection: "filterArtworksConnection",
+  HomeViewSection: "Section",
 }
 
 SupportedTypes.typeMap = SupportedTypes.files.reduce((typeMap, file) => {
@@ -156,9 +159,14 @@ const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
           rootValueForChild(rootValue)
         )
       ).then((data) => {
+        // Further narrow down the type if it is a union or interface.
+        const specificType = type?.resolveType
+          ? type.resolveType(data)
+          : type?._types?.find((t) => t.isTypeOf(data))
+
         // Add the already known type so `NodeInterface` can pluck that out in
         // its `resolveType` implementation.
-        return { __type: type, ...data }
+        return { __type: specificType ?? type, ...data }
       })
     }
   },
