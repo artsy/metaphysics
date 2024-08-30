@@ -280,12 +280,36 @@ export const ActiveBids: HomeViewSection = {
   resolver: ActiveBidsResolver,
 }
 
+/*
+ * Galleries Sections
+ */
+
+export const GalleriesNearYou: HomeViewSection = {
+  id: "home-view-section-galleries-near-you",
+  type: "GalleriesHomeViewSection",
+  requiresAuthentication: false,
+  component: {
+    title: "Galleries Near You",
+    description:
+      "Follow these local galleries for updates on artists you love.",
+    backgroundImageURL: "https://files.artsy.net/images/galleries_for_you.webp",
+    href: "/galleries-for-you",
+    behaviors: {
+      viewAll: {
+        href: "/galleries-for-you",
+        buttonText: "Explore",
+      },
+    },
+  },
+}
+
 const sections: HomeViewSection[] = [
   ActiveBids,
   AuctionLotsForYou,
   Auctions,
   CuratorsPicksEmerging,
   FeaturedFairs,
+  GalleriesNearYou,
   HeroUnits,
   LatestActivity,
   LatestArticles,

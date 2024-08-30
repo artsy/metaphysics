@@ -21,6 +21,7 @@ import {
   ViewingRooms,
   RecommendedArtworks,
   ActiveBids,
+  GalleriesNearYou,
 } from "schema/v2/homeView/sections"
 
 const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
@@ -31,7 +32,7 @@ const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
   AuctionLotsForYou,
   Auctions,
   LatestAuctionResults,
-  // TK: galleries near you
+  GalleriesNearYou,
   LatestArticles,
   News,
   CuratorsPicksEmerging,
