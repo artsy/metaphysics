@@ -599,6 +599,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    partnerMerchantAccountsLoader: gravityLoader<any, { partnerId: string }>(
+      ({ partnerId }) => `merchant_accounts?partner_id=${partnerId}`,
+      {},
+      { headers: true }
+    ),
     partnerCollectorProfileLoader: gravityLoader<any, { partnerId; userId }>(
       ({ partnerId, userId }) =>
         `partner_collector_profile?partner_id=${partnerId}&user_id=${userId}`

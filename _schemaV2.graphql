@@ -14679,6 +14679,7 @@ type Partner implements Node {
     private: Boolean
     size: Int
   ): LocationConnection
+  merchantAccount: PartnerMerchantAccount
   meta: PartnerMeta
   name: String
 
@@ -15212,6 +15213,10 @@ type PartnerInquiryRequest {
   internalID: ID!
   questions: [InquiryQuestion]
   shippingLocation: Location
+}
+
+type PartnerMerchantAccount {
+  externalId: String!
 }
 
 type PartnerMeta {

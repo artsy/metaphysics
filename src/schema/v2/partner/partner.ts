@@ -858,6 +858,35 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ default_profile_id }) => default_profile_id,
       },
       documentsConnection: PartnerDocumentsConnection,
+      merchantAccount: {
+        type: new GraphQLObjectType<any, ResolverContext>({
+          name: "PartnerMerchantAccount",
+          fields: {
+            externalId: {
+              type: new GraphQLNonNull(GraphQLString),
+              resolve: ({ external_id }) => external_id,
+            },
+          },
+        }),
+        resolve: async ({ id }, _args, { partnerMerchantAccountsLoader }) => {
+          if (!partnerMerchantAccountsLoader) {
+            return null
+          }
+          const {
+            body: accounts,
+          }: { body: any[] } = await partnerMerchantAccountsLoader(
+            {
+              partnerId: id,
+            },
+            {
+              page: 1,
+              size: 1,
+            }
+          )
+
+          return accounts[0]
+        },
+      },
       featuredKeywords: {
         type: new GraphQLNonNull(
           GraphQLList(new GraphQLNonNull(GraphQLString))
