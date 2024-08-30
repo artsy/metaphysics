@@ -39,39 +39,51 @@ const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   },
 }
 
+export const HomeViewSectionTypeNames = {
+  ActivityHomeViewSection: "ActivityHomeViewSection",
+  ArticlesHomeViewSection: "ArticlesHomeViewSection",
+  ArtistsHomeViewSection: "ArtistsHomeViewSection",
+  ArtworksHomeViewSection: "ArtworksHomeViewSection",
+  AuctionResultsHomeViewSection: "AuctionResultsHomeViewSection",
+  FairsHomeViewSection: "FairsHomeViewSection",
+  GalleriesHomeViewSection: "GalleriesHomeViewSection",
+  GenericHomeViewSection: "GenericHomeViewSection",
+  HeroUnitsHomeViewSection: "HeroUnitsHomeViewSection",
+  MarketingCollectionsHomeViewSection: "MarketingCollectionsHomeViewSection",
+  SalesHomeViewSection: "SalesHomeViewSection",
+  ShowsHomeViewSection: "ShowsHomeViewSection",
+  ViewingRoomsHomeViewSection: "ViewingRoomsHomeViewSection",
+} as const
+
 const GenericHomeViewSectionInterface = new GraphQLInterfaceType({
-  name: "GenericHomeViewSection",
+  name: HomeViewSectionTypeNames.GenericHomeViewSection,
   description: "Abstract interface shared by every kind of home view section",
   fields: standardSectionFields,
 })
 
 // concrete sections
 
-const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "ArtworksRailHomeViewSection",
-  description: "An artwork rail section in the home view",
-  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
-  fields: {
-    ...standardSectionFields,
+const ArtworksHomeViewSectionType = new GraphQLObjectType<any, ResolverContext>(
+  {
+    name: HomeViewSectionTypeNames.ArtworksHomeViewSection,
+    description: "An artworks section in the home view",
+    interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+    fields: {
+      ...standardSectionFields,
 
-    artworksConnection: {
-      type: artworkConnection.connectionType,
-      args: pageable({}),
-      resolve: (parent, ...rest) =>
-        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
+      artworksConnection: {
+        type: artworkConnection.connectionType,
+        args: pageable({}),
+        resolve: (parent, ...rest) =>
+          parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
+      },
     },
-  },
-})
+  }
+)
 
-const ArtistsRailHomeViewSectionType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "ArtistsRailHomeViewSection",
-  description: "An artists rail section in the home view",
+const ArtistsHomeViewSectionType = new GraphQLObjectType<any, ResolverContext>({
+  name: HomeViewSectionTypeNames.ArtistsHomeViewSection,
+  description: "An artists section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
@@ -89,8 +101,8 @@ const HeroUnitsHomeViewSectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "HeroUnitsHomeViewSection",
-  description: "Hero units rail section",
+  name: HomeViewSectionTypeNames.HeroUnitsHomeViewSection,
+  description: "A hero units section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
@@ -104,12 +116,9 @@ const HeroUnitsHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
-const FairsRailHomeViewSectionType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "FairsRailHomeViewSection",
-  description: "Fairs rail section",
+const FairsHomeViewSectionType = new GraphQLObjectType<any, ResolverContext>({
+  name: HomeViewSectionTypeNames.FairsHomeViewSection,
+  description: "Fairs section",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
@@ -123,31 +132,30 @@ const FairsRailHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
-const ArticlesRailHomeViewSectionType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "ArticlesRailHomeViewSection",
-  description: "An articles rail section in the home view",
-  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
-  fields: {
-    ...standardSectionFields,
+const ArticlesHomeViewSectionType = new GraphQLObjectType<any, ResolverContext>(
+  {
+    name: HomeViewSectionTypeNames.ArticlesHomeViewSection,
+    description: "An articles section in the home view",
+    interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+    fields: {
+      ...standardSectionFields,
 
-    articlesConnection: {
-      type: ArticlesConnection.type,
-      args: pageable({}),
-      resolve: (parent, ...rest) =>
-        parent.resolver ? parent.resolver(parent, ...rest) : [],
+      articlesConnection: {
+        type: ArticlesConnection.type,
+        args: pageable({}),
+        resolve: (parent, ...rest) =>
+          parent.resolver ? parent.resolver(parent, ...rest) : [],
+      },
     },
-  },
-})
+  }
+)
 
-const MarketingCollectionsRailHomeViewSectionType = new GraphQLObjectType<
+const MarketingCollectionsHomeViewSectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "MarketingCollectionsRailHomeViewSection",
-  description: "A marketing collections rail section in the home view",
+  name: HomeViewSectionTypeNames.MarketingCollectionsHomeViewSection,
+  description: "A marketing collections section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
@@ -163,57 +171,53 @@ const MarketingCollectionsRailHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
-const ShowsRailHomeViewSectionType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "ShowsRailHomeViewSection",
-  description: "A shows rail section in the home view",
+const ShowsHomeViewSectionType = new GraphQLObjectType<any, ResolverContext>({
+  name: HomeViewSectionTypeNames.ShowsHomeViewSection,
+  description: "A shows section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
   },
 })
 
-export const ViewingRoomsRailHomeViewSectionType = new GraphQLObjectType<
+export const ViewingRoomsHomeViewSectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "ViewingRoomsRailHomeViewSection",
-  description: "A viewing rooms rail section in the home view",
+  name: HomeViewSectionTypeNames.ViewingRoomsHomeViewSection,
+  description: "A viewing rooms section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
   },
 })
 
-const ActivityRailHomeViewSectionType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "ActivityRailHomeViewSection",
-  description: "An rail to show a list of user activity",
-  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
-  fields: {
-    ...standardSectionFields,
+const ActivityHomeViewSectionType = new GraphQLObjectType<any, ResolverContext>(
+  {
+    name: HomeViewSectionTypeNames.ActivityHomeViewSection,
+    description: "An activity rail to show a list of user activities",
+    interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+    fields: {
+      ...standardSectionFields,
 
-    notificationsConnection: {
-      type: NotificationsConnection.type,
+      notificationsConnection: {
+        type: NotificationsConnection.type,
 
-      args: pageable({}),
-      resolve: (parent, ...rest) => {
-        return parent.resolver ? parent.resolver(parent, ...rest) : []
+        args: pageable({}),
+        resolve: (parent, ...rest) => {
+          return parent.resolver ? parent.resolver(parent, ...rest) : []
+        },
       },
     },
-  },
-})
+  }
+)
 
-export const AuctionResultsRailHomeViewSectionType = new GraphQLObjectType<
+export const AuctionResultsHomeViewSectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "AuctionResultsRailHomeViewSection",
-  description: "An auction results rail section in the home view",
+  name: HomeViewSectionTypeNames.AuctionResultsHomeViewSection,
+  description: "An auction results section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
@@ -228,12 +232,9 @@ export const AuctionResultsRailHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
-const SalesRailHomeViewSectionType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "SalesRailHomeViewSection",
-  description: "A sales rail section in the home view",
+const SalesHomeViewSectionType = new GraphQLObjectType<any, ResolverContext>({
+  name: HomeViewSectionTypeNames.SalesHomeViewSection,
+  description: "A sales section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
@@ -251,7 +252,7 @@ export const GalleriesHomeViewSectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: "GalleriesHomeViewSection",
+  name: HomeViewSectionTypeNames.GalleriesHomeViewSection,
   description: "A section containing a list of galleries",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
@@ -263,18 +264,18 @@ export const GalleriesHomeViewSectionType = new GraphQLObjectType<
 export const HomeViewSectionType = new GraphQLUnionType({
   name: "HomeViewSection",
   types: [
-    ActivityRailHomeViewSectionType,
-    ArticlesRailHomeViewSectionType,
-    ArtistsRailHomeViewSectionType,
-    ArtworksRailHomeViewSectionType,
-    AuctionResultsRailHomeViewSectionType,
-    FairsRailHomeViewSectionType,
+    ActivityHomeViewSectionType,
+    ArticlesHomeViewSectionType,
+    ArtistsHomeViewSectionType,
+    ArtworksHomeViewSectionType,
+    AuctionResultsHomeViewSectionType,
+    FairsHomeViewSectionType,
     GalleriesHomeViewSectionType,
     HeroUnitsHomeViewSectionType,
-    MarketingCollectionsRailHomeViewSectionType,
-    SalesRailHomeViewSectionType,
-    ShowsRailHomeViewSectionType,
-    ViewingRoomsRailHomeViewSectionType,
+    MarketingCollectionsHomeViewSectionType,
+    SalesHomeViewSectionType,
+    ShowsHomeViewSectionType,
+    ViewingRoomsHomeViewSectionType,
   ],
   resolveType: (value) => {
     return value.type

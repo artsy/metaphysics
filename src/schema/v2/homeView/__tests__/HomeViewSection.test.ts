@@ -187,7 +187,7 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-recommended-artworks") {
               __typename
-              ... on ArtworksRailHomeViewSection {
+              ... on ArtworksHomeViewSection {
                 component {
                   title
                   behaviors {
@@ -324,7 +324,7 @@ describe("HomeViewSection", () => {
               id: "home-view-section-new-works-from-galleries-you-follow"
             ) {
               __typename
-              ... on ArtworksRailHomeViewSection {
+              ... on ArtworksHomeViewSection {
                 component {
                   title
                   behaviors {
@@ -365,7 +365,7 @@ describe("HomeViewSection", () => {
 
       expect(homeView.section).toMatchInlineSnapshot(`
         Object {
-          "__typename": "ArtworksRailHomeViewSection",
+          "__typename": "ArtworksHomeViewSection",
           "artworksConnection": Object {
             "edges": Array [
               Object {
@@ -402,7 +402,7 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-recommended-artists") {
               __typename
-              ... on ArtistsRailHomeViewSection {
+              ... on ArtistsHomeViewSection {
                 component {
                   title
                 }
@@ -470,7 +470,7 @@ describe("HomeViewSection", () => {
 
       expect(homeView.section).toMatchInlineSnapshot(`
         Object {
-          "__typename": "ArtistsRailHomeViewSection",
+          "__typename": "ArtistsHomeViewSection",
           "artistsConnection": Object {
             "edges": Array [
               Object {
@@ -565,7 +565,7 @@ describe("HomeViewSection", () => {
             section(id: "home-view-section-curators-picks-emerging") {
               __typename
 
-              ... on ArtworksRailHomeViewSection {
+              ... on ArtworksHomeViewSection {
                 component {
                   title
                   description
@@ -623,7 +623,7 @@ describe("HomeViewSection", () => {
 
       expect(homeView.section).toMatchInlineSnapshot(`
         Object {
-          "__typename": "ArtworksRailHomeViewSection",
+          "__typename": "ArtworksHomeViewSection",
           "artworksConnection": Object {
             "edges": Array [
               Object {
@@ -655,7 +655,7 @@ describe("HomeViewSection", () => {
     })
   })
 
-  describe("FairsRailHomeViewSection", () => {
+  describe("FairsHomeViewSection", () => {
     it("returns correct data", async () => {
       const query = gql`
         {
@@ -663,7 +663,7 @@ describe("HomeViewSection", () => {
             section(id: "home-view-section-featured-fairs") {
               __typename
 
-              ... on FairsRailHomeViewSection {
+              ... on FairsHomeViewSection {
                 component {
                   title
                 }
@@ -706,7 +706,7 @@ describe("HomeViewSection", () => {
 
       expect(homeView.section).toMatchInlineSnapshot(`
         Object {
-          "__typename": "FairsRailHomeViewSection",
+          "__typename": "FairsHomeViewSection",
           "component": Object {
             "title": "Featured Fairs",
           },
@@ -729,7 +729,7 @@ describe("HomeViewSection", () => {
     })
   })
 
-  describe("MarketingCollectionsRailHomeViewSection", () => {
+  describe("MarketingCollectionsHomeViewSection", () => {
     it("returns correct data", async () => {
       const query = gql`
         {
@@ -737,7 +737,7 @@ describe("HomeViewSection", () => {
             section(id: "home-view-section-marketing-collections") {
               __typename
 
-              ... on MarketingCollectionsRailHomeViewSection {
+              ... on MarketingCollectionsHomeViewSection {
                 component {
                   title
                 }
@@ -774,7 +774,7 @@ describe("HomeViewSection", () => {
 
       expect(homeView.section).toMatchInlineSnapshot(`
         Object {
-          "__typename": "MarketingCollectionsRailHomeViewSection",
+          "__typename": "MarketingCollectionsHomeViewSection",
           "component": Object {
             "title": "Collections",
           },
@@ -797,7 +797,7 @@ describe("HomeViewSection", () => {
     })
   })
 
-  describe("ViewingRoomsRailHomeViewSection", () => {
+  describe("ViewingRoomsHomeViewSection", () => {
     it("returns correct data", async () => {
       const query = gql`
         {
@@ -805,7 +805,7 @@ describe("HomeViewSection", () => {
             section(id: "home-view-section-viewing-rooms") {
               __typename
 
-              ... on ViewingRoomsRailHomeViewSection {
+              ... on ViewingRoomsHomeViewSection {
                 component {
                   title
                   behaviors {
@@ -826,7 +826,7 @@ describe("HomeViewSection", () => {
 
       expect(data.homeView.section).toMatchInlineSnapshot(`
                 Object {
-                  "__typename": "ViewingRoomsRailHomeViewSection",
+                  "__typename": "ViewingRoomsHomeViewSection",
                   "component": Object {
                     "behaviors": Object {
                       "viewAll": Object {
@@ -840,14 +840,14 @@ describe("HomeViewSection", () => {
     })
   })
 
-  describe("ActivityRailHomeViewSection", () => {
+  describe("ActivityHomeViewSection", () => {
     it("returns the latest activity", async () => {
       const query = `
         {
           homeView {
             section(id: "home-view-section-latest-activity") {
               __typename
-              ... on ActivityRailHomeViewSection {
+              ... on ActivityHomeViewSection {
                 component {
                   title
                   behaviors {
@@ -917,7 +917,7 @@ describe("HomeViewSection", () => {
         Object {
           "homeView": Object {
             "section": Object {
-              "__typename": "ActivityRailHomeViewSection",
+              "__typename": "ActivityHomeViewSection",
               "component": Object {
                 "behaviors": Object {
                   "viewAll": Object {
@@ -949,14 +949,14 @@ describe("HomeViewSection", () => {
     })
   })
 
-  describe("AuctionResultsRailHomeViewSection", () => {
+  describe("AuctionResultsHomeViewSection", () => {
     it("returns the latest activity", async () => {
       const query = `
         {
           homeView {
             section(id: "home-view-section-latest-auction-results") {
               __typename
-              ... on AuctionResultsRailHomeViewSection {
+              ... on AuctionResultsHomeViewSection {
                 component {
                   title
                   href
@@ -1030,7 +1030,7 @@ describe("HomeViewSection", () => {
         Object {
           "homeView": Object {
             "section": Object {
-              "__typename": "AuctionResultsRailHomeViewSection",
+              "__typename": "AuctionResultsHomeViewSection",
               "auctionResultsConnection": Object {
                 "edges": Array [
                   Object {
@@ -1109,7 +1109,7 @@ describe("HomeViewSection", () => {
             section(id: "home-view-section-news") {
               __typename
 
-              ... on ArticlesRailHomeViewSection {
+              ... on ArticlesHomeViewSection {
                 component {
                   title
                   type
@@ -1156,7 +1156,7 @@ describe("HomeViewSection", () => {
 
       expect(homeView.section).toMatchInlineSnapshot(`
         Object {
-          "__typename": "ArticlesRailHomeViewSection",
+          "__typename": "ArticlesHomeViewSection",
           "articlesConnection": Object {
             "edges": Array [
               Object {
@@ -1187,7 +1187,7 @@ describe("HomeViewSection", () => {
     })
   })
 
-  describe("SalesRailHomeViewSection", () => {
+  describe("SalesHomeViewSection", () => {
     it("returns correct data", async () => {
       const query = gql`
         {
@@ -1195,7 +1195,7 @@ describe("HomeViewSection", () => {
             section(id: "home-view-section-auctions") {
               __typename
 
-              ... on SalesRailHomeViewSection {
+              ... on SalesHomeViewSection {
                 component {
                   title
                   behaviors {
@@ -1235,7 +1235,7 @@ describe("HomeViewSection", () => {
 
       expect(homeView.section).toMatchInlineSnapshot(`
         Object {
-          "__typename": "SalesRailHomeViewSection",
+          "__typename": "SalesHomeViewSection",
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
@@ -1271,7 +1271,7 @@ describe("HomeViewSection", () => {
             section(id: "home-view-section-active-bids") {
               __typename
 
-              ... on ArtworksRailHomeViewSection {
+              ... on ArtworksHomeViewSection {
                 component {
                   title
                 }
@@ -1315,7 +1315,7 @@ describe("HomeViewSection", () => {
 
       expect(homeView.section).toMatchInlineSnapshot(`
         Object {
-          "__typename": "ArtworksRailHomeViewSection",
+          "__typename": "ArtworksHomeViewSection",
           "artworksConnection": Object {
             "edges": Array [
               Object {

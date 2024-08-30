@@ -46,8 +46,8 @@ type AccountRequest {
   notes: String
 }
 
-# An rail to show a list of user activity
-type ActivityRailHomeViewSection implements GenericHomeViewSection & Node {
+# An activity rail to show a list of user activities
+type ActivityHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent
 
@@ -1520,8 +1520,8 @@ type ArticleUnpublishedArtworkPartner {
   slug: String
 }
 
-# An articles rail section in the home view
-type ArticlesRailHomeViewSection implements GenericHomeViewSection & Node {
+# An articles section in the home view
+type ArticlesHomeViewSection implements GenericHomeViewSection & Node {
   articlesConnection(
     after: String
     before: String
@@ -2333,8 +2333,8 @@ enum ArtistTargetSupplyType {
   HIGH_HQDLS
 }
 
-# An artists rail section in the home view
-type ArtistsRailHomeViewSection implements GenericHomeViewSection & Node {
+# An artists section in the home view
+type ArtistsHomeViewSection implements GenericHomeViewSection & Node {
   artistsConnection(
     after: String
     before: String
@@ -3203,8 +3203,8 @@ type ArtworksCollectionsBatchUpdateSuccess {
   removedFromCollections: [Collection]
 }
 
-# An artwork rail section in the home view
-type ArtworksRailHomeViewSection implements GenericHomeViewSection & Node {
+# An artworks section in the home view
+type ArtworksHomeViewSection implements GenericHomeViewSection & Node {
   artworksConnection(
     after: String
     before: String
@@ -3510,8 +3510,8 @@ type AuctionResultsByArtistsEdge {
   node: AuctionResultsByArtists
 }
 
-# An auction results rail section in the home view
-type AuctionResultsRailHomeViewSection implements GenericHomeViewSection & Node {
+# An auction results section in the home view
+type AuctionResultsHomeViewSection implements GenericHomeViewSection & Node {
   auctionResultsConnection(
     after: String
     before: String
@@ -9776,8 +9776,8 @@ type FairSponsoredContent {
   pressReleaseUrl: String
 }
 
-# Fairs rail section
-type FairsRailHomeViewSection implements GenericHomeViewSection & Node {
+# Fairs section
+type FairsHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent
   fairsConnection(
@@ -10758,7 +10758,7 @@ type HeroUnitLink {
   url: String!
 }
 
-# Hero units rail section
+# A hero units section in the home view
 type HeroUnitsHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent
@@ -11091,18 +11091,18 @@ type HomeViewComponentBehaviorsViewAll {
 }
 
 union HomeViewSection =
-    ActivityRailHomeViewSection
-  | ArticlesRailHomeViewSection
-  | ArtistsRailHomeViewSection
-  | ArtworksRailHomeViewSection
-  | AuctionResultsRailHomeViewSection
-  | FairsRailHomeViewSection
+    ActivityHomeViewSection
+  | ArticlesHomeViewSection
+  | ArtistsHomeViewSection
+  | ArtworksHomeViewSection
+  | AuctionResultsHomeViewSection
+  | FairsHomeViewSection
   | GalleriesHomeViewSection
   | HeroUnitsHomeViewSection
-  | MarketingCollectionsRailHomeViewSection
-  | SalesRailHomeViewSection
-  | ShowsRailHomeViewSection
-  | ViewingRoomsRailHomeViewSection
+  | MarketingCollectionsHomeViewSection
+  | SalesHomeViewSection
+  | ShowsHomeViewSection
+  | ViewingRoomsHomeViewSection
 
 # A connection to a list of items.
 type HomeViewSectionConnection {
@@ -12129,8 +12129,8 @@ type MarketingCollectionQuery {
   tagID: String
 }
 
-# A marketing collections rail section in the home view
-type MarketingCollectionsRailHomeViewSection implements GenericHomeViewSection & Node {
+# A marketing collections section in the home view
+type MarketingCollectionsHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent
 
@@ -17971,8 +17971,8 @@ enum SaleSorts {
   _ID_DESC
 }
 
-# A sales rail section in the home view
-type SalesRailHomeViewSection implements GenericHomeViewSection & Node {
+# A sales section in the home view
+type SalesHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent
 
@@ -18685,8 +18685,8 @@ enum ShowSorts {
   UPDATED_AT_DESC
 }
 
-# A shows rail section in the home view
-type ShowsRailHomeViewSection implements GenericHomeViewSection & Node {
+# A shows section in the home view
+type ShowsHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent
 
@@ -21837,8 +21837,8 @@ type ViewingRoomsEdge {
   node: ViewingRoom
 }
 
-# A viewing rooms rail section in the home view
-type ViewingRoomsRailHomeViewSection implements GenericHomeViewSection & Node {
+# A viewing rooms section in the home view
+type ViewingRoomsHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent
 

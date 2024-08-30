@@ -23,6 +23,7 @@ import { LatestAuctionResultsResolver } from "./auctionResultsResolvers"
 import { HomeViewComponentBehaviors } from "./HomeViewComponent"
 import { SalesResolver } from "./salesResolver"
 import { withHomeViewTimeout } from "./withHomeViewTimeout"
+import { HomeViewSectionTypeNames } from "./HomeViewSection"
 
 type MaybeResolved<T> =
   | T
@@ -30,7 +31,7 @@ type MaybeResolved<T> =
 
 export type HomeViewSection = {
   id: string
-  type: string
+  type: keyof typeof HomeViewSectionTypeNames
   component?: {
     title?: MaybeResolved<string>
     type?: string
@@ -42,10 +43,13 @@ export type HomeViewSection = {
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }
+/**
+ * Artworks Section
+ */
 
 export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-similar-to-recently-viewed-artworks",
-  type: "ArtworksRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ArtworksHomeViewSection,
   component: {
     title: "Similar to Works You’ve Viewed",
     behaviors: {
@@ -61,7 +65,7 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
 
 export const CuratorsPicksEmerging: HomeViewSection = {
   id: "home-view-section-curators-picks-emerging",
-  type: "ArtworksRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ArtworksHomeViewSection,
   component: {
     type: "FeaturedCollection",
     title: async (context: ResolverContext) => {
@@ -102,7 +106,7 @@ export const CuratorsPicksEmerging: HomeViewSection = {
 
 export const RecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-recently-viewed-artworks",
-  type: "ArtworksRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ArtworksHomeViewSection,
   component: {
     title: "Recently Viewed",
     behaviors: {
@@ -118,7 +122,7 @@ export const RecentlyViewedArtworks: HomeViewSection = {
 
 export const AuctionLotsForYou: HomeViewSection = {
   id: "home-view-section-auction-lots-for-you",
-  type: "ArtworksRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ArtworksHomeViewSection,
   component: {
     title: "Auction lots for you",
     behaviors: {
@@ -134,7 +138,7 @@ export const AuctionLotsForYou: HomeViewSection = {
 
 export const NewWorksForYou: HomeViewSection = {
   id: "home-view-section-new-works-for-you",
-  type: "ArtworksRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ArtworksHomeViewSection,
   component: {
     title: "New works for you",
     behaviors: {
@@ -150,7 +154,7 @@ export const NewWorksForYou: HomeViewSection = {
 
 export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
   id: "home-view-section-new-works-from-galleries-you-follow",
-  type: "ArtworksRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ArtworksHomeViewSection,
   component: {
     title: "New Works from Galleries You Follow",
     behaviors: {
@@ -166,7 +170,7 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
 
 export const RecommendedArtworks: HomeViewSection = {
   id: "home-view-section-recommended-artworks",
-  type: "ArtworksRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ArtworksHomeViewSection,
   component: {
     title: "Artwork Recommendations",
     behaviors: {
@@ -180,11 +184,23 @@ export const RecommendedArtworks: HomeViewSection = {
   resolver: withHomeViewTimeout(RecommendedArtworksResolver),
 }
 
-// Artists Rails
+export const ActiveBids: HomeViewSection = {
+  id: "home-view-section-active-bids",
+  type: HomeViewSectionTypeNames.ArtworksHomeViewSection,
+  component: {
+    title: "Your Active Bids",
+  },
+  requiresAuthentication: true,
+  resolver: withHomeViewTimeout(ActiveBidsResolver),
+}
+
+/**
+ * Artists Section
+ */
 
 export const TrendingArtists: HomeViewSection = {
   id: "home-view-section-trending-artists",
-  type: "ArtistsRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ArtistsHomeViewSection,
   component: {
     title: "Trending Artists",
   },
@@ -194,7 +210,7 @@ export const TrendingArtists: HomeViewSection = {
 
 export const RecommendedArtists: HomeViewSection = {
   id: "home-view-section-recommended-artists",
-  type: "ArtistsRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ArtistsHomeViewSection,
   component: {
     title: "Recommended Artists",
   },
@@ -202,16 +218,24 @@ export const RecommendedArtists: HomeViewSection = {
   resolver: withHomeViewTimeout(RecommendedArtistsResolver),
 }
 
+/**
+ * Hero Units Sections
+ */
+
 export const HeroUnits: HomeViewSection = {
   id: "home-view-section-hero-units",
-  type: "HeroUnitsHomeViewSection",
+  type: HomeViewSectionTypeNames.HeroUnitsHomeViewSection,
   requiresAuthentication: false,
   resolver: withHomeViewTimeout(HeroUnitsResolver),
 }
 
+/**
+ * Fairs Sections
+ */
+
 export const FeaturedFairs: HomeViewSection = {
   id: "home-view-section-featured-fairs",
-  type: "FairsRailHomeViewSection",
+  type: HomeViewSectionTypeNames.FairsHomeViewSection,
   component: {
     title: "Featured Fairs",
     description: "See Works in Top Art Fairs",
@@ -220,24 +244,9 @@ export const FeaturedFairs: HomeViewSection = {
   resolver: withHomeViewTimeout(FeaturedFairsResolver),
 }
 
-export const LatestArticles: HomeViewSection = {
-  id: "home-view-section-latest-articles",
-  type: "ArticlesRailHomeViewSection",
-  component: {
-    title: "Artsy Editorial",
-    behaviors: {
-      viewAll: {
-        href: "/articles",
-      },
-    },
-  },
-  requiresAuthentication: false,
-  resolver: withHomeViewTimeout(LatestArticlesResolvers),
-}
-
 export const MarketingCollections: HomeViewSection = {
   id: "home-view-section-marketing-collections",
-  type: "MarketingCollectionsRailHomeViewSection",
+  type: HomeViewSectionTypeNames.MarketingCollectionsHomeViewSection,
   component: {
     title: "Collections",
   },
@@ -245,18 +254,26 @@ export const MarketingCollections: HomeViewSection = {
   resolver: withHomeViewTimeout(MarketingCollectionsResolver),
 }
 
+/**
+ * Shows Sections
+ */
+
 export const ShowsForYou: HomeViewSection = {
   id: "home-view-section-shows-for-you",
-  type: "ShowsRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ShowsHomeViewSection,
   component: {
     title: "Shows for You",
   },
   requiresAuthentication: true,
 }
 
+/**
+ * Viewing Rooms Sections
+ */
+
 export const ViewingRooms: HomeViewSection = {
   id: "home-view-section-viewing-rooms",
-  type: "ViewingRoomsRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ViewingRoomsHomeViewSection,
   component: {
     title: "Viewing Rooms",
     behaviors: {
@@ -268,9 +285,13 @@ export const ViewingRooms: HomeViewSection = {
   requiresAuthentication: false,
 }
 
+/**
+ * Activity Sections
+ */
+
 export const LatestActivity: HomeViewSection = {
   id: "home-view-section-latest-activity",
-  type: "ActivityRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ActivityHomeViewSection,
   component: {
     title: "Latest Activity",
     behaviors: {
@@ -284,9 +305,13 @@ export const LatestActivity: HomeViewSection = {
   resolver: withHomeViewTimeout(LatestActivityResolver),
 }
 
+/**
+ * Auction Results Sections
+ */
+
 export const LatestAuctionResults: HomeViewSection = {
   id: "home-view-section-latest-auction-results",
-  type: "AuctionResultsRailHomeViewSection",
+  type: HomeViewSectionTypeNames.AuctionResultsHomeViewSection,
   component: {
     title: "Latest Auction Results",
     href: "/auction-results-for-artists-you-follow",
@@ -301,9 +326,13 @@ export const LatestAuctionResults: HomeViewSection = {
   resolver: withHomeViewTimeout(LatestAuctionResultsResolver),
 }
 
+/**
+ * Articles Sections
+ */
+
 export const News: HomeViewSection = {
   id: "home-view-section-news",
-  type: "ArticlesRailHomeViewSection",
+  type: HomeViewSectionTypeNames.ArticlesHomeViewSection,
   component: {
     title: "News",
     href: "/news",
@@ -319,9 +348,28 @@ export const News: HomeViewSection = {
   resolver: withHomeViewTimeout(NewsResolver),
 }
 
+export const LatestArticles: HomeViewSection = {
+  id: "home-view-section-latest-articles",
+  type: HomeViewSectionTypeNames.ArticlesHomeViewSection,
+  component: {
+    title: "Artsy Editorial",
+    behaviors: {
+      viewAll: {
+        href: "/articles",
+      },
+    },
+  },
+  requiresAuthentication: false,
+  resolver: withHomeViewTimeout(LatestArticlesResolvers),
+}
+
+/**
+ * Auctions Sections
+ */
+
 export const Auctions: HomeViewSection = {
   id: "home-view-section-auctions",
-  type: "SalesRailHomeViewSection",
+  type: HomeViewSectionTypeNames.SalesHomeViewSection,
   component: {
     title: "Auctions",
     behaviors: {
@@ -335,23 +383,13 @@ export const Auctions: HomeViewSection = {
   resolver: withHomeViewTimeout(SalesResolver),
 }
 
-export const ActiveBids: HomeViewSection = {
-  id: "home-view-section-active-bids",
-  type: "ArtworksRailHomeViewSection",
-  component: {
-    title: "Your Active Bids",
-  },
-  requiresAuthentication: true,
-  resolver: withHomeViewTimeout(ActiveBidsResolver),
-}
-
 /*
  * Galleries Sections
  */
 
 export const GalleriesNearYou: HomeViewSection = {
   id: "home-view-section-galleries-near-you",
-  type: "GalleriesHomeViewSection",
+  type: HomeViewSectionTypeNames.GalleriesHomeViewSection,
   requiresAuthentication: false,
   component: {
     title: "Galleries Near You",
