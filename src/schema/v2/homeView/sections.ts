@@ -293,6 +293,13 @@ export const GalleriesNearYou: HomeViewSection = {
     description:
       "Follow these local galleries for updates on artists you love.",
     backgroundImageURL: "https://files.artsy.net/images/galleries_for_you.webp",
+    href: "/galleries-for-you",
+    behaviors: {
+      viewAll: {
+        href: "/galleries-for-you",
+        buttonText: "Explore",
+      },
+    },
   },
 }
 

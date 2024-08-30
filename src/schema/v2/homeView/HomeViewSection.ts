@@ -1,7 +1,6 @@
 import {
   GraphQLFieldConfigMap,
   GraphQLInterfaceType,
-  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
@@ -17,7 +16,6 @@ import { heroUnitsConnection } from "../HeroUnit/heroUnitsConnection"
 import { MarketingCollectionType } from "../marketingCollections"
 import { NotificationsConnection } from "../notifications"
 import { InternalIDFields, NodeInterface } from "../object_identification"
-import { PartnersConnection } from "../partner/partners"
 import { SalesConnectionField } from "../sales"
 import { HomeViewComponent } from "./HomeViewComponent"
 
@@ -245,16 +243,9 @@ export const GalleriesHomeViewSectionType = new GraphQLObjectType<
 >({
   name: "GalleriesHomeViewSection",
   description: "A section containing a list of galleries",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
-
-    partnersConnection: {
-      type: new GraphQLNonNull(PartnersConnection.type),
-      args: pageable({}),
-      resolve: (parent, ...rest) => {
-        return parent.resolver ? parent.resolver(parent, ...rest) : []
-      },
-    },
   },
 })
 
@@ -265,14 +256,12 @@ export const HomeViewSectionType = new GraphQLUnionType({
     ActivityRailHomeViewSectionType,
     ArticlesRailHomeViewSectionType,
     ArtistsRailHomeViewSectionType,
-    ArtistsRailHomeViewSectionType,
-    ArtworksRailHomeViewSectionType,
     ArtworksRailHomeViewSectionType,
     AuctionResultsRailHomeViewSectionType,
     FairsRailHomeViewSectionType,
+    GalleriesHomeViewSectionType,
     HeroUnitsHomeViewSectionType,
     MarketingCollectionsRailHomeViewSectionType,
-    GalleriesHomeViewSectionType,
     SalesRailHomeViewSectionType,
     ShowsRailHomeViewSectionType,
     ViewingRoomsRailHomeViewSectionType,

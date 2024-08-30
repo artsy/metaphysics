@@ -10507,7 +10507,7 @@ type FormattedDaySchedules {
 scalar FormattedNumber
 
 # A section containing a list of galleries
-type GalleriesHomeViewSection {
+type GalleriesHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent
 
@@ -10516,12 +10516,6 @@ type GalleriesHomeViewSection {
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
-  partnersConnection(
-    after: String
-    before: String
-    first: Int
-    last: Int
-  ): PartnerConnection!
 }
 
 # An entry from gemini
@@ -11089,9 +11083,6 @@ type HomeViewComponent {
   # Behaviors for the view
   behaviors: HomeViewComponentBehaviors
 
-  # Text for the CTA
-  buttonText: String
-
   # A description for this section
   description: String
 
@@ -11127,8 +11118,6 @@ union HomeViewSection =
     ActivityRailHomeViewSection
   | ArticlesRailHomeViewSection
   | ArtistsRailHomeViewSection
-  | ArtistsRailHomeViewSection
-  | ArtworksRailHomeViewSection
   | ArtworksRailHomeViewSection
   | AuctionResultsRailHomeViewSection
   | FairsRailHomeViewSection

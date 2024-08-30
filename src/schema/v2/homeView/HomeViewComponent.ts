@@ -140,9 +140,5 @@ export const HomeViewComponent = new GraphQLObjectType({
       type: HomeViewComponentBehaviors,
       description: "Behaviors for the view",
     },
-    buttonText: {
-      type: GraphQLString,
-      description: "Text for the CTA ",
-    },
   },
 })

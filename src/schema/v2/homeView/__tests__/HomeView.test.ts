@@ -52,6 +52,14 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
+                  "__typename": "GalleriesHomeViewSection",
+                  "component": Object {
+                    "title": "Galleries Near You",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
                   "__typename": "ArticlesRailHomeViewSection",
                   "component": Object {
                     "title": "Artsy Editorial",
@@ -177,6 +185,14 @@ describe("homeView", () => {
                   "__typename": "AuctionResultsRailHomeViewSection",
                   "component": Object {
                     "title": "Latest Auction Results",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "GalleriesHomeViewSection",
+                  "component": Object {
+                    "title": "Galleries Near You",
                   },
                 },
               },
