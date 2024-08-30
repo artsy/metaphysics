@@ -122,7 +122,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
             case "draft":
               return "Complete Submission"
             case "approved":
-              return "Complete Listing"
+              return "Complete your Listing"
             default:
               return null
           }
@@ -136,7 +136,7 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
             case "draft":
               return "Complete Submission"
             case "approved":
-              return "Complete Listing"
+              return "Complete your Listing"
             case "submitted":
             case "published":
             case "resubmitted":
