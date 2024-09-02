@@ -52,6 +52,14 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
+                  "__typename": "GalleriesHomeViewSection",
+                  "component": Object {
+                    "title": "Galleries Near You",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
                   "__typename": "ArticlesRailHomeViewSection",
                   "component": Object {
                     "title": "Artsy Editorial",
@@ -182,6 +190,14 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
+                  "__typename": "GalleriesHomeViewSection",
+                  "component": Object {
+                    "title": "Galleries Near You",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
                   "__typename": "ArticlesRailHomeViewSection",
                   "component": Object {
                     "title": "Artsy Editorial",
@@ -273,14 +289,6 @@ describe("homeView", () => {
                   "__typename": "ShowsRailHomeViewSection",
                   "component": Object {
                     "title": "Shows for You",
-                  },
-                },
-              },
-              Object {
-                "node": Object {
-                  "__typename": "FairsRailHomeViewSection",
-                  "component": Object {
-                    "title": "Featured Fairs",
                   },
                 },
               },

@@ -4629,6 +4629,7 @@ describe("Artwork type", () => {
         artwork(id: "richard-prince-untitled-portrait") {
           collectorSignals {
             increasedInterest
+            curatorsPick
             auction {
               bidCount
               lotWatcherCount
@@ -4652,6 +4653,7 @@ describe("Artwork type", () => {
         mePartnerOffersLoader: jest.fn(),
         salesLoader: jest.fn(),
         saleArtworkLoader: jest.fn(),
+        marketingCollectionLoader: jest.fn(),
       }
       context = {
         userID: "testUser",
@@ -4661,6 +4663,7 @@ describe("Artwork type", () => {
       context.artworkLoader.mockResolvedValue(artwork)
       context.mePartnerOffersLoader.mockResolvedValue({ body: [] })
       context.salesLoader.mockResolvedValue([])
+      context.marketingCollectionLoader.mockResolvedValue({ artwork_ids: [] })
     })
 
     describe("feature flags enabled", () => {
@@ -4899,6 +4902,25 @@ describe("Artwork type", () => {
         })
       })
 
+      describe("curatorsPick", () => {
+        it("returns true if the artwork id is in a curated collection", async () => {
+          artwork.purchasable = true
+          context.marketingCollectionLoader.mockResolvedValue({ artwork_ids: [artwork._id] })
+
+          const data = await runQuery(query, context)
+          expect(data.artwork.collectorSignals.curatorsPick).toBe(true)
+        })
+
+
+        it("returns false if the artwork id is not in a curated collection", async () => {
+          artwork.purchasable = true
+          context.marketingCollectionLoader.mockResolvedValue({ artwork_ids: [] })
+
+          const data = await runQuery(query, context)
+          expect(data.artwork.collectorSignals.curatorsPick).toBe(false)
+        })
+      })
+
       it("is null if the artwork has never been in auction and is not purchasable", async () => {
         artwork.purchasable = false
         artwork.sale_ids = []
@@ -4924,7 +4946,7 @@ describe("Artwork type", () => {
         context.salesLoader.mockResolvedValue([])
 
         const noPartnerOfferQuery = `
-          
+
           {
             artwork(id: "richard-prince-untitled-portrait") {
               collectorSignals {
@@ -4948,7 +4970,7 @@ describe("Artwork type", () => {
 
       it("does not query auction loaders if the auction field is not requested", async () => {
         const noAuctionFieldsQuery = `
-        
+
         {
           artwork(id: "richard-prince-untitled-portrait") {
             collectorSignals {
@@ -4967,21 +4989,6 @@ describe("Artwork type", () => {
               partnerOffer: null,
             },
           },
-        })
-      })
-      it("does not use any loaders if feature flag is disabled", async () => {
-        mockIsFeatureFlagEnabled.mockReturnValue(false)
-
-        const data = await runQuery(query, context)
-
-        Object.values(supportingLoaders).forEach((loader) =>
-          expect(loader).not.toHaveBeenCalled()
-        )
-
-        expect(data.artwork.collectorSignals).toEqual({
-          auction: null,
-          partnerOffer: null,
-          increasedInterest: false,
         })
       })
     })

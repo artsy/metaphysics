@@ -1060,4 +1060,55 @@ describe("HomeViewSection", () => {
       `)
     })
   })
+
+  describe("GalleriesNearYou", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-galleries-near-you") {
+              __typename
+
+              ... on GalleriesHomeViewSection {
+                component {
+                  title
+                  backgroundImageURL
+                  description
+                  href
+                  behaviors {
+                    viewAll {
+                      href
+                      buttonText
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {}
+
+      const data = await runQuery(query, context)
+
+      expect(data.homeView.section).toMatchInlineSnapshot(`
+                Object {
+                  "__typename": "GalleriesHomeViewSection",
+                  "component": Object {
+                    "backgroundImageURL": "https://files.artsy.net/images/galleries_for_you.webp",
+                    "behaviors": Object {
+                      "viewAll": Object {
+                        "buttonText": "Explore",
+                        "href": "/galleries-for-you",
+                      },
+                    },
+                    "description": "Follow these local galleries for updates on artists you love.",
+                    "href": "/galleries-for-you",
+                    "title": "Galleries Near You",
+                  },
+                }
+            `)
+    })
+  })
 })

@@ -9,15 +9,15 @@ import { ResolverContext } from "types/graphql"
 import ArticlesConnection from "../articlesConnection"
 import { artistsConnection } from "../artists"
 import { artworkConnection } from "../artwork"
+import { auctionResultConnection } from "../auction_result"
 import { fairsConnection } from "../fairs"
 import { connectionWithCursorInfo, emptyConnection } from "../fields/pagination"
 import { heroUnitsConnection } from "../HeroUnit/heroUnitsConnection"
 import { MarketingCollectionType } from "../marketingCollections"
 import { NotificationsConnection } from "../notifications"
 import { InternalIDFields, NodeInterface } from "../object_identification"
-import { HomeViewComponent } from "./HomeViewComponent"
-import { auctionResultConnection } from "../auction_result"
 import { SalesConnectionField } from "../sales"
+import { HomeViewComponent } from "./HomeViewComponent"
 
 // section interface
 
@@ -237,8 +237,19 @@ const SalesRailHomeViewSectionType = new GraphQLObjectType<
   },
 })
 
-// the Section union type of all concrete sections
+export const GalleriesHomeViewSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "GalleriesHomeViewSection",
+  description: "A section containing a list of galleries",
+  interfaces: [GenericHomeViewSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+  },
+})
 
+// the Section union type of all concrete sections
 export const HomeViewSectionType = new GraphQLUnionType({
   name: "HomeViewSection",
   types: [
@@ -248,11 +259,12 @@ export const HomeViewSectionType = new GraphQLUnionType({
     ArtworksRailHomeViewSectionType,
     AuctionResultsRailHomeViewSectionType,
     FairsRailHomeViewSectionType,
+    GalleriesHomeViewSectionType,
     HeroUnitsHomeViewSectionType,
     MarketingCollectionsRailHomeViewSectionType,
+    SalesRailHomeViewSectionType,
     ShowsRailHomeViewSectionType,
     ViewingRoomsRailHomeViewSectionType,
-    SalesRailHomeViewSectionType,
   ],
   resolveType: (value) => {
     return value.type

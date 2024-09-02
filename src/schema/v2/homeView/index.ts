@@ -1,16 +1,16 @@
 import {
-  GraphQLObjectType,
   GraphQLFieldConfig,
   GraphQLNonNull,
+  GraphQLObjectType,
   GraphQLString,
 } from "graphql"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import {
   connectionWithCursorInfo,
   paginationResolver,
 } from "../fields/pagination"
-import { pageable } from "relay-cursor-paging"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { HomeViewSectionType } from "./HomeViewSection"
 import { getSectionsForUser } from "./getSectionsForUser"
 import { registry } from "./sections"

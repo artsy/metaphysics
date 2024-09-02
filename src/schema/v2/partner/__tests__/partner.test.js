@@ -1154,6 +1154,46 @@ describe("Partner type", () => {
     })
   })
 
+  describe("#merchantAccount", () => {
+    it("returns the merchant account", async () => {
+      const merchantAccountResponse = [
+        {
+          external_id: "456",
+        },
+      ]
+
+      context = {
+        partnerLoader: () => Promise.resolve(partnerData),
+        partnerMerchantAccountsLoader: () =>
+          Promise.resolve({
+            body: merchantAccountResponse,
+            headers: {
+              "x-total-count": merchantAccountResponse.length,
+            },
+          }),
+      }
+
+      const query = gql`
+        {
+          partner(id: "levy-gorvy") {
+            merchantAccount {
+              externalId
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        partner: {
+          merchantAccount: {
+            externalId: "456",
+          },
+        },
+      })
+    })
+  })
+
   describe("#artistsConnection", () => {
     let artistsResponse
 
