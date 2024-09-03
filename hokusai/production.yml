@@ -159,3 +159,13 @@ spec:
             name: metaphysics-web-internal
             port:
               name: mp-http
+  - host: metaphysics-production-alt.artsy.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: metaphysics-web-internal
+            port:
+              name: mp-http
