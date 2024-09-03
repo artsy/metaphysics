@@ -7,6 +7,7 @@ import { runQuery } from "schema/v2/test/utils"
 import { CHECKOUT_TAXES_DOC_URL } from "../taxInfo"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import config from "config"
 
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
 jest.mock("lib/featureFlags", () => ({
@@ -19,6 +20,13 @@ const mockIsFeatureFlagEnabled = isFeatureFlagEnabled
 
 describe("Artwork type", () => {
   const sale = { id: "existy" }
+
+  beforeEach(() => {
+    config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = true
+  })
+  afterEach(() => {
+    config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = false
+  })
 
   let artwork = null
   let context = null
@@ -4905,16 +4913,19 @@ describe("Artwork type", () => {
       describe("curatorsPick", () => {
         it("returns true if the artwork id is in a curated collection", async () => {
           artwork.purchasable = true
-          context.marketingCollectionLoader.mockResolvedValue({ artwork_ids: [artwork._id] })
+          context.marketingCollectionLoader.mockResolvedValue({
+            artwork_ids: [artwork._id],
+          })
 
           const data = await runQuery(query, context)
           expect(data.artwork.collectorSignals.curatorsPick).toBe(true)
         })
 
-
         it("returns false if the artwork id is not in a curated collection", async () => {
           artwork.purchasable = true
-          context.marketingCollectionLoader.mockResolvedValue({ artwork_ids: [] })
+          context.marketingCollectionLoader.mockResolvedValue({
+            artwork_ids: [],
+          })
 
           const data = await runQuery(query, context)
           expect(data.artwork.collectorSignals.curatorsPick).toBe(false)
@@ -4990,6 +5001,57 @@ describe("Artwork type", () => {
             },
           },
         })
+      })
+    })
+  })
+
+  describe("artistSeriesConnection", () => {
+    beforeEach(() => {
+      config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = true
+    })
+    afterEach(() => {
+      config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = false
+    })
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          artistSeriesConnection(first: 3) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("returns the connection", async () => {
+      const artistSeriesList = {
+        body: [
+          {
+            id: "foo-bar",
+            title: "Catty Art Series",
+          },
+        ],
+        headers: { "x-total-count": 35 },
+      }
+      const context = {
+        artworkLoader: () =>
+          Promise.resolve({
+            id: "richard-prince-untitled-portrait",
+          }),
+        artistSeriesListLoader: () => Promise.resolve(artistSeriesList),
+      }
+
+      const data = await runQuery(query, context)
+
+      expect(data).toEqual({
+        artwork: {
+          artistSeriesConnection: {
+            edges: [{ node: { slug: "foo-bar" } }],
+          },
+        },
       })
     })
   })

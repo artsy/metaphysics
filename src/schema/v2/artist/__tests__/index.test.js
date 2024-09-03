@@ -1,9 +1,17 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
+import config from "config"
 
 describe("Artist type", () => {
   let artist = null
   let context
+
+  beforeEach(() => {
+    config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = true
+  })
+  afterEach(() => {
+    config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = false
+  })
 
   beforeEach(() => {
     context = {
@@ -1082,6 +1090,57 @@ describe("Artist type", () => {
           // Check show data included in edges.
           expect(edges[0].node.name).toEqual("Catty Art Show")
           // Check that there is a next page.
+          expect(hasNextPage).toBe(true)
+          expect(totalCount).toEqual(35)
+        }
+      )
+    })
+  })
+
+  describe("artistSeriesConnection", () => {
+    it("returns connection of artist series", () => {
+      const artistSeriesListLoader = jest.fn().mockReturnValueOnce(
+        Promise.resolve({
+          body: [
+            {
+              id: "foo-bar",
+              title: "Catty Art Series",
+            },
+          ],
+          headers: { "x-total-count": 35 },
+        })
+      )
+      context.artistSeriesListLoader = artistSeriesListLoader
+
+      const query = `
+        {
+          artist(id: "percy") {
+            artistSeriesConnection(first: 1) {
+              pageInfo {
+                hasNextPage
+              }
+              totalCount
+              edges {
+                node {
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, context).then(
+        ({
+          artist: {
+            artistSeriesConnection: {
+              pageInfo: { hasNextPage },
+              totalCount,
+              edges,
+            },
+          },
+        }) => {
+          expect(edges[0].node.title).toEqual("Catty Art Series")
           expect(hasNextPage).toBe(true)
           expect(totalCount).toEqual(35)
         }
