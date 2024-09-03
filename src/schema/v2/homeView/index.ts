@@ -40,7 +40,7 @@ const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
-const Section: GraphQLFieldConfig<void, ResolverContext> = {
+export const Section: GraphQLFieldConfig<void, ResolverContext> = {
   type: HomeViewSectionType,
   description: "A home view section",
   args: {
