@@ -11099,7 +11099,7 @@ type HomeViewComponentBehaviorsViewAll {
   buttonText: String
 
   # href of the view all button
-  href: String!
+  href: String
 }
 
 union HomeViewSection =

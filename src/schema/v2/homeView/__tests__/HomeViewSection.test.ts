@@ -17,7 +17,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -39,7 +38,6 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "buttonText": "Browse All Artworks",
                 "href": "/similar-to-recently-viewed",
               },
             },
@@ -63,7 +61,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -85,7 +82,6 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "buttonText": "Browse All Artworks",
                 "href": "/recently-viewed",
               },
             },
@@ -109,7 +105,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -131,7 +126,6 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "buttonText": "Browse All Artworks",
                 "href": "/new-for-you",
               },
             },
@@ -155,7 +149,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -177,7 +170,6 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "buttonText": "Browse All Artworks",
                 "href": "/auctions/lots-for-you-ending-soon",
               },
             },
@@ -201,7 +193,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -313,7 +304,6 @@ describe("HomeViewSection", () => {
             "component": Object {
               "behaviors": Object {
                 "viewAll": Object {
-                  "buttonText": "Browse All Artworks",
                   "href": "/artwork-recommendations",
                 },
               },
@@ -340,7 +330,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -396,7 +385,6 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "buttonText": "Browse All Artworks",
                 "href": "/new-works-from-galleries-you-follow",
               },
             },
@@ -585,7 +573,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -657,7 +644,6 @@ describe("HomeViewSection", () => {
             "backgroundImageURL": "image.jpg",
             "behaviors": Object {
               "viewAll": Object {
-                "buttonText": "Browse All Artworks",
                 "href": "/collection/curators-picks-emerging",
               },
             },
@@ -867,7 +853,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -936,7 +921,6 @@ describe("HomeViewSection", () => {
               "component": Object {
                 "behaviors": Object {
                   "viewAll": Object {
-                    "buttonText": "See All",
                     "href": "/notifications",
                   },
                 },
@@ -979,7 +963,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -1065,7 +1048,6 @@ describe("HomeViewSection", () => {
               "component": Object {
                 "behaviors": Object {
                   "viewAll": Object {
-                    "buttonText": "Browse All Results",
                     "href": "/auction-results-for-artists-you-follow",
                   },
                 },
@@ -1134,7 +1116,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -1195,7 +1176,6 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "buttonText": "More in News",
                 "href": "/news",
               },
             },
@@ -1221,7 +1201,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -1260,7 +1239,6 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "buttonText": "Browse All Auctions",
                 "href": "/auctions",
               },
             },
