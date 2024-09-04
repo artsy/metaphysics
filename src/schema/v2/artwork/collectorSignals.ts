@@ -34,7 +34,7 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       return null
     }
 
-    const activeLotData = await getActiveSaleArtwork(
+    const activeLotData = await getActiveAuctionValues(
       {
         artworkId: artwork.id,
         saleIds: artwork.sale_ids,
@@ -125,10 +125,7 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         type: GraphQLBoolean,
         description:
           "Artwork is part of either the Curators' Pick Emerging or Blue Chip collections",
-        resolve: async (artwork, {}, ctx) => {
-          const fields = await getLabelSignalFields(artwork, ctx)
-          return fields.curatorsPick
-        },
+        resolve: (artwork, {}, ctx) => getIsCuratorsPick(artwork, ctx),
       },
       lotWatcherCount: {
         type: GraphQLInt,
@@ -164,10 +161,7 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       primaryLabel: {
         type: LabelSignalEnumType,
         description: "Primary label signal available to collector",
-        resolve: async (artwork, {}, ctx) => {
-          const fields = await getLabelSignalFields(artwork, ctx)
-          return fields.primaryLabel
-        },
+        resolve: (artwork, {}, ctx) => getPrimaryLabel(artwork, ctx),
       },
       partnerOffer: {
         type: PartnerOfferToCollectorType,
@@ -188,26 +182,14 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
-interface LabelSignalFields {
-  increasedInterest: boolean
-  curatorsPick: boolean
-  // only a partial partner offer type
-  partnerOffer: { end_at: string; active: true } | null
-  primaryLabel: "PARTNER_OFFER" | "INCREASED_INTEREST" | "CURATORS_PICK" | null
-}
+type PrimaryLabel =
+  | "PARTNER_OFFER"
+  | "INCREASED_INTEREST"
+  | "CURATORS_PICK"
+  | null
 
 // Single function to resolve mutually-exclusive label signals
-const getLabelSignalFields = async (
-  artwork,
-  ctx
-): Promise<LabelSignalFields> => {
-  const signals = {
-    increasedInterest: false,
-    curatorsPick: false,
-    partnerOffer: null,
-    primaryLabel: null as LabelSignalFields["primaryLabel"],
-  }
-
+const getPrimaryLabel = async (artwork, ctx): Promise<PrimaryLabel> => {
   const partnerOfferPromise = getActivePartnerOffer(artwork, ctx)
   const curatorsPickPromise = getIsCuratorsPick(artwork, ctx)
 
@@ -216,27 +198,17 @@ const getLabelSignalFields = async (
     curatorsPickPromise,
   ])
 
-  if (artwork.increased_interest_signal) {
-    signals.increasedInterest = true
-  }
-
-  if (curatorsPick) {
-    signals.curatorsPick = true
-  }
-
   if (activePartnerOffer) {
-    signals.partnerOffer = activePartnerOffer
+    return "PARTNER_OFFER"
+  }
+  if (artwork.increased_interest_signal) {
+    return "INCREASED_INTEREST"
+  }
+  if (curatorsPick) {
+    return "CURATORS_PICK"
   }
 
-  if (signals.partnerOffer) {
-    signals.primaryLabel = "PARTNER_OFFER"
-  } else if (signals.increasedInterest) {
-    signals.primaryLabel = "INCREASED_INTEREST"
-  } else if (signals.curatorsPick) {
-    signals.primaryLabel = "CURATORS_PICK"
-  }
-
-  return signals
+  return null
 }
 
 const checkFeatureFlag = (flag: any, context: any) => {
@@ -278,7 +250,7 @@ const getIsCuratorsPick = async (artwork, ctx) => {
   return checks.includes(true)
 }
 
-const getActiveSaleArtwork = async (
+const getActiveAuctionValues = async (
   { artworkId, saleIds },
   ctx
 ): Promise<ActiveLotData | null> => {
