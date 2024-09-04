@@ -1,6 +1,8 @@
 import {
   GraphQLFieldConfigMap,
+  GraphQLID,
   GraphQLInterfaceType,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql"
@@ -18,11 +20,19 @@ import { NotificationsConnection } from "../notifications"
 import { InternalIDFields, NodeInterface } from "../object_identification"
 import { SalesConnectionField } from "../sales"
 import { HomeViewComponent } from "./HomeViewComponent"
+import { toGlobalId } from "graphql-relay"
 
 // section interface
 
 const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   ...InternalIDFields,
+  id: {
+    type: new GraphQLNonNull(GraphQLID),
+    description: "A globally unique ID.",
+    resolve: ({ id }) => {
+      return toGlobalId("HomeViewSection", id)
+    },
+  },
   component: {
     type: HomeViewComponent,
     description: "The component that is prescribed for this section",

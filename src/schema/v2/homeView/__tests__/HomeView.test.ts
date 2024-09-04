@@ -94,7 +94,7 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "ArtistsRailHomeViewSection",
                   "component": Object {
-                    "title": "Trending Artists on Artsy",
+                    "title": "Trending Artists",
                   },
                 },
               },
@@ -256,7 +256,7 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "ArtistsRailHomeViewSection",
                   "component": Object {
-                    "title": "Trending Artists on Artsy",
+                    "title": "Trending Artists",
                   },
                 },
               },
