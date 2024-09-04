@@ -2,6 +2,184 @@ import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
 describe("HomeViewSection", () => {
+  describe("SimilarToRecentlyViewedArtworks", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(
+              id: "home-view-section-similar-to-recently-viewed-artworks"
+            ) {
+              __typename
+              ... on ArtworksRailHomeViewSection {
+                component {
+                  title
+                  behaviors {
+                    viewAll {
+                      href
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        accessToken: "424242",
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ArtworksRailHomeViewSection",
+          "component": Object {
+            "behaviors": Object {
+              "viewAll": Object {
+                "href": "/similar-to-recently-viewed",
+              },
+            },
+            "title": "Similar to Works You’ve Viewed",
+          },
+        }
+      `)
+    })
+  })
+
+  describe("RecentlyViewedArtworks", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-recently-viewed-artworks") {
+              __typename
+              ... on ArtworksRailHomeViewSection {
+                component {
+                  title
+                  behaviors {
+                    viewAll {
+                      href
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        accessToken: "424242",
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ArtworksRailHomeViewSection",
+          "component": Object {
+            "behaviors": Object {
+              "viewAll": Object {
+                "href": "/recently-viewed",
+              },
+            },
+            "title": "Recently viewed works",
+          },
+        }
+      `)
+    })
+  })
+
+  describe("NewWorksForYou", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-new-works-for-you") {
+              __typename
+              ... on ArtworksRailHomeViewSection {
+                component {
+                  title
+                  behaviors {
+                    viewAll {
+                      href
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        accessToken: "424242",
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ArtworksRailHomeViewSection",
+          "component": Object {
+            "behaviors": Object {
+              "viewAll": Object {
+                "href": "/new-for-you",
+              },
+            },
+            "title": "New works for you",
+          },
+        }
+      `)
+    })
+  })
+
+  describe("AuctionLotsForYou", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-auction-lots-for-you") {
+              __typename
+              ... on ArtworksRailHomeViewSection {
+                component {
+                  title
+                  behaviors {
+                    viewAll {
+                      href
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        accessToken: "424242",
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ArtworksRailHomeViewSection",
+          "component": Object {
+            "behaviors": Object {
+              "viewAll": Object {
+                "href": "/auctions/lots-for-you-ending-soon",
+              },
+            },
+            "title": "Auction lots for you",
+          },
+        }
+      `)
+    })
+  })
+
   describe("RecommendedArtworks", () => {
     it("returns lists of artworksConnection", async () => {
       const query = gql`
@@ -12,6 +190,11 @@ describe("HomeViewSection", () => {
               ... on ArtworksRailHomeViewSection {
                 component {
                   title
+                  behaviors {
+                    viewAll {
+                      href
+                    }
+                  }
                 }
                 artworksConnection(first: 2) {
                   edges {
@@ -98,25 +281,37 @@ describe("HomeViewSection", () => {
         ids: ["608a7417bdfbd1a789ba092a", "308a7416bdfbd1a789ba0911"],
       })
 
-      expect(response.homeView.section.artworksConnection)
-        .toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [
-          Object {
-            "node": Object {
-              "id": "QXJ0d29yazo2MDhhNzQxN2JkZmJkMWE3ODliYTA5MmE=",
-              "title": "Untitled",
+      expect(response.homeView).toMatchInlineSnapshot(`
+        Object {
+          "section": Object {
+            "__typename": "ArtworksRailHomeViewSection",
+            "artworksConnection": Object {
+              "edges": Array [
+                Object {
+                  "node": Object {
+                    "id": "QXJ0d29yazo2MDhhNzQxN2JkZmJkMWE3ODliYTA5MmE=",
+                    "title": "Untitled",
+                  },
+                },
+                Object {
+                  "node": Object {
+                    "id": "QXJ0d29yazozMDhhNzQxNmJkZmJkMWE3ODliYTA5MTE=",
+                    "title": "Untitled",
+                  },
+                },
+              ],
+            },
+            "component": Object {
+              "behaviors": Object {
+                "viewAll": Object {
+                  "href": "/artwork-recommendations",
+                },
+              },
+              "title": "Artwork Recommendations",
             },
           },
-          Object {
-            "node": Object {
-              "id": "QXJ0d29yazozMDhhNzQxNmJkZmJkMWE3ODliYTA5MTE=",
-              "title": "Untitled",
-            },
-          },
-        ],
-      }
-    `)
+        }
+      `)
     })
   })
 
@@ -132,6 +327,11 @@ describe("HomeViewSection", () => {
               ... on ArtworksRailHomeViewSection {
                 component {
                   title
+                  behaviors {
+                    viewAll {
+                      href
+                    }
+                  }
                 }
                 artworksConnection(first: 2) {
                   edges {
@@ -183,6 +383,11 @@ describe("HomeViewSection", () => {
             ],
           },
           "component": Object {
+            "behaviors": Object {
+              "viewAll": Object {
+                "href": "/new-works-from-galleries-you-follow",
+              },
+            },
             "title": "New Works from Galleries You Follow",
           },
         }
@@ -364,8 +569,12 @@ describe("HomeViewSection", () => {
                 component {
                   title
                   description
-                  href
                   backgroundImageURL
+                  behaviors {
+                    viewAll {
+                      href
+                    }
+                  }
                 }
 
                 artworksConnection(first: 2) {
@@ -433,8 +642,12 @@ describe("HomeViewSection", () => {
           },
           "component": Object {
             "backgroundImageURL": "image.jpg",
+            "behaviors": Object {
+              "viewAll": Object {
+                "href": "/collection/curators-picks-emerging",
+              },
+            },
             "description": "The best works by rising talents on Artsy, available now.",
-            "href": "/collection/curators-picks-emerging",
             "title": "Curators' Picks Emerging",
           },
         }
@@ -595,6 +808,11 @@ describe("HomeViewSection", () => {
               ... on ViewingRoomsRailHomeViewSection {
                 component {
                   title
+                  behaviors {
+                    viewAll {
+                      href
+                    }
+                  }
                 }
               }
             }
@@ -610,6 +828,11 @@ describe("HomeViewSection", () => {
                 Object {
                   "__typename": "ViewingRoomsRailHomeViewSection",
                   "component": Object {
+                    "behaviors": Object {
+                      "viewAll": Object {
+                        "href": "/viewing-rooms",
+                      },
+                    },
                     "title": "Viewing Rooms",
                   },
                 }
@@ -627,6 +850,11 @@ describe("HomeViewSection", () => {
               ... on ActivityRailHomeViewSection {
                 component {
                   title
+                  behaviors {
+                    viewAll {
+                      href
+                    }
+                  }
                 }
                 notificationsConnection(first: 1) {
                   edges {
@@ -691,6 +919,11 @@ describe("HomeViewSection", () => {
             "section": Object {
               "__typename": "ActivityRailHomeViewSection",
               "component": Object {
+                "behaviors": Object {
+                  "viewAll": Object {
+                    "href": "/notifications",
+                  },
+                },
                 "title": "Latest Activity",
               },
               "notificationsConnection": Object {
@@ -730,7 +963,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -816,7 +1048,6 @@ describe("HomeViewSection", () => {
               "component": Object {
                 "behaviors": Object {
                   "viewAll": Object {
-                    "buttonText": "Browse All Results",
                     "href": "/auction-results-for-artists-you-follow",
                   },
                 },
@@ -824,6 +1055,46 @@ describe("HomeViewSection", () => {
                 "title": "Latest Auction Results",
               },
             },
+          },
+        }
+      `)
+    })
+  })
+
+  describe("LatestArticles", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-latest-articles") {
+              __typename
+              ... on ArticlesRailHomeViewSection {
+                component {
+                  title
+                  behaviors {
+                    viewAll {
+                      href
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const { homeView } = await runQuery(query, {})
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "ArticlesRailHomeViewSection",
+          "component": Object {
+            "behaviors": Object {
+              "viewAll": Object {
+                "href": "/articles",
+              },
+            },
+            "title": "Artsy Editorial",
           },
         }
       `)
@@ -841,8 +1112,12 @@ describe("HomeViewSection", () => {
               ... on ArticlesRailHomeViewSection {
                 component {
                   title
-                  href
                   type
+                  behaviors {
+                    viewAll {
+                      href
+                    }
+                  }
                 }
 
                 articlesConnection(first: 3) {
@@ -899,7 +1174,11 @@ describe("HomeViewSection", () => {
             ],
           },
           "component": Object {
-            "href": "/news",
+            "behaviors": Object {
+              "viewAll": Object {
+                "href": "/news",
+              },
+            },
             "title": "News",
             "type": "ArticlesCard",
           },
@@ -922,7 +1201,6 @@ describe("HomeViewSection", () => {
                   behaviors {
                     viewAll {
                       href
-                      buttonText
                     }
                   }
                 }
@@ -961,7 +1239,6 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "buttonText": "Browse All Auctions",
                 "href": "/auctions",
               },
             },
