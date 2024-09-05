@@ -4636,6 +4636,11 @@ describe("Artwork type", () => {
       {
         artwork(id: "richard-prince-untitled-portrait") {
           collectorSignals {
+            runningShow {
+              name
+              startAt
+              endAt
+            }
             increasedInterest
             curatorsPick
             auction {
@@ -4662,6 +4667,7 @@ describe("Artwork type", () => {
         salesLoader: jest.fn(),
         saleArtworkLoader: jest.fn(),
         marketingCollectionLoader: jest.fn(),
+        relatedShowsLoader: jest.fn(),
       }
       context = {
         userID: "testUser",
@@ -4672,6 +4678,7 @@ describe("Artwork type", () => {
       context.mePartnerOffersLoader.mockResolvedValue({ body: [] })
       context.salesLoader.mockResolvedValue([])
       context.marketingCollectionLoader.mockResolvedValue({ artwork_ids: [] })
+      context.relatedShowsLoader.mockResolvedValue({ body: [] })
     })
 
     describe("feature flags enabled", () => {
@@ -4987,6 +4994,36 @@ describe("Artwork type", () => {
 
           const data = await runQuery(query, context)
           expect(data.artwork.collectorSignals.curatorsPick).toBe(false)
+        })
+      })
+
+      describe("runningShow", () => {
+        it("returns the show or fair if the artwork id is in a running show or fair", async () => {
+          artwork.purchasable = true
+          context.relatedShowsLoader.mockResolvedValue({
+            body: [
+              {
+                name: "Test Show",
+                start_at: "2023-01-01T00:00:00Z",
+                end_at: "2023-01-02T00:00:00Z",
+              }
+            ],
+          })
+
+          const data = await runQuery(query, context)
+          expect(data.artwork.collectorSignals.runningShow).toEqual({
+            name: "Test Show",
+            startAt: "2023-01-01T00:00:00Z",
+            endAt: "2023-01-02T00:00:00Z",
+          })
+        })
+
+        it("returns null if the artwork id is not in a running show or fair", async () => {
+          artwork.purchasable = true
+          context.relatedShowsLoader.mockResolvedValue({ body: [] })
+
+          const data = await runQuery(query, context)
+          expect(data.artwork.collectorSignals.runningShow).toBeNull
         })
       })
 

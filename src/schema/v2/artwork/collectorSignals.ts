@@ -8,6 +8,7 @@ import { GraphQLInt, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
+import Show from "../show"
 import { date } from "../fields/date"
 import { GraphQLNonNull } from "graphql"
 
@@ -172,6 +173,21 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Increased interest in the artwork",
         resolve: (artwork) => !!artwork.increased_interest_signal,
+      },
+      runningShow: {
+        type: Show.type,
+        description:
+          "Most recent running Show or Fair booth the artwork is currently in, sorted by relevance",
+        resolve: async (artwork, {}, ctx) => {
+          const showOrFair = await await ctx.relatedShowsLoader({
+            artwork: [artwork._id],
+            size: 1,
+            status: "running",
+            hasLocation: true,
+            sort: "-relevance,-start_at",
+          })
+          return showOrFair.body[0]
+        },
       },
     },
   }),
