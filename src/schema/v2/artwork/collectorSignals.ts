@@ -190,7 +190,7 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
           return !!artwork.increased_interest_signal
         },
       },
-      runningShowOrFair: {
+      runningShow: {
         type: Show.type,
         description:
           "Most recent running Show or Fair the artwork is currently in, sorted by relevance",

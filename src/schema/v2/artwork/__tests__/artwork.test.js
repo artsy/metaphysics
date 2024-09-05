@@ -4636,7 +4636,7 @@ describe("Artwork type", () => {
       {
         artwork(id: "richard-prince-untitled-portrait") {
           collectorSignals {
-            runningShowOrFair {
+            runningShow {
               name
               startAt
               endAt
@@ -4939,7 +4939,7 @@ describe("Artwork type", () => {
         })
       })
 
-      describe("runningShowOrFair", () => {
+      describe("runningShow", () => {
         it("returns the show or fair if the artwork id is in a running show or fair", async () => {
           artwork.purchasable = true
           context.relatedShowsLoader.mockResolvedValue({
@@ -4953,7 +4953,7 @@ describe("Artwork type", () => {
           })
 
           const data = await runQuery(query, context)
-          expect(data.artwork.collectorSignals.runningShowOrFair).toEqual({
+          expect(data.artwork.collectorSignals.runningShow).toEqual({
             name: "Test Show",
             startAt: "2023-01-01T00:00:00Z",
             endAt: "2023-01-02T00:00:00Z",
@@ -4965,7 +4965,7 @@ describe("Artwork type", () => {
           context.relatedShowsLoader.mockResolvedValue({ body: [] })
 
           const data = await runQuery(query, context)
-          expect(data.artwork.collectorSignals.runningShowOrFair).toBeNull
+          expect(data.artwork.collectorSignals.runningShow).toBeNull
         })
       })
 
