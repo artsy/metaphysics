@@ -197,7 +197,7 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         resolve: async (artwork, {}, ctx) => {
           const showOrFair = await await ctx.relatedShowsLoader({
             artwork: [artwork._id],
-            first: 1,
+            size: 1,
             status: "running",
             hasLocation: true,
             sort: "-relevance,-start_at",
