@@ -103,7 +103,7 @@ export const ARTIST_INSIGHT_MAPPING: Record<
   },
   ARTSY_VANGUARD_YEAR: {
     getDescription: () =>
-      `Featured in Artsy’s [annual list](/collection/the-artsy-vanguard) of the most promising artists working today`,
+      `Featured in Artsy’s [annual list](/collection/artsy-vanguard-artists) of the most promising artists working today`,
     getEntities: (artist) => artist.vanguard_year && [],
     getLabel: (artist) => `The Artsy Vanguard ${artist.vanguard_year}`,
   },
