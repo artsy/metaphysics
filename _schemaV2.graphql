@@ -4550,7 +4550,7 @@ type CollectorSignals {
   registrationEndsAt: String
     @deprecated(reason: "Use nested field in `auction` instead")
 
-  # Most recent running Show or Fair the artwork is currently in, sorted by relevance
+  # Most recent running Show or Fair booth the artwork is currently in, sorted by relevance
   runningShow: Show
 }
 
