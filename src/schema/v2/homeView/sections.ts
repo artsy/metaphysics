@@ -22,6 +22,7 @@ import { LatestActivityResolver } from "./activityResolvers"
 import { LatestAuctionResultsResolver } from "./auctionResultsResolvers"
 import { HomeViewComponentBehaviors } from "./HomeViewComponent"
 import { SalesResolver } from "./salesResolver"
+import { withHomeViewTimeout } from "./withHomeViewTimeout"
 
 type MaybeResolved<T> =
   | T
@@ -55,7 +56,7 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
     },
   },
   requiresAuthentication: true,
-  resolver: SimilarToRecentlyViewedArtworksResolver,
+  resolver: withHomeViewTimeout(SimilarToRecentlyViewedArtworksResolver),
 }
 
 export const CuratorsPicksEmerging: HomeViewSection = {
@@ -96,7 +97,7 @@ export const CuratorsPicksEmerging: HomeViewSection = {
     href: "/collection/curators-picks-emerging",
   },
   requiresAuthentication: false,
-  resolver: CuratorsPicksEmergingArtworksResolver,
+  resolver: withHomeViewTimeout(CuratorsPicksEmergingArtworksResolver),
 }
 
 export const RecentlyViewedArtworks: HomeViewSection = {
@@ -112,7 +113,7 @@ export const RecentlyViewedArtworks: HomeViewSection = {
     },
   },
   requiresAuthentication: true,
-  resolver: RecentlyViewedArtworksResolver,
+  resolver: withHomeViewTimeout(RecentlyViewedArtworksResolver),
 }
 
 export const AuctionLotsForYou: HomeViewSection = {
@@ -128,7 +129,7 @@ export const AuctionLotsForYou: HomeViewSection = {
     },
   },
   requiresAuthentication: true,
-  resolver: AuctionLotsForYouResolver,
+  resolver: withHomeViewTimeout(AuctionLotsForYouResolver),
 }
 
 export const NewWorksForYou: HomeViewSection = {
@@ -144,7 +145,7 @@ export const NewWorksForYou: HomeViewSection = {
     },
   },
   requiresAuthentication: true,
-  resolver: NewWorksForYouResolver,
+  resolver: withHomeViewTimeout(NewWorksForYouResolver),
 }
 
 export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
@@ -160,7 +161,7 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
     },
   },
   requiresAuthentication: true,
-  resolver: NewWorksFromGalleriesYouFollowResolver,
+  resolver: withHomeViewTimeout(NewWorksFromGalleriesYouFollowResolver),
 }
 
 export const RecommendedArtworks: HomeViewSection = {
@@ -176,7 +177,7 @@ export const RecommendedArtworks: HomeViewSection = {
     },
   },
   requiresAuthentication: true,
-  resolver: RecommendedArtworksResolver,
+  resolver: withHomeViewTimeout(RecommendedArtworksResolver),
 }
 
 // Artists Rails
@@ -188,7 +189,7 @@ export const TrendingArtists: HomeViewSection = {
     title: "Trending Artists",
   },
   requiresAuthentication: false,
-  resolver: SuggestedArtistsResolver,
+  resolver: withHomeViewTimeout(SuggestedArtistsResolver),
 }
 
 export const RecommendedArtists: HomeViewSection = {
@@ -198,14 +199,14 @@ export const RecommendedArtists: HomeViewSection = {
     title: "Recommended Artists",
   },
   requiresAuthentication: true,
-  resolver: RecommendedArtistsResolver,
+  resolver: withHomeViewTimeout(RecommendedArtistsResolver),
 }
 
 export const HeroUnits: HomeViewSection = {
   id: "home-view-section-hero-units",
   type: "HeroUnitsHomeViewSection",
   requiresAuthentication: false,
-  resolver: HeroUnitsResolver,
+  resolver: withHomeViewTimeout(HeroUnitsResolver),
 }
 
 export const FeaturedFairs: HomeViewSection = {
@@ -216,7 +217,7 @@ export const FeaturedFairs: HomeViewSection = {
     description: "See Works in Top Art Fairs",
   },
   requiresAuthentication: false,
-  resolver: FeaturedFairsResolver,
+  resolver: withHomeViewTimeout(FeaturedFairsResolver),
 }
 
 export const LatestArticles: HomeViewSection = {
@@ -231,7 +232,7 @@ export const LatestArticles: HomeViewSection = {
     },
   },
   requiresAuthentication: false,
-  resolver: LatestArticlesResolvers,
+  resolver: withHomeViewTimeout(LatestArticlesResolvers),
 }
 
 export const MarketingCollections: HomeViewSection = {
@@ -241,7 +242,7 @@ export const MarketingCollections: HomeViewSection = {
     title: "Collections",
   },
   requiresAuthentication: false,
-  resolver: MarketingCollectionsResolver,
+  resolver: withHomeViewTimeout(MarketingCollectionsResolver),
 }
 
 export const ShowsForYou: HomeViewSection = {
@@ -280,7 +281,7 @@ export const LatestActivity: HomeViewSection = {
     },
   },
   requiresAuthentication: true,
-  resolver: LatestActivityResolver,
+  resolver: withHomeViewTimeout(LatestActivityResolver),
 }
 
 export const LatestAuctionResults: HomeViewSection = {
@@ -297,7 +298,7 @@ export const LatestAuctionResults: HomeViewSection = {
     },
   },
   requiresAuthentication: true,
-  resolver: LatestAuctionResultsResolver,
+  resolver: withHomeViewTimeout(LatestAuctionResultsResolver),
 }
 
 export const News: HomeViewSection = {
@@ -315,7 +316,7 @@ export const News: HomeViewSection = {
     },
   },
   requiresAuthentication: false,
-  resolver: NewsResolver,
+  resolver: withHomeViewTimeout(NewsResolver),
 }
 
 export const Auctions: HomeViewSection = {
@@ -331,7 +332,7 @@ export const Auctions: HomeViewSection = {
     },
   },
   requiresAuthentication: false,
-  resolver: SalesResolver,
+  resolver: withHomeViewTimeout(SalesResolver),
 }
 
 export const ActiveBids: HomeViewSection = {
@@ -341,7 +342,7 @@ export const ActiveBids: HomeViewSection = {
     title: "Your Active Bids",
   },
   requiresAuthentication: true,
-  resolver: ActiveBidsResolver,
+  resolver: withHomeViewTimeout(ActiveBidsResolver),
 }
 
 /*
