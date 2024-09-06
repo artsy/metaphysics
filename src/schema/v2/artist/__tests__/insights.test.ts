@@ -233,7 +233,7 @@ describe("ArtistInsights type", () => {
         },
         {
           description:
-            '<p>Featured in Artsy’s <a href="/collection/the-artsy-vanguard">annual list</a> of the most promising artists working today</p>',
+            '<p>Featured in Artsy’s <a href="/collection/artsy-vanguard-artists">annual list</a> of the most promising artists working today</p>',
         },
         {
           description:

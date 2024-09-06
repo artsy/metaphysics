@@ -696,22 +696,23 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           _options,
           { artistArtworksLoader, artworkLoader }
         ) => {
-          try {
-            if (cover_artwork_id) {
-              return artworkLoader(cover_artwork_id)
+          if (cover_artwork_id) {
+            try {
+              return await artworkLoader(cover_artwork_id)
+            } catch {
+              // Intentionally ignore errors from unpublished/deleted artworks
+              // that are set as cover artworks.
             }
-
-            const [fallbackArtwork] = await artistArtworksLoader(id, {
-              offset: 0,
-              size: 1,
-              sort: "-iconicity",
-              published: true,
-            })
-
-            return fallbackArtwork
-          } catch (error) {
-            return null
           }
+
+          const [fallbackArtwork] = await artistArtworksLoader(id, {
+            offset: 0,
+            size: 1,
+            sort: "-iconicity",
+            published: true,
+          })
+
+          return fallbackArtwork
         },
       },
       createdAt: date(),
