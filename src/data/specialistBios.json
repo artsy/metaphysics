@@ -61,6 +61,15 @@
     "imageUrl": "https://files.artsy.net/images/George-Mobile.webp"
   },
   {
+    "firstName": "Susanna",
+    "name": "Susanna Mancini",
+    "email": "susanna.Mancini@artsy.net",
+    "jobTitle": "Collector Sales Specialist, London",
+    "specialty": "auctions",
+    "bio": "Susanna is a post-war and contemporary art specialist with nearly a decade of experience in the art market, having previously worked at prestigious auction houses like Sotheby’s and Artcurial, as well as in the tech industry. She has developed a deep understanding of various art market categories through her work in both primary and secondary sectors internationally, from Italy to Berlin, Paris, and London. Susanna’s keen intuition for market trends and her ability to deliver tailored, strategic advice make her a trusted advisor to every collector.",
+    "imageUrl": "https://files.artsy.net/images/Susanna-Mancini.png"
+  },
+  {
     "firstName": "Laura",
     "name": "Laura Martin",
     "email": "laura.martin@artsymail.com",
@@ -68,15 +77,6 @@
     "specialty": "auctions",
     "bio": "Based in Los Angeles, Laura’s expertise spans the post-war market to more emerging talent, with an emphasis on artists from the West Coast. She previously worked as head of sales in post-war and contemporary art at Bonhams Los Angeles, and in client strategy at Christie’s New York, contributing to a number of record-breaking auctions. She holds a bachelor’s degree in art history from Chapman University, and a master’s degree in the modern and contemporary art market from Christie’s Education.",
     "imageUrl": "https://files.artsy.net/images/Laura-Mobile.webp"
-  },
-  {
-    "firstName": "Caroline",
-    "name": "Caroline Perkins",
-    "email": "caroline.perkins@artsymail.com",
-    "jobTitle": "Advisor",
-    "specialty": "auctions",
-    "bio": "Caroline advises collectors on buying and selling hard-to-access unique artworks. Her passion and foremost expertise is emerging and ultra contemporary artist markets. With Artsy since 2016, she holds a Bachelor of Arts in Art History from Wake Forest University.",
-    "imageUrl": "https://files.artsy.net/images/Caroline-Mobile-1701268893821.webp"
   },
   {
     "firstName": "Dana",
