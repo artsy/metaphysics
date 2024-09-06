@@ -85,7 +85,7 @@ describe("HomeViewSection", () => {
                 "href": "/recently-viewed",
               },
             },
-            "title": "Recently viewed works",
+            "title": "Recently Viewed",
           },
         }
       `)
