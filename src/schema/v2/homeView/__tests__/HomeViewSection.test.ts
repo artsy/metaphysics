@@ -38,7 +38,7 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "href": "/similar-to-recently-viewed",
+                "href": "/home-view/section/artworks/home-view-section-similar-to-recently-viewed-artworks",
               },
             },
             "title": "Similar to Works You’ve Viewed",
@@ -82,7 +82,7 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "href": "/recently-viewed",
+                "href": "home-view/section/artworks/home-view-section-recently-viewed-artworks",
               },
             },
             "title": "Recently Viewed",
@@ -126,7 +126,7 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "href": "/new-for-you",
+                "href": "home-view/section/artworks/home-view-section-new-works-for-you",
               },
             },
             "title": "New works for you",
@@ -304,7 +304,7 @@ describe("HomeViewSection", () => {
             "component": Object {
               "behaviors": Object {
                 "viewAll": Object {
-                  "href": "/artwork-recommendations",
+                  "href": "home-view/section/artworks/home-view-section-recommended-artworks",
                 },
               },
               "title": "Artwork Recommendations",
@@ -385,7 +385,7 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "href": "/new-works-from-galleries-you-follow",
+                "href": "home-view/section/artworks/home-view-section-new-works-from-galleries-you-follow",
               },
             },
             "title": "New Works from Galleries You Follow",

@@ -50,7 +50,8 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
     title: "Similar to Works You’ve Viewed",
     behaviors: {
       viewAll: {
-        href: "/similar-to-recently-viewed",
+        href:
+          "/home-view/section/artworks/home-view-section-similar-to-recently-viewed-artworks",
         buttonText: "Browse All Artworks",
       },
     },
@@ -100,6 +101,16 @@ export const CuratorsPicksEmerging: HomeViewSection = {
   resolver: withHomeViewTimeout(CuratorsPicksEmergingArtworksResolver),
 }
 
+export const ActiveBids: HomeViewSection = {
+  id: "home-view-section-active-bids",
+  type: "ArtworksRailHomeViewSection",
+  component: {
+    title: "Your Active Bids",
+  },
+  requiresAuthentication: true,
+  resolver: withHomeViewTimeout(ActiveBidsResolver),
+}
+
 export const RecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-recently-viewed-artworks",
   type: "ArtworksRailHomeViewSection",
@@ -107,7 +118,8 @@ export const RecentlyViewedArtworks: HomeViewSection = {
     title: "Recently Viewed",
     behaviors: {
       viewAll: {
-        href: "/recently-viewed",
+        href:
+          "home-view/section/artworks/home-view-section-recently-viewed-artworks",
         buttonText: "Browse All Artworks",
       },
     },
@@ -139,7 +151,7 @@ export const NewWorksForYou: HomeViewSection = {
     title: "New works for you",
     behaviors: {
       viewAll: {
-        href: "/new-for-you",
+        href: "home-view/section/artworks/home-view-section-new-works-for-you",
         buttonText: "Browse All Artworks",
       },
     },
@@ -155,7 +167,8 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
     title: "New Works from Galleries You Follow",
     behaviors: {
       viewAll: {
-        href: "/new-works-from-galleries-you-follow",
+        href:
+          "home-view/section/artworks/home-view-section-new-works-from-galleries-you-follow",
         buttonText: "Browse All Artworks",
       },
     },
@@ -171,7 +184,8 @@ export const RecommendedArtworks: HomeViewSection = {
     title: "Artwork Recommendations",
     behaviors: {
       viewAll: {
-        href: "/artwork-recommendations",
+        href:
+          "home-view/section/artworks/home-view-section-recommended-artworks",
         buttonText: "Browse All Artworks",
       },
     },
@@ -333,16 +347,6 @@ export const Auctions: HomeViewSection = {
   },
   requiresAuthentication: false,
   resolver: withHomeViewTimeout(SalesResolver),
-}
-
-export const ActiveBids: HomeViewSection = {
-  id: "home-view-section-active-bids",
-  type: "ArtworksRailHomeViewSection",
-  component: {
-    title: "Your Active Bids",
-  },
-  requiresAuthentication: true,
-  resolver: withHomeViewTimeout(ActiveBidsResolver),
 }
 
 /*
