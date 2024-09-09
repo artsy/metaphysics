@@ -507,8 +507,7 @@ describe("Show type", () => {
   })
 
   describe("href", () => {
-    it("returns the href for a regular show", async () => {
-      showData.is_reference = false
+    it("when displayable, returns the show page path", async () => {
       const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -524,7 +523,8 @@ describe("Show type", () => {
       })
     })
 
-    it("returns null for a reference show", async () => {
+    it("when not displayable, returns null", async () => {
+      showData.displayable = false
       const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
