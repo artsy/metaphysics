@@ -10,7 +10,6 @@ import {
   GraphQLString,
   GraphQLError,
 } from "graphql"
-import gql from "lib/gql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import moment from "moment"
@@ -298,21 +297,17 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
           },
           savedSearches: {
             type: new GraphQLNonNull(GraphQLInt),
-            resolve: async (_me, _args, { gravityGraphQLLoader }) => {
-              if (!gravityGraphQLLoader) return 0
+            resolve: async (_me, _args, { meAlertsLoader }) => {
+              if (!meAlertsLoader) return 0
 
               try {
-                const data = await gravityGraphQLLoader({
-                  query: gql`
-                    {
-                      savedSearchesConnection(first: 0) {
-                        totalCount
-                      }
-                    }
-                  `,
+                const { headers } = await meAlertsLoader({
+                  size: 0,
+                  total_count: true,
                 })
+                const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-                return data?.savedSearchesConnection?.totalCount ?? 0
+                return totalCount
               } catch (error) {
                 console.error(error)
                 return 0
