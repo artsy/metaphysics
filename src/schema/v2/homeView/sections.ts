@@ -104,7 +104,7 @@ export const RecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-recently-viewed-artworks",
   type: "ArtworksRailHomeViewSection",
   component: {
-    title: "Recently viewed works",
+    title: "Recently Viewed",
     behaviors: {
       viewAll: {
         href: "/recently-viewed",
