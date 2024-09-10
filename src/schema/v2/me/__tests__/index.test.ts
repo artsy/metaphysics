@@ -669,6 +669,42 @@ describe("me/index", () => {
     })
   })
 
+  describe("counts", () => {
+    describe("savedSearches", () => {
+      it("returns the number of saved searches", async () => {
+        const query = gql`
+          query {
+            me {
+              counts {
+                savedSearches
+              }
+            }
+          }
+        `
+
+        const meLoader = () => Promise.resolve({})
+        const meAlertsLoader = () =>
+          Promise.resolve({
+            body: [],
+            headers: { "x-total-count": "12" },
+          })
+
+        const data = await runAuthenticatedQuery(query, {
+          meLoader,
+          meAlertsLoader,
+        })
+
+        expect(data).toEqual({
+          me: {
+            counts: {
+              savedSearches: 12,
+            },
+          },
+        })
+      })
+    })
+  })
+
   describe("partnerOffersConnection", () => {
     it("returns partner offers for the collector", async () => {
       const meLoader = () => Promise.resolve({})

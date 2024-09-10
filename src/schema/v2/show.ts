@@ -365,9 +365,8 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       href: {
         description: "A path to the show on Artsy",
         type: GraphQLString,
-        resolve: ({ id, is_reference, displayable }) => {
-          if (is_reference || !displayable) return null
-          return `/show/${id}`
+        resolve: ({ id, displayable }) => {
+          if (displayable) return `/show/${id}`
         },
       },
       images: {
