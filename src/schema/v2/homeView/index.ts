@@ -70,7 +70,7 @@ export const Section: GraphQLFieldConfig<void, ResolverContext> = {
 
 const HomeViewType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomeView",
-  description: "Experimental schema for new home view",
+  description: "Schema for server-driven home view content",
   fields: {
     sectionsConnection: SectionConnection,
     section: Section,
