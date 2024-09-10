@@ -8,9 +8,6 @@ import { formatMarkdownValue } from "schema/v2/fields/markdown"
 import { toGlobalId } from "graphql-relay"
 import { printType } from "lib/stitching/lib/printType"
 import { dateRange } from "lib/date"
-import { resolveSearchCriteriaLabels } from "schema/v2/previewSavedSearch/searchCriteriaLabel"
-import { generateDisplayName } from "schema/v2/previewSavedSearch/generateDisplayName"
-import { amount, amountSDL } from "schema/v2/fields/money"
 import { GraphQLSchemaWithTransforms } from "graphql-tools"
 import config from "config"
 
@@ -69,9 +66,8 @@ export const gravityStitchingEnvironment = (
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
-        ${
-          !useUnstitchedArtistSeries
-            ? `extend type Artist {
+      ${!useUnstitchedArtistSeries
+        ? `extend type Artist {
               artistSeriesConnection(
           first: Int
           last: Int
@@ -79,23 +75,19 @@ export const gravityStitchingEnvironment = (
           before: String
           ): ArtistSeriesConnection
             }`
-            : ""
-        }
+        : ""}
 
-      ${
-        !useUnstitchedArtistSeries
-          ? `extend type Artwork { artistSeriesConnection(
+      ${!useUnstitchedArtistSeries
+        ? `extend type Artwork { artistSeriesConnection(
           first: Int
           last: Int
           after: String
           before: String
           ): ArtistSeriesConnection }`
-          : ""
-      }
+        : ""}
 
-      ${
-        !useUnstitchedArtistSeries
-          ? `
+      ${!useUnstitchedArtistSeries
+        ? `
         extend type ArtistSeries {
         artists(page: Int, size: Int): [Artist]
         image: Image
@@ -111,22 +103,9 @@ export const gravityStitchingEnvironment = (
         """
         artworksCountMessage: String
       }`
-          : ""
-      }
+        : ""}
 
       extend type Me {
-        savedSearch(id: ID, criteria: SearchCriteriaAttributes): SearchCriteria
-        savedSearchesConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-          sort: SavedSearchesSortEnum
-          """
-          Returns saved searches associated with the provided artist IDs
-          """
-          artistIDs: [String!]
-        ): SearchCriteriaConnection
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
         addressConnection(
           first: Int
@@ -137,23 +116,11 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type Partner {
-        viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!]): ViewingRoomsConnection
-      }
-
-      extend type SearchCriteria {
-        artistsConnection(
-          first: Int,
-          last: Int,
-          before: String,
-          after: String,
-          ids: [String],
-          sort: ArtistSorts,
-          term: String
-        ): ArtistConnection
-        displayName: String!
-        labels: [SearchCriteriaLabel!]!
-        ${amountSDL("lowPriceAmount")}
-        ${amountSDL("highPriceAmount")}
+        viewingRoomsConnection(
+          first: Int
+          after: String
+          statuses: [ViewingRoomStatusEnum!]
+        ): ViewingRoomsConnection
       }
 
       extend type Show {
@@ -188,19 +155,25 @@ export const gravityStitchingEnvironment = (
       }
 
       extend type ViewingRoomPublishedNotificationItem {
-        viewingRoomsConnection(first: Int, after: String, last: Int, before: String): ViewingRoomsConnection
+        viewingRoomsConnection(
+          first: Int
+          after: String
+          last: Int
+          before: String
+        ): ViewingRoomsConnection
       }
 
       extend type Viewer {
-        viewingRoomsConnection(first: Int, after: String, statuses: [ViewingRoomStatusEnum!], partnerID: ID): ViewingRoomsConnection
+        viewingRoomsConnection(
+          first: Int
+          after: String
+          statuses: [ViewingRoomStatusEnum!]
+          partnerID: ID
+        ): ViewingRoomsConnection
       }
 
       # Mutation Payloads
       extend type CreateUserAddressPayload {
-        me: Me
-      }
-
-      extend type CreateSavedSearchPayload {
         me: Me
       }
 
@@ -436,30 +409,6 @@ export const gravityStitchingEnvironment = (
         },
       }),
       Me: {
-        savedSearch: {
-          resolve: (_parent, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_savedSearch",
-              args: args,
-              context,
-              info,
-            })
-          },
-        },
-        savedSearchesConnection: {
-          resolve: (_parent, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_savedSearchesConnection",
-              args: args,
-              context,
-              info,
-            })
-          },
-        },
         secondFactors: {
           resolve: (_parent, args, context, info) => {
             return info.mergeInfo.delegateToSchema({
@@ -510,80 +459,6 @@ export const gravityStitchingEnvironment = (
               info,
             })
           },
-        },
-      },
-      SearchCriteria: {
-        artistsConnection: {
-          fragment: gql`
-            ... on SearchCriteria {
-              artistIDs
-            }
-          `,
-          resolve: ({ artistIDs }, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: localSchema,
-              operation: "query",
-              fieldName: "artistsConnection",
-              args: {
-                ids: artistIDs,
-                ...args,
-              },
-              context,
-              info,
-            })
-          },
-        },
-        displayName: {
-          fragment: gql`
-            ... on SearchCriteria {
-              artistIDs
-              attributionClass
-              additionalGeneIDs
-              priceRange
-              sizes
-              width
-              height
-              acquireable
-              atAuction
-              inquireableOnly
-              offerable
-              materialsTerms
-              locationCities
-              majorPeriods
-              colors
-              partnerIDs
-
-              userAlertSettings {
-                name
-              }
-            }
-          `,
-          resolve: generateDisplayName,
-        },
-        labels: {
-          fragment: gql`
-            ... on SearchCriteria {
-              artistIDs
-              attributionClass
-              additionalGeneIDs
-              priceRange
-              sizes
-              width
-              height
-              acquireable
-              atAuction
-              inquireableOnly
-              offerable
-              materialsTerms
-              locationCities
-              majorPeriods
-              colors
-              partnerIDs
-            }
-            `,
-          resolve: resolveSearchCriteriaLabels,
-          description:
-            "Human-friendly labels that are added by Metaphysics to the upstream SearchCriteria type coming from Gravity",
         },
       },
       Show: {
@@ -869,20 +744,6 @@ export const gravityStitchingEnvironment = (
           },
         },
       },
-      CreateSavedSearchPayload: {
-        me: {
-          resolve: (_parent, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: localSchema,
-              operation: "query",
-              fieldName: "me",
-              args,
-              context,
-              info,
-            })
-          },
-        },
-      },
       UpdateUserAddressPayload: {
         me: {
           resolve: (_parent, args, context, info) => {
@@ -928,14 +789,4 @@ export const gravityStitchingEnvironment = (
       },
     },
   }
-}
-
-export const formatSearchCriteriaAmount = (amountInCents: number, args) => {
-  const formattedAmount = amount((_) => amountInCents).resolve(
-    {
-      currencyCode: "usd",
-    },
-    args
-  )
-  return formattedAmount
 }
