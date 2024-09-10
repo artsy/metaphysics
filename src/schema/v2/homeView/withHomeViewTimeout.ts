@@ -12,7 +12,7 @@ export const withHomeViewTimeout = (
       resolver(parent, args, context, info),
       timeout
     ).catch((err) => {
-      const errorMessage = `[homeViewSection #${parent.id}]: ${err.message}`
+      const errorMessage = `${err.message} (${parent.id}): `
       const error = new Error(errorMessage)
 
       throw error
