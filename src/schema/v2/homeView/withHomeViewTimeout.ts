@@ -8,6 +8,14 @@ export const withHomeViewTimeout = (
   timeout: number = config.HOME_VIEW_RESOLVER_TIMEOUT_MS
 ): GraphQLFieldResolver<any, ResolverContext> => {
   return async (parent, args, context, info) => {
-    return await withTimeout(resolver(parent, args, context, info), timeout)
+    return await withTimeout(
+      resolver(parent, args, context, info),
+      timeout
+    ).catch((err) => {
+      const errorMessage = `[homeViewSection #${parent.id}]: ${err.message}`
+      const error = new Error(errorMessage)
+
+      throw error
+    })
   }
 }
