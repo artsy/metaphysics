@@ -360,18 +360,16 @@ describe("previewSavedSearch", () => {
           .fn()
           .mockReturnValueOnce(Promise.resolve({ name: "KAWS" }))
 
-        const gravityGraphQLLoader = jest.fn().mockReturnValueOnce(
+        const artistSeriesLoader = jest.fn().mockReturnValueOnce(
           Promise.resolve({
-            artistSeries: {
-              internalID: "abc-123",
-              title: "Astroboy",
-            },
+            _id: "abc-123",
+            title: "Astroboy",
           })
         )
 
         const context = {
           artistLoader,
-          gravityGraphQLLoader,
+          artistSeriesLoader,
           meLoader,
         }
 
@@ -553,7 +551,7 @@ describe("previewSavedSearch", () => {
           Promise.resolve(aggregationsForSuggestions)
         )
 
-        const gravityGraphQLLoader = jest
+        const artistSeriesListLoader = jest
           .fn()
           .mockReturnValueOnce(artworkArtistSeriesForSuggestions)
 
@@ -561,7 +559,7 @@ describe("previewSavedSearch", () => {
           artistLoader,
           meLoader,
           filterArtworksLoader: mockFilterArtworksLoader,
-          gravityGraphQLLoader,
+          artistSeriesListLoader,
         })
 
         expect(previewSavedSearch.suggestedFilters).toEqual([
@@ -724,23 +722,15 @@ const aggregationsForSuggestions = {
   },
 }
 
-const artworkArtistSeriesForSuggestions = {
-  artistSeriesConnection: {
-    edges: [
-      {
-        node: {
-          internalID: "ba48e478-9f5d-400c-9f5c-d4e532966961",
-          slug: "kaws-companions",
-          title: "Companions",
-        },
-      },
-      {
-        node: {
-          internalID: "1e16c94f-7d50-465c-905b-5826ee9f0ec0",
-          slug: "kaws-toys",
-          title: "Toys",
-        },
-      },
-    ],
+const artworkArtistSeriesForSuggestions = [
+  {
+    _id: "ba48e478-9f5d-400c-9f5c-d4e532966961",
+    slug: "kaws-companions",
+    title: "Companions",
   },
-}
+  {
+    _id: "1e16c94f-7d50-465c-905b-5826ee9f0ec0",
+    slug: "kaws-toys",
+    title: "Toys",
+  },
+]

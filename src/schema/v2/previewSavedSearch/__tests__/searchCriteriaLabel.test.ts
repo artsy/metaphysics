@@ -659,20 +659,16 @@ describe("resolveSearchCriteriaLabels", () => {
     }
 
     const context = {
-      gravityGraphQLLoader: jest
+      artistSeriesLoader: jest
         .fn()
         .mockReturnValueOnce(
           Promise.resolve({
-            artistSeries: {
-              title: "Astroboy",
-            },
+            title: "Astroboy",
           })
         )
         .mockReturnValueOnce(
           Promise.resolve({
-            artistSeries: {
-              title: "Companions",
-            },
+            title: "Companions",
           })
         ),
       meLoader,
