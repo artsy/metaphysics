@@ -46,7 +46,7 @@ type AccountRequest {
   notes: String
 }
 
-# An activity rail to show a list of user activities
+# A user activity section in the home view
 type ActivityHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent
@@ -9776,7 +9776,7 @@ type FairSponsoredContent {
   pressReleaseUrl: String
 }
 
-# Fairs section
+# A fairs section in the home view
 type FairsHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent
@@ -11034,7 +11034,7 @@ type HomePageSalesModule {
   results: [Sale]!
 }
 
-# Experimental schema for new home view
+# Schema for server-driven home view content
 type HomeView {
   # A home view section
   section(
@@ -17971,7 +17971,7 @@ enum SaleSorts {
   _ID_DESC
 }
 
-# A sales section in the home view
+# A sales (auctions) section in the home view
 type SalesHomeViewSection implements GenericHomeViewSection & Node {
   # The component that is prescribed for this section
   component: HomeViewComponent

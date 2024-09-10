@@ -118,7 +118,7 @@ const HeroUnitsHomeViewSectionType = new GraphQLObjectType<
 
 const FairsHomeViewSectionType = new GraphQLObjectType<any, ResolverContext>({
   name: HomeViewSectionTypeNames.FairsHomeViewSection,
-  description: "Fairs section",
+  description: "A fairs section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
@@ -195,7 +195,7 @@ export const ViewingRoomsHomeViewSectionType = new GraphQLObjectType<
 const ActivityHomeViewSectionType = new GraphQLObjectType<any, ResolverContext>(
   {
     name: HomeViewSectionTypeNames.ActivityHomeViewSection,
-    description: "An activity rail to show a list of user activities",
+    description: "A user activity section in the home view",
     interfaces: [GenericHomeViewSectionInterface, NodeInterface],
     fields: {
       ...standardSectionFields,
@@ -234,7 +234,7 @@ export const AuctionResultsHomeViewSectionType = new GraphQLObjectType<
 
 const SalesHomeViewSectionType = new GraphQLObjectType<any, ResolverContext>({
   name: HomeViewSectionTypeNames.SalesHomeViewSection,
-  description: "A sales section in the home view",
+  description: "A sales (auctions) section in the home view",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
