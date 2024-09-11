@@ -4936,6 +4936,7 @@ describe("Artwork type", () => {
           context.salesLoader.mockResolvedValue([
             {
               id: "sale-id-auction",
+              _id: "sale-database-id",
             },
           ])
 
@@ -4953,7 +4954,7 @@ describe("Artwork type", () => {
 
           expect(context.saleArtworkLoader).toHaveBeenCalledWith({
             saleArtworkId: "richard-prince-untitled-portrait",
-            saleId: "sale-id-auction",
+            saleId: "sale-database-id",
           })
 
           expect(data.artwork.collectorSignals.auction.bidCount).toEqual(5)
@@ -5006,7 +5007,7 @@ describe("Artwork type", () => {
                 name: "Test Show",
                 start_at: "2023-01-01T00:00:00Z",
                 end_at: "2023-01-02T00:00:00Z",
-              }
+              },
             ],
           })
 
