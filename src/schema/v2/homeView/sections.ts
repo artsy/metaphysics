@@ -54,7 +54,7 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
     title: "Similar to Works You’ve Viewed",
     behaviors: {
       viewAll: {
-        href: "/similar-to-recently-viewed",
+        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -111,7 +111,7 @@ export const RecentlyViewedArtworks: HomeViewSection = {
     title: "Recently Viewed",
     behaviors: {
       viewAll: {
-        href: "/recently-viewed",
+        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -143,7 +143,7 @@ export const NewWorksForYou: HomeViewSection = {
     title: "New works for you",
     behaviors: {
       viewAll: {
-        href: "/new-for-you",
+        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -159,7 +159,7 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
     title: "New Works from Galleries You Follow",
     behaviors: {
       viewAll: {
-        href: "/new-works-from-galleries-you-follow",
+        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -175,7 +175,7 @@ export const RecommendedArtworks: HomeViewSection = {
     title: "Artwork Recommendations",
     behaviors: {
       viewAll: {
-        href: "/artwork-recommendations",
+        href: null,
         buttonText: "Browse All Artworks",
       },
     },
