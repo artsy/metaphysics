@@ -3,7 +3,7 @@ import { ResolverContext } from "types/graphql"
 
 export type HomeViewComponentBehaviors = {
   viewAll?: {
-    href?: string
+    href?: string | null
     buttonText?: string
   }
 }

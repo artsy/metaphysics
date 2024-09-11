@@ -1,11 +1,10 @@
 import _ from "lodash"
 import artworkMediums from "lib/artworkMediums"
 import attributionClasses from "lib/attributionClasses"
-import { extractNodes, isExisty } from "lib/helpers"
+import { isExisty } from "lib/helpers"
 import { SearchCriteriaLabel } from "./searchCriteriaLabel"
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
-import gql from "lib/gql"
 
 const ALLOWED_RARITY_SUGGESTIONS = ["unique", "limited edition"]
 const MAX_SUGGESTIONS = 2
@@ -18,7 +17,7 @@ export const suggestedFilters: GraphQLFieldResolver<
 > = async (parent, args, context) => {
   const { artistIDs } = parent
   const { source } = args
-  const { filterArtworksLoader, gravityGraphQLLoader } = context
+  const { filterArtworksLoader, artistSeriesListLoader } = context
 
   if (!artistIDs) {
     throw new Error("artistIDs are required to get suggested filters")
@@ -64,7 +63,7 @@ export const suggestedFilters: GraphQLFieldResolver<
   if (source?.type === "Artwork") {
     artistSeriesOptions = await getArtistSeriesSearchCriteriaLabelsFromArtwork(
       source,
-      gravityGraphQLLoader
+      artistSeriesListLoader
     )
   } else {
     artistSeriesOptions = getArtistSeriesSearchCriteriaLabelsFromArtist(
@@ -155,37 +154,16 @@ const getArtistSeriesSearchCriteriaLabelsFromArtist = (
 
 const getArtistSeriesSearchCriteriaLabelsFromArtwork = async (
   source: { type: string; id: string },
-  gravityGraphQLLoader,
+  artistSeriesListLoader,
   limit?: number
 ): Promise<SearchCriteriaLabel[] | null> => {
   if (!source || source.type !== "Artwork" || !source.id) {
     return null
   }
 
-  const data = await gravityGraphQLLoader({
-    query: gql`
-      query GetArtistSeriesFromArtwork($id: ID!) {
-        artistSeriesConnection(artworkID: $id, first: 5) {
-          edges {
-            node {
-              internalID
-              slug
-              title
-            }
-          }
-        }
-      }
-    `,
-    variables: { id: source.id },
-  })
+  const list = await artistSeriesListLoader({ size: 5, artwork_id: source.id })
 
-  const nodes = extractNodes<{
-    internalID: string
-    slug: string
-    title: string
-  }>(data.artistSeriesConnection)
-
-  const artistSeriesLabels: SearchCriteriaLabel[] = nodes
+  const artistSeriesLabels: SearchCriteriaLabel[] = list
     .slice(0, limit ?? MAX_ARTIST_SERIES_SUGGESTIONS)
     .map((node) => ({
       displayValue: node.title,

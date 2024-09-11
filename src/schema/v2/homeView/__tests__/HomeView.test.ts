@@ -11,7 +11,7 @@ describe("homeView", () => {
             edges {
               node {
                 __typename
-                ... on GenericHomeViewSection {
+                ... on HomeViewSectionGeneric {
                   component {
                     title
                   }
@@ -38,13 +38,13 @@ describe("homeView", () => {
             "edges": Array [
               Object {
                 "node": Object {
-                  "__typename": "HeroUnitsHomeViewSection",
+                  "__typename": "HomeViewSectionHeroUnits",
                   "component": null,
                 },
               },
               Object {
                 "node": Object {
-                  "__typename": "SalesRailHomeViewSection",
+                  "__typename": "HomeViewSectionSales",
                   "component": Object {
                     "title": "Auctions",
                   },
@@ -52,7 +52,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "GalleriesHomeViewSection",
+                  "__typename": "HomeViewSectionGalleries",
                   "component": Object {
                     "title": "Galleries Near You",
                   },
@@ -60,7 +60,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArticlesRailHomeViewSection",
+                  "__typename": "HomeViewSectionArticles",
                   "component": Object {
                     "title": "Artsy Editorial",
                   },
@@ -68,7 +68,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArticlesRailHomeViewSection",
+                  "__typename": "HomeViewSectionArticles",
                   "component": Object {
                     "title": "News",
                   },
@@ -76,7 +76,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtworksRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtworks",
                   "component": Object {
                     "title": "Curators' Picks Emerging",
                   },
@@ -84,7 +84,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "MarketingCollectionsRailHomeViewSection",
+                  "__typename": "HomeViewSectionMarketingCollections",
                   "component": Object {
                     "title": "Collections",
                   },
@@ -92,7 +92,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtistsRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtists",
                   "component": Object {
                     "title": "Trending Artists",
                   },
@@ -100,7 +100,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ViewingRoomsRailHomeViewSection",
+                  "__typename": "HomeViewSectionViewingRooms",
                   "component": Object {
                     "title": "Viewing Rooms",
                   },
@@ -108,7 +108,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "FairsRailHomeViewSection",
+                  "__typename": "HomeViewSectionFairs",
                   "component": Object {
                     "title": "Featured Fairs",
                   },
@@ -136,7 +136,7 @@ describe("homeView", () => {
             "edges": Array [
               Object {
                 "node": Object {
-                  "__typename": "ActivityRailHomeViewSection",
+                  "__typename": "HomeViewSectionActivity",
                   "component": Object {
                     "title": "Latest Activity",
                   },
@@ -144,7 +144,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtworksRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtworks",
                   "component": Object {
                     "title": "New works for you",
                   },
@@ -152,13 +152,13 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "HeroUnitsHomeViewSection",
+                  "__typename": "HomeViewSectionHeroUnits",
                   "component": null,
                 },
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtworksRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtworks",
                   "component": Object {
                     "title": "Your Active Bids",
                   },
@@ -166,7 +166,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtworksRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtworks",
                   "component": Object {
                     "title": "Auction lots for you",
                   },
@@ -174,7 +174,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "SalesRailHomeViewSection",
+                  "__typename": "HomeViewSectionSales",
                   "component": Object {
                     "title": "Auctions",
                   },
@@ -182,7 +182,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "AuctionResultsRailHomeViewSection",
+                  "__typename": "HomeViewSectionAuctionResults",
                   "component": Object {
                     "title": "Latest Auction Results",
                   },
@@ -190,7 +190,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "GalleriesHomeViewSection",
+                  "__typename": "HomeViewSectionGalleries",
                   "component": Object {
                     "title": "Galleries Near You",
                   },
@@ -198,7 +198,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArticlesRailHomeViewSection",
+                  "__typename": "HomeViewSectionArticles",
                   "component": Object {
                     "title": "Artsy Editorial",
                   },
@@ -206,7 +206,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArticlesRailHomeViewSection",
+                  "__typename": "HomeViewSectionArticles",
                   "component": Object {
                     "title": "News",
                   },
@@ -214,7 +214,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtworksRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtworks",
                   "component": Object {
                     "title": "Curators' Picks Emerging",
                   },
@@ -222,7 +222,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "MarketingCollectionsRailHomeViewSection",
+                  "__typename": "HomeViewSectionMarketingCollections",
                   "component": Object {
                     "title": "Collections",
                   },
@@ -230,7 +230,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtworksRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtworks",
                   "component": Object {
                     "title": "Artwork Recommendations",
                   },
@@ -238,7 +238,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtworksRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtworks",
                   "component": Object {
                     "title": "New Works from Galleries You Follow",
                   },
@@ -246,7 +246,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtistsRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtists",
                   "component": Object {
                     "title": "Recommended Artists",
                   },
@@ -254,7 +254,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtistsRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtists",
                   "component": Object {
                     "title": "Trending Artists",
                   },
@@ -262,7 +262,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtworksRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtworks",
                   "component": Object {
                     "title": "Recently Viewed",
                   },
@@ -270,7 +270,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ArtworksRailHomeViewSection",
+                  "__typename": "HomeViewSectionArtworks",
                   "component": Object {
                     "title": "Similar to Works You’ve Viewed",
                   },
@@ -278,7 +278,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ViewingRoomsRailHomeViewSection",
+                  "__typename": "HomeViewSectionViewingRooms",
                   "component": Object {
                     "title": "Viewing Rooms",
                   },
@@ -286,7 +286,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "ShowsRailHomeViewSection",
+                  "__typename": "HomeViewSectionShows",
                   "component": Object {
                     "title": "Shows for You",
                   },
@@ -306,7 +306,7 @@ describe("homeView", () => {
           homeView {
             section(id: "home-view-section-auction-lots-for-you") {
               __typename
-              ... on GenericHomeViewSection {
+              ... on HomeViewSectionGeneric {
                 component {
                   title
                 }
@@ -336,7 +336,7 @@ describe("homeView", () => {
 
           expect(homeView.section).toMatchInlineSnapshot(`
                       Object {
-                        "__typename": "ArtworksRailHomeViewSection",
+                        "__typename": "HomeViewSectionArtworks",
                         "component": Object {
                           "title": "Auction lots for you",
                         },
@@ -352,7 +352,7 @@ describe("homeView", () => {
           homeView {
             section(id: "home-view-section-news") {
               __typename
-              ... on GenericHomeViewSection {
+              ... on HomeViewSectionGeneric {
                 component {
                   title
                 }
@@ -370,7 +370,7 @@ describe("homeView", () => {
 
           expect(homeView.section).toMatchInlineSnapshot(`
             Object {
-              "__typename": "ArticlesRailHomeViewSection",
+              "__typename": "HomeViewSectionArticles",
               "component": Object {
                 "title": "News",
               },
@@ -389,7 +389,7 @@ describe("homeView", () => {
 
           expect(homeView.section).toMatchInlineSnapshot(`
             Object {
-              "__typename": "ArticlesRailHomeViewSection",
+              "__typename": "HomeViewSectionArticles",
               "component": Object {
                 "title": "News",
               },
