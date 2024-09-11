@@ -287,7 +287,7 @@ const getActiveAuctionValues = async (
 
   const saleArtwork =
     (await ctx.saleArtworkLoader({
-      saleId: activeAuction.id,
+      saleId: activeAuction._id,
       saleArtworkId: artworkId,
     })) ?? null
 
