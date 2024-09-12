@@ -177,12 +177,10 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         },
         resolve: (artwork, args, ctx) => {
           const { ignore } = args
-          if (ignore?.length > 0) {
-            if (ignore.length > AVAILABLE_LABEL_COUNT) {
-              throw new Error(
-                `Ignore list length limited to number of available signals - max ${AVAILABLE_LABEL_COUNT}`
-              )
-            }
+          if (ignore && ignore.length > AVAILABLE_LABEL_COUNT) {
+            throw new Error(
+              `Ignore list length limited to number of available signals - max ${AVAILABLE_LABEL_COUNT}`
+            )
           }
           return getPrimaryLabel(artwork, args, ctx)
         },
