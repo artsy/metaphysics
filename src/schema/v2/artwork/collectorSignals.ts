@@ -175,10 +175,13 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
           },
         },
         resolve: (artwork, args, ctx) => {
-          if (args.ignore?.length > 0) {
-            const uniqueIgnoredLabels = new Set(args.ignore)
-            if (uniqueIgnoredLabels.size !== args.ignore.length) {
-              throw new Error("Duplicate values found in ignore argument")
+          const { ignore } = args
+          if (ignore?.length > 0) {
+            const availableLabelCount = LabelSignalEnumType.getValues().length
+            if (ignore.length > availableLabelCount) {
+              throw new Error(
+                `Ignore list length limited to number of available signals - max ${availableLabelCount}`
+              )
             }
           }
           return getPrimaryLabel(artwork, args, ctx)

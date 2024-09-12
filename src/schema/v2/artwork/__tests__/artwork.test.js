@@ -4874,6 +4874,25 @@ describe("Artwork type", () => {
             ).toBeNull()
           })
 
+          it("does not allow illegal values for `ignorePrimaryLabels` arg", async () => {
+            const queryWithTooManyLabels = `
+            {
+              artwork(id: "richard-prince-untitled-portrait") {
+                collectorSignals {
+                  primaryLabel(ignore: [PARTNER_OFFER, CURATORS_PICK, INCREASED_INTEREST, PARTNER_OFFER])
+                }
+              }
+            }
+          `
+            await expect(
+              runQuery(queryWithTooManyLabels, context)
+            ).rejects.toThrow(
+              new Error(
+                `Ignore list length limited to number of available signals - max 3`
+              )
+            )
+          })
+
           it("returns null if there is no active partner offer increased interest, or curators pick collection", async () => {
             context.mePartnerOffersLoader.mockResolvedValue({
               body: [],
