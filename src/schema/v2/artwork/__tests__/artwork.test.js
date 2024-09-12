@@ -4974,6 +4974,23 @@ describe("Artwork type", () => {
 
           expect(data.artwork.collectorSignals.auction).toBeNull()
         })
+
+        it("does not return lotWatcherCount if the bidding is closed", async () => {
+          artwork.purchasable = true
+          artwork.recent_saves_count = 123
+          context.salesLoader.mockResolvedValue([
+            { id: "sale-id-auction", ended_at: pastTime },
+          ])
+          context.saleArtworkLoader.mockResolvedValue({
+            end_at: pastTime,
+            extended_bidding_end_at: pastTime,
+          })
+
+          const data = await runQuery(query, context)
+          console.log(data.artwork.collectorSignals.auction)
+
+          expect(data.artwork.collectorSignals.auction.lotWatcherCount).toBeNull()
+        })
       })
 
       describe("curatorsPick", () => {

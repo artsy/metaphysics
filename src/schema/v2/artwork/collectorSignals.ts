@@ -47,11 +47,20 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       return null
     }
 
+    const lotClosesAt =
+      (!activeLotData.sale.live_start_at &&
+        activeLotData.saleArtwork.extended_bidding_end_at) ||
+      activeLotData.saleArtwork.end_at ||
+      activeLotData.sale.ended_at
+    const isBiddingClosed = lotClosesAt && new Date(lotClosesAt) <= new Date()
+
     // Resolve all associated auctions data in one object
     return {
       artwork,
       saleArtwork: activeLotData.saleArtwork,
       sale: activeLotData.sale,
+      lotClosesAt,
+      isBiddingClosed,
     }
   },
 
@@ -65,9 +74,10 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         resolve: ({ saleArtwork }) => saleArtwork.bidder_positions_count ?? 0,
       },
       lotWatcherCount: {
-        type: new GraphQLNonNull(GraphQLInt),
-        description: "Lot watcher count",
-        resolve: ({ artwork }) => artwork.recent_saves_count ?? 0,
+        type: GraphQLInt,
+        description: "Lot watcher count, null if lot is closed for bidding",
+        resolve: ({ artwork, isBiddingClosed }) =>
+          isBiddingClosed ? null : artwork.recent_saves_count,
       },
       liveBiddingStarted: {
         type: new GraphQLNonNull(GraphQLBoolean),
@@ -81,13 +91,7 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         resolve: ({ saleArtwork }) => !!saleArtwork.extended_bidding_end_at,
       },
       lotClosesAt: {
-        ...date(
-          ({ saleArtwork, sale }) =>
-            !sale.live_start_at &&
-            (saleArtwork.extended_bidding_end_at ||
-              saleArtwork.end_at ||
-              sale.end_at)
-        ),
+        ...date(({ lotClosesAt }) => lotClosesAt),
         description: "Pending auction lot end time for bidding",
       },
       liveStartAt: {
