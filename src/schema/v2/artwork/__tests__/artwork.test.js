@@ -85,6 +85,7 @@ describe("Artwork type", () => {
 
   beforeEach(() => {
     artwork = {
+      _id: "richard-prince-untitled-portrait-database-id",
       id: "richard-prince-untitled-portrait",
       artist: {
         _id: "artist-id",
@@ -1515,10 +1516,11 @@ describe("Artwork type", () => {
           }
         }
       `
-      context.saleArtworkLoader = ({ saleId, saleArtworkId }) =>
+      context.saleArtworkLoader = ({ saleId, artworkId }) =>
         saleId === artwork.sale_ids[0] &&
-        saleArtworkId === "richard-prince-untitled-portrait" &&
+        artworkId === "richard-prince-untitled-portrait-database-id" &&
         Promise.resolve({ sale_id: saleId })
+
       const {
         artwork: {
           saleArtwork: { saleID },
@@ -1537,9 +1539,9 @@ describe("Artwork type", () => {
           }
         }
       `
-      context.saleArtworkLoader = ({ saleId, saleArtworkId }) =>
+      context.saleArtworkLoader = ({ saleId, artworkId }) =>
         saleId === artwork.sale_ids[1] &&
-        saleArtworkId === "richard-prince-untitled-portrait" &&
+        artworkId === "richard-prince-untitled-portrait-database-id" &&
         Promise.resolve({ sale_id: saleId })
       const {
         artwork: {
@@ -4961,7 +4963,7 @@ describe("Artwork type", () => {
           })
 
           expect(context.saleArtworkLoader).toHaveBeenCalledWith({
-            saleArtworkId: "richard-prince-untitled-portrait",
+            artworkId: "richard-prince-untitled-portrait-database-id",
             saleId: "sale-database-id",
           })
 

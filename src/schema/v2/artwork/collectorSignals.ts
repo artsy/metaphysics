@@ -37,7 +37,7 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
 
     const activeLotData = await getActiveAuctionValues(
       {
-        artworkId: artwork.id,
+        artworkId: artwork._id,
         saleIds: artwork.sale_ids,
       },
       ctx
@@ -290,7 +290,7 @@ const getActiveAuctionValues = async (
   const saleArtwork =
     (await ctx.saleArtworkLoader({
       saleId: activeAuction._id,
-      saleArtworkId: artworkId,
+      artworkId,
     })) ?? null
 
   return { saleArtwork, sale: activeAuction }

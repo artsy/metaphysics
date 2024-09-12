@@ -4,6 +4,8 @@ import { uncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_fact
 import gravity from "lib/apis/gravity"
 import { createBatchLoaders } from "../batchLoader"
 import { searchLoader } from "../searchLoader"
+import { createBatchSaleArtworkLoader } from "../batchSaleArtworkLoader"
+import config from "config"
 
 export type StartIdentityVerificationGravityOutput = {
   identity_verification_id: string
@@ -21,6 +23,10 @@ export default (opts) => {
       "sales"
     ),
   })
+
+  const batchSaleArtworkLoader = createBatchSaleArtworkLoader(
+    gravityUncachedLoader((id) => `sale/${id}/sale_artworks`)
+  )
 
   type GravityCalculatedCostResponse = {
     display_bid_amount: string
@@ -248,14 +254,12 @@ export default (opts) => {
       {},
       { headers: true }
     ),
-    saleArtworkLoader: gravityUncachedLoader<
-      any,
-      { saleId: string; saleArtworkId: string }
-    >(
-      ({ saleId, saleArtworkId }) =>
-        `sale/${saleId}/sale_artwork/${saleArtworkId}`,
-      null
-    ),
+    saleArtworkLoader: config.ENABLE_SALE_ARTWORK_REQUEST_BATCHING
+      ? batchSaleArtworkLoader
+      : gravityUncachedLoader<any, { saleId: string; artworkId: string }>(
+          ({ saleId, artworkId }) => `sale/${saleId}/sale_artwork/${artworkId}`,
+          null
+        ),
     saleArtworkCalculatedCostLoader: gravityLoader<
       GravityCalculatedCostResponse,
       { saleId: string; saleArtworkId: string; bidAmountMinor: number }
