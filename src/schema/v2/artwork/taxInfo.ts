@@ -2,7 +2,7 @@ import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import { isEligibleForOnPlatformTransaction } from "./utilities"
 
 export const CHECKOUT_TAXES_DOC_URL =
-  "https://support.artsy.net/s/article/How-are-taxes-customs-VAT-and-import-fees-handled-on-works-listed-with-secure-checkout"
+  "https://support.artsy.net/s/article/How-are-taxes-and-customs-fees-calculated"
 
 const TaxMoreInfoType = new GraphQLObjectType({
   name: "TaxMoreInfo",
