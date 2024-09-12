@@ -118,7 +118,6 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
     const canSendSignals = artwork.purchasable || artwork.sale_ids?.length > 0
     return canSendSignals ? artwork : null
   },
-
   type: new GraphQLObjectType({
     description: "Collector signals available to the artwork",
     name: "CollectorSignals",
@@ -225,23 +224,23 @@ const getPrimaryLabel = async (
   const partnerOfferPromise = getActivePartnerOffer(artwork, ctx)
   const curatorsPickPromise = getIsCuratorsPick(artwork, ctx)
 
-  const ignoreLabels = (args.ignore ?? []) as PrimaryLabel[]
+  const ignoreLabels = args.ignore
 
   const [activePartnerOffer, curatorsPick] = await Promise.all([
     partnerOfferPromise,
     curatorsPickPromise,
   ])
 
-  if (activePartnerOffer && !ignoreLabels.includes("PARTNER_OFFER")) {
+  if (!ignoreLabels?.includes("PARTNER_OFFER") && activePartnerOffer) {
     return "PARTNER_OFFER"
   }
 
-  if (!ignoreLabels.includes("CURATORS_PICK") && curatorsPick) {
+  if (!ignoreLabels?.includes("CURATORS_PICK") && curatorsPick) {
     return "CURATORS_PICK"
   }
 
   if (
-    !ignoreLabels.includes("INCREASED_INTEREST") &&
+    !ignoreLabels?.includes("INCREASED_INTEREST") &&
     artwork.increased_interest_signal
   ) {
     return "INCREASED_INTEREST"
