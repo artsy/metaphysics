@@ -217,11 +217,13 @@ const getPrimaryLabel = async (artwork, ctx): Promise<PrimaryLabel> => {
   if (activePartnerOffer) {
     return "PARTNER_OFFER"
   }
-  if (artwork.increased_interest_signal) {
-    return "INCREASED_INTEREST"
-  }
+
   if (curatorsPick) {
     return "CURATORS_PICK"
+  }
+
+  if (artwork.increased_interest_signal) {
+    return "INCREASED_INTEREST"
   }
 
   return null
