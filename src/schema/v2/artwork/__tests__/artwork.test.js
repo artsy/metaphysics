@@ -4758,15 +4758,11 @@ describe("Artwork type", () => {
               artwork(id: "richard-prince-untitled-portrait") {
                 collectorSignals {
                   primaryLabel
-                  increasedInterest
-                  partnerOffer {
-                    endAt
-                  }
                 }
               }
             }
           `
-          it("'PARTNER_OFFER' takes precedence over 'INCREASED_INTEREST' and 'CURATORS_PICK'", async () => {
+          it("'PARTNER_OFFER' takes precedence over 'INCREASED_INTEREST' and 'CURATORS_PICK' unless ignored", async () => {
             context.mePartnerOffersLoader.mockResolvedValue({
               body: [{ endAt: "2023-01-01", active: true }],
             })
@@ -4809,6 +4805,75 @@ describe("Artwork type", () => {
               "INCREASED_INTEREST"
             )
           })
+
+          it("primaryLabel choices can be suppressed through `ignorePrimaryLabels` arg", async () => {
+            context.mePartnerOffersLoader.mockResolvedValue({
+              body: [{ endAt: "2023-01-01", active: true }],
+            })
+            context.marketingCollectionLoader.mockResolvedValue({
+              artwork_ids: [artwork._id],
+            })
+            artwork.increased_interest_signal = true
+
+            const data = await runQuery(query, context)
+            expect(data.artwork.collectorSignals.primaryLabel).toEqual(
+              "PARTNER_OFFER"
+            )
+
+            const queryWithoutPartnerOffer = `
+              {
+                artwork(id: "richard-prince-untitled-portrait") {
+                  collectorSignals {
+                    primaryLabel(ignore: [PARTNER_OFFER])
+                  }
+                }
+              }
+            `
+            const dataWithoutPartnerOffer = await runQuery(
+              queryWithoutPartnerOffer,
+              context
+            )
+
+            expect(
+              dataWithoutPartnerOffer.artwork.collectorSignals.primaryLabel
+            ).toEqual("CURATORS_PICK")
+
+            const queryWithoutPartnerOfferAndCuratorsPick = `
+              {
+                artwork(id: "richard-prince-untitled-portrait") {
+                  collectorSignals {
+                    primaryLabel(ignore: [PARTNER_OFFER, CURATORS_PICK])
+                  }
+                }
+              }
+            `
+            const dataWithoutPartnerOfferAndCuratorsPick = await runQuery(
+              queryWithoutPartnerOfferAndCuratorsPick,
+              context
+            )
+            expect(
+              dataWithoutPartnerOfferAndCuratorsPick.artwork.collectorSignals
+                .primaryLabel
+            ).toEqual("INCREASED_INTEREST")
+
+            const queryWithAllLabelsExcluded = `
+            {
+              artwork(id: "richard-prince-untitled-portrait") {
+                collectorSignals {
+                  primaryLabel(ignore: [PARTNER_OFFER, CURATORS_PICK, INCREASED_INTEREST])
+                }
+              }
+            }
+          `
+            const dataWithAllLabelsExcluded = await runQuery(
+              queryWithAllLabelsExcluded,
+              context
+            )
+            expect(
+              dataWithAllLabelsExcluded.artwork.collectorSignals.primaryLabel
+            ).toBeNull()
+          })
+
           it("returns null if there is no active partner offer increased interest, or curators pick collection", async () => {
             context.mePartnerOffersLoader.mockResolvedValue({
               body: [],
