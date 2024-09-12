@@ -111,6 +111,7 @@ const LabelSignalEnumType = new GraphQLEnumType({
     CURATORS_PICK: { value: "CURATORS_PICK" },
   },
 })
+const AVAILABLE_LABEL_COUNT = LabelSignalEnumType.getValues().length
 
 export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   description: "Collector signals on artwork",
@@ -177,10 +178,9 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         resolve: (artwork, args, ctx) => {
           const { ignore } = args
           if (ignore?.length > 0) {
-            const availableLabelCount = LabelSignalEnumType.getValues().length
-            if (ignore.length > availableLabelCount) {
+            if (ignore.length > AVAILABLE_LABEL_COUNT) {
               throw new Error(
-                `Ignore list length limited to number of available signals - max ${availableLabelCount}`
+                `Ignore list length limited to number of available signals - max ${AVAILABLE_LABEL_COUNT}`
               )
             }
           }
