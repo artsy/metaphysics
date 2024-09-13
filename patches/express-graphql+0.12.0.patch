@@ -1,0 +1,15 @@
+diff --git a/node_modules/express-graphql/index.js b/node_modules/express-graphql/index.js
+index 3bc78dc..477be08 100644
+--- a/node_modules/express-graphql/index.js
++++ b/node_modules/express-graphql/index.js
+@@ -153,6 +153,10 @@ function graphqlHTTP(options) {
+                     result = { ...result, extensions };
+                 }
+             }
++            // If errors in execution, set the `Cache-Control: no-cache` header.
++            if (result.errors != null) {
++                response.setHeader('Cache-Control', 'no-cache');
++            }
+         }
+         catch (rawError) {
+             // If an error was caught, report the httpError status, or 500.
