@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@artsy/cohesion@^4.204.0":
+  version "4.204.0"
+  resolved "https://registry.yarnpkg.com/@artsy/cohesion/-/cohesion-4.204.0.tgz#8882f00ba0bce7b0d2ac6e9d7ee9cda7e6f6c99a"
+  integrity sha512-oR+ucWA93SUvERuksReQSYCjSiOpIqu/BHYtE8gmEfwV4JMJVVWhE/TeE3Xv2dv4OATwUat7Zg0VePxe6aJ02g==
+  dependencies:
+    core-js "3"
+
 "@artsy/express-reloadable@1.7.0":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@artsy/express-reloadable/-/express-reloadable-1.7.0.tgz#af8f93aea5ad8cf6ebb90d9be484c3e19269ffb6"
@@ -3654,6 +3661,11 @@ core-js@2.6.12:
   version "2.6.12"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
   integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
+
+core-js@3:
+  version "3.38.1"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.38.1.tgz#aa375b79a286a670388a1a363363d53677c0383e"
+  integrity sha512-OP35aUorbU3Zvlx7pjsFdu1rGNnD4pgw/CWoYzRY3t2EzoVT7shKHY1dlAy3f41cGIO7ZDPQimhGFTlEYkG/Hw==
 
 core-js@^2.4.1:
   version "2.6.11"

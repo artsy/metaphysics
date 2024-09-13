@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLList,
   GraphQLString,
 } from "graphql"
 import { GraphQLInt, GraphQLObjectType } from "graphql"
@@ -110,8 +111,14 @@ const LabelSignalEnumType = new GraphQLEnumType({
     CURATORS_PICK: { value: "CURATORS_PICK" },
   },
 })
+const AVAILABLE_LABEL_COUNT = LabelSignalEnumType.getValues().length
 
 export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
+  description: "Collector signals on artwork",
+  resolve: (artwork) => {
+    const canSendSignals = artwork.purchasable || artwork.sale_ids?.length > 0
+    return canSendSignals ? artwork : null
+  },
   type: new GraphQLObjectType({
     description: "Collector signals available to the artwork",
     name: "CollectorSignals",
@@ -162,7 +169,21 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       primaryLabel: {
         type: LabelSignalEnumType,
         description: "Primary label signal available to collector",
-        resolve: (artwork, {}, ctx) => getPrimaryLabel(artwork, ctx),
+        args: {
+          ignore: {
+            type: GraphQLList(LabelSignalEnumType),
+            description: "Signals to ignore",
+          },
+        },
+        resolve: (artwork, args, ctx) => {
+          const { ignore } = args
+          if (ignore && ignore.length > AVAILABLE_LABEL_COUNT) {
+            throw new Error(
+              `Ignore list length limited to number of available signals - max ${AVAILABLE_LABEL_COUNT}`
+            )
+          }
+          return getPrimaryLabel(artwork, args, ctx)
+        },
       },
       partnerOffer: {
         type: PartnerOfferToCollectorType,
@@ -191,38 +212,38 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       },
     },
   }),
-  description: "Collector signals on artwork",
-  resolve: (artwork) => {
-    const canSendSignals = artwork.purchasable || artwork.sale_ids?.length > 0
-    return canSendSignals ? artwork : null
-  },
 }
 
-type PrimaryLabel =
-  | "PARTNER_OFFER"
-  | "INCREASED_INTEREST"
-  | "CURATORS_PICK"
-  | null
+type PrimaryLabel = "PARTNER_OFFER" | "INCREASED_INTEREST" | "CURATORS_PICK"
 
 // Single function to resolve mutually-exclusive label signals
-const getPrimaryLabel = async (artwork, ctx): Promise<PrimaryLabel> => {
+const getPrimaryLabel = async (
+  artwork,
+  args,
+  ctx
+): Promise<PrimaryLabel | null> => {
   const partnerOfferPromise = getActivePartnerOffer(artwork, ctx)
   const curatorsPickPromise = getIsCuratorsPick(artwork, ctx)
+
+  const ignoreLabels = args.ignore
 
   const [activePartnerOffer, curatorsPick] = await Promise.all([
     partnerOfferPromise,
     curatorsPickPromise,
   ])
 
-  if (activePartnerOffer) {
+  if (!ignoreLabels?.includes("PARTNER_OFFER") && activePartnerOffer) {
     return "PARTNER_OFFER"
   }
 
-  if (curatorsPick) {
+  if (!ignoreLabels?.includes("CURATORS_PICK") && curatorsPick) {
     return "CURATORS_PICK"
   }
 
-  if (artwork.increased_interest_signal) {
+  if (
+    !ignoreLabels?.includes("INCREASED_INTEREST") &&
+    artwork.increased_interest_signal
+  ) {
     return "INCREASED_INTEREST"
   }
 

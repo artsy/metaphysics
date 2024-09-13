@@ -24,6 +24,7 @@ import { HomeViewComponentBehaviors } from "./HomeViewComponent"
 import { SalesResolver } from "./salesResolver"
 import { withHomeViewTimeout } from "./withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "./HomeViewSection"
+import { ContextModule } from "@artsy/cohesion"
 
 type MaybeResolved<T> =
   | T
@@ -31,6 +32,7 @@ type MaybeResolved<T> =
 
 export type HomeViewSection = {
   id: string
+  contextModule: ContextModule
   type: keyof typeof HomeViewSectionTypeNames
   component?: {
     title?: MaybeResolved<string>
@@ -50,6 +52,7 @@ export type HomeViewSection = {
 export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-similar-to-recently-viewed-artworks",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
+  contextModule: ContextModule.similarToWorksYouViewedRail,
   component: {
     title: "Similar to Works You’ve Viewed",
     behaviors: {
@@ -66,6 +69,7 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
 export const CuratorsPicksEmerging: HomeViewSection = {
   id: "home-view-section-curators-picks-emerging",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
+  contextModule: ContextModule.curatorsPicksEmergingRail,
   component: {
     type: "FeaturedCollection",
     title: async (context: ResolverContext) => {
@@ -107,6 +111,7 @@ export const CuratorsPicksEmerging: HomeViewSection = {
 export const RecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-recently-viewed-artworks",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
+  contextModule: ContextModule.recentlyViewedRail,
   component: {
     title: "Recently Viewed",
     behaviors: {
@@ -123,6 +128,7 @@ export const RecentlyViewedArtworks: HomeViewSection = {
 export const AuctionLotsForYou: HomeViewSection = {
   id: "home-view-section-auction-lots-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
+  contextModule: ContextModule.lotsForYouRail,
   component: {
     title: "Auction lots for you",
     behaviors: {
@@ -139,6 +145,7 @@ export const AuctionLotsForYou: HomeViewSection = {
 export const NewWorksForYou: HomeViewSection = {
   id: "home-view-section-new-works-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
+  contextModule: ContextModule.newWorksForYouRail,
   component: {
     title: "New works for you",
     behaviors: {
@@ -155,6 +162,7 @@ export const NewWorksForYou: HomeViewSection = {
 export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
   id: "home-view-section-new-works-from-galleries-you-follow",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
+  contextModule: ContextModule.newWorksByGalleriesYouFollowRail,
   component: {
     title: "New Works from Galleries You Follow",
     behaviors: {
@@ -171,6 +179,7 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
 export const RecommendedArtworks: HomeViewSection = {
   id: "home-view-section-recommended-artworks",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
+  contextModule: ContextModule.recommendedArtistsRail,
   component: {
     title: "Artwork Recommendations",
     behaviors: {
@@ -187,6 +196,7 @@ export const RecommendedArtworks: HomeViewSection = {
 export const ActiveBids: HomeViewSection = {
   id: "home-view-section-active-bids",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
+  contextModule: ContextModule.yourActiveBids,
   component: {
     title: "Your Active Bids",
   },
@@ -201,6 +211,7 @@ export const ActiveBids: HomeViewSection = {
 export const TrendingArtists: HomeViewSection = {
   id: "home-view-section-trending-artists",
   type: HomeViewSectionTypeNames.HomeViewSectionArtists,
+  contextModule: ContextModule.trendingArtistsRail,
   component: {
     title: "Trending Artists",
   },
@@ -211,6 +222,7 @@ export const TrendingArtists: HomeViewSection = {
 export const RecommendedArtists: HomeViewSection = {
   id: "home-view-section-recommended-artists",
   type: HomeViewSectionTypeNames.HomeViewSectionArtists,
+  contextModule: ContextModule.recommendedArtistsRail,
   component: {
     title: "Recommended Artists",
   },
@@ -225,6 +237,7 @@ export const RecommendedArtists: HomeViewSection = {
 export const HeroUnits: HomeViewSection = {
   id: "home-view-section-hero-units",
   type: HomeViewSectionTypeNames.HomeViewSectionHeroUnits,
+  contextModule: ContextModule.heroUnitsRail,
   requiresAuthentication: false,
   resolver: withHomeViewTimeout(HeroUnitsResolver),
 }
@@ -236,6 +249,7 @@ export const HeroUnits: HomeViewSection = {
 export const FeaturedFairs: HomeViewSection = {
   id: "home-view-section-featured-fairs",
   type: HomeViewSectionTypeNames.HomeViewSectionFairs,
+  contextModule: ContextModule.fairRail,
   component: {
     title: "Featured Fairs",
     description: "See Works in Top Art Fairs",
@@ -247,6 +261,7 @@ export const FeaturedFairs: HomeViewSection = {
 export const MarketingCollections: HomeViewSection = {
   id: "home-view-section-marketing-collections",
   type: HomeViewSectionTypeNames.HomeViewSectionMarketingCollections,
+  contextModule: ContextModule.collectionRail,
   component: {
     title: "Collections",
   },
@@ -261,6 +276,7 @@ export const MarketingCollections: HomeViewSection = {
 export const ShowsForYou: HomeViewSection = {
   id: "home-view-section-shows-for-you",
   type: HomeViewSectionTypeNames.HomeViewSectionShows,
+  contextModule: ContextModule.showsRail,
   component: {
     title: "Shows for You",
   },
@@ -274,6 +290,7 @@ export const ShowsForYou: HomeViewSection = {
 export const ViewingRooms: HomeViewSection = {
   id: "home-view-section-viewing-rooms",
   type: HomeViewSectionTypeNames.HomeViewSectionViewingRooms,
+  contextModule: ContextModule.featuredViewingRoomsRail,
   component: {
     title: "Viewing Rooms",
     behaviors: {
@@ -292,6 +309,7 @@ export const ViewingRooms: HomeViewSection = {
 export const LatestActivity: HomeViewSection = {
   id: "home-view-section-latest-activity",
   type: HomeViewSectionTypeNames.HomeViewSectionActivity,
+  contextModule: ContextModule.activityRail,
   component: {
     title: "Latest Activity",
     behaviors: {
@@ -312,6 +330,7 @@ export const LatestActivity: HomeViewSection = {
 export const LatestAuctionResults: HomeViewSection = {
   id: "home-view-section-latest-auction-results",
   type: HomeViewSectionTypeNames.HomeViewSectionAuctionResults,
+  contextModule: ContextModule.auctionResultsRail,
   component: {
     title: "Latest Auction Results",
     href: "/auction-results-for-artists-you-follow",
@@ -333,6 +352,8 @@ export const LatestAuctionResults: HomeViewSection = {
 export const News: HomeViewSection = {
   id: "home-view-section-news",
   type: HomeViewSectionTypeNames.HomeViewSectionArticles,
+  // TODO: This should be differentiated from the Artsy Editorial rail
+  contextModule: ContextModule.articleRail,
   component: {
     title: "News",
     href: "/news",
@@ -351,6 +372,7 @@ export const News: HomeViewSection = {
 export const LatestArticles: HomeViewSection = {
   id: "home-view-section-latest-articles",
   type: HomeViewSectionTypeNames.HomeViewSectionArticles,
+  contextModule: ContextModule.articleRail,
   component: {
     title: "Artsy Editorial",
     behaviors: {
@@ -370,6 +392,7 @@ export const LatestArticles: HomeViewSection = {
 export const Auctions: HomeViewSection = {
   id: "home-view-section-auctions",
   type: HomeViewSectionTypeNames.HomeViewSectionSales,
+  contextModule: ContextModule.auctionRail,
   component: {
     title: "Auctions",
     behaviors: {
@@ -390,7 +413,7 @@ export const Auctions: HomeViewSection = {
 export const GalleriesNearYou: HomeViewSection = {
   id: "home-view-section-galleries-near-you",
   type: HomeViewSectionTypeNames.HomeViewSectionGalleries,
-  requiresAuthentication: false,
+  contextModule: ContextModule.galleriesForYouBanner,
   component: {
     title: "Galleries Near You",
     description:
@@ -404,6 +427,7 @@ export const GalleriesNearYou: HomeViewSection = {
       },
     },
   },
+  requiresAuthentication: false,
 }
 
 const sections: HomeViewSection[] = [
