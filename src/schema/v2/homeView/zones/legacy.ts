@@ -12,7 +12,6 @@ import {
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   News,
-  RecentlyViewedArtworks,
   RecommendedArtists,
   ShowsForYou,
   TrendingArtists,
@@ -21,6 +20,7 @@ import {
   ActiveBids,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { RecentlyViewedArtworks } from "../sections/RecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
 import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
 

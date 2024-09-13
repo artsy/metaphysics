@@ -5,7 +5,6 @@ import {
   AuctionLotsForYouResolver,
   NewWorksForYouResolver,
   NewWorksFromGalleriesYouFollowResolver,
-  RecentlyViewedArtworksResolver,
   RecommendedArtworksResolver,
 } from "../resolvers/artworkResolvers"
 import {
@@ -28,6 +27,7 @@ import { HomeViewSectionTypeNames } from "../HomeViewSection"
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
+import { RecentlyViewedArtworks } from "./RecentlyViewedArtworks"
 
 type MaybeResolved<T> =
   | T
@@ -46,22 +46,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-export const RecentlyViewedArtworks: HomeViewSection = {
-  id: "home-view-section-recently-viewed-artworks",
-  type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  contextModule: ContextModule.recentlyViewedRail,
-  component: {
-    title: "Recently Viewed",
-    behaviors: {
-      viewAll: {
-        buttonText: "Browse All Artworks",
-      },
-    },
-  },
-  requiresAuthentication: true,
-  resolver: withHomeViewTimeout(RecentlyViewedArtworksResolver),
 }
 
 export const AuctionLotsForYou: HomeViewSection = {

@@ -2,7 +2,6 @@ import type { GraphQLFieldResolver } from "graphql"
 import type { ResolverContext } from "types/graphql"
 import { artworksForUser } from "../../artworksForUser"
 import { newWorksFromGalleriesYouFollow } from "../../me/newWorksFromGalleriesYouFollow"
-import { RecentlyViewedArtworks } from "../../me/recentlyViewedArtworks"
 import { connectionFromArray } from "graphql-relay"
 import { ArtworkRecommendations } from "../../me/artworkRecommendations"
 
@@ -36,18 +35,6 @@ export const NewWorksFromGalleriesYouFollowResolver: GraphQLFieldResolver<
   any,
   ResolverContext
 > = newWorksFromGalleriesYouFollow.resolve!
-
-export const RecentlyViewedArtworksResolver: GraphQLFieldResolver<
-  any,
-  ResolverContext
-> = async (_parent, args, context, info) => {
-  if (!context.meLoader)
-    throw new Error("You need to be signed in to perform this action")
-
-  const me = await context.meLoader()
-
-  return RecentlyViewedArtworks.resolve!(me, args, context, info)
-}
 
 export const AuctionLotsForYouResolver: GraphQLFieldResolver<
   any,
