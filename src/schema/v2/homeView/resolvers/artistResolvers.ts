@@ -1,8 +1,8 @@
 import type { GraphQLFieldResolver } from "graphql"
 import { connectionFromArray } from "graphql-relay"
 import type { ResolverContext } from "types/graphql"
-import { getCuratedArtists } from "../artists/curatedTrending"
-import { ArtistRecommendations } from "../me/artistRecommendations"
+import { getCuratedArtists } from "../../artists/curatedTrending"
+import { ArtistRecommendations } from "../../me/artistRecommendations"
 
 /*
  * Resolvers for home view artist sections

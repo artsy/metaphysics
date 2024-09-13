@@ -1,13 +1,15 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { HomePageFairsModuleType } from "../home/home_page_fairs_module"
+import { HomePageSalesModuleType } from "../../home/home_page_sales_module"
 import { connectionFromArray } from "graphql-relay"
 
-export const FeaturedFairsResolver: GraphQLFieldResolver<
-  any,
-  ResolverContext
-> = async (parent, args, context, info) => {
-  const { results: resolver } = HomePageFairsModuleType.getFields()
+export const SalesResolver: GraphQLFieldResolver<any, ResolverContext> = async (
+  parent,
+  args,
+  context,
+  info
+) => {
+  const { results: resolver } = HomePageSalesModuleType.getFields()
 
   if (!resolver?.resolve) {
     return []

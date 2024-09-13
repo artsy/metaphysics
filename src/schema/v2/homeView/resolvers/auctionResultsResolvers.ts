@@ -3,8 +3,8 @@ import { ResolverContext } from "types/graphql"
 import {
   AuctionResultSortEnum,
   AuctionResultsStateEnums,
-} from "../auction_result"
-import AuctionResultsByFollowedArtists from "../me/auctionResultsByFollowedArtists"
+} from "../../auction_result"
+import AuctionResultsByFollowedArtists from "../../me/auctionResultsByFollowedArtists"
 
 export const LatestAuctionResultsResolver: GraphQLFieldResolver<
   any,

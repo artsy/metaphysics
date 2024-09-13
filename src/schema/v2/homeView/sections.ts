@@ -9,19 +9,22 @@ import {
   RecentlyViewedArtworksResolver,
   RecommendedArtworksResolver,
   SimilarToRecentlyViewedArtworksResolver,
-} from "./artworkResolvers"
+} from "./resolvers/artworkResolvers"
 import {
   RecommendedArtistsResolver,
   SuggestedArtistsResolver,
-} from "./artistResolvers"
-import { HeroUnitsResolver } from "./heroUnitsResolver"
-import { FeaturedFairsResolver } from "./featuredFairsResolver"
-import { LatestArticlesResolvers, NewsResolver } from "./articlesResolvers"
-import { MarketingCollectionsResolver } from "./marketingCollectionsResolver"
-import { LatestActivityResolver } from "./activityResolvers"
-import { LatestAuctionResultsResolver } from "./auctionResultsResolvers"
+} from "./resolvers/artistResolvers"
+import { HeroUnitsResolver } from "./resolvers/heroUnitsResolvers"
+import { FeaturedFairsResolver } from "./resolvers/featuredFairsResolver"
+import {
+  LatestArticlesResolvers,
+  NewsResolver,
+} from "./resolvers/articlesResolvers"
+import { MarketingCollectionsResolver } from "./resolvers/marketingCollectionsResolvers"
+import { LatestActivityResolver } from "./resolvers/activityResolvers"
+import { LatestAuctionResultsResolver } from "./resolvers/auctionResultsResolvers"
 import { HomeViewComponentBehaviors } from "./HomeViewComponent"
-import { SalesResolver } from "./salesResolver"
+import { SalesResolver } from "./resolvers/salesResolvers"
 import { withHomeViewTimeout } from "./withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "./HomeViewSection"
 import { ContextModule } from "@artsy/cohesion"
