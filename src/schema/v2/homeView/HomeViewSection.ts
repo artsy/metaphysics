@@ -4,6 +4,7 @@ import {
   GraphQLInterfaceType,
   GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLString,
   GraphQLUnionType,
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
@@ -32,6 +33,10 @@ const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
     resolve: ({ id }) => {
       return toGlobalId("HomeViewSection", id)
     },
+  },
+  contextModule: {
+    type: new GraphQLNonNull(GraphQLString),
+    description: "An analytics context label for this section",
   },
   component: {
     type: HomeViewComponent,
