@@ -11,12 +11,12 @@ import {
   connectionWithCursorInfo,
   paginationResolver,
 } from "../fields/pagination"
-import { HomeViewSectionType } from "./HomeViewSection"
+import { HomeViewGenericSectionInterface } from "./HomeViewSection"
 import { getSectionsForUser } from "./getSectionsForUser"
 import { registry } from "./sections"
 
 const SectionsConnectionType = connectionWithCursorInfo({
-  nodeType: HomeViewSectionType,
+  nodeType: HomeViewGenericSectionInterface,
 }).connectionType
 
 const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
@@ -41,7 +41,7 @@ const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
 }
 
 export const Section: GraphQLFieldConfig<void, ResolverContext> = {
-  type: HomeViewSectionType,
+  type: HomeViewGenericSectionInterface,
   description: "A home view section",
   args: {
     id: {
