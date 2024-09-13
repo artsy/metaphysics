@@ -3,29 +3,8 @@ import type { ResolverContext } from "types/graphql"
 import { artworksForUser } from "../../artworksForUser"
 import { newWorksFromGalleriesYouFollow } from "../../me/newWorksFromGalleriesYouFollow"
 import { RecentlyViewedArtworks } from "../../me/recentlyViewedArtworks"
-import { filterArtworksConnectionWithParams } from "../../filterArtworksConnection"
 import { connectionFromArray } from "graphql-relay"
 import { ArtworkRecommendations } from "../../me/artworkRecommendations"
-
-export const CuratorsPicksEmergingArtworksResolver: GraphQLFieldResolver<
-  any,
-  ResolverContext
-> = async (parent, args, context, info) => {
-  const loader = filterArtworksConnectionWithParams((_args) => {
-    return {
-      marketing_collection_id: "curators-picks-emerging",
-      sort: "-decayed_merch",
-    }
-  })
-
-  if (!loader?.resolve) {
-    return
-  }
-
-  const result = await loader.resolve(parent, args, context, info)
-
-  return result
-}
 
 export const NewWorksForYouResolver: GraphQLFieldResolver<
   any,

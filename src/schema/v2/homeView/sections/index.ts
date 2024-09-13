@@ -3,7 +3,6 @@ import { ResolverContext } from "types/graphql"
 import {
   ActiveBidsResolver,
   AuctionLotsForYouResolver,
-  CuratorsPicksEmergingArtworksResolver,
   NewWorksForYouResolver,
   NewWorksFromGalleriesYouFollowResolver,
   RecentlyViewedArtworksResolver,
@@ -28,6 +27,7 @@ import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtworks"
+import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 
 type MaybeResolved<T> =
   | T
@@ -46,48 +46,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-export const CuratorsPicksEmerging: HomeViewSection = {
-  id: "home-view-section-curators-picks-emerging",
-  type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  contextModule: ContextModule.curatorsPicksEmergingRail,
-  component: {
-    type: "FeaturedCollection",
-    title: async (context: ResolverContext) => {
-      const { app_title } = await context.siteHeroUnitLoader(
-        "curators-picks-emerging-app"
-      )
-      return app_title
-    },
-    description: async (context: ResolverContext) => {
-      const { app_description } = await context.siteHeroUnitLoader(
-        "curators-picks-emerging-app"
-      )
-      return app_description
-    },
-    backgroundImageURL: async (context: ResolverContext, args) => {
-      const {
-        background_image_app_phone_url,
-        background_image_app_tablet_url,
-      } = await context.siteHeroUnitLoader("curators-picks-emerging-app")
-
-      if (args.version === "wide") {
-        return background_image_app_tablet_url
-      }
-
-      return background_image_app_phone_url
-    },
-    behaviors: {
-      viewAll: {
-        href: "/collection/curators-picks-emerging",
-        buttonText: "Browse All Artworks",
-        ownerType: OwnerType.collection,
-      },
-    },
-  },
-  requiresAuthentication: false,
-  resolver: withHomeViewTimeout(CuratorsPicksEmergingArtworksResolver),
 }
 
 export const RecentlyViewedArtworks: HomeViewSection = {

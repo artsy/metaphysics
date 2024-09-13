@@ -2,7 +2,6 @@ import { ResolverContext } from "types/graphql"
 import {
   Auctions,
   AuctionLotsForYou,
-  CuratorsPicksEmerging,
   FeaturedFairs,
   HeroUnits,
   HomeViewSection,
@@ -22,6 +21,7 @@ import {
   ActiveBids,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
 import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
 
 const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
