@@ -1547,7 +1547,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: SaleArtwork.type,
         args: { saleID: { type: GraphQLString, defaultValue: null } },
         resolve: (
-          { id, sale_ids },
+          { _id, sale_ids },
           { saleID: sale_id },
           { saleArtworkLoader }
         ) => {
@@ -1556,9 +1556,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           if (sale_ids && sale_ids.length > 0) {
             const loader_sale_id = sale_id || _.first(sale_ids)
             // don't error if the sale/artwork is unpublished
+
             return saleArtworkLoader({
               saleId: loader_sale_id,
-              saleArtworkId: id,
+              artworkId: _id,
             }).catch(() => null)
           }
           return null

@@ -85,6 +85,7 @@ describe("Artwork type", () => {
 
   beforeEach(() => {
     artwork = {
+      _id: "richard-prince-untitled-portrait-database-id",
       id: "richard-prince-untitled-portrait",
       artist: {
         _id: "artist-id",
@@ -1515,10 +1516,11 @@ describe("Artwork type", () => {
           }
         }
       `
-      context.saleArtworkLoader = ({ saleId, saleArtworkId }) =>
+      context.saleArtworkLoader = ({ saleId, artworkId }) =>
         saleId === artwork.sale_ids[0] &&
-        saleArtworkId === "richard-prince-untitled-portrait" &&
+        artworkId === "richard-prince-untitled-portrait-database-id" &&
         Promise.resolve({ sale_id: saleId })
+
       const {
         artwork: {
           saleArtwork: { saleID },
@@ -1537,9 +1539,9 @@ describe("Artwork type", () => {
           }
         }
       `
-      context.saleArtworkLoader = ({ saleId, saleArtworkId }) =>
+      context.saleArtworkLoader = ({ saleId, artworkId }) =>
         saleId === artwork.sale_ids[1] &&
-        saleArtworkId === "richard-prince-untitled-portrait" &&
+        artworkId === "richard-prince-untitled-portrait-database-id" &&
         Promise.resolve({ sale_id: saleId })
       const {
         artwork: {
@@ -4766,20 +4768,42 @@ describe("Artwork type", () => {
               }
             }
           `
-          it("prefers 'PARTNER_OFFER' if there is an active partner offer", async () => {
+          it("'PARTNER_OFFER' takes precedence over 'INCREASED_INTEREST' and 'CURATORS_PICK'", async () => {
             context.mePartnerOffersLoader.mockResolvedValue({
               body: [{ endAt: "2023-01-01", active: true }],
             })
+            context.marketingCollectionLoader.mockResolvedValue({
+              artwork_ids: [artwork._id],
+            })
             artwork.increased_interest_signal = true
+
             const data = await runQuery(query, context)
             expect(data.artwork.collectorSignals.primaryLabel).toEqual(
               "PARTNER_OFFER"
             )
           })
 
-          it("shows 'INCREASED_INTEREST' if there is no active partner offer but increased interest", async () => {
+          it("CURATORS_PICK takes precedence over INCREASED_INTEREST", async () => {
             context.mePartnerOffersLoader.mockResolvedValue({
               body: [],
+            })
+            context.marketingCollectionLoader.mockResolvedValue({
+              artwork_ids: [artwork._id],
+            })
+            artwork.increased_interest_signal = true
+
+            const data = await runQuery(query, context)
+            expect(data.artwork.collectorSignals.primaryLabel).toEqual(
+              "CURATORS_PICK"
+            )
+          })
+
+          it("shows 'INCREASED_INTEREST' if artwork.increased_interest_signal is present and no other labels are available", async () => {
+            context.mePartnerOffersLoader.mockResolvedValue({
+              body: [],
+            })
+            context.marketingCollectionLoader.mockResolvedValue({
+              artwork_ids: ["not-this-artwork"],
             })
             artwork.increased_interest_signal = true
             const data = await runQuery(query, context)
@@ -4787,27 +4811,13 @@ describe("Artwork type", () => {
               "INCREASED_INTEREST"
             )
           })
-
-          it("returns null if there is no active partner offer and no increased interest", async () => {
+          it("returns null if there is no active partner offer increased interest, or curators pick collection", async () => {
             context.mePartnerOffersLoader.mockResolvedValue({
               body: [],
             })
             artwork.increased_interest_signal = false
             const data = await runQuery(query, context)
             expect(data.artwork.collectorSignals.primaryLabel).toBeNull()
-          })
-          it("shows 'CURATORS_PICK' if there is no active partner offer, no increased interest, but the artwork is in a curators pick collection", async () => {
-            context.mePartnerOffersLoader.mockResolvedValue({
-              body: [],
-            })
-            artwork.increased_interest_signal = false
-            context.marketingCollectionLoader.mockResolvedValue({
-              artwork_ids: [artwork._id],
-            })
-            const data = await runQuery(query, context)
-            expect(data.artwork.collectorSignals.primaryLabel).toEqual(
-              "CURATORS_PICK"
-            )
           })
         })
       })
@@ -4953,7 +4963,7 @@ describe("Artwork type", () => {
           })
 
           expect(context.saleArtworkLoader).toHaveBeenCalledWith({
-            saleArtworkId: "richard-prince-untitled-portrait",
+            artworkId: "richard-prince-untitled-portrait-database-id",
             saleId: "sale-database-id",
           })
 
@@ -5024,7 +5034,7 @@ describe("Artwork type", () => {
           context.relatedShowsLoader.mockResolvedValue({ body: [] })
 
           const data = await runQuery(query, context)
-          expect(data.artwork.collectorSignals.runningShow).toBeNull
+          expect(data.artwork.collectorSignals.runningShow).toBeNull()
         })
       })
 

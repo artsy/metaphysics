@@ -37,7 +37,7 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
 
     const activeLotData = await getActiveAuctionValues(
       {
-        artworkId: artwork.id,
+        artworkId: artwork._id,
         saleIds: artwork.sale_ids,
       },
       ctx
@@ -217,11 +217,13 @@ const getPrimaryLabel = async (artwork, ctx): Promise<PrimaryLabel> => {
   if (activePartnerOffer) {
     return "PARTNER_OFFER"
   }
-  if (artwork.increased_interest_signal) {
-    return "INCREASED_INTEREST"
-  }
+
   if (curatorsPick) {
     return "CURATORS_PICK"
+  }
+
+  if (artwork.increased_interest_signal) {
+    return "INCREASED_INTEREST"
   }
 
   return null
@@ -288,7 +290,7 @@ const getActiveAuctionValues = async (
   const saleArtwork =
     (await ctx.saleArtworkLoader({
       saleId: activeAuction._id,
-      saleArtworkId: artworkId,
+      artworkId,
     })) ?? null
 
   return { saleArtwork, sale: activeAuction }
