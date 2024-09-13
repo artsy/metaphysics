@@ -10,7 +10,10 @@ const groupByParams = (
     if (!acc[saleId]) {
       acc[saleId] = []
     }
-    acc[saleId].push(artworkId)
+
+    if (!acc[saleId].includes(artworkId)) {
+      acc[saleId].push(artworkId)
+    }
     return acc
   }, {})
 
