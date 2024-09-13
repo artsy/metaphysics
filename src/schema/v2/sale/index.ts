@@ -559,7 +559,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: SaleArtworkType,
         args: { id: { type: new GraphQLNonNull(GraphQLString) } },
         resolve: ({ _id }, { id }, { saleArtworkLoader }) => {
-          return saleArtworkLoader({ saleId: _id, saleArtworkId: id })
+          return saleArtworkLoader({ saleId: _id, artworkId: id })
         },
       },
       symbol: { type: GraphQLString },
