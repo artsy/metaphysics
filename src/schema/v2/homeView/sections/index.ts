@@ -25,7 +25,7 @@ import { LatestActivityResolver } from "../resolvers/activityResolvers"
 import { LatestAuctionResultsResolver } from "../resolvers/auctionResultsResolvers"
 import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { SalesResolver } from "../resolvers/salesResolvers"
-import { withHomeViewTimeout } from "../withHomeViewTimeout"
+import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
 import { ContextModule } from "@artsy/cohesion"
 

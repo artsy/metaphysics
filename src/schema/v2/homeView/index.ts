@@ -12,7 +12,7 @@ import {
   paginationResolver,
 } from "../fields/pagination"
 import { HomeViewGenericSectionInterface } from "./HomeViewSection"
-import { getSectionsForUser } from "./sections/getSectionsForUser"
+import { getSectionsForUser } from "./helpers/getSectionsForUser"
 import { registry } from "./sections"
 
 const SectionsConnectionType = connectionWithCursorInfo({

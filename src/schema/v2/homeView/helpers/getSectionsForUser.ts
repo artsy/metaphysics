@@ -1,6 +1,6 @@
 import { ResolverContext } from "types/graphql"
 import { getLegacyZoneSections } from "../zones/legacy"
-import { HomeViewSection } from "."
+import { HomeViewSection } from "../sections/"
 
 export async function getSectionsForUser(
   context: ResolverContext
