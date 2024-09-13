@@ -8,7 +8,6 @@ import {
   NewWorksFromGalleriesYouFollowResolver,
   RecentlyViewedArtworksResolver,
   RecommendedArtworksResolver,
-  SimilarToRecentlyViewedArtworksResolver,
 } from "../resolvers/artworkResolvers"
 import {
   RecommendedArtistsResolver,
@@ -28,6 +27,7 @@ import { SalesResolver } from "../resolvers/salesResolvers"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
 import { ContextModule, OwnerType } from "@artsy/cohesion"
+import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtworks"
 
 type MaybeResolved<T> =
   | T
@@ -46,25 +46,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-/**
- * Artworks Section
- */
-
-export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
-  id: "home-view-section-similar-to-recently-viewed-artworks",
-  type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  contextModule: ContextModule.similarToWorksYouViewedRail,
-  component: {
-    title: "Similar to Works You’ve Viewed",
-    behaviors: {
-      viewAll: {
-        buttonText: "Browse All Artworks",
-      },
-    },
-  },
-  requiresAuthentication: true,
-  resolver: withHomeViewTimeout(SimilarToRecentlyViewedArtworksResolver),
 }
 
 export const CuratorsPicksEmerging: HomeViewSection = {

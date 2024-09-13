@@ -16,13 +16,13 @@ import {
   RecentlyViewedArtworks,
   RecommendedArtists,
   ShowsForYou,
-  SimilarToRecentlyViewedArtworks,
   TrendingArtists,
   ViewingRooms,
   RecommendedArtworks,
   ActiveBids,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
 
 const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
   LatestActivity,

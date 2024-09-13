@@ -3,35 +3,9 @@ import type { ResolverContext } from "types/graphql"
 import { artworksForUser } from "../../artworksForUser"
 import { newWorksFromGalleriesYouFollow } from "../../me/newWorksFromGalleriesYouFollow"
 import { RecentlyViewedArtworks } from "../../me/recentlyViewedArtworks"
-import { SimilarToRecentlyViewed } from "../../me/similarToRecentlyViewed"
 import { filterArtworksConnectionWithParams } from "../../filterArtworksConnection"
 import { connectionFromArray } from "graphql-relay"
 import { ArtworkRecommendations } from "../../me/artworkRecommendations"
-
-/*
- * Resolvers for home view artwork sections
- */
-
-export const SimilarToRecentlyViewedArtworksResolver: GraphQLFieldResolver<
-  any,
-  ResolverContext
-> = async (parent, args, context, info) => {
-  if (!context.meLoader) return []
-
-  const { recently_viewed_artwork_ids } = await context.meLoader()
-
-  if (recently_viewed_artwork_ids.length === 0) {
-    return []
-  }
-  const recentlyViewedIds = recently_viewed_artwork_ids.slice(0, 7)
-
-  return SimilarToRecentlyViewed.resolve!(
-    { ...parent, recently_viewed_artwork_ids: recentlyViewedIds },
-    args,
-    context,
-    info
-  )
-}
 
 export const CuratorsPicksEmergingArtworksResolver: GraphQLFieldResolver<
   any,
