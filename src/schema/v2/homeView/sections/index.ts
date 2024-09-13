@@ -9,24 +9,24 @@ import {
   RecentlyViewedArtworksResolver,
   RecommendedArtworksResolver,
   SimilarToRecentlyViewedArtworksResolver,
-} from "./resolvers/artworkResolvers"
+} from "../resolvers/artworkResolvers"
 import {
   RecommendedArtistsResolver,
   SuggestedArtistsResolver,
-} from "./resolvers/artistResolvers"
-import { HeroUnitsResolver } from "./resolvers/heroUnitsResolvers"
-import { FeaturedFairsResolver } from "./resolvers/featuredFairsResolver"
+} from "../resolvers/artistResolvers"
+import { HeroUnitsResolver } from "../resolvers/heroUnitsResolvers"
+import { FeaturedFairsResolver } from "../resolvers/featuredFairsResolver"
 import {
   LatestArticlesResolvers,
   NewsResolver,
-} from "./resolvers/articlesResolvers"
-import { MarketingCollectionsResolver } from "./resolvers/marketingCollectionsResolvers"
-import { LatestActivityResolver } from "./resolvers/activityResolvers"
-import { LatestAuctionResultsResolver } from "./resolvers/auctionResultsResolvers"
-import { HomeViewComponentBehaviors } from "./HomeViewComponent"
-import { SalesResolver } from "./resolvers/salesResolvers"
-import { withHomeViewTimeout } from "./withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "./HomeViewSection"
+} from "../resolvers/articlesResolvers"
+import { MarketingCollectionsResolver } from "../resolvers/marketingCollectionsResolvers"
+import { LatestActivityResolver } from "../resolvers/activityResolvers"
+import { LatestAuctionResultsResolver } from "../resolvers/auctionResultsResolvers"
+import { HomeViewComponentBehaviors } from "../HomeViewComponent"
+import { SalesResolver } from "../resolvers/salesResolvers"
+import { withHomeViewTimeout } from "../withHomeViewTimeout"
+import { HomeViewSectionTypeNames } from "../HomeViewSection"
 import { ContextModule } from "@artsy/cohesion"
 
 type MaybeResolved<T> =
