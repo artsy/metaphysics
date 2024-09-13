@@ -5,7 +5,6 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLUnionType,
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
@@ -60,10 +59,13 @@ export const HomeViewSectionTypeNames = {
   HomeViewSectionViewingRooms: "HomeViewSectionViewingRooms",
 } as const
 
-const HomeViewGenericSectionInterface = new GraphQLInterfaceType({
+export const HomeViewGenericSectionInterface = new GraphQLInterfaceType({
   name: HomeViewSectionTypeNames.HomeViewSectionGeneric,
   description: "Abstract interface shared by every kind of home view section",
   fields: standardSectionFields,
+  resolveType: (value) => {
+    return value.type
+  },
 })
 
 // concrete sections
@@ -265,24 +267,17 @@ export const HomeViewGalleriesSectionType = new GraphQLObjectType<
   },
 })
 
-// the Section union type of all concrete sections
-export const HomeViewSectionType = new GraphQLUnionType({
-  name: "HomeViewSection",
-  types: [
-    HomeViewActivitySectionType,
-    HomeViewArticlesSectionType,
-    HomeViewArtistsSectionType,
-    HomeViewArtworksSectionType,
-    HomeViewAuctionResultsSectionType,
-    HomeViewFairsSectionType,
-    HomeViewGalleriesSectionType,
-    HomeViewHeroUnitsSectionType,
-    HomeViewMarketingCollectionsSectionType,
-    HomeViewSalesSectionType,
-    HomeViewShowsSectionType,
-    HomeViewViewingRoomsSectionType,
-  ],
-  resolveType: (value) => {
-    return value.type
-  },
-})
+export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
+  HomeViewActivitySectionType,
+  HomeViewArticlesSectionType,
+  HomeViewArtistsSectionType,
+  HomeViewArtworksSectionType,
+  HomeViewAuctionResultsSectionType,
+  HomeViewFairsSectionType,
+  HomeViewGalleriesSectionType,
+  HomeViewHeroUnitsSectionType,
+  HomeViewMarketingCollectionsSectionType,
+  HomeViewSalesSectionType,
+  HomeViewShowsSectionType,
+  HomeViewViewingRoomsSectionType,
+]

@@ -234,6 +234,7 @@ import { updatePartnerShowMutation } from "./partner/updatePartnerShowMutation"
 import { VerifyUser } from "./verifyUser"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
 import config from "config"
+import { homeViewSectionTypes } from "./homeView/HomeViewSection"
 
 const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
@@ -516,6 +517,7 @@ export default new GraphQLSchema({
     ShowArtworkGridType,
     ArtworkOrEditionSetType,
     SearchCriteriaLabel,
+    ...homeViewSectionTypes,
   ],
   directives: specifiedDirectives.concat([
     PrincipalFieldDirective,
