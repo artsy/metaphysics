@@ -2,12 +2,12 @@ import { ResolverContext } from "types/graphql"
 import {
   Auctions,
   HomeViewSection,
-  LatestActivity,
   LatestArticles,
   LatestAuctionResults,
   News,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { LatestActivity } from "../sections/LatestActivity"
 import { ViewingRooms } from "../sections/ViewingRooms"
 import { ShowsForYou } from "../sections/ShowsForYou"
 import { MarketingCollections } from "../sections/MarketingCollections"

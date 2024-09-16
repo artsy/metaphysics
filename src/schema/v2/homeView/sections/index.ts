@@ -4,7 +4,6 @@ import {
   LatestArticlesResolvers,
   NewsResolver,
 } from "../resolvers/articlesResolvers"
-import { LatestActivityResolver } from "../resolvers/activityResolvers"
 import { LatestAuctionResultsResolver } from "../resolvers/auctionResultsResolvers"
 import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { SalesResolver } from "../resolvers/salesResolvers"
@@ -26,6 +25,7 @@ import { FeaturedFairs } from "./FeaturedFairs"
 import { MarketingCollections } from "./MarketingCollections"
 import { ShowsForYou } from "./ShowsForYou"
 import { ViewingRooms } from "./ViewingRooms"
+import { LatestActivity } from "./LatestActivity"
 
 type MaybeResolved<T> =
   | T
@@ -44,28 +44,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-/**
- * Activity Sections
- */
-
-export const LatestActivity: HomeViewSection = {
-  id: "home-view-section-latest-activity",
-  type: HomeViewSectionTypeNames.HomeViewSectionActivity,
-  contextModule: ContextModule.activityRail,
-  component: {
-    title: "Latest Activity",
-    behaviors: {
-      viewAll: {
-        buttonText: "See All",
-        href: "/notifications",
-        ownerType: OwnerType.activities,
-      },
-    },
-  },
-  requiresAuthentication: true,
-  resolver: withHomeViewTimeout(LatestActivityResolver),
 }
 
 /**
