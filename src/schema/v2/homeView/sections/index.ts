@@ -1,9 +1,6 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
-import {
-  RecommendedArtistsResolver,
-  SuggestedArtistsResolver,
-} from "../resolvers/artistResolvers"
+import { RecommendedArtistsResolver } from "../resolvers/artistResolvers"
 import { HeroUnitsResolver } from "../resolvers/heroUnitsResolvers"
 import { FeaturedFairsResolver } from "../resolvers/featuredFairsResolver"
 import {
@@ -26,6 +23,7 @@ import { NewWorksForYou } from "./NewWorksForYou"
 import { NewWorksFromGalleriesYouFollow } from "./NewWorksFromGalleriesYouFollow"
 import { RecommendedArtworks } from "./RecommendedArtworks"
 import { ActiveBids } from "./ActiveBids"
+import { TrendingArtists } from "./TrendingArtists"
 
 type MaybeResolved<T> =
   | T
@@ -44,21 +42,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-/**
- * Artists Section
- */
-
-export const TrendingArtists: HomeViewSection = {
-  id: "home-view-section-trending-artists",
-  type: HomeViewSectionTypeNames.HomeViewSectionArtists,
-  contextModule: ContextModule.trendingArtistsRail,
-  component: {
-    title: "Trending Artists",
-  },
-  requiresAuthentication: false,
-  resolver: withHomeViewTimeout(SuggestedArtistsResolver),
 }
 
 export const RecommendedArtists: HomeViewSection = {

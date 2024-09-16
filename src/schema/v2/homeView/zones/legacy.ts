@@ -11,10 +11,10 @@ import {
   News,
   RecommendedArtists,
   ShowsForYou,
-  TrendingArtists,
   ViewingRooms,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { TrendingArtists } from "../sections/TrendingArtists"
 import { ActiveBids } from "../sections/ActiveBids"
 import { RecommendedArtworks } from "../sections/RecommendedArtworks"
 import { NewWorksFromGalleriesYouFollow } from "../sections/NewWorksFromGalleriesYouFollow"
