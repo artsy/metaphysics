@@ -6,10 +6,10 @@ import {
   LatestArticles,
   LatestAuctionResults,
   News,
-  ShowsForYou,
   ViewingRooms,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { ShowsForYou } from "../sections/ShowsForYou"
 import { MarketingCollections } from "../sections/MarketingCollections"
 import { FeaturedFairs } from "../sections/FeaturedFairs"
 import { HeroUnits } from "../sections/HeroUnits"

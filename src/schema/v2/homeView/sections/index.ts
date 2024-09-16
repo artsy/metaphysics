@@ -24,6 +24,7 @@ import { RecommendedArtists } from "./RecommendedArtists"
 import { HeroUnits } from "./HeroUnits"
 import { FeaturedFairs } from "./FeaturedFairs"
 import { MarketingCollections } from "./MarketingCollections"
+import { ShowsForYou } from "./ShowsForYou"
 
 type MaybeResolved<T> =
   | T
@@ -42,20 +43,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-/**
- * Shows Sections
- */
-
-export const ShowsForYou: HomeViewSection = {
-  id: "home-view-section-shows-for-you",
-  type: HomeViewSectionTypeNames.HomeViewSectionShows,
-  contextModule: ContextModule.showsRail,
-  component: {
-    title: "Shows for You",
-  },
-  requiresAuthentication: true,
 }
 
 /**
