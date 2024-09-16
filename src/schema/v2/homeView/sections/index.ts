@@ -1,6 +1,5 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { HeroUnitsResolver } from "../resolvers/heroUnitsResolvers"
 import { FeaturedFairsResolver } from "../resolvers/featuredFairsResolver"
 import {
   LatestArticlesResolvers,
@@ -24,6 +23,7 @@ import { RecommendedArtworks } from "./RecommendedArtworks"
 import { ActiveBids } from "./ActiveBids"
 import { TrendingArtists } from "./TrendingArtists"
 import { RecommendedArtists } from "./RecommendedArtists"
+import { HeroUnits } from "./HeroUnits"
 
 type MaybeResolved<T> =
   | T
@@ -42,18 +42,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-/**
- * Hero Units Sections
- */
-
-export const HeroUnits: HomeViewSection = {
-  id: "home-view-section-hero-units",
-  type: HomeViewSectionTypeNames.HomeViewSectionHeroUnits,
-  contextModule: ContextModule.heroUnitsRail,
-  requiresAuthentication: false,
-  resolver: withHomeViewTimeout(HeroUnitsResolver),
 }
 
 /**

@@ -2,7 +2,6 @@ import { ResolverContext } from "types/graphql"
 import {
   Auctions,
   FeaturedFairs,
-  HeroUnits,
   HomeViewSection,
   LatestActivity,
   LatestArticles,
@@ -13,6 +12,7 @@ import {
   ViewingRooms,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { HeroUnits } from "../sections/HeroUnits"
 import { RecommendedArtists } from "../sections/RecommendedArtists"
 import { TrendingArtists } from "../sections/TrendingArtists"
 import { ActiveBids } from "../sections/ActiveBids"
