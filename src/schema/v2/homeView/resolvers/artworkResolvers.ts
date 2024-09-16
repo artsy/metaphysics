@@ -1,13 +1,7 @@
 import type { GraphQLFieldResolver } from "graphql"
 import type { ResolverContext } from "types/graphql"
-import { newWorksFromGalleriesYouFollow } from "../../me/newWorksFromGalleriesYouFollow"
 import { connectionFromArray } from "graphql-relay"
 import { ArtworkRecommendations } from "../../me/artworkRecommendations"
-
-export const NewWorksFromGalleriesYouFollowResolver: GraphQLFieldResolver<
-  any,
-  ResolverContext
-> = newWorksFromGalleriesYouFollow.resolve!
 
 export const ActiveBidsResolver: GraphQLFieldResolver<
   any,

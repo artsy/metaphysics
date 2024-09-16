@@ -2,7 +2,6 @@ import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
   ActiveBidsResolver,
-  NewWorksFromGalleriesYouFollowResolver,
   RecommendedArtworksResolver,
 } from "../resolvers/artworkResolvers"
 import {
@@ -28,6 +27,7 @@ import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { RecentlyViewedArtworks } from "./RecentlyViewedArtworks"
 import { AuctionLotsForYou } from "./AuctionLotsForYou"
 import { NewWorksForYou } from "./NewWorksForYou"
+import { NewWorksFromGalleriesYouFollow } from "./NewWorksFromGalleriesYouFollow"
 
 type MaybeResolved<T> =
   | T
@@ -46,22 +46,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
-  id: "home-view-section-new-works-from-galleries-you-follow",
-  type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  contextModule: ContextModule.newWorksByGalleriesYouFollowRail,
-  component: {
-    title: "New Works from Galleries You Follow",
-    behaviors: {
-      viewAll: {
-        buttonText: "Browse All Artworks",
-      },
-    },
-  },
-  requiresAuthentication: true,
-  resolver: withHomeViewTimeout(NewWorksFromGalleriesYouFollowResolver),
 }
 
 export const RecommendedArtworks: HomeViewSection = {
