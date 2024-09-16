@@ -1,6 +1,12 @@
 import { getOptionalFieldsDirectivePaths } from "directives/optionalField/getOptionalFieldsDirectivePaths"
 import { isEqual } from "lodash"
 import { flattenErrors, statusCodeForError } from "lib/graphqlErrorHandler"
+import { GraphQLDirective, DirectiveLocation } from "graphql"
+
+export const OptionalFieldDirective = new GraphQLDirective({
+  name: "optionalField",
+  locations: [DirectiveLocation.FIELD],
+})
 
 export const optionalFieldsDirectiveExtension = (documentAST, result) => {
   const paths = getOptionalFieldsDirectivePaths(documentAST)
