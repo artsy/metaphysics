@@ -4,7 +4,6 @@ import {
   LatestArticlesResolvers,
   NewsResolver,
 } from "../resolvers/articlesResolvers"
-import { MarketingCollectionsResolver } from "../resolvers/marketingCollectionsResolvers"
 import { LatestActivityResolver } from "../resolvers/activityResolvers"
 import { LatestAuctionResultsResolver } from "../resolvers/auctionResultsResolvers"
 import { HomeViewComponentBehaviors } from "../HomeViewComponent"
@@ -24,6 +23,7 @@ import { TrendingArtists } from "./TrendingArtists"
 import { RecommendedArtists } from "./RecommendedArtists"
 import { HeroUnits } from "./HeroUnits"
 import { FeaturedFairs } from "./FeaturedFairs"
+import { MarketingCollections } from "./MarketingCollections"
 
 type MaybeResolved<T> =
   | T
@@ -42,17 +42,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-export const MarketingCollections: HomeViewSection = {
-  id: "home-view-section-marketing-collections",
-  type: HomeViewSectionTypeNames.HomeViewSectionMarketingCollections,
-  contextModule: ContextModule.collectionRail,
-  component: {
-    title: "Collections",
-  },
-  requiresAuthentication: false,
-  resolver: withHomeViewTimeout(MarketingCollectionsResolver),
 }
 
 /**

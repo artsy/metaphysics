@@ -5,12 +5,12 @@ import {
   LatestActivity,
   LatestArticles,
   LatestAuctionResults,
-  MarketingCollections,
   News,
   ShowsForYou,
   ViewingRooms,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { MarketingCollections } from "../sections/MarketingCollections"
 import { FeaturedFairs } from "../sections/FeaturedFairs"
 import { HeroUnits } from "../sections/HeroUnits"
 import { RecommendedArtists } from "../sections/RecommendedArtists"
