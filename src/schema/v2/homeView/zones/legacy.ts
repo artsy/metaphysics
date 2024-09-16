@@ -6,9 +6,9 @@ import {
   LatestArticles,
   LatestAuctionResults,
   News,
-  ViewingRooms,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { ViewingRooms } from "../sections/ViewingRooms"
 import { ShowsForYou } from "../sections/ShowsForYou"
 import { MarketingCollections } from "../sections/MarketingCollections"
 import { FeaturedFairs } from "../sections/FeaturedFairs"

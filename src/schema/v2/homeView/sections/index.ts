@@ -25,6 +25,7 @@ import { HeroUnits } from "./HeroUnits"
 import { FeaturedFairs } from "./FeaturedFairs"
 import { MarketingCollections } from "./MarketingCollections"
 import { ShowsForYou } from "./ShowsForYou"
+import { ViewingRooms } from "./ViewingRooms"
 
 type MaybeResolved<T> =
   | T
@@ -43,26 +44,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-/**
- * Viewing Rooms Sections
- */
-
-export const ViewingRooms: HomeViewSection = {
-  id: "home-view-section-viewing-rooms",
-  type: HomeViewSectionTypeNames.HomeViewSectionViewingRooms,
-  contextModule: ContextModule.featuredViewingRoomsRail,
-  component: {
-    title: "Viewing Rooms",
-    behaviors: {
-      viewAll: {
-        href: "/viewing-rooms",
-        ownerType: OwnerType.viewingRooms,
-      },
-    },
-  },
-  requiresAuthentication: false,
 }
 
 /**
