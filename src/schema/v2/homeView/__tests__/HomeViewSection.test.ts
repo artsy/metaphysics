@@ -129,7 +129,7 @@ describe("HomeViewSection", () => {
                 "href": null,
               },
             },
-            "title": "New works for you",
+            "title": "New works for You",
           },
         }
       `)
@@ -173,7 +173,7 @@ describe("HomeViewSection", () => {
                 "href": "/auctions/lots-for-you-ending-soon",
               },
             },
-            "title": "Auction lots for you",
+            "title": "Auction lots for You",
           },
         }
       `)
@@ -959,7 +959,6 @@ describe("HomeViewSection", () => {
               ... on HomeViewSectionAuctionResults {
                 component {
                   title
-                  href
                   behaviors {
                     viewAll {
                       href
@@ -1048,10 +1047,9 @@ describe("HomeViewSection", () => {
               "component": Object {
                 "behaviors": Object {
                   "viewAll": Object {
-                    "href": "/auction-results-for-artists-you-follow",
+                    "href": null,
                   },
                 },
-                "href": "/auction-results-for-artists-you-follow",
                 "title": "Latest Auction Results",
               },
             },
@@ -1351,7 +1349,6 @@ describe("HomeViewSection", () => {
                   title
                   backgroundImageURL
                   description
-                  href
                   behaviors {
                     viewAll {
                       href
@@ -1377,11 +1374,10 @@ describe("HomeViewSection", () => {
                     "behaviors": Object {
                       "viewAll": Object {
                         "buttonText": "Explore",
-                        "href": "/galleries-for-you",
+                        "href": null,
                       },
                     },
                     "description": "Follow these local galleries for updates on artists you love.",
-                    "href": "/galleries-for-you",
                     "title": "Galleries Near You",
                   },
                 }

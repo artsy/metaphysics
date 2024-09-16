@@ -27,7 +27,7 @@ import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { SalesResolver } from "../resolvers/salesResolvers"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 
 type MaybeResolved<T> =
   | T
@@ -42,7 +42,6 @@ export type HomeViewSection = {
     type?: string
     description?: MaybeResolved<string>
     backgroundImageURL?: MaybeResolved<string>
-    href?: MaybeResolved<string>
     behaviors?: HomeViewComponentBehaviors
   }
   requiresAuthentication: boolean
@@ -60,7 +59,6 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
     title: "Similar to Works You’ve Viewed",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -103,9 +101,9 @@ export const CuratorsPicksEmerging: HomeViewSection = {
       viewAll: {
         href: "/collection/curators-picks-emerging",
         buttonText: "Browse All Artworks",
+        ownerType: OwnerType.collection,
       },
     },
-    href: "/collection/curators-picks-emerging",
   },
   requiresAuthentication: false,
   resolver: withHomeViewTimeout(CuratorsPicksEmergingArtworksResolver),
@@ -119,7 +117,6 @@ export const RecentlyViewedArtworks: HomeViewSection = {
     title: "Recently Viewed",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -133,11 +130,12 @@ export const AuctionLotsForYou: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.lotsForYouRail,
   component: {
-    title: "Auction lots for you",
+    title: "Auction lots for You",
     behaviors: {
       viewAll: {
         href: "/auctions/lots-for-you-ending-soon",
         buttonText: "Browse All Artworks",
+        ownerType: OwnerType.lotsForYou,
       },
     },
   },
@@ -150,10 +148,9 @@ export const NewWorksForYou: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.newWorksForYouRail,
   component: {
-    title: "New works for you",
+    title: "New works for You",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -170,7 +167,6 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
     title: "New Works from Galleries You Follow",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -187,7 +183,6 @@ export const RecommendedArtworks: HomeViewSection = {
     title: "Artwork Recommendations",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -299,6 +294,7 @@ export const ViewingRooms: HomeViewSection = {
     behaviors: {
       viewAll: {
         href: "/viewing-rooms",
+        ownerType: OwnerType.viewingRooms,
       },
     },
   },
@@ -317,8 +313,9 @@ export const LatestActivity: HomeViewSection = {
     title: "Latest Activity",
     behaviors: {
       viewAll: {
-        href: "/notifications",
         buttonText: "See All",
+        href: "/notifications",
+        ownerType: OwnerType.activities,
       },
     },
   },
@@ -336,10 +333,8 @@ export const LatestAuctionResults: HomeViewSection = {
   contextModule: ContextModule.auctionResultsRail,
   component: {
     title: "Latest Auction Results",
-    href: "/auction-results-for-artists-you-follow",
     behaviors: {
       viewAll: {
-        href: "/auction-results-for-artists-you-follow",
         buttonText: "Browse All Results",
       },
     },
@@ -359,12 +354,12 @@ export const News: HomeViewSection = {
   contextModule: ContextModule.articleRail,
   component: {
     title: "News",
-    href: "/news",
     type: "ArticlesCard",
     behaviors: {
       viewAll: {
-        href: "/news",
         buttonText: "More in News",
+        href: "/news",
+        ownerType: "marketNews" as OwnerType,
       },
     },
   },
@@ -381,6 +376,7 @@ export const LatestArticles: HomeViewSection = {
     behaviors: {
       viewAll: {
         href: "/articles",
+        ownerType: OwnerType.articles,
       },
     },
   },
@@ -400,8 +396,9 @@ export const Auctions: HomeViewSection = {
     title: "Auctions",
     behaviors: {
       viewAll: {
-        href: "/auctions",
         buttonText: "Browse All Auctions",
+        href: "/auctions",
+        ownerType: OwnerType.auctions,
       },
     },
   },
@@ -422,10 +419,8 @@ export const GalleriesNearYou: HomeViewSection = {
     description:
       "Follow these local galleries for updates on artists you love.",
     backgroundImageURL: "https://files.artsy.net/images/galleries_for_you.webp",
-    href: "/galleries-for-you",
     behaviors: {
       viewAll: {
-        href: "/galleries-for-you",
         buttonText: "Explore",
       },
     },

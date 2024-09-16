@@ -1,3 +1,4 @@
+import { OwnerType } from "@artsy/cohesion"
 import { GraphQLEnumType, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -5,6 +6,7 @@ export type HomeViewComponentBehaviors = {
   viewAll?: {
     href?: string | null
     buttonText?: string
+    ownerType?: OwnerType
   }
 }
 const HomeViewComponentBehaviors = new GraphQLObjectType<
@@ -17,13 +19,18 @@ const HomeViewComponentBehaviors = new GraphQLObjectType<
       type: new GraphQLObjectType({
         name: "HomeViewComponentBehaviorsViewAll",
         fields: {
+          buttonText: {
+            type: GraphQLString,
+            description: "Text for the CTA of the view all button",
+          },
           href: {
             type: GraphQLString,
             description: "href of the view all button",
           },
-          buttonText: {
+          ownerType: {
             type: GraphQLString,
-            description: "Text for the CTA of the view all button",
+            description:
+              "[Analytics] `owner type` analytics value, as defined in our schema (artsy/cohesion), for the requested destination",
           },
         },
       }),
@@ -130,6 +137,7 @@ export const HomeViewComponent = new GraphQLObjectType({
           return description
         }
       },
+      deprecationReason: "Use `behaviors.viewAll.href` instead",
     },
     behaviors: {
       type: HomeViewComponentBehaviors,
