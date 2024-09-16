@@ -1,8 +1,8 @@
 import type { GraphQLFieldResolver } from "graphql"
 import type { ResolverContext } from "types/graphql"
-import ArticlesConnection from "../articlesConnection"
-import ArticleSorts from "../sorts/article_sorts"
-import { ArticleLayoutEnum } from "../article/models"
+import ArticlesConnection from "../../articlesConnection"
+import ArticleSorts from "../../sorts/article_sorts"
+import { ArticleLayoutEnum } from "../../article/models"
 
 /*
  * Resolvers for home view articels sections

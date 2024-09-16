@@ -1,7 +1,7 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { connectionFromArray } from "graphql-relay"
-import { HomePageMarketingCollectionsModuleType } from "../home/home_page_marketing_collections_module"
+import { HomePageMarketingCollectionsModuleType } from "../../home/home_page_marketing_collections_module"
 
 export const MarketingCollectionsResolver: GraphQLFieldResolver<
   any,
