@@ -23,6 +23,7 @@ import { LatestAuctionResults } from "./LatestAuctionResults"
 import { News } from "./News"
 import { LatestArticles } from "./LatestArticles"
 import { Auctions } from "./Auctions"
+import { GalleriesNearYou } from "./GalleriesNearYou"
 
 type MaybeResolved<T> =
   | T
@@ -41,28 +42,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-/*
- * Galleries Sections
- */
-
-export const GalleriesNearYou: HomeViewSection = {
-  id: "home-view-section-galleries-near-you",
-  type: HomeViewSectionTypeNames.HomeViewSectionGalleries,
-  contextModule: ContextModule.galleriesForYouBanner,
-  component: {
-    title: "Galleries Near You",
-    description:
-      "Follow these local galleries for updates on artists you love.",
-    backgroundImageURL: "https://files.artsy.net/images/galleries_for_you.webp",
-    behaviors: {
-      viewAll: {
-        buttonText: "Explore",
-      },
-    },
-  },
-  requiresAuthentication: false,
 }
 
 const sections: HomeViewSection[] = [
