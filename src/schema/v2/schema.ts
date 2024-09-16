@@ -1,10 +1,4 @@
-import {
-  DirectiveLocation,
-  GraphQLDirective,
-  GraphQLObjectType,
-  GraphQLSchema,
-  specifiedDirectives,
-} from "graphql"
+import { GraphQLObjectType, GraphQLSchema, specifiedDirectives } from "graphql"
 import { ArtworkOrEditionSetType } from "schema/v2/artworkOrEditionSet"
 import { ResolverContext } from "types/graphql"
 // import Status from "./status"
@@ -234,16 +228,9 @@ import { updatePartnerShowMutation } from "./partner/updatePartnerShowMutation"
 import { VerifyUser } from "./verifyUser"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
 import { homeViewSectionTypes } from "./homeView/HomeViewSection"
-
-const PrincipalFieldDirective = new GraphQLDirective({
-  name: "principalField",
-  locations: [DirectiveLocation.FIELD],
-})
-
-const OptionalFieldDirective = new GraphQLDirective({
-  name: "optionalField",
-  locations: [DirectiveLocation.FIELD],
-})
+import { CacheableDirective } from "directives/cacheableDirective"
+import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsDirectiveExtension"
+import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -515,5 +502,6 @@ export default new GraphQLSchema({
   directives: specifiedDirectives.concat([
     PrincipalFieldDirective,
     OptionalFieldDirective,
+    CacheableDirective,
   ]),
 })
