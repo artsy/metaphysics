@@ -1,0 +1,9 @@
+main = './ciTestWorker.ts'
+compatibility_date = "2024-09-16"
+
+[env.staging]
+name = "ci-test-worker-staging"
+workers_dev = true # Deploy to the workers.dev subdomain
+
+[env.production]
+name = "ci-test-worker"
