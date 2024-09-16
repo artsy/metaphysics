@@ -1,7 +1,6 @@
 import type { GraphQLFieldResolver } from "graphql"
 import type { ResolverContext } from "types/graphql"
 import { connectionFromArray } from "graphql-relay"
-import { ArtworkRecommendations } from "../../me/artworkRecommendations"
 
 export const ActiveBidsResolver: GraphQLFieldResolver<
   any,
@@ -18,8 +17,3 @@ export const ActiveBidsResolver: GraphQLFieldResolver<
 
   return connectionFromArray(result, args)
 }
-
-export const RecommendedArtworksResolver: GraphQLFieldResolver<
-  any,
-  ResolverContext
-> = ArtworkRecommendations.resolve!

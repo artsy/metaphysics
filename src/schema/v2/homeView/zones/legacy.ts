@@ -13,10 +13,10 @@ import {
   ShowsForYou,
   TrendingArtists,
   ViewingRooms,
-  RecommendedArtworks,
   ActiveBids,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { RecommendedArtworks } from "../sections/RecommendedArtworks"
 import { NewWorksFromGalleriesYouFollow } from "../sections/NewWorksFromGalleriesYouFollow"
 import { NewWorksForYou } from "../sections/NewWorksForYou"
 import { AuctionLotsForYou } from "../sections/AuctionLotsForYou"
