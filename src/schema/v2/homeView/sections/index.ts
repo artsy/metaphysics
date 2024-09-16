@@ -60,7 +60,6 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
     title: "Similar to Works You’ve Viewed",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -119,7 +118,6 @@ export const RecentlyViewedArtworks: HomeViewSection = {
     title: "Recently Viewed",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -133,7 +131,7 @@ export const AuctionLotsForYou: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.lotsForYouRail,
   component: {
-    title: "Auction lots for you",
+    title: "Auction lots for You",
     behaviors: {
       viewAll: {
         href: "/auctions/lots-for-you-ending-soon",
@@ -150,10 +148,9 @@ export const NewWorksForYou: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.newWorksForYouRail,
   component: {
-    title: "New works for you",
+    title: "New works for You",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -170,7 +167,6 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
     title: "New Works from Galleries You Follow",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -187,7 +183,6 @@ export const RecommendedArtworks: HomeViewSection = {
     title: "Artwork Recommendations",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },
@@ -336,10 +331,8 @@ export const LatestAuctionResults: HomeViewSection = {
   contextModule: ContextModule.auctionResultsRail,
   component: {
     title: "Latest Auction Results",
-    href: "/auction-results-for-artists-you-follow",
     behaviors: {
       viewAll: {
-        href: "/auction-results-for-artists-you-follow",
         buttonText: "Browse All Results",
       },
     },
@@ -422,10 +415,8 @@ export const GalleriesNearYou: HomeViewSection = {
     description:
       "Follow these local galleries for updates on artists you love.",
     backgroundImageURL: "https://files.artsy.net/images/galleries_for_you.webp",
-    href: "/galleries-for-you",
     behaviors: {
       viewAll: {
-        href: "/galleries-for-you",
         buttonText: "Explore",
       },
     },
