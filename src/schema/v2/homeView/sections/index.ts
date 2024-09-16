@@ -1,6 +1,5 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { LatestArticlesResolvers } from "../resolvers/articlesResolvers"
 import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { SalesResolver } from "../resolvers/salesResolvers"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
@@ -24,6 +23,7 @@ import { ViewingRooms } from "./ViewingRooms"
 import { LatestActivity } from "./LatestActivity"
 import { LatestAuctionResults } from "./LatestAuctionResults"
 import { News } from "./News"
+import { LatestArticles } from "./LatestArticles"
 
 type MaybeResolved<T> =
   | T
@@ -42,23 +42,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-export const LatestArticles: HomeViewSection = {
-  id: "home-view-section-latest-articles",
-  type: HomeViewSectionTypeNames.HomeViewSectionArticles,
-  contextModule: ContextModule.articleRail,
-  component: {
-    title: "Artsy Editorial",
-    behaviors: {
-      viewAll: {
-        href: "/articles",
-        ownerType: OwnerType.articles,
-      },
-    },
-  },
-  requiresAuthentication: false,
-  resolver: withHomeViewTimeout(LatestArticlesResolvers),
 }
 
 /**
