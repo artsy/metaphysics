@@ -1,8 +1,6 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { HomeViewComponentBehaviors } from "../HomeViewComponent"
-import { SalesResolver } from "../resolvers/salesResolvers"
-import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtworks"
@@ -24,6 +22,7 @@ import { LatestActivity } from "./LatestActivity"
 import { LatestAuctionResults } from "./LatestAuctionResults"
 import { News } from "./News"
 import { LatestArticles } from "./LatestArticles"
+import { Auctions } from "./Auctions"
 
 type MaybeResolved<T> =
   | T
@@ -42,28 +41,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-/**
- * Auctions Sections
- */
-
-export const Auctions: HomeViewSection = {
-  id: "home-view-section-auctions",
-  type: HomeViewSectionTypeNames.HomeViewSectionSales,
-  contextModule: ContextModule.auctionRail,
-  component: {
-    title: "Auctions",
-    behaviors: {
-      viewAll: {
-        buttonText: "Browse All Auctions",
-        href: "/auctions",
-        ownerType: OwnerType.auctions,
-      },
-    },
-  },
-  requiresAuthentication: false,
-  resolver: withHomeViewTimeout(SalesResolver),
 }
 
 /*

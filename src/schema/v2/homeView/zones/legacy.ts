@@ -1,9 +1,6 @@
 import { ResolverContext } from "types/graphql"
-import {
-  Auctions,
-  HomeViewSection,
-  GalleriesNearYou,
-} from "schema/v2/homeView/sections"
+import { HomeViewSection, GalleriesNearYou } from "schema/v2/homeView/sections"
+import { Auctions } from "../sections/Auctions"
 import { LatestArticles } from "../sections/LatestArticles"
 import { News } from "../sections/News"
 import { LatestAuctionResults } from "../sections/LatestAuctionResults"
