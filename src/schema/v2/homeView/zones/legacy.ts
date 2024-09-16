@@ -8,7 +8,6 @@ import {
   LatestArticles,
   LatestAuctionResults,
   MarketingCollections,
-  NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
   News,
   RecommendedArtists,
@@ -19,6 +18,7 @@ import {
   ActiveBids,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { NewWorksForYou } from "../sections/NewWorksForYou"
 import { AuctionLotsForYou } from "../sections/AuctionLotsForYou"
 import { RecentlyViewedArtworks } from "../sections/RecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
