@@ -3,10 +3,10 @@ import {
   Auctions,
   HomeViewSection,
   LatestArticles,
-  LatestAuctionResults,
   News,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { LatestAuctionResults } from "../sections/LatestAuctionResults"
 import { LatestActivity } from "../sections/LatestActivity"
 import { ViewingRooms } from "../sections/ViewingRooms"
 import { ShowsForYou } from "../sections/ShowsForYou"

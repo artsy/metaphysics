@@ -4,7 +4,6 @@ import {
   LatestArticlesResolvers,
   NewsResolver,
 } from "../resolvers/articlesResolvers"
-import { LatestAuctionResultsResolver } from "../resolvers/auctionResultsResolvers"
 import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { SalesResolver } from "../resolvers/salesResolvers"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
@@ -26,6 +25,7 @@ import { MarketingCollections } from "./MarketingCollections"
 import { ShowsForYou } from "./ShowsForYou"
 import { ViewingRooms } from "./ViewingRooms"
 import { LatestActivity } from "./LatestActivity"
+import { LatestAuctionResults } from "./LatestAuctionResults"
 
 type MaybeResolved<T> =
   | T
@@ -44,26 +44,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-/**
- * Auction Results Sections
- */
-
-export const LatestAuctionResults: HomeViewSection = {
-  id: "home-view-section-latest-auction-results",
-  type: HomeViewSectionTypeNames.HomeViewSectionAuctionResults,
-  contextModule: ContextModule.auctionResultsRail,
-  component: {
-    title: "Latest Auction Results",
-    behaviors: {
-      viewAll: {
-        buttonText: "Browse All Results",
-      },
-    },
-  },
-  requiresAuthentication: true,
-  resolver: withHomeViewTimeout(LatestAuctionResultsResolver),
 }
 
 /**
