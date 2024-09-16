@@ -1,6 +1,5 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { FeaturedFairsResolver } from "../resolvers/featuredFairsResolver"
 import {
   LatestArticlesResolvers,
   NewsResolver,
@@ -24,6 +23,7 @@ import { ActiveBids } from "./ActiveBids"
 import { TrendingArtists } from "./TrendingArtists"
 import { RecommendedArtists } from "./RecommendedArtists"
 import { HeroUnits } from "./HeroUnits"
+import { FeaturedFairs } from "./FeaturedFairs"
 
 type MaybeResolved<T> =
   | T
@@ -42,22 +42,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-/**
- * Fairs Sections
- */
-
-export const FeaturedFairs: HomeViewSection = {
-  id: "home-view-section-featured-fairs",
-  type: HomeViewSectionTypeNames.HomeViewSectionFairs,
-  contextModule: ContextModule.fairRail,
-  component: {
-    title: "Featured Fairs",
-    description: "See Works in Top Art Fairs",
-  },
-  requiresAuthentication: false,
-  resolver: withHomeViewTimeout(FeaturedFairsResolver),
 }
 
 export const MarketingCollections: HomeViewSection = {
