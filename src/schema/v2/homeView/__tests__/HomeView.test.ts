@@ -146,7 +146,7 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "HomeViewSectionArtworks",
                   "component": Object {
-                    "title": "New works for you",
+                    "title": "New works for You",
                   },
                 },
               },
@@ -168,7 +168,7 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "HomeViewSectionArtworks",
                   "component": Object {
-                    "title": "Auction lots for you",
+                    "title": "Auction lots for You",
                   },
                 },
               },
@@ -338,7 +338,7 @@ describe("homeView", () => {
                       Object {
                         "__typename": "HomeViewSectionArtworks",
                         "component": Object {
-                          "title": "Auction lots for you",
+                          "title": "Auction lots for You",
                         },
                       }
                   `)
