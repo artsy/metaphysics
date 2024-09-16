@@ -13937,7 +13937,7 @@ input MyCollectionCreateArtworkInput {
 
   # The given location of the user as structured data
   collectorLocation: EditableLocation
-  condition: ArtworkConditionEnumType
+  condition: ArtworkConditionEnumType!
   conditionDescription: String
   confidentialNotes: String
   costCurrencyCode: String
@@ -14039,7 +14039,7 @@ input MyCollectionUpdateArtworkInput {
 
   # The given location of the user as structured data
   collectorLocation: EditableLocation
-  condition: ArtworkConditionEnumType
+  condition: ArtworkConditionEnumType!
   conditionDescription: String
   confidentialNotes: String
   costCurrencyCode: String
