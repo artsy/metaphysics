@@ -3,7 +3,7 @@ import DataLoader from "dataloader"
 // Take the list of params that the loader is called with, tuples of `artworkId` and `saleId`.
 // Group them by saleId, and return a dictionary where the value for each record
 // is the list of artwork ids for that sale.
-const groupByParams = (
+export const groupByParams = (
   params: { artworkId: string; saleId: string }[]
 ): Record<string, string[]> => {
   const groupedParams = params.reduce((acc, { saleId, artworkId }) => {
@@ -34,9 +34,15 @@ export const createBatchSaleArtworkLoader = (saleArtworksLoader) => {
           return saleArtworksLoader(saleId, {
             artwork_ids,
             size: artwork_ids.length,
-          }).then((saleData) => {
-            return { saleId, saleData }
           })
+            .then((saleData) => {
+              return { saleId, saleData }
+            })
+            .catch(() => {
+              // Intentional. If any individual call fails, we don't want to
+              // reject the whole batch in `Promise.all`.
+              return {}
+            })
         }
       )
 

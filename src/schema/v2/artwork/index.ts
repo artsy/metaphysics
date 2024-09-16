@@ -100,8 +100,6 @@ import { ArtworkConditionType } from "./artworkCondition"
 import { CollectorSignals } from "./collectorSignals"
 import { ArtistSeriesConnectionType } from "../artistSeries"
 
-const useUnstitchedArtistSeries = !!config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA
-
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
 }
@@ -318,36 +316,34 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: (artwork) => artistNames(artwork),
       },
-      ...(useUnstitchedArtistSeries && {
-        artistSeriesConnection: {
-          type: ArtistSeriesConnectionType,
-          args: pageable(),
-          resolve: async ({ _id }, args, { artistSeriesListLoader }) => {
-            const { page, size, offset } = convertConnectionArgsToGravityArgs(
-              args
-            )
+      artistSeriesConnection: {
+        type: ArtistSeriesConnectionType,
+        args: pageable(),
+        resolve: async ({ _id }, args, { artistSeriesListLoader }) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
 
-            const { body, headers } = await artistSeriesListLoader({
-              artwork_id: _id,
-              page,
-              size,
-              exclude_ids: args.excludeIDs,
-              total_count: true,
-            })
+          const { body, headers } = await artistSeriesListLoader({
+            artwork_id: _id,
+            page,
+            size,
+            exclude_ids: args.excludeIDs,
+            total_count: true,
+          })
 
-            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+          const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-            return paginationResolver({
-              args,
-              body,
-              offset,
-              page,
-              size,
-              totalCount,
-            })
-          },
+          return paginationResolver({
+            args,
+            body,
+            offset,
+            page,
+            size,
+            totalCount,
+          })
         },
-      }),
+      },
       articles: {
         type: new GraphQLList(Article.type),
         args: { size: { type: GraphQLInt } },

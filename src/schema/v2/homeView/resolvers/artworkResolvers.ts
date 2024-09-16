@@ -1,12 +1,12 @@
 import type { GraphQLFieldResolver } from "graphql"
 import type { ResolverContext } from "types/graphql"
-import { artworksForUser } from "../artworksForUser"
-import { newWorksFromGalleriesYouFollow } from "../me/newWorksFromGalleriesYouFollow"
-import { RecentlyViewedArtworks } from "../me/recentlyViewedArtworks"
-import { SimilarToRecentlyViewed } from "../me/similarToRecentlyViewed"
-import { filterArtworksConnectionWithParams } from "../filterArtworksConnection"
+import { artworksForUser } from "../../artworksForUser"
+import { newWorksFromGalleriesYouFollow } from "../../me/newWorksFromGalleriesYouFollow"
+import { RecentlyViewedArtworks } from "../../me/recentlyViewedArtworks"
+import { SimilarToRecentlyViewed } from "../../me/similarToRecentlyViewed"
+import { filterArtworksConnectionWithParams } from "../../filterArtworksConnection"
 import { connectionFromArray } from "graphql-relay"
-import { ArtworkRecommendations } from "../me/artworkRecommendations"
+import { ArtworkRecommendations } from "../../me/artworkRecommendations"
 
 /*
  * Resolvers for home view artwork sections

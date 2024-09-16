@@ -1,6 +1,6 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { heroUnitsConnection } from "../HeroUnit/heroUnitsConnection"
+import { heroUnitsConnection } from "../../HeroUnit/heroUnitsConnection"
 
 export const HeroUnitsResolver: GraphQLFieldResolver<
   any,

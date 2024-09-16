@@ -1,15 +1,10 @@
 import gql from "lib/gql"
-import { GraphQLSchema, GraphQLFieldConfigArgumentMap } from "graphql"
+import { GraphQLSchema } from "graphql"
 import moment from "moment"
-import { defineCustomLocale, isExisty } from "lib/helpers"
-import { pageableFilterArtworksArgsWithInput } from "schema/v2/filterArtworksConnection"
-import { normalizeImageData, getDefault } from "schema/v2/image"
-import { formatMarkdownValue } from "schema/v2/fields/markdown"
+import { defineCustomLocale } from "lib/helpers"
 import { toGlobalId } from "graphql-relay"
-import { printType } from "lib/stitching/lib/printType"
 import { dateRange } from "lib/date"
 import { GraphQLSchemaWithTransforms } from "graphql-tools"
-import config from "config"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -50,15 +45,6 @@ defineCustomLocale(LocaleEnViewingRoomRelativeLong, {
   },
 })
 
-function argsToSDL(args: GraphQLFieldConfigArgumentMap) {
-  const result: string[] = []
-  Object.keys(args).forEach((argName) => {
-    result.push(`${argName}: ${printType(args[argName].type)}`)
-  })
-  return result
-}
-const useUnstitchedArtistSeries = !!config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA
-
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
   gravitySchema: GraphQLSchemaWithTransforms
@@ -66,45 +52,6 @@ export const gravityStitchingEnvironment = (
   return {
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
-      ${!useUnstitchedArtistSeries
-        ? `extend type Artist {
-              artistSeriesConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-          ): ArtistSeriesConnection
-            }`
-        : ""}
-
-      ${!useUnstitchedArtistSeries
-        ? `extend type Artwork { artistSeriesConnection(
-          first: Int
-          last: Int
-          after: String
-          before: String
-          ): ArtistSeriesConnection }`
-        : ""}
-
-      ${!useUnstitchedArtistSeries
-        ? `
-        extend type ArtistSeries {
-        artists(page: Int, size: Int): [Artist]
-        image: Image
-        artworksConnection(first: Int, after: String): ArtworkConnection
-        filterArtworksConnection(${argsToSDL(
-          pageableFilterArtworksArgsWithInput
-        ).join("\n")}): FilterArtworksConnection
-
-        descriptionFormatted(format: Format): String
-        """
-        A formatted string that shows the number of available works or
-        (as a fallback) the number of works in general.
-        """
-        artworksCountMessage: String
-      }`
-        : ""}
-
       extend type Me {
         secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
         addressConnection(
@@ -190,224 +137,6 @@ export const gravityStitchingEnvironment = (
       }
     `,
     resolvers: {
-      Artist: {
-        ...(!useUnstitchedArtistSeries && {
-          artistSeriesConnection: {
-            fragment: gql`
-            ... on Artist {
-              internalID
-            }
-          `,
-            resolve: ({ internalID: artistID }, args, context, info) => {
-              return info.mergeInfo.delegateToSchema({
-                schema: gravitySchema,
-                operation: "query",
-                fieldName: "artistSeriesConnection",
-                args: {
-                  artistID,
-                  ...args,
-                  // Exclude the current artist series so that lists of
-                  // artist series by the artist don't include the current series
-                  // if there is one.
-                  ...(!!context.currentArtistSeriesInternalID && {
-                    excludeIDs: [context.currentArtistSeriesInternalID],
-                  }),
-                },
-                context,
-                info,
-              })
-            },
-          },
-        }),
-      },
-      Artwork: {
-        ...(!useUnstitchedArtistSeries && {
-          artistSeriesConnection: {
-            fragment: gql`
-            ... on Artwork {
-              internalID
-            }
-            `,
-            resolve: ({ internalID: artworkID }, args, context, info) => {
-              return info.mergeInfo.delegateToSchema({
-                schema: gravitySchema,
-                operation: "query",
-                fieldName: "artistSeriesConnection",
-                args: {
-                  artworkID,
-                  ...args,
-                },
-                context: {
-                  ...context,
-                  currentArtworkID: artworkID,
-                },
-                info,
-              })
-            },
-          },
-        }),
-      },
-      ...(!useUnstitchedArtistSeries && {
-        ArtistSeries: {
-          artworksConnection: {
-            fragment: gql`
-          ... on ArtistSeries {
-            artworkIDs
-          }
-          `,
-            resolve: async ({ artworkIDs: ids }, _args, context, info) => {
-              // Exclude the current artwork in a series so that lists of
-              // other artworks in the same series don't show the artwork.
-              const filteredIDs = context.currentArtworkID
-                ? ids.filter((id) => id !== context.currentArtworkID)
-                : ids
-              return await info.mergeInfo.delegateToSchema({
-                args: {
-                  ids: filteredIDs,
-                  ..._args,
-                },
-                schema: localSchema,
-                operation: "query",
-                fieldName: "artworks",
-                context,
-                info,
-              })
-            },
-          },
-          descriptionFormatted: {
-            fragment: gql`
-            ... on ArtistSeries {
-              description
-            }
-          `,
-            resolve: async ({ description }, { format }) => {
-              if (!isExisty(description) || typeof description !== "string")
-                return null
-
-              return formatMarkdownValue(description, format)
-            },
-          },
-          artworksCountMessage: {
-            fragment: gql`
-            ... on ArtistSeries {
-              forSaleArtworksCount
-              artworksCount
-            }
-          `,
-            resolve: async ({ forSaleArtworksCount, artworksCount }) => {
-              let artworksCountMessage
-
-              if (forSaleArtworksCount) {
-                artworksCountMessage = `${forSaleArtworksCount} available`
-              } else {
-                artworksCountMessage = `${artworksCount} ${
-                  artworksCount === 1 ? "work" : "works"
-                }`
-              }
-
-              return artworksCountMessage
-            },
-          },
-          image: {
-            fragment: gql`
-          ... on ArtistSeries {
-            image_url: imageURL
-            original_height: imageHeight
-            original_width: imageWidth
-            representativeArtworkID
-          }
-          `,
-            resolve: async (
-              {
-                representativeArtworkID,
-                image_url,
-                original_height,
-                original_width,
-              },
-              args,
-              context,
-              info
-            ) => {
-              let imageData: unknown
-              if (image_url) {
-                imageData = {
-                  image_url,
-                  original_width,
-                  original_height,
-                }
-              } else if (representativeArtworkID) {
-                const { artworkLoader } = context
-                const { images } = await artworkLoader(representativeArtworkID)
-                imageData = normalizeImageData(getDefault(images))
-              }
-
-              return info.mergeInfo.delegateToSchema({
-                args,
-                schema: localSchema,
-                operation: "query",
-                fieldName: "_do_not_use_image",
-                context: {
-                  ...context,
-                  imageData,
-                },
-                info,
-              })
-            },
-          },
-          artists: {
-            fragment: gql`
-          ... on ArtistSeries {
-            artistIDs
-            internalID
-          }
-        `,
-            resolve: ({ artistIDs: ids, internalID }, args, context, info) => {
-              if (ids.length === 0) {
-                return []
-              }
-
-              return info.mergeInfo.delegateToSchema({
-                schema: localSchema,
-                operation: "query",
-                fieldName: "artists",
-                args: {
-                  ids,
-                  ...args,
-                },
-                context: {
-                  ...context,
-                  currentArtistSeriesInternalID: internalID,
-                },
-                info,
-              })
-            },
-          },
-
-          filterArtworksConnection: {
-            fragment: `
-          ... on ArtistSeries {
-            internalID
-          }
-        `,
-            resolve: ({ internalID: artistSeriesID }, args, context, info) => {
-              return info.mergeInfo.delegateToSchema({
-                schema: localSchema,
-                operation: "query",
-                fieldName: "artworksConnection",
-                args: {
-                  artistSeriesID,
-                  ...(!!context.currentArtworkID && {
-                    excludeArtworkIDs: [context.currentArtworkID],
-                  }),
-                  ...args,
-                },
-                context,
-                info,
-              })
-            },
-          },
-        },
-      }),
       Me: {
         secondFactors: {
           resolve: (_parent, args, context, info) => {

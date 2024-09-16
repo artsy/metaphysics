@@ -1,13 +1,6 @@
-import config from "config"
 import { runQuery } from "schema/v2/test/utils"
 
 describe("ArtistSeries type", () => {
-  beforeEach(() => {
-    config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = true
-  })
-  afterEach(() => {
-    config.USE_UNSTITCHED_ARTIST_SERIES_SCHEMA = false
-  })
   it("fetches an artist series by ID", async () => {
     const query = `
       {
