@@ -13,9 +13,9 @@ import {
   ShowsForYou,
   TrendingArtists,
   ViewingRooms,
-  ActiveBids,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { ActiveBids } from "../sections/ActiveBids"
 import { RecommendedArtworks } from "../sections/RecommendedArtworks"
 import { NewWorksFromGalleriesYouFollow } from "../sections/NewWorksFromGalleriesYouFollow"
 import { NewWorksForYou } from "../sections/NewWorksForYou"

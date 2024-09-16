@@ -1,6 +1,5 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { ActiveBidsResolver } from "../resolvers/artworkResolvers"
 import {
   RecommendedArtistsResolver,
   SuggestedArtistsResolver,
@@ -26,6 +25,7 @@ import { AuctionLotsForYou } from "./AuctionLotsForYou"
 import { NewWorksForYou } from "./NewWorksForYou"
 import { NewWorksFromGalleriesYouFollow } from "./NewWorksFromGalleriesYouFollow"
 import { RecommendedArtworks } from "./RecommendedArtworks"
+import { ActiveBids } from "./ActiveBids"
 
 type MaybeResolved<T> =
   | T
@@ -44,17 +44,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-export const ActiveBids: HomeViewSection = {
-  id: "home-view-section-active-bids",
-  type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  contextModule: ContextModule.yourActiveBids,
-  component: {
-    title: "Your Active Bids",
-  },
-  requiresAuthentication: true,
-  resolver: withHomeViewTimeout(ActiveBidsResolver),
 }
 
 /**
