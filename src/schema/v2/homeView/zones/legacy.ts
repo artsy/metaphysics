@@ -9,11 +9,11 @@ import {
   LatestAuctionResults,
   MarketingCollections,
   News,
-  RecommendedArtists,
   ShowsForYou,
   ViewingRooms,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { RecommendedArtists } from "../sections/RecommendedArtists"
 import { TrendingArtists } from "../sections/TrendingArtists"
 import { ActiveBids } from "../sections/ActiveBids"
 import { RecommendedArtworks } from "../sections/RecommendedArtworks"
