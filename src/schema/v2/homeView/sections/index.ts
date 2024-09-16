@@ -42,7 +42,6 @@ export type HomeViewSection = {
     type?: string
     description?: MaybeResolved<string>
     backgroundImageURL?: MaybeResolved<string>
-    href?: MaybeResolved<string>
     behaviors?: HomeViewComponentBehaviors
   }
   requiresAuthentication: boolean
@@ -105,7 +104,6 @@ export const CuratorsPicksEmerging: HomeViewSection = {
         ownerType: OwnerType.collection,
       },
     },
-    href: "/collection/curators-picks-emerging",
   },
   requiresAuthentication: false,
   resolver: withHomeViewTimeout(CuratorsPicksEmergingArtworksResolver),
@@ -356,7 +354,6 @@ export const News: HomeViewSection = {
   contextModule: ContextModule.articleRail,
   component: {
     title: "News",
-    href: "/news",
     type: "ArticlesCard",
     behaviors: {
       viewAll: {

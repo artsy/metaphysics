@@ -137,6 +137,7 @@ export const HomeViewComponent = new GraphQLObjectType({
           return description
         }
       },
+      deprecationReason: "Use `behaviors.viewAll.href` instead",
     },
     behaviors: {
       type: HomeViewComponentBehaviors,

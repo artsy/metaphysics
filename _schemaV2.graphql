@@ -10912,7 +10912,7 @@ type HomeViewComponent {
   description: String
 
   # A screen to navigate to when this component is clicked
-  href: String
+  href: String @deprecated(reason: "Use `behaviors.viewAll.href` instead")
 
   # A display title for this section
   title: String
