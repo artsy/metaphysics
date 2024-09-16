@@ -1,9 +1,6 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
-import {
-  LatestArticlesResolvers,
-  NewsResolver,
-} from "../resolvers/articlesResolvers"
+import { LatestArticlesResolvers } from "../resolvers/articlesResolvers"
 import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { SalesResolver } from "../resolvers/salesResolvers"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
@@ -26,6 +23,7 @@ import { ShowsForYou } from "./ShowsForYou"
 import { ViewingRooms } from "./ViewingRooms"
 import { LatestActivity } from "./LatestActivity"
 import { LatestAuctionResults } from "./LatestAuctionResults"
+import { News } from "./News"
 
 type MaybeResolved<T> =
   | T
@@ -44,30 +42,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-/**
- * Articles Sections
- */
-
-export const News: HomeViewSection = {
-  id: "home-view-section-news",
-  type: HomeViewSectionTypeNames.HomeViewSectionArticles,
-  // TODO: This should be differentiated from the Artsy Editorial rail
-  contextModule: ContextModule.articleRail,
-  component: {
-    title: "News",
-    type: "ArticlesCard",
-    behaviors: {
-      viewAll: {
-        buttonText: "More in News",
-        href: "/news",
-        ownerType: "marketNews" as OwnerType,
-      },
-    },
-  },
-  requiresAuthentication: false,
-  resolver: withHomeViewTimeout(NewsResolver),
 }
 
 export const LatestArticles: HomeViewSection = {

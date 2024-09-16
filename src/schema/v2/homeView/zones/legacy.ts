@@ -3,9 +3,9 @@ import {
   Auctions,
   HomeViewSection,
   LatestArticles,
-  News,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { News } from "../sections/News"
 import { LatestAuctionResults } from "../sections/LatestAuctionResults"
 import { LatestActivity } from "../sections/LatestActivity"
 import { ViewingRooms } from "../sections/ViewingRooms"
