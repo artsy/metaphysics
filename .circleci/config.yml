@@ -119,11 +119,25 @@ workflows:
             - push-staging-image
             - deploy-staging
 
+      - node/run:
+          name: deploy-cloudflare-workers-staging
+          context: cloudflare
+          <<: *only_main
+          pkg-manager: yarn
+          yarn-run: deploy-cloudflare-workers:staging
+
       # release
       - horizon/block:
           <<: *only_release
           context: horizon
           project_id: 18
+
+      - node/run:
+          name: deploy-cloudflare-workers
+          context: cloudflare
+          <<: *only_release
+          pkg-manager: yarn
+          yarn-run: deploy-cloudflare-workers
 
       - hokusai/deploy-production:
           <<: *only_release
