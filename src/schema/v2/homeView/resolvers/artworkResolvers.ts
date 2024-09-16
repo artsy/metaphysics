@@ -36,31 +36,6 @@ export const NewWorksFromGalleriesYouFollowResolver: GraphQLFieldResolver<
   ResolverContext
 > = newWorksFromGalleriesYouFollow.resolve!
 
-export const AuctionLotsForYouResolver: GraphQLFieldResolver<
-  any,
-  ResolverContext
-> = async (parent, args, context, info) => {
-  const finalArgs = {
-    // formerly specified client-side
-    includeBackfill: true,
-    onlyAtAuction: true,
-    first: args.first,
-    excludeDislikedArtworks: true,
-    excludeArtworkIds: [],
-
-    ...args,
-  }
-
-  const result = await artworksForUser.resolve!(
-    parent,
-    finalArgs,
-    context,
-    info
-  )
-
-  return result
-}
-
 export const ActiveBidsResolver: GraphQLFieldResolver<
   any,
   ResolverContext

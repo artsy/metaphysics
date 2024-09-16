@@ -2,7 +2,6 @@ import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
   ActiveBidsResolver,
-  AuctionLotsForYouResolver,
   NewWorksForYouResolver,
   NewWorksFromGalleriesYouFollowResolver,
   RecommendedArtworksResolver,
@@ -28,6 +27,7 @@ import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { RecentlyViewedArtworks } from "./RecentlyViewedArtworks"
+import { AuctionLotsForYou } from "./AuctionLotsForYou"
 
 type MaybeResolved<T> =
   | T
@@ -46,24 +46,6 @@ export type HomeViewSection = {
   }
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
-}
-
-export const AuctionLotsForYou: HomeViewSection = {
-  id: "home-view-section-auction-lots-for-you",
-  type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  contextModule: ContextModule.lotsForYouRail,
-  component: {
-    title: "Auction lots for You",
-    behaviors: {
-      viewAll: {
-        href: "/auctions/lots-for-you-ending-soon",
-        buttonText: "Browse All Artworks",
-        ownerType: OwnerType.lotsForYou,
-      },
-    },
-  },
-  requiresAuthentication: true,
-  resolver: withHomeViewTimeout(AuctionLotsForYouResolver),
 }
 
 export const NewWorksForYou: HomeViewSection = {

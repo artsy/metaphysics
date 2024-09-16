@@ -1,7 +1,6 @@
 import { ResolverContext } from "types/graphql"
 import {
   Auctions,
-  AuctionLotsForYou,
   FeaturedFairs,
   HeroUnits,
   HomeViewSection,
@@ -20,6 +19,7 @@ import {
   ActiveBids,
   GalleriesNearYou,
 } from "schema/v2/homeView/sections"
+import { AuctionLotsForYou } from "../sections/AuctionLotsForYou"
 import { RecentlyViewedArtworks } from "../sections/RecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
 import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
