@@ -27,7 +27,7 @@ import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { SalesResolver } from "../resolvers/salesResolvers"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 
 type MaybeResolved<T> =
   | T
@@ -102,6 +102,7 @@ export const CuratorsPicksEmerging: HomeViewSection = {
       viewAll: {
         href: "/collection/curators-picks-emerging",
         buttonText: "Browse All Artworks",
+        ownerType: OwnerType.collection,
       },
     },
     href: "/collection/curators-picks-emerging",
@@ -136,6 +137,7 @@ export const AuctionLotsForYou: HomeViewSection = {
       viewAll: {
         href: "/auctions/lots-for-you-ending-soon",
         buttonText: "Browse All Artworks",
+        ownerType: OwnerType.lotsForYou,
       },
     },
   },
@@ -294,6 +296,7 @@ export const ViewingRooms: HomeViewSection = {
     behaviors: {
       viewAll: {
         href: "/viewing-rooms",
+        ownerType: OwnerType.viewingRooms,
       },
     },
   },
@@ -312,8 +315,9 @@ export const LatestActivity: HomeViewSection = {
     title: "Latest Activity",
     behaviors: {
       viewAll: {
-        href: "/notifications",
         buttonText: "See All",
+        href: "/notifications",
+        ownerType: OwnerType.activities,
       },
     },
   },
@@ -356,8 +360,9 @@ export const News: HomeViewSection = {
     type: "ArticlesCard",
     behaviors: {
       viewAll: {
-        href: "/news",
         buttonText: "More in News",
+        href: "/news",
+        ownerType: "marketNews" as OwnerType,
       },
     },
   },
@@ -374,6 +379,7 @@ export const LatestArticles: HomeViewSection = {
     behaviors: {
       viewAll: {
         href: "/articles",
+        ownerType: OwnerType.articles,
       },
     },
   },
@@ -393,8 +399,9 @@ export const Auctions: HomeViewSection = {
     title: "Auctions",
     behaviors: {
       viewAll: {
-        href: "/auctions",
         buttonText: "Browse All Auctions",
+        href: "/auctions",
+        ownerType: OwnerType.auctions,
       },
     },
   },
