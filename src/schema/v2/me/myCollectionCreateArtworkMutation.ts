@@ -14,13 +14,13 @@ import { snakeCaseKeys } from "lib/helpers"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { ResolverContext } from "types/graphql"
 import { ArtworkImportSourceEnum } from "../artwork"
-import { MyCollectionArtworkMutationType } from "./myCollection"
-import { EditableLocationFields } from "./update_me_mutation"
+import { ArtworkConditionEnum } from "../artwork/artworkCondition"
 import {
   ArtworkSignatureTypeEnum,
   transformSignatureFieldsToGravityFields,
 } from "../artwork/artworkSignatureTypes"
-import { ArtworkConditionEnum } from "../artwork/artworkCondition"
+import { MyCollectionArtworkMutationType } from "./myCollection"
+import { EditableLocationFields } from "./update_me_mutation"
 
 export const externalUrlRegex = /https:\/\/(?<sourceBucket>.*).s3.amazonaws.com\/(?<sourceKey>.*)/
 
@@ -79,7 +79,7 @@ export const myCollectionCreateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
     },
     condition: {
-      type: ArtworkConditionEnum,
+      type: GraphQLNonNull(ArtworkConditionEnum),
     },
     confidentialNotes: {
       type: GraphQLString,

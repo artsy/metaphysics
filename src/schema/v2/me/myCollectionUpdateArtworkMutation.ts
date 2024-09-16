@@ -9,6 +9,11 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { GraphQLLong } from "lib/customTypes/GraphQLLong"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
+import { ArtworkConditionEnum } from "../artwork/artworkCondition"
+import {
+  ArtworkSignatureTypeEnum,
+  transformSignatureFieldsToGravityFields,
+} from "../artwork/artworkSignatureTypes"
 import { MyCollectionArtworkMutationType } from "./myCollection"
 import {
   ArtworkAttributionClassEnum,
@@ -16,11 +21,6 @@ import {
   transformToPricePaidCents,
 } from "./myCollectionCreateArtworkMutation"
 import { EditableLocationFields } from "./update_me_mutation"
-import {
-  ArtworkSignatureTypeEnum,
-  transformSignatureFieldsToGravityFields,
-} from "../artwork/artworkSignatureTypes"
-import { ArtworkConditionEnum } from "../artwork/artworkCondition"
 
 interface MyCollectionArtworkUpdateMutationInput {
   additionalInformation?: string
@@ -87,7 +87,7 @@ export const myCollectionUpdateArtworkMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
     },
     condition: {
-      type: ArtworkConditionEnum,
+      type: GraphQLNonNull(ArtworkConditionEnum),
     },
     conditionDescription: {
       type: GraphQLString,
