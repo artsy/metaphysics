@@ -1,4 +1,4 @@
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
 
@@ -11,6 +11,7 @@ export const ViewingRooms: HomeViewSection = {
     behaviors: {
       viewAll: {
         href: "/viewing-rooms",
+        ownerType: OwnerType.viewingRooms,
       },
     },
   },

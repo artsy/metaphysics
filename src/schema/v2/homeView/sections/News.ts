@@ -1,4 +1,4 @@
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
@@ -13,12 +13,12 @@ export const News: HomeViewSection = {
   contextModule: ContextModule.articleRail,
   component: {
     title: "News",
-    href: "/news",
     type: "ArticlesCard",
     behaviors: {
       viewAll: {
         href: "/news",
         buttonText: "More in News",
+        ownerType: "marketNews" as OwnerType,
       },
     },
   },

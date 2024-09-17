@@ -12,7 +12,6 @@ export const RecommendedArtworks: HomeViewSection = {
     title: "Artwork Recommendations",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },

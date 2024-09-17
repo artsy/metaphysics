@@ -14,10 +14,8 @@ export const LatestAuctionResults: HomeViewSection = {
   contextModule: ContextModule.auctionResultsRail,
   component: {
     title: "Latest Auction Results",
-    href: "/auction-results-for-artists-you-follow",
     behaviors: {
       viewAll: {
-        href: "/auction-results-for-artists-you-follow",
         buttonText: "Browse All Results",
       },
     },

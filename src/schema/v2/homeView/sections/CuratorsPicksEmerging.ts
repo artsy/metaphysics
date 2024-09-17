@@ -1,4 +1,4 @@
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { ResolverContext } from "types/graphql"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
@@ -39,9 +39,9 @@ export const CuratorsPicksEmerging: HomeViewSection = {
       viewAll: {
         href: "/collection/curators-picks-emerging",
         buttonText: "Browse All Artworks",
+        ownerType: OwnerType.collection,
       },
     },
-    href: "/collection/curators-picks-emerging",
   },
   requiresAuthentication: false,
 

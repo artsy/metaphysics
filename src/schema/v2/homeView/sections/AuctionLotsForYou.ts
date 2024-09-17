@@ -1,4 +1,4 @@
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
@@ -9,11 +9,12 @@ export const AuctionLotsForYou: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.lotsForYouRail,
   component: {
-    title: "Auction lots for you",
+    title: "Auction lots for You",
     behaviors: {
       viewAll: {
         href: "/auctions/lots-for-you-ending-soon",
         buttonText: "Browse All Artworks",
+        ownerType: OwnerType.lotsForYou,
       },
     },
   },

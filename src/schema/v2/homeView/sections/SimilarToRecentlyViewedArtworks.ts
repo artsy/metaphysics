@@ -12,7 +12,6 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
     title: "Similar to Works You’ve Viewed",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },

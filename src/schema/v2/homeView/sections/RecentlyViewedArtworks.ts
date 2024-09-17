@@ -12,7 +12,6 @@ export const RecentlyViewedArtworks: HomeViewSection = {
     title: "Recently Viewed",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },

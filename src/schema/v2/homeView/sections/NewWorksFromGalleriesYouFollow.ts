@@ -12,7 +12,6 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
     title: "New Works from Galleries You Follow",
     behaviors: {
       viewAll: {
-        href: null,
         buttonText: "Browse All Artworks",
       },
     },
