@@ -51,11 +51,13 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
     const lotClosesAt =
       !activeLotData.sale.live_start_at &&
       (activeLotData.saleArtwork.extended_bidding_end_at ||
-        activeLotData.saleArtwork.end_at ||
-        activeLotData.sale.ended_at)
+        activeLotData.saleArtwork.end_at)
 
     // If the lot is closed for bidding, return null
-    if (lotClosesAt && new Date(lotClosesAt) <= new Date()) {
+    if (
+      !!activeLotData.sale.ended_at ||
+      (lotClosesAt && new Date(lotClosesAt) <= new Date())
+    ) {
       return null
     }
 
