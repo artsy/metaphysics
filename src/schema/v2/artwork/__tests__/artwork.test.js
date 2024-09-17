@@ -4975,9 +4975,8 @@ describe("Artwork type", () => {
           expect(data.artwork.collectorSignals.auction).toBeNull()
         })
 
-        it("does not return lotWatcherCount if the bidding is closed", async () => {
+        it("does not return auction data if bidding is closed", async () => {
           artwork.purchasable = true
-          artwork.recent_saves_count = 123
           context.salesLoader.mockResolvedValue([
             { id: "sale-id-auction", ended_at: pastTime },
           ])
@@ -4987,9 +4986,8 @@ describe("Artwork type", () => {
           })
 
           const data = await runQuery(query, context)
-          console.log(data.artwork.collectorSignals.auction)
 
-          expect(data.artwork.collectorSignals.auction.lotWatcherCount).toBeNull()
+          expect(data.artwork.collectorSignals.auction).toBeNull()
         })
       })
 
