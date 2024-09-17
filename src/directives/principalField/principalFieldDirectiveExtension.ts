@@ -1,6 +1,12 @@
-import { getPrincipalFieldDirectivePath } from "directives/principleField/getPrincipalFieldDirectivePath"
+import { getPrincipalFieldDirectivePath } from "directives/principalField/getPrincipalFieldDirectivePath"
 import { isEqual } from "lodash"
 import { flattenErrors, statusCodeForError } from "lib/graphqlErrorHandler"
+import { GraphQLDirective, DirectiveLocation } from "graphql"
+
+export const PrincipalFieldDirective = new GraphQLDirective({
+  name: "principalField",
+  locations: [DirectiveLocation.FIELD],
+})
 
 export const principalFieldDirectiveExtension = (documentAST, result) => {
   const path = getPrincipalFieldDirectivePath(documentAST)

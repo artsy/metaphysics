@@ -3,6 +3,7 @@
 .env.staging
 .env.shared
 .DS_Store
+.wrangler
 build
 node_modules
 dump.rdb
