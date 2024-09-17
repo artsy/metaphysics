@@ -4915,16 +4915,10 @@ describe("Artwork type", () => {
         const futureTime = moment().add(1, "day").toISOString()
         const pastTime = moment().subtract(1, "day").toISOString()
 
-        it("returns the increasedInterest signal", async () => {
+        it("returns false for increasedInterest", async () => {
           artwork.increased_interest_signal = true
 
-          let data = await runQuery(query, context)
-
-          expect(data.artwork.collectorSignals.increasedInterest).toEqual(true)
-
-          artwork.increased_interest_signal = false
-
-          data = await runQuery(query, context)
+          const data = await runQuery(query, context)
 
           expect(data.artwork.collectorSignals.increasedInterest).toEqual(false)
         })
@@ -5086,8 +5080,20 @@ describe("Artwork type", () => {
       })
 
       describe("curatorsPick", () => {
-        it("returns true if the artwork id is in a curated collection", async () => {
+        it("returns false if the artwork id is in a curated collection but has sale_ids", async () => {
           artwork.purchasable = true
+          artwork.sale_ids = ["sale-id-auction"]
+          context.marketingCollectionLoader.mockResolvedValue({
+            artwork_ids: [artwork._id],
+          })
+
+          const data = await runQuery(query, context)
+          expect(data.artwork.collectorSignals.curatorsPick).toBe(false)
+        })
+
+        it("returns true if the artwork id is in a curated collection with no sale ids", async () => {
+          artwork.purchasable = true
+          artwork.sale_ids = []
           context.marketingCollectionLoader.mockResolvedValue({
             artwork_ids: [artwork._id],
           })

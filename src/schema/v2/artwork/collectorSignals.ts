@@ -28,21 +28,11 @@ interface ActiveLotData {
 
 const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (artwork, {}, ctx) => {
-    const isInSale = artwork.sale_ids?.length > 0
-    if (
-      !checkFeatureFlag("emerald_signals-auction-improvements", ctx) ||
-      !isInSale
-    ) {
+    if (!checkFeatureFlag("emerald_signals-auction-improvements", ctx)) {
       return null
     }
 
-    const activeLotData = await getActiveAuctionValues(
-      {
-        artworkId: artwork._id,
-        saleIds: artwork.sale_ids,
-      },
-      ctx
-    )
+    const activeLotData = await getActiveAuctionValues(artwork, ctx)
 
     if (!activeLotData) {
       return null
@@ -199,7 +189,7 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       increasedInterest: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Increased interest in the artwork",
-        resolve: (artwork) => !!artwork.increased_interest_signal,
+        resolve: (artwork) => getIncreasedInterest(artwork),
       },
       runningShow: {
         type: Show.type,
@@ -228,28 +218,30 @@ const getPrimaryLabel = async (
   args,
   ctx
 ): Promise<PrimaryLabel | null> => {
-  const partnerOfferPromise = getActivePartnerOffer(artwork, ctx)
-  const curatorsPickPromise = getIsCuratorsPick(artwork, ctx)
-
   const ignoreLabels = args.ignore
+  const partnerOfferPromise =
+    !ignoreLabels?.includes("PARTNER_OFFER") &&
+    getActivePartnerOffer(artwork, ctx)
+  const curatorsPickPromise =
+    !ignoreLabels?.includes("CURATORS_PICK") && getIsCuratorsPick(artwork, ctx)
+  const increasedInterest =
+    !ignoreLabels?.includes("INCREASED_INTEREST") &&
+    getIncreasedInterest(artwork)
 
   const [activePartnerOffer, curatorsPick] = await Promise.all([
     partnerOfferPromise,
     curatorsPickPromise,
   ])
 
-  if (!ignoreLabels?.includes("PARTNER_OFFER") && activePartnerOffer) {
+  if (activePartnerOffer) {
     return "PARTNER_OFFER"
   }
 
-  if (!ignoreLabels?.includes("CURATORS_PICK") && curatorsPick) {
+  if (curatorsPick) {
     return "CURATORS_PICK"
   }
 
-  if (
-    !ignoreLabels?.includes("INCREASED_INTEREST") &&
-    artwork.increased_interest_signal
-  ) {
+  if (increasedInterest) {
     return "INCREASED_INTEREST"
   }
 
@@ -261,6 +253,10 @@ const checkFeatureFlag = (flag: any, context: any) => {
     userId: context.userID,
   }
   return isFeatureFlagEnabled(flag, unleashContext)
+}
+
+const getIncreasedInterest = (artwork) => {
+  return !(artwork.sale_ids?.length > 0) && !!artwork.increased_interest_signal
 }
 
 const getActivePartnerOffer = async (artwork, ctx) => {
@@ -281,6 +277,10 @@ const getActivePartnerOffer = async (artwork, ctx) => {
 }
 
 const getIsCuratorsPick = async (artwork, ctx) => {
+  if (isAuctionArtwork(artwork)) {
+    return false
+  }
+
   const CURATED_COLLECTION_SLUGS = [
     "curators-picks-blue-chip-artists",
     "curators-picks-emerging-artists",
@@ -295,13 +295,16 @@ const getIsCuratorsPick = async (artwork, ctx) => {
   return checks.includes(true)
 }
 
+const isAuctionArtwork = (artwork) => artwork.sale_ids?.length > 0
+
 const getActiveAuctionValues = async (
-  { artworkId, saleIds },
+  artwork,
   ctx
 ): Promise<ActiveLotData | null> => {
-  if (!saleIds?.length) {
+  if (!isAuctionArtwork(artwork)) {
     return null
   }
+  const { _id: artworkId, sale_ids: saleIds } = artwork
 
   const sales = await ctx.salesLoader({
     id: saleIds,
