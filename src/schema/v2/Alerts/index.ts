@@ -388,20 +388,6 @@ export const AlertType = new GraphQLObjectType<
       settings: {
         type: new GraphQLNonNull(AlertSettingsType),
       },
-
-      // Below fields are injected in the JSON when the alert data is being returned
-      // from ElasticSearch - currently when queried from the following places:
-      //
-      // - `alertsConnection` under `Artist`
-      // - `alertsSummaryArtistsConnection` under `Partner`.
-      totalUserSearchCriteriaCount: {
-        type: GraphQLInt,
-        resolve: ({ count_30d }) => count_30d,
-      },
-      hasRecentlyEnabledUserSearchCriteria: {
-        type: GraphQLBoolean,
-        resolve: ({ count_7d }) => count_7d && count_7d > 0,
-      },
     }
   },
 })
@@ -453,51 +439,6 @@ export const AlertsConnectionType = connectionWithCursorInfo({
   nodeType: AlertType,
   edgeFields: AlertsEdgeFields,
 }).connectionType
-
-export const AlertsSummaryFields = {
-  topHit: {
-    type: AlertType,
-    resolve: ({ top_hit }) => top_hit,
-  },
-  isRecentlyEnabled: {
-    type: GraphQLBoolean,
-    resolve: ({ total_user_search_criteria_enabled_within_last_7d }) =>
-      total_user_search_criteria_enabled_within_last_7d > 0,
-  },
-  counts: {
-    type: new GraphQLObjectType({
-      name: "AlertsSummaryCounts",
-      fields: {
-        totalUserSearchCriteriaCount: {
-          type: GraphQLInt,
-          resolve: ({ total_user_search_criteria_count }) =>
-            total_user_search_criteria_count,
-        },
-        totalWithAdditionalGeneIdsCount: {
-          type: GraphQLInt,
-          resolve: ({ total_with_additional_gene_ids_count }) =>
-            total_with_additional_gene_ids_count,
-        },
-        totalWithAttributionClassCount: {
-          type: GraphQLInt,
-          resolve: ({ total_with_attribution_class_count }) =>
-            total_with_attribution_class_count,
-        },
-        totalWithPriceRangeCount: {
-          type: GraphQLInt,
-          resolve: ({ total_with_price_range_count }) =>
-            total_with_price_range_count,
-        },
-        totalWithOtherMetadataCount: {
-          type: GraphQLInt,
-          resolve: ({ total_with_other_metadata_count }) =>
-            total_with_other_metadata_count,
-        },
-      },
-    }),
-    resolve: (resp) => resp,
-  },
-}
 
 export const PartnerAlertsEdgeFields = {
   ...IDFields,

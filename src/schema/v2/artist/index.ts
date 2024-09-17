@@ -61,7 +61,6 @@ import VerifiedRepresentatives from "./verifiedRepresentatives"
 import { AuctionResultsAggregation } from "../aggregations/filterAuctionResultsAggregation"
 import { parsePriceRangeValues } from "lib/moneyHelper"
 import { ArtistGroupIndicatorEnum } from "schema/v2/artist/groupIndicator"
-import { AlertsConnectionType } from "../Alerts"
 import CareerHighlights from "./careerHighlights"
 import {
   MarketingCollections,
@@ -113,46 +112,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       alternateNames: {
         type: new GraphQLList(GraphQLString),
         resolve: ({ alternate_names }) => alternate_names,
-      },
-      alertsConnection: {
-        args: pageable({
-          sort: {
-            type: GraphQLString,
-          },
-          page: {
-            type: GraphQLInt,
-          },
-          size: {
-            type: GraphQLInt,
-          },
-        }),
-        type: AlertsConnectionType,
-        resolve: async ({ _id }, args, { artistAlertsLoader }) => {
-          if (!artistAlertsLoader) throw new Error("You need to be signed in.")
-
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            args
-          )
-
-          const {
-            alerts: body,
-            total_count: totalCount,
-          } = await artistAlertsLoader(_id, {
-            page,
-            size,
-            sort: args.sort,
-          })
-
-          return paginationResolver({
-            totalCount,
-            offset,
-            page,
-            size,
-            body,
-            args,
-            resolveNode: (node) => node,
-          })
-        },
       },
       articlesConnection: {
         args: pageable({
