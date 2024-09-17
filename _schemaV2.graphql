@@ -3228,7 +3228,7 @@ type AuctionCollectorSignals {
     timezone: String
   ): String
 
-  # Lot watcher count, null if lot is closed for bidding
+  # Lot watcher count
   lotWatcherCount: Int!
 
   # Lot bidding period extended due to last-minute bids

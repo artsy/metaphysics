@@ -78,7 +78,7 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       },
       lotWatcherCount: {
         type: new GraphQLNonNull(GraphQLInt),
-        description: "Lot watcher count, null if lot is closed for bidding",
+        description: "Lot watcher count",
         resolve: ({ artwork }) => artwork.recent_saves_count ?? 0,
       },
       liveBiddingStarted: {
