@@ -4657,6 +4657,7 @@ describe("Artwork type", () => {
             partnerOffer {
               endAt
             }
+            primaryLabel
           }
         }
       }
