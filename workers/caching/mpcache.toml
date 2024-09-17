@@ -1,0 +1,8 @@
+main = './mpcache.ts'
+compatibility_date = "2024-09-16"
+
+[env.staging]
+name = "mpcache-staging"
+
+[env.production]
+name = "mpcache"
