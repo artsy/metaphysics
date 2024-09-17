@@ -218,6 +218,10 @@ const getPrimaryLabel = async (
   args,
   ctx
 ): Promise<PrimaryLabel | null> => {
+  if (isAuctionArtwork(artwork)) {
+    return null
+  }
+
   const ignoreLabels = args.ignore
   const partnerOfferPromise =
     !ignoreLabels?.includes("PARTNER_OFFER") &&

@@ -4915,6 +4915,12 @@ describe("Artwork type", () => {
         const futureTime = moment().add(1, "day").toISOString()
         const pastTime = moment().subtract(1, "day").toISOString()
 
+        it("returns null for primaryLabel even if a signal is available", async () => {
+          artwork.increased_interest_signal = true
+          const data = await runQuery(query, context)
+          expect(data.artwork.collectorSignals.primaryLabel).toBeNull()
+        })
+
         it("returns false for increasedInterest", async () => {
           artwork.increased_interest_signal = true
 
