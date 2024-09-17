@@ -14,38 +14,43 @@ const HomeViewComponentBehaviors = new GraphQLObjectType<
   ResolverContext
 >({
   name: "HomeViewComponentBehaviors",
+  description: "Behaviors for this component",
   fields: {
     viewAll: {
       type: new GraphQLObjectType({
         name: "HomeViewComponentBehaviorsViewAll",
+        description: "A specification for this section’s View All behavior",
         fields: {
           buttonText: {
             type: GraphQLString,
-            description: "Text for the CTA of the view all button",
+            description: "Text for the CTA of the View All button",
           },
           href: {
             type: GraphQLString,
-            description: "href of the view all button",
+            description:
+              "`href` of the View All button. When present, will result in a navigation to the specified route. When `null`, will result in the client-side component’s default view-all behavior, e.g. a full-screen modal overlay",
           },
           ownerType: {
             type: GraphQLString,
             description:
-              "[Analytics] `owner type` analytics value, as defined in our schema (artsy/cohesion), for the requested destination",
+              "[Analytics] `owner type` analytics value for the requested destination, as defined in our schema (artsy/cohesion)",
           },
         },
       }),
-      description: "Represents the behavior of the view all button",
+      description: "Represents the behavior of the View All button",
     },
   },
 })
 
 export const HomeViewComponent = new GraphQLObjectType({
   name: "HomeViewComponent",
-  description: "A component specification",
+  description:
+    "A component specification, to allow for customization of presentation and behavior",
   fields: {
     type: {
       type: GraphQLString,
-      description: "How this component should be rendered",
+      description:
+        "The name of the client-side component which should be preferred (when the default component for a given section type is not sufficient)",
       resolve: async (parent, _args, context, _info) => {
         const { type: _type } = parent
 
@@ -77,7 +82,7 @@ export const HomeViewComponent = new GraphQLObjectType({
     },
     description: {
       type: GraphQLString,
-      description: "A description for this section",
+      description: "A description or blurb for this section",
       resolve: async (parent, _args, context, _info) => {
         const { description: _description } = parent
 
@@ -141,7 +146,7 @@ export const HomeViewComponent = new GraphQLObjectType({
     },
     behaviors: {
       type: HomeViewComponentBehaviors,
-      description: "Behaviors for the view",
+      description: "Behaviors for this component",
     },
   },
 })
