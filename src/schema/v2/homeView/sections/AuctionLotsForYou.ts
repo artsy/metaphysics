@@ -12,12 +12,11 @@ export const AuctionLotsForYou: HomeViewSection = {
     title: "Auction lots for You",
     behaviors: {
       viewAll: {
-        href: "/auctions/lots-for-you-ending-soon",
         buttonText: "Browse All Artworks",
-        ownerType: OwnerType.lotsForYou,
       },
     },
   },
+  ownerType: OwnerType.lotsForYou,
   requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {

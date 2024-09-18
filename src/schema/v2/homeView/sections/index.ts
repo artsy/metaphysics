@@ -2,7 +2,7 @@ import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
 import { RecentlyViewedArtworks } from "./RecentlyViewedArtworks"
@@ -40,6 +40,7 @@ export type HomeViewSection = {
     backgroundImageURL?: MaybeResolved<string>
     behaviors?: HomeViewComponentBehaviors
   }
+  ownerType?: OwnerType
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
 }

@@ -1,4 +1,4 @@
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
 
@@ -17,5 +17,6 @@ export const GalleriesNearYou: HomeViewSection = {
       },
     },
   },
+  ownerType: OwnerType.galleriesForYou,
   requiresAuthentication: false,
 }
