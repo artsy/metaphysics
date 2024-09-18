@@ -11,16 +11,17 @@ describe("HomeViewSection", () => {
               id: "home-view-section-similar-to-recently-viewed-artworks"
             ) {
               __typename
-              ... on HomeViewSectionArtworks {
-                component {
-                  title
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
               }
+              ownerType
             }
           }
         }
@@ -38,11 +39,14 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
+                "buttonText": "Browse All Artworks",
                 "href": null,
+                "ownerType": null,
               },
             },
             "title": "Similar to Works You’ve Viewed",
           },
+          "ownerType": "similarToRecentlyViewed",
         }
       `)
     })
@@ -55,16 +59,17 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-recently-viewed-artworks") {
               __typename
-              ... on HomeViewSectionArtworks {
-                component {
-                  title
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
               }
+              ownerType
             }
           }
         }
@@ -82,11 +87,14 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
+                "buttonText": "Browse All Artworks",
                 "href": null,
+                "ownerType": null,
               },
             },
             "title": "Recently Viewed",
           },
+          "ownerType": "recentlyViewed",
         }
       `)
     })
@@ -99,16 +107,17 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-new-works-for-you") {
               __typename
-              ... on HomeViewSectionArtworks {
-                component {
-                  title
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
               }
+              ownerType
             }
           }
         }
@@ -126,11 +135,14 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
+                "buttonText": "Browse All Artworks",
                 "href": null,
+                "ownerType": null,
               },
             },
             "title": "New works for You",
           },
+          "ownerType": "newWorksForYou",
         }
       `)
     })
@@ -143,16 +155,17 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-auction-lots-for-you") {
               __typename
-              ... on HomeViewSectionArtworks {
-                component {
-                  title
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
               }
+              ownerType
             }
           }
         }
@@ -170,11 +183,14 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
-                "href": "/auctions/lots-for-you-ending-soon",
+                "buttonText": "Browse All Artworks",
+                "href": null,
+                "ownerType": null,
               },
             },
             "title": "Auction lots for You",
           },
+          "ownerType": "lotsForYou",
         }
       `)
     })
@@ -187,15 +203,19 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-recommended-artworks") {
               __typename
-              ... on HomeViewSectionArtworks {
-                component {
-                  title
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
+              }
+              ownerType
+
+              ... on HomeViewSectionArtworks {
                 artworksConnection(first: 2) {
                   edges {
                     node {
@@ -304,11 +324,14 @@ describe("HomeViewSection", () => {
             "component": Object {
               "behaviors": Object {
                 "viewAll": Object {
+                  "buttonText": "Browse All Artworks",
                   "href": null,
+                  "ownerType": null,
                 },
               },
               "title": "Artwork Recommendations",
             },
+            "ownerType": "artworkRecommendations",
           },
         }
       `)
@@ -324,15 +347,19 @@ describe("HomeViewSection", () => {
               id: "home-view-section-new-works-from-galleries-you-follow"
             ) {
               __typename
-              ... on HomeViewSectionArtworks {
-                component {
-                  title
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
+              }
+              ownerType
+
+              ... on HomeViewSectionArtworks {
                 artworksConnection(first: 2) {
                   edges {
                     node {
@@ -385,11 +412,14 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
+                "buttonText": "Browse All Artworks",
                 "href": null,
+                "ownerType": null,
               },
             },
             "title": "New Works from Galleries You Follow",
           },
+          "ownerType": "newWorksFromGalleriesYouFollow",
         }
       `)
     })
@@ -402,10 +432,10 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-recommended-artists") {
               __typename
+              component {
+                title
+              }
               ... on HomeViewSectionArtists {
-                component {
-                  title
-                }
                 artistsConnection(first: 2) {
                   edges {
                     node {
@@ -564,19 +594,20 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-curators-picks-emerging") {
               __typename
-
-              ... on HomeViewSectionArtworks {
-                component {
-                  title
-                  description
-                  backgroundImageURL
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                description
+                backgroundImageURL
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
+              }
 
+              ... on HomeViewSectionArtworks {
                 artworksConnection(first: 2) {
                   edges {
                     node {
@@ -644,7 +675,9 @@ describe("HomeViewSection", () => {
             "backgroundImageURL": "image.jpg",
             "behaviors": Object {
               "viewAll": Object {
+                "buttonText": "Browse All Artworks",
                 "href": "/collection/curators-picks-emerging",
+                "ownerType": "collection",
               },
             },
             "description": "The best works by rising talents on Artsy, available now.",
@@ -662,12 +695,11 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-featured-fairs") {
               __typename
+              component {
+                title
+              }
 
               ... on HomeViewSectionFairs {
-                component {
-                  title
-                }
-
                 fairsConnection(first: 2) {
                   edges {
                     node {
@@ -736,12 +768,11 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-marketing-collections") {
               __typename
+              component {
+                title
+              }
 
               ... on HomeViewSectionMarketingCollections {
-                component {
-                  title
-                }
-
                 marketingCollectionsConnection(first: 2) {
                   edges {
                     node {
@@ -804,14 +835,13 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-viewing-rooms") {
               __typename
-
-              ... on HomeViewSectionViewingRooms {
-                component {
-                  title
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
               }
@@ -830,7 +860,9 @@ describe("HomeViewSection", () => {
                   "component": Object {
                     "behaviors": Object {
                       "viewAll": Object {
+                        "buttonText": null,
                         "href": "/viewing-rooms",
+                        "ownerType": "viewingRooms",
                       },
                     },
                     "title": "Viewing Rooms",
@@ -847,15 +879,18 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-latest-activity") {
               __typename
-              ... on HomeViewSectionActivity {
-                component {
-                  title
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
+              }
+
+              ... on HomeViewSectionActivity {
                 notificationsConnection(first: 1) {
                   edges {
                     node {
@@ -921,7 +956,9 @@ describe("HomeViewSection", () => {
               "component": Object {
                 "behaviors": Object {
                   "viewAll": Object {
+                    "buttonText": "See All",
                     "href": "/notifications",
+                    "ownerType": "activities",
                   },
                 },
                 "title": "Latest Activity",
@@ -956,15 +993,19 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-latest-auction-results") {
               __typename
-              ... on HomeViewSectionAuctionResults {
-                component {
-                  title
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
+              }
+              ownerType
+
+              ... on HomeViewSectionAuctionResults {
                 auctionResultsConnection(first: 2) {
                   edges {
                     node {
@@ -1047,11 +1088,14 @@ describe("HomeViewSection", () => {
               "component": Object {
                 "behaviors": Object {
                   "viewAll": Object {
+                    "buttonText": "Browse All Results",
                     "href": null,
+                    "ownerType": null,
                   },
                 },
                 "title": "Latest Auction Results",
               },
+              "ownerType": "auctionResultsForArtistsYouFollow",
             },
           },
         }
@@ -1066,13 +1110,13 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-latest-articles") {
               __typename
-              ... on HomeViewSectionArticles {
-                component {
-                  title
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
               }
@@ -1089,7 +1133,9 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
+                "buttonText": null,
                 "href": "/articles",
+                "ownerType": "articles",
               },
             },
             "title": "Artsy Editorial",
@@ -1106,18 +1152,19 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-news") {
               __typename
-
-              ... on HomeViewSectionArticles {
-                component {
-                  title
-                  type
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                type
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
+              }
 
+              ... on HomeViewSectionArticles {
                 articlesConnection(first: 3) {
                   edges {
                     node {
@@ -1174,7 +1221,9 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
+                "buttonText": "More in News",
                 "href": "/news",
+                "ownerType": "marketNews",
               },
             },
             "title": "News",
@@ -1192,17 +1241,18 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-auctions") {
               __typename
-
-              ... on HomeViewSectionSales {
-                component {
-                  title
-                  behaviors {
-                    viewAll {
-                      href
-                    }
+              component {
+                title
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
+              }
 
+              ... on HomeViewSectionSales {
                 salesConnection(first: 2) {
                   edges {
                     node {
@@ -1237,7 +1287,9 @@ describe("HomeViewSection", () => {
           "component": Object {
             "behaviors": Object {
               "viewAll": Object {
+                "buttonText": "Browse All Auctions",
                 "href": "/auctions",
+                "ownerType": "auctions",
               },
             },
             "title": "Auctions",
@@ -1269,11 +1321,11 @@ describe("HomeViewSection", () => {
             section(id: "home-view-section-active-bids") {
               __typename
 
-              ... on HomeViewSectionArtworks {
-                component {
-                  title
-                }
+              component {
+                title
+              }
 
+              ... on HomeViewSectionArtworks {
                 artworksConnection(first: 2) {
                   edges {
                     node {
@@ -1343,20 +1395,19 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-galleries-near-you") {
               __typename
-
-              ... on HomeViewSectionGalleries {
-                component {
-                  title
-                  backgroundImageURL
-                  description
-                  behaviors {
-                    viewAll {
-                      href
-                      buttonText
-                    }
+              component {
+                title
+                backgroundImageURL
+                description
+                behaviors {
+                  viewAll {
+                    buttonText
+                    href
+                    ownerType
                   }
                 }
               }
+              ownerType
             }
           }
         }
@@ -1375,11 +1426,13 @@ describe("HomeViewSection", () => {
                       "viewAll": Object {
                         "buttonText": "Explore",
                         "href": null,
+                        "ownerType": null,
                       },
                     },
                     "description": "Follow these local galleries for updates on artists you love.",
                     "title": "Galleries Near You",
                   },
+                  "ownerType": "galleriesForYou",
                 }
             `)
     })
@@ -1392,9 +1445,7 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-news") {
               __typename
-              ... on HomeViewSectionArticles {
-                id
-              }
+              id
             }
           }
         }
@@ -1417,7 +1468,7 @@ describe("HomeViewSection", () => {
         {
           node(id: "SG9tZVZpZXdTZWN0aW9uOmhvbWUtdmlldy1zZWN0aW9uLW5ld3M=") {
             __typename
-            ... on HomeViewSectionArticles {
+            ... on HomeViewSectionGeneric {
               component {
                 title
               }

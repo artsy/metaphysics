@@ -1,4 +1,4 @@
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
@@ -16,6 +16,7 @@ export const RecommendedArtworks: HomeViewSection = {
       },
     },
   },
+  ownerType: OwnerType.artworkRecommendations,
   requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(ArtworkRecommendations.resolve!),

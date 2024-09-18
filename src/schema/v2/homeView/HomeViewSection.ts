@@ -43,6 +43,11 @@ const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
     description:
       "Component prescription for this section, for overriding or customizing presentation and behavior",
   },
+  ownerType: {
+    type: GraphQLString,
+    description:
+      "[Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)",
+  },
 }
 
 export const HomeViewSectionTypeNames = {

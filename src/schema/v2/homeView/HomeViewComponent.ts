@@ -25,15 +25,15 @@ const HomeViewComponentBehaviors = new GraphQLObjectType<
             type: GraphQLString,
             description: "Text for the CTA of the View All button",
           },
-          href: {
-            type: GraphQLString,
-            description:
-              "`href` of the View All button. When present, will result in a navigation to the specified route. When `null`, will result in the client-side component’s default view-all behavior, e.g. a full-screen modal overlay",
-          },
           ownerType: {
             type: GraphQLString,
             description:
               "[Analytics] `owner type` analytics value for the requested destination, as defined in our schema (artsy/cohesion)",
+          },
+          href: {
+            type: GraphQLString,
+            description:
+              "`href` of the View All button. When present, will result in a navigation to the specified route. When `null`, will result in the client-side component’s default view-all behavior, e.g. a full-screen modal overlay",
           },
         },
       }),

@@ -1,4 +1,4 @@
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
@@ -16,6 +16,7 @@ export const RecentlyViewedArtworks: HomeViewSection = {
       },
     },
   },
+  ownerType: OwnerType.recentlyViewed,
   requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(async (_parent, args, context, info) => {

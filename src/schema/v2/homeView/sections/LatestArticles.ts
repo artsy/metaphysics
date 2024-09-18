@@ -12,8 +12,8 @@ export const LatestArticles: HomeViewSection = {
     title: "Artsy Editorial",
     behaviors: {
       viewAll: {
-        href: "/articles",
         ownerType: OwnerType.articles,
+        href: "/articles",
       },
     },
   },
