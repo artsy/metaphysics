@@ -16,9 +16,9 @@ export const News: HomeViewSection = {
     type: "ArticlesCard",
     behaviors: {
       viewAll: {
-        href: "/news",
         buttonText: "More in News",
         ownerType: "marketNews" as OwnerType,
+        href: "/news",
       },
     },
   },

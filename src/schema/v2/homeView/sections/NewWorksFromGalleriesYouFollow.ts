@@ -1,4 +1,4 @@
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
@@ -16,6 +16,7 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
       },
     },
   },
+  ownerType: OwnerType.newWorksFromGalleriesYouFollow,
   requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(newWorksFromGalleriesYouFollow.resolve!),

@@ -35,11 +35,18 @@ const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   },
   contextModule: {
     type: new GraphQLNonNull(GraphQLString),
-    description: "An analytics context label for this section",
+    description:
+      "[Analytics] `context module` analytics value for this section, as defined in our schema (artsy/cohesion)",
   },
   component: {
     type: HomeViewComponent,
-    description: "The component that is prescribed for this section",
+    description:
+      "Component prescription for this section, for overriding or customizing presentation and behavior",
+  },
+  ownerType: {
+    type: GraphQLString,
+    description:
+      "[Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)",
   },
 }
 

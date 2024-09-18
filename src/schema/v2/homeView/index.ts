@@ -21,6 +21,7 @@ const SectionsConnectionType = connectionWithCursorInfo({
 
 const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLNonNull(SectionsConnectionType),
+  description: "A paginated list of home view sections",
   args: pageable({}),
   resolve: async (_parent, args, context, _info) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
@@ -42,7 +43,7 @@ const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
 
 export const Section: GraphQLFieldConfig<void, ResolverContext> = {
   type: HomeViewGenericSectionInterface,
-  description: "A home view section",
+  description: "A single home view section, addressed by internal id",
   args: {
     id: {
       description: "The ID of the section",
