@@ -112,7 +112,7 @@ const AVAILABLE_LABEL_COUNT = LabelSignalEnumType.getValues().length
 export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   description: "Collector signals on artwork",
   resolve: (artwork) => {
-    const canSendSignals = artwork.purchasable || artwork.sale_ids?.length > 0
+    const canSendSignals = artwork.purchasable || isAuctionArtwork(artwork)
     return canSendSignals ? artwork : null
   },
   type: new GraphQLObjectType({
@@ -260,7 +260,7 @@ const checkFeatureFlag = (flag: any, context: any) => {
 }
 
 const getIncreasedInterest = (artwork) => {
-  return !(artwork.sale_ids?.length > 0) && !!artwork.increased_interest_signal
+  return !isAuctionArtwork(artwork) && !!artwork.increased_interest_signal
 }
 
 const getActivePartnerOffer = async (artwork, ctx) => {
