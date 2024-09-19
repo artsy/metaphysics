@@ -62,6 +62,11 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     collectorProfileSummaryLoader: gravityLoader("collector_profile_summary"),
+    commerceOptInLoader: gravityLoader(
+      (id) => `partner/${id}/opt_in_artworks_into_commerce`,
+      {},
+      { method: "PUT" }
+    ),
     createAccountRequestLoader: gravityLoader(
       "account_requests",
       {},
