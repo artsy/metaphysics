@@ -116,7 +116,6 @@ workflows:
           <<: *only_main
           context: hokusai
           requires:
-            - push-staging-image
             - deploy-staging
 
       - node/run:
@@ -126,7 +125,6 @@ workflows:
           pkg-manager: yarn
           yarn-run: deploy-cloudflare-workers:staging
           requires:
-            - push-staging-image
             - deploy-staging
 
       # release
