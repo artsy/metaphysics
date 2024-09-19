@@ -1,5 +1,5 @@
 import { ResolverContext } from "types/graphql"
-import { getSections } from "../legacy"
+import { getSections } from "../discovery"
 
 describe("getSections", () => {
   describe("with an authenticated user", () => {
@@ -13,24 +13,14 @@ describe("getSections", () => {
 
       expect(sectionIds).toMatchInlineSnapshot(`
         Array [
-          "home-view-section-latest-activity",
-          "home-view-section-new-works-for-you",
           "home-view-section-hero-units",
-          "home-view-section-active-bids",
-          "home-view-section-auction-lots-for-you",
           "home-view-section-auctions",
-          "home-view-section-latest-auction-results",
           "home-view-section-galleries-near-you",
           "home-view-section-latest-articles",
           "home-view-section-news",
           "home-view-section-curators-picks-emerging",
           "home-view-section-marketing-collections",
-          "home-view-section-recommended-artworks",
-          "home-view-section-new-works-from-galleries-you-follow",
-          "home-view-section-recommended-artists",
           "home-view-section-trending-artists",
-          "home-view-section-recently-viewed-artworks",
-          "home-view-section-similar-to-recently-viewed-artworks",
           "home-view-section-viewing-rooms",
           "home-view-section-shows-for-you",
           "home-view-section-featured-fairs",

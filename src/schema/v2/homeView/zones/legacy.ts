@@ -46,7 +46,7 @@ const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
   FeaturedFairs,
 ]
 
-export async function getLegacyZoneSections(context: ResolverContext) {
+export async function getSections(context: ResolverContext) {
   const isAuthenticatedUser = !!context.accessToken
 
   const displayableSections = LEGACY_ZONE_SECTIONS.reduce(

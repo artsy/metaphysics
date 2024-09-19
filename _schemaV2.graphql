@@ -10899,6 +10899,9 @@ type HomeView {
     before: String
     first: Int
     last: Int
+
+    # The ID of the zone to fetch sections for
+    zoneID: String
   ): HomeViewSectionGenericConnection!
 }
 

@@ -4,17 +4,17 @@ import { ResolverContext } from "types/graphql"
 
 describe("homeView", () => {
   describe("sectionsConnection", () => {
-    const query = gql`
+    const getQuery = (zoneID?: string) => gql`
       {
         homeView {
-          sectionsConnection(first: 20) {
+          sectionsConnection(first: 20${
+            zoneID ? `, zoneID: "${zoneID}"` : ""
+          }) {
             edges {
               node {
                 __typename
-                ... on HomeViewSectionGeneric {
-                  component {
-                    title
-                  }
+                component {
+                  title
                 }
               }
             }
@@ -31,7 +31,7 @@ describe("homeView", () => {
       }
 
       it("returns the correct sections", async () => {
-        const { homeView } = await runQuery(query, context)
+        const { homeView } = await runQuery(getQuery(), context)
 
         expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
           Object {
@@ -129,7 +129,7 @@ describe("homeView", () => {
       }
 
       it("returns the correct sections", async () => {
-        const { homeView } = await runQuery(query, context)
+        const { homeView } = await runQuery(getQuery(), context)
 
         expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
           Object {
@@ -281,6 +281,111 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionViewingRooms",
                   "component": Object {
                     "title": "Viewing Rooms",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionShows",
+                  "component": Object {
+                    "title": "Shows for You",
+                  },
+                },
+              },
+            ],
+          }
+        `)
+      })
+    })
+
+    describe("specifying zone ID", () => {
+      const context: Partial<ResolverContext> = {
+        accessToken: "424242",
+      }
+
+      it("returns the correct sections", async () => {
+        const { homeView } = await runQuery(getQuery("next"), context)
+
+        expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
+          Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionActivity",
+                  "component": Object {
+                    "title": "Latest Activity",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": Object {
+                    "title": "New works for You",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": Object {
+                    "title": "Your Active Bids",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": Object {
+                    "title": "Auction lots for You",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionAuctionResults",
+                  "component": Object {
+                    "title": "Latest Auction Results",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": Object {
+                    "title": "Artwork Recommendations",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": Object {
+                    "title": "New Works from Galleries You Follow",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionArtists",
+                  "component": Object {
+                    "title": "Recommended Artists",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": Object {
+                    "title": "Recently Viewed",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": Object {
+                    "title": "Similar to Works You’ve Viewed",
                   },
                 },
               },

@@ -22,11 +22,16 @@ const SectionsConnectionType = connectionWithCursorInfo({
 const SectionConnection: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLNonNull(SectionsConnectionType),
   description: "A paginated list of home view sections",
-  args: pageable({}),
+  args: pageable({
+    zoneID: {
+      type: GraphQLString,
+      description: "The ID of the zone to fetch sections for",
+    },
+  }),
   resolve: async (_parent, args, context, _info) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
 
-    const sections = await getSectionsForUser(context)
+    const sections = await getSectionsForUser(context, args.zoneID)
     const totalCount = sections.length
     const data = sections.slice(offset, offset + size)
 

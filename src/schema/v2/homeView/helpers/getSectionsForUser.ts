@@ -1,14 +1,26 @@
 import { ResolverContext } from "types/graphql"
-import { getLegacyZoneSections } from "../zones/legacy"
+import { getSections as getDiscoverySections } from "../zones/discovery"
+import { getSections as getNextSections } from "../zones/next"
+import { getSections as getLegacySections } from "../zones/legacy"
 import { HomeViewSection } from "../sections/"
 
-export async function getSectionsForUser(
-  context: ResolverContext
-): Promise<HomeViewSection[]> {
-  const legacyZoneSections = await getLegacyZoneSections(context)
+const zones = {
+  legacy: getLegacySections,
+  next: getNextSections,
+  discovery: getDiscoverySections,
+}
 
-  return [
-    ...legacyZoneSections,
-    // other zones’ sections TK
-  ]
+export async function getSectionsForUser(
+  context: ResolverContext,
+  zoneID = "legacy"
+): Promise<HomeViewSection[]> {
+  const getSections = zones[zoneID]
+
+  if (!getSections) {
+    throw new Error(`Unknown zone ID: ${zoneID}`)
+  }
+
+  const sections = await getSections(context)
+
+  return sections
 }
