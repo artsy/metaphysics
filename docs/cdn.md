@@ -1,4 +1,4 @@
-Metaphysics can be queried through its CDN endpoint, `metaphysics-[staging|production]-alt.artsy.net`.
+Metaphysics can be queried through its CDN endpoint, `metaphysics-cdn[-staging].artsy.net`.
 
 That endpoint routes through [Cloudflare edge locations](https://www.cloudflare.com/network/) to [a worker](../workers/caching/) with access to a geographically-distributed cache. Upon cache misses, those requests fall through to the live Metaphysics application at `metaphysics-[staging|production].artsy.net`.
 
@@ -19,7 +19,7 @@ As a convenience for clients, Metaphysics' schema declares support for a custom 
 A cacheable query without a match in the edge-cache (i.e., cache miss):
 
 ```bash
-curl -vvv -H "Content-Type: application/json" -d '{"query":"{ artist(id: \"andy-warhol\") { slug } }"}' https://metaphysics-staging-alt.artsy.net/v2
+curl -vvv -H "Content-Type: application/json" -d '{"query":"{ artist(id: \"andy-warhol\") { slug } }"}' https://metaphysics-cdn-staging.artsy.net/v2
 ...
 < cf-cache-status: DYNAMIC
 < cache-control: max-age=3600
@@ -40,7 +40,7 @@ The same query _with_ a match (i.e., cache hit):
 Queries that specify a custom cache expiration may similarly hit or miss, but respect the provided expiration:
 
 ```bash
-curl -vvv -H "Content-Type: application/json" -H "Cache-Control: max-age=60" -d '{"query":"{ artist(id: \"andy-warhol\") { slug } }"}' https://metaphysics-staging-alt.artsy.net/v2
+curl -vvv -H "Content-Type: application/json" -H "Cache-Control: max-age=60" -d '{"query":"{ artist(id: \"andy-warhol\") { slug } }"}' https://metaphysics-cdn-staging.artsy.net/v2
 ...
 < cf-cache-status: HIT
 < age: 18
@@ -51,11 +51,11 @@ curl -vvv -H "Content-Type: application/json" -H "Cache-Control: max-age=60" -d 
 Queries with `X-Access-Token` or `Cache-Control: no-cache` headers will never be HITs:
 
 ```bash
-curl -vvv -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{"query":"{ artist(id: \"andy-warhol\") { slug } }"}' https://metaphysics-staging-alt.artsy.net/v2
+curl -vvv -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d '{"query":"{ artist(id: \"andy-warhol\") { slug } }"}' https://metaphysics-cdn-staging.artsy.net/v2
 ...
 < cf-cache-status: DYNAMIC
 ...
-curl -vvv -H "Content-Type: application/json" -H "X-Access-Token: redacted" -d '{"query":"{ artist(id: \"andy-warhol\") { slug } }"}' https://metaphysics-staging-alt.artsy.net/v2
+curl -vvv -H "Content-Type: application/json" -H "X-Access-Token: redacted" -d '{"query":"{ artist(id: \"andy-warhol\") { slug } }"}' https://metaphysics-cdn-staging.artsy.net/v2
 ...
 < cf-cache-status: DYNAMIC
 ...

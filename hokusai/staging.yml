@@ -146,7 +146,17 @@ spec:
             name: metaphysics-web-internal
             port:
               name: mp-http
-  - host: metaphysics-staging-alt.artsy.net
+  - host: metaphysics-cdn-staging.artsy.net # routes to Cloudflare worker
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: metaphysics-web-internal
+            port:
+              name: mp-http
+  - host: metaphysics-staging-alt.artsy.net # preserve this legacy worker hostname until traffic fully migrates away
     http:
       paths:
       - path: /
