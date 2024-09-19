@@ -16,7 +16,7 @@ It is currently used in production all over the place in
 - **State:** production
 - **CI/Deploys:** [CircleCi](https://circleci.com/gh/artsy/metaphysics); merged PRs to `artsy/metaphysics#main` are automatically deployed to staging; PRs from `staging` to `release` are automatically deployed to production. [Start a deploy...](https://github.com/artsy/metaphysics/compare/release...staging?expand=1)
 - **Production:**
-  - GraphQL endpoint: [CDN](https://metaphysics-production-alt.artsy.net/v2) / [Backend](https://metaphysics-production.artsy.net/v2)
+  - GraphQL endpoint: [CDN](https://metaphysics-cdn.artsy.net/v2) / [Backend](https://metaphysics-production.artsy.net/v2)
   - [Kubernetes deployment dashboard](https://kubernetes.prd.artsy.systems/#!/deployment/default/metaphysics-web?namespace=default)
   - [Datadog Monitoring - Overview](https://app.datadoghq.com/screen/302489/metaphysics-production)
   - [Datadog Monitoring - GraphQL Queries](https://app.datadoghq.com/apm/services/metaphysics.graphql/operations/graphql.execute/resources?env=production)
@@ -29,7 +29,7 @@ It is currently used in production all over the place in
   - [Sentry error reporting](https://sentry.io/artsynet/metaphysics-production/)
   - [Papertrail logs](https://papertrailapp.com/groups/3675843/events?q=host%3Ametaphysics-web)
 - **Staging:**
-  - GraphQL endpoint: [CDN](https://metaphysics-staging-alt.artsy.net/v2) / [Backend](https://metaphysics-staging.artsy.net/v2)
+  - GraphQL endpoint: [CDN](https://metaphysics-cdn-staging.artsy.net/v2) / [Backend](https://metaphysics-staging.artsy.net/v2)
   - [Kubernetes deployment dashboard](https://kubernetes.stg.artsy.systems/#!/deployment/default/metaphysics-web?namespace=default)
   - [Datadog Monitoring - GraphQL Queries](https://app.datadoghq.com/apm/services/metaphysics.graphql/operations/graphql.execute/resources?env=staging)
   - [Datadog Monitoring - Express](https://app.datadoghq.com/apm/services/metaphysics/operations/express.request/resources?env=staging)
