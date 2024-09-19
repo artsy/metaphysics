@@ -4657,6 +4657,7 @@ describe("Artwork type", () => {
             partnerOffer {
               endAt
             }
+            primaryLabel
           }
         }
       }
@@ -4915,16 +4916,16 @@ describe("Artwork type", () => {
         const futureTime = moment().add(1, "day").toISOString()
         const pastTime = moment().subtract(1, "day").toISOString()
 
-        it("returns the increasedInterest signal", async () => {
+        it("returns null for primaryLabel even if a signal is available", async () => {
+          artwork.increased_interest_signal = true
+          const data = await runQuery(query, context)
+          expect(data.artwork.collectorSignals.primaryLabel).toBeNull()
+        })
+
+        it("returns false for increasedInterest", async () => {
           artwork.increased_interest_signal = true
 
-          let data = await runQuery(query, context)
-
-          expect(data.artwork.collectorSignals.increasedInterest).toEqual(true)
-
-          artwork.increased_interest_signal = false
-
-          data = await runQuery(query, context)
+          const data = await runQuery(query, context)
 
           expect(data.artwork.collectorSignals.increasedInterest).toEqual(false)
         })
@@ -5086,8 +5087,20 @@ describe("Artwork type", () => {
       })
 
       describe("curatorsPick", () => {
-        it("returns true if the artwork id is in a curated collection", async () => {
+        it("returns true if the artwork id is in a curated collection but has sale_ids", async () => {
           artwork.purchasable = true
+          artwork.sale_ids = ["sale-id-auction"]
+          context.marketingCollectionLoader.mockResolvedValue({
+            artwork_ids: [artwork._id],
+          })
+
+          const data = await runQuery(query, context)
+          expect(data.artwork.collectorSignals.curatorsPick).toBe(true)
+        })
+
+        it("returns true if the artwork id is in a curated collection with no sale ids", async () => {
+          artwork.purchasable = true
+          artwork.sale_ids = []
           context.marketingCollectionLoader.mockResolvedValue({
             artwork_ids: [artwork._id],
           })
