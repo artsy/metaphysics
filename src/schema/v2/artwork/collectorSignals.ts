@@ -281,10 +281,6 @@ const getActivePartnerOffer = async (artwork, ctx) => {
 }
 
 const getIsCuratorsPick = async (artwork, ctx) => {
-  if (isAuctionArtwork(artwork)) {
-    return false
-  }
-
   const CURATED_COLLECTION_SLUGS = [
     "curators-picks-blue-chip-artists",
     "curators-picks-emerging-artists",

@@ -5087,7 +5087,7 @@ describe("Artwork type", () => {
       })
 
       describe("curatorsPick", () => {
-        it("returns false if the artwork id is in a curated collection but has sale_ids", async () => {
+        it("returns true if the artwork id is in a curated collection but has sale_ids", async () => {
           artwork.purchasable = true
           artwork.sale_ids = ["sale-id-auction"]
           context.marketingCollectionLoader.mockResolvedValue({
@@ -5095,7 +5095,7 @@ describe("Artwork type", () => {
           })
 
           const data = await runQuery(query, context)
-          expect(data.artwork.collectorSignals.curatorsPick).toBe(false)
+          expect(data.artwork.collectorSignals.curatorsPick).toBe(true)
         })
 
         it("returns true if the artwork id is in a curated collection with no sale ids", async () => {
