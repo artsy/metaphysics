@@ -7,7 +7,7 @@ import { ArtworkRecommendations } from "schema/v2/me/artworkRecommendations"
 export const RecommendedArtworks: HomeViewSection = {
   id: "home-view-section-recommended-artworks",
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-  contextModule: ContextModule.recommendedArtistsRail,
+  contextModule: ContextModule.artworkRecommendationsRail,
   component: {
     title: "Artwork Recommendations",
     behaviors: {
