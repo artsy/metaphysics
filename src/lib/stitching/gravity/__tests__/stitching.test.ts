@@ -466,7 +466,7 @@ describe("gravity/stitching", () => {
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
         args: { partnerID: "partner-id", first: 2 },
         operation: "query",
-        fieldName: "_unused_gravity_viewingRoomsConnection",
+        fieldName: "viewingRoomsConnection",
         schema: expect.anything(),
         context: expect.anything(),
         info: expect.anything(),
@@ -497,7 +497,7 @@ describe("gravity/stitching", () => {
       expect(info.mergeInfo.delegateToSchema).toHaveBeenCalledWith({
         args: { ids: ["view-lots-of-cats-id"] },
         operation: "query",
-        fieldName: "_unused_gravity_viewingRoomsConnection",
+        fieldName: "viewingRoomsConnection",
         schema: expect.anything(),
         context: expect.anything(),
         info: expect.anything(),
