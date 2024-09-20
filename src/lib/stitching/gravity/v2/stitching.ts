@@ -179,7 +179,7 @@ export const gravityStitchingEnvironment = (
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,
               operation: "query",
-              fieldName: "_unused_gravity_viewingRoomsConnection",
+              fieldName: "viewingRoomsConnection",
               args: {
                 partnerID,
                 ...args,
@@ -203,7 +203,7 @@ export const gravityStitchingEnvironment = (
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,
               operation: "query",
-              fieldName: "_unused_gravity_viewingRoomsConnection",
+              fieldName: "viewingRoomsConnection",
               args: {
                 ids,
               },
@@ -428,7 +428,7 @@ export const gravityStitchingEnvironment = (
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,
               operation: "query",
-              fieldName: "_unused_gravity_viewingRoomsConnection",
+              fieldName: "viewingRoomsConnection",
               args: {
                 ...args,
                 ids,
@@ -449,7 +449,7 @@ export const gravityStitchingEnvironment = (
             return info.mergeInfo.delegateToSchema({
               schema: gravitySchema,
               operation: "query",
-              fieldName: "_unused_gravity_viewingRoomsConnection",
+              fieldName: "viewingRoomsConnection",
               args,
               context,
               info,
