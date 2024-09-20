@@ -1,4 +1,11 @@
-import { GraphQLBoolean, GraphQLInt, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLUnionType } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
   formatGravityError,
@@ -6,7 +13,10 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 
-export const CommerceOptInResponseType = new GraphQLObjectType<any, ResolverContext>({
+export const CommerceOptInResponseType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "CommerceOptInResponse",
   fields: () => ({
     count: { type: GraphQLInt },
