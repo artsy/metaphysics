@@ -70,6 +70,7 @@ export default (opts) => {
     artworksLoader: gravityLoader("artworks"),
     authenticationStatusLoader: gravityLoader("me", {}, { headers: true }),
     bidderLoader: gravityLoader((id) => `bidder/${id}`),
+    devicesLoader: gravityLoader("devices", {}, { headers: true }),
     exchangeRatesLoader: gravityLoader(
       "exchange_rates",
       {},

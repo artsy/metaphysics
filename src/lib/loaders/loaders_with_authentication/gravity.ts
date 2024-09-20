@@ -82,6 +82,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    devicesLoader: gravityLoader("devices", {}, { headers: true }),
     deleteArtistCareerHighlightLoader: gravityLoader(
       (id) => `artist_career_highlight/${id}`,
       {},
