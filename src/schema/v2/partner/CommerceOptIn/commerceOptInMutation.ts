@@ -1,4 +1,4 @@
-import { GraphQLBoolean, GraphQLObjectType, GraphQLUnionType } from "graphql"
+import { GraphQLBoolean, GraphQLInt, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLUnionType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
   formatGravityError,
@@ -6,19 +6,16 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 
-export const CommerceOptInType = new GraphQLObjectType<any, ResolverContext>({
-  name: "CommerceOptIn",
+export const CommerceOptInResponseType = new GraphQLObjectType<any, ResolverContext>({
+  name: "CommerceOptInResponse",
   fields: () => ({
-    exactPrice: { type: GraphQLBoolean },
-    pickupAvailable: { type: GraphQLBoolean },
-    framed: { type: GraphQLBoolean },
-    certificateOfAuthenticity: { type: GraphQLBoolean },
-    coaByGallery: { type: GraphQLBoolean },
-    coaByAuthenticatingBody: { type: GraphQLBoolean },
+    count: { type: GraphQLInt },
+    ids: { type: GraphQLList(GraphQLString) },
   }),
 })
 
 interface Input {
+  id: string
   exactPrice?: boolean
   pickupAvailable?: boolean
   framed?: boolean
@@ -27,20 +24,12 @@ interface Input {
   coaByAuthenticatingBody?: boolean
 }
 
-// interface GravityInput {
-//   exact_price?: boolean
-//   pickup_available?: boolean
-//   framed?: boolean
-//   certificate_of_authenticity?: boolean
-//   coa_by_gallery?: boolean
-// 	coa_by_authenticating_body?: boolean
-// }
-
 const CommerceOptInSuccesssType = new GraphQLObjectType<any, ResolverContext>({
   name: "CommerceOptInSuccess",
   isTypeOf: (data) => data.id,
   fields: () => ({
-    commerceOptInMutation: { type: CommerceOptInType },
+    updatedCommerceOptIn: { type: CommerceOptInResponseType },
+    skippedCommerceOptIn: { type: CommerceOptInResponseType },
   }),
 })
 
@@ -71,7 +60,7 @@ export const commerceOptInMutation = mutationWithClientMutationId<
   any,
   ResolverContext
 >({
-  name: "commerceOptInMutation",
+  name: "CommerceOptInMutation",
   description: "Opt all eligible artworks into BNMO",
   inputFields: {
     exactPrice: {
@@ -104,7 +93,7 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       type: CommerceOptInMutationType,
       resolve: (result) => {
         return {
-          updatedCommerceOptIn: {},
+          updatedCommerceOptIn: { count: result.success, ids: [] },
           skippedCommerceOptIn: {
             count: result.errors.count,
             ids: result.errors.ids,
@@ -115,6 +104,7 @@ export const commerceOptInMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     {
+      id,
       exactPrice,
       pickupAvailable,
       framed,
@@ -138,7 +128,7 @@ export const commerceOptInMutation = mutationWithClientMutationId<
     }
 
     try {
-      return await commerceOptInLoader(gravityOptions)
+      return await commerceOptInLoader(id, gravityOptions)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
