@@ -231,6 +231,7 @@ import { homeViewSectionTypes } from "./homeView/HomeViewSection"
 import { CacheableDirective } from "directives/cacheableDirective"
 import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsDirectiveExtension"
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
+import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -375,6 +376,7 @@ export default new GraphQLSchema({
       adminUpdateFeatureFlag: updateFeatureFlagMutation,
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
+      commerceOptIn: commerceOptInMutation,
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,

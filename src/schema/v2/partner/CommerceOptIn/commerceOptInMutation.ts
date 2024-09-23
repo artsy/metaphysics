@@ -1,3 +1,4 @@
+import { GraphQLNonNull } from "graphql"
 import {
   GraphQLBoolean,
   GraphQLInt,
@@ -36,7 +37,6 @@ interface Input {
 
 const CommerceOptInSuccesssType = new GraphQLObjectType<any, ResolverContext>({
   name: "CommerceOptInSuccess",
-  isTypeOf: (data) => data.id,
   fields: () => ({
     updatedCommerceOptIn: { type: CommerceOptInResponseType },
     skippedCommerceOptIn: { type: CommerceOptInResponseType },
@@ -73,6 +73,10 @@ export const commerceOptInMutation = mutationWithClientMutationId<
   name: "CommerceOptInMutation",
   description: "Opt all eligible artworks into BNMO",
   inputFields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ID of the partner",
+    },
     exactPrice: {
       type: GraphQLBoolean,
       description: "whether or not the artwork is set to exact price",
