@@ -5610,7 +5610,6 @@ type CommerceOptInResponse {
 }
 
 type CommerceOptInSuccess {
-  skippedCommerceOptIn: CommerceOptInResponse
   updatedCommerceOptIn: CommerceOptInResponse
 }
 

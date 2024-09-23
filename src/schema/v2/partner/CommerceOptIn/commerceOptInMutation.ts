@@ -38,8 +38,12 @@ interface Input {
 const CommerceOptInSuccesssType = new GraphQLObjectType<any, ResolverContext>({
   name: "CommerceOptInSuccess",
   fields: () => ({
-    updatedCommerceOptIn: { type: CommerceOptInResponseType },
-    skippedCommerceOptIn: { type: CommerceOptInResponseType },
+    updatedCommerceOptIn: {
+      type: CommerceOptInResponseType,
+      resolve: (result) => {
+        return { count: result.success, ids: [] }
+      },
+    },
   }),
 })
 
@@ -58,9 +62,10 @@ const CommerceOptInMutationType = new GraphQLUnionType({
   name: "CommerceOptInMutationType",
   types: [CommerceOptInSuccesssType, CommerceOptInFailureType],
   resolveType: (object) => {
-    if (object.mutationError) {
+    if (object._type == "GravityMutationError") {
       return CommerceOptInFailureType
     }
+
     return CommerceOptInSuccesssType
   },
 })
@@ -105,15 +110,7 @@ export const commerceOptInMutation = mutationWithClientMutationId<
   outputFields: {
     commerceOptInMutationOrError: {
       type: CommerceOptInMutationType,
-      resolve: (result) => {
-        return {
-          updatedCommerceOptIn: { count: result.success, ids: [] },
-          skippedCommerceOptIn: {
-            count: result.errors.count,
-            ids: result.errors.ids,
-          },
-        }
-      },
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
