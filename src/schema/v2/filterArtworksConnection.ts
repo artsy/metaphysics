@@ -87,7 +87,7 @@ export const FilterArtworksCounts = {
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
       followedArtists: numeral(
-        ({ aggregations }) => aggregations.followed_artists.value
+        ({ aggregations }) => aggregations.followed_artists?.value
       ),
     },
   }),
