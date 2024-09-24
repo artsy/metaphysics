@@ -21,7 +21,7 @@ import { AuctionLotsForYou } from "../sections/AuctionLotsForYou"
 import { RecentlyViewedArtworks } from "../sections/RecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
 import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
+import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 
 const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
   LatestActivity,
@@ -54,35 +54,10 @@ export async function getLegacyZoneSections(context: ResolverContext) {
   const displayableSections: HomeViewSection[] = []
 
   LEGACY_ZONE_SECTIONS.forEach((section) => {
-    if (isDisplayable(section, context)) {
+    if (isSectionDisplayable(section, context)) {
       displayableSections.push(section)
     }
   })
 
   return displayableSections
-}
-
-/**
- * Determine if an individual section can be displayed, considering the current
- * context, session, feature flags, etc.
- */
-function isDisplayable(section: HomeViewSection, context: ResolverContext) {
-  // public content
-  const isPublicSection = section.requiresAuthentication === false
-
-  // personalized content
-  const isAuthenticatedUser = !!context.accessToken
-  const isValidPersonalizedSection =
-    section.requiresAuthentication && isAuthenticatedUser
-
-  let isDisplayable = isPublicSection || isValidPersonalizedSection
-
-  // feature flags
-  if (isDisplayable && section.featureFlag) {
-    isDisplayable = isFeatureFlagEnabled(section.featureFlag, {
-      userId: context.userID,
-    })
-  }
-
-  return isDisplayable
 }
