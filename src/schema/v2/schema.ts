@@ -232,6 +232,7 @@ import { CacheableDirective } from "directives/cacheableDirective"
 import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsDirectiveExtension"
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
 import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
+import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -377,6 +378,7 @@ export default new GraphQLSchema({
       artworksCollectionsBatchUpdate: artworksCollectionsBatchUpdateMutation,
       bulkUpdatePartnerArtworks: bulkUpdatePartnerArtworksMutation,
       commerceOptIn: commerceOptInMutation,
+      commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,
