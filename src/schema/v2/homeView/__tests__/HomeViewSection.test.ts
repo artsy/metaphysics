@@ -1,5 +1,12 @@
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
+
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn(() => true),
+}))
+
+const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
 describe("HomeViewSection", () => {
   describe("SimilarToRecentlyViewedArtworks", () => {
@@ -689,75 +696,103 @@ describe("HomeViewSection", () => {
   })
 
   describe("HomeViewSectionFairs", () => {
-    it("returns correct data", async () => {
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-featured-fairs") {
-              __typename
-              component {
-                title
-              }
+    const query = gql`
+      {
+        homeView {
+          section(id: "home-view-section-featured-fairs") {
+            __typename
+            component {
+              title
+            }
 
-              ... on HomeViewSectionFairs {
-                fairsConnection(first: 2) {
-                  edges {
-                    node {
-                      name
-                    }
+            ... on HomeViewSectionFairs {
+              fairsConnection(first: 2) {
+                edges {
+                  node {
+                    name
                   }
                 }
               }
             }
           }
         }
-      `
-
-      const fairs = {
-        body: [
-          {
-            id: "fair-1",
-            name: "Fair 1",
-            start_at: "2024-05-23T11:00:00+00:00",
-            end_at: "2024-06-23T11:00:00+00:00",
-          },
-          {
-            id: "fair-2",
-            name: "Fair 2",
-            start_at: "2024-05-23T11:00:00+00:00",
-            end_at: "2024-06-23T11:00:00+00:00",
-          },
-        ],
       }
+    `
 
-      const context = {
-        fairsLoader: jest.fn().mockResolvedValue(fairs),
-      }
+    describe("when the feature flag is enabled", () => {
+      beforeEach(() => {
+        mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+          if (flag === "onyx_enable-home-view-section-featured-fairs")
+            return true
+        })
+      })
 
-      const { homeView } = await runQuery(query, context)
-
-      expect(homeView.section).toMatchInlineSnapshot(`
-        Object {
-          "__typename": "HomeViewSectionFairs",
-          "component": Object {
-            "title": "Featured Fairs",
-          },
-          "fairsConnection": Object {
-            "edges": Array [
-              Object {
-                "node": Object {
-                  "name": "Fair 1",
-                },
-              },
-              Object {
-                "node": Object {
-                  "name": "Fair 2",
-                },
-              },
-            ],
-          },
+      it("returns correct data", async () => {
+        const fairs = {
+          body: [
+            {
+              id: "fair-1",
+              name: "Fair 1",
+              start_at: "2024-05-23T11:00:00+00:00",
+              end_at: "2024-06-23T11:00:00+00:00",
+            },
+            {
+              id: "fair-2",
+              name: "Fair 2",
+              start_at: "2024-05-23T11:00:00+00:00",
+              end_at: "2024-06-23T11:00:00+00:00",
+            },
+          ],
         }
-      `)
+
+        const context = {
+          fairsLoader: jest.fn().mockResolvedValue(fairs),
+        }
+
+        const { homeView } = await runQuery(query, context)
+
+        expect(homeView.section).toMatchInlineSnapshot(`
+          Object {
+            "__typename": "HomeViewSectionFairs",
+            "component": Object {
+              "title": "Featured Fairs",
+            },
+            "fairsConnection": Object {
+              "edges": Array [
+                Object {
+                  "node": Object {
+                    "name": "Fair 1",
+                  },
+                },
+                Object {
+                  "node": Object {
+                    "name": "Fair 2",
+                  },
+                },
+              ],
+            },
+          }
+        `)
+      })
+    })
+
+    describe("when the feature flag is disabled", () => {
+      beforeEach(() => {
+        mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+          if (flag === "onyx_enable-home-view-section-featured-fairs")
+            return false
+        })
+      })
+
+      it("throws an error", async () => {
+        const context = {
+          fairsLoader: jest.fn().mockResolvedValue([]),
+        }
+
+        await expect(runQuery(query, context)).rejects.toThrow(
+          "Section requires authorized user: home-view-section-featured-fairs"
+        )
+      })
     })
   })
 

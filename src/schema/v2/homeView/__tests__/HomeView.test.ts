@@ -327,7 +327,7 @@ describe("homeView", () => {
 
         it("throws an error", async () => {
           await expect(runQuery(query, context)).rejects.toThrow(
-            "Section requires authenticated user"
+            "Section requires authorized user"
           )
         })
       })
