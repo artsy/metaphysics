@@ -34,7 +34,8 @@ describe("CommerceOptInMutation", () => {
       }
 
       const context = {
-        commerceOptInLoader: () => Promise.resolve(successfulResponse),
+        optInArtworksIntoCommerceLoader: () =>
+          Promise.resolve(successfulResponse),
       }
 
       it("opts eligible artworks into BNMO", async () => {
@@ -67,7 +68,7 @@ describe("CommerceOptInMutation", () => {
       }
 
       const context = {
-        commerceOptInLoader: () => Promise.resolve(failureResponse),
+        optInArtworksIntoCommerceLoader: () => Promise.resolve(failureResponse),
       }
 
       it("returns an error", async () => {

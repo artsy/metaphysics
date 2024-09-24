@@ -123,7 +123,7 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       coaByGallery,
       coaByAuthenticatingBody,
     },
-    { commerceOptInLoader }
+    { optInArtworksIntoCommerceLoader }
   ) => {
     const gravityOptions = {
       exact_price: exactPrice,
@@ -134,12 +134,12 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       coa_by_authenticating_body: coaByAuthenticatingBody,
     }
 
-    if (!commerceOptInLoader) {
+    if (!optInArtworksIntoCommerceLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
 
     try {
-      return await commerceOptInLoader(id, gravityOptions)
+      return await optInArtworksIntoCommerceLoader(id, gravityOptions)
     } catch (error) {
       const formattedErr = formatGravityError(error)
       if (formattedErr) {
