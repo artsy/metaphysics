@@ -21,6 +21,7 @@ import { AuctionLotsForYou } from "../sections/AuctionLotsForYou"
 import { RecentlyViewedArtworks } from "../sections/RecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
 import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
   LatestActivity,
@@ -75,7 +76,12 @@ function isDisplayable(section: HomeViewSection, context: ResolverContext) {
     section.requiresAuthentication && isAuthenticatedUser
 
   // feature flagged sections
-  // TKTK
+  if (section.id === "home-view-section-featured-fairs") {
+    return isFeatureFlagEnabled(
+      "onyx_enable-home-view-section-featured-fairs",
+      { userId: context.userID }
+    )
+  }
 
   return isPublicSection || isValidPersonalizedSection
 }
