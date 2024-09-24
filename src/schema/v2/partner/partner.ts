@@ -50,11 +50,7 @@ import { setVersion } from "schema/v2/image/normalize"
 import { compact } from "lodash"
 import { InquiryRequestType } from "./partnerInquiryRequest"
 import { PartnerDocumentsConnection } from "./partnerDocumentsConnection"
-import {
-  AlertType,
-  AlertsSummaryFields,
-  PartnerAlertsEdgeFields,
-} from "../Alerts"
+import { AlertType, PartnerAlertsEdgeFields } from "../Alerts"
 import {
   ArtworkVisibility,
   ArtworkVisibilityEnumValues,
@@ -171,12 +167,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       partnerShowsMatchConnection,
     } = require("./PartnerMatch")
 
-    const AlertsSummaryArtistConnectionType = connectionWithCursorInfo({
-      name: "AlertsSummaryArtist",
-      edgeFields: AlertsSummaryFields,
-      nodeType: ArtistType,
-    }).connectionType
-
     const ArtistsWithAlertCountsConnectionType = connectionWithCursorInfo({
       name: "ArtistsWithAlertCounts",
       edgeFields: {
@@ -214,71 +204,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      alertsSummaryArtistsConnection: {
-        type: AlertsSummaryArtistConnectionType,
-        args: pageable({
-          represented: {
-            type: GraphQLBoolean,
-          },
-          activeInventory: {
-            type: GraphQLBoolean,
-          },
-          hasMedium: {
-            type: GraphQLBoolean,
-          },
-          hasRarity: {
-            type: GraphQLBoolean,
-          },
-          hasPrice: {
-            type: GraphQLBoolean,
-          },
-          page: {
-            type: GraphQLInt,
-          },
-          size: {
-            type: GraphQLInt,
-          },
-        }),
-        resolve: async ({ _id }, args, { partnerAlertsSummaryLoader }) => {
-          if (!partnerAlertsSummaryLoader) return null
-
-          const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            args
-          )
-
-          type GravityArgs = {
-            page: number
-            size: number
-            represented?: boolean
-            active_inventory?: boolean
-            has_medium?: boolean
-            has_rarity?: boolean
-            has_price?: boolean
-          }
-
-          const gravityArgs: GravityArgs = { page, size }
-          if (args.represented) gravityArgs.represented = true
-          if (args.activeInventory) gravityArgs.active_inventory = true
-          if (args.hasMedium) gravityArgs.has_medium = true
-          if (args.hasRarity) gravityArgs.has_rarity = true
-          if (args.hasPrice) gravityArgs.has_price = true
-
-          const {
-            summary: body,
-            total_count: totalCount,
-          } = await partnerAlertsSummaryLoader(_id, gravityArgs)
-
-          return paginationResolver({
-            totalCount,
-            offset,
-            page,
-            size,
-            body,
-            args,
-            resolveNode: ({ artist }) => artist,
-          })
-        },
-      },
       artistsWithAlertCountsConnection: {
         type: ArtistsWithAlertCountsConnectionType,
         args: pageable({

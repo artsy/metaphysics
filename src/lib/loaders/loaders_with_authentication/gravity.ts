@@ -20,7 +20,6 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    artistAlertsLoader: gravityLoader((id) => `artist/${id}/alerts`),
     artistDuplicatesLoader: gravityLoader(
       (id) => `artist/${id}/duplicates`,
       {},
@@ -62,11 +61,6 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     collectorProfileSummaryLoader: gravityLoader("collector_profile_summary"),
-    optInArtworksIntoCommerceLoader: gravityLoader(
-      (id) => `partner/${id}/opt_in_artworks_into_commerce`,
-      {},
-      { method: "PUT" }
-    ),
     createAccountRequestLoader: gravityLoader(
       "account_requests",
       {},
@@ -75,6 +69,11 @@ export default (accessToken, userID, opts) => {
     createArtistLoader: gravityLoader("artist", {}, { method: "POST" }),
     createArtistCareerHighlightLoader: gravityLoader(
       "artist_career_highlight",
+      {},
+      { method: "POST" }
+    ),
+    createCommerceOptInEligibleArtworksReportLoader: gravityLoader(
+      (id) => `partner/${id}/commerce_opt_in_eligible_artworks_report`,
       {},
       { method: "POST" }
     ),
@@ -556,8 +555,10 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     matchPagesLoader: gravityLoader("match/pages", {}, { headers: true }),
-    partnerAlertsSummaryLoader: gravityLoader(
-      (id) => `partner/${id}/alert_summary`
+    optInArtworksIntoCommerceLoader: gravityLoader(
+      (id) => `partner/${id}/opt_in_artworks_into_commerce`,
+      {},
+      { method: "PUT" }
     ),
     partnerArtistsWithAlertCountsLoader: gravityLoader(
       (id) => `partner/${id}/artists_with_alert_counts`,

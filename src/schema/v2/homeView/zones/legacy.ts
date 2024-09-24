@@ -21,6 +21,7 @@ import { AuctionLotsForYou } from "../sections/AuctionLotsForYou"
 import { RecentlyViewedArtworks } from "../sections/RecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
 import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
+import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 
 const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
   LatestActivity,
@@ -46,20 +47,17 @@ const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
   FeaturedFairs,
 ]
 
+/**
+ * Assemble the list of sections that can be displayed
+ */
 export async function getLegacyZoneSections(context: ResolverContext) {
-  const isAuthenticatedUser = !!context.accessToken
+  const displayableSections: HomeViewSection[] = []
 
-  const displayableSections = LEGACY_ZONE_SECTIONS.reduce(
-    (sections, section) => {
-      const isDisplayable =
-        section.requiresAuthentication === false || // public content, or
-        (section.requiresAuthentication && isAuthenticatedUser) // user-specific content
-
-      if (isDisplayable) sections.push(section)
-      return sections
-    },
-    [] as HomeViewSection[]
-  )
+  LEGACY_ZONE_SECTIONS.forEach((section) => {
+    if (isSectionDisplayable(section, context)) {
+      displayableSections.push(section)
+    }
+  })
 
   return displayableSections
 }
