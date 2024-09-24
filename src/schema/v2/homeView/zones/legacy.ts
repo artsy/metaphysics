@@ -63,7 +63,7 @@ export async function getLegacyZoneSections(context: ResolverContext) {
 }
 
 /**
- * Determine if an individual section can displayed, consdering the current
+ * Determine if an individual section can be displayed, considering the current
  * context, session, feature flags, etc.
  */
 function isDisplayable(section: HomeViewSection, context: ResolverContext) {
