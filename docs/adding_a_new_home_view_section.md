@@ -2,29 +2,11 @@
 
 Before creating a new section, please check first if there is an existing section that returns the same data on the home view. _Make sure to also check hidden sections_. If there is one 🎉, you can skip to Step 3.
 
-**1. Add a new `HomeViewSection` type.**
+**1. Define your new section schema in [HomeViewSection.ts](../src/schema/v2/homeView/HomeViewSection.ts)**
 
 ```typescript
-export const HomeViewSectionType = new GraphQLUnionType({
-  name: "HomeViewSection",
-  types: [
-    MyNewHomeViewSection, // 👈 Add your new type here
-    ...
-  ],
-  resolveType: (value) => {
-    return value.type
-  },
-})
-```
-
-**2. Define your new home view section type.**
-
-```typescript
-const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "MyNewHomeViewSection",
+const MyNewHomeViewSectionType = new GraphQLObjectType<any, ResolverContext>({
+  name: HomeViewSectionTypeNames.MyNewHomeViewSection,
   description: "A relevant description of your new section",
   interfaces: [GenericHomeViewSectionInterface, NodeInterface],
   fields: {
@@ -36,63 +18,40 @@ const ArtworksRailHomeViewSectionType = new GraphQLObjectType<
 })
 ```
 
-**3. Define your new section inside `homeView/sections.ts`**
+**2. Make your section available as HomeViewSection in [HomeViewSection.ts](../src/schema/v2/homeView/HomeViewSection.ts)**
 
 ```typescript
-export const MyNewHomeViewSectionName: HomeViewSection = {
+export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
+  ...,
+  MyNewHomeViewSectionType, // 👈 Add your new type here
+]
+```
+
+**3. Define section logic in [homeView/sections](../src/schema/v2/homeView/sections)**
+
+```typescript
+export const MyNewSection: HomeViewSection = {
   id: "home-view-section-[name-of-the-new-section]",
-  type: "ArtworksRailHomeViewSection",
+  type: "MyNewHomeViewSection",
   component: {
-    title: "Recently viewed works",
+    title: "My New Section",
   },
-  resolver: RecentlyViewedArtworksResolver,
+  resolver: withHomeViewTimeout(),
+  // 👇 Add your new resolver here
 }
 ```
 
 - Note: If you don't prefix the id with `home-view-section-`, it might break deep linking in App.
 
-**4. Add the new section resolver. If you are creating a new section, create a new file for it. Otherwise, use the existing home section types resolvers.**
+**5. Expose your section in the appropriate zone:**
 
-Example 1: If you want to add a new artworks rail section to the existing `ArtworksRailHomeViewSection`, you need to add its resovler to `homeView/artworkResolvers.ts`
-Example 2: If you want to add a new section that for a new type, you need to add its resovler to `homeView/newSectionResolvers.ts`
+> Currently, only legacy zone is supported.
 
-**5. In order to expose your section to client apps:**
-
-- Add your new section to the `sections` array in `homeView/getSectionsForUser.ts` and define the order you want to display it at. In the exmaple below, we are adding the new section at the end of the list if you are a regular user, and at the beginning of the list if you are an admin.
+- Add your new section to the `LEGACY_ZONE_SECTIONS` array in `homeView/zones/legacy.ts` and define the order you want to display it at.
 
 ```typescript
-export async function getSectionsForUser(
-  context: ResolverContext
-): Promise<HomeViewSection[]> {
+  MyNewSection, // 👈 Add your new section here if you want it to appear first
   ...
-  let sections: HomeViewSection[] = []
-
-  if (me.type === "Admin") {
-    sections = [
-      MyNewHomeViewSectionName, // 👈 Add your new section here
-      ...
-    ]
-  } else {
-    sections = [
-      ...
-      MyNewHomeViewSectionName, // 👈 Add your new section here
-    ]
-  }
-
-  return sections
-}
-```
-
-- Add section the list of sections in `homeView/sections.ts`
-
-```typescript
-// 👇 This will expose your section to homeView > section(id: "home-view-section-[name-of-the-new-section]")
-const sections: HomeViewSection[] = [
-  RecentlyViewedArtworks,
-  AuctionLotsForYou,
-  NewWorksForYou,
-  TrendingArtists,
-]
 ```
 
 If you want to see a PR where this comes together, check out [TODO: Add PR link here]().
