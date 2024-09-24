@@ -75,13 +75,14 @@ function isDisplayable(section: HomeViewSection, context: ResolverContext) {
   const isValidPersonalizedSection =
     section.requiresAuthentication && isAuthenticatedUser
 
-  // feature flagged sections
-  if (section.id === "home-view-section-featured-fairs") {
-    return isFeatureFlagEnabled(
-      "onyx_enable-home-view-section-featured-fairs",
-      { userId: context.userID }
-    )
+  let isDisplayable = isPublicSection || isValidPersonalizedSection
+
+  // feature flags
+  if (isDisplayable && section.featureFlag) {
+    isDisplayable = isFeatureFlagEnabled(section.featureFlag, {
+      userId: context.userID,
+    })
   }
 
-  return isPublicSection || isValidPersonalizedSection
+  return isDisplayable
 }
