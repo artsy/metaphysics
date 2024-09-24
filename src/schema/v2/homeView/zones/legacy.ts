@@ -46,20 +46,36 @@ const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
   FeaturedFairs,
 ]
 
+/**
+ * Assemble the list of sections that can be displayed
+ */
 export async function getLegacyZoneSections(context: ResolverContext) {
-  const isAuthenticatedUser = !!context.accessToken
+  const displayableSections: HomeViewSection[] = []
 
-  const displayableSections = LEGACY_ZONE_SECTIONS.reduce(
-    (sections, section) => {
-      const isDisplayable =
-        section.requiresAuthentication === false || // public content, or
-        (section.requiresAuthentication && isAuthenticatedUser) // user-specific content
-
-      if (isDisplayable) sections.push(section)
-      return sections
-    },
-    [] as HomeViewSection[]
-  )
+  LEGACY_ZONE_SECTIONS.forEach((section) => {
+    if (isDisplayable(section, context)) {
+      displayableSections.push(section)
+    }
+  })
 
   return displayableSections
+}
+
+/**
+ * Determine if an individual section can displayed, consdering the current
+ * context, session, feature flags, etc.
+ */
+function isDisplayable(section: HomeViewSection, context: ResolverContext) {
+  // public content
+  const isPublicSection = section.requiresAuthentication === false
+
+  // personalized content
+  const isAuthenticatedUser = !!context.accessToken
+  const isValidPersonalizedSection =
+    section.requiresAuthentication && isAuthenticatedUser
+
+  // feature flagged sections
+  // TKTK
+
+  return isPublicSection || isValidPersonalizedSection
 }
