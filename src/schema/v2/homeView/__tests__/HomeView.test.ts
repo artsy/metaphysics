@@ -2,6 +2,12 @@ import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
 
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn((flag: string) => {
+    return !!flag.match("enable-home-view-section")
+  }),
+}))
+
 describe("homeView", () => {
   describe("sectionsConnection", () => {
     const query = gql`
@@ -321,7 +327,7 @@ describe("homeView", () => {
 
         it("throws an error", async () => {
           await expect(runQuery(query, context)).rejects.toThrow(
-            "Section requires authenticated user"
+            "Section requires authorized user"
           )
         })
       })

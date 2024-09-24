@@ -14,6 +14,7 @@ import {
 import { HomeViewGenericSectionInterface } from "./HomeViewSection"
 import { getSectionsForUser } from "./helpers/getSectionsForUser"
 import { registry } from "./sections"
+import { isSectionDisplayable } from "./helpers/isSectionDisplayable"
 
 const SectionsConnectionType = connectionWithCursorInfo({
   nodeType: HomeViewGenericSectionInterface,
@@ -53,14 +54,13 @@ export const Section: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: (_parent, args, context, _info) => {
     const { id } = args
     const section = registry[id]
-    const userIsAuthenticated = !!context.accessToken
 
     if (!section) {
       throw new Error(`Section not found: ${id}`)
     }
 
-    if (section.requiresAuthentication && !userIsAuthenticated) {
-      throw new Error(`Section requires authenticated user: ${id}`)
+    if (!isSectionDisplayable(section, context)) {
+      throw new Error(`Section requires authorized user: ${id}`)
     }
 
     return section

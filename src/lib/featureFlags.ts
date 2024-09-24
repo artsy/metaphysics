@@ -12,9 +12,10 @@ const FEATURE_FLAGS_LIST = [
   "diamond_blurhash-enabled-globally",
   "emerald_signals-partner-offers",
   "emerald_signals-auction-improvements",
+  "onyx_enable-home-view-section-featured-fairs",
 ] as const
 
-type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
+export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
 
 let unleashClient: Unleash
 

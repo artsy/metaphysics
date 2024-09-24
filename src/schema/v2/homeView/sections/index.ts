@@ -24,6 +24,7 @@ import { News } from "./News"
 import { LatestArticles } from "./LatestArticles"
 import { Auctions } from "./Auctions"
 import { GalleriesNearYou } from "./GalleriesNearYou"
+import { FeatureFlag } from "lib/featureFlags"
 
 type MaybeResolved<T> =
   | T
@@ -32,7 +33,7 @@ type MaybeResolved<T> =
 export type HomeViewSection = {
   id: string
   contextModule: ContextModule
-  type: keyof typeof HomeViewSectionTypeNames
+  featureFlag?: FeatureFlag
   component?: {
     title?: MaybeResolved<string>
     type?: string
@@ -43,6 +44,7 @@ export type HomeViewSection = {
   ownerType?: OwnerType
   requiresAuthentication: boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
+  type: keyof typeof HomeViewSectionTypeNames
 }
 
 const sections: HomeViewSection[] = [
