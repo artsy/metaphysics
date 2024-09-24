@@ -13,6 +13,7 @@ export const FeaturedFairs: HomeViewSection = {
     title: "Featured Fairs",
     description: "See Works in Top Art Fairs",
   },
+  featureFlag: "onyx_enable-home-view-section-featured-fairs",
   requiresAuthentication: false,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {

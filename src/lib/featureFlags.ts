@@ -15,7 +15,7 @@ const FEATURE_FLAGS_LIST = [
   "onyx_enable-home-view-section-featured-fairs",
 ] as const
 
-type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
+export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
 
 let unleashClient: Unleash
 
