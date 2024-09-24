@@ -1,5 +1,12 @@
 import { ResolverContext } from "types/graphql"
 import { getLegacyZoneSections } from "../legacy"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
+
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn(() => true),
+}))
+
+const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
 describe("getLegacyZoneSections", () => {
   describe("with an authenticated user", () => {
@@ -62,6 +69,42 @@ describe("getLegacyZoneSections", () => {
           "home-view-section-featured-fairs",
         ]
       `)
+    })
+  })
+
+  describe("FeaturedFairs section", () => {
+    describe("when the feature flag is enabled", () => {
+      beforeEach(() => {
+        mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+          if (flag === "onyx_enable-home-view-section-featured-fairs")
+            return true
+        })
+      })
+
+      it("returns the section", async () => {
+        const context: Partial<ResolverContext> = {}
+        const sections = await getLegacyZoneSections(context as ResolverContext)
+        const sectionIds = sections.map((section) => section.id)
+
+        expect(sectionIds).toInclude("home-view-section-featured-fairs")
+      })
+    })
+
+    describe("when the feature flag is not enabled", () => {
+      beforeEach(() => {
+        mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+          if (flag === "onyx_enable-home-view-section-featured-fairs")
+            return false
+        })
+      })
+
+      it("does not return the section", async () => {
+        const context: Partial<ResolverContext> = {}
+        const sections = await getLegacyZoneSections(context as ResolverContext)
+        const sectionIds = sections.map((section) => section.id)
+
+        expect(sectionIds).not.toInclude("home-view-section-featured-fairs")
+      })
     })
   })
 })
