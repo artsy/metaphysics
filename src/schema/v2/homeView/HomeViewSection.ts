@@ -21,6 +21,7 @@ import { InternalIDFields, NodeInterface } from "../object_identification"
 import { SalesConnectionField } from "../sales"
 import { HomeViewComponent } from "./HomeViewComponent"
 import { toGlobalId } from "graphql-relay"
+import { FeaturedLinkConnectionType } from "../FeaturedLink/featuredLink"
 
 // section interface
 
@@ -64,6 +65,7 @@ export const HomeViewSectionTypeNames = {
   HomeViewSectionSales: "HomeViewSectionSales",
   HomeViewSectionShows: "HomeViewSectionShows",
   HomeViewSectionViewingRooms: "HomeViewSectionViewingRooms",
+  HomeViewSectionFeaturedLinks: "HomeViewSectionFeaturedLinks",
 } as const
 
 export const HomeViewGenericSectionInterface = new GraphQLInterfaceType({
@@ -274,6 +276,25 @@ export const HomeViewGalleriesSectionType = new GraphQLObjectType<
   },
 })
 
+export const HomeViewSectionFeaturedLinks = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: HomeViewSectionTypeNames.HomeViewSectionFeaturedLinks,
+  description: "A section containing a list of navigation links",
+  interfaces: [HomeViewGenericSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+
+    linksConnection: {
+      type: FeaturedLinkConnectionType,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
+    },
+  },
+})
+
 export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
   HomeViewActivitySectionType,
   HomeViewArticlesSectionType,
@@ -287,4 +308,5 @@ export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
   HomeViewSalesSectionType,
   HomeViewShowsSectionType,
   HomeViewViewingRoomsSectionType,
+  HomeViewSectionFeaturedLinks,
 ]
