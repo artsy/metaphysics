@@ -21,6 +21,7 @@ describe("getSections", () => {
       expect(sectionIds).toMatchInlineSnapshot(`
         Array [
           "home-view-section-latest-activity",
+          "home-view-section-geographic-links",
           "home-view-section-new-works-for-you",
           "home-view-section-hero-units",
           "home-view-section-active-bids",
@@ -57,6 +58,7 @@ describe("getSections", () => {
 
       expect(sectionIds).toMatchInlineSnapshot(`
         Array [
+          "home-view-section-geographic-links",
           "home-view-section-hero-units",
           "home-view-section-auctions",
           "home-view-section-galleries-near-you",

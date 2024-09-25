@@ -13,7 +13,7 @@ describe("homeView", () => {
     const query = gql`
       {
         homeView {
-          sectionsConnection(first: 20) {
+          sectionsConnection(first: 21) {
             edges {
               node {
                 __typename
@@ -42,6 +42,14 @@ describe("homeView", () => {
         expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
           Object {
             "edges": Array [
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionFeaturedLinks",
+                  "component": Object {
+                    "title": "Browse by country",
+                  },
+                },
+              },
               Object {
                 "node": Object {
                   "__typename": "HomeViewSectionHeroUnits",
@@ -145,6 +153,14 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionActivity",
                   "component": Object {
                     "title": "Latest Activity",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionFeaturedLinks",
+                  "component": Object {
+                    "title": "Browse by country",
                   },
                 },
               },

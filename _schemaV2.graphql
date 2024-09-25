@@ -11154,7 +11154,7 @@ type HomeViewSectionFeaturedLinks implements HomeViewSectionGeneric & Node {
   component: HomeViewComponent
 
   # [Analytics] `context module` analytics value for this section, as defined in our schema (artsy/cohesion)
-  contextModule: String!
+  contextModule: String
 
   # A globally unique ID.
   id: ID!
