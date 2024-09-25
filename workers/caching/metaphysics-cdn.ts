@@ -28,13 +28,8 @@ export default {
       cacheUrl.pathname = `${cacheUrl.pathname}_post_${cacheKeyGeneration}${hash}`
 
       console.log(
-        "Using cache key path: ",
-        cacheUrl.pathname,
-        "body: ",
-        body.substring(0, 100),
-        "x-relay-cache-path: ",
-        request.headers.get("x-relay-cache-path")
-      ) // DEBUG
+        `Using key ${cacheUrl.pathname} for ${body.substring(0, 100)}...`
+      )
 
       return new Request(cacheUrl.toString(), {
         headers: request.headers,
@@ -47,8 +42,6 @@ export default {
         const cacheControl = request.headers.get("cache-control")
 
         if (cacheControl?.includes("max-age=")) {
-          console.log("Cache-Control: ", cacheControl) // DEBUG
-
           const directives = cacheControl
             .toLowerCase()
             .split(",")
@@ -70,6 +63,24 @@ export default {
 
     try {
       if (
+        request.method.toUpperCase() === "OPTIONS" &&
+        request.headers.get("origin")?.match(/\.artsy\.net$/)
+      ) {
+        // Handle preflight requests
+        return new Response(null, {
+          status: 204,
+          headers: {
+            "Access-Control-Allow-Headers":
+              "cache-control,content-type,x-access-token,x-original-session-id,x-timezone,x-user-id",
+            "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Max-Age": "600",
+            Vary: "Origin",
+          },
+        })
+      }
+
+      if (
         !request.headers.get("cache-control")?.includes("no-cache") &&
         !request.headers.has("x-access-token") &&
         request.method.toUpperCase() === "POST"
@@ -85,8 +96,6 @@ export default {
         let response
 
         if (cachedResponse) {
-          console.log("Cache hit.") // DEBUG
-
           response = new Response(cachedResponse.body, cachedResponse)
           response.headers.set("Cache-Control", `max-age=${maxAge}`)
         } else {
