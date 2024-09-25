@@ -74,4 +74,51 @@ describe("isSectionDisplayable", () => {
       ).toBe(false)
     })
   })
+
+  describe("with a section's own displayability check", () => {
+    it("returns true if the section does NOT define a displayability check", () => {
+      const section: Partial<HomeViewSection> = {
+        requiresAuthentication: false,
+        shouldBeDisplayed: undefined,
+      }
+      const context: Partial<ResolverContext> = { userID: "42" }
+
+      expect(
+        isSectionDisplayable(
+          section as HomeViewSection,
+          context as ResolverContext
+        )
+      ).toBe(true)
+    })
+
+    it("returns true if the section's displayability check passes", () => {
+      const section: Partial<HomeViewSection> = {
+        requiresAuthentication: false,
+        shouldBeDisplayed: () => true,
+      }
+      const context: Partial<ResolverContext> = { userID: "42" }
+
+      expect(
+        isSectionDisplayable(
+          section as HomeViewSection,
+          context as ResolverContext
+        )
+      ).toBe(true)
+    })
+
+    it("returns false if the section's displayability check fails", () => {
+      const section: Partial<HomeViewSection> = {
+        requiresAuthentication: false,
+        shouldBeDisplayed: () => false,
+      }
+      const context: Partial<ResolverContext> = { userID: "42" }
+
+      expect(
+        isSectionDisplayable(
+          section as HomeViewSection,
+          context as ResolverContext
+        )
+      ).toBe(false)
+    })
+  })
 })
