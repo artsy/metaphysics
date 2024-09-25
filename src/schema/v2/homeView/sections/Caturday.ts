@@ -6,7 +6,7 @@ import filterArtworksConnection from "schema/v2/filterArtworksConnection"
 
 export const CaturdaySection: HomeViewSection = {
   id: "home-view-section-caturday",
-  // featureFlag: "onyx_enable-home-view-section-caturday",
+  featureFlag: "onyx_enable-home-view-section-caturday",
 
   contextModule: "ContextModule.caturday" as ContextModule,
   ownerType: "OwnerType.caturday" as OwnerType,
