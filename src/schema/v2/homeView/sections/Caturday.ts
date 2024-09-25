@@ -14,6 +14,7 @@ export const CaturdaySection: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
 
   component: {
+    type: "VeryFelineArtworks",
     title: "It's Caturday",
     behaviors: {
       viewAll: {
