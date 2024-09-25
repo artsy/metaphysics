@@ -213,6 +213,14 @@ export const ExampleSection: HomeViewSection = {
   requiresAuthentication: false,
 
   /*
+   * Arbitrary logic to determine whether this section should be displayed.
+   *
+   * Intended for considering any logic beyond the standard checks
+   * that have already been declared above (featureFlag, requiresAuthentication)
+   */
+  shouldBeDisplayed: (_context: ResolverContext) => true,
+
+  /*
    * The resolver method that knows how to fetch the data for this section.
    *
    * Has the same signature as a typical Metaphysics resolver.
