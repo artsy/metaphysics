@@ -25,6 +25,7 @@ import { LatestArticles } from "./LatestArticles"
 import { Auctions } from "./Auctions"
 import { GalleriesNearYou } from "./GalleriesNearYou"
 import { FeatureFlag } from "lib/featureFlags"
+import { CaturdaySection } from "./Caturday"
 
 type MaybeResolved<T> =
   | T
@@ -52,6 +53,7 @@ const sections: HomeViewSection[] = [
   ActiveBids,
   AuctionLotsForYou,
   Auctions,
+  CaturdaySection,
   CuratorsPicksEmerging,
   FeaturedFairs,
   GalleriesNearYou,
