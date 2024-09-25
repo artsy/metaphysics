@@ -27,5 +27,10 @@ export function isSectionDisplayable(
     })
   }
 
+  // section's display pre-check
+  if (typeof section.shouldBeDisplayed === "function") {
+    isDisplayable = isDisplayable && section?.shouldBeDisplayed(context)
+  }
+
   return isDisplayable
 }

@@ -43,6 +43,7 @@ export type HomeViewSection = {
   }
   ownerType?: OwnerType
   requiresAuthentication: boolean
+  shouldBeDisplayed?: (context: ResolverContext) => boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
   type: keyof typeof HomeViewSectionTypeNames
 }
