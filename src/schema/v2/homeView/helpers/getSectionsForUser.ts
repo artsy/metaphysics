@@ -1,14 +1,14 @@
 import { ResolverContext } from "types/graphql"
-import { getLegacyZoneSections } from "../zones/legacy"
+import { getSections } from "../zones/default"
 import { HomeViewSection } from "../sections/"
 
 export async function getSectionsForUser(
   context: ResolverContext
 ): Promise<HomeViewSection[]> {
-  const legacyZoneSections = await getLegacyZoneSections(context)
+  const sections = await getSections(context)
 
   return [
-    ...legacyZoneSections,
+    ...sections,
     // other zones’ sections TK
   ]
 }
