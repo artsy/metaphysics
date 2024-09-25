@@ -9,15 +9,14 @@ import ArticlesConnection from "schema/v2/articlesConnection"
 export const News: HomeViewSection = {
   id: "home-view-section-news",
   type: HomeViewSectionTypeNames.HomeViewSectionArticles,
-  // TODO: This should be differentiated from the Artsy Editorial rail
-  contextModule: ContextModule.articleRail,
+  contextModule: ContextModule.marketNews,
   component: {
     title: "News",
     type: "ArticlesCard",
     behaviors: {
       viewAll: {
         buttonText: "More in News",
-        ownerType: "marketNews" as OwnerType,
+        ownerType: OwnerType.marketNews,
         href: "/news",
       },
     },

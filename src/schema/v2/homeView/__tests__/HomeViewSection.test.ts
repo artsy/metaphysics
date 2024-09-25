@@ -197,7 +197,7 @@ describe("HomeViewSection", () => {
             },
             "title": "Auction lots for You",
           },
-          "ownerType": "lotsForYou",
+          "ownerType": "lotsByArtistsYouFollow",
         }
       `)
     })
