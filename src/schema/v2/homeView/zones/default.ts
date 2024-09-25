@@ -27,6 +27,7 @@ import { CaturdaySection } from "../sections/Caturday"
 const SECTIONS: HomeViewSection[] = [
   LatestActivity,
   CaturdaySection,
+  LatestActivity,
   NewWorksForYou,
   HeroUnits,
   ActiveBids,
