@@ -34,7 +34,7 @@ const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
     },
   },
   contextModule: {
-    type: new GraphQLNonNull(GraphQLString),
+    type: GraphQLString,
     description:
       "[Analytics] `context module` analytics value for this section, as defined in our schema (artsy/cohesion)",
   },
