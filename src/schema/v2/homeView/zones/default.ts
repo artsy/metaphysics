@@ -22,9 +22,11 @@ import { RecentlyViewedArtworks } from "../sections/RecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
 import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
+import { GeographicLinks } from "../sections/GeographicLinks"
 
 const SECTIONS: HomeViewSection[] = [
   LatestActivity,
+  GeographicLinks,
   NewWorksForYou,
   HeroUnits,
   ActiveBids,
