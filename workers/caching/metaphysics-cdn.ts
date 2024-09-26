@@ -71,7 +71,7 @@ export default {
           status: 204,
           headers: {
             "Access-Control-Allow-Headers":
-              "cache-control,content-type,x-access-token,x-original-session-id,x-timezone,x-user-id",
+              "cache-control,content-type,user-agent,x-access-token,x-original-session-id,x-timezone,x-user-id",
             "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Max-Age": "600",
