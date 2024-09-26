@@ -2,8 +2,8 @@
 
 export default {
   async fetch(request, env, ctx) {
-    const cacheKeyGeneration = env.CACHE_KEY_GENERATION || "v1"
-    const defaultMaxAge = env.DEFAULT_MAX_AGE || 30
+    const cacheKeyGeneration = env.CACHE_KEY_GENERATION ?? "v1"
+    const defaultMaxAge = env.DEFAULT_MAX_AGE ?? 30
 
     // Returns a SHA-256 digest of provided string.
     async function sha256(message) {
@@ -64,18 +64,22 @@ export default {
     try {
       if (
         request.method.toUpperCase() === "OPTIONS" &&
+        request.headers.get("access-control-request-method") &&
         request.headers.get("origin")?.match(/\.artsy\.net$/)
       ) {
         // Handle preflight requests
+        const allowedHeaders =
+          request.headers.get("access-control-request-headers") ??
+          "cache-control,content-type,user-agent,x-access-token,x-original-session-id,x-timezone,x-user-id"
         return new Response(null, {
           status: 204,
           headers: {
-            "Access-Control-Allow-Headers":
-              "cache-control,content-type,user-agent,x-access-token,x-original-session-id,x-timezone,x-user-id",
+            "Access-Control-Allow-Headers": allowedHeaders,
             "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Max-Age": "600",
-            Vary: "Origin",
+            "Content-Length": "0",
+            Vary: "Origin,Access-Control-Request-Headers",
           },
         })
       }
