@@ -2,6 +2,7 @@ import {
   GraphQLFieldConfigMap,
   GraphQLID,
   GraphQLInterfaceType,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -22,6 +23,7 @@ import { SalesConnectionField } from "../sales"
 import { HomeViewComponent } from "./HomeViewComponent"
 import { toGlobalId } from "graphql-relay"
 import { FeaturedLinkConnectionType } from "../FeaturedLink/featuredLink"
+import { ImageType } from "../image"
 
 // section interface
 
@@ -63,6 +65,8 @@ export const HomeViewSectionTypeNames = {
   HomeViewSectionGalleries: "HomeViewSectionGalleries",
   HomeViewSectionGeneric: "HomeViewSectionGeneric",
   HomeViewSectionHeroUnits: "HomeViewSectionHeroUnits",
+  HomeViewSectionMarketingCollectionCategories:
+    "HomeViewSectionMarketingCollectionCategories",
   HomeViewSectionMarketingCollections: "HomeViewSectionMarketingCollections",
   HomeViewSectionSales: "HomeViewSectionSales",
   HomeViewSectionShows: "HomeViewSectionShows",
@@ -166,6 +170,53 @@ const HomeViewArticlesSectionType = new GraphQLObjectType<any, ResolverContext>(
     },
   }
 )
+
+export const ExploreByMarketingCategoriesType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ExploreByMarketingCategories",
+  description: "A list of categories to explore",
+  fields: () => ({
+    slug: {
+      type: GraphQLNonNull(GraphQLString),
+    },
+    name: {
+      type: GraphQLNonNull(GraphQLString),
+    },
+    image: {
+      type: ImageType,
+      resolve: ({ image }) => {
+        const { image_url } = image
+        return {
+          image_url,
+          original_width: 180,
+          original_height: 180,
+          quality: 80,
+        }
+      },
+    },
+  }),
+})
+
+const HomeViewMarketingCollectionCategoriesSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: HomeViewSectionTypeNames.HomeViewSectionMarketingCollectionCategories,
+  description: "Marketing Collection Categories section in the home view",
+  interfaces: [HomeViewGenericSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+
+    categories: {
+      type: GraphQLNonNull(GraphQLList(ExploreByMarketingCategoriesType)),
+      resolve: (parent, ...rest) => {
+        return parent.resolver ? parent.resolver(parent, ...rest) : []
+      },
+    },
+  },
+})
 
 const HomeViewMarketingCollectionsSectionType = new GraphQLObjectType<
   any,
@@ -304,6 +355,7 @@ export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
   HomeViewFairsSectionType,
   HomeViewGalleriesSectionType,
   HomeViewHeroUnitsSectionType,
+  HomeViewMarketingCollectionCategoriesSectionType,
   HomeViewMarketingCollectionsSectionType,
   HomeViewSalesSectionType,
   HomeViewShowsSectionType,

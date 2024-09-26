@@ -50,6 +50,14 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
+                  "__typename": "HomeViewSectionMarketingCollectionCategories",
+                  "component": Object {
+                    "title": "Explore by categories",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
                   "__typename": "HomeViewSectionSales",
                   "component": Object {
                     "title": "Auctions",
@@ -168,6 +176,14 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "HomeViewSectionHeroUnits",
                   "component": null,
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionMarketingCollectionCategories",
+                  "component": Object {
+                    "title": "Explore by categories",
+                  },
                 },
               },
               Object {
@@ -303,14 +319,6 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionViewingRooms",
                   "component": Object {
                     "title": "Viewing Rooms",
-                  },
-                },
-              },
-              Object {
-                "node": Object {
-                  "__typename": "HomeViewSectionShows",
-                  "component": Object {
-                    "title": "Shows for You",
                   },
                 },
               },
