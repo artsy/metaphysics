@@ -32,7 +32,7 @@ type MaybeResolved<T> =
 
 export type HomeViewSection = {
   id: string
-  contextModule: ContextModule
+  contextModule?: ContextModule
   featureFlag?: FeatureFlag
   component?: {
     title?: MaybeResolved<string>
@@ -43,6 +43,7 @@ export type HomeViewSection = {
   }
   ownerType?: OwnerType
   requiresAuthentication: boolean
+  shouldBeDisplayed?: (context: ResolverContext) => boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
   type: keyof typeof HomeViewSectionTypeNames
 }

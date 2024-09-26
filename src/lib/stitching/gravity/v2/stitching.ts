@@ -5,6 +5,9 @@ import { defineCustomLocale } from "lib/helpers"
 import { toGlobalId } from "graphql-relay"
 import { dateRange } from "lib/date"
 import { GraphQLSchemaWithTransforms } from "graphql-tools"
+import config from "config"
+
+const useUnstitchedUserDevices = !!config.USE_UNSTITCHED_USER_DEVICES
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -78,9 +81,13 @@ export const gravityStitchingEnvironment = (
         id: ID!
       }
 
-      extend type User {
-        devices: [Device!]!
-      }
+      ${!useUnstitchedUserDevices
+        ? `
+          extend type User {
+            devices: [Device!]!
+          }
+        `
+        : ""}
 
       extend type ViewingRoom {
         artworksConnection(
@@ -213,25 +220,27 @@ export const gravityStitchingEnvironment = (
           },
         },
       },
-      User: {
-        devices: {
-          fragment: gql`
+      ...(!useUnstitchedUserDevices && {
+        User: {
+          devices: {
+            fragment: gql`
             ... on User {
             internalID
           }
           `,
-          resolve: ({ internalID: userId }, _args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_devices",
-              args: { userId },
-              context,
-              info,
-            })
+            resolve: ({ internalID: userId }, _args, context, info) => {
+              return info.mergeInfo.delegateToSchema({
+                schema: gravitySchema,
+                operation: "query",
+                fieldName: "_unused_gravity_devices",
+                args: { userId },
+                context,
+                info,
+              })
+            },
           },
         },
-      },
+      }),
       UserAddress: {
         id: {
           fragment: gql`

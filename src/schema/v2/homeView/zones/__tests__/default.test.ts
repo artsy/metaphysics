@@ -1,5 +1,5 @@
 import { ResolverContext } from "types/graphql"
-import { getLegacyZoneSections } from "../legacy"
+import { getSections } from "../default"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 jest.mock("lib/featureFlags", () => ({
@@ -8,14 +8,14 @@ jest.mock("lib/featureFlags", () => ({
 
 const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
-describe("getLegacyZoneSections", () => {
+describe("getSections", () => {
   describe("with an authenticated user", () => {
     it("returns the correct sections", async () => {
       const context: Partial<ResolverContext> = {
         accessToken: "some-token",
       }
 
-      const sections = await getLegacyZoneSections(context as ResolverContext)
+      const sections = await getSections(context as ResolverContext)
       const sectionIds = sections.map((section) => section.id)
 
       expect(sectionIds).toMatchInlineSnapshot(`
@@ -52,7 +52,7 @@ describe("getLegacyZoneSections", () => {
         accessToken: undefined,
       }
 
-      const sections = await getLegacyZoneSections(context as ResolverContext)
+      const sections = await getSections(context as ResolverContext)
       const sectionIds = sections.map((section) => section.id)
 
       expect(sectionIds).toMatchInlineSnapshot(`
@@ -83,7 +83,7 @@ describe("getLegacyZoneSections", () => {
 
       it("returns the section", async () => {
         const context: Partial<ResolverContext> = {}
-        const sections = await getLegacyZoneSections(context as ResolverContext)
+        const sections = await getSections(context as ResolverContext)
         const sectionIds = sections.map((section) => section.id)
 
         expect(sectionIds).toInclude("home-view-section-featured-fairs")
@@ -100,7 +100,7 @@ describe("getLegacyZoneSections", () => {
 
       it("does not return the section", async () => {
         const context: Partial<ResolverContext> = {}
-        const sections = await getLegacyZoneSections(context as ResolverContext)
+        const sections = await getSections(context as ResolverContext)
         const sectionIds = sections.map((section) => section.id)
 
         expect(sectionIds).not.toInclude("home-view-section-featured-fairs")

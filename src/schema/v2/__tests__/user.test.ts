@@ -2,6 +2,7 @@ import { toGlobalId } from "graphql-relay"
 import { HTTPError } from "lib/HTTPError"
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import config from "config"
 
 describe("User", () => {
   it("implements the NodeInterface", async () => {
@@ -1078,8 +1079,6 @@ describe("User", () => {
         user: { adminNotes },
       } = await runAuthenticatedQuery(query, context)
 
-      console.log(adminNotes)
-
       expect(context.userByIDLoader).toHaveBeenCalledTimes(2)
       expect(context.userByIDLoader.mock.calls[0][0]).toEqual("abc123")
       expect(context.userByIDLoader.mock.calls[1][0]).toEqual("def456")
@@ -1087,6 +1086,73 @@ describe("User", () => {
       expect(adminNotes[0].creator.name).toEqual("Percy Z")
       expect(adminNotes[1].body).toEqual("Now a great collector")
       expect(adminNotes[2].body).toEqual("A Good collector")
+    })
+  })
+
+  beforeAll(() => {
+    config.USE_UNSTITCHED_USER_DEVICES = true
+  })
+
+  describe("Devices", () => {
+    let context
+
+    const user = {
+      id: "user-xyz",
+    }
+
+    const devices = [
+      {
+        id: "device-abc",
+        token: "token-abc",
+        platform: "ios",
+      },
+      {
+        id: "device-def",
+        token: "token-def",
+        platform: "android",
+      },
+    ]
+
+    beforeEach(() => {
+      context = {
+        userByIDLoader: () => {
+          return Promise.resolve(user)
+        },
+        devicesLoader: () => {
+          return Promise.resolve({ body: devices })
+        },
+      }
+    })
+
+    it("returns devices", async () => {
+      const query = `
+        {
+          user(id: "user-xyz") {
+            devices {
+              id
+              token
+              platform
+            }
+          }
+        }
+      `
+
+      const {
+        user: { devices },
+      } = await runAuthenticatedQuery(query, context)
+
+      expect(devices).toEqual([
+        {
+          id: "device-abc",
+          token: "token-abc",
+          platform: "ios",
+        },
+        {
+          id: "device-def",
+          token: "token-def",
+          platform: "android",
+        },
+      ])
     })
   })
 })

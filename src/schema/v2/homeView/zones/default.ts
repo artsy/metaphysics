@@ -23,7 +23,7 @@ import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
 import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 
-const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
+const SECTIONS: HomeViewSection[] = [
   LatestActivity,
   NewWorksForYou,
   HeroUnits,
@@ -50,10 +50,10 @@ const LEGACY_ZONE_SECTIONS: HomeViewSection[] = [
 /**
  * Assemble the list of sections that can be displayed
  */
-export async function getLegacyZoneSections(context: ResolverContext) {
+export async function getSections(context: ResolverContext) {
   const displayableSections: HomeViewSection[] = []
 
-  LEGACY_ZONE_SECTIONS.forEach((section) => {
+  SECTIONS.forEach((section) => {
     if (isSectionDisplayable(section, context)) {
       displayableSections.push(section)
     }
