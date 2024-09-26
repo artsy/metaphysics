@@ -1,4 +1,4 @@
-import { OwnerType } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { ResolverContext } from "types/graphql"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
@@ -46,9 +46,9 @@ export const ExampleSection: HomeViewSection = {
    * An analytics label to describe this section.
    *
    * This is assumed to already exist in @artsy/cohesion's
-   * ContextModule enum.
+   * ContextModule enum. (You can omit this attribute until
+   * Cohesion actually contains the desired value.)
    *
-   * Pardon the fake value below, it's just an example.
    * A real value would be something like:
    *
    * contextModule: ContextModule.recommendedArtistsRail
@@ -57,7 +57,7 @@ export const ExampleSection: HomeViewSection = {
    * etc…
    */
   // @ts-expect-error - not a real context module
-  contextModule: "ContextModule.example",
+  contextModule: ContextModule.example,
 
   /*
    * An analytics label to describe the expanded (view-all)
@@ -67,9 +67,9 @@ export const ExampleSection: HomeViewSection = {
    * then this label does not apply -- see `behaviors.viewAll.ownerType` below.)
    *
    * This is assumed to already exist in @artsy/cohesion's
-   * OwnerType enum.
+   * OwnerType enum. (You can omit this attribute until
+   * Cohesion actually contains the desired value.)
    *
-   * Pardon the fake value below, it's just an example.
    * A real value would be something like:
    *
    * ownerType: OwnerType.artists
@@ -118,7 +118,7 @@ export const ExampleSection: HomeViewSection = {
      * But that default rendering style may not be always be sufficient,
      * depending on the specific needs or design of the section. In such a case
      * we can specify a custom component to use instead. If it exists on the
-     * client (consider the case of old Eigen versions) it will be used; if not,
+     * client it will be used; if not (consider the case of old Eigen versions),
      * the default component would be used instead.
      */
     type: "FeaturedCollection", // a (real) example of a specialized artworks section component
@@ -129,32 +129,52 @@ export const ExampleSection: HomeViewSection = {
      * This will usually be a simple string scalar. But in the event that this needs
      * to be fetched from upstream, it can also be a function that resolves to a string.
      */
+    title: "My Example Section",
+
+    /*
+    // async version that can fetch this value from upstream
     title: async (context: ResolverContext) => {
       const { app_title } = await context.siteHeroUnitLoader(
         "curators-picks-emerging-app"
       )
       return app_title
     },
+    */
 
     /*
      * A descriptive text or blurb that is secondary to the main display title.
      *
+     * This is not currently used by the standard section components in Eigen but
+     * can be supplied for custom components.
+     *
      * This will usually be a simple string scalar. But in the event that this needs
      * to be fetched from upstream, it can also be a function that resolves to a string.
      */
+    description: "My example section's blurb",
+
+    /*
+    // async version that can fetch this value from upstream
     description: async (context: ResolverContext) => {
       const { app_description } = await context.siteHeroUnitLoader(
         "curators-picks-emerging-app"
       )
       return app_description
     },
+    */
 
     /*
      * A background image for customizing the appearance of the section.
      *
+     * This is not currently used by the standard section components in Eigen but
+     * can be supplied for custom components.
+     *
      * This will usually be a simple string scalar. But in the event that this needs
      * to be fetched from upstream, it can also be a function that resolves to a string.
      */
+    backgroundImageURL: "https://example.com/image.jpg",
+
+    /*
+    // async version that can fetch this value from upstream
     backgroundImageURL: async (context: ResolverContext, args) => {
       const {
         background_image_app_phone_url,
@@ -167,6 +187,7 @@ export const ExampleSection: HomeViewSection = {
 
       return background_image_app_phone_url
     },
+    */
 
     /*
      * A specification for the component’s behaviors.
