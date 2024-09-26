@@ -231,6 +231,16 @@ import { homeViewSectionTypes } from "./homeView/HomeViewSection"
 import { CacheableDirective } from "directives/cacheableDirective"
 import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsDirectiveExtension"
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
+import config from "config"
+import { ViewingRoom } from "./viewingRoom"
+import { ViewingRoomsConnection } from "./viewingRoomConnection"
+
+const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
+  ? {
+      viewingRoom: ViewingRoom,
+      viewingRoomsConnection: ViewingRoomsConnection,
+    }
+  : ({} as any)
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -348,6 +358,7 @@ const rootFields = {
   vanityURLEntity: VanityURLEntity,
   verifyAddress: VerifyAddress,
   verifyUser: VerifyUser,
+  ...viewingRoomUnstitchedRootField,
 }
 
 // FIXME: Remove type once Reaction MPv2 migration is complete
