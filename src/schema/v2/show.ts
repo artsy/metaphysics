@@ -25,7 +25,10 @@ import { artworkConnection } from "./artwork"
 import { LocationType } from "./location"
 import Image, { getDefault, normalizeImageData } from "./image"
 import ShowEventType from "./show_event"
-import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import {
+  connectionWithCursorInfo,
+  paginationResolver,
+} from "schema/v2/fields/pagination"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLObjectType,
@@ -47,6 +50,8 @@ import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
 import { ExhibitionPeriodFormatEnum } from "./types/exhibitonPeriod"
+import config from "config"
+import { ViewingRoomsConnection } from "./viewingRoomConnection"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -99,11 +104,55 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
     return [NodeInterface, EntityWithFilterArtworksConnectionInterface]
   },
   fields: () => {
+    const ViewingRoomConnectionFields = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
+      ? {
+          viewingRoomsConnection: {
+            type: ViewingRoomsConnection.type,
+            args: pageable({}),
+            resolve: async (
+              { viewing_room_ids },
+              args,
+              { viewingRoomsLoader }
+            ) => {
+              if (!viewing_room_ids || viewing_room_ids.length === 0) {
+                return null
+              }
+
+              const { page, size, offset } = convertConnectionArgsToGravityArgs(
+                args
+              )
+
+              const gravityArgs = {
+                ids: viewing_room_ids,
+                page,
+                size,
+                total_count: true,
+              }
+
+              const { body, headers } = await viewingRoomsLoader(gravityArgs)
+
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+              return paginationResolver({
+                args,
+                body,
+                offset,
+                page,
+                size,
+                totalCount,
+              })
+            },
+          },
+        }
+      : {}
+
     const {
       filterArtworksConnectionWithParams,
     } = require("./filterArtworksConnection")
+
     return {
       ...SlugAndInternalIDFields,
+      ...ViewingRoomConnectionFields,
       cached,
       artists: {
         description: "The Artists presenting in this show",
