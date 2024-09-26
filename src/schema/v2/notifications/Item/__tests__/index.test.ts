@@ -379,6 +379,18 @@ describe("NotificationItem", () => {
       })
     )
 
+    const viewingRoomsLoader = jest.fn().mockResolvedValue({
+      body: [
+        {
+          id: "viewing-room-id",
+          title: "Viewing room title",
+        },
+      ],
+      headers: {
+        "x-total-count": "1",
+      },
+    })
+
     beforeEach(() => {
       meNotificationLoader = jest.fn(() =>
         Promise.resolve({
@@ -426,6 +438,67 @@ describe("NotificationItem", () => {
                 "viewingRoomIDs": Array [
                   "viewing-room-id",
                 ],
+              },
+            },
+          },
+        }
+      `)
+    })
+
+    // TODO: skip until USE_UNSTITCHED_VIEWING_ROOM_SCHEMA is set to true and the schema is updated
+    it.skip("returns viewingRoomsConnection", async () => {
+      const query = gql`
+        {
+          me {
+            notification(id: "user-notification-id") {
+              item {
+                ... on ViewingRoomPublishedNotificationItem {
+                  viewingRoomsConnection(first: 1) {
+                    totalCount
+                    edges {
+                      node {
+                        internalID
+                        title
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runAuthenticatedQuery(query, {
+        meNotificationLoader,
+        meLoader,
+        partnerLoader,
+        viewingRoomsLoader,
+      })
+
+      expect(viewingRoomsLoader).toHaveBeenCalledWith({
+        ids: ["viewing-room-id"],
+        page: 1,
+        size: 1,
+        total_count: true,
+      })
+
+      expect(data).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "notification": Object {
+              "item": Object {
+                "viewingRoomsConnection": Object {
+                  "edges": Array [
+                    Object {
+                      "node": Object {
+                        "internalID": "viewing-room-id",
+                        "title": "Viewing room title",
+                      },
+                    },
+                  ],
+                  "totalCount": 1,
+                },
               },
             },
           },
