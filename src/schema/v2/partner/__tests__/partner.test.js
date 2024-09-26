@@ -8,6 +8,7 @@ describe("Partner type", () => {
 
   beforeEach(() => {
     partnerData = {
+      _id: "internal-id",
       id: "catty-partner",
       slug: "catty-partner",
       name: "Catty Partner",
@@ -153,6 +154,64 @@ describe("Partner type", () => {
         displayFullPartnerPage: true,
       },
     })
+  })
+
+  // TODO: skip until USE_UNSTITCHED_VIEWING_ROOM_SCHEMA is set to true and the schema is updated
+  it.skip("returns viewingRoomsConnection field", async () => {
+    const query = gql`
+      {
+        partner(id: "catty-partner") {
+          viewingRoomsConnection(first: 1) {
+            totalCount
+            edges {
+              node {
+                title
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const viewingRoomsLoader = jest.fn().mockResolvedValue({
+      body: [
+        {
+          title: "Viewing Room 1",
+        },
+      ],
+      headers: {
+        "x-total-count": 1,
+      },
+    })
+
+    const data = await runQuery(query, {
+      ...context,
+      viewingRoomsLoader: viewingRoomsLoader,
+    })
+
+    expect(viewingRoomsLoader).toHaveBeenCalledWith({
+      page: 1,
+      partner_id: "internal-id",
+      size: 1,
+      total_count: true,
+    })
+
+    expect(data).toMatchInlineSnapshot(`
+      Object {
+        "partner": Object {
+          "viewingRoomsConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "title": "Viewing Room 1",
+                },
+              },
+            ],
+            "totalCount": 1,
+          },
+        },
+      }
+    `)
   })
 
   it.each([
