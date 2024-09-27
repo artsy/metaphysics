@@ -11261,7 +11261,7 @@ type HomeViewSectionHeroUnits implements HomeViewSectionGeneric & Node {
 
 # Marketing Collection Categories section in the home view
 type HomeViewSectionMarketingCollectionCategories implements HomeViewSectionGeneric & Node {
-  categories: [ExploreByMarketingCategories]!
+  categories: [ExploreByMarketingCategories!]!
 
   # Component prescription for this section, for overriding or customizing presentation and behavior
   component: HomeViewComponent

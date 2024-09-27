@@ -210,7 +210,9 @@ const HomeViewMarketingCollectionCategoriesSectionType = new GraphQLObjectType<
     ...standardSectionFields,
 
     categories: {
-      type: GraphQLNonNull(GraphQLList(ExploreByMarketingCategoriesType)),
+      type: GraphQLNonNull(
+        GraphQLList(GraphQLNonNull(ExploreByMarketingCategoriesType))
+      ),
       resolve: (parent, ...rest) => {
         return parent.resolver ? parent.resolver(parent, ...rest) : []
       },
