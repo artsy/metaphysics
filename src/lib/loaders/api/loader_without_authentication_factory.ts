@@ -3,7 +3,7 @@ import DataLoader from "dataloader"
 import { loaderInterface } from "./loader_interface"
 import cache, { CacheOptions } from "lib/cache"
 import timer from "lib/timer"
-import { verbose, warn } from "lib/loggers"
+import { error, verbose, warn } from "lib/loggers"
 import extensionsLogger, { formatBytes } from "lib/loaders/api/extensionsLogger"
 import config from "config"
 import { API, DataLoaderKey, APIOptions } from "./index"
@@ -106,6 +106,23 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
               return data
             }
 
+            const fetchAndCache = () => {
+              const cacheOptions: CacheOptions = {}
+              if (apiOptions.requestThrottleMs) {
+                cacheOptions.cacheTtlInSeconds =
+                  apiOptions.requestThrottleMs / 1000
+              }
+              return callApi()
+                .then(
+                  finish({
+                    message: `Requested (Uncached): ${key}`,
+                    cached: false,
+                  })
+                )
+                .then(reduceData)
+                .then((data) => cacheData(data, cacheOptions))
+            }
+
             // Short-circuits any reading or writing to the cache.
             const skipCache =
               CACHE_DISABLED ||
@@ -127,29 +144,24 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
               return (
                 cache
                   .get(key)
-                  // Cache hit
-                  .then(
-                    finish({
-                      message: `Cached: ${key}`,
-                      cached: true,
-                    })
-                  )
-                  // Cache miss.
-                  .catch(() => {
-                    const cacheOptions: CacheOptions = {}
-                    if (apiOptions.requestThrottleMs) {
-                      cacheOptions.cacheTtlInSeconds =
-                        apiOptions.requestThrottleMs / 1000
+                  // Successful cache operation.
+                  .then((data) => {
+                    if (data !== undefined) {
+                      // Cache hit.
+                      return finish({
+                        message: `Cached: ${key}`,
+                        cached: true,
+                      })(data)
                     }
-                    return callApi()
-                      .then(
-                        finish({
-                          message: `Requested (Uncached): ${key}`,
-                          cached: false,
-                        })
-                      )
-                      .then(reduceData)
-                      .then((data) => cacheData(data, cacheOptions))
+
+                    // Cache miss.
+                    return fetchAndCache()
+                  })
+                  // Cache error.
+                  .catch((err) => {
+                    // Log the error and continue with the request.
+                    error(err)
+                    return fetchAndCache()
                   })
               )
             }

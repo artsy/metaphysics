@@ -87,7 +87,7 @@ const cacheTracer: ReturnType<typeof createCacheTracer> = isTest
 const statsClient = isTest ? null : createStatsClient()
 
 function _get<T>(key) {
-  return new Promise<T>((resolve, reject) => {
+  return new Promise<T | undefined>((resolve, reject) => {
     let timeoutId: NodeJS.Timer | null = setTimeout(() => {
       timeoutId = null
       const err = new Error(`[Cache#get] Timeout for key ${cacheKey(key)}`)
@@ -127,7 +127,12 @@ function _get<T>(key) {
           })
         }
       } else {
-        reject(new Error("[Cache#get] Cache miss"))
+        // Cache miss.
+        //
+        // It's fine to `reject` in the conditions above as those are errors.
+        // A cache miss is not an error, and these show up in DataDog, so instead
+        // we resolve with an `undefined` value.
+        resolve(undefined)
       }
     })
   })
