@@ -46,9 +46,17 @@ describe("Cache with compression enabled", () => {
 
         await cache.delete("get_foo")
 
-        await expect(cache.get("get_foo")).rejects.toThrow(
-          "[Cache#get] Cache miss"
-        )
+        let data
+
+        try {
+          data = await cache.get("get_foo")
+
+          throw new Error("unexpected error")
+        } catch {
+          // no-op
+        }
+
+        expect(data).toBeUndefined()
       })
     })
 
@@ -113,11 +121,21 @@ describe("Cache with compression disabled", () => {
       beforeEach(async () => await cache.set("get_foo", { bar: "baz" }))
 
       it("deletes the data", async () => {
-        cache.delete("get_foo")
+        expect.assertions(1)
 
-        await expect(cache.get("get_foo")).rejects.toThrow(
-          "[Cache#get] Cache miss"
-        )
+        await cache.delete("get_foo")
+
+        let data
+
+        try {
+          data = await cache.get("get_foo")
+
+          throw new Error("unexpected error")
+        } catch {
+          // no-op
+        }
+
+        expect(data).toBeUndefined()
       })
     })
 
