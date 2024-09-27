@@ -9365,8 +9365,8 @@ enum ExhibitionPeriodFormat {
   SHORT
 }
 
-# A list of marketing collection categories to explore
-type ExploreByMarketingCategories {
+# A marketing collection category to explore by
+type ExploreByCategory {
   image: Image
   name: String!
   slug: String!

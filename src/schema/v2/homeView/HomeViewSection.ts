@@ -170,9 +170,9 @@ const HomeViewArticlesSectionType = new GraphQLObjectType<any, ResolverContext>(
   }
 )
 
-const ExploreByCategoriesType = new GraphQLObjectType<any, ResolverContext>({
-  name: "ExploreByMarketingCategories",
-  description: "A list of marketing collection categories to explore",
+const ExploreByCategoryType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ExploreByCategory",
+  description: "A marketing collection category to explore by",
   fields: () => ({
     slug: {
       type: GraphQLNonNull(GraphQLString),
@@ -206,9 +206,7 @@ const HomeViewExploreBySectionType = new GraphQLObjectType<
     ...standardSectionFields,
 
     categories: {
-      type: GraphQLNonNull(
-        GraphQLList(GraphQLNonNull(ExploreByCategoriesType))
-      ),
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(ExploreByCategoryType))),
       resolve: (parent, ...rest) => {
         return parent.resolver ? parent.resolver(parent, ...rest) : []
       },
