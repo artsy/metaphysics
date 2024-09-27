@@ -23,7 +23,7 @@ describe("getSections", () => {
           "home-view-section-latest-activity",
           "home-view-section-new-works-for-you",
           "home-view-section-hero-units",
-          "home-view-section-explore-by-categories",
+          "home-view-section-explore-by",
           "home-view-section-active-bids",
           "home-view-section-auction-lots-for-you",
           "home-view-section-auctions",
@@ -60,7 +60,7 @@ describe("getSections", () => {
       expect(sectionIds).toMatchInlineSnapshot(`
         Array [
           "home-view-section-hero-units",
-          "home-view-section-explore-by-categories",
+          "home-view-section-explore-by",
           "home-view-section-auctions",
           "home-view-section-discover-marketing-collections",
           "home-view-section-galleries-near-you",

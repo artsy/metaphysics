@@ -1,9 +1,9 @@
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
 
-export const ExploreByCategories: HomeViewSection = {
-  id: "home-view-section-explore-by-categories",
-  type: HomeViewSectionTypeNames.HomeViewSectionMarketingCollectionCategories,
+export const ExploreBy: HomeViewSection = {
+  id: "home-view-section-explore-by",
+  type: HomeViewSectionTypeNames.HomeViewSectionExploreBy,
   component: {
     title: "Explore by categories",
   },

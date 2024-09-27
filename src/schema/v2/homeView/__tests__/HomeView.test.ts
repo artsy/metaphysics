@@ -50,7 +50,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "HomeViewSectionMarketingCollectionCategories",
+                  "__typename": "HomeViewSectionExploreBy",
                   "component": Object {
                     "title": "Explore by categories",
                   },
@@ -180,7 +180,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "HomeViewSectionMarketingCollectionCategories",
+                  "__typename": "HomeViewSectionExploreBy",
                   "component": Object {
                     "title": "Explore by categories",
                   },

@@ -599,10 +599,10 @@ describe("HomeViewSection", () => {
       const query = gql`
         {
           homeView {
-            section(id: "home-view-section-explore-by-categories") {
+            section(id: "home-view-section-explore-by") {
               __typename
 
-              ... on HomeViewSectionMarketingCollectionCategories {
+              ... on HomeViewSectionExploreBy {
                 categories {
                   name
                 }
@@ -616,7 +616,7 @@ describe("HomeViewSection", () => {
 
       expect(homeView.section).toMatchInlineSnapshot(`
         Object {
-          "__typename": "HomeViewSectionMarketingCollectionCategories",
+          "__typename": "HomeViewSectionExploreBy",
           "categories": Array [
             Object {
               "name": "Medium",

@@ -65,8 +65,7 @@ export const HomeViewSectionTypeNames = {
   HomeViewSectionGalleries: "HomeViewSectionGalleries",
   HomeViewSectionGeneric: "HomeViewSectionGeneric",
   HomeViewSectionHeroUnits: "HomeViewSectionHeroUnits",
-  HomeViewSectionMarketingCollectionCategories:
-    "HomeViewSectionMarketingCollectionCategories",
+  HomeViewSectionExploreBy: "HomeViewSectionExploreBy",
   HomeViewSectionMarketingCollections: "HomeViewSectionMarketingCollections",
   HomeViewSectionSales: "HomeViewSectionSales",
   HomeViewSectionShows: "HomeViewSectionShows",
@@ -171,12 +170,9 @@ const HomeViewArticlesSectionType = new GraphQLObjectType<any, ResolverContext>(
   }
 )
 
-export const ExploreByMarketingCategoriesType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
+const ExploreByCategoriesType = new GraphQLObjectType<any, ResolverContext>({
   name: "ExploreByMarketingCategories",
-  description: "A list of categories to explore",
+  description: "A list of marketing collection categories to explore",
   fields: () => ({
     slug: {
       type: GraphQLNonNull(GraphQLString),
@@ -199,11 +195,11 @@ export const ExploreByMarketingCategoriesType = new GraphQLObjectType<
   }),
 })
 
-const HomeViewMarketingCollectionCategoriesSectionType = new GraphQLObjectType<
+const HomeViewExploreBySectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: HomeViewSectionTypeNames.HomeViewSectionMarketingCollectionCategories,
+  name: HomeViewSectionTypeNames.HomeViewSectionExploreBy,
   description: "Marketing Collection Categories section in the home view",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
@@ -211,7 +207,7 @@ const HomeViewMarketingCollectionCategoriesSectionType = new GraphQLObjectType<
 
     categories: {
       type: GraphQLNonNull(
-        GraphQLList(GraphQLNonNull(ExploreByMarketingCategoriesType))
+        GraphQLList(GraphQLNonNull(ExploreByCategoriesType))
       ),
       resolve: (parent, ...rest) => {
         return parent.resolver ? parent.resolver(parent, ...rest) : []
@@ -357,7 +353,7 @@ export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
   HomeViewFairsSectionType,
   HomeViewGalleriesSectionType,
   HomeViewHeroUnitsSectionType,
-  HomeViewMarketingCollectionCategoriesSectionType,
+  HomeViewExploreBySectionType,
   HomeViewMarketingCollectionsSectionType,
   HomeViewSalesSectionType,
   HomeViewShowsSectionType,

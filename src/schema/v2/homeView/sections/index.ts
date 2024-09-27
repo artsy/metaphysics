@@ -26,7 +26,7 @@ import { Auctions } from "./Auctions"
 import { GalleriesNearYou } from "./GalleriesNearYou"
 import { FeatureFlag } from "lib/featureFlags"
 import { DiscoverMarketingCollections } from "./DiscoverMarketingCollections"
-import { ExploreByCategories } from "./ExploreByCategories"
+import { ExploreBy } from "./ExploreBy"
 
 type MaybeResolved<T> =
   | T
@@ -59,7 +59,7 @@ const sections: HomeViewSection[] = [
   FeaturedFairs,
   GalleriesNearYou,
   HeroUnits,
-  ExploreByCategories,
+  ExploreBy,
   LatestActivity,
   LatestArticles,
   LatestAuctionResults,
