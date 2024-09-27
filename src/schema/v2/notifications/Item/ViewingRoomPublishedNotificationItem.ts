@@ -14,51 +14,7 @@ export const ViewingRoomPublishedNotificationItemType = new GraphQLObjectType<
 >({
   name: "ViewingRoomPublishedNotificationItem",
   fields: () => {
-    const ViewingRoomConnectionFields = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
-      ? {
-          viewingRoomsConnection: {
-            type: ViewingRoomsConnection.type,
-            args: pageable(),
-            resolve: async (
-              { object_ids: viewing_room_ids },
-              args,
-              { viewingRoomsLoader }
-            ) => {
-              if (!viewing_room_ids || viewing_room_ids.length === 0) {
-                return null
-              }
-
-              const { page, size, offset } = convertConnectionArgsToGravityArgs(
-                args
-              )
-
-              const gravityArgs = {
-                ids: viewing_room_ids,
-                page,
-                size,
-                total_count: true,
-              }
-
-              const { body, headers } = await viewingRoomsLoader(gravityArgs)
-
-              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-              return paginationResolver({
-                args,
-                body,
-                offset,
-                page,
-                size,
-                totalCount,
-              })
-            },
-          },
-        }
-      : {}
-
     return {
-      ...ViewingRoomConnectionFields,
-
       partner: {
         type: PartnerType,
         resolve: ({ actor_ids }, _args, { partnerLoader }) => {
@@ -77,6 +33,46 @@ export const ViewingRoomPublishedNotificationItemType = new GraphQLObjectType<
           return object_ids
         },
       },
+
+      ...(config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA && {
+        viewingRoomsConnection: {
+          type: ViewingRoomsConnection.type,
+          args: pageable(),
+          resolve: async (
+            { object_ids: viewing_room_ids },
+            args,
+            { viewingRoomsLoader }
+          ) => {
+            if (!viewing_room_ids || viewing_room_ids.length === 0) {
+              return null
+            }
+
+            const { page, size, offset } = convertConnectionArgsToGravityArgs(
+              args
+            )
+
+            const gravityArgs = {
+              ids: viewing_room_ids,
+              page,
+              size,
+              total_count: true,
+            }
+
+            const { body, headers } = await viewingRoomsLoader(gravityArgs)
+
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+            return paginationResolver({
+              args,
+              body,
+              offset,
+              page,
+              size,
+              totalCount,
+            })
+          },
+        },
+      }),
     }
   },
 })

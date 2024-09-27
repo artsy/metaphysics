@@ -31,7 +31,7 @@ describe("gravity/stitching", () => {
 
       it("resolves the artworks field on ViewingRoom as a paginated list", async () => {
         const { resolvers } = await getGravityStitchedSchema()
-        const { artworksConnection } = resolvers.ViewingRoom
+        const { artworksConnection } = resolvers.ViewingRoom!
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
         artworksConnection.resolve(
@@ -53,7 +53,7 @@ describe("gravity/stitching", () => {
 
       it("converts empty artworkIDs argument", async () => {
         const { resolvers } = await getGravityStitchedSchema()
-        const { artworksConnection } = resolvers.ViewingRoom
+        const { artworksConnection } = resolvers.ViewingRoom!
         const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
         artworksConnection.resolve({ artworkIDs: [] }, { first: 2 }, {}, info)
@@ -83,7 +83,7 @@ describe("gravity/stitching", () => {
 
     it("returns null if startAt date is missing", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { distanceToOpen } = resolvers.ViewingRoom
+      const { distanceToOpen } = resolvers.ViewingRoom!
 
       expect(distanceToOpen.resolve({ startAt: null }, {})).toEqual(null)
 
@@ -98,7 +98,7 @@ describe("gravity/stitching", () => {
 
     it("returns null if startAt date is in the past", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { distanceToOpen } = resolvers.ViewingRoom
+      const { distanceToOpen } = resolvers.ViewingRoom!
       expect(
         distanceToOpen.resolve({ startAt: momentSubtract(1, "second") }, {})
       ).toEqual(null)
@@ -120,7 +120,7 @@ describe("gravity/stitching", () => {
 
     it("returns properly formatted distance string for long timeframe", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { distanceToOpen } = resolvers.ViewingRoom
+      const { distanceToOpen } = resolvers.ViewingRoom!
 
       const cases: Array<[
         [DurationInputArg1, DurationInputArg2],
@@ -153,7 +153,7 @@ describe("gravity/stitching", () => {
 
     it("returns properly formatted distance string for short timeframe", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { distanceToOpen } = resolvers.ViewingRoom
+      const { distanceToOpen } = resolvers.ViewingRoom!
 
       const cases: Array<[
         [DurationInputArg1, DurationInputArg2],
@@ -198,7 +198,7 @@ describe("gravity/stitching", () => {
 
     it("returns null if endAt date is missing", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { distanceToClose } = resolvers.ViewingRoom
+      const { distanceToClose } = resolvers.ViewingRoom!
 
       expect(
         distanceToClose.resolve(
@@ -224,7 +224,7 @@ describe("gravity/stitching", () => {
 
     it("returns null if endAt date is in the past", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { distanceToClose } = resolvers.ViewingRoom
+      const { distanceToClose } = resolvers.ViewingRoom!
       expect(
         distanceToClose.resolve(
           {
@@ -258,7 +258,7 @@ describe("gravity/stitching", () => {
 
     it("returns null if startAt date is in the future", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { distanceToClose } = resolvers.ViewingRoom
+      const { distanceToClose } = resolvers.ViewingRoom!
       expect(
         distanceToClose.resolve(
           { startAt: momentAdd(1, "days"), endAt: momentAdd(4, "days") },
@@ -283,7 +283,7 @@ describe("gravity/stitching", () => {
 
     it("returns properly formatted distance string for long timeframe", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { distanceToClose } = resolvers.ViewingRoom
+      const { distanceToClose } = resolvers.ViewingRoom!
 
       const cases: Array<[
         [DurationInputArg1, DurationInputArg2],
@@ -321,7 +321,7 @@ describe("gravity/stitching", () => {
 
     it("returns properly formatted distance string for short timeframe", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { distanceToClose } = resolvers.ViewingRoom
+      const { distanceToClose } = resolvers.ViewingRoom!
 
       const cases: Array<[
         [DurationInputArg1, DurationInputArg2],
@@ -368,7 +368,7 @@ describe("gravity/stitching", () => {
 
     it("resolves the partner field on ViewingRoom", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { partner } = resolvers.ViewingRoom
+      const { partner } = resolvers.ViewingRoom!
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
       partner.resolve({ partnerID: "fakeid" }, {}, {}, info)
@@ -397,7 +397,7 @@ describe("gravity/stitching", () => {
 
     it("resolves the exhibitionPeriod field on ViewingRoom", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { exhibitionPeriod } = resolvers.ViewingRoom
+      const { exhibitionPeriod } = resolvers.ViewingRoom!
       const startAt = moment("2021-09-01T00:00:00Z")
       const endAt = moment("2021-09-30T00:00:00Z")
 
@@ -411,7 +411,7 @@ describe("gravity/stitching", () => {
 
     it("returns Invalid dates if dates are missing", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { exhibitionPeriod } = resolvers.ViewingRoom
+      const { exhibitionPeriod } = resolvers.ViewingRoom!
       const startAt = moment.utc().add(1, "days").format("MMMM D")
       const endAt = moment.utc().add(30, "days").format("MMMM D")
       const startAtYear = moment.utc().add(1, "days").format("YYYY")
@@ -453,7 +453,7 @@ describe("gravity/stitching", () => {
 
     it("resolves the viewing rooms field on Partner as a paginated list", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { viewingRoomsConnection } = resolvers.Partner
+      const { viewingRoomsConnection } = resolvers.Partner!
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
       viewingRoomsConnection.resolve(
@@ -484,7 +484,7 @@ describe("gravity/stitching", () => {
 
     it("resolves the viewingRoomsConnection field on Show", async () => {
       const { resolvers } = await getGravityStitchedSchema()
-      const { viewingRoomsConnection } = resolvers.Show
+      const { viewingRoomsConnection } = resolvers.Show!
       const info = { mergeInfo: { delegateToSchema: jest.fn() } }
 
       viewingRoomsConnection.resolve(

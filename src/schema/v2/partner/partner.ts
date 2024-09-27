@@ -176,51 +176,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       partnerShowsMatchConnection,
     } = require("./PartnerMatch")
 
-    const ViewingRoomConnectionFields = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
-      ? {
-          viewingRoomsConnection: {
-            type: ViewingRoomsConnection.type,
-            args: pageable({
-              statuses: {
-                type: new GraphQLList(
-                  new GraphQLNonNull(ViewingRoomStatusEnum)
-                ),
-              },
-            }),
-            resolve: async (
-              { _id: partnerID },
-              args,
-              { viewingRoomsLoader }
-            ) => {
-              const { page, size, offset } = convertConnectionArgsToGravityArgs(
-                args
-              )
-
-              const gravityArgs = {
-                partner_id: partnerID,
-                statuses: args.statuses,
-                page,
-                size,
-                total_count: true,
-              }
-
-              const { body, headers } = await viewingRoomsLoader(gravityArgs)
-
-              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-
-              return paginationResolver({
-                args,
-                body,
-                offset,
-                page,
-                size,
-                totalCount,
-              })
-            },
-          },
-        }
-      : {}
-
     const AlertsSummaryArtistConnectionType = connectionWithCursorInfo({
       name: "AlertsSummaryArtist",
       edgeFields: AlertsSummaryFields,
@@ -263,7 +218,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
     return {
       ...SlugAndInternalIDFields,
-      ...ViewingRoomConnectionFields,
       cached,
       alertsSummaryArtistsConnection: {
         type: AlertsSummaryArtistConnectionType,
@@ -1311,6 +1265,42 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      ...(config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA && {
+        viewingRoomsConnection: {
+          type: ViewingRoomsConnection.type,
+          args: pageable({
+            statuses: {
+              type: new GraphQLList(new GraphQLNonNull(ViewingRoomStatusEnum)),
+            },
+          }),
+          resolve: async ({ _id: partnerID }, args, { viewingRoomsLoader }) => {
+            const { page, size, offset } = convertConnectionArgsToGravityArgs(
+              args
+            )
+
+            const gravityArgs = {
+              partner_id: partnerID,
+              statuses: args.statuses,
+              page,
+              size,
+              total_count: true,
+            }
+
+            const { body, headers } = await viewingRoomsLoader(gravityArgs)
+
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+            return paginationResolver({
+              args,
+              body,
+              offset,
+              page,
+              size,
+              totalCount,
+            })
+          },
+        },
+      }),
     }
   },
 })
