@@ -127,7 +127,7 @@ function _get<T>(key) {
           })
         }
       } else {
-        reject(new Error("[Cache#get] Cache miss"))
+        reject()
       }
     })
   })
