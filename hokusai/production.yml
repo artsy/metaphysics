@@ -118,7 +118,7 @@ spec:
     name: metaphysics-web
   minReplicas: 10
   maxReplicas: 35
-  targetCPUUtilizationPercentage: 60
+  targetCPUUtilizationPercentage: 50
 ---
 apiVersion: v1
 kind: Service
