@@ -18,6 +18,7 @@ interface ActiveLotData {
     bidder_positions_count: number
     extended_bidding_end_at?: string
     end_at?: string
+    ended_at?: string
   }
   sale: {
     registration_ends_at: string
@@ -38,16 +39,10 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       return null
     }
 
-    const lotClosesAt =
-      !activeLotData.sale.live_start_at &&
-      (activeLotData.saleArtwork.extended_bidding_end_at ||
-        activeLotData.saleArtwork.end_at ||
-        activeLotData.sale.ended_at)
-
-    // If the lot is closed for bidding, return null
-    if (lotClosesAt && new Date(lotClosesAt) <= new Date()) {
-      return null
-    }
+    const lotClosesAt = activeLotData.sale.live_start_at
+      ? null
+      : activeLotData.saleArtwork.extended_bidding_end_at ||
+        activeLotData.saleArtwork.end_at
 
     // Resolve all associated auctions data in one object
     return {
@@ -109,10 +104,14 @@ const LabelSignalEnumType = new GraphQLEnumType({
 })
 const AVAILABLE_LABEL_COUNT = LabelSignalEnumType.getValues().length
 
+const ARTWORK_AVAILABILITY_FOR_SALE_VALUE = "for sale"
+
 export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   description: "Collector signals on artwork",
   resolve: (artwork) => {
-    const canSendSignals = artwork.purchasable || isAuctionArtwork(artwork)
+    const canSendSignals =
+      artwork.availability === ARTWORK_AVAILABILITY_FOR_SALE_VALUE &&
+      (artwork.purchasable || isAuctionArtwork(artwork))
     return canSendSignals ? artwork : null
   },
   type: new GraphQLObjectType({
@@ -317,11 +316,15 @@ const getActiveAuctionValues = async (
     return null
   }
 
-  const saleArtwork =
+  const saleArtwork: ActiveLotData["saleArtwork"] | null =
     (await ctx.saleArtworkLoader({
       saleId: activeAuction._id,
       artworkId,
     })) ?? null
+
+  if (!saleArtwork || !!saleArtwork.ended_at) {
+    return null
+  }
 
   return { saleArtwork, sale: activeAuction }
 }
