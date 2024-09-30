@@ -516,6 +516,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    meTasksLoader: gravityLoader("me/tasks", {}, {}),
     meUpdateCollectorProfileLoader: gravityLoader(
       "me/collector_profile",
       {},

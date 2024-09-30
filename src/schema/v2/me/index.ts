@@ -92,6 +92,7 @@ import {
 } from "../partnerOfferToCollector"
 import { PreviewSavedSearchAttributesType } from "../previewSavedSearch"
 import { submissionsConnection } from "./submissionsConnection"
+import TaskType from "./task"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -681,6 +682,16 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     similarToRecentlyViewedConnection: SimilarToRecentlyViewed,
+    tasks: {
+      type: new GraphQLList(TaskType),
+      args: {
+        limit: { type: GraphQLInt },
+      },
+      resolve: (_root, { limit }, { meTasksLoader }) => {
+        if (!meTasksLoader) return null
+        return meTasksLoader({ limit })
+      },
+    },
     type: {
       type: GraphQLString,
     },
