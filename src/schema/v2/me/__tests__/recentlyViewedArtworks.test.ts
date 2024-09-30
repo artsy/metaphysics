@@ -70,6 +70,42 @@ describe("RecentlyViewedArtworks", () => {
     `)
   })
 
+  it("returns a second page of artworks", async () => {
+    // "YXJyYXljb25uZWN0aW9uOjE" is for "Matt the Person"
+    const query = gql`
+      {
+        me {
+          recentlyViewedArtworksConnection(
+            first: 1
+            after: "YXJyYXljb25uZWN0aW9uOjE"
+          ) {
+            edges {
+              node {
+                slug
+                title
+              }
+            }
+          }
+        }
+      }
+    `
+    const data = await runAuthenticatedQuery(query, context)
+    const recentlyViewedArtworks = data!.me.recentlyViewedArtworksConnection
+
+    expect(recentlyViewedArtworks).toMatchInlineSnapshot(`
+      Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "slug": "paul",
+              "title": "Paul the snail",
+            },
+          },
+        ],
+      }
+    `)
+  })
+
   it("works for a request using impersonation", async () => {
     context.meLoader = () => Promise.reject("This should not be called")
     context.xImpersonateUserID = "some-user-id"
