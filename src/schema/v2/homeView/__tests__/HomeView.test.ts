@@ -4,7 +4,10 @@ import { ResolverContext } from "types/graphql"
 
 jest.mock("lib/featureFlags", () => ({
   isFeatureFlagEnabled: jest.fn((flag: string) => {
-    return !!flag.match("enable-home-view-section")
+    return [
+      "onyx_enable-home-view-section-featured-fairs",
+      "diamond_home-view-marketing-collection-categories",
+    ].includes(flag)
   }),
 }))
 
@@ -13,7 +16,7 @@ describe("homeView", () => {
     const query = gql`
       {
         homeView {
-          sectionsConnection(first: 21) {
+          sectionsConnection(first: 30) {
             edges {
               node {
                 __typename
@@ -46,6 +49,14 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "HomeViewSectionHeroUnits",
                   "component": null,
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionExploreByMarketingCollectionCategories",
+                  "component": Object {
+                    "title": "Explore by categories",
+                  },
                 },
               },
               Object {
@@ -168,6 +179,14 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "HomeViewSectionHeroUnits",
                   "component": null,
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionExploreByMarketingCollectionCategories",
+                  "component": Object {
+                    "title": "Explore by categories",
+                  },
                 },
               },
               Object {
@@ -311,6 +330,14 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionShows",
                   "component": Object {
                     "title": "Shows for You",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionFairs",
+                  "component": Object {
+                    "title": "Featured Fairs",
                   },
                 },
               },
