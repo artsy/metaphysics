@@ -13,7 +13,6 @@ const {
   CACHE_COMPRESSION_DISABLED,
   CACHE_LIFETIME_IN_SECONDS,
   CACHE_NAMESPACE,
-  CACHE_QUERY_LOGGING_THRESHOLD_MS,
   CACHE_RETRIEVAL_TIMEOUT_MS,
 } = config
 
@@ -96,14 +95,7 @@ function _get<T>(key) {
       reject(err)
     }, CACHE_RETRIEVAL_TIMEOUT_MS)
 
-    const start = Date.now()
     client.get(cacheKey(key), (err, data) => {
-      const time = Date.now() - start
-      if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
-        error(`[Cache#get] Slow read of ${time}ms for key ${cacheKey(key)}`)
-        statsClient.timing("cache.slow_read", time)
-      }
-
       if (timeoutId) {
         clearTimeout(timeoutId)
       } else {

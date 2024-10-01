@@ -16,6 +16,9 @@ export const TrendingArtists: HomeViewSection = {
 
   resolver: withHomeViewTimeout(async (_parent, args, context, _info) => {
     const artistRecords = await getCuratedArtists(context)
-    return connectionFromArray(artistRecords, args)
+    return {
+      totalCount: artistRecords.length,
+      ...connectionFromArray(artistRecords, args),
+    }
   }),
 }

@@ -594,6 +594,56 @@ describe("HomeViewSection", () => {
     })
   })
 
+  describe("ExploreByCategories", () => {
+    it("returns lists of marketing collection categories", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(
+              id: "home-view-section-explore-by-marketing-collection-categories"
+            ) {
+              __typename
+
+              ... on HomeViewSectionExploreByMarketingCollectionCategories {
+                categories {
+                  name
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const { homeView } = await runQuery(query, {})
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "HomeViewSectionExploreByMarketingCollectionCategories",
+          "categories": Array [
+            Object {
+              "name": "Medium",
+            },
+            Object {
+              "name": "Movement",
+            },
+            Object {
+              "name": "Color",
+            },
+            Object {
+              "name": "Size",
+            },
+            Object {
+              "name": "Price",
+            },
+            Object {
+              "name": "Gallery",
+            },
+          ],
+        }
+      `)
+    })
+  })
+
   describe("CuratorsPicksEmerging", () => {
     it("returns correct data", async () => {
       const query = gql`

@@ -13,6 +13,7 @@ const FEATURE_FLAGS_LIST = [
   "emerald_signals-partner-offers",
   "emerald_signals-auction-improvements",
   "onyx_enable-home-view-section-featured-fairs",
+  "diamond_home-view-marketing-collection-categories",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]

@@ -2,6 +2,7 @@ import {
   GraphQLFieldConfigMap,
   GraphQLID,
   GraphQLInterfaceType,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
@@ -21,6 +22,8 @@ import { InternalIDFields, NodeInterface } from "../object_identification"
 import { SalesConnectionField } from "../sales"
 import { HomeViewComponent } from "./HomeViewComponent"
 import { toGlobalId } from "graphql-relay"
+import { FeaturedLinkConnectionType } from "../FeaturedLink/featuredLink"
+import { ImageType } from "../image"
 
 // section interface
 
@@ -56,10 +59,14 @@ export const HomeViewSectionTypeNames = {
   HomeViewSectionArtists: "HomeViewSectionArtists",
   HomeViewSectionArtworks: "HomeViewSectionArtworks",
   HomeViewSectionAuctionResults: "HomeViewSectionAuctionResults",
+  HomeViewSectionDiscoverMarketingCollections:
+    "HomeViewSectionDiscoverMarketingCollections",
   HomeViewSectionFairs: "HomeViewSectionFairs",
   HomeViewSectionGalleries: "HomeViewSectionGalleries",
   HomeViewSectionGeneric: "HomeViewSectionGeneric",
   HomeViewSectionHeroUnits: "HomeViewSectionHeroUnits",
+  HomeViewSectionExploreByMarketingCollectionCategories:
+    "HomeViewSectionExploreByMarketingCollectionCategories",
   HomeViewSectionMarketingCollections: "HomeViewSectionMarketingCollections",
   HomeViewSectionSales: "HomeViewSectionSales",
   HomeViewSectionShows: "HomeViewSectionShows",
@@ -163,6 +170,56 @@ const HomeViewArticlesSectionType = new GraphQLObjectType<any, ResolverContext>(
     },
   }
 )
+
+const ExploreByMarketingCollectionCategory = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ExploreByMarketingCollectionCategory",
+  description: "A marketing collection category to explore by",
+  fields: () => ({
+    href: {
+      type: GraphQLNonNull(GraphQLString),
+    },
+    name: {
+      type: GraphQLNonNull(GraphQLString),
+    },
+    image: {
+      type: ImageType,
+      resolve: ({ image }) => {
+        const { image_url } = image
+        return {
+          image_url,
+          original_width: 180,
+          original_height: 180,
+          quality: 80,
+        }
+      },
+    },
+  }),
+})
+
+const HomeViewExploreBySectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name:
+    HomeViewSectionTypeNames.HomeViewSectionExploreByMarketingCollectionCategories,
+  description: "Marketing Collection Categories section in the home view",
+  interfaces: [HomeViewGenericSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+
+    categories: {
+      type: GraphQLNonNull(
+        GraphQLList(GraphQLNonNull(ExploreByMarketingCollectionCategory))
+      ),
+      resolve: (parent, ...rest) => {
+        return parent.resolver ? parent.resolver(parent, ...rest) : []
+      },
+    },
+  },
+})
 
 const HomeViewMarketingCollectionsSectionType = new GraphQLObjectType<
   any,
@@ -274,6 +331,24 @@ export const HomeViewGalleriesSectionType = new GraphQLObjectType<
   },
 })
 
+export const HomeViewDiscoverMarketingCollectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: HomeViewSectionTypeNames.HomeViewSectionDiscoverMarketingCollections,
+  description: "A section containing a list of curated marketing collections",
+  interfaces: [HomeViewGenericSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+    linksConnection: {
+      type: FeaturedLinkConnectionType,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
+    },
+  },
+})
+
 export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
   HomeViewActivitySectionType,
   HomeViewArticlesSectionType,
@@ -283,8 +358,10 @@ export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
   HomeViewFairsSectionType,
   HomeViewGalleriesSectionType,
   HomeViewHeroUnitsSectionType,
+  HomeViewExploreBySectionType,
   HomeViewMarketingCollectionsSectionType,
   HomeViewSalesSectionType,
   HomeViewShowsSectionType,
   HomeViewViewingRoomsSectionType,
+  HomeViewDiscoverMarketingCollectionType,
 ]
