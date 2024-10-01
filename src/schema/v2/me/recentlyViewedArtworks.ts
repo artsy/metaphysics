@@ -1,5 +1,5 @@
 import { GraphQLFieldConfig } from "graphql"
-import { connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArray } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { pageable } from "relay-cursor-paging"
@@ -26,7 +26,7 @@ export const RecentlyViewedArtworks: GraphQLFieldConfig<
   ) => {
     if (!userID && !xImpersonateUserID) return null
 
-    const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+    const { page, size } = convertConnectionArgsToGravityArgs(args)
 
     try {
       let artworkIDs
@@ -47,10 +47,7 @@ export const RecentlyViewedArtworks: GraphQLFieldConfig<
 
       const totalCount = artworks.length
 
-      const connection = connectionFromArraySlice(artworks, args, {
-        arrayLength: totalCount,
-        sliceStart: offset,
-      })
+      const connection = connectionFromArray(artworks, args)
 
       const totalPages = Math.ceil(totalCount / size)
 
