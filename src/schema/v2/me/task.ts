@@ -3,6 +3,21 @@ import { ResolverContext } from "types/graphql"
 import { IDFields, NodeInterface } from "../object_identification"
 import { date } from "./../fields/date"
 
+export interface Task {
+  image_url: string
+  title: string
+  created_at: string
+  message: string
+  action_message: string
+  action_link: string
+  resolved_at: string
+  dismissed_at: string
+  expires_at: string
+  task_type: string
+  source_id: string
+  source_type: string
+}
+
 const TaskType = new GraphQLObjectType<any, ResolverContext>({
   name: "Task",
   interfaces: [NodeInterface],

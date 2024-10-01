@@ -517,6 +517,11 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     meTasksLoader: gravityLoader("me/tasks", {}, {}),
+    meDismissTaskLoader: gravityLoader(
+      (id) => `me/task/${id}/dismiss`,
+      {},
+      { method: "PUT" }
+    ),
     meUpdateCollectorProfileLoader: gravityLoader(
       "me/collector_profile",
       {},
