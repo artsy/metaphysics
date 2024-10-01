@@ -71,7 +71,8 @@ describe("RecentlyViewedArtworks", () => {
   })
 
   it("returns a second page of artworks", async () => {
-    // "YXJyYXljb25uZWN0aW9uOjE" is for "Matt the Person"
+    // In this test I want to get an artwork which comes right after "Matt the Person" artwork.
+    // It's cursor is "YXJyYXljb25uZWN0aW9uOjE" - I specify it a few lines bellow.
     const query = gql`
       {
         me {
