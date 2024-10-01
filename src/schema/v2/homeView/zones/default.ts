@@ -22,6 +22,7 @@ import { RecentlyViewedArtworks } from "../sections/RecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
 import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
+import { DiscoverMarketingCollections } from "../sections/DiscoverMarketingCollections"
 
 const SECTIONS: HomeViewSection[] = [
   LatestActivity,
@@ -30,6 +31,7 @@ const SECTIONS: HomeViewSection[] = [
   ActiveBids,
   AuctionLotsForYou,
   Auctions,
+  DiscoverMarketingCollections,
   LatestAuctionResults,
   GalleriesNearYou,
   LatestArticles,

@@ -13,7 +13,7 @@ describe("homeView", () => {
     const query = gql`
       {
         homeView {
-          sectionsConnection(first: 20) {
+          sectionsConnection(first: 21) {
             edges {
               node {
                 __typename
@@ -53,6 +53,14 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionSales",
                   "component": Object {
                     "title": "Auctions",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionDiscoverMarketingCollections",
+                  "component": Object {
+                    "title": "Discover Something New",
                   },
                 },
               },
@@ -183,6 +191,14 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionSales",
                   "component": Object {
                     "title": "Auctions",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionDiscoverMarketingCollections",
+                  "component": Object {
+                    "title": "Discover Something New",
                   },
                 },
               },
