@@ -178,7 +178,7 @@ const ExploreByMarketingCollectionCategory = new GraphQLObjectType<
   name: "ExploreByMarketingCollectionCategory",
   description: "A marketing collection category to explore by",
   fields: () => ({
-    slug: {
+    href: {
       type: GraphQLNonNull(GraphQLString),
     },
     name: {
