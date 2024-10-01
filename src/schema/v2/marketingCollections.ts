@@ -18,6 +18,7 @@ import { MarketingCollectionsSorts } from "./sorts/marketingCollectionsSort"
 import { NodeInterface, InternalIDFields } from "./object_identification"
 import Image, { normalizeImageData, getDefault } from "schema/v2/image"
 import { date } from "schema/v2/fields/date"
+import { markdown } from "schema/v2/fields/markdown"
 
 const MarketingCollectionQuery = new GraphQLObjectType<any, ResolverContext>({
   name: "MarketingCollectionQuery",
@@ -79,12 +80,17 @@ export const MarketingCollectionFields: GraphQLFieldConfigMap<
   },
   description: {
     type: GraphQLString,
+    deprecationReason: "Use `markdownDescription` field instead",
     resolve: ({ description }) => description,
   },
   descriptionMarkdown: {
     type: GraphQLString,
+    deprecationReason: "Use `markdownDescription` field instead",
     resolve: ({ description_markdown }) => description_markdown,
   },
+  markdownDescription: markdown(
+    ({ description_markdown }) => description_markdown
+  ),
   credit: {
     type: GraphQLString,
     resolve: ({ credit }) => credit,
