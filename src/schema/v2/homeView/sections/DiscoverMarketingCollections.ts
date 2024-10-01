@@ -17,6 +17,7 @@ export const DiscoverMarketingCollections: HomeViewSection = {
   },
 
   requiresAuthentication: false,
+  featureFlag: "diamond_home-view-marketing-collection-categories",
 
   resolver: withHomeViewTimeout(async (_parent, args, _context, _info) => {
     const links = [

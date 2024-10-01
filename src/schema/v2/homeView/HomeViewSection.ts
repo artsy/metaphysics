@@ -65,7 +65,8 @@ export const HomeViewSectionTypeNames = {
   HomeViewSectionGalleries: "HomeViewSectionGalleries",
   HomeViewSectionGeneric: "HomeViewSectionGeneric",
   HomeViewSectionHeroUnits: "HomeViewSectionHeroUnits",
-  HomeViewSectionExploreBy: "HomeViewSectionExploreBy",
+  HomeViewSectionExploreByMarketingCollectionCategories:
+    "HomeViewSectionExploreByMarketingCollectionCategories",
   HomeViewSectionMarketingCollections: "HomeViewSectionMarketingCollections",
   HomeViewSectionSales: "HomeViewSectionSales",
   HomeViewSectionShows: "HomeViewSectionShows",
@@ -170,8 +171,11 @@ const HomeViewArticlesSectionType = new GraphQLObjectType<any, ResolverContext>(
   }
 )
 
-const ExploreByCategoryType = new GraphQLObjectType<any, ResolverContext>({
-  name: "ExploreByCategory",
+const ExploreByMarketingCollectionCategory = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ExploreByMarketingCollectionCategory",
   description: "A marketing collection category to explore by",
   fields: () => ({
     slug: {
@@ -199,14 +203,17 @@ const HomeViewExploreBySectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: HomeViewSectionTypeNames.HomeViewSectionExploreBy,
+  name:
+    HomeViewSectionTypeNames.HomeViewSectionExploreByMarketingCollectionCategories,
   description: "Marketing Collection Categories section in the home view",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
 
     categories: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(ExploreByCategoryType))),
+      type: GraphQLNonNull(
+        GraphQLList(GraphQLNonNull(ExploreByMarketingCollectionCategory))
+      ),
       resolve: (parent, ...rest) => {
         return parent.resolver ? parent.resolver(parent, ...rest) : []
       },

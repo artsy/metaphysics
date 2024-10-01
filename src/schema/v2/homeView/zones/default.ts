@@ -23,13 +23,13 @@ import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
 import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 import { DiscoverMarketingCollections } from "../sections/DiscoverMarketingCollections"
-import { ExploreBy } from "../sections/ExploreBy"
+import { ExploreByMarketingCollectionCategories } from "../sections/ExploreByMarketingCollectionCategories"
 
 const SECTIONS: HomeViewSection[] = [
   LatestActivity,
   NewWorksForYou,
   HeroUnits,
-  ExploreBy,
+  ExploreByMarketingCollectionCategories,
   ActiveBids,
   AuctionLotsForYou,
   Auctions,

@@ -4,7 +4,10 @@ import { ResolverContext } from "types/graphql"
 
 jest.mock("lib/featureFlags", () => ({
   isFeatureFlagEnabled: jest.fn((flag: string) => {
-    return !!flag.match("enable-home-view-section")
+    return [
+      "onyx_enable-home-view-section-featured-fairs",
+      "diamond_home-view-marketing-collection-categories",
+    ].includes(flag)
   }),
 }))
 
@@ -50,7 +53,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "HomeViewSectionExploreBy",
+                  "__typename": "HomeViewSectionExploreByMarketingCollectionCategories",
                   "component": Object {
                     "title": "Explore by categories",
                   },
@@ -180,7 +183,7 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "HomeViewSectionExploreBy",
+                  "__typename": "HomeViewSectionExploreByMarketingCollectionCategories",
                   "component": Object {
                     "title": "Explore by categories",
                   },

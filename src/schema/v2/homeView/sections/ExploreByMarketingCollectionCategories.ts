@@ -1,13 +1,15 @@
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
 
-export const ExploreBy: HomeViewSection = {
-  id: "home-view-section-explore-by",
-  type: HomeViewSectionTypeNames.HomeViewSectionExploreBy,
+export const ExploreByMarketingCollectionCategories: HomeViewSection = {
+  id: "home-view-section-explore-by-marketing-collection-categories",
+  type:
+    HomeViewSectionTypeNames.HomeViewSectionExploreByMarketingCollectionCategories,
   component: {
     title: "Explore by categories",
   },
   requiresAuthentication: false,
+  featureFlag: "diamond_home-view-marketing-collection-categories",
 
   resolver: () => categories,
 }
