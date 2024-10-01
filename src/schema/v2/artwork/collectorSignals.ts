@@ -70,8 +70,16 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       liveBiddingStarted: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Live bidding has started on this lot's auction",
-        resolve: ({ sale }) =>
-          !!sale.live_start_at && new Date(sale.live_start_at) <= new Date(),
+        resolve: async ({ sale }, {}, { systemTimeLoader }) => {
+          if (!sale.live_start_at) {
+            return false
+          }
+          const systemTime = await systemTimeLoader()
+          if (!systemTime) {
+            return false
+          }
+          return new Date(sale.live_start_at) < new Date(systemTime)
+        },
       },
       onlineBiddingExtended: {
         type: new GraphQLNonNull(GraphQLBoolean),
