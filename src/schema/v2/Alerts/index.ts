@@ -392,25 +392,6 @@ export const AlertType = new GraphQLObjectType<
   },
 })
 
-const AlertsEdgeFields = {
-  counts: {
-    type: new GraphQLObjectType({
-      name: "AlertsCounts",
-      fields: {
-        totalUserSearchCriteriaCount: {
-          type: GraphQLInt,
-          resolve: ({ count_30d }) => count_30d,
-        },
-      },
-    }),
-    resolve: (x) => x,
-  },
-  isRecentlyEnabled: {
-    type: GraphQLBoolean,
-    resolve: ({ count_7d }) => count_7d > 0,
-  },
-}
-
 export const AlertsConnectionSortEnum = new GraphQLEnumType({
   name: "AlertsConnectionSortEnum",
   values: {
@@ -437,7 +418,6 @@ export const resolveAlertFromJSON = (alert) => {
 export const AlertsConnectionType = connectionWithCursorInfo({
   name: "Alert",
   nodeType: AlertType,
-  edgeFields: AlertsEdgeFields,
 }).connectionType
 
 export const PartnerAlertsEdgeFields = {
