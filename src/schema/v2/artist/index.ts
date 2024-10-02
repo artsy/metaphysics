@@ -651,9 +651,15 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           _options,
           { artistArtworksLoader, unauthenticatedLoaders: { artworkLoader } }
         ) => {
+          const staticArtworkID = `${id}-coverArtwork`
+
           if (cover_artwork_id) {
             try {
-              return await artworkLoader(cover_artwork_id)
+              const artwork = await artworkLoader(cover_artwork_id)
+              return {
+                ...artwork,
+                _id: staticArtworkID,
+              }
             } catch {
               // Intentionally ignore errors from unpublished/deleted artworks
               // that are set as cover artworks.
@@ -667,7 +673,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             published: true,
           })
 
-          return fallbackArtwork
+          return {
+            ...fallbackArtwork,
+            _id: staticArtworkID,
+          }
         },
       },
       createdAt: date(),
