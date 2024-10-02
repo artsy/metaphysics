@@ -19,6 +19,7 @@ import { ArticleSectionImageCollection } from "./sections/ArticleSectionImageCol
 import { ArticleSectionText } from "./sections/ArticleSectionText"
 import { ArticleSectionVideo } from "./sections/ArticleSectionVideo"
 import { ArticleSectionCallout } from "./sections/ArticleSectionCallout"
+import { ArticleSectionCollection } from "./sections/ArticleSectionCollection"
 import { ArticleSectionEmbed } from "./sections/ArticleSectionEmbed"
 import { ArticleSectionImageSet } from "./sections/ArticleSectionImageSet"
 import { ArticleSectionSocialEmbed } from "./sections/ArticleSectionSocialEmbed"
@@ -285,6 +286,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
                 ArticleSectionCallout,
                 ArticleSectionEmbed,
                 ArticleSectionImageCollection,
+                ArticleSectionCollection,
                 ArticleSectionImageSet,
                 ArticleSectionSocialEmbed,
                 ArticleSectionText,
@@ -300,6 +302,7 @@ export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
             sections.filter((section) => {
               return [
                 "callout",
+                "collection",
                 "embed",
                 "image_collection",
                 "image_set",
