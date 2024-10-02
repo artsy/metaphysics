@@ -649,7 +649,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         resolve: async (
           { id, cover_artwork_id },
           _options,
-          { artistArtworksLoader, artworkLoader }
+          { artistArtworksLoader, unauthenticatedLoaders: { artworkLoader } }
         ) => {
           if (cover_artwork_id) {
             try {
