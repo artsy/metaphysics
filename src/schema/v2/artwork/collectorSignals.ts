@@ -70,16 +70,7 @@ const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
       liveBiddingStarted: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Live bidding has started on this lot's auction",
-        resolve: async ({ sale }, {}, { systemTimeLoader }) => {
-          if (!sale.live_start_at) {
-            return false
-          }
-          const systemTime = await systemTimeLoader()
-          if (!systemTime) {
-            return false
-          }
-          return new Date(sale.live_start_at) < new Date(systemTime)
-        },
+        resolve: async ({ sale }) => !!sale.live_integration_started,
       },
       onlineBiddingExtended: {
         type: new GraphQLNonNull(GraphQLBoolean),
@@ -112,14 +103,10 @@ const LabelSignalEnumType = new GraphQLEnumType({
 })
 const AVAILABLE_LABEL_COUNT = LabelSignalEnumType.getValues().length
 
-const ARTWORK_AVAILABILITY_FOR_SALE_VALUE = "for sale"
-
 export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   description: "Collector signals on artwork",
   resolve: (artwork) => {
-    const canSendSignals =
-      artwork.availability === ARTWORK_AVAILABILITY_FOR_SALE_VALUE &&
-      (artwork.purchasable || isAuctionArtwork(artwork))
+    const canSendSignals = artwork.purchasable || isAuctionArtwork(artwork)
     return canSendSignals ? artwork : null
   },
   type: new GraphQLObjectType({
@@ -320,7 +307,7 @@ const getActiveAuctionValues = async (
   })
   const activeAuction = sales?.[0]
 
-  if (!activeAuction) {
+  if (!activeAuction || !!activeAuction.ended_at) {
     return null
   }
 

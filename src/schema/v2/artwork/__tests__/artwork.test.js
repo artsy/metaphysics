@@ -5010,7 +5010,11 @@ describe("Artwork type", () => {
         })
         it("returns correct nested values for an auction that has started live bidding", async () => {
           context.salesLoader.mockResolvedValue([
-            { id: "sale-id-auction", live_start_at: pastTime },
+            {
+              id: "sale-id-auction",
+              live_start_at: pastTime,
+              live_integration_started: true,
+            },
           ])
 
           // live start at not set on sale artwork
@@ -5020,6 +5024,27 @@ describe("Artwork type", () => {
           expect(
             data.artwork.collectorSignals.auction.liveBiddingStarted
           ).toEqual(true)
+
+          expect(data.artwork.collectorSignals.auction.liveStartAt).toEqual(
+            pastTime
+          )
+        })
+        it("may say live bidding has not started even though the start time has passed", async () => {
+          context.salesLoader.mockResolvedValue([
+            {
+              id: "sale-id-auction",
+              live_start_at: pastTime,
+              live_integration_started: false,
+            },
+          ])
+
+          // live start at not set on sale artwork
+          context.saleArtworkLoader.mockResolvedValue({})
+          const data = await runQuery(query, context)
+
+          expect(
+            data.artwork.collectorSignals.auction.liveBiddingStarted
+          ).toEqual(false)
 
           expect(data.artwork.collectorSignals.auction.liveStartAt).toEqual(
             pastTime
@@ -5070,10 +5095,10 @@ describe("Artwork type", () => {
           expect(data.artwork.collectorSignals.auction).toBeNull()
         })
 
-        it("does not return auction data if bidding is closed", async () => {
+        it("may return auction data after end time if the sale closes late", async () => {
           artwork.purchasable = true
           context.salesLoader.mockResolvedValue([
-            { id: "sale-id-auction", ended_at: pastTime },
+            { id: "sale-id-auction", end_at: pastTime, ended_at: null },
           ])
           context.saleArtworkLoader.mockResolvedValue({
             end_at: pastTime,
@@ -5082,7 +5107,9 @@ describe("Artwork type", () => {
 
           const data = await runQuery(query, context)
 
-          expect(data.artwork.collectorSignals.auction).toBeNull()
+          expect(data.artwork.collectorSignals.auction.lotClosesAt).toEqual(
+            pastTime
+          )
         })
       })
 
