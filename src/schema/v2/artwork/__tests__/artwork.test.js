@@ -2029,7 +2029,7 @@ describe("Artwork type", () => {
     it("returns available inquiry questions if an artwork is not inquirable", () => {
       const context = {
         artworkLoader: () => {
-          return Promise.resolve({ id: "blah", sale_ids: ["sale_id"] })
+          return Promise.resolve({ id: "blah", inquireable: false })
         },
         inquiryRequestQuestionsLoader: () => {
           return Promise.reject()
@@ -2044,7 +2044,7 @@ describe("Artwork type", () => {
     it("returns inquiry questions if an artwork is inquirable", () => {
       const context = {
         artworkLoader: () => {
-          return Promise.resolve({ id: "blah", sale_ids: [] })
+          return Promise.resolve({ id: "blah", inquireable: true })
         },
         inquiryRequestQuestionsLoader: () => {
           return Promise.resolve([
