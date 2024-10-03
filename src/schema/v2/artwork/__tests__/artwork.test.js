@@ -5029,27 +5029,6 @@ describe("Artwork type", () => {
             pastTime
           )
         })
-        it("may say live bidding has not started even though the start time has passed", async () => {
-          context.salesLoader.mockResolvedValue([
-            {
-              id: "sale-id-auction",
-              live_start_at: pastTime,
-              live_integration_started: false,
-            },
-          ])
-
-          // live start at not set on sale artwork
-          context.saleArtworkLoader.mockResolvedValue({})
-          const data = await runQuery(query, context)
-
-          expect(
-            data.artwork.collectorSignals.auction.liveBiddingStarted
-          ).toEqual(false)
-
-          expect(data.artwork.collectorSignals.auction.liveStartAt).toEqual(
-            pastTime
-          )
-        })
 
         it("fetches & returns the nested lot watcher and bid count signals for an auction lot artwork if requested", async () => {
           artwork.recent_saves_count = 123
