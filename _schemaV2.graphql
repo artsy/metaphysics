@@ -9137,7 +9137,7 @@ type DislikeArtworkPayload {
 }
 
 type DismissTaskFailure {
-  mutationError: GravityMutationError
+  mutationError: GravityMutationError!
 }
 
 input DismissTaskMutationInput {
@@ -9149,13 +9149,13 @@ type DismissTaskMutationPayload {
   clientMutationId: String
 
   # On success: the new state of the Task
-  taskOrError: DismissTaskResponseOrError
+  taskOrError: DismissTaskResponseOrError!
 }
 
 union DismissTaskResponseOrError = DismissTaskFailure | DismissTaskSuccess
 
 type DismissTaskSuccess {
-  task: Task
+  task: Task!
 }
 
 type DoNotUseThisPartner {

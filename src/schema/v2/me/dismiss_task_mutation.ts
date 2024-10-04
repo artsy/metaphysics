@@ -21,7 +21,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   isTypeOf: (data) => data.id,
   fields: () => ({
     task: {
-      type: TaskType,
+      type: new GraphQLNonNull(TaskType),
       resolve: (response) => {
         return response
       },
@@ -36,7 +36,7 @@ const ErrorType = new GraphQLObjectType<any, ResolverContext>({
   },
   fields: () => ({
     mutationError: {
-      type: GravityMutationErrorType,
+      type: new GraphQLNonNull(GravityMutationErrorType),
       resolve: (err) => (typeof err.message === "object" ? err.message : err),
     },
   }),
@@ -61,7 +61,7 @@ export const dismissTaskMutation = mutationWithClientMutationId<
   },
   outputFields: {
     taskOrError: {
-      type: ResponseOrErrorType,
+      type: new GraphQLNonNull(ResponseOrErrorType),
       description: "On success: the new state of the Task",
       resolve: (result) => result,
     },
