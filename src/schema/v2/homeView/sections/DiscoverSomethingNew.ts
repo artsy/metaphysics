@@ -9,8 +9,8 @@ const marketingCollectionSlugs = [
   "paintings",
   "prints",
   "street-art",
-  "black-and-white",
-  "art-under-1000",
+  "black-and-white-artworks",
+  "art-under-1000-dollars",
   "art-for-small-spaces",
   "cool-toned-artworks",
 ]
