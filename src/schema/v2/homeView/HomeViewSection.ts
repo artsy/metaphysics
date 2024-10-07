@@ -24,6 +24,7 @@ import { HomeViewComponent } from "./HomeViewComponent"
 import { toGlobalId } from "graphql-relay"
 import { FeaturedLinkConnectionType } from "../FeaturedLink/featuredLink"
 import { ImageType } from "../image"
+import { HomeViewCardConnectionType } from "./HomeViewCard"
 
 // section interface
 
@@ -59,6 +60,7 @@ export const HomeViewSectionTypeNames = {
   HomeViewSectionArtists: "HomeViewSectionArtists",
   HomeViewSectionArtworks: "HomeViewSectionArtworks",
   HomeViewSectionAuctionResults: "HomeViewSectionAuctionResults",
+  HomeViewSectionCards: "HomeViewSectionCards",
   HomeViewSectionDiscoverMarketingCollections:
     "HomeViewSectionDiscoverMarketingCollections",
   HomeViewSectionFairs: "HomeViewSectionFairs",
@@ -349,12 +351,31 @@ export const HomeViewDiscoverMarketingCollectionType = new GraphQLObjectType<
   },
 })
 
+export const HomeViewCardsSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: HomeViewSectionTypeNames.HomeViewSectionCards,
+  description: "A section containing a list of navigation cards",
+  interfaces: [HomeViewGenericSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
+    cardsConnection: {
+      type: HomeViewCardConnectionType,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
+    },
+  },
+})
+
 export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
   HomeViewActivitySectionType,
   HomeViewArticlesSectionType,
   HomeViewArtistsSectionType,
   HomeViewArtworksSectionType,
   HomeViewAuctionResultsSectionType,
+  HomeViewCardsSectionType,
   HomeViewFairsSectionType,
   HomeViewGalleriesSectionType,
   HomeViewHeroUnitsSectionType,
