@@ -1148,8 +1148,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       myLotStanding: {
         type: new GraphQLList(new GraphQLNonNull(LotStandingType)),
         args: { live: { type: GraphQLBoolean, defaultValue: null } },
-        resolve: ({ id }, { live }, { lotStandingLoader }) => {
+        resolve: ({ id, sale_ids }, { live }, { lotStandingLoader }) => {
           if (!lotStandingLoader) return null
+          if (!sale_ids || sale_ids.length === 0) return null
           return lotStandingLoader({ artwork_id: id, live })
         },
       },
