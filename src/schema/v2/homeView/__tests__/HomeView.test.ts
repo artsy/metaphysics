@@ -61,6 +61,14 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
+                  "__typename": "HomeViewSectionCards",
+                  "component": Object {
+                    "title": "Explore by Category",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
                   "__typename": "HomeViewSectionSales",
                   "component": Object {
                     "title": "Auctions",
@@ -70,6 +78,14 @@ describe("homeView", () => {
               Object {
                 "node": Object {
                   "__typename": "HomeViewSectionDiscoverMarketingCollections",
+                  "component": Object {
+                    "title": "Discover Something New",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionCards",
                   "component": Object {
                     "title": "Discover Something New",
                   },
@@ -191,6 +207,14 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
+                  "__typename": "HomeViewSectionCards",
+                  "component": Object {
+                    "title": "Explore by Category",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
                   "__typename": "HomeViewSectionArtworks",
                   "component": Object {
                     "title": "Your Active Bids",
@@ -216,6 +240,14 @@ describe("homeView", () => {
               Object {
                 "node": Object {
                   "__typename": "HomeViewSectionDiscoverMarketingCollections",
+                  "component": Object {
+                    "title": "Discover Something New",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionCards",
                   "component": Object {
                     "title": "Discover Something New",
                   },
