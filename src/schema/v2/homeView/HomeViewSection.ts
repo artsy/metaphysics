@@ -178,7 +178,8 @@ const ExploreByMarketingCollectionCategory = new GraphQLObjectType<
   ResolverContext
 >({
   name: "ExploreByMarketingCollectionCategory",
-  description: "A marketing collection category to explore by",
+  description:
+    "[deprecated in favor of `HomeViewCard`] A marketing collection category to explore by",
   fields: () => ({
     href: {
       type: GraphQLNonNull(GraphQLString),
@@ -207,7 +208,8 @@ const HomeViewExploreBySectionType = new GraphQLObjectType<
 >({
   name:
     HomeViewSectionTypeNames.HomeViewSectionExploreByMarketingCollectionCategories,
-  description: "Marketing Collection Categories section in the home view",
+  description:
+    "[deprecated in favor of `HomeViewSectionCards`] Marketing Collection Categories section in the home view",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
@@ -338,7 +340,9 @@ export const HomeViewDiscoverMarketingCollectionType = new GraphQLObjectType<
   ResolverContext
 >({
   name: HomeViewSectionTypeNames.HomeViewSectionDiscoverMarketingCollections,
-  description: "A section containing a list of curated marketing collections",
+  description:
+    "[deprecated in favor of `HomeViewSectionCards`] A section containing a list of curated marketing collections",
+
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,

@@ -9380,7 +9380,7 @@ enum ExhibitionPeriodFormat {
   SHORT
 }
 
-# A marketing collection category to explore by
+# [deprecated in favor of `HomeViewCard`] A marketing collection category to explore by
 type ExploreByMarketingCollectionCategory {
   href: String!
   image: Image
@@ -11200,7 +11200,7 @@ type HomeViewSectionCards implements HomeViewSectionGeneric & Node {
   ownerType: String
 }
 
-# A section containing a list of curated marketing collections
+# [deprecated in favor of `HomeViewSectionCards`] A section containing a list of curated marketing collections
 type HomeViewSectionDiscoverMarketingCollections implements HomeViewSectionGeneric & Node {
   # Component prescription for this section, for overriding or customizing presentation and behavior
   component: HomeViewComponent
@@ -11224,7 +11224,7 @@ type HomeViewSectionDiscoverMarketingCollections implements HomeViewSectionGener
   ownerType: String
 }
 
-# Marketing Collection Categories section in the home view
+# [deprecated in favor of `HomeViewSectionCards`] Marketing Collection Categories section in the home view
 type HomeViewSectionExploreByMarketingCollectionCategories implements HomeViewSectionGeneric & Node {
   categories: [ExploreByMarketingCollectionCategory!]!
 
