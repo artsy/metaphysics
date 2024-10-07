@@ -762,8 +762,9 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           { size },
           { unauthenticatedLoaders: { partnerLocationsConnectionLoader } }
         ) => {
-          const locations = await partnerLocationsConnectionLoader(id, { size })
-          const cities = locations.body.map((location) => location.city)
+          const { body } = await partnerLocationsConnectionLoader(id, { size })
+
+          const cities = (body ?? []).map((location) => location.city)
 
           // Filter for dupes and blanks
           return Array.from(new Set(cities)).filter(Boolean)
