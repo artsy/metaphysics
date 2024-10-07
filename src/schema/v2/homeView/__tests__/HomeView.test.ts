@@ -85,6 +85,14 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
+                  "__typename": "HomeViewSectionCards",
+                  "component": Object {
+                    "title": "Discover Something New",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
                   "__typename": "HomeViewSectionGalleries",
                   "component": Object {
                     "title": "Galleries Near You",
@@ -232,6 +240,14 @@ describe("homeView", () => {
               Object {
                 "node": Object {
                   "__typename": "HomeViewSectionDiscoverMarketingCollections",
+                  "component": Object {
+                    "title": "Discover Something New",
+                  },
+                },
+              },
+              Object {
+                "node": Object {
+                  "__typename": "HomeViewSectionCards",
                   "component": Object {
                     "title": "Discover Something New",
                   },

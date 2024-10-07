@@ -25,6 +25,7 @@ import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 import { DiscoverMarketingCollections } from "../sections/DiscoverMarketingCollections"
 import { ExploreByMarketingCollectionCategories } from "../sections/ExploreByMarketingCollectionCategories"
 import { ExploreByCategory } from "../sections/ExploreByCategory"
+import { DiscoverSomethingNew } from "../sections/DiscoverSomethingNew"
 
 const SECTIONS: HomeViewSection[] = [
   LatestActivity,
@@ -36,6 +37,7 @@ const SECTIONS: HomeViewSection[] = [
   AuctionLotsForYou,
   Auctions,
   DiscoverMarketingCollections,
+  DiscoverSomethingNew,
   LatestAuctionResults,
   GalleriesNearYou,
   LatestArticles,
