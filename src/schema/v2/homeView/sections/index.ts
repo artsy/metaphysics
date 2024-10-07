@@ -27,6 +27,7 @@ import { GalleriesNearYou } from "./GalleriesNearYou"
 import { FeatureFlag } from "lib/featureFlags"
 import { DiscoverMarketingCollections } from "./DiscoverMarketingCollections"
 import { ExploreByMarketingCollectionCategories } from "./ExploreByMarketingCollectionCategories"
+import { ExploreByCategory } from "./ExploreByCategory"
 
 type MaybeResolved<T> =
   | T
@@ -56,6 +57,7 @@ const sections: HomeViewSection[] = [
   Auctions,
   CuratorsPicksEmerging,
   DiscoverMarketingCollections,
+  ExploreByCategory,
   ExploreByMarketingCollectionCategories,
   FeaturedFairs,
   GalleriesNearYou,

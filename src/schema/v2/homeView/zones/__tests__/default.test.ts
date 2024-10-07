@@ -24,6 +24,7 @@ describe("getSections", () => {
           "home-view-section-new-works-for-you",
           "home-view-section-hero-units",
           "home-view-section-explore-by-marketing-collection-categories",
+          "home-view-section-explore-by-category",
           "home-view-section-active-bids",
           "home-view-section-auction-lots-for-you",
           "home-view-section-auctions",
@@ -61,6 +62,7 @@ describe("getSections", () => {
         Array [
           "home-view-section-hero-units",
           "home-view-section-explore-by-marketing-collection-categories",
+          "home-view-section-explore-by-category",
           "home-view-section-auctions",
           "home-view-section-discover-marketing-collections",
           "home-view-section-galleries-near-you",

@@ -24,12 +24,14 @@ import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyVi
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
 import { DiscoverMarketingCollections } from "../sections/DiscoverMarketingCollections"
 import { ExploreByMarketingCollectionCategories } from "../sections/ExploreByMarketingCollectionCategories"
+import { ExploreByCategory } from "../sections/ExploreByCategory"
 
 const SECTIONS: HomeViewSection[] = [
   LatestActivity,
   NewWorksForYou,
   HeroUnits,
   ExploreByMarketingCollectionCategories,
+  ExploreByCategory,
   ActiveBids,
   AuctionLotsForYou,
   Auctions,
