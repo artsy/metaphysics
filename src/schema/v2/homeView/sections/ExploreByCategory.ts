@@ -1,33 +1,39 @@
 import { ContextModule } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../HomeViewSection"
-import { URL, URLSearchParams } from "url"
 import { connectionFromArray } from "graphql-relay"
 
+// TODO: replace placeholder images 🐹
 const marketingColletionCategories = {
   Medium: {
     id: "Medium",
     title: "Medium",
+    imageUrl: "https://files.artsy.net/images/capivara_chimarrao.jpg",
   },
   Movement: {
     id: "Movement",
     title: "Movement",
+    imageUrl: "https://files.artsy.net/images/capivara_chimarrao.jpg",
   },
   "Collect by Color": {
     id: "Collect by Color",
     title: "Color",
+    imageUrl: "https://files.artsy.net/images/capivara_boia.jpg",
   },
   "Collect by Size": {
     id: "Collect by Size",
     title: "Size",
+    imageUrl: "https://files.artsy.net/images/capivara_nadando.jpg",
   },
   "Collect by Price": {
     id: "Collect by Price",
     title: "Price",
+    imageUrl: "https://files.artsy.net/images/capivara_filhotes.jpg",
   },
   Gallery: {
     id: "Gallery",
     title: "Gallery",
+    imageUrl: "https://files.artsy.net/images/capivara_filhotes.jpg",
   },
 }
 
@@ -47,13 +53,7 @@ export const ExploreByCategory: HomeViewSection = {
           ...category,
           entityID: category.id,
           entityType: "MarketingCollectionCategory",
-          image_url: new URL(
-            `/340x400/EEE/31343C?${new URLSearchParams({
-              font: "open-sans",
-              text: category.title,
-            })}`,
-            "https://placehold.co"
-          ),
+          image_url: category.imageUrl,
         }
       }
     )
