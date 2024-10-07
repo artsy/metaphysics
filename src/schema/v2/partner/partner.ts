@@ -757,25 +757,16 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             defaultValue: 25,
           },
         },
-        resolve: ({ id }, options, { partnerLocationsConnectionLoader }) => {
-          return partnerLocationsConnectionLoader(id, {
-            total_count: true,
-            ...options,
-          }).then((locations) => {
-            const locationCities = locations.body.map((location) => {
-              return location.city
-            })
-            const filteredForDuplicatesAndBlanks = locationCities.filter(
-              (city, pos) => {
-                return (
-                  city &&
-                  locationCities.indexOf(city) === pos &&
-                  city.length > 0
-                )
-              }
-            )
-            return filteredForDuplicatesAndBlanks
-          })
+        resolve: async (
+          { id },
+          { size },
+          { unauthenticatedLoaders: { partnerLocationsConnectionLoader } }
+        ) => {
+          const locations = await partnerLocationsConnectionLoader(id, { size })
+          const cities = locations.body.map((location) => location.city)
+
+          // Filter for dupes and blanks
+          return Array.from(new Set(cities)).filter(Boolean)
         },
       },
       defaultProfileID: {
