@@ -129,7 +129,9 @@ describe("Artwork type", () => {
 
     const context = {
       artworkLoader: () => Promise.resolve(artwork),
-      artistLoader: () => Promise.resolve({ name: "Catty Artist" }),
+      unauthenticatedLoaders: {
+        artistLoader: () => Promise.resolve({ name: "Catty Artist" }),
+      },
     }
     const query = `
       {
