@@ -303,9 +303,27 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             description:
               "Use whatever is in the original response instead of making a request",
           },
+          private: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+          },
         },
-        resolve: ({ artists }, { shallow }, { artistLoader }) => {
-          if (shallow) return artists
+        resolve: (
+          { artists },
+          args,
+          {
+            unauthenticatedLoaders: {
+              artistLoader: unauthenticatedArtistLoader,
+            },
+            authenticatedLoaders,
+          }
+        ) => {
+          if (args.shallow) return artists
+
+          const artistLoader =
+            args.private && authenticatedLoaders?.artistLoader
+              ? authenticatedLoaders?.artistLoader
+              : unauthenticatedArtistLoader
 
           return Promise.all(
             artists.map((artist) => artistLoader(artist.id))
@@ -1130,8 +1148,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       myLotStanding: {
         type: new GraphQLList(new GraphQLNonNull(LotStandingType)),
         args: { live: { type: GraphQLBoolean, defaultValue: null } },
-        resolve: ({ id }, { live }, { lotStandingLoader }) => {
+        resolve: ({ id, sale_ids }, { live }, { lotStandingLoader }) => {
           if (!lotStandingLoader) return null
+          if (!sale_ids || sale_ids.length === 0) return null
           return lotStandingLoader({ artwork_id: id, live })
         },
       },

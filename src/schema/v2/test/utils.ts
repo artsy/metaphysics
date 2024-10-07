@@ -96,7 +96,12 @@ const unpackGraphQLError = (error: GraphQLError) => error.originalError || error
  */
 export const runAuthenticatedQuery = (
   query,
-  context: Partial<ResolverContext> = {}
+  context: Partial<
+    Omit<ResolverContext, "authenticatedLoaders" | "unauthenticatedLoaders"> & {
+      authenticatedLoaders: Partial<ResolverContext["authenticatedLoaders"]>
+      unauthenticatedLoaders: Partial<ResolverContext["unauthenticatedLoaders"]>
+    }
+  >
 ) => {
   const accessToken = "secret"
   const userID = "user-42"
