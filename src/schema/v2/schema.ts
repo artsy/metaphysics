@@ -76,6 +76,7 @@ import { deleteBankAccountMutation } from "./me/delete_bank_account_mutation"
 import { deleteCreditCardMutation } from "./me/delete_credit_card_mutation"
 import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileIconMutation"
 import dislikeArtworkMutation from "./me/dislikeArtworkMutation"
+import { dismissTaskMutation } from "./me/dismiss_task_mutation"
 import FollowArtist from "./me/follow_artist"
 import FollowGene from "./me/follow_gene"
 import FollowProfile from "./me/follow_profile"
@@ -428,6 +429,7 @@ export default new GraphQLSchema({
       deleteUserInterests: deleteUserInterestsMutation,
       deleteUserRole: deleteUserRoleMutation,
       dislikeArtwork: dislikeArtworkMutation,
+      dismissTask: dismissTaskMutation,
       endSale: endSaleMutation,
       followArtist: FollowArtist,
       followGene: FollowGene,
