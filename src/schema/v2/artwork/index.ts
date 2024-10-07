@@ -303,9 +303,27 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             description:
               "Use whatever is in the original response instead of making a request",
           },
+          private: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+          },
         },
-        resolve: ({ artists }, { shallow }, { artistLoader }) => {
-          if (shallow) return artists
+        resolve: (
+          { artists },
+          args,
+          {
+            unauthenticatedLoaders: {
+              artistLoader: unauthenticatedArtistLoader,
+            },
+            authenticatedLoaders,
+          }
+        ) => {
+          if (args.shallow) return artists
+
+          const artistLoader =
+            args.private && authenticatedLoaders?.artistLoader
+              ? authenticatedLoaders?.artistLoader
+              : unauthenticatedArtistLoader
 
           return Promise.all(
             artists.map((artist) => artistLoader(artist.id))

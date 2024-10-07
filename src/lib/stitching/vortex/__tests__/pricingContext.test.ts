@@ -54,11 +54,17 @@ describe("PricingContext type", () => {
       },
     ])
   )
-  const context: Partial<ResolverContext> = {
+  const context: Partial<
+    Omit<ResolverContext, "authenticatedLoaders" | "unauthenticatedLoaders"> & {
+      authenticatedLoaders: Partial<ResolverContext["authenticatedLoaders"]>
+      unauthenticatedLoaders: Partial<ResolverContext["unauthenticatedLoaders"]>
+    }
+  > = {
     meLoader,
     artworkLoader,
     artistLoader,
     salesLoader,
+    unauthenticatedLoaders: { artistLoader },
   }
   const query = gql`
     query {
