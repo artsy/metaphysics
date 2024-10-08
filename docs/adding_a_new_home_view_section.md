@@ -8,7 +8,9 @@
 >
 > 👉🏽 [Archived presentation video and slides][ks_archive]
 
-In order to add to the home view schema, we should think in terms of **section instances** and **section types** (see [related slide][ks_slide_instances_types]).
+In order to add to the home view schema, we should think in terms of **section instances** and **section types**, as indicated by [this slide from the KS][ks_slide_instances_types].
+
+<a href="https://docs.google.com/presentation/d/1j9yFZmkdelJ6y3YQiuJ-KaUTv0Pc9-ZwyTdrR5HrU9Q/edit#slide=id.g3024881a6d2_1_126"><img width="50%" src="imgs/home-view-sections-and-types.png" /></a>
 
 If you want to add a new section _instance_, you should first check to see if there is an existing section _type_ that returns the same kind of data.
 
@@ -21,7 +23,11 @@ Else, you'll need to create the new section type:
 > [!NOTE]
 > See also [related slide][ks_slide_new_section_type] and 33:00 in the [video][ks_archive]
 
-### 1. Create the new section type in [HomeViewSection.ts][section_type_declarations]
+### 1. Create the new section type in [homeView/sectionTypes/][section_type_declarations]
+
+You will first need to define a name for the section type, in the [sectionTypes/names][section_type_names] file
+
+Then copy the annotated [`ExampleSectionType`][example_section_type_declaration] file, customizing the values and removing the comments as you go.
 
 ```typescript
 const HomeViewSectionMyNewType = new GraphQLObjectType<any, ResolverContext>({
@@ -37,16 +43,19 @@ const HomeViewSectionMyNewType = new GraphQLObjectType<any, ResolverContext>({
 })
 ```
 
-### 2. Add your new section type to [`homeViewSectionTypes`][section_types_list]
+### 2. Add your new section type to [`sectionTypes/index`][section_types_list]
 
 ```typescript
 export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
-  ...,
-  HomeViewSectionMyNewType, // 👈 Add your new type here
+  //...
+
+  HomeViewSectionMyNewType, // 👈 Add your new type here, in alphabetical order
+
+  //...
 ]
 ```
 
-You should now have a commit that looks something like [this][gh_new_section_type_commit].
+You should now have a commit that looks something like [this][gh_new_section_type_commit] (although the folder structure may be different nowadays).
 
 ## Define your new section _instance_
 
@@ -73,15 +82,20 @@ export const MyNewSection: HomeViewSection = {
 }
 ```
 
-> [!CAUTION]
-> If you don't prefix the id with `home-view-section-`, it might break deep linking in App.
-
 > [!TIP]
 > Consider using the built-in support for Unleash flags so as to avoid expose the new section prematurely.
 
-You should now have a commit that looks something like [this][gh_new_section_instance_commit].
-
 ### 4. Add your new section to the [section registry][section_instance_registry]
+
+```ts
+const sections: HomeViewSection[] = [
+  //...
+
+  MyNewSection, // 👈 Add your new section here, in alphabetical order
+
+  //...
+]
+```
 
 This is what will allow you to query it directly by `id` from GraphQL:
 
@@ -96,6 +110,8 @@ This is what will allow you to query it directly by `id` from GraphQL:
   }
 }
 ```
+
+You should now have a commit that looks something like [this][gh_new_section_instance_commit] (although the folder structure may be different nowadays).
 
 ### 5. Expose your section in the appropriate zone
 
@@ -119,7 +135,7 @@ This will allow you to query the entire list of home view sections and see your 
 ```graphql
 {
   homeView {
-    sectionsConnection(first: 20) {
+    sectionsConnection(first: 30) {
       edges {
         node {
           __typename
@@ -132,6 +148,8 @@ This will allow you to query the entire list of home view sections and see your 
 }
 ```
 
+You should now have a commit that looks something like [this][gh_expose_section_commit] (although the folder structure may be different nowadays).
+
 ## Finally
 
 If you want to see how this all comes together, check out [this branch from the KS][gh_new_section_type_and_instance_branch]
@@ -140,10 +158,12 @@ If you have any questions, drop them in #dev-help as usual!
 
 <!-- repo file links -->
 
-[section_type_declarations]: ../src/schema/v2/homeView/HomeViewSection.ts
-[section_types_list]: ../src/schema/v2/homeView/HomeViewSection.ts
+[section_type_names]: ../src/schema/v2/homeView/sectionTypes/names.ts
+[section_type_declarations]: ../src/schema/v2/homeView/sectionTypes/
+[section_types_list]: ../src/schema/v2/homeView/sectionTypes/index.ts
 [section_instance_declarations]: ../src/schema/v2/homeView/sections
 [example_section_declaration]: ../src/schema/v2/homeView/sections/_ExampleSection.ts
+[example_section_type_declaration]: ../src/schema/v2/homeView/sectionTypes/_ExampleSectionType.ts
 [section_instance_registry]: ../src/schema/v2/homeView/sections/index.ts
 [default_zone]: ../src/schema/v2/homeView/zones/default.ts
 
@@ -159,4 +179,5 @@ If you have any questions, drop them in #dev-help as usual!
 
 [gh_new_section_type_commit]: https://github.com/artsy/metaphysics/commit/34dd1ddf195da8bb8a842e7e5b2b3bf77cf5f8be
 [gh_new_section_instance_commit]: https://github.com/artsy/metaphysics/commit/98c9acec51ab2f4c9c0ec8d2e24c66c1219fe5c0
+[gh_expose_section_commit]: https://github.com/artsy/metaphysics/commit/613415ec88cb79f81e011ce7389b1f97eafa0149
 [gh_new_section_type_and_instance_branch]: https://github.com/artsy/metaphysics/compare/main...onyx/home-view-ks-demo-new-section-type

@@ -1,3 +1,7 @@
+/**
+ * A list of section types’ names, following the naming convention:
+ * HomeViewSection{Things}
+ */
 export const HomeViewSectionTypeNames = {
   HomeViewSectionActivity: "HomeViewSectionActivity",
   HomeViewSectionArticles: "HomeViewSectionArticles",
