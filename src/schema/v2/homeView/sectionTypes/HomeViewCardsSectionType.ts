@@ -8,7 +8,7 @@ import {
 import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "../HomeViewGenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
-import { standardSectionFields } from "../standardSectionFields"
+import { standardSectionFields } from "./standardSectionFields"
 import Image from "schema/v2/image"
 
 export const HomeViewCardType = new GraphQLObjectType<any, ResolverContext>({

@@ -5,7 +5,7 @@ import { NodeInterface } from "../../object_identification"
 import { SalesConnectionField } from "../../sales"
 import { HomeViewGenericSectionInterface } from "../HomeViewGenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
-import { standardSectionFields } from "../standardSectionFields"
+import { standardSectionFields } from "./standardSectionFields"
 
 export const HomeViewSalesSectionType = new GraphQLObjectType<
   any,

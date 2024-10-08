@@ -6,7 +6,7 @@ import { heroUnitsConnection } from "../../HeroUnit/heroUnitsConnection"
 import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "../HomeViewGenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
-import { standardSectionFields } from "../standardSectionFields"
+import { standardSectionFields } from "./standardSectionFields"
 
 export const HomeViewHeroUnitsSectionType = new GraphQLObjectType<
   any,

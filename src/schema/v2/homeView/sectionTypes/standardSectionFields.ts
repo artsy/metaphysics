@@ -6,8 +6,8 @@ import {
 } from "graphql"
 import { toGlobalId } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "../object_identification"
-import { HomeViewComponent } from "./HomeViewComponent"
+import { InternalIDFields } from "../../object_identification"
+import { HomeViewComponent } from "../HomeViewComponent"
 
 // section interface
 export const standardSectionFields: GraphQLFieldConfigMap<
