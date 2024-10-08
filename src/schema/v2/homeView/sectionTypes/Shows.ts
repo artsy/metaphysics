@@ -4,6 +4,9 @@ import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
+import { ShowsConnection } from "schema/v2/show"
+import { pageable } from "relay-cursor-paging"
+import { emptyConnection } from "schema/v2/fields/pagination"
 
 export const HomeViewShowsSectionType = new GraphQLObjectType<
   any,
@@ -14,5 +17,12 @@ export const HomeViewShowsSectionType = new GraphQLObjectType<
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
+
+    showsConnection: {
+      type: ShowsConnection.connectionType,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
+    },
   },
 })
