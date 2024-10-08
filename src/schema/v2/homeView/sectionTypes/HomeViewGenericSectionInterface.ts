@@ -1,6 +1,6 @@
 import { GraphQLInterfaceType } from "graphql"
-import { HomeViewSectionTypeNames } from "./sectionTypes/names"
-import { standardSectionFields } from "./sectionTypes/standardSectionFields"
+import { HomeViewSectionTypeNames } from "./names"
+import { standardSectionFields } from "./standardSectionFields"
 
 export const HomeViewGenericSectionInterface = new GraphQLInterfaceType({
   name: HomeViewSectionTypeNames.HomeViewSectionGeneric,

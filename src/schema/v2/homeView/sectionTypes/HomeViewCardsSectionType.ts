@@ -6,7 +6,7 @@ import {
   emptyConnection,
 } from "../../fields/pagination"
 import { NodeInterface } from "../../object_identification"
-import { HomeViewGenericSectionInterface } from "../HomeViewGenericSectionInterface"
+import { HomeViewGenericSectionInterface } from "./HomeViewGenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./standardSectionFields"
 import Image from "schema/v2/image"

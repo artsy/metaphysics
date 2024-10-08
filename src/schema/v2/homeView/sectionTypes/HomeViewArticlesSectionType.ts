@@ -5,7 +5,7 @@ import ArticlesConnection from "../../articlesConnection"
 import { NodeInterface } from "../../object_identification"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./standardSectionFields"
-import { HomeViewGenericSectionInterface } from "../HomeViewGenericSectionInterface"
+import { HomeViewGenericSectionInterface } from "./HomeViewGenericSectionInterface"
 
 export const HomeViewArticlesSectionType = new GraphQLObjectType<
   any,

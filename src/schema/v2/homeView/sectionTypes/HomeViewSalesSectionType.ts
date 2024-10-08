@@ -3,7 +3,7 @@ import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { NodeInterface } from "../../object_identification"
 import { SalesConnectionField } from "../../sales"
-import { HomeViewGenericSectionInterface } from "../HomeViewGenericSectionInterface"
+import { HomeViewGenericSectionInterface } from "./HomeViewGenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./standardSectionFields"
 
