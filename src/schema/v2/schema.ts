@@ -228,7 +228,7 @@ import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHig
 import { updatePartnerShowMutation } from "./partner/updatePartnerShowMutation"
 import { VerifyUser } from "./verifyUser"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
-import { homeViewSectionTypes } from "./homeView/homeViewSectionTypes"
+import { homeViewSectionTypes } from "./homeView/sectionTypes"
 import { CacheableDirective } from "directives/cacheableDirective"
 import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsDirectiveExtension"
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
