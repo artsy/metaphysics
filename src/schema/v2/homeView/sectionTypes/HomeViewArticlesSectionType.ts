@@ -4,8 +4,8 @@ import { ResolverContext } from "types/graphql"
 import ArticlesConnection from "../../articlesConnection"
 import { NodeInterface } from "../../object_identification"
 import { HomeViewSectionTypeNames } from "./names"
-import { standardSectionFields } from "./standardSectionFields"
-import { HomeViewGenericSectionInterface } from "./HomeViewGenericSectionInterface"
+import { standardSectionFields } from "./GenericSectionInterface"
+import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 
 export const HomeViewArticlesSectionType = new GraphQLObjectType<
   any,

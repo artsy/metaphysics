@@ -3,9 +3,9 @@ import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { NodeInterface } from "../../object_identification"
 import { SalesConnectionField } from "../../sales"
-import { HomeViewGenericSectionInterface } from "./HomeViewGenericSectionInterface"
+import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
-import { standardSectionFields } from "./standardSectionFields"
+import { standardSectionFields } from "./GenericSectionInterface"
 
 export const HomeViewSalesSectionType = new GraphQLObjectType<
   any,

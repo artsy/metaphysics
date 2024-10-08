@@ -3,9 +3,9 @@ import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { NotificationsConnection } from "../../notifications"
 import { NodeInterface } from "../../object_identification"
-import { HomeViewGenericSectionInterface } from "./HomeViewGenericSectionInterface"
+import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
-import { standardSectionFields } from "./standardSectionFields"
+import { standardSectionFields } from "./GenericSectionInterface"
 
 export const HomeViewActivitySectionType = new GraphQLObjectType<
   any,

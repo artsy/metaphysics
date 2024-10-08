@@ -6,9 +6,9 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { NodeInterface } from "../../object_identification"
-import { HomeViewGenericSectionInterface } from "./HomeViewGenericSectionInterface"
+import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
-import { standardSectionFields } from "./standardSectionFields"
+import { standardSectionFields } from "./GenericSectionInterface"
 import { ImageType } from "../../image"
 
 export const ExploreByMarketingCollectionCategory = new GraphQLObjectType<

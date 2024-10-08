@@ -1,15 +1,16 @@
 import {
   GraphQLFieldConfigMap,
-  GraphQLNonNull,
   GraphQLID,
+  GraphQLInterfaceType,
+  GraphQLNonNull,
   GraphQLString,
 } from "graphql"
+import { HomeViewSectionTypeNames } from "./names"
 import { toGlobalId } from "graphql-relay"
+import { InternalIDFields } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "../../object_identification"
 import { HomeViewComponent } from "../HomeViewComponent"
 
-// section interface
 export const standardSectionFields: GraphQLFieldConfigMap<
   any,
   ResolverContext
@@ -38,3 +39,12 @@ export const standardSectionFields: GraphQLFieldConfigMap<
       "[Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)",
   },
 }
+
+export const HomeViewGenericSectionInterface = new GraphQLInterfaceType({
+  name: HomeViewSectionTypeNames.HomeViewSectionGeneric,
+  description: "Abstract interface shared by every kind of home view section",
+  fields: standardSectionFields,
+  resolveType: (value) => {
+    return value.type
+  },
+})

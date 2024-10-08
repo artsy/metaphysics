@@ -4,9 +4,9 @@ import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../../artwork"
 import { emptyConnection } from "../../fields/pagination"
 import { NodeInterface } from "../../object_identification"
-import { HomeViewGenericSectionInterface } from "./HomeViewGenericSectionInterface"
+import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
-import { standardSectionFields } from "./standardSectionFields"
+import { standardSectionFields } from "./GenericSectionInterface"
 
 export const HomeViewArtworksSectionType = new GraphQLObjectType<
   any,
