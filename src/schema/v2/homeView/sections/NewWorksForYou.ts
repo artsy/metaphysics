@@ -1,7 +1,7 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../HomeViewSectionTypeNames"
 import { artworksForUser } from "schema/v2/artworksForUser/artworksForUser"
 
 export const NewWorksForYou: HomeViewSection = {

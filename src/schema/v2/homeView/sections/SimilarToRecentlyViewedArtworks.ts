@@ -1,7 +1,7 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../HomeViewSectionTypeNames"
 import { SimilarToRecentlyViewed } from "schema/v2/me/similarToRecentlyViewed"
 
 export const SimilarToRecentlyViewedArtworks: HomeViewSection = {

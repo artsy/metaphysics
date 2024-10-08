@@ -1,6 +1,6 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../HomeViewSectionTypeNames"
 
 export const GalleriesNearYou: HomeViewSection = {
   id: "home-view-section-galleries-near-you",

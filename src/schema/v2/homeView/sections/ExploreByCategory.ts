@@ -1,6 +1,6 @@
 import { ContextModule } from "@artsy/cohesion"
 import { HomeViewSection } from "."
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../HomeViewSectionTypeNames"
 import { connectionFromArray } from "graphql-relay"
 
 // TODO: replace placeholder images 🐹

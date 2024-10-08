@@ -1,7 +1,4 @@
 import {
-  GraphQLFieldConfigMap,
-  GraphQLID,
-  GraphQLInterfaceType,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -18,93 +15,40 @@ import { connectionWithCursorInfo, emptyConnection } from "../fields/pagination"
 import { heroUnitsConnection } from "../HeroUnit/heroUnitsConnection"
 import { MarketingCollectionType } from "../marketingCollections"
 import { NotificationsConnection } from "../notifications"
-import { InternalIDFields, NodeInterface } from "../object_identification"
+import { NodeInterface } from "../object_identification"
 import { SalesConnectionField } from "../sales"
-import { HomeViewComponent } from "./HomeViewComponent"
-import { toGlobalId } from "graphql-relay"
 import { FeaturedLinkConnectionType } from "../FeaturedLink/featuredLink"
 import { ImageType } from "../image"
 import { HomeViewCardConnectionType } from "./HomeViewCard"
-
-// section interface
-
-const standardSectionFields: GraphQLFieldConfigMap<any, ResolverContext> = {
-  ...InternalIDFields,
-  id: {
-    type: new GraphQLNonNull(GraphQLID),
-    description: "A globally unique ID.",
-    resolve: ({ id }) => {
-      return toGlobalId("HomeViewSection", id)
-    },
-  },
-  contextModule: {
-    type: GraphQLString,
-    description:
-      "[Analytics] `context module` analytics value for this section, as defined in our schema (artsy/cohesion)",
-  },
-  component: {
-    type: HomeViewComponent,
-    description:
-      "Component prescription for this section, for overriding or customizing presentation and behavior",
-  },
-  ownerType: {
-    type: GraphQLString,
-    description:
-      "[Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)",
-  },
-}
-
-export const HomeViewSectionTypeNames = {
-  HomeViewSectionActivity: "HomeViewSectionActivity",
-  HomeViewSectionArticles: "HomeViewSectionArticles",
-  HomeViewSectionArtists: "HomeViewSectionArtists",
-  HomeViewSectionArtworks: "HomeViewSectionArtworks",
-  HomeViewSectionAuctionResults: "HomeViewSectionAuctionResults",
-  HomeViewSectionCards: "HomeViewSectionCards",
-  HomeViewSectionDiscoverMarketingCollections:
-    "HomeViewSectionDiscoverMarketingCollections",
-  HomeViewSectionFairs: "HomeViewSectionFairs",
-  HomeViewSectionGalleries: "HomeViewSectionGalleries",
-  HomeViewSectionGeneric: "HomeViewSectionGeneric",
-  HomeViewSectionHeroUnits: "HomeViewSectionHeroUnits",
-  HomeViewSectionExploreByMarketingCollectionCategories:
-    "HomeViewSectionExploreByMarketingCollectionCategories",
-  HomeViewSectionMarketingCollections: "HomeViewSectionMarketingCollections",
-  HomeViewSectionSales: "HomeViewSectionSales",
-  HomeViewSectionShows: "HomeViewSectionShows",
-  HomeViewSectionViewingRooms: "HomeViewSectionViewingRooms",
-} as const
-
-export const HomeViewGenericSectionInterface = new GraphQLInterfaceType({
-  name: HomeViewSectionTypeNames.HomeViewSectionGeneric,
-  description: "Abstract interface shared by every kind of home view section",
-  fields: standardSectionFields,
-  resolveType: (value) => {
-    return value.type
-  },
-})
+import { HomeViewSectionTypeNames } from "./HomeViewSectionTypeNames"
+import { standardSectionFields } from "./standardSectionFields"
+import { HomeViewGenericSectionInterface } from "./HomeViewGenericSectionInterface"
 
 // concrete sections
 
-const HomeViewArtworksSectionType = new GraphQLObjectType<any, ResolverContext>(
-  {
-    name: HomeViewSectionTypeNames.HomeViewSectionArtworks,
-    description: "An artworks section in the home view",
-    interfaces: [HomeViewGenericSectionInterface, NodeInterface],
-    fields: {
-      ...standardSectionFields,
+export const HomeViewArtworksSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: HomeViewSectionTypeNames.HomeViewSectionArtworks,
+  description: "An artworks section in the home view",
+  interfaces: [HomeViewGenericSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
 
-      artworksConnection: {
-        type: artworkConnection.connectionType,
-        args: pageable({}),
-        resolve: (parent, ...rest) =>
-          parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
-      },
+    artworksConnection: {
+      type: artworkConnection.connectionType,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
     },
-  }
-)
+  },
+})
 
-const HomeViewArtistsSectionType = new GraphQLObjectType<any, ResolverContext>({
+export const HomeViewArtistsSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: HomeViewSectionTypeNames.HomeViewSectionArtists,
   description: "An artists section in the home view",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
@@ -120,7 +64,7 @@ const HomeViewArtistsSectionType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-const HomeViewHeroUnitsSectionType = new GraphQLObjectType<
+export const HomeViewHeroUnitsSectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
@@ -139,7 +83,10 @@ const HomeViewHeroUnitsSectionType = new GraphQLObjectType<
   },
 })
 
-const HomeViewFairsSectionType = new GraphQLObjectType<any, ResolverContext>({
+export const HomeViewFairsSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: HomeViewSectionTypeNames.HomeViewSectionFairs,
   description: "A fairs section in the home view",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
@@ -155,23 +102,24 @@ const HomeViewFairsSectionType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-const HomeViewArticlesSectionType = new GraphQLObjectType<any, ResolverContext>(
-  {
-    name: HomeViewSectionTypeNames.HomeViewSectionArticles,
-    description: "An articles section in the home view",
-    interfaces: [HomeViewGenericSectionInterface, NodeInterface],
-    fields: {
-      ...standardSectionFields,
+export const HomeViewArticlesSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: HomeViewSectionTypeNames.HomeViewSectionArticles,
+  description: "An articles section in the home view",
+  interfaces: [HomeViewGenericSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
 
-      articlesConnection: {
-        type: ArticlesConnection.type,
-        args: pageable({}),
-        resolve: (parent, ...rest) =>
-          parent.resolver ? parent.resolver(parent, ...rest) : [],
-      },
+    articlesConnection: {
+      type: ArticlesConnection.type,
+      args: pageable({}),
+      resolve: (parent, ...rest) =>
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
     },
-  }
-)
+  },
+})
 
 const ExploreByMarketingCollectionCategory = new GraphQLObjectType<
   any,
@@ -202,7 +150,7 @@ const ExploreByMarketingCollectionCategory = new GraphQLObjectType<
   }),
 })
 
-const HomeViewExploreBySectionType = new GraphQLObjectType<
+export const HomeViewExploreBySectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
@@ -225,7 +173,7 @@ const HomeViewExploreBySectionType = new GraphQLObjectType<
   },
 })
 
-const HomeViewMarketingCollectionsSectionType = new GraphQLObjectType<
+export const HomeViewMarketingCollectionsSectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
@@ -246,7 +194,10 @@ const HomeViewMarketingCollectionsSectionType = new GraphQLObjectType<
   },
 })
 
-const HomeViewShowsSectionType = new GraphQLObjectType<any, ResolverContext>({
+export const HomeViewShowsSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: HomeViewSectionTypeNames.HomeViewSectionShows,
   description: "A shows section in the home view",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
@@ -267,25 +218,26 @@ export const HomeViewViewingRoomsSectionType = new GraphQLObjectType<
   },
 })
 
-const HomeViewActivitySectionType = new GraphQLObjectType<any, ResolverContext>(
-  {
-    name: HomeViewSectionTypeNames.HomeViewSectionActivity,
-    description: "A user activity section in the home view",
-    interfaces: [HomeViewGenericSectionInterface, NodeInterface],
-    fields: {
-      ...standardSectionFields,
+export const HomeViewActivitySectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: HomeViewSectionTypeNames.HomeViewSectionActivity,
+  description: "A user activity section in the home view",
+  interfaces: [HomeViewGenericSectionInterface, NodeInterface],
+  fields: {
+    ...standardSectionFields,
 
-      notificationsConnection: {
-        type: NotificationsConnection.type,
+    notificationsConnection: {
+      type: NotificationsConnection.type,
 
-        args: pageable({}),
-        resolve: (parent, ...rest) => {
-          return parent.resolver ? parent.resolver(parent, ...rest) : []
-        },
+      args: pageable({}),
+      resolve: (parent, ...rest) => {
+        return parent.resolver ? parent.resolver(parent, ...rest) : []
       },
     },
-  }
-)
+  },
+})
 
 export const HomeViewAuctionResultsSectionType = new GraphQLObjectType<
   any,
@@ -307,7 +259,10 @@ export const HomeViewAuctionResultsSectionType = new GraphQLObjectType<
   },
 })
 
-const HomeViewSalesSectionType = new GraphQLObjectType<any, ResolverContext>({
+export const HomeViewSalesSectionType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: HomeViewSectionTypeNames.HomeViewSectionSales,
   description: "A sales (auctions) section in the home view",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
@@ -372,21 +327,3 @@ export const HomeViewCardsSectionType = new GraphQLObjectType<
     },
   },
 })
-
-export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
-  HomeViewActivitySectionType,
-  HomeViewArticlesSectionType,
-  HomeViewArtistsSectionType,
-  HomeViewArtworksSectionType,
-  HomeViewAuctionResultsSectionType,
-  HomeViewCardsSectionType,
-  HomeViewFairsSectionType,
-  HomeViewGalleriesSectionType,
-  HomeViewHeroUnitsSectionType,
-  HomeViewExploreBySectionType,
-  HomeViewMarketingCollectionsSectionType,
-  HomeViewSalesSectionType,
-  HomeViewShowsSectionType,
-  HomeViewViewingRoomsSectionType,
-  HomeViewDiscoverMarketingCollectionType,
-]

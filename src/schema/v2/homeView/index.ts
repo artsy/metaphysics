@@ -11,7 +11,7 @@ import {
   connectionWithCursorInfo,
   paginationResolver,
 } from "../fields/pagination"
-import { HomeViewGenericSectionInterface } from "./HomeViewSection"
+import { HomeViewGenericSectionInterface } from "./HomeViewGenericSectionInterface"
 import { getSectionsForUser } from "./helpers/getSectionsForUser"
 import { registry } from "./sections"
 import { isSectionDisplayable } from "./helpers/isSectionDisplayable"
