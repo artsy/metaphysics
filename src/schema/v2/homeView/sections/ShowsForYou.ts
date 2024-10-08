@@ -1,6 +1,6 @@
 import { ContextModule } from "@artsy/cohesion"
 import { HomeViewSection } from "."
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 
 export const ShowsForYou: HomeViewSection = {
   id: "home-view-section-shows-for-you",

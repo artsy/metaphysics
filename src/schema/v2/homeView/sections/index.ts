@@ -1,7 +1,7 @@
 import { GraphQLFieldResolver } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { HomeViewComponentBehaviors } from "../HomeViewComponent"
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
@@ -68,11 +68,9 @@ const sections: HomeViewSection[] = [
   LatestArticles,
   LatestAuctionResults,
   MarketingCollections,
-  MarketingCollections,
-  MarketingCollections,
+  News,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
-  News,
   RecentlyViewedArtworks,
   RecommendedArtists,
   RecommendedArtworks,
