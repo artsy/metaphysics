@@ -7,6 +7,7 @@ import { standardSectionFields } from "./GenericSectionInterface"
 import { ShowsConnection } from "schema/v2/show"
 import { pageable } from "relay-cursor-paging"
 import { emptyConnection } from "schema/v2/fields/pagination"
+import Near from "schema/v2/input_fields/near"
 
 export const HomeViewShowsSectionType = new GraphQLObjectType<
   any,
@@ -20,7 +21,12 @@ export const HomeViewShowsSectionType = new GraphQLObjectType<
 
     showsConnection: {
       type: ShowsConnection.connectionType,
-      args: pageable({}),
+      args: pageable({
+        near: {
+          type: Near,
+          description: "Include shows within a radius of the provided location",
+        },
+      }),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
     },

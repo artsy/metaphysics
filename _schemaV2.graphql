@@ -11419,6 +11419,9 @@ type HomeViewSectionShows implements HomeViewSectionGeneric & Node {
     before: String
     first: Int
     last: Int
+
+    # Include shows within a radius of the provided location
+    near: Near
   ): ShowConnection
 }
 
