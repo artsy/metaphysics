@@ -84,6 +84,7 @@ const {
   VORTEX_API_BASE,
   VORTEX_APP_ID,
   VORTEX_TOKEN,
+  WEAVIATE_API_BASE,
 } = process.env
 
 const mustHave = {
@@ -219,4 +220,5 @@ export default {
   VORTEX_API_BASE,
   VORTEX_APP_ID,
   VORTEX_TOKEN,
+  WEAVIATE_API_BASE,
 }
