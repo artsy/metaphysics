@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("Me", () => {
   describe("Tasks", () => {
@@ -50,7 +50,7 @@ describe("Me", () => {
       expect(tasks).toEqual(expectedData)
 
       expect(meTasksLoader).toHaveBeenCalledWith({
-        limit: 2,
+        size: 2,
       })
     })
   })
