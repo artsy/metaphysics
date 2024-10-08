@@ -16617,6 +16617,14 @@ type Query {
     last: Int
   ): ArtistConnection
   departments: [Department!]!
+  discoverArtworks(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    limit: Int
+    userId: String
+  ): ArtworkConnection
 
   # A namespace external partners (provided by Galaxy)
   external: External!
@@ -21256,6 +21264,14 @@ type Viewer {
     last: Int
   ): ArtistConnection
   departments: [Department!]!
+  discoverArtworks(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    limit: Int
+    userId: String
+  ): ArtworkConnection
 
   # A namespace external partners (provided by Galaxy)
   external: External!

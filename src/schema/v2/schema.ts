@@ -234,6 +234,7 @@ import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsD
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
 import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
 import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
+import { DiscoverArtworks } from "./discoverArtworks"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -281,6 +282,7 @@ const rootFields = {
   conversationsConnection: Conversations,
   creditCard: CreditCard,
   curatedTrendingArtists: CuratedTrendingArtists,
+  discoverArtworks: DiscoverArtworks,
   departments,
   external: externalField,
   fair: Fair,
