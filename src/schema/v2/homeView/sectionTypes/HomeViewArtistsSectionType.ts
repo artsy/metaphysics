@@ -5,7 +5,7 @@ import { artistsConnection } from "../../artists"
 import { emptyConnection } from "../../fields/pagination"
 import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "../HomeViewGenericSectionInterface"
-import { HomeViewSectionTypeNames } from "../HomeViewSectionTypeNames"
+import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "../standardSectionFields"
 
 export const HomeViewArtistsSectionType = new GraphQLObjectType<

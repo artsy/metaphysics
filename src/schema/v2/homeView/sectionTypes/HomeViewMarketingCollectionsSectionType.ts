@@ -5,7 +5,7 @@ import { connectionWithCursorInfo } from "../../fields/pagination"
 import { MarketingCollectionType } from "../../marketingCollections"
 import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "../HomeViewGenericSectionInterface"
-import { HomeViewSectionTypeNames } from "../HomeViewSectionTypeNames"
+import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "../standardSectionFields"
 
 export const HomeViewMarketingCollectionsSectionType = new GraphQLObjectType<

@@ -4,7 +4,7 @@ import { ResolverContext } from "types/graphql"
 import { auctionResultConnection } from "../../auction_result"
 import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "../HomeViewGenericSectionInterface"
-import { HomeViewSectionTypeNames } from "../HomeViewSectionTypeNames"
+import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "../standardSectionFields"
 
 export const HomeViewAuctionResultsSectionType = new GraphQLObjectType<

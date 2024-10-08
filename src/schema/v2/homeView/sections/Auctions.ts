@@ -1,7 +1,7 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../HomeViewSectionTypeNames"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { HomePageSalesModuleType } from "schema/v2/home/home_page_sales_module"
 import { connectionFromArray } from "graphql-relay"
 
