@@ -47,16 +47,16 @@ describe("homeView", () => {
             "edges": Array [
               Object {
                 "node": Object {
-                  "__typename": "HomeViewSectionHeroUnits",
-                  "component": null,
+                  "__typename": "HomeViewSectionCards",
+                  "component": Object {
+                    "title": "Discover Something New",
+                  },
                 },
               },
               Object {
                 "node": Object {
-                  "__typename": "HomeViewSectionExploreByMarketingCollectionCategories",
-                  "component": Object {
-                    "title": "Explore by categories",
-                  },
+                  "__typename": "HomeViewSectionHeroUnits",
+                  "component": null,
                 },
               },
               Object {
@@ -72,22 +72,6 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionSales",
                   "component": Object {
                     "title": "Auctions",
-                  },
-                },
-              },
-              Object {
-                "node": Object {
-                  "__typename": "HomeViewSectionDiscoverMarketingCollections",
-                  "component": Object {
-                    "title": "Discover Something New",
-                  },
-                },
-              },
-              Object {
-                "node": Object {
-                  "__typename": "HomeViewSectionCards",
-                  "component": Object {
-                    "title": "Discover Something New",
                   },
                 },
               },
@@ -193,16 +177,16 @@ describe("homeView", () => {
               },
               Object {
                 "node": Object {
-                  "__typename": "HomeViewSectionHeroUnits",
-                  "component": null,
+                  "__typename": "HomeViewSectionCards",
+                  "component": Object {
+                    "title": "Discover Something New",
+                  },
                 },
               },
               Object {
                 "node": Object {
-                  "__typename": "HomeViewSectionExploreByMarketingCollectionCategories",
-                  "component": Object {
-                    "title": "Explore by categories",
-                  },
+                  "__typename": "HomeViewSectionHeroUnits",
+                  "component": null,
                 },
               },
               Object {
@@ -234,22 +218,6 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionSales",
                   "component": Object {
                     "title": "Auctions",
-                  },
-                },
-              },
-              Object {
-                "node": Object {
-                  "__typename": "HomeViewSectionDiscoverMarketingCollections",
-                  "component": Object {
-                    "title": "Discover Something New",
-                  },
-                },
-              },
-              Object {
-                "node": Object {
-                  "__typename": "HomeViewSectionCards",
-                  "component": Object {
-                    "title": "Discover Something New",
                   },
                 },
               },
