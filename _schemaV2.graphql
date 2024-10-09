@@ -8036,6 +8036,26 @@ union CreateConsignmentInquiryMutationType =
     ConsignmentInquiryMutationFailure
   | ConsignmentInquiryMutationSuccess
 
+input CreateDiscoveryLikedArtworkMutationInput {
+  # The artwork's ID
+  artworkId: String!
+  clientMutationId: String
+
+  # The user's ID
+  userId: String!
+}
+
+type CreateDiscoveryLikedArtworkMutationPayload {
+  clientMutationId: String
+
+  # On success: return boolean. On failure: MutationError.
+  createDiscoveryLikedArtworkResponseOrError: CreateDiscoveryLikedArtworkResponseOrError
+}
+
+union CreateDiscoveryLikedArtworkResponseOrError =
+    DiscoveryLikedArtworkMutationFailure
+  | DiscoveryLikedArtworkMutationSuccess
+
 type CreateFeatureFailure {
   mutationError: GravityMutationError
 }
@@ -9125,6 +9145,14 @@ type DisableSecondFactorPayload {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
   secondFactorOrErrors: SecondFactorOrErrorsUnion!
+}
+
+type DiscoveryLikedArtworkMutationFailure {
+  mutationError: GravityMutationError
+}
+
+type DiscoveryLikedArtworkMutationSuccess {
+  success: Boolean
 }
 
 input DislikeArtworkInput {
@@ -13543,6 +13571,11 @@ type Mutation {
 
   # Create a credit card
   createCreditCard(input: CreditCardInput!): CreditCardPayload
+
+  # Create a liked artwork cross reference for the user in weaviate
+  createDiscoveryLikedArtworkMutation(
+    input: CreateDiscoveryLikedArtworkMutationInput!
+  ): CreateDiscoveryLikedArtworkMutationPayload
 
   # Creates a feature.
   createFeature(

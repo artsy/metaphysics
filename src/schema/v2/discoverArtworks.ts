@@ -4,8 +4,6 @@ import { artworkConnection } from "./artwork"
 import { connectionFromArray } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
 import gql from "lib/gql"
-import config from "config"
-import { URL } from "url"
 import uuid from "uuid/v5"
 
 export const generateUuid = (userId: string) => {
@@ -23,12 +21,11 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     if (!weaviateGraphqlLoader) return
 
     const { userId, limit = 5 } = args
-    const { WEAVIATE_API_BASE } = config
 
     const userUUID = generateUuid(userId)
 
-    const hostName = new URL(WEAVIATE_API_BASE as string).hostname
-    const beacon = `weaviate://${hostName}/InfiniteDiscoveryUsers/${userUUID}`
+    // TODO: Understand why localhost works here and weaviate://weaviate.stg.artsy.net doesn't
+    const beacon = `weaviate://localhost/InfiniteDiscoveryUsers/${userUUID}`
 
     const query = gql`
       {
