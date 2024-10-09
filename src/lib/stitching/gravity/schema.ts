@@ -8,8 +8,6 @@ import {
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
-import config from "config"
-
 const rootFieldsAllowList = [
   "agreement",
   "viewingRoom",
@@ -35,6 +33,7 @@ export const executableGravitySchema = () => {
     "Artwork",
     "ArtworkConnection",
     "ArtworkEdge",
+    "Device",
     "Lot",
     "Money",
     "MoneyInput",
@@ -49,10 +48,6 @@ export const executableGravitySchema = () => {
     "ArtistSeriesEdge",
     "ArtistSeriesConnection",
   ]
-
-  if (config.USE_UNSTITCHED_USER_DEVICES) {
-    duplicatedTypes.push("Device")
-  }
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
