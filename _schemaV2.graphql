@@ -5545,6 +5545,9 @@ input CommerceOptInMutationInput {
   # ID of the partner
   id: String!
 
+  # The partner location ID to assign
+  location: String
+
   # whether or not pick up it is pick up available
   pickupAvailable: Boolean
 }
