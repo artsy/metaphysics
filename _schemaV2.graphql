@@ -4583,6 +4583,7 @@ type CommerceBuyOrder implements CommerceOrder {
   orderUpdateState: String
   paymentMethod: CommercePaymentMethodEnum
   paymentMethodDetails: PaymentMethodUnion
+  paymentSet: Boolean!
   requestedFulfillment: CommerceRequestedFulfillmentUnion
 
   # Whether the buyer needs to complete identity verification to make this purchase.
@@ -4972,7 +4973,7 @@ type CommerceCreatePartnerOfferOrderPayload {
 scalar CommerceDate
 
 # An ISO 8601 datetime
-scalar CommerceDateTime
+scalar CommerceDateTime @specifiedBy(url: "https://tools.ietf.org/html/rfc3339")
 
 enum CommerceEeiFormStatusEnum {
   # approved
@@ -5430,6 +5431,7 @@ type CommerceOfferOrder implements CommerceOrder {
   orderUpdateState: String
   paymentMethod: CommercePaymentMethodEnum
   paymentMethodDetails: PaymentMethodUnion
+  paymentSet: Boolean!
   requestedFulfillment: CommerceRequestedFulfillmentUnion
 
   # Whether the buyer needs to complete identity verification to make this purchase.
@@ -5717,6 +5719,7 @@ interface CommerceOrder {
   orderUpdateState: String
   paymentMethod: CommercePaymentMethodEnum
   paymentMethodDetails: PaymentMethodUnion
+  paymentSet: Boolean!
   requestedFulfillment: CommerceRequestedFulfillmentUnion
 
   # Whether the buyer needs to complete identity verification to make this purchase.
@@ -5801,6 +5804,11 @@ interface CommerceOrder {
 # Order Action data
 type CommerceOrderActionData {
   clientSecret: String!
+}
+
+enum CommerceOrderConnectionFilterEnum {
+  # payment failure preventing order from processing further
+  PAYMENT_FAILED
 }
 
 # Fields to sort by
@@ -16553,6 +16561,7 @@ type Query {
 
     # Returns the elements in the list that come before the specified cursor.
     before: String
+    filters: [CommerceOrderConnectionFilterEnum!] = []
 
     # Returns the first _n_ elements from the list.
     first: Int
