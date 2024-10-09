@@ -11,7 +11,7 @@ export const FeaturedFairs: HomeViewSection = {
   contextModule: ContextModule.fairRail,
   component: {
     title: "Featured Fairs",
-    description: "See Works in Top Art Fairs",
+    description: "See works in top art fairs",
   },
   featureFlag: "onyx_enable-home-view-section-featured-fairs",
   requiresAuthentication: false,
