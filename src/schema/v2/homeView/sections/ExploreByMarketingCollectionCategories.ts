@@ -1,5 +1,5 @@
 import { HomeViewSection } from "."
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 
 export const ExploreByMarketingCollectionCategories: HomeViewSection = {
   id: "home-view-section-explore-by-marketing-collection-categories",

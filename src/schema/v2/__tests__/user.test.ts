@@ -2,7 +2,6 @@ import { toGlobalId } from "graphql-relay"
 import { HTTPError } from "lib/HTTPError"
 import gql from "lib/gql"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import config from "config"
 
 describe("User", () => {
   it("implements the NodeInterface", async () => {
@@ -1087,10 +1086,6 @@ describe("User", () => {
       expect(adminNotes[1].body).toEqual("Now a great collector")
       expect(adminNotes[2].body).toEqual("A Good collector")
     })
-  })
-
-  beforeAll(() => {
-    config.USE_UNSTITCHED_USER_DEVICES = true
   })
 
   describe("Devices", () => {

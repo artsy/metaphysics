@@ -1,7 +1,7 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import ArticleSorts from "schema/v2/sorts/article_sorts"
 import { ArticleLayoutEnum } from "schema/v2/article/models"
 import ArticlesConnection from "schema/v2/articlesConnection"
