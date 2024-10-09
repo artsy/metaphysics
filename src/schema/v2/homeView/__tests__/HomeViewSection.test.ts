@@ -1590,19 +1590,18 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-galleries-near-you") {
               __typename
-              component {
-                title
-                backgroundImageURL
-                description
-                behaviors {
-                  viewAll {
-                    buttonText
-                    href
-                    ownerType
+              ownerType
+              ... on HomeViewSectionCard {
+                card {
+                  title
+                  subtitle
+                  href
+                  buttonText
+                  image {
+                    imageURL
                   }
                 }
               }
-              ownerType
             }
           }
         }
@@ -1613,23 +1612,20 @@ describe("HomeViewSection", () => {
       const data = await runQuery(query, context)
 
       expect(data.homeView.section).toMatchInlineSnapshot(`
-                Object {
-                  "__typename": "HomeViewSectionGalleries",
-                  "component": Object {
-                    "backgroundImageURL": "https://files.artsy.net/images/galleries_for_you.webp",
-                    "behaviors": Object {
-                      "viewAll": Object {
-                        "buttonText": "Explore",
-                        "href": null,
-                        "ownerType": null,
-                      },
-                    },
-                    "description": "Follow these local galleries for updates on artists you love.",
-                    "title": "Galleries Near You",
-                  },
-                  "ownerType": "galleriesForYou",
-                }
-            `)
+        Object {
+          "__typename": "HomeViewSectionCard",
+          "card": Object {
+            "buttonText": "Explore",
+            "href": "/galleries-for-you",
+            "image": Object {
+              "imageURL": "https://files.artsy.net/images/galleries_for_you.webp",
+            },
+            "subtitle": "Follow these local galleries for updates on artists you love.",
+            "title": "Galleries Near You",
+          },
+          "ownerType": "galleriesForYou",
+        }
+      `)
     })
   })
 
