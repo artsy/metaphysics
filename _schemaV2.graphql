@@ -11011,6 +11011,7 @@ type HomeView {
 }
 
 type HomeViewCard {
+  buttonText: String
   entityID: String
   entityType: String
   href: String

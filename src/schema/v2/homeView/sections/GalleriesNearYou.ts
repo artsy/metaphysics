@@ -26,6 +26,7 @@ export const GalleriesNearYou: HomeViewSection = {
       title: "Galleries Near You",
       subtitle: "Follow these local galleries for updates on artists you love.",
       href: "/galleries-for-you",
+      buttonText: "Explore",
       image_url: "https://files.artsy.net/images/galleries_for_you.webp",
     }
   }),

@@ -10,6 +10,7 @@ import Image from "schema/v2/image"
 export const HomeViewCardType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomeViewCard",
   fields: {
+    buttonText: { type: GraphQLString },
     href: { type: GraphQLString },
     entityType: { type: GraphQLString },
     entityID: { type: GraphQLString },
