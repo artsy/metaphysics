@@ -948,8 +948,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             defaultValue: 25,
           },
         },
-        resolve: ({ id }, options, { partnerLocationsLoader }) =>
-          partnerLocationsLoader(id, options),
+        resolve: async ({ id }, options, { partnerLocationsLoader }) => {
+          const locations = await partnerLocationsLoader(id, options)
+
+          return locations ?? []
+        },
       },
       locationsConnection: {
         description: "A connection of locations from a Partner.",
