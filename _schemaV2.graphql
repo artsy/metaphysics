@@ -5803,6 +5803,11 @@ type CommerceOrderActionData {
   clientSecret: String!
 }
 
+enum CommerceOrderConnectionFilterEnum {
+  # payment failure preventing order from processing further
+  PAYMENT_FAILED
+}
+
 # Fields to sort by
 enum CommerceOrderConnectionSortEnum {
   # Sort by the timestamp the state of the order expires at in ascending order
@@ -16553,6 +16558,7 @@ type Query {
 
     # Returns the elements in the list that come before the specified cursor.
     before: String
+    filters: [CommerceOrderConnectionFilterEnum!] = []
 
     # Returns the first _n_ elements from the list.
     first: Int

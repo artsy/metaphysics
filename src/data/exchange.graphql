@@ -1479,6 +1479,13 @@ type OrderActionData {
   clientSecret: String!
 }
 
+enum OrderConnectionFilterEnum {
+  """
+  payment failure preventing order from processing further
+  """
+  PAYMENT_FAILED
+}
+
 """
 Fields to sort by
 """
@@ -1964,6 +1971,7 @@ type Query {
     Returns the elements in the list that come before the specified cursor.
     """
     before: String
+    filters: [OrderConnectionFilterEnum!] = []
 
     """
     Returns the first _n_ elements from the list.
