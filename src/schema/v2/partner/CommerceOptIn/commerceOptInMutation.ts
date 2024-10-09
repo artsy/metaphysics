@@ -33,7 +33,7 @@ interface Input {
   certificateOfAuthenticity?: boolean
   coaByGallery?: boolean
   coaByAuthenticatingBody?: boolean
-  location?: string
+  locationId?: string
 }
 
 const CommerceOptInSuccesssType = new GraphQLObjectType<any, ResolverContext>({
@@ -107,7 +107,7 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "whether or not the CoA is by an authenticating body",
     },
-    location: {
+    locationId: {
       type: GraphQLString,
       description: "The partner location ID to assign",
     },
