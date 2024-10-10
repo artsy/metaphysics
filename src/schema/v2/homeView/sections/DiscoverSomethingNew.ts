@@ -22,6 +22,7 @@ export const DiscoverSomethingNew: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionCards,
   component: {
     title: "Discover Something New",
+    type: "Chips",
   },
   requiresAuthentication: false,
   resolver: async (_parent, args, context, _info) => {

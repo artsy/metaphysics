@@ -22,22 +22,18 @@ import { RecentlyViewedArtworks } from "../sections/RecentlyViewedArtworks"
 import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
 import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
-import { DiscoverMarketingCollections } from "../sections/DiscoverMarketingCollections"
-import { ExploreByMarketingCollectionCategories } from "../sections/ExploreByMarketingCollectionCategories"
 import { ExploreByCategory } from "../sections/ExploreByCategory"
 import { DiscoverSomethingNew } from "../sections/DiscoverSomethingNew"
 
 const SECTIONS: HomeViewSection[] = [
   LatestActivity,
   NewWorksForYou,
+  DiscoverSomethingNew,
   HeroUnits,
-  ExploreByMarketingCollectionCategories,
   ExploreByCategory,
   ActiveBids,
   AuctionLotsForYou,
   Auctions,
-  DiscoverMarketingCollections,
-  DiscoverSomethingNew,
   LatestAuctionResults,
   GalleriesNearYou,
   LatestArticles,

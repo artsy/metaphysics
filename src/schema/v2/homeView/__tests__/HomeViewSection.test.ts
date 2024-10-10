@@ -599,14 +599,16 @@ describe("HomeViewSection", () => {
       const query = gql`
         {
           homeView {
-            section(
-              id: "home-view-section-explore-by-marketing-collection-categories"
-            ) {
+            section(id: "home-view-section-explore-by-category") {
               __typename
 
-              ... on HomeViewSectionExploreByMarketingCollectionCategories {
-                categories {
-                  name
+              ... on HomeViewSectionCards {
+                cardsConnection(first: 6) {
+                  edges {
+                    node {
+                      entityID
+                    }
+                  }
                 }
               }
             }
@@ -618,27 +620,41 @@ describe("HomeViewSection", () => {
 
       expect(homeView.section).toMatchInlineSnapshot(`
         Object {
-          "__typename": "HomeViewSectionExploreByMarketingCollectionCategories",
-          "categories": Array [
-            Object {
-              "name": "Medium",
-            },
-            Object {
-              "name": "Movement",
-            },
-            Object {
-              "name": "Color",
-            },
-            Object {
-              "name": "Size",
-            },
-            Object {
-              "name": "Price",
-            },
-            Object {
-              "name": "Gallery",
-            },
-          ],
+          "__typename": "HomeViewSectionCards",
+          "cardsConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "entityID": "Medium",
+                },
+              },
+              Object {
+                "node": Object {
+                  "entityID": "Movement",
+                },
+              },
+              Object {
+                "node": Object {
+                  "entityID": "Collect by Size",
+                },
+              },
+              Object {
+                "node": Object {
+                  "entityID": "Collect by Color",
+                },
+              },
+              Object {
+                "node": Object {
+                  "entityID": "Collect by Price",
+                },
+              },
+              Object {
+                "node": Object {
+                  "entityID": "Gallery",
+                },
+              },
+            ],
+          },
         }
       `)
     })

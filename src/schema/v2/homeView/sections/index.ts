@@ -25,8 +25,6 @@ import { LatestArticles } from "./LatestArticles"
 import { Auctions } from "./Auctions"
 import { GalleriesNearYou } from "./GalleriesNearYou"
 import { FeatureFlag } from "lib/featureFlags"
-import { DiscoverMarketingCollections } from "./DiscoverMarketingCollections"
-import { ExploreByMarketingCollectionCategories } from "./ExploreByMarketingCollectionCategories"
 import { ExploreByCategory } from "./ExploreByCategory"
 import { DiscoverSomethingNew } from "./DiscoverSomethingNew"
 
@@ -57,10 +55,8 @@ const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   Auctions,
   CuratorsPicksEmerging,
-  DiscoverMarketingCollections,
   DiscoverSomethingNew,
   ExploreByCategory,
-  ExploreByMarketingCollectionCategories,
   FeaturedFairs,
   GalleriesNearYou,
   HeroUnits,
