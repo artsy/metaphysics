@@ -8036,6 +8036,29 @@ union CreateConsignmentInquiryMutationType =
     ConsignmentInquiryMutationFailure
   | ConsignmentInquiryMutationSuccess
 
+input CreateDiscoveryArtworkReferenceMutationInput {
+  # The artwork's ID
+  artworkId: String!
+  clientMutationId: String
+
+  # The reference type
+  reference: ReferenceTypes!
+
+  # The user's ID
+  userId: String
+}
+
+type CreateDiscoveryArtworkReferenceMutationPayload {
+  clientMutationId: String
+
+  # On success: return boolean. On failure: MutationError.
+  createDiscoveryArtworkReferenceResponseOrError: CreateDiscoveryArtworkReferenceResponseOrError
+}
+
+union CreateDiscoveryArtworkReferenceResponseOrError =
+    DiscoveryArtworkReferenceMutationFailure
+  | DiscoveryArtworkReferenceMutationSuccess
+
 type CreateFeatureFailure {
   mutationError: GravityMutationError
 }
@@ -9125,6 +9148,14 @@ type DisableSecondFactorPayload {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
   secondFactorOrErrors: SecondFactorOrErrorsUnion!
+}
+
+type DiscoveryArtworkReferenceMutationFailure {
+  mutationError: GravityMutationError
+}
+
+type DiscoveryArtworkReferenceMutationSuccess {
+  success: Boolean
 }
 
 input DislikeArtworkInput {
@@ -13568,6 +13599,11 @@ type Mutation {
   # Create a credit card
   createCreditCard(input: CreditCardInput!): CreditCardPayload
 
+  # Creates a cross reference for artwork and user in weaviate
+  createDiscoveryArtworkReference(
+    input: CreateDiscoveryArtworkReferenceMutationInput!
+  ): CreateDiscoveryArtworkReferenceMutationPayload
+
   # Creates a feature.
   createFeature(
     input: CreateFeatureMutationInput!
@@ -16641,6 +16677,14 @@ type Query {
     last: Int
   ): ArtistConnection
   departments: [Department!]!
+  discoverArtworks(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    limit: Int
+    userId: String
+  ): ArtworkConnection
 
   # A namespace external partners (provided by Galaxy)
   external: External!
@@ -17528,6 +17572,11 @@ type RecordArtworkViewPayload {
 
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
+}
+
+enum ReferenceTypes {
+  DISLIKED_ARTWORKS
+  LIKED_ARTWORKS
 }
 
 enum RelatedArtistsKind {
@@ -21300,6 +21349,14 @@ type Viewer {
     last: Int
   ): ArtistConnection
   departments: [Department!]!
+  discoverArtworks(
+    after: String
+    before: String
+    first: Int
+    last: Int
+    limit: Int
+    userId: String
+  ): ArtworkConnection
 
   # A namespace external partners (provided by Galaxy)
   external: External!
