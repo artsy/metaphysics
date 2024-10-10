@@ -2,6 +2,7 @@ import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
+import type { HomeViewCard } from "../sectionTypes/Card"
 
 export const GalleriesNearYou: HomeViewSection = {
   id: "home-view-section-galleries-near-you",
@@ -16,12 +17,13 @@ export const GalleriesNearYou: HomeViewSection = {
   requiresAuthentication: false,
 
   resolver: withHomeViewTimeout(async (parent, _args, _context, _info) => {
-    return {
+    const card: HomeViewCard = {
       title: parent.component.title,
       subtitle: parent.component.description,
       href: "/galleries-for-you",
       buttonText: "Explore",
       image_url: "https://files.artsy.net/images/galleries_for_you.webp",
     }
+    return card
   }),
 }

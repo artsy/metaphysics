@@ -7,7 +7,20 @@ import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
 import Image from "schema/v2/image"
 
-export const HomeViewCardType = new GraphQLObjectType<any, ResolverContext>({
+export type HomeViewCard = {
+  title?: string
+  subtitle?: string
+  href?: string
+  buttonText?: string
+  image_url?: string
+  entityType?: string
+  entityID?: string
+}
+
+export const HomeViewCardType = new GraphQLObjectType<
+  HomeViewCard,
+  ResolverContext
+>({
   name: "HomeViewCard",
   fields: {
     buttonText: { type: GraphQLString },
