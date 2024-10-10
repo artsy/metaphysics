@@ -11,7 +11,7 @@ export const Tasks: HomeViewSection = {
   // TODO: Create context module in Cohesion
   // contextModule: ContextModule.tasks,
   component: {
-    title: "Notifications",
+    title: "Act Now",
   },
   featureFlag: "emerald_home-view-tasks-section",
   requiresAuthentication: true,

@@ -1544,7 +1544,7 @@ describe("HomeViewSection", () => {
         Object {
           "__typename": "HomeViewSectionTasks",
           "component": Object {
-            "title": "Notifications",
+            "title": "Act Now",
           },
           "tasksConnection": Object {
             "edges": Array [
