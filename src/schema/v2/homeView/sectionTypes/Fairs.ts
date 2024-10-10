@@ -6,6 +6,7 @@ import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
+import { emptyConnection } from "schema/v2/fields/pagination"
 
 export const HomeViewFairsSectionType = new GraphQLObjectType<
   any,
@@ -21,7 +22,7 @@ export const HomeViewFairsSectionType = new GraphQLObjectType<
       type: fairsConnection.type,
       args: pageable({}),
       resolve: (parent, ...rest) =>
-        parent.resolver ? parent.resolver(parent, ...rest) : [],
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
     },
   },
 })
