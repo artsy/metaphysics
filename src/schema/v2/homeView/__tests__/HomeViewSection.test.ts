@@ -1489,6 +1489,76 @@ describe("HomeViewSection", () => {
     })
   })
 
+  describe("Tasks", () => {
+    it("returns correct data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-tasks") {
+              __typename
+              component {
+                title
+              }
+
+              ... on HomeViewSectionTasks {
+                tasksConnection(first: 2) {
+                  edges {
+                    node {
+                      title
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const tasks = {
+        body: [
+          {
+            title: "Task 1",
+          },
+          {
+            title: "Task 2",
+          },
+        ],
+        headers: { "x-total-count": 10 },
+      }
+
+      const context = {
+        accessToken: "424242",
+        meLoader: () => Promise.resolve({}),
+        meTasksLoader: jest.fn().mockResolvedValue(tasks),
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "HomeViewSectionTasks",
+          "component": Object {
+            "title": "Notifications",
+          },
+          "tasksConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "title": "Task 1",
+                },
+              },
+              Object {
+                "node": Object {
+                  "title": "Task 2",
+                },
+              },
+            ],
+          },
+        }
+      `)
+    })
+  })
+
   describe("GalleriesNearYou", () => {
     it("returns correct data", async () => {
       const query = gql`
