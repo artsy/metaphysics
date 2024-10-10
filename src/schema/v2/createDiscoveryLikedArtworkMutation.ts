@@ -11,12 +11,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { mutationWithClientMutationId } from "graphql-relay"
-import uuid from "uuid/v5"
-
-export const generateUuid = (userId: string) => {
-  if (!userId) return ""
-  return uuid(userId, uuid.DNS).toString()
-}
+import { generateUuid, generateBeacon } from "./discoverArtworks"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DiscoveryLikedArtworkMutationSuccess",
@@ -81,10 +76,13 @@ export const createDiscoveryLikedArtworkMutation = mutationWithClientMutationId<
     }
 
     const artworkUUID = generateUuid(artworkId)
+    const artworkBeacon = generateBeacon(
+      "InfiniteDiscoveryArtworks",
+      artworkUUID
+    )
 
-    // TODO: Understand why localhost works here and weaviate://weaviate.stg.artsy.net doesn't
-    const artworkBeacon = `weaviate://localhost/InfiniteDiscoveryArtworks/${artworkUUID}`
     const userUUID = generateUuid(userId)
+
     try {
       await weaviateCreateCrossReferenceLoader(userUUID, {
         beacon: artworkBeacon,

@@ -11,6 +11,11 @@ export const generateUuid = (userId: string) => {
   return uuid(userId, uuid.DNS).toString()
 }
 
+export const generateBeacon = (namespace: string, identifier: string) => {
+  // TODO: Understand why localhost works here and weaviate://weaviate.stg.artsy.net doesn't
+  return `weaviate://localhost/${namespace}/${identifier}`
+}
+
 export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
   args: pageable({
@@ -23,9 +28,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     const { userId, limit = 5 } = args
 
     const userUUID = generateUuid(userId)
-
-    // TODO: Understand why localhost works here and weaviate://weaviate.stg.artsy.net doesn't
-    const beacon = `weaviate://localhost/InfiniteDiscoveryUsers/${userUUID}`
+    const beacon = generateBeacon("InfiniteDiscoveryUsers", userUUID)
 
     const query = gql`
       {
