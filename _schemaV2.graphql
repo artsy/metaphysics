@@ -8045,7 +8045,7 @@ input CreateDiscoveryArtworkReferenceMutationInput {
   reference: ReferenceTypes!
 
   # The user's ID
-  userId: String!
+  userId: String
 }
 
 type CreateDiscoveryArtworkReferenceMutationPayload {

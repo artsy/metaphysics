@@ -65,7 +65,7 @@ export const CreateDiscoveryLikedArtworkMutation = mutationWithClientMutationId<
   inputFields: {
     userId: {
       description: "The user's ID",
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
     artworkId: {
       description: "The artwork's ID",
