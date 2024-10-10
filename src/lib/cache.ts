@@ -2,7 +2,7 @@ import zlib from "zlib"
 import { isArray } from "lodash"
 import config from "config"
 import { error, verbose } from "./loggers"
-import Memcached from "memcached"
+import { MemcacheClient } from "memcache-client"
 import { createCacheTracer } from "./tracer"
 import { createStatsClient } from "./stats"
 
@@ -17,14 +17,6 @@ const {
 } = config
 
 const isTest = NODE_ENV === "test"
-
-const VerboseEvents = [
-  "issue",
-  "failure",
-  "reconnecting",
-  "reconnect",
-  "remove",
-]
 
 const uncompressedKeyPrefix = "::"
 const cacheVersion = "v1"
@@ -68,19 +60,17 @@ function createMockClient() {
 }
 
 function createMemcachedClient() {
-  const client = new Memcached(MEMCACHED_URL, {
-    poolSize: MEMCACHED_MAX_POOL,
+  console.log("hey")
+  const newClient = new MemcacheClient({
+    server: { server: MEMCACHED_URL, maxConnections: MEMCACHED_MAX_POOL },
   })
-  VerboseEvents.forEach((event) => {
-    client.on(event, () => verbose(`[Cache] ${event}`))
-  })
-  return client
+  return newClient
 }
 
 export const client = isTest ? createMockClient() : createMemcachedClient()
 
 const cacheTracer: ReturnType<typeof createCacheTracer> = isTest
-  ? { get: (x) => x, set: (x) => x, delete: (x) => x }
+  ? { get: (x) => x, set: (x) => x }
   : createCacheTracer()
 
 const statsClient = isTest ? null : createStatsClient()
@@ -108,15 +98,18 @@ function _get<T>(key) {
         reject(err)
       } else if (data) {
         if (CACHE_COMPRESSION_DISABLED) {
-          resolve(JSON.parse(data.toString()))
+          resolve(JSON.parse(data.value.toString()))
         } else {
-          zlib.inflate(Buffer.from(data, "base64"), (er, inflatedData) => {
-            if (er) {
-              reject(er)
-            } else {
-              resolve(JSON.parse(inflatedData.toString()))
+          zlib.inflate(
+            Buffer.from(data.value, "base64"),
+            (er, inflatedData) => {
+              if (er) {
+                reject(er)
+              } else {
+                resolve(JSON.parse(inflatedData.toString()))
+              }
             }
-          })
+          )
         }
       } else {
         reject()
@@ -146,7 +139,7 @@ function _set(key, data, options: CacheOptions) {
     return new Promise<void>((resolve, reject) => {
       const payload = JSON.stringify(data)
       verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
-      client.set(cacheKey(key), payload, cacheTtl, (err) => {
+      client.set(cacheKey(key), payload, { lifetime: cacheTtl }, (err) => {
         err ? reject(err) : resolve()
       })
     }).catch(error)
@@ -157,7 +150,7 @@ function _set(key, data, options: CacheOptions) {
         verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
 
         return new Promise<void>((resolve, reject) => {
-          client.set(cacheKey(key), payload, cacheTtl, (err) =>
+          client.set(cacheKey(key), payload, { lifetime: cacheTtl }, (err) =>
             err ? reject(err) : resolve()
           )
         })
@@ -166,13 +159,6 @@ function _set(key, data, options: CacheOptions) {
   }
 }
 
-const _delete = (key) =>
-  new Promise<void>((resolve, reject) =>
-    client.del(cacheKey(key), (err) => {
-      err ? reject(err) : resolve()
-    })
-  )
-
 export default {
   get: <T = any>(key: string) => {
     return cacheTracer.get(_get<T>(key))
@@ -180,9 +166,5 @@ export default {
 
   set: (key: string, data: any, options: CacheOptions = {}) => {
     return cacheTracer.set(_set(key, data, options))
-  },
-
-  delete: (key: string) => {
-    return cacheTracer.delete(_delete(key))
   },
 }

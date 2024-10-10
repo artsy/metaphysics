@@ -83,7 +83,7 @@
     "lodash": "4.17.21",
     "longjohn": "0.2.12",
     "marked": "2.0.1",
-    "memcached": "2.2.2",
+    "memcache-client": "^1.0.5",
     "moment": "2.29.4",
     "moment-timezone": "0.5.37",
     "node-fetch": "2.6.7",
