@@ -1616,7 +1616,7 @@ describe("HomeViewSection", () => {
           "__typename": "HomeViewSectionCard",
           "card": Object {
             "buttonText": "Explore",
-            "href": "/galleries-for-you",
+            "href": null,
             "image": Object {
               "imageURL": "https://files.artsy.net/images/galleries_for_you.webp",
             },

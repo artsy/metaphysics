@@ -20,9 +20,10 @@ export const GalleriesNearYou: HomeViewSection = {
     const card: HomeViewCard = {
       title: parent.component.title,
       subtitle: parent.component.description,
-      href: "/galleries-for-you",
       buttonText: "Explore",
       image_url: "https://files.artsy.net/images/galleries_for_you.webp",
+      entityType: "Page",
+      entityID: parent.ownerType,
     }
     return card
   }),

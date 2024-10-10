@@ -49,6 +49,8 @@ describe("GalleriesNearYou", () => {
                 image {
                   imageURL
                 }
+                entityType
+                entityID
               }
             }
           }
@@ -63,7 +65,9 @@ describe("GalleriesNearYou", () => {
     expect(homeView.section).toMatchInlineSnapshot(`
       Object {
         "card": Object {
-          "href": "/galleries-for-you",
+          "entityID": "galleriesForYou",
+          "entityType": "Page",
+          "href": null,
           "image": Object {
             "imageURL": "https://files.artsy.net/images/galleries_for_you.webp",
           },
