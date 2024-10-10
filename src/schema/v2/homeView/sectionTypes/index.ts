@@ -5,9 +5,9 @@ import { HomeViewArticlesSectionType } from "./Articles"
 import { HomeViewArtistsSectionType } from "./Artists"
 import { HomeViewArtworksSectionType } from "./Artworks"
 import { HomeViewAuctionResultsSectionType } from "./AuctionResults"
+import { HomeViewCardSectionType } from "./Card"
 import { HomeViewCardsSectionType } from "./Cards"
 import { HomeViewFairsSectionType } from "./Fairs"
-import { HomeViewGalleriesSectionType } from "./Galleries"
 import { HomeViewHeroUnitsSectionType } from "./HeroUnits"
 import { HomeViewMarketingCollectionsSectionType } from "./MarketingCollections"
 import { HomeViewSalesSectionType } from "./Sales"
@@ -21,9 +21,9 @@ export const homeViewSectionTypes: GraphQLObjectType<any, ResolverContext>[] = [
   HomeViewArtistsSectionType,
   HomeViewArtworksSectionType,
   HomeViewAuctionResultsSectionType,
+  HomeViewCardSectionType,
   HomeViewCardsSectionType,
   HomeViewFairsSectionType,
-  HomeViewGalleriesSectionType,
   HomeViewHeroUnitsSectionType,
   HomeViewMarketingCollectionsSectionType,
   HomeViewSalesSectionType,
