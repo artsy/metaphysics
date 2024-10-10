@@ -13,6 +13,7 @@ export const Tasks: HomeViewSection = {
   component: {
     title: "Notifications",
   },
+  featureFlag: "emerald_home-view-tasks-section",
   requiresAuthentication: true,
   resolver: withHomeViewTimeout(async (_parent, args, { meTasksLoader }) => {
     if (!meTasksLoader) return null

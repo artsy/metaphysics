@@ -1490,30 +1490,36 @@ describe("HomeViewSection", () => {
   })
 
   describe("Tasks", () => {
-    it("returns correct data", async () => {
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-tasks") {
-              __typename
-              component {
-                title
-              }
+    beforeAll(() => {
+      mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+        if (flag === "emerald_home-view-tasks-section") return true
+      })
+    })
 
-              ... on HomeViewSectionTasks {
-                tasksConnection(first: 2) {
-                  edges {
-                    node {
-                      title
-                    }
+    const query = gql`
+      {
+        homeView {
+          section(id: "home-view-section-tasks") {
+            __typename
+            component {
+              title
+            }
+
+            ... on HomeViewSectionTasks {
+              tasksConnection(first: 2) {
+                edges {
+                  node {
+                    title
                   }
                 }
               }
             }
           }
         }
-      `
+      }
+    `
 
+    it("returns correct data", async () => {
       const tasks = {
         body: [
           {
@@ -1556,6 +1562,24 @@ describe("HomeViewSection", () => {
           },
         }
       `)
+    })
+
+    describe("when the feature flag is disabled", () => {
+      beforeAll(() => {
+        mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+          if (flag === "emerald_home-view-tasks-section") return false
+        })
+      })
+
+      it("throws an error", async () => {
+        const context = {
+          fairsLoader: jest.fn().mockResolvedValue([]),
+        }
+
+        await expect(runQuery(query, context)).rejects.toThrow(
+          "Section requires authorized user: home-view-section-featured-fairs"
+        )
+      })
     })
   })
 
