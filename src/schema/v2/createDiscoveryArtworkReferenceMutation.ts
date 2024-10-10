@@ -4,6 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
+  GraphQLEnumType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
@@ -13,8 +14,20 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { generateUuid, generateBeacon } from "./discoverArtworks"
 
+export const ReferenceTypesEnum = new GraphQLEnumType({
+  name: "ReferenceTypes",
+  values: {
+    LIKED_ARTWORKS: {
+      value: "likedArtworks",
+    },
+    DISLIKED_ARTWORKS: {
+      value: "dislikedArtworks",
+    },
+  },
+})
+
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "DiscoveryLikedArtworkMutationSuccess",
+  name: "DiscoveryArtworkReferenceMutationSuccess",
   isTypeOf: (data) => data.success,
   fields: () => ({
     success: {
@@ -25,7 +38,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "DiscoveryLikedArtworkMutationFailure",
+  name: "DiscoveryArtworkReferenceMutationFailure",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
@@ -38,18 +51,17 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "CreateDiscoveryLikedArtworkResponseOrError",
+  name: "CreateDiscoveryArtworkReferenceResponseOrError",
   types: [SuccessType, FailureType],
 })
 
-export const createDiscoveryLikedArtworkMutation = mutationWithClientMutationId<
-  { userId: string; artworkId: string },
+export const CreateDiscoveryLikedArtworkMutation = mutationWithClientMutationId<
+  { userId: string; artworkId: string; reference: string },
   any,
   ResolverContext
 >({
-  name: "CreateDiscoveryLikedArtworkMutation",
-  description:
-    "Create a liked artwork cross reference for the user in weaviate",
+  name: "CreateDiscoveryArtworkReferenceMutation",
+  description: "Creates a cross reference for artwork and user in weaviate",
   inputFields: {
     userId: {
       description: "The user's ID",
@@ -59,16 +71,20 @@ export const createDiscoveryLikedArtworkMutation = mutationWithClientMutationId<
       description: "The artwork's ID",
       type: new GraphQLNonNull(GraphQLString),
     },
+    reference: {
+      description: "The reference type",
+      type: new GraphQLNonNull(ReferenceTypesEnum),
+    },
   },
   outputFields: {
-    createDiscoveryLikedArtworkResponseOrError: {
+    createDiscoveryArtworkReferenceResponseOrError: {
       type: ResponseOrErrorType,
       description: "On success: return boolean. On failure: MutationError.",
       resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (
-    { userId, artworkId },
+    { userId, artworkId, reference },
     { weaviateCreateCrossReferenceLoader }
   ) => {
     if (!weaviateCreateCrossReferenceLoader) {
@@ -82,9 +98,10 @@ export const createDiscoveryLikedArtworkMutation = mutationWithClientMutationId<
     )
 
     const userUUID = generateUuid(userId)
+    const referenceURL = `${userUUID}/references/${reference}`
 
     try {
-      await weaviateCreateCrossReferenceLoader(userUUID, {
+      await weaviateCreateCrossReferenceLoader(referenceURL, {
         beacon: artworkBeacon,
       })
       return { success: true }

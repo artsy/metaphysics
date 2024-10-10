@@ -8036,25 +8036,28 @@ union CreateConsignmentInquiryMutationType =
     ConsignmentInquiryMutationFailure
   | ConsignmentInquiryMutationSuccess
 
-input CreateDiscoveryLikedArtworkMutationInput {
+input CreateDiscoveryArtworkReferenceMutationInput {
   # The artwork's ID
   artworkId: String!
   clientMutationId: String
+
+  # The reference type
+  reference: ReferenceTypes!
 
   # The user's ID
   userId: String!
 }
 
-type CreateDiscoveryLikedArtworkMutationPayload {
+type CreateDiscoveryArtworkReferenceMutationPayload {
   clientMutationId: String
 
   # On success: return boolean. On failure: MutationError.
-  createDiscoveryLikedArtworkResponseOrError: CreateDiscoveryLikedArtworkResponseOrError
+  createDiscoveryArtworkReferenceResponseOrError: CreateDiscoveryArtworkReferenceResponseOrError
 }
 
-union CreateDiscoveryLikedArtworkResponseOrError =
-    DiscoveryLikedArtworkMutationFailure
-  | DiscoveryLikedArtworkMutationSuccess
+union CreateDiscoveryArtworkReferenceResponseOrError =
+    DiscoveryArtworkReferenceMutationFailure
+  | DiscoveryArtworkReferenceMutationSuccess
 
 type CreateFeatureFailure {
   mutationError: GravityMutationError
@@ -9147,11 +9150,11 @@ type DisableSecondFactorPayload {
   secondFactorOrErrors: SecondFactorOrErrorsUnion!
 }
 
-type DiscoveryLikedArtworkMutationFailure {
+type DiscoveryArtworkReferenceMutationFailure {
   mutationError: GravityMutationError
 }
 
-type DiscoveryLikedArtworkMutationSuccess {
+type DiscoveryArtworkReferenceMutationSuccess {
   success: Boolean
 }
 
@@ -13572,10 +13575,10 @@ type Mutation {
   # Create a credit card
   createCreditCard(input: CreditCardInput!): CreditCardPayload
 
-  # Create a liked artwork cross reference for the user in weaviate
-  createDiscoveryLikedArtworkMutation(
-    input: CreateDiscoveryLikedArtworkMutationInput!
-  ): CreateDiscoveryLikedArtworkMutationPayload
+  # Creates a cross reference for artwork and user in weaviate
+  createDiscoveryArtworkReference(
+    input: CreateDiscoveryArtworkReferenceMutationInput!
+  ): CreateDiscoveryArtworkReferenceMutationPayload
 
   # Creates a feature.
   createFeature(
@@ -17545,6 +17548,11 @@ type RecordArtworkViewPayload {
 
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
+}
+
+enum ReferenceTypes {
+  DISLIKED_ARTWORKS
+  LIKED_ARTWORKS
 }
 
 enum RelatedArtistsKind {

@@ -21,8 +21,7 @@ export default (opts) => {
       )
     },
     weaviateCreateCrossReferenceLoader: weaviateLoader(
-      (userId) =>
-        `objects/InfiniteDiscoveryUsers/${userId}/references/likedArtworks`,
+      (path) => `objects/InfiniteDiscoveryUsers/${path}`,
       {},
       { method: "POST" }
     ),
