@@ -1489,7 +1489,7 @@ describe("HomeViewSection", () => {
     })
   })
 
-  describe("Tasks", () => {
+  describe("HomeViewSectionTasks", () => {
     beforeAll(() => {
       mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
         if (flag === "emerald_home-view-tasks-section") return true
@@ -1577,7 +1577,7 @@ describe("HomeViewSection", () => {
         }
 
         await expect(runQuery(query, context)).rejects.toThrow(
-          "Section requires authorized user: home-view-section-featured-fairs"
+          "Section requires authorized user: home-view-section-tasks"
         )
       })
     })
