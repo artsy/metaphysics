@@ -11,20 +11,14 @@ export const GalleriesNearYou: HomeViewSection = {
     title: "Galleries Near You",
     description:
       "Follow these local galleries for updates on artists you love.",
-    backgroundImageURL: "https://files.artsy.net/images/galleries_for_you.webp",
-    behaviors: {
-      viewAll: {
-        buttonText: "Explore",
-      },
-    },
   },
   ownerType: OwnerType.galleriesForYou,
   requiresAuthentication: false,
 
-  resolver: withHomeViewTimeout(async (_parent, _args, _context, _info) => {
+  resolver: withHomeViewTimeout(async (parent, _args, _context, _info) => {
     return {
-      title: "Galleries Near You",
-      subtitle: "Follow these local galleries for updates on artists you love.",
+      title: parent.component.title,
+      subtitle: parent.component.description,
       href: "/galleries-for-you",
       buttonText: "Explore",
       image_url: "https://files.artsy.net/images/galleries_for_you.webp",
