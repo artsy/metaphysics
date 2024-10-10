@@ -516,7 +516,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    meTasksLoader: gravityLoader("me/tasks", {}, {}),
+    meTasksLoader: gravityLoader("me/tasks", {}, { headers: true }),
     meDismissTaskLoader: gravityLoader(
       (id) => `me/task/${id}/dismiss`,
       {},

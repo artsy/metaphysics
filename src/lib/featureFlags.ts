@@ -1,6 +1,6 @@
 import config from "config"
-import { Context as UnleashContext, Unleash, initialize } from "unleash-client"
-import { info, error } from "./loggers"
+import { Unleash, Context as UnleashContext, initialize } from "unleash-client"
+import { error, info } from "./loggers"
 
 const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
 
@@ -14,6 +14,7 @@ const FEATURE_FLAGS_LIST = [
   "emerald_signals-auction-improvements",
   "onyx_enable-home-view-section-featured-fairs",
   "diamond_home-view-marketing-collection-categories",
+  "emerald_home-view-tasks-section",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]

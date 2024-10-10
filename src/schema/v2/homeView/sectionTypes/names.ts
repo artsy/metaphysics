@@ -16,5 +16,6 @@ export const HomeViewSectionTypeNames = {
   HomeViewSectionMarketingCollections: "HomeViewSectionMarketingCollections",
   HomeViewSectionSales: "HomeViewSectionSales",
   HomeViewSectionShows: "HomeViewSectionShows",
+  HomeViewSectionTasks: "HomeViewSectionTasks",
   HomeViewSectionViewingRooms: "HomeViewSectionViewingRooms",
 } as const

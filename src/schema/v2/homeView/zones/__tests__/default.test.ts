@@ -1,6 +1,6 @@
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 import { ResolverContext } from "types/graphql"
 import { getSections } from "../default"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 jest.mock("lib/featureFlags", () => ({
   isFeatureFlagEnabled: jest.fn(() => true),
@@ -20,6 +20,7 @@ describe("getSections", () => {
 
       expect(sectionIds).toMatchInlineSnapshot(`
         Array [
+          "home-view-section-tasks",
           "home-view-section-latest-activity",
           "home-view-section-new-works-for-you",
           "home-view-section-discover-something-new",

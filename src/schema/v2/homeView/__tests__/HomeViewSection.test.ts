@@ -1489,6 +1489,100 @@ describe("HomeViewSection", () => {
     })
   })
 
+  describe("HomeViewSectionTasks", () => {
+    beforeAll(() => {
+      mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+        if (flag === "emerald_home-view-tasks-section") return true
+      })
+    })
+
+    const query = gql`
+      {
+        homeView {
+          section(id: "home-view-section-tasks") {
+            __typename
+            component {
+              title
+            }
+
+            ... on HomeViewSectionTasks {
+              tasksConnection(first: 2) {
+                edges {
+                  node {
+                    title
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("returns correct data", async () => {
+      const tasks = {
+        body: [
+          {
+            title: "Task 1",
+          },
+          {
+            title: "Task 2",
+          },
+        ],
+        headers: { "x-total-count": 10 },
+      }
+
+      const context = {
+        accessToken: "424242",
+        meLoader: () => Promise.resolve({}),
+        meTasksLoader: jest.fn().mockResolvedValue(tasks),
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "HomeViewSectionTasks",
+          "component": Object {
+            "title": "Act Now",
+          },
+          "tasksConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "title": "Task 1",
+                },
+              },
+              Object {
+                "node": Object {
+                  "title": "Task 2",
+                },
+              },
+            ],
+          },
+        }
+      `)
+    })
+
+    describe("when the feature flag is disabled", () => {
+      beforeAll(() => {
+        mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+          if (flag === "emerald_home-view-tasks-section") return false
+        })
+      })
+
+      it("throws an error", async () => {
+        const context = {
+          fairsLoader: jest.fn().mockResolvedValue([]),
+        }
+
+        await expect(runQuery(query, context)).rejects.toThrow(
+          "Section requires authorized user: home-view-section-tasks"
+        )
+      })
+    })
+  })
+
   describe("GalleriesNearYou", () => {
     it("returns correct data", async () => {
       const query = gql`
