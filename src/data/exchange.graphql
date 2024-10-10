@@ -670,7 +670,7 @@ scalar Date
 """
 An ISO 8601 datetime
 """
-scalar DateTime @specifiedBy(url: "https://tools.ietf.org/html/rfc3339")
+scalar DateTime
 
 enum EeiFormStatusEnum {
   """
