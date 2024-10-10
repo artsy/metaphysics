@@ -599,14 +599,16 @@ describe("HomeViewSection", () => {
       const query = gql`
         {
           homeView {
-            section(
-              id: "home-view-section-explore-by-marketing-collection-categories"
-            ) {
+            section(id: "home-view-section-explore-by-category") {
               __typename
 
-              ... on HomeViewSectionExploreByMarketingCollectionCategories {
-                categories {
-                  name
+              ... on HomeViewSectionCards {
+                cardsConnection(first: 6) {
+                  edges {
+                    node {
+                      entityID
+                    }
+                  }
                 }
               }
             }
@@ -618,27 +620,41 @@ describe("HomeViewSection", () => {
 
       expect(homeView.section).toMatchInlineSnapshot(`
         Object {
-          "__typename": "HomeViewSectionExploreByMarketingCollectionCategories",
-          "categories": Array [
-            Object {
-              "name": "Medium",
-            },
-            Object {
-              "name": "Movement",
-            },
-            Object {
-              "name": "Color",
-            },
-            Object {
-              "name": "Size",
-            },
-            Object {
-              "name": "Price",
-            },
-            Object {
-              "name": "Gallery",
-            },
-          ],
+          "__typename": "HomeViewSectionCards",
+          "cardsConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "entityID": "Medium",
+                },
+              },
+              Object {
+                "node": Object {
+                  "entityID": "Movement",
+                },
+              },
+              Object {
+                "node": Object {
+                  "entityID": "Collect by Size",
+                },
+              },
+              Object {
+                "node": Object {
+                  "entityID": "Collect by Color",
+                },
+              },
+              Object {
+                "node": Object {
+                  "entityID": "Collect by Price",
+                },
+              },
+              Object {
+                "node": Object {
+                  "entityID": "Gallery",
+                },
+              },
+            ],
+          },
         }
       `)
     })
@@ -1473,6 +1489,100 @@ describe("HomeViewSection", () => {
     })
   })
 
+  describe("HomeViewSectionTasks", () => {
+    beforeAll(() => {
+      mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+        if (flag === "emerald_home-view-tasks-section") return true
+      })
+    })
+
+    const query = gql`
+      {
+        homeView {
+          section(id: "home-view-section-tasks") {
+            __typename
+            component {
+              title
+            }
+
+            ... on HomeViewSectionTasks {
+              tasksConnection(first: 2) {
+                edges {
+                  node {
+                    title
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("returns correct data", async () => {
+      const tasks = {
+        body: [
+          {
+            title: "Task 1",
+          },
+          {
+            title: "Task 2",
+          },
+        ],
+        headers: { "x-total-count": 10 },
+      }
+
+      const context = {
+        accessToken: "424242",
+        meLoader: () => Promise.resolve({}),
+        meTasksLoader: jest.fn().mockResolvedValue(tasks),
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        Object {
+          "__typename": "HomeViewSectionTasks",
+          "component": Object {
+            "title": "Act Now",
+          },
+          "tasksConnection": Object {
+            "edges": Array [
+              Object {
+                "node": Object {
+                  "title": "Task 1",
+                },
+              },
+              Object {
+                "node": Object {
+                  "title": "Task 2",
+                },
+              },
+            ],
+          },
+        }
+      `)
+    })
+
+    describe("when the feature flag is disabled", () => {
+      beforeAll(() => {
+        mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+          if (flag === "emerald_home-view-tasks-section") return false
+        })
+      })
+
+      it("throws an error", async () => {
+        const context = {
+          fairsLoader: jest.fn().mockResolvedValue([]),
+        }
+
+        await expect(runQuery(query, context)).rejects.toThrow(
+          "Section requires authorized user: home-view-section-tasks"
+        )
+      })
+    })
+  })
+
   describe("GalleriesNearYou", () => {
     it("returns correct data", async () => {
       const query = gql`
@@ -1480,19 +1590,18 @@ describe("HomeViewSection", () => {
           homeView {
             section(id: "home-view-section-galleries-near-you") {
               __typename
-              component {
-                title
-                backgroundImageURL
-                description
-                behaviors {
-                  viewAll {
-                    buttonText
-                    href
-                    ownerType
+              ownerType
+              ... on HomeViewSectionCard {
+                card {
+                  title
+                  subtitle
+                  href
+                  buttonText
+                  image {
+                    imageURL
                   }
                 }
               }
-              ownerType
             }
           }
         }
@@ -1503,23 +1612,20 @@ describe("HomeViewSection", () => {
       const data = await runQuery(query, context)
 
       expect(data.homeView.section).toMatchInlineSnapshot(`
-                Object {
-                  "__typename": "HomeViewSectionGalleries",
-                  "component": Object {
-                    "backgroundImageURL": "https://files.artsy.net/images/galleries_for_you.webp",
-                    "behaviors": Object {
-                      "viewAll": Object {
-                        "buttonText": "Explore",
-                        "href": null,
-                        "ownerType": null,
-                      },
-                    },
-                    "description": "Follow these local galleries for updates on artists you love.",
-                    "title": "Galleries Near You",
-                  },
-                  "ownerType": "galleriesForYou",
-                }
-            `)
+        Object {
+          "__typename": "HomeViewSectionCard",
+          "card": Object {
+            "buttonText": "Explore",
+            "href": null,
+            "image": Object {
+              "imageURL": "https://files.artsy.net/images/galleries_for_you.webp",
+            },
+            "subtitle": "Follow these local galleries for updates on artists you love.",
+            "title": "Galleries Near You",
+          },
+          "ownerType": "galleriesForYou",
+        }
+      `)
     })
   })
 

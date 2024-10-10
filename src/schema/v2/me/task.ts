@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
+import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields, NodeInterface } from "../object_identification"
 import { date } from "./../fields/date"
@@ -18,7 +18,7 @@ export interface Task {
   source_type: string
 }
 
-const TaskType = new GraphQLObjectType<any, ResolverContext>({
+export const TaskType = new GraphQLObjectType<any, ResolverContext>({
   name: "Task",
   interfaces: [NodeInterface],
   fields: () => ({
@@ -52,5 +52,3 @@ const TaskType = new GraphQLObjectType<any, ResolverContext>({
     createdAt: date(),
   }),
 })
-
-export default TaskType

@@ -8,17 +8,14 @@ export const HomeViewSectionTypeNames = {
   HomeViewSectionArtists: "HomeViewSectionArtists",
   HomeViewSectionArtworks: "HomeViewSectionArtworks",
   HomeViewSectionAuctionResults: "HomeViewSectionAuctionResults",
+  HomeViewSectionCard: "HomeViewSectionCard",
   HomeViewSectionCards: "HomeViewSectionCards",
-  HomeViewSectionDiscoverMarketingCollections:
-    "HomeViewSectionDiscoverMarketingCollections",
   HomeViewSectionFairs: "HomeViewSectionFairs",
-  HomeViewSectionGalleries: "HomeViewSectionGalleries",
   HomeViewSectionGeneric: "HomeViewSectionGeneric",
   HomeViewSectionHeroUnits: "HomeViewSectionHeroUnits",
-  HomeViewSectionExploreByMarketingCollectionCategories:
-    "HomeViewSectionExploreByMarketingCollectionCategories",
   HomeViewSectionMarketingCollections: "HomeViewSectionMarketingCollections",
   HomeViewSectionSales: "HomeViewSectionSales",
   HomeViewSectionShows: "HomeViewSectionShows",
+  HomeViewSectionTasks: "HomeViewSectionTasks",
   HomeViewSectionViewingRooms: "HomeViewSectionViewingRooms",
 } as const
