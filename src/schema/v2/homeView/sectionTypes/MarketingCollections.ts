@@ -1,7 +1,10 @@
 import { GraphQLObjectType } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
-import { connectionWithCursorInfo } from "../../fields/pagination"
+import {
+  connectionWithCursorInfo,
+  emptyConnection,
+} from "../../fields/pagination"
 import { MarketingCollectionType } from "../../marketingCollections"
 import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
@@ -24,7 +27,7 @@ export const HomeViewMarketingCollectionsSectionType = new GraphQLObjectType<
       }).connectionType,
       args: pageable({}),
       resolve: (parent, ...rest) =>
-        parent.resolver ? parent.resolver(parent, ...rest) : [],
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
     },
   },
 })

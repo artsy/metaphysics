@@ -6,6 +6,7 @@ import { SalesConnectionField } from "../../sales"
 import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
+import { emptyConnection } from "schema/v2/fields/pagination"
 
 export const HomeViewSalesSectionType = new GraphQLObjectType<
   any,
@@ -21,7 +22,7 @@ export const HomeViewSalesSectionType = new GraphQLObjectType<
       type: SalesConnectionField.type,
       args: pageable({}),
       resolve: (parent, ...rest) =>
-        parent.resolver ? parent.resolver(parent, ...rest) : [],
+        parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
     },
   },
 })

@@ -4,6 +4,7 @@ import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { HomePageFairsModuleType } from "schema/v2/home/home_page_fairs_module"
 import { connectionFromArray } from "graphql-relay"
+import { emptyConnection } from "schema/v2/fields/pagination"
 
 export const FeaturedFairs: HomeViewSection = {
   id: "home-view-section-featured-fairs",
@@ -20,7 +21,7 @@ export const FeaturedFairs: HomeViewSection = {
     const { results: resolver } = HomePageFairsModuleType.getFields()
 
     if (!resolver?.resolve) {
-      return []
+      return emptyConnection
     }
 
     const result = await resolver.resolve(parent, args, context, info)

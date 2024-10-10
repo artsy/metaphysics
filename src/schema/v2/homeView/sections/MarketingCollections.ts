@@ -4,6 +4,7 @@ import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { HomePageMarketingCollectionsModuleType } from "schema/v2/home/home_page_marketing_collections_module"
 import { connectionFromArray } from "graphql-relay"
+import { emptyConnection } from "schema/v2/fields/pagination"
 
 export const MarketingCollections: HomeViewSection = {
   id: "home-view-section-marketing-collections",
@@ -20,7 +21,7 @@ export const MarketingCollections: HomeViewSection = {
     } = HomePageMarketingCollectionsModuleType.getFields()
 
     if (!resolver?.resolve) {
-      return []
+      return emptyConnection
     }
 
     const result = await resolver.resolve(parent, args, context, info)
