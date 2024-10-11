@@ -147,7 +147,7 @@ describe("HomeViewSection", () => {
                 "ownerType": null,
               },
             },
-            "title": "New works for You",
+            "title": "New Works for You",
           },
           "ownerType": "newWorksForYou",
         }
@@ -195,7 +195,7 @@ describe("HomeViewSection", () => {
                 "ownerType": null,
               },
             },
-            "title": "Auction lots for You",
+            "title": "Auction Lots for You",
           },
           "ownerType": "lotsByArtistsYouFollow",
         }
@@ -1621,7 +1621,7 @@ describe("HomeViewSection", () => {
               "imageURL": "https://files.artsy.net/images/galleries_for_you.webp",
             },
             "subtitle": "Follow these local galleries for updates on artists you love.",
-            "title": "Galleries Near You",
+            "title": "Galleries near You",
           },
           "ownerType": "galleriesForYou",
         }

@@ -79,7 +79,7 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "HomeViewSectionCard",
                   "component": Object {
-                    "title": "Galleries Near You",
+                    "title": "Galleries near You",
                   },
                 },
               },
@@ -171,7 +171,7 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "HomeViewSectionArtworks",
                   "component": Object {
-                    "title": "New works for You",
+                    "title": "New Works for You",
                   },
                 },
               },
@@ -209,7 +209,7 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "HomeViewSectionArtworks",
                   "component": Object {
-                    "title": "Auction lots for You",
+                    "title": "Auction Lots for You",
                   },
                 },
               },
@@ -233,7 +233,7 @@ describe("homeView", () => {
                 "node": Object {
                   "__typename": "HomeViewSectionCard",
                   "component": Object {
-                    "title": "Galleries Near You",
+                    "title": "Galleries near You",
                   },
                 },
               },
@@ -387,7 +387,7 @@ describe("homeView", () => {
                       Object {
                         "__typename": "HomeViewSectionArtworks",
                         "component": Object {
-                          "title": "Auction lots for You",
+                          "title": "Auction Lots for You",
                         },
                       }
                   `)
