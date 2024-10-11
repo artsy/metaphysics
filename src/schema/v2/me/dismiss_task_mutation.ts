@@ -10,7 +10,7 @@ import {
   formatGravityError,
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
-import TaskType, { Task } from "./task"
+import { Task, TaskType } from "./task"
 
 interface Input {
   id: string

@@ -1,34 +1,33 @@
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { GraphQLFieldResolver } from "graphql"
+import { FeatureFlag } from "lib/featureFlags"
 import { ResolverContext } from "types/graphql"
 import { HomeViewComponentBehaviors } from "../HomeViewComponent"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
-import { ContextModule, OwnerType } from "@artsy/cohesion"
-import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtworks"
-import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
-import { RecentlyViewedArtworks } from "./RecentlyViewedArtworks"
+import { ActiveBids } from "./ActiveBids"
 import { AuctionLotsForYou } from "./AuctionLotsForYou"
+import { Auctions } from "./Auctions"
+import { CuratorsPicksEmerging } from "./CuratorsPicksEmerging"
+import { DiscoverSomethingNew } from "./DiscoverSomethingNew"
+import { ExploreByCategory } from "./ExploreByCategory"
+import { FeaturedFairs } from "./FeaturedFairs"
+import { GalleriesNearYou } from "./GalleriesNearYou"
+import { HeroUnits } from "./HeroUnits"
+import { LatestActivity } from "./LatestActivity"
+import { LatestArticles } from "./LatestArticles"
+import { LatestAuctionResults } from "./LatestAuctionResults"
+import { MarketingCollections } from "./MarketingCollections"
+import { News } from "./News"
 import { NewWorksForYou } from "./NewWorksForYou"
 import { NewWorksFromGalleriesYouFollow } from "./NewWorksFromGalleriesYouFollow"
-import { RecommendedArtworks } from "./RecommendedArtworks"
-import { ActiveBids } from "./ActiveBids"
-import { TrendingArtists } from "./TrendingArtists"
+import { RecentlyViewedArtworks } from "./RecentlyViewedArtworks"
 import { RecommendedArtists } from "./RecommendedArtists"
-import { HeroUnits } from "./HeroUnits"
-import { FeaturedFairs } from "./FeaturedFairs"
-import { MarketingCollections } from "./MarketingCollections"
+import { RecommendedArtworks } from "./RecommendedArtworks"
 import { ShowsForYou } from "./ShowsForYou"
+import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtworks"
+import { Tasks } from "./Tasks"
+import { TrendingArtists } from "./TrendingArtists"
 import { ViewingRooms } from "./ViewingRooms"
-import { LatestActivity } from "./LatestActivity"
-import { LatestAuctionResults } from "./LatestAuctionResults"
-import { News } from "./News"
-import { LatestArticles } from "./LatestArticles"
-import { Auctions } from "./Auctions"
-import { GalleriesNearYou } from "./GalleriesNearYou"
-import { FeatureFlag } from "lib/featureFlags"
-import { DiscoverMarketingCollections } from "./DiscoverMarketingCollections"
-import { ExploreByMarketingCollectionCategories } from "./ExploreByMarketingCollectionCategories"
-import { ExploreByCategory } from "./ExploreByCategory"
-import { DiscoverSomethingNew } from "./DiscoverSomethingNew"
 
 type MaybeResolved<T> =
   | T
@@ -57,10 +56,8 @@ const sections: HomeViewSection[] = [
   AuctionLotsForYou,
   Auctions,
   CuratorsPicksEmerging,
-  DiscoverMarketingCollections,
   DiscoverSomethingNew,
   ExploreByCategory,
-  ExploreByMarketingCollectionCategories,
   FeaturedFairs,
   GalleriesNearYou,
   HeroUnits,
@@ -76,6 +73,7 @@ const sections: HomeViewSection[] = [
   RecommendedArtworks,
   ShowsForYou,
   SimilarToRecentlyViewedArtworks,
+  Tasks,
   TrendingArtists,
   ViewingRooms,
 ]

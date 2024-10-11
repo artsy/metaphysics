@@ -92,7 +92,7 @@ export const ExampleSection: HomeViewSection = {
    * -or-
    * type: HomeViewSectionTypeNames.HomeViewSectionArtists
    * -or-
-   * type: HomeViewSectionTypeNames.HomeViewSectionGalleries
+   * type: HomeViewSectionTypeNames.HomeViewSectionShows
    * etc…
    *
    */

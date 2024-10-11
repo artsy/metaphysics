@@ -234,6 +234,8 @@ import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsD
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
 import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
 import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
+import { DiscoverArtworks } from "./discoverArtworks"
+import { CreateDiscoveryLikedArtworkMutation } from "./createDiscoveryArtworkReferenceMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -281,6 +283,7 @@ const rootFields = {
   conversationsConnection: Conversations,
   creditCard: CreditCard,
   curatedTrendingArtists: CuratedTrendingArtists,
+  discoverArtworks: DiscoverArtworks,
   departments,
   external: externalField,
   fair: Fair,
@@ -393,6 +396,7 @@ export default new GraphQLSchema({
       createCollection: createCollectionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
       createCreditCard: createCreditCardMutation,
+      createDiscoveryArtworkReference: CreateDiscoveryLikedArtworkMutation,
       createFeature: CreateFeatureMutation,
       createFeaturedLink: CreateFeaturedLinkMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,

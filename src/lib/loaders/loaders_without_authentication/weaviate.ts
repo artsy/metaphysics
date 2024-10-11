@@ -20,5 +20,10 @@ export default (opts) => {
         }
       )
     },
+    weaviateCreateCrossReferenceLoader: weaviateLoader(
+      (path) => `objects/InfiniteDiscoveryUsers/${path}`,
+      {},
+      { method: "POST" }
+    ),
   }
 }
