@@ -8093,6 +8093,24 @@ union CreateDiscoveryArtworkReferenceResponseOrError =
     DiscoveryArtworkReferenceMutationFailure
   | DiscoveryArtworkReferenceMutationSuccess
 
+input CreateDiscoveryUserMutationInput {
+  clientMutationId: String
+
+  # The user's ID
+  userId: String!
+}
+
+type CreateDiscoveryUserMutationPayload {
+  clientMutationId: String
+
+  # On success: return boolean. On failure: MutationError.
+  createDiscoveryUserReferenceResponseOrError: CreateDiscoveryUserResponseOrError
+}
+
+union CreateDiscoveryUserResponseOrError =
+    DiscoveryUserMutationFailure
+  | DiscoveryUserMutationSuccess
+
 type CreateFeatureFailure {
   mutationError: GravityMutationError
 }
@@ -9215,6 +9233,14 @@ type DiscoveryArtworkReferenceMutationFailure {
 }
 
 type DiscoveryArtworkReferenceMutationSuccess {
+  success: Boolean
+}
+
+type DiscoveryUserMutationFailure {
+  mutationError: GravityMutationError
+}
+
+type DiscoveryUserMutationSuccess {
   success: Boolean
 }
 
@@ -13697,6 +13723,11 @@ type Mutation {
   createDiscoveryArtworkReference(
     input: CreateDiscoveryArtworkReferenceMutationInput!
   ): CreateDiscoveryArtworkReferenceMutationPayload
+
+  # Creates a user object in weaviate
+  createDiscoveryUser(
+    input: CreateDiscoveryUserMutationInput!
+  ): CreateDiscoveryUserMutationPayload
 
   # Creates a feature.
   createFeature(

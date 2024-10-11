@@ -25,5 +25,10 @@ export default (opts) => {
       {},
       { method: "POST" }
     ),
+    weaviateCreateObjectLoader: weaviateLoader(
+      () => "objects",
+      {},
+      { method: "POST" }
+    ),
   }
 }
