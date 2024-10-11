@@ -234,8 +234,9 @@ import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsD
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
 import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
 import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
-import { DiscoverArtworks } from "./discoverArtworks"
-import { CreateDiscoveryLikedArtworkMutation } from "./createDiscoveryArtworkReferenceMutation"
+import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
+import { CreateDiscoveryLikedArtworkMutation } from "./infiniteDiscovery/createDiscoveryArtworkReferenceMutation"
+import { CreateDiscoveryUserMutation } from "./infiniteDiscovery/createDiscoveryUserMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -397,6 +398,7 @@ export default new GraphQLSchema({
       createConsignmentInquiry: createConsignmentInquiryMutation,
       createCreditCard: createCreditCardMutation,
       createDiscoveryArtworkReference: CreateDiscoveryLikedArtworkMutation,
+      createDiscoveryUser: CreateDiscoveryUserMutation,
       createFeature: CreateFeatureMutation,
       createFeaturedLink: CreateFeaturedLinkMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
