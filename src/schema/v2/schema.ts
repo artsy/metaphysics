@@ -237,6 +237,7 @@ import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOpt
 import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
 import { CreateDiscoveryLikedArtworkMutation } from "./infiniteDiscovery/createDiscoveryArtworkReferenceMutation"
 import { CreateDiscoveryUserMutation } from "./infiniteDiscovery/createDiscoveryUserMutation"
+import { DeleteDiscoveryUserReferencesMutation } from "./infiniteDiscovery/deleteDiscoveryArtworkReferencesMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -399,6 +400,7 @@ export default new GraphQLSchema({
       createCreditCard: createCreditCardMutation,
       createDiscoveryArtworkReference: CreateDiscoveryLikedArtworkMutation,
       createDiscoveryUser: CreateDiscoveryUserMutation,
+      deleteDiscoveryUserReferences: DeleteDiscoveryUserReferencesMutation,
       createFeature: CreateFeatureMutation,
       createFeaturedLink: CreateFeaturedLinkMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
