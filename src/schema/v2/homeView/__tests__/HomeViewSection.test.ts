@@ -707,7 +707,7 @@ describe("HomeViewSection", () => {
         }
 
         await expect(runQuery(query, context)).rejects.toThrow(
-          "Section requires authorized user: home-view-section-featured-fairs"
+          "Section is not displayable"
         )
       })
     })
@@ -1268,13 +1268,13 @@ describe("HomeViewSection", () => {
         })
       })
 
-      it("throws an error", async () => {
+      it("throws an error when accessed by id", async () => {
         const context = {
           fairsLoader: jest.fn().mockResolvedValue([]),
         }
 
         await expect(runQuery(query, context)).rejects.toThrow(
-          "Section requires authorized user: home-view-section-tasks"
+          "Section is not displayable: home-view-section-tasks"
         )
       })
     })
