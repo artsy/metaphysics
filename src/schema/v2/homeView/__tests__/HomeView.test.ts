@@ -368,9 +368,9 @@ describe("homeView", () => {
       describe("with an unauthenticated user", () => {
         const context: Partial<ResolverContext> = {}
 
-        it("throws an error", async () => {
+        it("throws an error when accessed by id", async () => {
           await expect(runQuery(query, context)).rejects.toThrow(
-            "Section requires authorized user"
+            "Section is not displayable"
           )
         })
       })
