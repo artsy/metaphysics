@@ -46,52 +46,6 @@ describe("HomeViewSection", () => {
     })
   })
 
-  describe("GalleriesNearYou", () => {
-    it("returns correct data", async () => {
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-galleries-near-you") {
-              __typename
-              ownerType
-              ... on HomeViewSectionCard {
-                card {
-                  title
-                  subtitle
-                  href
-                  buttonText
-                  image {
-                    imageURL
-                  }
-                }
-              }
-            }
-          }
-        }
-      `
-
-      const context = {}
-
-      const data = await runQuery(query, context)
-
-      expect(data.homeView.section).toMatchInlineSnapshot(`
-        Object {
-          "__typename": "HomeViewSectionCard",
-          "card": Object {
-            "buttonText": "Explore",
-            "href": null,
-            "image": Object {
-              "imageURL": "https://files.artsy.net/images/galleries_for_you.webp",
-            },
-            "subtitle": "Follow these local galleries for updates on artists you love.",
-            "title": "Galleries near You",
-          },
-          "ownerType": "galleriesForYou",
-        }
-      `)
-    })
-  })
-
   describe("implements the NodeInterface", () => {
     it("returns the correct id", async () => {
       const query = gql`
