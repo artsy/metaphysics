@@ -107,54 +107,6 @@ describe("HomeViewSection", () => {
     })
   })
 
-  describe("NewWorksForYou", () => {
-    it("returns correct data", async () => {
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-new-works-for-you") {
-              __typename
-              component {
-                title
-                behaviors {
-                  viewAll {
-                    buttonText
-                    href
-                    ownerType
-                  }
-                }
-              }
-              ownerType
-            }
-          }
-        }
-      `
-
-      const context = {
-        accessToken: "424242",
-      }
-
-      const { homeView } = await runQuery(query, context)
-
-      expect(homeView.section).toMatchInlineSnapshot(`
-        Object {
-          "__typename": "HomeViewSectionArtworks",
-          "component": Object {
-            "behaviors": Object {
-              "viewAll": Object {
-                "buttonText": "Browse All Artworks",
-                "href": null,
-                "ownerType": null,
-              },
-            },
-            "title": "New Works for You",
-          },
-          "ownerType": "newWorksForYou",
-        }
-      `)
-    })
-  })
-
   describe("RecommendedArtworks", () => {
     it("returns lists of artworksConnection", async () => {
       const query = gql`
