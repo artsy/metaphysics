@@ -20,20 +20,20 @@ export default (opts) => {
         }
       )
     },
-    weaviateCreateCrossReferenceLoader: weaviateLoader(
-      (path) => `objects/InfiniteDiscoveryUsers/${path}`,
-      {},
-      { method: "POST" }
-    ),
     weaviateCreateObjectLoader: weaviateLoader(
-      () => "objects",
+      (path) => `objects/${path}`,
       {},
       { method: "POST" }
     ),
     weaviateDeleteObjectLoader: weaviateLoader(
-      (path) => path,
+      (path) => `objects/${path}`,
       {},
       { method: "DELETE" }
+    ),
+    weaviateGetObjectLoader: weaviateLoader(
+      (path) => path,
+      {},
+      { method: "GET" }
     ),
   }
 }

@@ -85,9 +85,9 @@ export const CreateDiscoveryLikedArtworkMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { userId, artworkId, reference },
-    { weaviateCreateCrossReferenceLoader }
+    { weaviateCreateObjectLoader }
   ) => {
-    if (!weaviateCreateCrossReferenceLoader) {
+    if (!weaviateCreateObjectLoader) {
       new Error("Weaviate loader not available")
     }
 
@@ -98,10 +98,10 @@ export const CreateDiscoveryLikedArtworkMutation = mutationWithClientMutationId<
     )
 
     const userUUID = generateUuid(userId)
-    const referenceURL = `${userUUID}/references/${reference}`
+    const referenceURL = `InfiniteDiscoveryUsers/${userUUID}/references/${reference}`
 
     try {
-      await weaviateCreateCrossReferenceLoader(referenceURL, {
+      await weaviateCreateObjectLoader(referenceURL, {
         beacon: artworkBeacon,
       })
       return { success: true }
