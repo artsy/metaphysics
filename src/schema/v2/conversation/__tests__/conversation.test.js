@@ -204,14 +204,6 @@ describe("Me", () => {
                 edges {
                   node {
                     internalID
-                    isInvoice
-                    invoice {
-                      id
-                      internalID
-                      paymentURL
-                      state
-                      total
-                    }
                     isFromUser
                     from {
                       name
