@@ -1,6 +1,6 @@
 import { GraphQLString, GraphQLFieldConfig, GraphQLInt } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { artworkConnection } from "./artwork"
+import { artworkConnection } from "../artwork"
 import { connectionFromArray } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
 import gql from "lib/gql"

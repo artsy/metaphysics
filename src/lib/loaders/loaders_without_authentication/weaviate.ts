@@ -25,5 +25,15 @@ export default (opts) => {
       {},
       { method: "POST" }
     ),
+    weaviateCreateObjectLoader: weaviateLoader(
+      () => "objects",
+      {},
+      { method: "POST" }
+    ),
+    weaviateDeleteObjectLoader: weaviateLoader(
+      (path) => path,
+      {},
+      { method: "DELETE" }
+    ),
   }
 }
