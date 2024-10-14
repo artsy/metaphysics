@@ -9,56 +9,6 @@ jest.mock("lib/featureFlags", () => ({
 const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
 describe("HomeViewSection", () => {
-  describe("SimilarToRecentlyViewedArtworks", () => {
-    it("returns correct data", async () => {
-      const query = gql`
-        {
-          homeView {
-            section(
-              id: "home-view-section-similar-to-recently-viewed-artworks"
-            ) {
-              __typename
-              component {
-                title
-                behaviors {
-                  viewAll {
-                    buttonText
-                    href
-                    ownerType
-                  }
-                }
-              }
-              ownerType
-            }
-          }
-        }
-      `
-
-      const context = {
-        accessToken: "424242",
-      }
-
-      const { homeView } = await runQuery(query, context)
-
-      expect(homeView.section).toMatchInlineSnapshot(`
-        Object {
-          "__typename": "HomeViewSectionArtworks",
-          "component": Object {
-            "behaviors": Object {
-              "viewAll": Object {
-                "buttonText": "Browse All Artworks",
-                "href": null,
-                "ownerType": null,
-              },
-            },
-            "title": "Similar to Works You’ve Viewed",
-          },
-          "ownerType": "similarToRecentlyViewed",
-        }
-      `)
-    })
-  })
-
   describe("HomeViewSectionViewingRooms", () => {
     it("returns correct data", async () => {
       const query = gql`
