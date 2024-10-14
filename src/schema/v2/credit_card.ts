@@ -65,6 +65,7 @@ export const CreditCardType = new GraphQLObjectType<any, ResolverContext>({
     brand: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Brand of credit card",
+      resolve: ({ brand, preferred_network }) => preferred_network || brand,
     },
     name: {
       type: GraphQLString,
