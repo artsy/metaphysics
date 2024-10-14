@@ -193,6 +193,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           resolve: ({ artwork }) => artwork,
         },
         createdAt: date(),
+        partnerSearchCriteriaID: {
+          type: GraphQLString,
+          resolve: ({ partner_search_criteria_id }) =>
+            partner_search_criteria_id,
+        },
         userIDs: {
           type: new GraphQLList(GraphQLString),
           resolve: ({ user_ids }) => user_ids,
