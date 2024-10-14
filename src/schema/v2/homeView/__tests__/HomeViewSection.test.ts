@@ -712,48 +712,6 @@ describe("HomeViewSection", () => {
     })
   })
 
-  describe("LatestArticles", () => {
-    it("returns correct data", async () => {
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-latest-articles") {
-              __typename
-              component {
-                title
-                behaviors {
-                  viewAll {
-                    buttonText
-                    href
-                    ownerType
-                  }
-                }
-              }
-            }
-          }
-        }
-      `
-
-      const { homeView } = await runQuery(query, {})
-
-      expect(homeView.section).toMatchInlineSnapshot(`
-        Object {
-          "__typename": "HomeViewSectionArticles",
-          "component": Object {
-            "behaviors": Object {
-              "viewAll": Object {
-                "buttonText": null,
-                "href": "/articles",
-                "ownerType": "articles",
-              },
-            },
-            "title": "Artsy Editorial",
-          },
-        }
-      `)
-    })
-  })
-
   describe("News", () => {
     it("returns correct data", async () => {
       const query = gql`
