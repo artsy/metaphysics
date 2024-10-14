@@ -51,7 +51,6 @@ const SupportedTypes: any = {
     "./home/home_page_artist_module",
     "./me",
     "./conversation",
-    "./conversation/invoice",
     "./partner/partner",
     "./show",
     "./fair",
