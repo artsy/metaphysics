@@ -10,8 +10,17 @@ describe("ShowsForYou", () => {
             __typename
             internalID
             contextModule
+            ownerType
             component {
               title
+              description
+              behaviors {
+                viewAll {
+                  buttonText
+                  href
+                  ownerType
+                }
+              }
             }
           }
         }
@@ -28,10 +37,13 @@ describe("ShowsForYou", () => {
       Object {
         "__typename": "HomeViewSectionShows",
         "component": Object {
+          "behaviors": null,
+          "description": null,
           "title": "Shows for You",
         },
         "contextModule": "showsRail",
         "internalID": "home-view-section-shows-for-you",
+        "ownerType": null,
       }
     `)
   })
