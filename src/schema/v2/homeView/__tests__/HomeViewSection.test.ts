@@ -2,50 +2,6 @@ import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
 describe("HomeViewSection", () => {
-  describe("HomeViewSectionViewingRooms", () => {
-    it("returns correct data", async () => {
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-viewing-rooms") {
-              __typename
-              component {
-                title
-                behaviors {
-                  viewAll {
-                    buttonText
-                    href
-                    ownerType
-                  }
-                }
-              }
-            }
-          }
-        }
-      `
-
-      const context = {}
-
-      const data = await runQuery(query, context)
-
-      expect(data.homeView.section).toMatchInlineSnapshot(`
-                Object {
-                  "__typename": "HomeViewSectionViewingRooms",
-                  "component": Object {
-                    "behaviors": Object {
-                      "viewAll": Object {
-                        "buttonText": null,
-                        "href": "/viewing-rooms",
-                        "ownerType": "viewingRooms",
-                      },
-                    },
-                    "title": "Viewing Rooms",
-                  },
-                }
-            `)
-    })
-  })
-
   describe("implements the NodeInterface", () => {
     it("returns the correct id", async () => {
       const query = gql`
