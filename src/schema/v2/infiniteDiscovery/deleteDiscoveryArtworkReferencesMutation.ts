@@ -154,7 +154,7 @@ const getArtworkReferences = ({ data, reference, uuid }) =>
     (id) => {
       const artwork = data.find((artwork) => artwork._additional.id === id)
       return {
-        url: `/objects/${uuid}/references/${reference}`,
+        url: `${uuid}/references/${reference}`,
         beacon: generateBeacon(
           "InfiniteDiscoveryArtworks",
           artwork._additional.id
