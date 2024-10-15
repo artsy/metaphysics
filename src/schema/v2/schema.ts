@@ -236,6 +236,8 @@ import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMuta
 import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
 import { DiscoverArtworks } from "./discoverArtworks"
 import { CreateDiscoveryLikedArtworkMutation } from "./createDiscoveryArtworkReferenceMutation"
+import { Invoice } from "./Invoice/invoice"
+import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -304,6 +306,7 @@ const rootFields = {
   homeView: HomeView,
   identityVerification: IdentityVerification,
   identityVerificationsConnection,
+  invoice: Invoice,
   job,
   jobs,
   saleAgreement: SaleAgreement,
@@ -385,6 +388,7 @@ export default new GraphQLSchema({
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
+      createInvoicePayment: createInvoicePaymentMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,
       deleteVerifiedRepresentative: deleteVerifiedRepresentativeMutation,
       createCareerHighlight: createCareerHighlightMutation,

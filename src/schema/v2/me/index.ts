@@ -23,7 +23,6 @@ import moment from "moment"
 import { pageable } from "relay-cursor-paging"
 import Conversation from "schema/v2/conversation"
 import Conversations from "schema/v2/conversation/conversations"
-import Invoice from "schema/v2/conversation/invoice"
 import date from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
 import { createPageCursors } from "schema/v2/fields/pagination"
@@ -408,7 +407,6 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: Image.type,
       resolve: collectorProfileResolver("icon"),
     },
-    invoice: Invoice,
     identityVerification: IdentityVerification,
     identityVerified: {
       type: GraphQLBoolean,
