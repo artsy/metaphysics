@@ -93,6 +93,10 @@ const InvoiceType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ payments }) => payments,
     },
     remaining: amount(({ remaining_cents }) => remaining_cents),
+    remainingMinor: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({ remaining_cents }) => remaining_cents,
+    },
     externalNote: {
       type: GraphQLString,
       resolve: ({ external_note }) => external_note,
