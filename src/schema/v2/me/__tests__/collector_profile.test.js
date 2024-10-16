@@ -89,7 +89,6 @@ describe("Me", () => {
             display: "Berlin",
           },
           profession: "coder",
-          other_relevant_positions: "other typer",
         }
 
         const context = {
@@ -122,8 +121,6 @@ describe("Me", () => {
             display: "Berlin",
           },
           profession: "",
-          other_relevant_positions: "no one knows",
-          bio: "¯\\_(ツ)_//¯",
         }
 
         const context = {
