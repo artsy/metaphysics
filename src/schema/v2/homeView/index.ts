@@ -60,7 +60,7 @@ export const Section: GraphQLFieldConfig<void, ResolverContext> = {
     }
 
     if (!isSectionDisplayable(section, context)) {
-      throw new Error(`Section requires authorized user: ${id}`)
+      throw new Error(`Section is not displayable: ${id}`)
     }
 
     return section
