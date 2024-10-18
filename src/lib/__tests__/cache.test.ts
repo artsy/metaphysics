@@ -7,7 +7,6 @@ jest.mock("lib/tracer", () => {
     cacheTracer: {
       get: jest.fn((promise) => promise),
       set: jest.fn((promise) => promise),
-      delete: jest.fn((promise) => promise),
     },
   }
 })
@@ -35,28 +34,6 @@ describe("Cache with compression enabled", () => {
         const data = await cache.get("get_foo")
 
         expect(data.bar).toBe("baz")
-      })
-    })
-
-    describe("#delete", () => {
-      beforeEach(async () => await cache.set("get_foo", { bar: "baz" }))
-
-      it("deletes the data", async () => {
-        expect.assertions(1)
-
-        await cache.delete("get_foo")
-
-        let data
-
-        try {
-          data = await cache.get("get_foo")
-
-          throw new Error("unexpected error")
-        } catch {
-          // no-op
-        }
-
-        expect(data).toBeUndefined()
       })
     })
 
@@ -114,28 +91,6 @@ describe("Cache with compression disabled", () => {
         const data = await cache.get("get_foo")
 
         expect(data.bar).toBe("baz")
-      })
-    })
-
-    describe("#delete", () => {
-      beforeEach(async () => await cache.set("get_foo", { bar: "baz" }))
-
-      it("deletes the data", async () => {
-        expect.assertions(1)
-
-        await cache.delete("get_foo")
-
-        let data
-
-        try {
-          data = await cache.get("get_foo")
-
-          throw new Error("unexpected error")
-        } catch {
-          // no-op
-        }
-
-        expect(data).toBeUndefined()
       })
     })
 
