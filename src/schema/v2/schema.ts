@@ -238,6 +238,7 @@ import { DiscoverArtworks } from "./discoverArtworks"
 import { CreateDiscoveryLikedArtworkMutation } from "./createDiscoveryArtworkReferenceMutation"
 import { Invoice } from "./Invoice/invoice"
 import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
+import { ackTaskMutation } from "./me/ack_task_mutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -376,6 +377,7 @@ export default new GraphQLSchema({
   mutation: new GraphQLObjectType<any, ResolverContext>({
     name: "Mutation",
     fields: {
+      ackTask: ackTaskMutation,
       addOrderedSetItem: addOrderedSetItemMutation,
       addUserRole: addUserRoleMutation,
       adminCreateFeatureFlag: createFeatureFlagMutation,

@@ -522,6 +522,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    meAckTaskLoader: gravityLoader(
+      (id) => `me/task/${id}/acknowledge`,
+      {},
+      { method: "PUT" }
+    ),
     meUpdateCollectorProfileLoader: gravityLoader(
       "me/collector_profile",
       {},
