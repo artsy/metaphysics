@@ -150,6 +150,16 @@ This will allow you to query the entire list of home view sections and see your 
 
 You should now have a commit that looks something like [this][gh_expose_section_commit] (although the folder structure may be different nowadays).
 
+### 6. Add a test for your new section
+
+Our pattern is to write a test for each new section to verify that it correctly returns its _metadata_ (section type, name, analytics, e.g.) and _data_ (a connection of artworks or artists, e.g).
+
+We don't write tests for the abstract section **types**, preferring instead to test them via their concrete section **instances**.
+
+Thus you can see that each section declared in [`homeView/sections`][section_instance_declarations] has a corresponding test in [`homeView/sections/__tests__`][section_instance_specs].
+
+Please continue this pattern as you add new sections.
+
 ## Finally
 
 If you want to see how this all comes together, check out [this branch from the KS][gh_new_section_type_and_instance_branch]
@@ -162,6 +172,7 @@ If you have any questions, drop them in #dev-help as usual!
 [section_type_declarations]: ../src/schema/v2/homeView/sectionTypes/
 [section_types_list]: ../src/schema/v2/homeView/sectionTypes/index.ts
 [section_instance_declarations]: ../src/schema/v2/homeView/sections
+[section_instance_specs]: ../src/schema/v2/homeView/sections/__tests__
 [example_section_declaration]: ../src/schema/v2/homeView/sections/_ExampleSection.ts
 [example_section_type_declaration]: ../src/schema/v2/homeView/sectionTypes/_ExampleSectionType.ts
 [section_instance_registry]: ../src/schema/v2/homeView/sections/index.ts
