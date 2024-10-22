@@ -1,4 +1,9 @@
-import { GraphQLString, GraphQLFieldConfig, GraphQLInt } from "graphql"
+import {
+  GraphQLString,
+  GraphQLFieldConfig,
+  GraphQLInt,
+  GraphQLEnumType,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import { connectionFromArray } from "graphql-relay"
@@ -21,11 +26,29 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   args: pageable({
     userId: { type: GraphQLString },
     limit: { type: GraphQLInt },
+    certainty: { type: GraphQLInt },
+    sort: {
+      type: new GraphQLEnumType({
+        name: "DiscoverArtworksSort",
+        values: {
+          CERTAINTY_ASC: {
+            value: "certainty",
+            description:
+              "Sort by certainty ascending. High certainty means the artwork is more likely to be recommended.",
+          },
+          CERTAINTY_DESC: {
+            value: "-certainty",
+            description:
+              "Sort by certainty descending. High certainty means the artwork is more likely to be recommended.",
+          },
+        },
+      }),
+    },
   }),
   resolve: async (_root, args, { weaviateGraphqlLoader, artworksLoader }) => {
     if (!weaviateGraphqlLoader) return
 
-    const { userId, limit = 5 } = args
+    const { userId, limit = 5, certainty = 0.5, sort } = args
 
     const userUUID = generateUuid(userId)
     const beacon = generateBeacon("InfiniteDiscoveryUsers", userUUID)
@@ -33,7 +56,13 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     const query = gql`
       {
         Get {
-          InfiniteDiscoveryArtworks(nearObject: {beacon: "${beacon}"}, limit: ${limit}) {
+          InfiniteDiscoveryArtworks(
+              nearObject: {
+                beacon: "${beacon}", 
+                certainty: ${certainty}
+              },
+              limit: ${limit},
+          ) {
             internalID
             _additional {
               id
@@ -53,6 +82,10 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     const artworkIds = body.data.Get.InfiniteDiscoveryArtworks.map(
       (node) => node.internalID
     )
+
+    if (sort == "certainty") {
+      artworkIds.reverse()
+    }
 
     const artworks =
       artworkIds?.length > 0 ? await artworksLoader({ ids: artworkIds }) : []
