@@ -72,8 +72,11 @@ export const CreateDiscoveryUserMutation = mutationWithClientMutationId<
     const uuid = generateUuid(userId)
 
     const body = {
-      class: "InfiniteDiscoveryUser",
+      class: "InfiniteDiscoveryUsers",
       id: uuid,
+      properties: {
+        internalID: userId,
+      },
     }
 
     try {

@@ -116,12 +116,12 @@ export const DeleteDiscoveryUserReferencesMutation = mutationWithClientMutationI
 
       const references = [
         ...getArtworkReferences({
-          data: likedArtworks,
+          data: likedArtworks ?? [],
           reference: "likedArtworks",
           uuid,
         }),
         ...getArtworkReferences({
-          data: dislikedArtworks,
+          data: dislikedArtworks ?? [],
           reference: "dislikedArtworks",
           uuid,
         }),
@@ -148,17 +148,25 @@ export const DeleteDiscoveryUserReferencesMutation = mutationWithClientMutationI
   },
 })
 
-const getArtworkReferences = ({ data, reference, uuid }) =>
-  // remove duplicates if any, because reference duplicating is possible in Weaviate
-  Array.from(new Set(data.map((artwork) => artwork._additional.id))).map(
-    (id) => {
-      const artwork = data.find((artwork) => artwork._additional.id === id)
-      return {
-        url: `/objects/${uuid}/references/${reference}`,
-        beacon: generateBeacon(
-          "InfiniteDiscoveryArtworks",
-          artwork._additional.id
-        ),
-      }
-    }
+// remove duplicates if any, because reference duplicating is possible in Weaviate and avoid sending multiple delete requests
+const getArtworkReferences = ({ data, reference, uuid }) => {
+  const uniqueIds = Array.from(
+    new Set(data.map((artwork) => artwork._additional.id))
   )
+
+  const uniqueArtworks = uniqueIds.map((id) => {
+    const artwork = data.find((artwork) => artwork._additional.id === id)
+    const url = `/objects/${uuid}/references/${reference}`
+    const beacon = generateBeacon(
+      "InfiniteDiscoveryArtworks",
+      artwork._additional.id
+    )
+
+    return {
+      url,
+      beacon,
+    }
+  })
+
+  return uniqueArtworks
+}
