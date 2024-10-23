@@ -4,12 +4,12 @@ import { createPageCursors } from "schema/v2/fields/pagination"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
+import { ContextModule } from "@artsy/cohesion"
 
 export const Tasks: HomeViewSection = {
   id: "home-view-section-tasks",
   type: HomeViewSectionTypeNames.HomeViewSectionTasks,
-  // TODO: Create context module in Cohesion
-  // contextModule: ContextModule.tasks,
+  contextModule: ContextModule.notification,
   component: {
     title: "Act Now",
   },
