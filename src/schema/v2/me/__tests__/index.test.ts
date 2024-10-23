@@ -716,6 +716,8 @@ describe("me/index", () => {
               active: true,
               artwork_id: "65d9b98ae37dd70006240bf6",
               available: true,
+              minor: 5600000,
+              currencyCode: "USD",
               note: "This is a note!",
               partner_id: "5f80bfefe8d808000ea212c1",
               price_currency: "USD",
@@ -744,6 +746,9 @@ describe("me/index", () => {
                   isAvailable
                   note
                   partnerId
+                  priceListed {
+                    display
+                  }
                   priceWithDiscount {
                     display
                     major
@@ -769,33 +774,38 @@ describe("me/index", () => {
         total_count: true,
       })
 
-      expect(response).toEqual({
-        me: {
-          partnerOffersConnection: {
-            totalCount: 1,
-            edges: [
-              {
-                node: {
-                  artworkId: "65d9b98ae37dd70006240bf6",
-                  createdAt: "2024-02-27T19:01:51.461Z",
-                  endAt: "2024-03-01T19:01:51.457Z",
-                  internalID: "866f16a0-92bf-4fb6-8911-e1ab1a5fb508",
-                  isActive: true,
-                  isAvailable: true,
-                  note: "This is a note!",
-                  partnerId: "5f80bfefe8d808000ea212c1",
-                  priceWithDiscount: {
-                    currencyCode: "USD",
-                    display: "US$17,360",
-                    minor: 1736000,
-                    major: 17360,
+      expect(response).toMatchInlineSnapshot(`
+        Object {
+          "me": Object {
+            "partnerOffersConnection": Object {
+              "edges": Array [
+                Object {
+                  "node": Object {
+                    "artworkId": "65d9b98ae37dd70006240bf6",
+                    "createdAt": "2024-02-27T19:01:51.461Z",
+                    "endAt": "2024-03-01T19:01:51.457Z",
+                    "internalID": "866f16a0-92bf-4fb6-8911-e1ab1a5fb508",
+                    "isActive": true,
+                    "isAvailable": true,
+                    "note": "This is a note!",
+                    "partnerId": "5f80bfefe8d808000ea212c1",
+                    "priceListed": Object {
+                      "display": "US$56,000",
+                    },
+                    "priceWithDiscount": Object {
+                      "currencyCode": "USD",
+                      "display": "US$17,360",
+                      "major": 17360,
+                      "minor": 1736000,
+                    },
                   },
                 },
-              },
-            ],
+              ],
+              "totalCount": 1,
+            },
           },
-        },
-      })
+        }
+      `)
     })
 
     it("returns partner offers for the collector on an artwork", async () => {

@@ -15796,6 +15796,7 @@ type PartnerOfferToCollector implements Node {
   isAvailable: Boolean
   note: String
   partnerId: String
+  priceListed: Money
   priceWithDiscount: Money
   source: PartnerOfferSourceEnum
 }

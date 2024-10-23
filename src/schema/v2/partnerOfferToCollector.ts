@@ -1,14 +1,14 @@
-import { date } from "./fields/date"
 import {
-  GraphQLObjectType,
-  GraphQLString,
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { IDFields, NodeInterface } from "./object_identification"
-import { connectionWithCursorInfo } from "./fields/pagination"
+import { date } from "./fields/date"
 import { Money, resolveMinorAndCurrencyFieldsToMoney } from "./fields/money"
+import { connectionWithCursorInfo } from "./fields/pagination"
+import { IDFields, NodeInterface } from "./object_identification"
 import { PartnerOfferSourceEnumType } from "./partnerOffer"
 
 export const PartnerOfferToCollectorType = new GraphQLObjectType<
