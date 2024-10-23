@@ -51,3 +51,28 @@ export function isFeatureFlagEnabled(
 
   return unleashClient.isEnabled(flag, context)
 }
+
+export function getFeatureFlag(flag: FeatureFlag) {
+  if (!unleashClient) {
+    error(
+      `[featureFlags] Error retrieving ${flag} feature flag. Unleash client not initialized.`
+    )
+    return false
+  }
+
+  return unleashClient.getFeatureToggleDefinition(flag)
+}
+
+export function getExperimentVariant(
+  flag: FeatureFlag,
+  context: UnleashContext = {}
+) {
+  if (!unleashClient) {
+    error(
+      `[featureFlags] Error retrieving ${flag} feature flag. Unleash client not initialized.`
+    )
+    return false
+  }
+
+  return unleashClient.getVariant(flag, context)
+}
