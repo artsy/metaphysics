@@ -1,18 +1,25 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
+import { isFeatureFlagEnabled } from "lib/featureFlags"
 
 jest.mock("lib/featureFlags", () => ({
-  isFeatureFlagEnabled: jest.fn((flag: string) => {
-    return [
-      "onyx_enable-home-view-section-featured-fairs",
-      "diamond_home-view-marketing-collection-categories",
-    ].includes(flag)
-  }),
+  isFeatureFlagEnabled: jest.fn(),
 }))
+
+const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
 
 describe("homeView", () => {
   describe("sectionsConnection", () => {
+    beforeEach(() => {
+      mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
+        return [
+          "onyx_enable-home-view-section-featured-fairs",
+          "diamond_home-view-marketing-collection-categories",
+        ].includes(flag)
+      })
+    })
+
     const query = gql`
       {
         homeView {
