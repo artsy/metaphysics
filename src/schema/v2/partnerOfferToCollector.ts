@@ -40,6 +40,25 @@ export const PartnerOfferToCollectorType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ partner_id }) => partner_id,
     },
+    priceListed: {
+      type: Money,
+      resolve: (
+        { price_listed_minor: minor, price_currency: currencyCode },
+        args,
+        context,
+        info
+      ) => {
+        return resolveMinorAndCurrencyFieldsToMoney(
+          {
+            minor,
+            currencyCode,
+          },
+          args,
+          context,
+          info
+        )
+      },
+    },
     priceWithDiscount: {
       type: Money,
       resolve: (
