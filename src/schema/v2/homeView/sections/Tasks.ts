@@ -9,7 +9,7 @@ import { ContextModule } from "@artsy/cohesion"
 export const Tasks: HomeViewSection = {
   id: "home-view-section-tasks",
   type: HomeViewSectionTypeNames.HomeViewSectionTasks,
-  contextModule: ContextModule.notification,
+  contextModule: ContextModule.actNow,
   component: {
     title: "Act Now",
   },
