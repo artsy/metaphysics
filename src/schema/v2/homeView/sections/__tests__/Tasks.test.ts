@@ -68,7 +68,7 @@ describe("HomeViewSectionTasks", () => {
           "description": null,
           "title": "Act Now",
         },
-        "contextModule": null,
+        "contextModule": "actNow",
         "internalID": "home-view-section-tasks",
         "ownerType": null,
       }
