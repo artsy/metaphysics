@@ -1,13 +1,29 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
+import {
+  isFeatureFlagEnabled,
+  getFeatureFlag,
+  getExperimentVariant,
+} from "lib/featureFlags"
+import "schema/v2/homeView/experiments/experiments"
 
 jest.mock("lib/featureFlags", () => ({
   isFeatureFlagEnabled: jest.fn(),
+  getFeatureFlag: jest.fn(),
+  getExperimentVariant: jest.fn(),
+}))
+
+jest.mock("schema/v2/homeView/experiments/experiments.ts", () => ({
+  CURRENTLY_RUNNING_EXPERIMENTS: [
+    "exciting-experiment-1",
+    "exciting-experiment-2",
+  ],
 }))
 
 const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
+const mockGetFeatureFlag = getFeatureFlag as jest.Mock
+const mockGetExperimentVariant = getExperimentVariant as jest.Mock
 
 describe("homeView", () => {
   describe("sectionsConnection", () => {
@@ -453,6 +469,98 @@ describe("homeView", () => {
           `)
         })
       })
+    })
+  })
+
+  describe("experiments", () => {
+    it("returns the currently running experiments and variants", async () => {
+      const query = gql`
+        {
+          homeView {
+            experiments {
+              name
+              description
+              service
+              enabled
+              variant
+              variants {
+                name
+                weight
+                stickiness
+              }
+            }
+          }
+        }
+      `
+
+      mockGetFeatureFlag.mockImplementation((flagName: string) => ({
+        name: flagName,
+        description: "A very exciting experiment",
+        enabled: true,
+        variants: [
+          {
+            name: "control",
+            weight: 800,
+            stickiness: "default",
+          },
+          {
+            name: "experiment",
+            weight: 200,
+            stickiness: "default",
+          },
+        ],
+      }))
+
+      mockGetExperimentVariant.mockImplementation(() => ({
+        name: "control",
+      }))
+
+      const context: Partial<ResolverContext> = {}
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.experiments).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "description": "A very exciting experiment",
+            "enabled": "true",
+            "name": "exciting-experiment-1",
+            "service": "unleash",
+            "variant": "control",
+            "variants": Array [
+              Object {
+                "name": "control",
+                "stickiness": "default",
+                "weight": 800,
+              },
+              Object {
+                "name": "experiment",
+                "stickiness": "default",
+                "weight": 200,
+              },
+            ],
+          },
+          Object {
+            "description": "A very exciting experiment",
+            "enabled": "true",
+            "name": "exciting-experiment-2",
+            "service": "unleash",
+            "variant": "control",
+            "variants": Array [
+              Object {
+                "name": "control",
+                "stickiness": "default",
+                "weight": 800,
+              },
+              Object {
+                "name": "experiment",
+                "stickiness": "default",
+                "weight": 200,
+              },
+            ],
+          },
+        ]
+      `)
     })
   })
 })
