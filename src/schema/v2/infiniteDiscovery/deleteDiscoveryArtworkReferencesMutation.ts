@@ -89,7 +89,7 @@ export const DeleteDiscoveryUserReferencesMutation = mutationWithClientMutationI
                 }
               }
             }
-            dislikedArtworks {
+            seenArtworks {
               ... on InfiniteDiscoveryArtworks {
                 _additional {
                   id
@@ -111,7 +111,7 @@ export const DeleteDiscoveryUserReferencesMutation = mutationWithClientMutationI
       const {
         _additional: { id: uuid },
         likedArtworks,
-        dislikedArtworks,
+        seenArtworks,
       } = users[0]
 
       const references = [
@@ -121,8 +121,8 @@ export const DeleteDiscoveryUserReferencesMutation = mutationWithClientMutationI
           uuid,
         }),
         ...getArtworkReferences({
-          data: dislikedArtworks ?? [],
-          reference: "dislikedArtworks",
+          data: seenArtworks ?? [],
+          reference: "seenArtworks",
           uuid,
         }),
       ]

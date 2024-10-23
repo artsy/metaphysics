@@ -54,6 +54,42 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     const userUUID = generateUuid(userId)
     const beacon = generateBeacon("InfiniteDiscoveryUsers", userUUID)
 
+    const userQuery = gql`
+      {
+        Get {
+          InfiniteDiscoveryUsers(
+            where: { path: ["internalID"], operator: Equal, valueString: "${userId}" }
+          ) {
+            likedArtworks {
+              ... on InfiniteDiscoveryArtworks {
+                internalID
+              }
+            }
+            seenArtworks  {
+              ... on InfiniteDiscoveryArtworks {
+                internalID
+              }
+            }
+          }
+        }
+      }
+    `
+    const userQueryResponse = await weaviateGraphqlLoader({
+      query: userQuery,
+    })()
+
+    const user = userQueryResponse.data.Get.InfiniteDiscoveryUsers[0]
+
+    if (!user) {
+      throw new Error("Weaviate user not found")
+    }
+
+    const likedArtworkIds =
+      user.likedArtworks?.map((node) => node.internalID) || []
+    const seenArtworkIds =
+      user.seenArtworks?.map((node) => node.internalID) || []
+    const artworkIdsToFilter = [...likedArtworkIds, ...seenArtworkIds]
+
     const query = gql`
       {
         Get {
@@ -84,12 +120,19 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       (node) => node.internalID
     )
 
+    // Remove liked artworks from the list
+    const filteredArtworkIds = artworkIds.filter(
+      (id) => artworkIdsToFilter.indexOf(id) === -1
+    )
+
     if (sort == "certainty") {
-      artworkIds.reverse()
+      filteredArtworkIds.reverse()
     }
 
     const artworks =
-      artworkIds?.length > 0 ? await artworksLoader({ ids: artworkIds }) : []
+      filteredArtworkIds?.length > 0
+        ? await artworksLoader({ ids: filteredArtworkIds })
+        : []
 
     return connectionFromArray(artworks, args)
   },
