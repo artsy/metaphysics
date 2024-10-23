@@ -15,6 +15,7 @@ const FEATURE_FLAGS_LIST = [
   "onyx_enable-home-view-section-featured-fairs",
   "diamond_home-view-marketing-collection-categories",
   "emerald_home-view-tasks-section",
+  "onyx_experiment_home_view_test",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
