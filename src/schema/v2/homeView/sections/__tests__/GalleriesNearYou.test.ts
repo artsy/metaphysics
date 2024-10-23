@@ -10,8 +10,17 @@ describe("GalleriesNearYou", () => {
             __typename
             internalID
             contextModule
+            ownerType
             component {
               title
+              description
+              behaviors {
+                viewAll {
+                  buttonText
+                  href
+                  ownerType
+                }
+              }
             }
           }
         }
@@ -28,10 +37,13 @@ describe("GalleriesNearYou", () => {
       Object {
         "__typename": "HomeViewSectionCard",
         "component": Object {
+          "behaviors": null,
+          "description": "Follow these local galleries for updates on artists you love.",
           "title": "Galleries near You",
         },
         "contextModule": "galleriesForYouBanner",
         "internalID": "home-view-section-galleries-near-you",
+        "ownerType": "galleriesForYou",
       }
     `)
   })

@@ -8,7 +8,6 @@ export interface Task {
   title: string
   created_at: string
   message: string
-  action_message: string
   action_link: string
   resolved_at: string
   dismissed_at: string
@@ -29,10 +28,6 @@ export const TaskType = new GraphQLObjectType<any, ResolverContext>({
     },
     title: { type: new GraphQLNonNull(GraphQLString) },
     message: { type: new GraphQLNonNull(GraphQLString) },
-    actionMessage: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ action_message }) => action_message,
-    },
     actionLink: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ action_link }) => action_link,
