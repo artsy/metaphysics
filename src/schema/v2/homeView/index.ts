@@ -15,6 +15,7 @@ import { HomeViewGenericSectionInterface } from "./sectionTypes/GenericSectionIn
 import { getSectionsForUser } from "./helpers/getSectionsForUser"
 import { registry } from "./sections"
 import { isSectionDisplayable } from "./helpers/isSectionDisplayable"
+import { HomeViewExperiments } from "./experiments/HomeViewExperiments"
 
 const SectionsConnectionType = connectionWithCursorInfo({
   nodeType: HomeViewGenericSectionInterface,
@@ -73,6 +74,7 @@ const HomeViewType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomeView",
   description: "Schema for server-driven home view content",
   fields: {
+    experiments: HomeViewExperiments,
     sectionsConnection: SectionConnection,
     section: Section,
   },

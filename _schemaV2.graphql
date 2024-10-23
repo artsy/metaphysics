@@ -11115,6 +11115,9 @@ type HomePageSalesModule {
 
 # Schema for server-driven home view content
 type HomeView {
+  # Currently running A/B tests for home view content
+  experiments: [HomeViewExperiment]!
+
   # A single home view section, addressed by internal id
   section(
     # The ID of the section
@@ -11204,6 +11207,31 @@ type HomeViewComponentBehaviorsViewAll {
 
   # [Analytics] `owner type` analytics value for the requested destination, as defined in our schema (artsy/cohesion)
   ownerType: String
+}
+
+# An A/B test for home view content
+type HomeViewExperiment {
+  # A description of the experiment
+  description: String
+
+  # Whether the experiment is enabled
+  enabled: String!
+
+  # The name of the experiment
+  name: String!
+  service: String!
+
+  # The name of the experimental variant being shown currently
+  variant: String
+
+  # The variants available within this experiment
+  variants: [HomeViewExperimentVariant]
+}
+
+type HomeViewExperimentVariant {
+  name: String!
+  stickiness: String
+  weight: Int!
 }
 
 # A user activity section in the home view
