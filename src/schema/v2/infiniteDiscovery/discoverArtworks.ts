@@ -3,6 +3,7 @@ import {
   GraphQLFieldConfig,
   GraphQLInt,
   GraphQLEnumType,
+  GraphQLFloat,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
@@ -26,7 +27,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   args: pageable({
     userId: { type: GraphQLString },
     limit: { type: GraphQLInt },
-    certainty: { type: GraphQLInt },
+    certainty: { type: GraphQLFloat },
     sort: {
       type: new GraphQLEnumType({
         name: "DiscoverArtworksSort",
