@@ -20,8 +20,10 @@ export const ReferenceTypesEnum = new GraphQLEnumType({
     LIKED_ARTWORKS: {
       value: "likedArtworks",
     },
-    DISLIKED_ARTWORKS: {
-      value: "dislikedArtworks",
+    SEEN_ARTWORKS: {
+      value: "seenArtworks",
+      description:
+        'Artworks that the user has seen and not "liked". Should not be considered a negative signal.',
     },
   },
 })
