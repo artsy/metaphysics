@@ -11116,7 +11116,7 @@ type HomePageSalesModule {
 # Schema for server-driven home view content
 type HomeView {
   # Currently running A/B tests for home view content
-  experiments: [HomeViewExperiment]!
+  experiments: [UnleashFeatureFlag]!
 
   # A single home view section, addressed by internal id
   section(
@@ -11207,31 +11207,6 @@ type HomeViewComponentBehaviorsViewAll {
 
   # [Analytics] `owner type` analytics value for the requested destination, as defined in our schema (artsy/cohesion)
   ownerType: String
-}
-
-# An A/B test for home view content
-type HomeViewExperiment {
-  # A description of the experiment
-  description: String
-
-  # Whether the experiment is enabled
-  enabled: String!
-
-  # The name of the experiment
-  name: String!
-  service: String!
-
-  # The name of the experimental variant being shown currently
-  variant: String
-
-  # The variants available within this experiment
-  variants: [HomeViewExperimentVariant]
-}
-
-type HomeViewExperimentVariant {
-  name: String!
-  stickiness: String
-  weight: Int!
 }
 
 # A user activity section in the home view
@@ -19631,6 +19606,30 @@ type TriggerCampaignPayload {
 }
 
 union UnderlyingCurrentEvent = Sale | Show
+
+type UnleashExperimentVariant {
+  name: String!
+  stickiness: String
+  weight: Int!
+}
+
+# An Unleash feature toggle, used for managing releases, experiments, etc.
+type UnleashFeatureFlag {
+  # A description of the feature
+  description: String
+
+  # Whether the feature is enabled
+  enabled: String!
+
+  # The name of the feature
+  name: String!
+
+  # The name of the experimental variant being shown currently (when the feature is of type `experiment`)
+  variant: String
+
+  # The variants available within this experiment (when the feature is of type `experiment`)
+  variants: [UnleashExperimentVariant]
+}
 
 input UnlinkAuthenticationMutationInput {
   clientMutationId: String
