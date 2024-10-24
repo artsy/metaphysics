@@ -38,7 +38,7 @@
   "author": "Art.sy Inc",
   "license": "MIT",
   "dependencies": {
-    "@artsy/cohesion": "^4.210.0",
+    "@artsy/cohesion": "^4.211.0",
     "@artsy/img": "1.0.3",
     "@artsy/morgan": "^1.0.2",
     "@artsy/multienv": "^1.2.0",
