@@ -559,5 +559,43 @@ describe("homeView", () => {
         ]
       `)
     })
+
+    it("filters out experiments that are not enabled", async () => {
+      const query = gql`
+        {
+          homeView {
+            experiments {
+              name
+              enabled
+            }
+          }
+        }
+      `
+
+      mockGetFeatureFlag.mockImplementationOnce(() => ({
+        name: "outdated-experiment",
+        description: "An outdated experiment",
+        enabled: false,
+      }))
+
+      mockGetFeatureFlag.mockImplementationOnce(() => ({
+        name: "running-experiment",
+        description: "A still running experiment",
+        enabled: true,
+      }))
+
+      const context: Partial<ResolverContext> = {}
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.experiments).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "enabled": "true",
+            "name": "running-experiment",
+          },
+        ]
+      `)
+    })
   })
 })

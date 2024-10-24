@@ -7,6 +7,7 @@ import {
 import { ResolverContext } from "types/graphql"
 import { CURRENTLY_RUNNING_EXPERIMENTS } from "./experiments"
 import { UnleashFeatureFlag } from "schema/v2/unleashFeatureFlag"
+import { compact } from "lodash"
 
 export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
   type: GraphQLNonNull(GraphQLList(UnleashFeatureFlag)),
@@ -17,12 +18,14 @@ export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
         const flag = getFeatureFlag(name)
         const variant = getExperimentVariant(name, { userId: context.userID })
 
-        return {
-          ...flag,
-          variant: variant ? variant.name : null,
+        if (flag && flag.enabled) {
+          return {
+            ...flag,
+            variant: variant ? variant.name : null,
+          }
         }
       }
     )
-    return experiments
+    return compact(experiments)
   },
 }
