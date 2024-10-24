@@ -74,6 +74,5 @@ export function createCacheTracer() {
   return {
     get: createCommand("get"),
     set: createCommand("set"),
-    delete: createCommand("delete"),
   }
 }
