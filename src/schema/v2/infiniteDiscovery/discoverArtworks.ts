@@ -78,7 +78,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       query: userQuery,
     })()
 
-    const user = userQueryResponse.data.Get.InfiniteDiscoveryUsers[0]
+    const user = userQueryResponse?.data?.Get?.InfiniteDiscoveryUsers?.[0];
 
     if (!user) {
       throw new Error("Weaviate user not found")
