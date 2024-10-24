@@ -480,7 +480,6 @@ describe("homeView", () => {
             experiments {
               name
               description
-              service
               enabled
               variant
               variants {
@@ -525,7 +524,6 @@ describe("homeView", () => {
             "description": "A very exciting experiment",
             "enabled": "true",
             "name": "exciting-experiment-1",
-            "service": "unleash",
             "variant": "control",
             "variants": Array [
               Object {
@@ -544,7 +542,6 @@ describe("homeView", () => {
             "description": "A very exciting experiment",
             "enabled": "true",
             "name": "exciting-experiment-2",
-            "service": "unleash",
             "variant": "control",
             "variants": Array [
               Object {
