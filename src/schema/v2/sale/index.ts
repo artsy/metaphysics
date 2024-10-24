@@ -385,7 +385,9 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           if (!cascading_end_time_interval_minutes) return false
           if (ended_at) return false
 
+          // @ts-expect-error FIXME: moment-tz types are incorrect
           const thisMoment = moment.tz(moment(), DEFAULT_TZ)
+          // @ts-expect-error FIXME: moment-tz types are incorrect
           const lotsClosingMoment = moment.tz(end_at, DEFAULT_TZ)
 
           return thisMoment.isAfter(lotsClosingMoment)
