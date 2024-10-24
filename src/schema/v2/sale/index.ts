@@ -8,6 +8,7 @@ import initials from "schema/v2/fields/initials"
 import cached from "schema/v2/fields/cached"
 import date from "schema/v2/fields/date"
 import moment from "moment"
+import { tz } from "moment-timezone"
 import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import {
   formattedStartDateTime,
@@ -385,10 +386,8 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           if (!cascading_end_time_interval_minutes) return false
           if (ended_at) return false
 
-          // @ts-expect-error FIXME: moment-tz types are incorrect
-          const thisMoment = moment.tz(moment(), DEFAULT_TZ)
-          // @ts-expect-error FIXME: moment-tz types are incorrect
-          const lotsClosingMoment = moment.tz(end_at, DEFAULT_TZ)
+          const thisMoment = tz(moment(), DEFAULT_TZ)
+          const lotsClosingMoment = tz(end_at, DEFAULT_TZ)
 
           return thisMoment.isAfter(lotsClosingMoment)
         },
