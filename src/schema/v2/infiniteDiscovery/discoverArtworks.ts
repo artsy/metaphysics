@@ -27,6 +27,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   args: pageable({
     userId: { type: GraphQLString },
     limit: { type: GraphQLInt },
+    offset: { type: GraphQLInt },
     certainty: { type: GraphQLFloat },
     sort: {
       type: new GraphQLEnumType({
@@ -49,7 +50,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (_root, args, { weaviateGraphqlLoader, artworksLoader }) => {
     if (!weaviateGraphqlLoader) return
 
-    const { userId, limit = 5, certainty = 0.5, sort } = args
+    const { userId, limit = 5, offset = 0, certainty = 0.5, sort } = args
 
     const userUUID = generateUuid(userId)
     const beacon = generateBeacon("InfiniteDiscoveryUsers", userUUID)
@@ -78,7 +79,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       query: userQuery,
     })()
 
-    const user = userQueryResponse?.data?.Get?.InfiniteDiscoveryUsers?.[0];
+    const user = userQueryResponse?.data?.Get?.InfiniteDiscoveryUsers?.[0]
 
     if (!user) {
       throw new Error("Weaviate user not found")
@@ -90,7 +91,10 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       user.seenArtworks?.map((node) => node.internalID) || []
     const artworkIdsToFilter = [...likedArtworkIds, ...seenArtworkIds]
 
-    const query = gql`
+    let searchQuery
+
+    if (likedArtworkIds.length > 0) {
+      searchQuery = gql`
       {
         Get {
           InfiniteDiscoveryArtworks(
@@ -108,9 +112,25 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         }
       }
     `
+    } else {
+      searchQuery = gql`
+      {
+        Get {
+          InfiniteDiscoveryArtworks(
+              limit: ${limit},
+              offset: ${offset},
+          ) {
+            internalID
+            _additional {
+              id
+            }
+          }
+        }
+      }`
+    }
 
     const body = await weaviateGraphqlLoader({
-      query,
+      query: searchQuery,
     })()
 
     if (!body.data.Get.InfiniteDiscoveryArtworks)
