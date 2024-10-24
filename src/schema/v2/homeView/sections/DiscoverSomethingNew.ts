@@ -4,21 +4,24 @@ import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { connectionFromArray } from "graphql-relay"
 
 const marketingCollectionSlugs = [
-  "figurative-art",
-  "new-from-leading-galleries",
-  "paintings",
-  "prints",
-  "street-art",
-  "black-and-white-artworks",
-  "art-under-1000-dollars",
-  "art-for-small-spaces",
-  "cool-toned-artworks",
+  "most-loved",
+  "understated",
+  "curators-picks",
+  "transcendent",
+  "best-bids",
+  "statement-pieces",
+  "little-gems",
+  "feast-for-the-eyes",
+  "street-art-edit",
+  "icons",
+  "bleeding-edge",
+  "flora-and-fauna",
 ]
 
 export const DiscoverSomethingNew: HomeViewSection = {
   id: "home-view-section-discover-something-new",
   featureFlag: "diamond_home-view-marketing-collection-categories",
-  contextModule: "" as ContextModule, // TODO: fill in with real value
+  contextModule: ContextModule.discoverSomethingNewRail,
   type: HomeViewSectionTypeNames.HomeViewSectionCards,
   component: {
     title: "Discover Something New",
@@ -28,6 +31,7 @@ export const DiscoverSomethingNew: HomeViewSection = {
   resolver: async (_parent, args, context, _info) => {
     const { body } = await context.marketingCollectionsLoader({
       slugs: marketingCollectionSlugs,
+      size: 12,
     })
 
     const cards = body.map((marketingCollection) => {
