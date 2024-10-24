@@ -103,6 +103,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
                 certainty: ${certainty}
               },
               limit: ${limit},
+              offset: ${offset},
           ) {
             internalID
             _additional {
