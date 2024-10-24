@@ -42,7 +42,7 @@ const marketingColletionCategories = {
 export const ExploreByCategory: HomeViewSection = {
   id: "home-view-section-explore-by-category",
   featureFlag: "diamond_home-view-marketing-collection-categories",
-  contextModule: ContextModule.exploreBySection,
+  contextModule: ContextModule.exploreBy,
   type: HomeViewSectionTypeNames.HomeViewSectionCards,
   component: {
     title: "Explore by Category",

@@ -52,7 +52,7 @@ describe("DiscoverSomethingNew", () => {
             "behaviors": null,
             "title": "Discover Something New",
           },
-          "contextModule": "discoverSomethingNewSection",
+          "contextModule": "discoverSomethingNewRail",
           "internalID": "home-view-section-discover-something-new",
           "ownerType": null,
         }

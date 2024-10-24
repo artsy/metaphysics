@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@artsy/cohesion@^4.211.0":
-  version "4.211.0"
-  resolved "https://registry.yarnpkg.com/@artsy/cohesion/-/cohesion-4.211.0.tgz#e9a0a4518ce6b541dabd69c1deb1b93b987f1a30"
-  integrity sha512-Y+yVvJCw5Z/P2wLVy/n/dGYbF9MalWpjtd/+mclNGmAG5O+o2pqk5ENIWGRHjWsuDy2uN9Ip2mscY8ZAfUVIYA==
+"@artsy/cohesion@^4.213.0":
+  version "4.213.0"
+  resolved "https://registry.yarnpkg.com/@artsy/cohesion/-/cohesion-4.213.0.tgz#c935e8f51e852937ae08984df5abb2fd3d741480"
+  integrity sha512-Q+JOcGVUrprwukUdTYNlJ2Am/Dj4iiq8vy6R7GDUj9jUZbj4OFFiVzBGeBXR8+dT7dn4DIwd9NUW6drnGnnmJA==
   dependencies:
     core-js "3"
 
@@ -10062,6 +10062,7 @@ stringify-object@^3.2.2:
     is-regexp "^1.0.0"
 
 "strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.1:
+  name strip-ansi-cjs
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
