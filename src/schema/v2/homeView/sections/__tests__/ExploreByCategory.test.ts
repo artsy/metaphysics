@@ -52,7 +52,7 @@ describe("ExploreByCategory", () => {
             "behaviors": null,
             "title": "Explore by Category",
           },
-          "contextModule": "",
+          "contextModule": "exploreBy",
           "internalID": "home-view-section-explore-by-category",
           "ownerType": null,
         }
