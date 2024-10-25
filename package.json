@@ -37,6 +37,9 @@
   },
   "author": "Art.sy Inc",
   "license": "MIT",
+  "resolutions": {
+    "string-width": "4.2.3"
+  },
   "dependencies": {
     "@artsy/cohesion": "^4.213.0",
     "@artsy/img": "1.0.3",
