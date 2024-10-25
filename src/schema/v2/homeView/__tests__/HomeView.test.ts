@@ -78,8 +78,10 @@ describe("homeView", () => {
               },
               {
                 "node": {
-                  "__typename": "HomeViewSectionHeroUnits",
-                  "component": null,
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": {
+                    "title": "Curators' Picks Emerging",
+                  },
                 },
               },
               {
@@ -88,6 +90,12 @@ describe("homeView", () => {
                   "component": {
                     "title": "Explore by Category",
                   },
+                },
+              },
+              {
+                "node": {
+                  "__typename": "HomeViewSectionHeroUnits",
+                  "component": null,
                 },
               },
               {
@@ -119,14 +127,6 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionArticles",
                   "component": {
                     "title": "News",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Curators' Picks Emerging",
                   },
                 },
               },
@@ -208,8 +208,10 @@ describe("homeView", () => {
               },
               {
                 "node": {
-                  "__typename": "HomeViewSectionHeroUnits",
-                  "component": null,
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": {
+                    "title": "Curators' Picks Emerging",
+                  },
                 },
               },
               {
@@ -218,6 +220,12 @@ describe("homeView", () => {
                   "component": {
                     "title": "Explore by Category",
                   },
+                },
+              },
+              {
+                "node": {
+                  "__typename": "HomeViewSectionHeroUnits",
+                  "component": null,
                 },
               },
               {
@@ -273,14 +281,6 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionArticles",
                   "component": {
                     "title": "News",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Curators' Picks Emerging",
                   },
                 },
               },
