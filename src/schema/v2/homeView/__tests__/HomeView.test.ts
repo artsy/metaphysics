@@ -43,98 +43,98 @@ describe("homeView", () => {
         const { homeView } = await runQuery(query, context)
 
         expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
-          Object {
-            "edges": Array [
-              Object {
-                "node": Object {
+          {
+            "edges": [
+              {
+                "node": {
                   "__typename": "HomeViewSectionCards",
-                  "component": Object {
+                  "component": {
                     "title": "Discover Something New",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionHeroUnits",
                   "component": null,
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionCards",
-                  "component": Object {
+                  "component": {
                     "title": "Explore by Category",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionSales",
-                  "component": Object {
+                  "component": {
                     "title": "Auctions",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionCard",
-                  "component": Object {
+                  "component": {
                     "title": "Galleries near You",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArticles",
-                  "component": Object {
+                  "component": {
                     "title": "Artsy Editorial",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArticles",
-                  "component": Object {
+                  "component": {
                     "title": "News",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtworks",
-                  "component": Object {
+                  "component": {
                     "title": "Curators' Picks Emerging",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionMarketingCollections",
-                  "component": Object {
+                  "component": {
                     "title": "Collections",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtists",
-                  "component": Object {
+                  "component": {
                     "title": "Trending Artists",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionViewingRooms",
-                  "component": Object {
+                  "component": {
                     "title": "Viewing Rooms",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionFairs",
-                  "component": Object {
+                  "component": {
                     "title": "Featured Fairs",
                   },
                 },
@@ -157,186 +157,186 @@ describe("homeView", () => {
         const { homeView } = await runQuery(query, context)
 
         expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
-          Object {
-            "edges": Array [
-              Object {
-                "node": Object {
+          {
+            "edges": [
+              {
+                "node": {
                   "__typename": "HomeViewSectionActivity",
-                  "component": Object {
+                  "component": {
                     "title": "Latest Activity",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtworks",
-                  "component": Object {
+                  "component": {
                     "title": "New Works for You",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionCards",
-                  "component": Object {
+                  "component": {
                     "title": "Discover Something New",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionHeroUnits",
                   "component": null,
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionCards",
-                  "component": Object {
+                  "component": {
                     "title": "Explore by Category",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtworks",
-                  "component": Object {
+                  "component": {
                     "title": "Your Active Bids",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtworks",
-                  "component": Object {
+                  "component": {
                     "title": "Auction Lots for You",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionSales",
-                  "component": Object {
+                  "component": {
                     "title": "Auctions",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionAuctionResults",
-                  "component": Object {
+                  "component": {
                     "title": "Latest Auction Results",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionCard",
-                  "component": Object {
+                  "component": {
                     "title": "Galleries near You",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArticles",
-                  "component": Object {
+                  "component": {
                     "title": "Artsy Editorial",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArticles",
-                  "component": Object {
+                  "component": {
                     "title": "News",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtworks",
-                  "component": Object {
+                  "component": {
                     "title": "Curators' Picks Emerging",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionMarketingCollections",
-                  "component": Object {
+                  "component": {
                     "title": "Collections",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtworks",
-                  "component": Object {
+                  "component": {
                     "title": "Artwork Recommendations",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtworks",
-                  "component": Object {
+                  "component": {
                     "title": "New Works from Galleries You Follow",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtists",
-                  "component": Object {
+                  "component": {
                     "title": "Recommended Artists",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtists",
-                  "component": Object {
+                  "component": {
                     "title": "Trending Artists",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtworks",
-                  "component": Object {
+                  "component": {
                     "title": "Recently Viewed",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionArtworks",
-                  "component": Object {
+                  "component": {
                     "title": "Similar to Works You’ve Viewed",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionViewingRooms",
-                  "component": Object {
+                  "component": {
                     "title": "Viewing Rooms",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionShows",
-                  "component": Object {
+                  "component": {
                     "title": "Shows for You",
                   },
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "__typename": "HomeViewSectionFairs",
-                  "component": Object {
+                  "component": {
                     "title": "Featured Fairs",
                   },
                 },
@@ -384,13 +384,13 @@ describe("homeView", () => {
           const { homeView } = await runQuery(query, context)
 
           expect(homeView.section).toMatchInlineSnapshot(`
-                      Object {
-                        "__typename": "HomeViewSectionArtworks",
-                        "component": Object {
-                          "title": "Auction Lots for You",
-                        },
-                      }
-                  `)
+            {
+              "__typename": "HomeViewSectionArtworks",
+              "component": {
+                "title": "Auction Lots for You",
+              },
+            }
+          `)
         })
       })
     })
@@ -418,9 +418,9 @@ describe("homeView", () => {
           const { homeView } = await runQuery(query, context)
 
           expect(homeView.section).toMatchInlineSnapshot(`
-            Object {
+            {
               "__typename": "HomeViewSectionArticles",
-              "component": Object {
+              "component": {
                 "title": "News",
               },
             }
@@ -437,9 +437,9 @@ describe("homeView", () => {
           const { homeView } = await runQuery(query, context)
 
           expect(homeView.section).toMatchInlineSnapshot(`
-            Object {
+            {
               "__typename": "HomeViewSectionArticles",
-              "component": Object {
+              "component": {
                 "title": "News",
               },
             }

@@ -33,13 +33,13 @@ describe("LatestAuctionResults", () => {
     const data = await runQuery(query, context)
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "homeView": Object {
-          "section": Object {
+      {
+        "homeView": {
+          "section": {
             "__typename": "HomeViewSectionAuctionResults",
-            "component": Object {
-              "behaviors": Object {
-                "viewAll": Object {
+            "component": {
+              "behaviors": {
+                "viewAll": {
                   "buttonText": "Browse All Results",
                   "href": null,
                   "ownerType": null,
@@ -95,7 +95,7 @@ describe("LatestAuctionResults", () => {
       },
     }))
 
-    const followedArtistsLoader = jest.fn(async () => ({
+    const followedArtistsLoader = jest.fn().mockResolvedValue({
       headers: { "x-total-count": 2 },
       body: [
         {
@@ -113,7 +113,7 @@ describe("LatestAuctionResults", () => {
           },
         },
       ],
-    }))
+    })
 
     const context = {
       accessToken: "424242",
@@ -124,18 +124,18 @@ describe("LatestAuctionResults", () => {
     const data = await runQuery(query, context)
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "homeView": Object {
-          "section": Object {
-            "auctionResultsConnection": Object {
-              "edges": Array [
-                Object {
-                  "node": Object {
+      {
+        "homeView": {
+          "section": {
+            "auctionResultsConnection": {
+              "edges": [
+                {
+                  "node": {
                     "title": "Auction Result 1",
                   },
                 },
-                Object {
-                  "node": Object {
+                {
+                  "node": {
                     "title": "Auction Result 2",
                   },
                 },

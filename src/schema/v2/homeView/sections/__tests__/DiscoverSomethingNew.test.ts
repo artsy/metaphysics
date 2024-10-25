@@ -46,9 +46,9 @@ describe("DiscoverSomethingNew", () => {
       const { homeView } = await runQuery(query, context)
 
       expect(homeView.section).toMatchInlineSnapshot(`
-        Object {
+        {
           "__typename": "HomeViewSectionCards",
-          "component": Object {
+          "component": {
             "behaviors": null,
             "title": "Discover Something New",
           },
@@ -104,22 +104,22 @@ describe("DiscoverSomethingNew", () => {
       const { homeView } = await runQuery(query, context)
 
       expect(homeView.section).toMatchInlineSnapshot(`
-        Object {
-          "cardsConnection": Object {
-            "edges": Array [
-              Object {
-                "node": Object {
+        {
+          "cardsConnection": {
+            "edges": [
+              {
+                "node": {
                   "entityID": "figurative-art",
-                  "image": Object {
+                  "image": {
                     "url": "figurative-art.jpg",
                   },
                   "title": "Figurative Art",
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "entityID": "new-from-leading-galleries",
-                  "image": Object {
+                  "image": {
                     "url": "new-from-leading-galleries.jpg",
                   },
                   "title": "New from Leading Galleries",

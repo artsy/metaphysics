@@ -42,10 +42,10 @@ describe("me.userInterest", () => {
     expect(meUserInterestLoader).toHaveBeenCalledWith("user-interest-id")
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "me": Object {
-          "userInterest": Object {
-            "interest": Object {
+      {
+        "me": {
+          "userInterest": {
+            "interest": {
               "__typename": "Artist",
               "internalID": "artist-id",
               "name": "Artist Name",

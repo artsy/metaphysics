@@ -34,12 +34,12 @@ describe("RecommendedArtworks", () => {
     const response = await runQuery(query, context)
 
     expect(response.homeView).toMatchInlineSnapshot(`
-      Object {
-        "section": Object {
+      {
+        "section": {
           "__typename": "HomeViewSectionArtworks",
-          "component": Object {
-            "behaviors": Object {
-              "viewAll": Object {
+          "component": {
+            "behaviors": {
+              "viewAll": {
                 "buttonText": "Browse All Artworks",
                 "href": null,
                 "ownerType": null,
@@ -148,18 +148,18 @@ describe("RecommendedArtworks", () => {
     })
 
     expect(response.homeView).toMatchInlineSnapshot(`
-      Object {
-        "section": Object {
-          "artworksConnection": Object {
-            "edges": Array [
-              Object {
-                "node": Object {
+      {
+        "section": {
+          "artworksConnection": {
+            "edges": [
+              {
+                "node": {
                   "id": "QXJ0d29yazo2MDhhNzQxN2JkZmJkMWE3ODliYTA5MmE=",
                   "title": "Untitled",
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "id": "QXJ0d29yazozMDhhNzQxNmJkZmJkMWE3ODliYTA5MTE=",
                   "title": "Untitled",
                 },

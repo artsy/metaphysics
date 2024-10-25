@@ -439,19 +439,19 @@ describe("me/index", () => {
       })
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "alertsConnection": Object {
-              "edges": Array [
-                Object {
-                  "node": Object {
-                    "artistIDs": Array [
+        {
+          "me": {
+            "alertsConnection": {
+              "edges": [
+                {
+                  "node": {
+                    "artistIDs": [
                       "andy-warhol",
                     ],
                     "internalID": "123",
                     "keyword": "cats",
                     "searchCriteriaID": "search-criteria-id",
-                    "settings": Object {
+                    "settings": {
                       "email": true,
                       "frequency": "DAILY",
                       "name": "My Alert",
@@ -634,19 +634,19 @@ describe("me/index", () => {
       )
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "alert": Object {
-              "artistIDs": Array [
+        {
+          "me": {
+            "alert": {
+              "artistIDs": [
                 "andy-warhol",
               ],
-              "artworksConnection": Object {
-                "counts": Object {
+              "artworksConnection": {
+                "counts": {
                   "total": 1,
                 },
-                "edges": Array [
-                  Object {
-                    "node": Object {
+                "edges": [
+                  {
+                    "node": {
                       "title": "Soup can",
                     },
                   },
@@ -656,7 +656,7 @@ describe("me/index", () => {
               "internalID": "123",
               "keyword": "cats",
               "searchCriteriaID": "search-criteria-id",
-              "settings": Object {
+              "settings": {
                 "email": true,
                 "frequency": "DAILY",
               },

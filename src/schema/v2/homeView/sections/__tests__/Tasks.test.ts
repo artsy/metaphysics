@@ -61,9 +61,9 @@ describe("HomeViewSectionTasks", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionTasks",
-        "component": Object {
+        "component": {
           "behaviors": null,
           "description": null,
           "title": "Act Now",
@@ -115,16 +115,16 @@ describe("HomeViewSectionTasks", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
-        "tasksConnection": Object {
-          "edges": Array [
-            Object {
-              "node": Object {
+      {
+        "tasksConnection": {
+          "edges": [
+            {
+              "node": {
                 "title": "Task 1",
               },
             },
-            Object {
-              "node": Object {
+            {
+              "node": {
                 "title": "Task 2",
               },
             },

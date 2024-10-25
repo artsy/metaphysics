@@ -53,16 +53,16 @@ describe("notificationsConnection", () => {
     })
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "notificationsConnection": Object {
-          "counts": Object {
+      {
+        "notificationsConnection": {
+          "counts": {
             "total": 100,
             "unread": 10,
             "unseen": 10,
           },
-          "edges": Array [
-            Object {
-              "node": Object {
+          "edges": [
+            {
+              "node": {
                 "createdAt": "2022",
                 "internalID": "6303f205b54941000843419a",
                 "isUnread": true,
@@ -121,16 +121,16 @@ describe("notificationsConnection", () => {
       })
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "notificationsConnection": Object {
-            "counts": Object {
+        {
+          "notificationsConnection": {
+            "counts": {
               "total": 100,
               "unread": 10,
               "unseen": 10,
             },
-            "edges": Array [
-              Object {
-                "node": Object {
+            "edges": [
+              {
+                "node": {
                   "createdAt": "2022",
                   "internalID": "6303f205b54941000843419a",
                   "isUnread": true,

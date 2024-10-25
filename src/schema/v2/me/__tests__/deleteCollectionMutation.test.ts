@@ -51,10 +51,10 @@ describe("deleteCollection", () => {
       const result = await runAuthenticatedQuery(mutation, context)
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "deleteCollection": Object {
-            "responseOrError": Object {
-              "collection": Object {
+        {
+          "deleteCollection": {
+            "responseOrError": {
+              "collection": {
                 "internalID": "123-abc",
                 "name": "Dining room",
               },
@@ -75,10 +75,10 @@ describe("deleteCollection", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "deleteCollection": Object {
-          "responseOrError": Object {
-            "mutationError": Object {
+      {
+        "deleteCollection": {
+          "responseOrError": {
+            "mutationError": {
               "message": "Collection Not Found",
             },
           },

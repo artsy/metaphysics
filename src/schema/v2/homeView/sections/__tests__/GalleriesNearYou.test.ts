@@ -34,9 +34,9 @@ describe("GalleriesNearYou", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionCard",
-        "component": Object {
+        "component": {
           "behaviors": null,
           "description": "Follow these local galleries for updates on artists you love.",
           "title": "Galleries near You",
@@ -75,12 +75,12 @@ describe("GalleriesNearYou", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
-        "card": Object {
+      {
+        "card": {
           "entityID": "galleriesForYou",
           "entityType": "Page",
           "href": null,
-          "image": Object {
+          "image": {
             "imageURL": "https://files.artsy.net/images/galleries_for_you.webp",
           },
           "subtitle": "Follow these local galleries for updates on artists you love.",

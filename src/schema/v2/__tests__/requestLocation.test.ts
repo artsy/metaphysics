@@ -19,7 +19,9 @@ describe("requestLocation", () => {
         }
       `
 
-      const requestLocationLoader = jest.fn(async () => locationResponse)
+      const requestLocationLoader = jest
+        .fn()
+        .mockResolvedValue(locationResponse)
 
       const context = {
         requestLocationLoader,
@@ -31,9 +33,9 @@ describe("requestLocation", () => {
       expect(requestLocationLoader).toHaveBeenCalledWith({ ip: "request-ip" })
 
       expect(requestLocation).toMatchInlineSnapshot(`
-        Object {
+        {
           "city": "Frankfurt",
-          "coordinates": Object {
+          "coordinates": {
             "lat": 50.11207962036133,
             "lng": 8.683409690856934,
           },
@@ -62,7 +64,9 @@ describe("requestLocation", () => {
         }
       `
 
-      const requestLocationLoader = jest.fn(async () => locationResponse)
+      const requestLocationLoader = jest
+        .fn()
+        .mockResolvedValue(locationResponse)
 
       const context = {
         requestLocationLoader,
@@ -74,9 +78,9 @@ describe("requestLocation", () => {
       expect(requestLocationLoader).toHaveBeenCalledWith({ ip: "param-ip" })
 
       expect(requestLocation).toMatchInlineSnapshot(`
-        Object {
+        {
           "city": "Frankfurt",
-          "coordinates": Object {
+          "coordinates": {
             "lat": 50.11207962036133,
             "lng": 8.683409690856934,
           },

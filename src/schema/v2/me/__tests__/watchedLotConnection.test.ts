@@ -20,19 +20,17 @@ describe("watchedLotConnection", () => {
     `
 
     const context = {
-      meLoader: jest.fn(() => Promise.resolve({ internalID: "Baz" })),
-      saleArtworksAllLoader: jest.fn(() =>
-        Promise.resolve({
-          headers: {
-            "x-total-count": 1,
+      meLoader: jest.fn().mockResolvedValue({ internalID: "Baz" }),
+      saleArtworksAllLoader: jest.fn().mockResolvedValue({
+        headers: {
+          "x-total-count": 1,
+        },
+        body: [
+          {
+            _id: "foo",
           },
-          body: [
-            {
-              _id: "foo",
-            },
-          ],
-        })
-      ),
+        ],
+      }),
     }
 
     const data = await runAuthenticatedQuery(query, context)

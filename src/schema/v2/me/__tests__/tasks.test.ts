@@ -27,7 +27,7 @@ describe("Me", () => {
         },
       ]
 
-      const meTasksLoader = jest.fn(async () => [
+      const meTasksLoader = jest.fn().mockResolvedValue([
         {
           title: "Come on baby light my wire",
           task_type: "send_wire",
@@ -39,7 +39,7 @@ describe("Me", () => {
       ])
 
       const context = {
-        meLoader: () => Promise.resolve({}),
+        meLoader: jest.fn().mockResolvedValue({}),
         meTasksLoader,
       }
 

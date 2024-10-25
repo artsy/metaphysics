@@ -29,7 +29,7 @@ describe("partnerCategories", () => {
         },
       ])
     )
-    const partnersLoader = jest.fn(() => Promise.resolve([]))
+    const partnersLoader = jest.fn().mockResolvedValue([])
 
     await runQuery(query, {
       partnerCategoriesLoader,

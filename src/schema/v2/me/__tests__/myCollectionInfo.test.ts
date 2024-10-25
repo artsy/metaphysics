@@ -31,7 +31,7 @@ describe("me.myCollectionInfo", () => {
     const data = await runAuthenticatedQuery(query, context)
 
     expect(data.me.myCollectionInfo).toMatchInlineSnapshot(`
-      Object {
+      {
         "artistsCount": 2,
         "artworksCount": 20,
         "includesPurchasedArtworks": true,
@@ -110,10 +110,10 @@ describe("me.myCollectionInfo", () => {
       expect(soloShowCount).toBe(1)
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "myCollectionInfo": Object {
-              "artistInsightsCount": Object {
+        {
+          "me": {
+            "myCollectionInfo": {
+              "artistInsightsCount": {
                 "activeSecondaryMarketCount": 2,
                 "biennialCount": 1,
                 "collectedCount": 3,
@@ -147,7 +147,7 @@ describe("me.myCollectionInfo", () => {
           }
         }
       `
-      const artistCareerHighlightsLoader = jest.fn(() => Promise.resolve(null))
+      const artistCareerHighlightsLoader = jest.fn().mockResolvedValue(null)
 
       const context: Partial<ResolverContext> = {
         collectionLoader: async () => ({}),
@@ -175,15 +175,15 @@ describe("me.myCollectionInfo", () => {
       const data = await runAuthenticatedQuery(query, context)
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "myCollectionInfo": Object {
-              "artistInsights": Array [
-                Object {
-                  "artist": Object {
+        {
+          "me": {
+            "myCollectionInfo": {
+              "artistInsights": [
+                {
+                  "artist": {
                     "name": "Artist 1",
                   },
-                  "entities": Array [
+                  "entities": [
                     "MoMA PS1",
                   ],
                   "kind": "COLLECTED",
@@ -245,26 +245,26 @@ describe("me.myCollectionInfo", () => {
       const data = await runAuthenticatedQuery(query, context)
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "myCollectionInfo": Object {
-              "collectedArtistsConnection": Object {
-                "edges": Array [
-                  Object {
+        {
+          "me": {
+            "myCollectionInfo": {
+              "collectedArtistsConnection": {
+                "edges": [
+                  {
                     "artworksCount": 1,
-                    "node": Object {
+                    "node": {
                       "name": "Artist 1",
                     },
                   },
-                  Object {
+                  {
                     "artworksCount": 2,
-                    "node": Object {
+                    "node": {
                       "name": "Artist 2",
                     },
                   },
-                  Object {
+                  {
                     "artworksCount": 3,
-                    "node": Object {
+                    "node": {
                       "name": "Artist 3",
                     },
                   },
@@ -278,23 +278,23 @@ describe("me.myCollectionInfo", () => {
 
       expect(data.me.myCollectionInfo.collectedArtistsConnection)
         .toMatchInlineSnapshot(`
-        Object {
-          "edges": Array [
-            Object {
+        {
+          "edges": [
+            {
               "artworksCount": 1,
-              "node": Object {
+              "node": {
                 "name": "Artist 1",
               },
             },
-            Object {
+            {
               "artworksCount": 2,
-              "node": Object {
+              "node": {
                 "name": "Artist 2",
               },
             },
-            Object {
+            {
               "artworksCount": 3,
-              "node": Object {
+              "node": {
                 "name": "Artist 3",
               },
             },

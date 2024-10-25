@@ -5,7 +5,7 @@ describe("ArtistInsights type", () => {
   let artist = null as any
   let context = null as any
 
-  const artistCareerHighlightsLoader = jest.fn(() => Promise.resolve(null))
+  const artistCareerHighlightsLoader = jest.fn()
 
   beforeEach(() => {
     artist = {
@@ -16,6 +16,10 @@ describe("ArtistInsights type", () => {
       artistLoader: () => Promise.resolve(artist),
       artistCareerHighlightsLoader,
     }
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
   })
 
   it("returns an empty array when there are no insights", () => {

@@ -340,7 +340,7 @@ describe("Sale type", () => {
       `
 
       const saleArtworks = [{ id: "sa-slug-0" }, { id: "sa-slug-1" }]
-      allViaLoader.mockResolvedValue(saleArtworks)
+      allViaLoader.mockResolvedValue(saleArtworks as never)
       const context = {
         saleLoader: () => Promise.resolve(sale),
         saleArtworksLoader: jest.fn(),
@@ -757,7 +757,7 @@ describe("Sale type", () => {
 
   describe("formattedStartDateTime", () => {
     beforeEach(() => {
-      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
+      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z").getTime())
     })
     const query = `
       {
@@ -891,7 +891,7 @@ describe("Sale type", () => {
 
   describe("isLotsClosing", () => {
     beforeEach(() => {
-      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
+      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z").getTime())
     })
     const query = `
       {
@@ -936,7 +936,7 @@ describe("Sale type", () => {
 
   describe("cascadingEndTimeFormattedStartDateTime", () => {
     beforeEach(() => {
-      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
+      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z").getTime())
     })
     const query = `
       {
@@ -996,7 +996,7 @@ describe("Sale type", () => {
 
   describe("cascadingIntervalLabel", () => {
     beforeEach(() => {
-      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z"))
+      Date.now = jest.fn(() => new Date("2022-03-08T12:33:37.000Z").getTime())
     })
     const query = `
       {

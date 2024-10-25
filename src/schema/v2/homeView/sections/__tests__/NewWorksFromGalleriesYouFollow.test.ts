@@ -34,11 +34,11 @@ describe("NewWorksFromGalleriesYouFollow", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionArtworks",
-        "component": Object {
-          "behaviors": Object {
-            "viewAll": Object {
+        "component": {
+          "behaviors": {
+            "viewAll": {
               "buttonText": "Browse All Artworks",
               "href": null,
               "ownerType": null,
@@ -91,17 +91,17 @@ describe("NewWorksFromGalleriesYouFollow", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
-        "artworksConnection": Object {
-          "edges": Array [
-            Object {
-              "node": Object {
+      {
+        "artworksConnection": {
+          "edges": [
+            {
+              "node": {
                 "id": "QXJ0d29yazpwZXJjeQ==",
                 "title": "Percy the Cat",
               },
             },
-            Object {
-              "node": Object {
+            {
+              "node": {
                 "id": "QXJ0d29yazptYXR0",
                 "title": "Matt the Person",
               },

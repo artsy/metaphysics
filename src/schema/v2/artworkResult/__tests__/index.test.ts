@@ -66,26 +66,26 @@ describe("Artwork type", () => {
       const data = await runQuery(query, context)
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "artworkResult": Object {
+        {
+          "artworkResult": {
             "__typename": "ArtworkError",
-            "artwork": Object {
+            "artwork": {
               "internalID": "artwork-id",
-              "layer": Object {
-                "artworksConnection": Object {
-                  "edges": Array [
-                    Object {
-                      "node": Object {
+              "layer": {
+                "artworksConnection": {
+                  "edges": [
+                    {
+                      "node": {
                         "slug": "leonor-fini-les-aveugles",
                       },
                     },
-                    Object {
-                      "node": Object {
+                    {
+                      "node": {
                         "slug": "gregorio-vardanega-cereles-metaphorique",
                       },
                     },
-                    Object {
-                      "node": Object {
+                    {
+                      "node": {
                         "slug": "joaquin-torres-garcia-grafismo-del-hombre-y-barco",
                       },
                     },
@@ -94,7 +94,7 @@ describe("Artwork type", () => {
               },
               "slug": "artwork-slug",
             },
-            "requestError": Object {
+            "requestError": {
               "statusCode": 404,
             },
           },
@@ -109,11 +109,11 @@ describe("Artwork type", () => {
       const data = await runQuery(query, context)
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "artworkResult": Object {
+        {
+          "artworkResult": {
             "__typename": "ArtworkError",
             "artwork": null,
-            "requestError": Object {
+            "requestError": {
               "statusCode": 500,
             },
           },
@@ -150,11 +150,11 @@ describe("Artwork type", () => {
       const data = await runQuery(query, context)
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "artworkResult": Object {
+        {
+          "artworkResult": {
             "__typename": "Artwork",
-            "artists": Array [
-              Object {
+            "artists": [
+              {
                 "name": "Catty Artist",
               },
             ],

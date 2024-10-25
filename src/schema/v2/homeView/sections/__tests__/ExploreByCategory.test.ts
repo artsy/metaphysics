@@ -46,9 +46,9 @@ describe("ExploreByCategory", () => {
       const { homeView } = await runQuery(query, context)
 
       expect(homeView.section).toMatchInlineSnapshot(`
-        Object {
+        {
           "__typename": "HomeViewSectionCards",
-          "component": Object {
+          "component": {
             "behaviors": null,
             "title": "Explore by Category",
           },
@@ -83,36 +83,36 @@ describe("ExploreByCategory", () => {
       const { homeView } = await runQuery(query, context)
 
       expect(homeView.section).toMatchInlineSnapshot(`
-        Object {
-          "cardsConnection": Object {
-            "edges": Array [
-              Object {
-                "node": Object {
+        {
+          "cardsConnection": {
+            "edges": [
+              {
+                "node": {
                   "entityID": "Medium",
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "entityID": "Movement",
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "entityID": "Collect by Size",
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "entityID": "Collect by Color",
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "entityID": "Collect by Price",
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "entityID": "Gallery",
                 },
               },

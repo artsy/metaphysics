@@ -104,34 +104,34 @@ describe("MarketingCollections", () => {
     const data = await runQuery(query, context)
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "marketingCollections": Array [
-          Object {
-            "artworksConnection": Object {
-              "edges": Array [
-                Object {
-                  "node": Object {
+      {
+        "marketingCollections": [
+          {
+            "artworksConnection": {
+              "edges": [
+                {
+                  "node": {
                     "slug": "percy-1",
                   },
                 },
-                Object {
-                  "node": Object {
+                {
+                  "node": {
                     "slug": "fiby-2",
                   },
                 },
               ],
             },
           },
-          Object {
-            "artworksConnection": Object {
-              "edges": Array [
-                Object {
-                  "node": Object {
+          {
+            "artworksConnection": {
+              "edges": [
+                {
+                  "node": {
                     "slug": "percy-1",
                   },
                 },
-                Object {
-                  "node": Object {
+                {
+                  "node": {
                     "slug": "fiby-2",
                   },
                 },

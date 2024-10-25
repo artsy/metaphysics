@@ -63,16 +63,16 @@ describe("artworkRecommendations", () => {
     })
 
     expect(artworkRecommendations).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [
-          Object {
-            "node": Object {
+      {
+        "edges": [
+          {
+            "node": {
               "internalID": "608a7417bdfbd1a789ba092a",
               "slug": "gerhard-richter-abendstimmung-evening-calm-2",
             },
           },
-          Object {
-            "node": Object {
+          {
+            "node": {
               "internalID": "308a7416bdfbd1a789ba0911",
               "slug": "pablo-picasso-deux-femmes-nues-dans-un-arbre-2",
             },
@@ -111,8 +111,8 @@ describe("artworkRecommendations", () => {
     } = await runAuthenticatedQuery(query, context)
 
     expect(artworkRecommendations).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [],
+      {
+        "edges": [],
         "totalCount": 0,
       }
     `)

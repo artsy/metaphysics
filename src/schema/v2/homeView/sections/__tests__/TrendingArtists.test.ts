@@ -32,9 +32,9 @@ describe("TrendingArtists", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionArtists",
-        "component": Object {
+        "component": {
           "behaviors": null,
           "description": null,
           "title": "Trending Artists",
@@ -100,17 +100,17 @@ describe("TrendingArtists", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
-        "artistsConnection": Object {
-          "edges": Array [
-            Object {
-              "node": Object {
+      {
+        "artistsConnection": {
+          "edges": [
+            {
+              "node": {
                 "name": "Artist 123",
                 "slug": "artist-123",
               },
             },
-            Object {
-              "node": Object {
+            {
+              "node": {
                 "name": "Artist 456",
                 "slug": "artist-456",
               },

@@ -34,9 +34,9 @@ describe("ShowsForYou", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionShows",
-        "component": Object {
+        "component": {
           "behaviors": null,
           "description": null,
           "title": "Shows for You",
@@ -109,14 +109,14 @@ describe("ShowsForYou", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
-        "showsConnection": Object {
-          "edges": Array [
-            Object {
-              "node": Object {
-                "location": Object {
+      {
+        "showsConnection": {
+          "edges": [
+            {
+              "node": {
+                "location": {
                   "city": "New York",
-                  "coordinates": Object {
+                  "coordinates": {
                     "lat": 40.2854,
                     "lng": -74.0027,
                   },
@@ -125,11 +125,11 @@ describe("ShowsForYou", () => {
                 "slug": "gallery-one-a-nice-show",
               },
             },
-            Object {
-              "node": Object {
-                "location": Object {
+            {
+              "node": {
+                "location": {
                   "city": "New York",
-                  "coordinates": Object {
+                  "coordinates": {
                     "lat": 40.2535,
                     "lng": -73.4105,
                   },

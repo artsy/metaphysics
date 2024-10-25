@@ -34,9 +34,9 @@ describe("me.notification", () => {
     expect(meNotificationLoader).toHaveBeenCalledWith("user-notification-id")
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "me": Object {
-          "notification": Object {
+      {
+        "me": {
+          "notification": {
             "headline": "6 works added by Gerhard Richter",
             "internalID": "user-notification-id",
             "message": "6 works added",
@@ -75,12 +75,12 @@ describe("me.notification", () => {
       const data = await runAuthenticatedQuery(query, context)
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "notification": Object {
+        {
+          "me": {
+            "notification": {
               "notificationType": "VIEWING_ROOM_PUBLISHED",
-              "previewImages": Array [
-                Object {
+              "previewImages": [
+                {
                   "imageURL": "http://test.com",
                 },
               ],
@@ -107,12 +107,12 @@ describe("me.notification", () => {
       const data = await runAuthenticatedQuery(query, context)
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "notification": Object {
+        {
+          "me": {
+            "notification": {
               "notificationType": "ARTICLE_FEATURED_ARTIST",
-              "previewImages": Array [
-                Object {
+              "previewImages": [
+                {
                   "imageURL": "http://test.com",
                 },
               ],
@@ -140,12 +140,12 @@ describe("me.notification", () => {
       const data = await runAuthenticatedQuery(query, context)
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "notification": Object {
+        {
+          "me": {
+            "notification": {
               "notificationType": "PARTNER_SHOW_OPENED",
-              "previewImages": Array [
-                Object {
+              "previewImages": [
+                {
                   "imageURL": "http://test.com",
                 },
               ],
@@ -176,12 +176,12 @@ describe("me.notification", () => {
       const data = await runAuthenticatedQuery(query, context)
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "notification": Object {
+        {
+          "me": {
+            "notification": {
               "notificationType": "ARTWORK_PUBLISHED",
-              "previewImages": Array [
-                Object {
+              "previewImages": [
+                {
                   "imageURL": "http://test.com",
                 },
               ],

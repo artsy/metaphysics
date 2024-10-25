@@ -48,24 +48,24 @@ describe("ComparableAuctionResults", () => {
     })
 
     expect(comparableAuctionResults).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [
-          Object {
-            "node": Object {
+      {
+        "edges": [
+          {
+            "node": {
               "currency": "EUR",
-              "images": Object {
-                "thumbnail": Object {
+              "images": {
+                "thumbnail": {
                   "imageURL": "https://path.to.1.jpg",
                 },
               },
               "saleDateText": "10-12-2020",
             },
           },
-          Object {
-            "node": Object {
+          {
+            "node": {
               "currency": "EUR",
-              "images": Object {
-                "thumbnail": Object {
+              "images": {
+                "thumbnail": {
                   "imageURL": "https://path.to.2.jpg",
                 },
               },

@@ -34,9 +34,9 @@ describe("ActiveBids", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionArtworks",
-        "component": Object {
+        "component": {
           "behaviors": null,
           "description": null,
           "title": "Your Active Bids",
@@ -92,16 +92,16 @@ describe("ActiveBids", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
-        "artworksConnection": Object {
-          "edges": Array [
-            Object {
-              "node": Object {
+      {
+        "artworksConnection": {
+          "edges": [
+            {
+              "node": {
                 "title": "Artwork 1",
               },
             },
-            Object {
-              "node": Object {
+            {
+              "node": {
                 "title": "Artwork 2",
               },
             },

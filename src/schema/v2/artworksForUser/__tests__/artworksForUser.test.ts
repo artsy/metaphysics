@@ -73,7 +73,7 @@ describe("artworksForUser", () => {
 
       expect(response.artworksForUser.totalCount).toBe(0)
       expect(response.artworksForUser.pageInfo).toMatchInlineSnapshot(`
-        Object {
+        {
           "hasNextPage": false,
           "hasPreviousPage": false,
         }
@@ -97,7 +97,7 @@ describe("artworksForUser", () => {
 
       expect(artworksForUser.totalCount).toBe(0)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
-        Object {
+        {
           "hasNextPage": false,
           "hasPreviousPage": false,
         }
@@ -123,7 +123,7 @@ describe("artworksForUser", () => {
 
       expect(artworksForUser.totalCount).toBe(1)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
-        Object {
+        {
           "hasNextPage": false,
           "hasPreviousPage": false,
         }
@@ -149,7 +149,7 @@ describe("artworksForUser", () => {
 
       expect(artworksForUser.totalCount).toBe(1)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
-        Object {
+        {
           "hasNextPage": false,
           "hasPreviousPage": false,
         }
@@ -179,7 +179,7 @@ describe("artworksForUser", () => {
 
       expect(artworksForUser.totalCount).toBe(2)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
-        Object {
+        {
           "hasNextPage": true,
           "hasPreviousPage": false,
         }
@@ -209,7 +209,7 @@ describe("artworksForUser", () => {
 
       expect(artworksForUser.totalCount).toBe(2)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
-        Object {
+        {
           "hasNextPage": false,
           "hasPreviousPage": false,
         }
@@ -235,7 +235,7 @@ describe("artworksForUser", () => {
 
       expect(artworksForUser.totalCount).toBe(1)
       expect(artworksForUser.pageInfo).toMatchInlineSnapshot(`
-        Object {
+        {
           "hasNextPage": false,
           "hasPreviousPage": false,
         }

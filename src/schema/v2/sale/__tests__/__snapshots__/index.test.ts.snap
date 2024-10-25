@@ -1,62 +1,62 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Sale type artworksConnection returns data from gravity 1`] = `
-Object {
-  "sale": Object {
-    "artworksConnection": Object {
-      "edges": Array [
-        Object {
-          "node": Object {
+{
+  "sale": {
+    "artworksConnection": {
+      "edges": [
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
       ],
-      "pageInfo": Object {
+      "pageInfo": {
         "hasNextPage": true,
       },
       "totalCount": 20,
@@ -66,17 +66,17 @@ Object {
 `;
 
 exports[`Sale type saleArtworksConnection accepts the all argument 1`] = `
-Object {
-  "sale": Object {
-    "saleArtworksConnection": Object {
-      "edges": Array [
-        Object {
-          "node": Object {
+{
+  "sale": {
+    "saleArtworksConnection": {
+      "edges": [
+        {
+          "node": {
             "slug": "sa-slug-0",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "sa-slug-1",
           },
         },
@@ -87,17 +87,17 @@ Object {
 `;
 
 exports[`Sale type saleArtworksConnection accepts the internalIDs argument 1`] = `
-Object {
-  "sale": Object {
-    "saleArtworksConnection": Object {
-      "edges": Array [
-        Object {
-          "node": Object {
+{
+  "sale": {
+    "saleArtworksConnection": {
+      "edges": [
+        {
+          "node": {
             "slug": "sa-slug-0",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "sa-slug-1",
           },
         },
@@ -108,62 +108,62 @@ Object {
 `;
 
 exports[`Sale type saleArtworksConnection returns data from gravity 1`] = `
-Object {
-  "sale": Object {
-    "saleArtworksConnection": Object {
-      "edges": Array [
-        Object {
-          "node": Object {
+{
+  "sale": {
+    "saleArtworksConnection": {
+      "edges": [
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "slug": "some-id",
           },
         },
       ],
-      "pageInfo": Object {
+      "pageInfo": {
         "hasNextPage": true,
       },
     },

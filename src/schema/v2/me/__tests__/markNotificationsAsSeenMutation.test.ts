@@ -27,9 +27,9 @@ describe("markNotificationsAsSeenMutation", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "markNotificationsAsSeen": Object {
-          "responseOrError": Object {
+      {
+        "markNotificationsAsSeen": {
+          "responseOrError": {
             "success": true,
           },
         },
@@ -47,10 +47,10 @@ describe("markNotificationsAsSeenMutation", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "markNotificationsAsSeen": Object {
-          "responseOrError": Object {
-            "mutationError": Object {
+      {
+        "markNotificationsAsSeen": {
+          "responseOrError": {
+            "mutationError": {
               "message": "Something went wrong",
             },
           },
