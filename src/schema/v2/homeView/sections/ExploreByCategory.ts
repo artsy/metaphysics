@@ -1,4 +1,4 @@
-import { ContextModule } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { connectionFromArray } from "graphql-relay"
@@ -54,7 +54,7 @@ export const ExploreByCategory: HomeViewSection = {
         return {
           ...category,
           entityID: category.id,
-          entityType: "MarketingCollectionCategory",
+          entityType: OwnerType.collectionsCategory,
           image_url: category.imageUrl,
         }
       }
