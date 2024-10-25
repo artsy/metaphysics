@@ -32,9 +32,9 @@ describe("MarketingCollections", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionMarketingCollections",
-        "component": Object {
+        "component": {
           "behaviors": null,
           "description": null,
           "title": "Collections",
@@ -83,16 +83,16 @@ describe("MarketingCollections", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
-        "marketingCollectionsConnection": Object {
-          "edges": Array [
-            Object {
-              "node": Object {
+      {
+        "marketingCollectionsConnection": {
+          "edges": [
+            {
+              "node": {
                 "title": "Trending Now",
               },
             },
-            Object {
-              "node": Object {
+            {
+              "node": {
                 "title": "Top Auction Works",
               },
             },

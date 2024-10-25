@@ -20,7 +20,7 @@ describe("HomeViewSection", () => {
       const data = await runQuery(query, context)
 
       expect(data.homeView.section).toMatchInlineSnapshot(`
-        Object {
+        {
           "__typename": "HomeViewSectionArticles",
           "id": "SG9tZVZpZXdTZWN0aW9uOmhvbWUtdmlldy1zZWN0aW9uLW5ld3M=",
         }
@@ -46,9 +46,9 @@ describe("HomeViewSection", () => {
       const data = await runQuery(query, context)
 
       expect(data.node).toMatchInlineSnapshot(`
-        Object {
+        {
           "__typename": "HomeViewSectionArticles",
-          "component": Object {
+          "component": {
             "title": "News",
           },
         }

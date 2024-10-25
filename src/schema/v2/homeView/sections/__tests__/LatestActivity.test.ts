@@ -34,11 +34,11 @@ describe("LatestActivity", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionActivity",
-        "component": Object {
-          "behaviors": Object {
-            "viewAll": Object {
+        "component": {
+          "behaviors": {
+            "viewAll": {
               "buttonText": "See All",
               "href": "/notifications",
               "ownerType": "activities",
@@ -117,13 +117,13 @@ describe("LatestActivity", () => {
     const data = await runQuery(query, context)
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "homeView": Object {
-          "section": Object {
-            "notificationsConnection": Object {
-              "edges": Array [
-                Object {
-                  "node": Object {
+      {
+        "homeView": {
+          "section": {
+            "notificationsConnection": {
+              "edges": [
+                {
+                  "node": {
                     "createdAt": "2022",
                     "internalID": "6303f205b54941000843419a",
                     "isUnread": true,

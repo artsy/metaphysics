@@ -90,37 +90,37 @@ describe("PricingContext type", () => {
   it("is accessible through the artwork type", async () => {
     const result = await runQuery(query, context)
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "artwork": Object {
-          "pricingContext": Object {
-            "appliedFilters": Object {
+      {
+        "artwork": {
+          "pricingContext": {
+            "appliedFilters": {
               "category": "ARCHITECTURE",
               "dimension": "SMALL",
             },
             "appliedFiltersDisplay": "Price ranges of small architecture works by Good Artist",
-            "bins": Array [
-              Object {
+            "bins": [
+              {
                 "maxPrice": "$89",
                 "maxPriceCents": 8855,
                 "minPrice": "$9",
                 "minPriceCents": 900,
                 "numArtworks": 67,
               },
-              Object {
+              {
                 "maxPrice": "$168",
                 "maxPriceCents": 16810,
                 "minPrice": "$89",
                 "minPriceCents": 8855,
                 "numArtworks": 57,
               },
-              Object {
+              {
                 "maxPrice": "$248",
                 "maxPriceCents": 24765,
                 "minPrice": "$168",
                 "minPriceCents": 16810,
                 "numArtworks": 45,
               },
-              Object {
+              {
                 "maxPrice": "$327",
                 "maxPriceCents": 32720,
                 "minPrice": "$248",
@@ -143,7 +143,7 @@ describe("PricingContext type", () => {
     await runQuery(query, context)
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
-      Object {
+      {
         "_v0_artistId": "artist-id",
         "_v0_category": "DRAWING_COLLAGE_OTHER_WORK_ON_PAPER",
         "_v0_sizeScore": 225,
@@ -173,7 +173,7 @@ describe("PricingContext type", () => {
     await runQuery(query, context)
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
-      Object {
+      {
         "_v0_artistId": "artist-id",
         "_v0_category": "PAINTING",
         "_v0_sizeScore": 10300,
@@ -201,7 +201,7 @@ describe("PricingContext type", () => {
     await runQuery(query, context)
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
-      Object {
+      {
         "_v0_artistId": "artist-id",
         "_v0_category": "PAINTING",
         "_v0_sizeScore": 3000,
@@ -243,37 +243,37 @@ describe("PricingContext type", () => {
     const { meLoader, ...others } = context
     const result = (await runQuery(query, others)) as any
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "artwork": Object {
-          "pricingContext": Object {
-            "appliedFilters": Object {
+      {
+        "artwork": {
+          "pricingContext": {
+            "appliedFilters": {
               "category": "ARCHITECTURE",
               "dimension": "SMALL",
             },
             "appliedFiltersDisplay": "Price ranges of small architecture works by Good Artist",
-            "bins": Array [
-              Object {
+            "bins": [
+              {
                 "maxPrice": "$89",
                 "maxPriceCents": 8855,
                 "minPrice": "$9",
                 "minPriceCents": 900,
                 "numArtworks": 67,
               },
-              Object {
+              {
                 "maxPrice": "$168",
                 "maxPriceCents": 16810,
                 "minPrice": "$89",
                 "minPriceCents": 8855,
                 "numArtworks": 57,
               },
-              Object {
+              {
                 "maxPrice": "$248",
                 "maxPriceCents": 24765,
                 "minPrice": "$168",
                 "minPriceCents": 16810,
                 "numArtworks": 45,
               },
-              Object {
+              {
                 "maxPrice": "$327",
                 "maxPriceCents": 32720,
                 "minPrice": "$248",

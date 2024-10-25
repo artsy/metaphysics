@@ -56,21 +56,21 @@ describe("deleteUserInterestsMutation", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "deleteUserInterests": Object {
-          "me": Object {
+      {
+        "deleteUserInterests": {
+          "me": {
             "name": "John Doe",
           },
-          "userInterestsOrErrors": Array [
-            Object {
+          "userInterestsOrErrors": [
+            {
               "category": "COLLECTED_BEFORE",
-              "interest": Object {
+              "interest": {
                 "name": "Artist Name",
               },
             },
-            Object {
+            {
               "category": "COLLECTED_BEFORE",
-              "interest": Object {
+              "interest": {
                 "name": "Artist Name",
               },
             },

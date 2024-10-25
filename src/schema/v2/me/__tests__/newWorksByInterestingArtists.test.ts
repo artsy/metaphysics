@@ -42,10 +42,10 @@ describe("newWorksByInterestingArtists", () => {
     } = await runAuthenticatedQuery(query, context)
 
     expect(newWorksByInterestingArtists).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [
-          Object {
-            "node": Object {
+      {
+        "edges": [
+          {
+            "node": {
               "id": "QXJ0d29yazo2MDhhNzQxOGJkZmJkMWE3ODliYTA5NmI=",
               "internalID": "608a7418bdfbd1a789ba096b",
               "slug": "yayoi-kusama-pumpkin-green",
@@ -108,8 +108,8 @@ describe("newWorksByInterestingArtists", () => {
     } = await runAuthenticatedQuery(query, context)
 
     expect(newWorksByInterestingArtists).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [],
+      {
+        "edges": [],
         "totalCount": 0,
       }
     `)

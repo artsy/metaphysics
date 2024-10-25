@@ -27,9 +27,9 @@ describe("markNotificationAsReadMutation", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "markNotificationAsRead": Object {
-          "responseOrError": Object {
+      {
+        "markNotificationAsRead": {
+          "responseOrError": {
             "success": true,
           },
         },
@@ -47,10 +47,10 @@ describe("markNotificationAsReadMutation", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "markNotificationAsRead": Object {
-          "responseOrError": Object {
-            "mutationError": Object {
+      {
+        "markNotificationAsRead": {
+          "responseOrError": {
+            "mutationError": {
               "message": "Something went wrong",
             },
           },

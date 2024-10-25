@@ -32,11 +32,11 @@ describe("News", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionArticles",
-        "component": Object {
-          "behaviors": Object {
-            "viewAll": Object {
+        "component": {
+          "behaviors": {
+            "viewAll": {
               "buttonText": "More in News",
               "href": "/news",
               "ownerType": "marketNews",
@@ -93,17 +93,17 @@ describe("News", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
-        "articlesConnection": Object {
-          "edges": Array [
-            Object {
-              "node": Object {
+      {
+        "articlesConnection": {
+          "edges": [
+            {
+              "node": {
                 "href": "/article/stolen-apes",
                 "title": "Bored apes stolen",
               },
             },
-            Object {
-              "node": Object {
+            {
+              "node": {
                 "href": "/article/more-apes",
                 "title": "More apes stolen",
               },

@@ -100,10 +100,10 @@ describe("PartnersConnection", () => {
       })
 
       expect(partnersConnection).toMatchInlineSnapshot(`
-        Object {
-          "edges": Array [
-            Object {
-              "node": Object {
+        {
+          "edges": [
+            {
+              "node": {
                 "internalID": "test-id",
               },
             },

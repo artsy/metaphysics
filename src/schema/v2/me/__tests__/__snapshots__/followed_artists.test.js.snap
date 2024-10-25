@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`returns artists for a user 1`] = `
-Object {
-  "me": Object {
-    "followsAndSaves": Object {
-      "artistsConnection": Object {
-        "edges": Array [
-          Object {
-            "node": Object {
-              "artist": Object {
+{
+  "me": {
+    "followsAndSaves": {
+      "artistsConnection": {
+        "edges": [
+          {
+            "node": {
+              "artist": {
                 "name": "Bradley Theodore",
                 "slug": "bradley-theodore",
               },

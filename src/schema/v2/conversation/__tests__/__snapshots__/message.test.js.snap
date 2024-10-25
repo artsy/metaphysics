@@ -1,32 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Me Conversation Message handles null message bodies 1`] = `
-Object {
-  "from": Object {
+{
+  "from": {
     "email": "collector@example.com",
   },
   "initialMessage": "Loved some of the works at your fair booth!",
   "internalID": "420",
-  "messages": Object {
-    "edges": Array [],
+  "messages": {
+    "edges": [],
   },
 }
 `;
 
 exports[`Me Conversation Message returns proper is_from_user 1`] = `
-Object {
-  "conversation": Object {
-    "from": Object {
+{
+  "conversation": {
+    "from": {
       "email": "collector@example.com",
     },
     "initialMessage": "Loved some of the works at your fair booth!",
     "internalID": "420",
-    "messages": Object {
-      "edges": Array [
-        Object {
-          "node": Object {
+    "messages": {
+      "edges": [
+        {
+          "node": {
             "body": "Loved some of the works at your fair booth!",
-            "from": Object {
+            "from": {
               "email": "fancy_german_person@posteo.de",
               "name": "Percy Z",
             },
@@ -34,10 +34,10 @@ Object {
             "isFromUser": true,
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "body": "I'm a cat oh yea!",
-            "from": Object {
+            "from": {
               "email": "fancy_german_person@posteo.de",
               "name": "Percy Z",
             },
@@ -52,42 +52,42 @@ Object {
 `;
 
 exports[`Me Conversation Message returns sanitized messages 1`] = `
-Object {
-  "conversation": Object {
-    "from": Object {
+{
+  "conversation": {
+    "from": {
       "email": "collector@example.com",
     },
     "initialMessage": "Loved some of the works at your fair booth!",
     "internalID": "420",
-    "messagesConnection": Object {
-      "edges": Array [
-        Object {
-          "node": Object {
+    "messagesConnection": {
+      "edges": [
+        {
+          "node": {
             "body": "Loved some of the works at your fair booth!",
-            "cc": Array [],
-            "from": Object {
+            "cc": [],
+            "from": {
               "email": "fancy_german_person@posteo.de",
               "name": "Percy Z",
             },
             "internalID": "222",
             "isFirstMessage": true,
-            "to": Array [],
+            "to": [],
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "body": "I'm a cat oh yea!",
-            "cc": Array [
-              "\\"Another Recipient\\" <another_recipient_in_cc@cat.com>",
+            "cc": [
+              ""Another Recipient" <another_recipient_in_cc@cat.com>",
             ],
-            "from": Object {
+            "from": {
               "email": "fancy_german_person@posteo.de",
               "name": "Percy Z",
             },
             "internalID": "222",
             "isFirstMessage": false,
-            "to": Array [
-              "\\"Recipient Name\\" <recipient@cat.com>",
+            "to": [
+              ""Recipient Name" <recipient@cat.com>",
             ],
           },
         },

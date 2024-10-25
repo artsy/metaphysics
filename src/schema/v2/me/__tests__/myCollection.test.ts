@@ -123,17 +123,17 @@ describe("me.myCollection", () => {
       const data = await runAuthenticatedQuery(query, context)
 
       expect(data.me.myCollectionConnection.edges).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "node": Object {
-              "marketPriceInsights": Object {
+        [
+          {
+            "node": {
+              "marketPriceInsights": {
                 "lastAuctionResultDate": "2023-06-15T00:00:00Z",
               },
             },
           },
-          Object {
-            "node": Object {
-              "marketPriceInsights": Object {
+          {
+            "node": {
+              "marketPriceInsights": {
                 "lastAuctionResultDate": "2022-06-15T00:00:00Z",
               },
             },
@@ -444,18 +444,18 @@ describe("me.myCollection", () => {
     const data = await runAuthenticatedQuery(query, context)
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "me": Object {
-          "myCollectionConnection": Object {
-            "edges": Array [
-              Object {
-                "node": Object {
-                  "artist": Object {
+      {
+        "me": {
+          "myCollectionConnection": {
+            "edges": [
+              {
+                "node": {
+                  "artist": {
                     "internalID": "artist-id",
                   },
                   "category": "Painting",
                   "internalID": "artwork_id_with_market_price_insights",
-                  "marketPriceInsights": Object {
+                  "marketPriceInsights": {
                     "annualValueSoldDisplayText": "$22M",
                     "averageSalePriceDisplayText": "US$2,176,421",
                     "demandRank": 0.64,

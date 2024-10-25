@@ -49,22 +49,22 @@ describe("Me", () => {
           })
 
           expect(showsConnection).toMatchInlineSnapshot(`
-          Object {
-            "edges": Array [
-              Object {
-                "node": Object {
-                  "name": "Design for a Garden",
+            {
+              "edges": [
+                {
+                  "node": {
+                    "name": "Design for a Garden",
+                  },
                 },
-              },
-              Object {
-                "node": Object {
-                  "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                {
+                  "node": {
+                    "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                  },
                 },
-              },
-            ],
-            "totalCount": 5084,
-          }
-        `)
+              ],
+              "totalCount": 5084,
+            }
+          `)
         })
       })
 
@@ -118,22 +118,22 @@ describe("Me", () => {
           })
 
           expect(showsConnection).toMatchInlineSnapshot(`
-          Object {
-            "edges": Array [
-              Object {
-                "node": Object {
-                  "name": "Design for a Garden",
-                },
-              },
-              Object {
-                "node": Object {
-                  "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
-                },
-              },
-            ],
-            "totalCount": 5084,
-          }
-        `)
+                      Object {
+                        "edges": Array [
+                          Object {
+                            "node": Object {
+                              "name": "Design for a Garden",
+                            },
+                          },
+                          Object {
+                            "node": Object {
+                              "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                            },
+                          },
+                        ],
+                        "totalCount": 5084,
+                      }
+                  `)
         })
       })
 
@@ -190,22 +190,22 @@ describe("Me", () => {
           })
 
           expect(showsConnection).toMatchInlineSnapshot(`
-          Object {
-            "edges": Array [
-              Object {
-                "node": Object {
-                  "name": "Design for a Garden",
-                },
-              },
-              Object {
-                "node": Object {
-                  "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
-                },
-              },
-            ],
-            "totalCount": 5084,
-          }
-        `)
+                      Object {
+                        "edges": Array [
+                          Object {
+                            "node": Object {
+                              "name": "Design for a Garden",
+                            },
+                          },
+                          Object {
+                            "node": Object {
+                              "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                            },
+                          },
+                        ],
+                        "totalCount": 5084,
+                      }
+                  `)
         })
       })
     })
@@ -247,22 +247,22 @@ describe("Me", () => {
         })
 
         expect(showsConnection).toMatchInlineSnapshot(`
-        Object {
-          "edges": Array [
-            Object {
-              "node": Object {
-                "name": "Design for a Garden",
+          {
+            "edges": [
+              {
+                "node": {
+                  "name": "Design for a Garden",
+                },
               },
-            },
-            Object {
-              "node": Object {
-                "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+              {
+                "node": {
+                  "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                },
               },
-            },
-          ],
-          "totalCount": 5084,
-        }
-      `)
+            ],
+            "totalCount": 5084,
+          }
+        `)
       })
     })
   })

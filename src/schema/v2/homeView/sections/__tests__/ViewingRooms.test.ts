@@ -32,11 +32,11 @@ describe("ViewingRooms", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionViewingRooms",
-        "component": Object {
-          "behaviors": Object {
-            "viewAll": Object {
+        "component": {
+          "behaviors": {
+            "viewAll": {
               "buttonText": null,
               "href": "/viewing-rooms",
               "ownerType": "viewingRooms",

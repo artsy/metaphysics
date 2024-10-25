@@ -208,24 +208,24 @@ describe("myCollectionCreateArtworkMutation", () => {
       const { artworkOrError } = data.myCollectionCreateArtwork
 
       expect(artworkOrError).toMatchInlineSnapshot(`
-        Object {
-          "artwork": Object {
+        {
+          "artwork": {
             "additionalInformation": "additional info",
             "artworkLocation": "Berlin, Germany",
-            "certificateOfAuthenticityDetails": Object {
+            "certificateOfAuthenticityDetails": {
               "coaByAuthenticatingBody": false,
               "coaByGallery": true,
             },
-            "collectorLocation": Object {
+            "collectorLocation": {
               "city": "Berlin",
               "country": "Germany",
             },
-            "condition": Object {
+            "condition": {
               "description": "Like a new!",
               "displayText": "Very good",
               "value": "VERY_GOOD",
             },
-            "conditionDescription": Object {
+            "conditionDescription": {
               "details": "Like a new!",
               "label": "Condition details",
             },
@@ -234,25 +234,25 @@ describe("myCollectionCreateArtworkMutation", () => {
             "framedMetric": "in",
             "framedWidth": "21",
             "hasCertificateOfAuthenticity": true,
-            "images": Array [
-              Object {
+            "images": [
+              {
                 "imageURL": null,
               },
             ],
             "isFramed": true,
             "medium": "Painting",
-            "pricePaid": Object {
+            "pricePaid": {
               "display": "$100",
             },
             "signature": "artist initials",
-            "signatureInfo": Object {
+            "signatureInfo": {
               "details": "Artist initials",
               "label": "Signature",
             },
           },
-          "artworkEdge": Object {
-            "node": Object {
-              "attributionClass": Object {
+          "artworkEdge": {
+            "node": {
+              "attributionClass": {
                 "name": "Open edition",
               },
               "medium": "Painting",
@@ -348,24 +348,24 @@ describe("myCollectionCreateArtworkMutation", () => {
       const { artworkOrError } = data.myCollectionCreateArtwork
 
       expect(artworkOrError).toMatchInlineSnapshot(`
-        Object {
-          "artwork": Object {
+        {
+          "artwork": {
             "additionalInformation": "additional info",
             "artworkLocation": "Berlin, Germany",
-            "certificateOfAuthenticityDetails": Object {
+            "certificateOfAuthenticityDetails": {
               "coaByAuthenticatingBody": false,
               "coaByGallery": true,
             },
-            "collectorLocation": Object {
+            "collectorLocation": {
               "city": "Berlin",
               "country": "Germany",
             },
-            "condition": Object {
+            "condition": {
               "description": "Like a new!",
               "displayText": "Very good",
               "value": "VERY_GOOD",
             },
-            "conditionDescription": Object {
+            "conditionDescription": {
               "details": "Like a new!",
               "label": "Condition details",
             },
@@ -374,25 +374,25 @@ describe("myCollectionCreateArtworkMutation", () => {
             "framedMetric": "in",
             "framedWidth": "21",
             "hasCertificateOfAuthenticity": true,
-            "images": Array [
-              Object {
+            "images": [
+              {
                 "imageURL": null,
               },
             ],
             "isFramed": true,
             "medium": "Painting",
-            "pricePaid": Object {
+            "pricePaid": {
               "display": "$100",
             },
             "signature": "artist initials",
-            "signatureInfo": Object {
+            "signatureInfo": {
               "details": "Artist initials",
               "label": "Signature",
             },
           },
-          "artworkEdge": Object {
-            "node": Object {
-              "attributionClass": Object {
+          "artworkEdge": {
+            "node": {
+              "attributionClass": {
                 "name": "Open edition",
               },
               "medium": "Painting",

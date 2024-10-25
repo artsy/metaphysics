@@ -41,12 +41,12 @@ describe("CuratorsPicksEmerging", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionArtworks",
-        "component": Object {
+        "component": {
           "backgroundImageURL": "image.jpg",
-          "behaviors": Object {
-            "viewAll": Object {
+          "behaviors": {
+            "viewAll": {
               "buttonText": "Browse All Artworks",
               "href": "/collection/curators-picks-emerging",
               "ownerType": "collection",
@@ -106,17 +106,17 @@ describe("CuratorsPicksEmerging", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
-        "artworksConnection": Object {
-          "edges": Array [
-            Object {
-              "node": Object {
+      {
+        "artworksConnection": {
+          "edges": [
+            {
+              "node": {
                 "id": "QXJ0d29yazpwZXJjeQ==",
                 "title": "Percy the Cat",
               },
             },
-            Object {
-              "node": Object {
+            {
+              "node": {
                 "id": "QXJ0d29yazptYXR0",
                 "title": "Matt the Person",
               },

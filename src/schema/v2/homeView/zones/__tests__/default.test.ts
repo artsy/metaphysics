@@ -19,7 +19,7 @@ describe("getSections", () => {
       const sectionIds = sections.map((section) => section.id)
 
       expect(sectionIds).toMatchInlineSnapshot(`
-        Array [
+        [
           "home-view-section-tasks",
           "home-view-section-latest-activity",
           "home-view-section-new-works-for-you",
@@ -59,7 +59,7 @@ describe("getSections", () => {
       const sectionIds = sections.map((section) => section.id)
 
       expect(sectionIds).toMatchInlineSnapshot(`
-        Array [
+        [
           "home-view-section-discover-something-new",
           "home-view-section-hero-units",
           "home-view-section-explore-by-category",

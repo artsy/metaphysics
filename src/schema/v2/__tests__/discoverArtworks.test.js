@@ -59,14 +59,14 @@ describe.skip("DiscoverArtworks", () => {
     const { discoverArtworks } = await runQuery(query, context)
 
     expect(discoverArtworks.edges).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "node": Object {
+      [
+        {
+          "node": {
             "title": "Percy Cat",
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "title": "Fiby Cat",
           },
         },

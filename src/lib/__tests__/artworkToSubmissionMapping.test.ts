@@ -37,9 +37,8 @@ describe("artworkToSubmissionMapping", () => {
 
     const submission = artworkToSubmissionMapping(artwork)
 
-    expect(submission).toMatchInlineSnapshot(
-      `
-      Object {
+    expect(submission).toMatchInlineSnapshot(`
+      {
         "artistID": "artist-id",
         "attributionClass": "ATTRIBUTION_CLASS",
         "category": "PHOTOGRAPHY",
@@ -60,8 +59,7 @@ describe("artworkToSubmissionMapping", () => {
         "width": "10",
         "year": "2020",
       }
-    `
-    )
+    `)
   })
 })
 

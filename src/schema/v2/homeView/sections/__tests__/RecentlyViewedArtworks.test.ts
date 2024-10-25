@@ -34,11 +34,11 @@ describe("RecentlyViewedArtworks", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionArtworks",
-        "component": Object {
-          "behaviors": Object {
-            "viewAll": Object {
+        "component": {
+          "behaviors": {
+            "viewAll": {
               "buttonText": "Browse All Artworks",
               "href": null,
               "ownerType": null,
