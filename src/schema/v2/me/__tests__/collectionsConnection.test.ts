@@ -32,9 +32,9 @@ describe("collectionsConnection", () => {
   beforeEach(() => {
     context = {
       meLoader: jest.fn(() => Promise.resolve(defaultMockUser)),
-      collectionsLoader: jest.fn(() =>
-        Promise.resolve(defaultMockGravityCollections)
-      ),
+      collectionsLoader: jest
+        .fn()
+        .mockResolvedValue(defaultMockGravityCollections),
     }
   })
 
@@ -94,19 +94,17 @@ describe("collectionsConnection with isArtworkSaved field", () => {
   beforeEach(() => {
     context = {
       meLoader: jest.fn(() => Promise.resolve(defaultMockUser)),
-      collectionsLoader: jest.fn(() =>
-        Promise.resolve(defaultMockGravityCollections)
-      ),
+      collectionsLoader: jest
+        .fn()
+        .mockResolvedValue(defaultMockGravityCollections),
     }
   })
 
   it("should return true if artwork is included in the collection", async () => {
-    context.collectionArtworksLoader = jest.fn(() => {
-      return Promise.resolve({
-        headers: {
-          "x-total-count": 1,
-        },
-      })
+    context.collectionArtworksLoader = jest.fn().mockResolvedValue({
+      headers: {
+        "x-total-count": 1,
+      },
     })
 
     const response = await runAuthenticatedQuery(query, context)
@@ -127,12 +125,10 @@ describe("collectionsConnection with isArtworkSaved field", () => {
   })
 
   it("should return false if artwork is included in the collection", async () => {
-    context.collectionArtworksLoader = jest.fn(() => {
-      return Promise.resolve({
-        headers: {
-          "x-total-count": 0,
-        },
-      })
+    context.collectionArtworksLoader = jest.fn().mockResolvedValue({
+      headers: {
+        "x-total-count": 0,
+      },
     })
     const response = await runAuthenticatedQuery(query, context)
 
@@ -209,9 +205,9 @@ describe("collectionsConnection with artworksConnection", () => {
     context = {
       meLoader: jest.fn(() => Promise.resolve(defaultMockUser)),
       collectionsLoader: jest.fn(() => Promise.resolve(mockGravityCollections)),
-      collectionArtworksLoader: jest.fn(() =>
-        Promise.resolve(mockGravityCollectionArtworks)
-      ),
+      collectionArtworksLoader: jest
+        .fn()
+        .mockResolvedValue(mockGravityCollectionArtworks),
     }
   })
 

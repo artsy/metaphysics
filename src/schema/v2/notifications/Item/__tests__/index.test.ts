@@ -19,24 +19,21 @@ describe("NotificationItem", () => {
   })
 
   describe('for "ArtworkPublishedNotificationItem"', () => {
-    const artistsLoader = jest.fn(() =>
-      Promise.resolve({
-        body: [
-          {
-            id: "artist-id",
-            name: "Catty Artist",
-          },
-        ],
-      })
-    )
-    const artworksLoader = jest.fn(() =>
-      Promise.resolve([
+    const artistsLoader = jest.fn().mockResolvedValue({
+      body: [
         {
-          id: "artwork-id",
-          title: "Catty Artwork",
+          id: "artist-id",
+          name: "Catty Artist",
         },
-      ])
-    )
+      ],
+    })
+
+    const artworksLoader = jest.fn().mockResolvedValue([
+      {
+        id: "artwork-id",
+        title: "Catty Artwork",
+      },
+    ])
 
     beforeEach(() => {
       meNotificationLoader = jest.fn(() =>
@@ -212,16 +209,14 @@ describe("NotificationItem", () => {
         id: "article-id",
       })
     )
-    const artistsLoader = jest.fn(() =>
-      Promise.resolve({
-        body: [
-          {
-            id: "artist-id",
-            name: "Catty Artist",
-          },
-        ],
-      })
-    )
+    const artistsLoader = jest.fn().mockResolvedValue({
+      body: [
+        {
+          id: "artist-id",
+          name: "Catty Artist",
+        },
+      ],
+    })
 
     beforeEach(() => {
       meNotificationLoader = jest.fn(() =>

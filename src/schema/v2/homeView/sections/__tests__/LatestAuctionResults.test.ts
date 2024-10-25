@@ -95,7 +95,7 @@ describe("LatestAuctionResults", () => {
       },
     }))
 
-    const followedArtistsLoader = jest.fn(async () => ({
+    const followedArtistsLoader = jest.fn().mockResolvedValue({
       headers: { "x-total-count": 2 },
       body: [
         {
@@ -113,7 +113,7 @@ describe("LatestAuctionResults", () => {
           },
         },
       ],
-    }))
+    })
 
     const context = {
       accessToken: "424242",

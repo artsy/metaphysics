@@ -20,7 +20,7 @@ describe("artworkOrEditionSet", () => {
     ],
   }
 
-  const artworkLoader = jest.fn(() => Promise.resolve(artwork))
+  const artworkLoader = jest.fn().mockResolvedValue(artwork)
 
   const context: Partial<ResolverContext> = {
     artworkLoader,

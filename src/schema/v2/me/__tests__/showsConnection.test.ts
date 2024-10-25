@@ -27,10 +27,10 @@ describe("Me", () => {
             }
           `
 
-          const meShowsLoader = jest.fn(async () => mockShowsResponse)
+          const meShowsLoader = jest.fn().mockResolvedValue(mockShowsResponse)
 
           const context = {
-            meLoader: () => Promise.resolve({}),
+            meLoader: jest.fn().mockResolvedValue({}),
             meShowsLoader,
           }
 
@@ -90,13 +90,13 @@ describe("Me", () => {
             }
           `
 
-          const meShowsLoader = jest.fn(async () => mockShowsResponse)
-          const requestLocationLoader = jest.fn(
-            async () => mockLocationResponse
-          )
+          const meShowsLoader = jest.fn().mockResolvedValue(mockShowsResponse)
+          const requestLocationLoader = jest
+            .fn()
+            .mockResolvedValue(mockLocationResponse)
 
           const context = {
-            meLoader: () => Promise.resolve({}),
+            meLoader: jest.fn().mockResolvedValue({}),
             meShowsLoader,
             requestLocationLoader,
           }
@@ -159,14 +159,14 @@ describe("Me", () => {
             }
           `
 
-          const meShowsLoader = jest.fn(async () => mockShowsResponse)
-          const requestLocationLoader = jest.fn(
-            async () => mockLocationResponse
-          )
+          const meShowsLoader = jest.fn().mockResolvedValue(mockShowsResponse)
+          const requestLocationLoader = jest
+            .fn()
+            .mockResolvedValue(mockLocationResponse)
 
           const context = {
             ipAddress: "context-ip",
-            meLoader: () => Promise.resolve({}),
+            meLoader: jest.fn().mockResolvedValue({}),
             meShowsLoader,
             requestLocationLoader,
           }
@@ -227,10 +227,10 @@ describe("Me", () => {
           }
         `
 
-        const meShowsLoader = jest.fn(async () => mockShowsResponse)
+        const meShowsLoader = jest.fn().mockResolvedValue(mockShowsResponse)
 
         const context = {
-          meLoader: () => Promise.resolve({}),
+          meLoader: jest.fn().mockResolvedValue({}),
           meShowsLoader,
         }
 

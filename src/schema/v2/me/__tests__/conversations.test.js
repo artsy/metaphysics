@@ -19,7 +19,7 @@ describe("Conversations", () => {
       `
 
       const context = {
-        meLoader: () => Promise.resolve({}),
+        meLoader: jest.fn().mockResolvedValue({}),
         conversationsLoader: () =>
           Promise.resolve({
             conversations: [],
@@ -85,7 +85,7 @@ describe("Conversations", () => {
       }
 
       const context = {
-        meLoader: () => Promise.resolve({}),
+        meLoader: jest.fn().mockResolvedValue({}),
         conversationsLoader: () =>
           Promise.resolve({
             total_unread_count: 1,
@@ -161,7 +161,7 @@ describe("Conversations", () => {
       }
 
       const context = {
-        meLoader: () => Promise.resolve({}),
+        meLoader: jest.fn().mockResolvedValue({}),
         conversationsLoader: () =>
           Promise.resolve({
             total_unread_count: 1,
@@ -235,7 +235,7 @@ describe("Conversations", () => {
       }
 
       const context = {
-        meLoader: () => Promise.resolve({}),
+        meLoader: jest.fn().mockResolvedValue({}),
         conversationsLoader: () =>
           Promise.resolve({
             total_unread_count: 1,

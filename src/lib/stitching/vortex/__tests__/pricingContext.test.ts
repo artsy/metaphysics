@@ -45,15 +45,13 @@ describe("PricingContext type", () => {
       ],
     })
   )
-  const artworkLoader = jest.fn(() => Promise.resolve(artwork))
-  const artistLoader = jest.fn(() => Promise.resolve(artist))
-  const salesLoader = jest.fn(() =>
-    Promise.resolve([
-      {
-        _id: "sale-1",
-      },
-    ])
-  )
+  const artworkLoader = jest.fn().mockResolvedValue(artwork)
+  const artistLoader = jest.fn().mockResolvedValue(artist)
+  const salesLoader = jest.fn().mockResolvedValue([
+    {
+      _id: "sale-1",
+    },
+  ])
   const context: Partial<
     Omit<ResolverContext, "authenticatedLoaders" | "unauthenticatedLoaders"> & {
       authenticatedLoaders: Partial<ResolverContext["authenticatedLoaders"]>

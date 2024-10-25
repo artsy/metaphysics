@@ -64,7 +64,7 @@ describe("Me", () => {
         },
       }))
 
-      const followedArtistsLoader = jest.fn(async () => ({
+      const followedArtistsLoader = jest.fn().mockResolvedValue({
         headers: { "x-total-count": 2 },
         body: [
           {
@@ -82,10 +82,10 @@ describe("Me", () => {
             },
           },
         ],
-      }))
+      })
 
       const context = {
-        meLoader: () => Promise.resolve({}),
+        meLoader: jest.fn().mockResolvedValue({}),
         followedArtistsLoader,
         auctionLotsLoader,
       }

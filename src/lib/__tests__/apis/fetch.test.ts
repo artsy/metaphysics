@@ -1,6 +1,6 @@
 jest.mock("request", () => jest.fn())
-import request, { Request } from "request"
-const mockRequest = (request as any) as jest.Mock<Request>
+import request from "request"
+const mockRequest = (request as any) as jest.Mock
 
 import fetch from "../../apis/fetch"
 import { constructUrlAndParams } from "../../apis/fetch"

@@ -3,7 +3,11 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
 
 describe("me.myCollection", () => {
-  const marketPriceInsightsBatchLoader = jest.fn(async () => mockVortexResponse)
+  const marketPriceInsightsBatchLoader = jest.fn()
+
+  beforeEach(() => {
+    marketPriceInsightsBatchLoader.mockResolvedValue(mockVortexResponse)
+  })
 
   it("returns artworks for a collection and passes params correctly", async () => {
     const query = gql`
@@ -106,18 +110,18 @@ describe("me.myCollection", () => {
       `
 
       const context: Partial<ResolverContext> = {
-        meLoader: () =>
-          Promise.resolve({
-            id: "some-user-id",
-          }),
-
-        meMyCollectionArtworksLoader: async () =>
-          mockCollectionArtworksResponse,
-        marketPriceInsightsBatchLoader: jest.fn(async () => mockVortexResponse),
-        artistLoader: () =>
-          Promise.resolve({
-            _id: "artist-id",
-          }),
+        meLoader: jest.fn().mockResolvedValue({
+          id: "some-user-id",
+        }),
+        meMyCollectionArtworksLoader: jest
+          .fn()
+          .mockResolvedValue(mockCollectionArtworksResponse),
+        marketPriceInsightsBatchLoader: jest
+          .fn()
+          .mockResolvedValue(mockVortexResponse),
+        artistLoader: jest.fn().mockResolvedValue({
+          _id: "artist-id",
+        }),
       }
 
       const data = await runAuthenticatedQuery(query, context)
@@ -158,9 +162,9 @@ describe("me.myCollection", () => {
       }
     `
 
-    const mockMeMyCollectionArtworksLoader = jest.fn(() => {
-      return mockCollectionArtworksResponse
-    })
+    const mockMeMyCollectionArtworksLoader = jest
+      .fn()
+      .mockResolvedValue(mockCollectionArtworksResponse)
 
     const context: Partial<ResolverContext> = {
       meLoader: () =>
@@ -169,7 +173,9 @@ describe("me.myCollection", () => {
         }),
 
       meMyCollectionArtworksLoader: mockMeMyCollectionArtworksLoader,
-      marketPriceInsightsBatchLoader: jest.fn(async () => mockVortexResponse),
+      marketPriceInsightsBatchLoader: jest
+        .fn()
+        .mockResolvedValue(mockVortexResponse),
       artistLoader: () =>
         Promise.resolve({
           _id: "artist-id",

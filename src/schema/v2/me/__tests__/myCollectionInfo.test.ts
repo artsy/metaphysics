@@ -147,7 +147,7 @@ describe("me.myCollectionInfo", () => {
           }
         }
       `
-      const artistCareerHighlightsLoader = jest.fn(() => Promise.resolve(null))
+      const artistCareerHighlightsLoader = jest.fn().mockResolvedValue(null)
 
       const context: Partial<ResolverContext> = {
         collectionLoader: async () => ({}),

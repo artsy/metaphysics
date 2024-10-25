@@ -19,7 +19,9 @@ describe("requestLocation", () => {
         }
       `
 
-      const requestLocationLoader = jest.fn(async () => locationResponse)
+      const requestLocationLoader = jest
+        .fn()
+        .mockResolvedValue(locationResponse)
 
       const context = {
         requestLocationLoader,
@@ -62,7 +64,9 @@ describe("requestLocation", () => {
         }
       `
 
-      const requestLocationLoader = jest.fn(async () => locationResponse)
+      const requestLocationLoader = jest
+        .fn()
+        .mockResolvedValue(locationResponse)
 
       const context = {
         requestLocationLoader,

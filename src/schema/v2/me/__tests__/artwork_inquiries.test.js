@@ -49,7 +49,7 @@ describe("Me", () => {
       }
 
       const context = {
-        meLoader: () => Promise.resolve({}),
+        meLoader: jest.fn().mockResolvedValue({}),
         inquiryRequestsLoader: () =>
           Promise.resolve({
             headers: { "x-total-count": 3 },

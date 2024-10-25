@@ -27,10 +27,10 @@ describe("Me", () => {
         }
       `
 
-      const meLoader = jest.fn(() => ({
+      const meLoader = jest.fn().mockResolvedValue({
         name: "Long John",
-      }))
-      const meUserInterestsLoader = jest.fn(async () => ({
+      })
+      const meUserInterestsLoader = jest.fn().mockResolvedValue({
         headers: { "x-total-count": 30 },
         body: [
           {
@@ -52,7 +52,7 @@ describe("Me", () => {
             id: "user-interest-id-2",
           },
         ],
-      }))
+      })
 
       const context = {
         meLoader,
@@ -123,10 +123,10 @@ describe("Me", () => {
         }
       `
 
-      const meLoader = jest.fn(() => ({
+      const meLoader = jest.fn().mockResolvedValue({
         name: "Long John",
-      }))
-      const meUserInterestsLoader = jest.fn(async () => ({
+      })
+      const meUserInterestsLoader = jest.fn().mockResolvedValue({
         headers: { "x-total-count": 30 },
         body: [
           {
@@ -139,7 +139,7 @@ describe("Me", () => {
             id: "user-interest-id-1",
           },
         ],
-      }))
+      })
 
       const context = {
         meLoader,

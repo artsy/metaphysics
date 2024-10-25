@@ -38,7 +38,7 @@ describe("deleteUserInterestsMutation", () => {
   const mockMeDeleteUserInterestLoader = jest.fn()
 
   const context = {
-    meLoader: jest.fn(() => ({ name: "John Doe" })),
+    meLoader: jest.fn().mockResolvedValue({ name: "John Doe" }),
     meDeleteUserInterestLoader: mockMeDeleteUserInterestLoader,
   }
 

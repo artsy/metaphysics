@@ -40,7 +40,7 @@ jest.mock("lib/sponsoredContent/data.json", () => {
   }
 })
 
-const allViaLoader = _allViaLoader as jest.Mock<typeof _allViaLoader>
+const allViaLoader = _allViaLoader as jest.Mock
 
 describe("City", () => {
   afterEach(() => {
@@ -481,12 +481,10 @@ describe("City", () => {
     it("includes shows and stub shows from a hard-coded list", async () => {
       const mockShows = [{ id: "sponsored-show" }]
 
-      const mockShowsLoader = jest.fn(() =>
-        Promise.resolve({
-          headers: { "x-total-count": "1" },
-          body: mockShows,
-        })
-      )
+      const mockShowsLoader = jest.fn().mockResolvedValue({
+        headers: { "x-total-count": "1" },
+        body: mockShows,
+      })
 
       const context = {
         ...MOCK_CONTEXT,
@@ -527,7 +525,7 @@ describe("City", () => {
 
     it("includes featured shows", async () => {
       const mockShows = [{ id: "featured-show" }]
-      const mockShowsLoader = jest.fn(() => Promise.resolve(mockShows))
+      const mockShowsLoader = jest.fn().mockResolvedValue(mockShows)
       const context = {
         ...MOCK_CONTEXT,
         showsLoader: mockShowsLoader,
