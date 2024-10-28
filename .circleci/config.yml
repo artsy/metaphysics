@@ -82,10 +82,26 @@ jobs:
     executor:
       name: node/default
       tag: "18.15"
+    parallelism: 7
     steps:
       - checkout
       - setup_hokusai
       - yarn_install
+      - run: |
+          REPOS=("eigen" "energy" "prediction" "force" "forque" "pulse" "volt")
+          TOTAL_NODES=${CIRCLE_NODE_TOTAL:-1}
+          NODE_INDEX=${CIRCLE_NODE_INDEX:-0}
+
+          # Calculate the subset of repos for this node
+          CHUNK_SIZE=$(( (${#REPOS[@]} + TOTAL_NODES - 1) / TOTAL_NODES ))
+          START_INDEX=$(( NODE_INDEX * CHUNK_SIZE ))
+          END_INDEX=$(( START_INDEX + CHUNK_SIZE ))
+
+          # Convert subset to JSON for easy parsing in Node.js
+          REPO_SUBSET=$(printf "%s\n" "${REPOS[@]:$START_INDEX:$CHUNK_SIZE}" | jq -cR '[inputs | {"repo": .}]')
+
+          echo "Repos for this node: $REPO_SUBSET"
+          echo "export REPOS_TO_UPDATE='$REPO_SUBSET'" >> $BASH_ENV
       - run:
           name: push schema changes
           command: node scripts/push-schema-changes.js
@@ -121,10 +137,10 @@ workflows:
             - test
 
       - push-schema-changes:
-          <<: *only_main
+          # <<: *only_main
           context: hokusai
-          requires:
-            - deploy-staging
+          # requires:
+          # - deploy-staging
 
       - node/run:
           <<: *only_main

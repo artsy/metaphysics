@@ -5,6 +5,7 @@ const { execSync } = require("child_process")
 const path = require("path")
 const { buildSchema, getIntrospectionQuery, graphqlSync } = require("graphql")
 const { readFileSync, writeFileSync } = require("fs")
+const e = require("express")
 
 const introspectionQuery = getIntrospectionQuery()
 
@@ -23,6 +24,9 @@ async function updateSchemaFile({
   destinations = ["data/schema.graphql"],
   body = defaultBody,
 }) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 1000)
+  })
   await updateRepo({
     repo: {
       owner: "artsy",
@@ -68,30 +72,29 @@ async function updateSchemaFile({
   })
 }
 
+const supportedRepos = {
+  eigen: { body: `${defaultBody} #nochangelog` },
+  energy: {},
+  prediction: {},
+  force: {},
+  forque: {},
+  pulse: { destinations: ["vendor/graphql/schema/metaphysics.json"] },
+  volt: {
+    destinations: [
+      "vendor/graphql/schema/schema.graphql",
+      "vendor/graphql/schema/metaphysics.json",
+    ],
+  },
+}
+
 async function main() {
   try {
     console.log("∙ Dumping staging schema")
 
     execSync("yarn dump:staging")
 
-    const reposToUpdate = [
-      { repo: "eigen", body: `${defaultBody} #nochangelog` },
-      { repo: "energy" },
-      { repo: "prediction" },
-      { repo: "force" },
-      { repo: "forque" },
-      {
-        repo: "pulse",
-        destinations: ["vendor/graphql/schema/metaphysics.json"],
-      },
-      {
-        repo: "volt",
-        destinations: [
-          "vendor/graphql/schema/schema.graphql",
-          "vendor/graphql/schema/metaphysics.json",
-        ],
-      },
-    ]
+    // Get repos from environment variables on the CI
+    const reposToUpdate = JSON.parse(process.env.REPOS_TO_PUSH_SCHEMA || "[]")
 
     const updatePromises = reposToUpdate.map((repo) => updateSchemaFile(repo))
 
