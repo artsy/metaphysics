@@ -1,6 +1,6 @@
 import { GraphQLFieldConfig, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { FeatureFlagType, FeatureFlags } from "./featureFlags"
+import { AdminFeatureFlagType, FeatureFlags } from "./featureFlags"
 import { base64 } from "lib/base64"
 
 export const AdminField: GraphQLFieldConfig<void, ResolverContext> = {
@@ -9,7 +9,7 @@ export const AdminField: GraphQLFieldConfig<void, ResolverContext> = {
     fields: {
       featureFlags: FeatureFlags,
       featureFlag: {
-        type: FeatureFlagType,
+        type: AdminFeatureFlagType,
         args: {
           id: {
             type: GraphQLString,

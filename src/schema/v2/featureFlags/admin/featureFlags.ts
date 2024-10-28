@@ -14,68 +14,70 @@ import { date } from "../../fields/date"
 import { base64 } from "lib/base64"
 import { GlobalIDField } from "../../object_identification"
 
-export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
-  name: "FeatureFlag",
-  fields: {
-    id: GlobalIDField,
-    description: {
-      type: GraphQLString,
-    },
-    environments: {
-      type: new GraphQLList(
-        new GraphQLObjectType({
-          name: "FeatureFlagEnvironments",
-          fields: {
-            name: {
-              type: new GraphQLNonNull(GraphQLString),
+export const AdminFeatureFlagType = new GraphQLObjectType<any, ResolverContext>(
+  {
+    name: "FeatureFlag",
+    fields: {
+      id: GlobalIDField,
+      description: {
+        type: GraphQLString,
+      },
+      environments: {
+        type: new GraphQLList(
+          new GraphQLObjectType({
+            name: "FeatureFlagEnvironments",
+            fields: {
+              name: {
+                type: new GraphQLNonNull(GraphQLString),
+              },
+              enabled: {
+                type: new GraphQLNonNull(GraphQLBoolean),
+              },
             },
-            enabled: {
-              type: new GraphQLNonNull(GraphQLBoolean),
+          })
+        ),
+      },
+      type: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      variants: {
+        type: new GraphQLList(
+          new GraphQLObjectType<any, ResolverContext>({
+            name: "FeatureFlagVariantType",
+            fields: {
+              name: {
+                type: GraphQLString,
+              },
+              weightType: {
+                type: GraphQLString,
+              },
+              weight: {
+                type: GraphQLInt,
+              },
+              stickiness: {
+                type: GraphQLString,
+              },
             },
-          },
-        })
-      ),
+          })
+        ),
+      },
+      createdAt: date(),
+      name: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      stale: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+      },
+      impressionData: {
+        type: new GraphQLNonNull(GraphQLBoolean),
+      },
+      lastSeenAt: date(),
+      project: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
     },
-    type: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    variants: {
-      type: new GraphQLList(
-        new GraphQLObjectType<any, ResolverContext>({
-          name: "FeatureFlagVariantType",
-          fields: {
-            name: {
-              type: GraphQLString,
-            },
-            weightType: {
-              type: GraphQLString,
-            },
-            weight: {
-              type: GraphQLInt,
-            },
-            stickiness: {
-              type: GraphQLString,
-            },
-          },
-        })
-      ),
-    },
-    createdAt: date(),
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    stale: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-    },
-    impressionData: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-    },
-    lastSeenAt: date(),
-    project: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-  },
-})
+  }
+)
 
 const FeatureFlagEnums = new GraphQLEnumType({
   name: "FeatureFlagsSortBy",
@@ -90,7 +92,7 @@ const FeatureFlagEnums = new GraphQLEnumType({
 })
 
 export const FeatureFlags: GraphQLFieldConfig<void, ResolverContext> = {
-  type: new GraphQLList(FeatureFlagType),
+  type: new GraphQLList(AdminFeatureFlagType),
   description: "A list of feature flags",
   args: {
     sortBy: {
