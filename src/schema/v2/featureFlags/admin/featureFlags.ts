@@ -10,9 +10,9 @@ import {
 } from "graphql"
 import { merge, sortBy } from "lodash"
 import { ResolverContext } from "types/graphql"
-import { date } from "../fields/date"
+import { date } from "../../fields/date"
 import { base64 } from "lib/base64"
-import { GlobalIDField } from "../object_identification"
+import { GlobalIDField } from "../../object_identification"
 
 export const FeatureFlagType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeatureFlag",
