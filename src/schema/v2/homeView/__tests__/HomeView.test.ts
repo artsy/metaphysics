@@ -519,37 +519,37 @@ describe("homeView", () => {
       const { homeView } = await runQuery(query, context)
 
       expect(homeView.experiments).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "description": "A very exciting experiment",
             "enabled": "true",
             "name": "exciting-experiment-1",
             "variant": "control",
-            "variants": Array [
-              Object {
+            "variants": [
+              {
                 "name": "control",
                 "stickiness": "default",
                 "weight": 800,
               },
-              Object {
+              {
                 "name": "experiment",
                 "stickiness": "default",
                 "weight": 200,
               },
             ],
           },
-          Object {
+          {
             "description": "A very exciting experiment",
             "enabled": "true",
             "name": "exciting-experiment-2",
             "variant": "control",
-            "variants": Array [
-              Object {
+            "variants": [
+              {
                 "name": "control",
                 "stickiness": "default",
                 "weight": 800,
               },
-              Object {
+              {
                 "name": "experiment",
                 "stickiness": "default",
                 "weight": 200,
@@ -589,8 +589,8 @@ describe("homeView", () => {
       const { homeView } = await runQuery(query, context)
 
       expect(homeView.experiments).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "enabled": "true",
             "name": "running-experiment",
           },
