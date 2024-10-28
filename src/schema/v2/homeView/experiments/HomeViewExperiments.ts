@@ -6,7 +6,7 @@ import {
 } from "lib/featureFlags"
 import { ResolverContext } from "types/graphql"
 import { CURRENTLY_RUNNING_EXPERIMENTS } from "./experiments"
-import { UnleashFeatureFlag } from "schema/v2/unleashFeatureFlag"
+import { UnleashFeatureFlag } from "schema/v2/featureFlags/client/featureFlags"
 import { compact } from "lodash"
 
 export const HomeViewExperiments: GraphQLFieldConfig<any, ResolverContext> = {
