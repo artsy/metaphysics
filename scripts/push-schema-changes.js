@@ -24,12 +24,6 @@ async function updateSchemaFile({
   destinations = ["data/schema.graphql"],
   body = defaultBody,
 }) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log(`∙ Updating schema for ${repo}`)
-      resolve(true)
-    }, 1000)
-  })
   await updateRepo({
     repo: {
       owner: "artsy",
@@ -99,9 +93,13 @@ async function main() {
     // Get repos from environment variables on the CI
     const reposToUpdate = JSON.parse(process.env.REPOS_TO_PUSH_SCHEMA || "[]")
 
-    const updatePromises = reposToUpdate.map((repo) =>
-      updateSchemaFile({ repo: repo, ...supportedRepos[repo] })
-    )
+    const updatePromises = reposToUpdate.map((repo) => {
+      if (supportedRepos[repo]) {
+        updateSchemaFile({ repo: repo, ...supportedRepos[repo] })
+      } else {
+        console.error(`Repo ${repo} is not supported`)
+      }
+    })
 
     await Promise.all(updatePromises)
   } catch (error) {

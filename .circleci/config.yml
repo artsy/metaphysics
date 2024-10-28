@@ -82,7 +82,7 @@ jobs:
     executor:
       name: node/default
       tag: "18.15"
-    parallelism: 7
+    parallelism: 4
     steps:
       - checkout
       - setup_hokusai
@@ -103,11 +103,6 @@ jobs:
           # Convert REPO_SUBSET array to JSON for Node.js
           REPO_JSON=$(printf '%s\n' "${REPO_SUBSET[@]}" | jq -Rc '[inputs | {"repo": .}]')
 
-          echo "Total nodes: $TOTAL_NODES"
-          echo "Node index: $NODE_INDEX"
-          echo "Chunk size: $CHUNK_SIZE"
-          echo "Start index: $START_INDEX"
-          echo "End index: $END_INDEX"
           echo "Repos for this node: $REPO_SUBSET"
           echo "export REPOS_TO_UPDATE='$REPO_JSON'" >> $BASH_ENV
       - run:
