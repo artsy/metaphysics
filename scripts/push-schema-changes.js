@@ -15,7 +15,7 @@ const defaultBody =
  * updates the schema file on repo
  * @param {Object} input
  * @param {string} input.repo - repo: name of the artsy repo to update
- * @param {string} [input.body] - body: The PR body descrption
+ * @param {string} [input.body] - body: The PR body description
  * @param {Array<string>} [input.destinations] - destinations: Paths to schema files in target repo
  */
 async function updateSchemaFile({
@@ -23,6 +23,7 @@ async function updateSchemaFile({
   destinations = ["data/schema.graphql"],
   body = defaultBody,
 }) {
+  console.log(`Updating schema for ${repo}`)
   await updateRepo({
     repo: {
       owner: "artsy",
@@ -68,32 +69,64 @@ async function updateSchemaFile({
   })
 }
 
+const supportedRepos = {
+  eigen: { body: `${defaultBody} #nochangelog` },
+  energy: {},
+  prediction: {},
+  force: {},
+  forque: {},
+  pulse: { destinations: ["vendor/graphql/schema/metaphysics.json"] },
+  volt: {
+    destinations: [
+      "vendor/graphql/schema/schema.graphql",
+      "vendor/graphql/schema/metaphysics.json",
+    ],
+  },
+}
+
+/**
+ * Splits the supported repositories into chunks for parallel processing on the CI
+ * @param {Array<string>} repos
+ * @param {number} totalNodes
+ * @param {number} nodeIndex
+ * @returns {Array<string>} subset of repos assigned to the current node
+ */
+function getRepoSubset(repos, totalNodes, nodeIndex) {
+  if (totalNodes !== 1) {
+    return repos.slice(nodeIndex, nodeIndex + 1)
+  }
+
+  return repos
+}
+
 async function main() {
   try {
-    console.log("∙ Dumping staging schema")
-
     execSync("yarn dump:staging")
 
-    const reposToUpdate = [
-      { repo: "eigen", body: `${defaultBody} #nochangelog` },
-      { repo: "energy" },
-      { repo: "prediction" },
-      { repo: "force" },
-      { repo: "forque" },
-      {
-        repo: "pulse",
-        destinations: ["vendor/graphql/schema/metaphysics.json"],
-      },
-      {
-        repo: "volt",
-        destinations: [
-          "vendor/graphql/schema/schema.graphql",
-          "vendor/graphql/schema/metaphysics.json",
-        ],
-      },
-    ]
+    const repos = Object.keys(supportedRepos)
 
-    const updatePromises = reposToUpdate.map((repo) => updateSchemaFile(repo))
+    // Read total_nodes and node_index from command line arguments
+    const [totalNodesArg, nodeIndexArg] = process.argv.slice(2)
+    const totalNodes = parseInt(totalNodesArg, 10) || 1
+    const nodeIndex = parseInt(nodeIndexArg, 10) || 0
+
+    if (totalNodes > 1 && totalNodes !== repos.length) {
+      throw new Error(
+        `Number of nodes should be the number of supported repos or 1, received: ${totalNodes}`
+      )
+    }
+
+    const reposToUpdate = getRepoSubset(repos, totalNodes, nodeIndex)
+
+    console.log(`Dumping staging schema for the repos ${reposToUpdate}`)
+
+    const updatePromises = reposToUpdate.map((repo) => {
+      if (supportedRepos[repo]) {
+        updateSchemaFile({ repo: repo, ...supportedRepos[repo] })
+      } else {
+        console.error(`Repo ${repo} is not supported`)
+      }
+    })
 
     await Promise.all(updatePromises)
   } catch (error) {
