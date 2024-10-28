@@ -4,16 +4,15 @@ import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_wi
 
 import cache from "lib/cache"
 import { StaticPathLoader } from "../api/loader_interface"
-import { API } from "../api"
 import { LoaderFactory } from "../index"
 
 describe("API loaders", () => {
-  let api: jest.Mock<API>
+  let api: jest.Mock
   let apiLoader: LoaderFactory
   let loader: StaticPathLoader<any>
 
   beforeEach(() => {
-    api = jest.fn<API>((path, accessToken, options) =>
+    api = jest.fn((path, accessToken, options) =>
       Promise.resolve({ body: { path, accessToken, options } })
     )
   })

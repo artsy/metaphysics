@@ -32,7 +32,7 @@ describe("HeroUnits", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
+      {
         "__typename": "HomeViewSectionHeroUnits",
         "component": null,
         "contextModule": "heroUnitsRail",
@@ -80,16 +80,16 @@ describe("HeroUnits", () => {
     const { homeView } = await runQuery(query, context)
 
     expect(homeView.section).toMatchInlineSnapshot(`
-      Object {
-        "heroUnitsConnection": Object {
-          "edges": Array [
-            Object {
-              "node": Object {
+      {
+        "heroUnitsConnection": {
+          "edges": [
+            {
+              "node": {
                 "title": "Foundations Summer 2024",
               },
             },
-            Object {
-              "node": Object {
+            {
+              "node": {
                 "title": "Foundations Prize Finalists",
               },
             },

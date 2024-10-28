@@ -46,9 +46,9 @@ describe("FeaturedFairs", () => {
       const { homeView } = await runQuery(query, context)
 
       expect(homeView.section).toMatchInlineSnapshot(`
-        Object {
+        {
           "__typename": "HomeViewSectionFairs",
-          "component": Object {
+          "component": {
             "behaviors": null,
             "description": "See works in top art fairs",
             "title": "Featured Fairs",
@@ -103,16 +103,16 @@ describe("FeaturedFairs", () => {
       const { homeView } = await runQuery(query, context)
 
       expect(homeView.section).toMatchInlineSnapshot(`
-        Object {
-          "fairsConnection": Object {
-            "edges": Array [
-              Object {
-                "node": Object {
+        {
+          "fairsConnection": {
+            "edges": [
+              {
+                "node": {
                   "name": "Fair 1",
                 },
               },
-              Object {
-                "node": Object {
+              {
+                "node": {
                   "name": "Fair 2",
                 },
               },

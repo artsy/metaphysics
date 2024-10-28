@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   hokusai: artsy/hokusai@volatile
   horizon: artsy/release@volatile
-  node: circleci/node@5.3.0
+  node: circleci/node@6.3.0
   yarn: artsy/yarn@6.5.0
 
 not_staging_or_release: &not_staging_or_release
@@ -57,6 +57,18 @@ commands:
       - yarn/save_dependencies
 
 jobs:
+  test:
+    executor:
+      name: node/default
+      tag: "18.15"
+    parallelism: 6
+    steps:
+      - checkout
+      - yarn_install
+      - run:
+          name: Run Jest
+          command: |
+            yarn jest --ci --forceExit --logHeapUsage --runInBand --reporters=default --reporters=jest-junit --shard=$(expr $CIRCLE_NODE_INDEX + 1)/$CIRCLE_NODE_TOTAL
   ensure-schema-update:
     executor:
       name: node/default
@@ -81,12 +93,8 @@ jobs:
 workflows:
   default:
     jobs:
-      - node/test:
+      - test:
           <<: *not_staging_or_release
-          name: test-jest
-          pkg-manager: yarn
-          test-results-for: jest
-          version: "18.15"
 
       - node/run:
           <<: *not_staging_or_release
@@ -102,8 +110,6 @@ workflows:
       - hokusai/push:
           name: push-staging-image
           <<: *only_main
-          requires:
-            - test-jest
 
       - hokusai/deploy-staging:
           name: deploy-staging
@@ -111,6 +117,8 @@ workflows:
           project-name: metaphysics
           requires:
             - push-staging-image
+            - type-check
+            - test
 
       - push-schema-changes:
           <<: *only_main

@@ -239,28 +239,28 @@ describe("myCollectionUpdateArtworkMutation", () => {
       const { artworkOrError } = data.myCollectionUpdateArtwork
 
       expect(artworkOrError).toMatchInlineSnapshot(`
-        Object {
-          "artwork": Object {
+        {
+          "artwork": {
             "additionalInformation": "some additional info",
             "artworkLocation": "Berlin, Germany",
-            "attributionClass": Object {
+            "attributionClass": {
               "name": "Open edition",
             },
             "category": "some strange category",
-            "certificateOfAuthenticityDetails": Object {
+            "certificateOfAuthenticityDetails": {
               "coaByAuthenticatingBody": false,
               "coaByGallery": true,
             },
-            "collectorLocation": Object {
+            "collectorLocation": {
               "city": "Berlin",
               "country": "Germany",
             },
-            "condition": Object {
+            "condition": {
               "description": "Like a new!",
               "displayText": "Very good",
               "value": "VERY_GOOD",
             },
-            "conditionDescription": Object {
+            "conditionDescription": {
               "details": "Like a new!",
               "label": "Condition details",
             },
@@ -274,8 +274,8 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "framedWidth": "21",
             "hasCertificateOfAuthenticity": true,
             "height": "20",
-            "images": Array [
-              Object {
+            "images": [
+              {
                 "imageURL": null,
               },
             ],
@@ -283,20 +283,20 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "isFramed": true,
             "medium": "Updated",
             "metric": "in",
-            "pricePaid": Object {
+            "pricePaid": {
               "display": "$100",
             },
             "provenance": "Pat Hearn Gallery",
             "signature": "artist initials",
-            "signatureInfo": Object {
+            "signatureInfo": {
               "details": "Artist initials",
               "label": "Signature",
             },
             "title": "hey now",
             "width": "20",
           },
-          "artworkEdge": Object {
-            "node": Object {
+          "artworkEdge": {
+            "node": {
               "medium": "Updated",
             },
           },
@@ -316,28 +316,28 @@ describe("myCollectionUpdateArtworkMutation", () => {
       const { artworkOrError } = data.myCollectionUpdateArtwork
 
       expect(artworkOrError).toMatchInlineSnapshot(`
-        Object {
-          "artwork": Object {
+        {
+          "artwork": {
             "additionalInformation": "some additional info",
             "artworkLocation": "Berlin, Germany",
-            "attributionClass": Object {
+            "attributionClass": {
               "name": "Open edition",
             },
             "category": "some strange category",
-            "certificateOfAuthenticityDetails": Object {
+            "certificateOfAuthenticityDetails": {
               "coaByAuthenticatingBody": false,
               "coaByGallery": true,
             },
-            "collectorLocation": Object {
+            "collectorLocation": {
               "city": "Berlin",
               "country": "Germany",
             },
-            "condition": Object {
+            "condition": {
               "description": "Like a new!",
               "displayText": "Very good",
               "value": "VERY_GOOD",
             },
-            "conditionDescription": Object {
+            "conditionDescription": {
               "details": "Like a new!",
               "label": "Condition details",
             },
@@ -351,8 +351,8 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "framedWidth": "21",
             "hasCertificateOfAuthenticity": true,
             "height": "20",
-            "images": Array [
-              Object {
+            "images": [
+              {
                 "imageURL": null,
               },
             ],
@@ -360,20 +360,20 @@ describe("myCollectionUpdateArtworkMutation", () => {
             "isFramed": true,
             "medium": "Updated",
             "metric": "in",
-            "pricePaid": Object {
+            "pricePaid": {
               "display": "$100",
             },
             "provenance": "Pat Hearn Gallery",
             "signature": "artist initials",
-            "signatureInfo": Object {
+            "signatureInfo": {
               "details": "Artist initials",
               "label": "Signature",
             },
             "title": "hey now",
             "width": "20",
           },
-          "artworkEdge": Object {
-            "node": Object {
+          "artworkEdge": {
+            "node": {
               "medium": "Updated",
             },
           },

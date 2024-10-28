@@ -98,12 +98,10 @@ describe("isSavedArtwork field", () => {
   })
 
   it("should return true if artwork is included in the collection", async () => {
-    context.collectionArtworksLoader = jest.fn(() => {
-      return Promise.resolve({
-        headers: {
-          "x-total-count": 1,
-        },
-      })
+    context.collectionArtworksLoader = jest.fn().mockResolvedValue({
+      headers: {
+        "x-total-count": 1,
+      },
     })
 
     const response = await runAuthenticatedQuery(query, context)
@@ -118,12 +116,10 @@ describe("isSavedArtwork field", () => {
   })
 
   it("should return false if artwork is included in the collection", async () => {
-    context.collectionArtworksLoader = jest.fn(() => {
-      return Promise.resolve({
-        headers: {
-          "x-total-count": 0,
-        },
-      })
+    context.collectionArtworksLoader = jest.fn().mockResolvedValue({
+      headers: {
+        "x-total-count": 0,
+      },
     })
     const response = await runAuthenticatedQuery(query, context)
 
@@ -206,9 +202,9 @@ describe("artworksConnection", () => {
   }
 
   beforeEach(() => {
-    context.collectionArtworksLoader = jest.fn(() =>
-      Promise.resolve(mockGravityCollectionArtworks)
-    )
+    context.collectionArtworksLoader = jest
+      .fn()
+      .mockResolvedValue(mockGravityCollectionArtworks)
 
     query = gql`
       query {
