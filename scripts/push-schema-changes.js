@@ -23,10 +23,7 @@ async function updateSchemaFile({
   destinations = ["data/schema.graphql"],
   body = defaultBody,
 }) {
-  console.log(`∙ Updating schema for ${repo}`)
-  return new Promise((resolve) => {
-    setTimeout(resolve, 1000)
-  })
+  console.log(`Updating schema for ${repo}`)
   await updateRepo({
     repo: {
       owner: "artsy",
@@ -121,7 +118,7 @@ async function main() {
 
     const reposToUpdate = getRepoSubset(repos, totalNodes, nodeIndex)
 
-    console.log(`∙ Dumping staging schema for the repos ${reposToUpdate}`)
+    console.log(`Dumping staging schema for the repos ${reposToUpdate}`)
 
     const updatePromises = reposToUpdate.map((repo) => {
       if (supportedRepos[repo]) {
@@ -139,9 +136,3 @@ async function main() {
 }
 
 main()
-
-module.exports = {
-  updateSchemaFile,
-  supportedRepos,
-  getRepoSubset,
-}

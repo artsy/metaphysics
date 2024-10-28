@@ -124,10 +124,10 @@ workflows:
             - test
 
       - push-schema-changes:
-          # <<: *only_main
+          <<: *only_main
           context: hokusai
-          # requires:
-          # - deploy-staging
+          requires:
+            - deploy-staging
 
       - node/run:
           <<: *only_main
