@@ -82,7 +82,7 @@ jobs:
     executor:
       name: node/default
       tag: "18.15"
-    parallelism: 4
+    parallelism: 7
     steps:
       - checkout
       - setup_hokusai

@@ -115,7 +115,7 @@ async function main() {
 
     if (totalNodes > 1 && totalNodes !== repos.length) {
       throw new Error(
-        `Number of nodes should bethe number of supported repos or 1, received: ${totalNodes}`
+        `Number of nodes should be the number of supported repos or 1, received: ${totalNodes}`
       )
     }
 
