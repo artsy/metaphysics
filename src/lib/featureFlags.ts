@@ -15,6 +15,7 @@ const FEATURE_FLAGS_LIST = [
   "onyx_enable-home-view-section-featured-fairs",
   "diamond_home-view-marketing-collection-categories",
   "emerald_home-view-tasks-section",
+  "onyx_experiment_home_view_test",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
@@ -50,4 +51,29 @@ export function isFeatureFlagEnabled(
   }
 
   return unleashClient.isEnabled(flag, context)
+}
+
+export function getFeatureFlag(flag: FeatureFlag) {
+  if (!unleashClient) {
+    error(
+      `[featureFlags] Error retrieving ${flag} feature flag. Unleash client not initialized.`
+    )
+    return false
+  }
+
+  return unleashClient.getFeatureToggleDefinition(flag)
+}
+
+export function getExperimentVariant(
+  flag: FeatureFlag,
+  context: UnleashContext = {}
+) {
+  if (!unleashClient) {
+    error(
+      `[featureFlags] Error retrieving ${flag} feature flag. Unleash client not initialized.`
+    )
+    return false
+  }
+
+  return unleashClient.getVariant(flag, context)
 }
