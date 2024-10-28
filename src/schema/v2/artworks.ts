@@ -15,7 +15,7 @@ const Artworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
   description: "A list of Artworks",
   deprecationReason:
-    "This is only for use in resolving stitched queries, not for first-class client use.",
+    "This is only for use in resolving stitched queries, not for first-class client use!",
   args: pageable({
     ids: {
       type: new GraphQLList(GraphQLString),

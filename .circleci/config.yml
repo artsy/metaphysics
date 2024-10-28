@@ -82,13 +82,16 @@ jobs:
     executor:
       name: node/default
       tag: "18.15"
+    parallelism: 7
     steps:
       - checkout
       - setup_hokusai
       - yarn_install
       - run:
-          name: push schema changes
-          command: node scripts/push-schema-changes.js
+          name: Push schema changes
+          command: |
+            # Run the Node.js script, passing total_nodes and node_index as arguments
+            node scripts/push-schema-changes.js $CIRCLE_NODE_TOTAL $CIRCLE_NODE_INDEX
 
 workflows:
   default:
