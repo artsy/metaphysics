@@ -18,7 +18,7 @@ const defaultBody =
  * @param {string} [input.body] - body: The PR body description
  * @param {Array<string>} [input.destinations] - destinations: Paths to schema files in target repo
  */
-export async function updateSchemaFile({
+async function updateSchemaFile({
   repo,
   destinations = ["data/schema.graphql"],
   body = defaultBody,
@@ -94,7 +94,7 @@ const supportedRepos = {
  * @param {number} nodeIndex
  * @returns {Array<string>} subset of repos assigned to the current node
  */
-export function getRepoSubset(repos, totalNodes, nodeIndex) {
+function getRepoSubset(repos, totalNodes, nodeIndex) {
   if (totalNodes !== 1) {
     return repos.slice(nodeIndex, nodeIndex + 1)
   }
@@ -102,7 +102,7 @@ export function getRepoSubset(repos, totalNodes, nodeIndex) {
   return repos
 }
 
-export async function main() {
+async function main() {
   try {
     execSync("yarn dump:staging")
 
@@ -139,3 +139,9 @@ export async function main() {
 }
 
 main()
+
+module.exports = {
+  updateSchemaFile,
+  supportedRepos,
+  getRepoSubset,
+}
