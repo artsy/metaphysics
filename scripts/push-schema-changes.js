@@ -99,7 +99,9 @@ async function main() {
     // Get repos from environment variables on the CI
     const reposToUpdate = JSON.parse(process.env.REPOS_TO_PUSH_SCHEMA || "[]")
 
-    const updatePromises = reposToUpdate.map((repo) => updateSchemaFile(repo))
+    const updatePromises = reposToUpdate.map((repo) =>
+      updateSchemaFile({ repo: repo, ...supportedRepos[repo] })
+    )
 
     await Promise.all(updatePromises)
   } catch (error) {
