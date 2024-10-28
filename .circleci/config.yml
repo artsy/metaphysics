@@ -91,7 +91,7 @@ jobs:
           name: Set up environment variables
           command: |
             # Run the Node.js script, passing total_nodes and node_index as arguments
-            node path-to-your-script.js $CIRCLE_NODE_TOTAL $CIRCLE_NODE_INDEX
+            node scripts/push-schema-changes.js $CIRCLE_NODE_TOTAL $CIRCLE_NODE_INDEX
 
 workflows:
   default:

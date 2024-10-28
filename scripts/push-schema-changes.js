@@ -5,7 +5,6 @@ const { execSync } = require("child_process")
 const path = require("path")
 const { buildSchema, getIntrospectionQuery, graphqlSync } = require("graphql")
 const { readFileSync, writeFileSync } = require("fs")
-const e = require("express")
 
 const introspectionQuery = getIntrospectionQuery()
 
@@ -16,10 +15,10 @@ const defaultBody =
  * updates the schema file on repo
  * @param {Object} input
  * @param {string} input.repo - repo: name of the artsy repo to update
- * @param {string} [input.body] - body: The PR body descrption
+ * @param {string} [input.body] - body: The PR body description
  * @param {Array<string>} [input.destinations] - destinations: Paths to schema files in target repo
  */
-async function updateSchemaFile({
+export async function updateSchemaFile({
   repo,
   destinations = ["data/schema.graphql"],
   body = defaultBody,
@@ -95,14 +94,15 @@ const supportedRepos = {
  * @param {number} nodeIndex
  * @returns {Array<string>} subset of repos assigned to the current node
  */
-function getRepoSubset(repos, totalNodes, nodeIndex) {
-  const chunkSize = Math.ceil(repos.length / totalNodes)
-  const startIndex = nodeIndex * chunkSize
-  const endIndex = Math.min(startIndex + chunkSize, repos.length)
-  return repos.slice(startIndex, endIndex)
+export function getRepoSubset(repos, totalNodes, nodeIndex) {
+  if (totalNodes !== 1) {
+    return repos.slice(nodeIndex, nodeIndex + 1)
+  }
+
+  return repos
 }
 
-async function main() {
+export async function main() {
   try {
     execSync("yarn dump:staging")
 
@@ -112,6 +112,12 @@ async function main() {
     const [totalNodesArg, nodeIndexArg] = process.argv.slice(2)
     const totalNodes = parseInt(totalNodesArg, 10) || 1
     const nodeIndex = parseInt(nodeIndexArg, 10) || 0
+
+    if (totalNodes > 1 && totalNodes !== repos.length) {
+      throw new Error(
+        `Number of nodes should bethe number of supported repos or 1, received: ${totalNodes}`
+      )
+    }
 
     const reposToUpdate = getRepoSubset(repos, totalNodes, nodeIndex)
 
