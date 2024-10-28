@@ -10,8 +10,11 @@ import { ResolverContext } from "types/graphql"
 /**
  * A client-facing representation of an Unleash feature flag.
  */
-export const UnleashFeatureFlag = new GraphQLObjectType<any, ResolverContext>({
-  name: "UnleashFeatureFlag",
+export const ClientFeatureFlagType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "ClientFeatureFlag",
   description:
     "An Unleash feature toggle, used for managing releases, experiments, etc.",
   fields: {
@@ -37,7 +40,7 @@ export const UnleashFeatureFlag = new GraphQLObjectType<any, ResolverContext>({
         "The variants available within this experiment (when the feature is of type `experiment`)",
       type: new GraphQLList(
         new GraphQLObjectType<any, ResolverContext>({
-          name: "UnleashExperimentVariant",
+          name: "ClientFeatureFlagVariant",
           fields: {
             name: {
               type: GraphQLNonNull(GraphQLString),
