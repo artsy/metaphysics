@@ -25,7 +25,10 @@ async function updateSchemaFile({
   body = defaultBody,
 }) {
   return new Promise((resolve) => {
-    setTimeout(resolve, 1000)
+    setTimeout(() => {
+      console.log(`∙ Updating schema for ${repo}`)
+      resolve(true)
+    }, 1000)
   })
   await updateRepo({
     repo: {

@@ -100,6 +100,11 @@ jobs:
           # Convert subset to JSON for easy parsing in Node.js
           REPO_SUBSET=$(printf "%s\n" "${REPOS[@]:$START_INDEX:$CHUNK_SIZE}" | jq -cR '[inputs | {"repo": .}]')
 
+          echo "Total nodes: $TOTAL_NODES"
+          echo "Node index: $NODE_INDEX"
+          echo "Chunk size: $CHUNK_SIZE"
+          echo "Start index: $START_INDEX"
+          echo "End index: $END_INDEX"
           echo "Repos for this node: $REPO_SUBSET"
           echo "export REPOS_TO_UPDATE='$REPO_SUBSET'" >> $BASH_ENV
       - run:
