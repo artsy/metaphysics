@@ -14,9 +14,14 @@ import { date } from "../../fields/date"
 import { base64 } from "lib/base64"
 import { GlobalIDField } from "../../object_identification"
 
+/**
+ * An admin representation of an Unleash feature flag, used by Forque
+ */
 export const AdminFeatureFlagType = new GraphQLObjectType<any, ResolverContext>(
   {
     name: "FeatureFlag",
+    description:
+      "An admin-facing feature flag, used for managing releases, experiments, etc.",
     fields: {
       id: GlobalIDField,
       description: {

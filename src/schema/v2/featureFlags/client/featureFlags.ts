@@ -8,7 +8,7 @@ import {
 import { ResolverContext } from "types/graphql"
 
 /**
- * A client-facing representation of an Unleash feature flag.
+ * A client-facing representation of an Unleash feature flag, exposed to client apps
  */
 export const ClientFeatureFlagType = new GraphQLObjectType<
   any,
@@ -16,7 +16,7 @@ export const ClientFeatureFlagType = new GraphQLObjectType<
 >({
   name: "ClientFeatureFlag",
   description:
-    "An Unleash feature toggle, used for managing releases, experiments, etc.",
+    "An client-facing feature flag, used for tracking releases, experiments, etc.",
   fields: {
     name: {
       type: GraphQLNonNull(GraphQLString),

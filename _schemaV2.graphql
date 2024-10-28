@@ -4170,7 +4170,7 @@ type CitySponsoredContent {
   ): ShowConnection
 }
 
-# An Unleash feature toggle, used for managing releases, experiments, etc.
+# An client-facing feature flag, used for tracking releases, experiments, etc.
 type ClientFeatureFlag {
   # A description of the feature
   description: String
@@ -9989,6 +9989,7 @@ type FeatureEdge {
   node: Feature
 }
 
+# An admin-facing feature flag, used for managing releases, experiments, etc.
 type FeatureFlag {
   createdAt(
     format: String
