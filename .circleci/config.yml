@@ -87,27 +87,11 @@ jobs:
       - checkout
       - setup_hokusai
       - yarn_install
-      - run: |
-          REPOS=("eigen" "energy" "prediction" "force" "forque" "pulse" "volt")
-          TOTAL_NODES=${CIRCLE_NODE_TOTAL:-1}
-          NODE_INDEX=${CIRCLE_NODE_INDEX:-0}
-
-          # Calculate the subset of repos for this node
-          CHUNK_SIZE=$(( (${#REPOS[@]} + TOTAL_NODES - 1) / TOTAL_NODES ))
-          START_INDEX=$(( NODE_INDEX * CHUNK_SIZE ))
-          END_INDEX=$(( START_INDEX + CHUNK_SIZE ))
-
-          # Get the subset of repos for this node
-          REPO_SUBSET=("${REPOS[@]:START_INDEX:CHUNK_SIZE}")
-
-          # Convert REPO_SUBSET array to JSON for Node.js
-          REPO_JSON=$(printf '%s\n' "${REPO_SUBSET[@]}" | jq -Rc '[inputs | {"repo": .}]')
-
-          echo "Repos for this node: $REPO_SUBSET"
-          echo "export REPOS_TO_UPDATE='$REPO_JSON'" >> $BASH_ENV
       - run:
-          name: push schema changes
-          command: node scripts/push-schema-changes.js
+          name: Set up environment variables
+          command: |
+            # Run the Node.js script, passing total_nodes and node_index as arguments
+            node path-to-your-script.js $CIRCLE_NODE_TOTAL $CIRCLE_NODE_INDEX
 
 workflows:
   default:

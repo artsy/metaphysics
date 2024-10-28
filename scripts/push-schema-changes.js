@@ -24,6 +24,10 @@ async function updateSchemaFile({
   destinations = ["data/schema.graphql"],
   body = defaultBody,
 }) {
+  console.log(`∙ Updating schema for ${repo}`)
+  return new Promise((resolve) => {
+    setTimeout(resolve, 1000)
+  })
   await updateRepo({
     repo: {
       owner: "artsy",
@@ -84,14 +88,34 @@ const supportedRepos = {
   },
 }
 
+/**
+ * Splits the supported repositories into chunks for parallel processing on the CI
+ * @param {Array<string>} repos
+ * @param {number} totalNodes
+ * @param {number} nodeIndex
+ * @returns {Array<string>} subset of repos assigned to the current node
+ */
+function getRepoSubset(repos, totalNodes, nodeIndex) {
+  const chunkSize = Math.ceil(repos.length / totalNodes)
+  const startIndex = nodeIndex * chunkSize
+  const endIndex = Math.min(startIndex + chunkSize, repos.length)
+  return repos.slice(startIndex, endIndex)
+}
+
 async function main() {
   try {
-    console.log("∙ Dumping staging schema")
-
     execSync("yarn dump:staging")
 
-    // Get repos from environment variables on the CI
-    const reposToUpdate = JSON.parse(process.env.REPOS_TO_PUSH_SCHEMA || "[]")
+    const repos = Object.keys(supportedRepos)
+
+    // Read total_nodes and node_index from command line arguments
+    const [totalNodesArg, nodeIndexArg] = process.argv.slice(2)
+    const totalNodes = parseInt(totalNodesArg, 10) || 1
+    const nodeIndex = parseInt(nodeIndexArg, 10) || 0
+
+    const reposToUpdate = getRepoSubset(repos, totalNodes, nodeIndex)
+
+    console.log(`∙ Dumping staging schema for the repos ${reposToUpdate}`)
 
     const updatePromises = reposToUpdate.map((repo) => {
       if (supportedRepos[repo]) {
