@@ -14,11 +14,15 @@ import {
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { MarketingCollectionsSorts } from "./sorts/marketingCollectionsSort"
+import {
+  MarketingCollectionsSorts,
+  MARKETING_COLLECTIONS_SORTS,
+} from "./sorts/marketingCollectionsSort"
 import { NodeInterface, InternalIDFields } from "./object_identification"
 import Image, { normalizeImageData, getDefault } from "schema/v2/image"
 import { date } from "schema/v2/fields/date"
 import { markdown } from "schema/v2/fields/markdown"
+import { marketingCollectionsByCategory } from "lib/marketing_collections_categories"
 
 const MarketingCollectionQuery = new GraphQLObjectType<any, ResolverContext>({
   name: "MarketingCollectionQuery",
@@ -320,6 +324,23 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
   }),
   resolve: async (_root, args, { marketingCollectionsLoader }) => {
     const { size } = convertConnectionArgsToGravityArgs(args)
+    // Enable custom sorting
+    if (
+      args.sort === MARKETING_COLLECTIONS_SORTS.CUSTOM.value &&
+      args.category
+    ) {
+      const category = args.category
+
+      if (!marketingCollectionsByCategory[category]) {
+        throw new Error(`No custom sort available for category: ${category}`)
+      }
+
+      args.slugs = marketingCollectionsByCategory[category].slugs
+
+      delete args.category
+      delete args.sort
+    }
+
     const gravityArgs: {
       page?: number
       size: number

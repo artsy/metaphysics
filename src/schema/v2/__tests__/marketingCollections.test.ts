@@ -172,4 +172,48 @@ describe("MarketingCollections", () => {
       curatedMarketingCollections: payload,
     })
   })
+
+  it("uses the custom sort for marketing collections", async () => {
+    const query = gql`
+      {
+        marketingCollections(sort: CUSTOM, size: 2, category: "Gallery") {
+          slug
+        }
+      }
+    `
+
+    const payload = [
+      {
+        slug: "percys-z-collection-1",
+      },
+      {
+        slug: "fiby-z-collection-2",
+      },
+    ]
+
+    const context = {
+      authenticatedLoaders: {},
+      marketingCollectionsLoader: () => Promise.resolve({ body: payload }),
+    } as any
+
+    const data = await runQuery(query, context)
+
+    expect(data).toEqual({
+      marketingCollections: payload,
+    })
+  })
+
+  it("throws an error when used with a non-existent custom-sorted category", async () => {
+    const query = gql`
+      {
+        marketingCollections(sort: CUSTOM, size: 2, category: "newest") {
+          slug
+        }
+      }
+    `
+    const context = {} as any
+    await expect(runQuery(query, context)).rejects.toThrow(
+      "No custom sort available for category: newest"
+    )
+  })
 })
