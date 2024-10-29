@@ -1,11 +1,14 @@
 import { GraphQLEnumType } from "graphql"
 
-const MARKETING_COLLECTIONS_SORTS = {
+export const MARKETING_COLLECTIONS_SORTS = {
   CREATED_AT_ASC: {
     value: "created_at",
   },
   CREATED_AT_DESC: {
     value: "-created_at",
+  },
+  EXPLORE_BY: {
+    value: "explore_by",
   },
   UPDATED_AT_ASC: {
     value: "updated_at",
