@@ -69,6 +69,7 @@ describe("ExploreByCategory", () => {
                   edges {
                     node {
                       entityID
+                      href
                     }
                   }
                 }
@@ -89,31 +90,37 @@ describe("ExploreByCategory", () => {
               {
                 "node": {
                   "entityID": "Medium",
+                  "href": "/collections-by-category/home-view-section-explore-by-category?slugs=["painting","sculpture","photography","prints-and-multiples","work-on-paper","design","drawing","installation","film-and-video","jewelry","performance-art","ceramics","textile-art","mixed-media"]",
                 },
               },
               {
                 "node": {
                   "entityID": "Movement",
+                  "href": "/collections-by-category/home-view-section-explore-by-category?slugs=["contemporary-art","abstract-art","impressionist-and-modern","emerging-art","minimalist-art","street-art","pop-art","post-war","20th-century-art","pre-columbian-art"]",
                 },
               },
               {
                 "node": {
                   "entityID": "Collect by Size",
+                  "href": "/collections-by-category/home-view-section-explore-by-category?slugs=["art-for-small-spaces","art-for-large-spaces","tabletop-sculpture"]",
                 },
               },
               {
                 "node": {
                   "entityID": "Collect by Color",
+                  "href": "/collections-by-category/home-view-section-explore-by-category?slugs=["black-and-white-artworks","warm-toned-artworks","cool-toned-artworks","blue-artworks","red-artworks","neutral-artworks","green-artworks","yellow-artworks","orange-artworks"]",
                 },
               },
               {
                 "node": {
                   "entityID": "Collect by Price",
+                  "href": "/collections-by-category/home-view-section-explore-by-category?slugs=["art-under-500-dollars","art-under-1000-dollars","art-under-2500-dollars","art-under-5000-dollars","art-under-10000-dollars","art-under-25000-dollars","art-under-50000-dollars"]",
                 },
               },
               {
                 "node": {
                   "entityID": "Gallery",
+                  "href": "/collections-by-category/home-view-section-explore-by-category?slugs=["new-from-tastemaking-galleries","new-from-nonprofits-acaf27cc-2d39-4ed3-93dd-d7099e183691","new-from-small-galleries","new-from-leading-galleries","new-to-artsy"]",
                 },
               },
             ],
