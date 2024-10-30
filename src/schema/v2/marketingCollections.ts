@@ -22,7 +22,7 @@ import { NodeInterface, InternalIDFields } from "./object_identification"
 import Image, { normalizeImageData, getDefault } from "schema/v2/image"
 import { date } from "schema/v2/fields/date"
 import { markdown } from "schema/v2/fields/markdown"
-import { marketingCollectionsByCategory } from "lib/marketingCollectionsCategories"
+import { marketingCollectionCategories } from "lib/marketingCollectionCategories"
 
 const MarketingCollectionQuery = new GraphQLObjectType<any, ResolverContext>({
   name: "MarketingCollectionQuery",
@@ -325,17 +325,18 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (_root, args, { marketingCollectionsLoader }) => {
     const { size } = convertConnectionArgsToGravityArgs(args)
     // Enable curated sorting
-    if (
-      args.sort === MARKETING_COLLECTIONS_SORTS.CURATED.value &&
-      args.category
-    ) {
+    if (args.sort === MARKETING_COLLECTIONS_SORTS.CURATED.value) {
+      if (!args.category) {
+        throw new Error("Category is required for CURATED sort.")
+      }
+
       const category = args.category
 
-      if (!marketingCollectionsByCategory[category]) {
+      if (!marketingCollectionCategories[category]) {
         throw new Error(`No curated sort available for category: ${category}`)
       }
 
-      args.slugs = marketingCollectionsByCategory[category].slugs
+      args.slugs = marketingCollectionCategories[category].sortedCollectionSlugs
 
       delete args.category
       delete args.sort
@@ -352,10 +353,8 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
     } = {
       ...args,
       size,
-      ...(args.artistID && { artist_id: args.artistID }),
-      ...(args.isFeaturedArtistContent && {
-        is_featured_artist_content: args.is_featured_artist_content,
-      }),
+      artist_id: args.artistID,
+      is_featured_artist_content: args.is_featured_artist_content,
     }
 
     try {

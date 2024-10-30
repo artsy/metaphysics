@@ -1,6 +1,10 @@
-export const marketingCollectionsByCategory = {
+export const marketingCollectionCategories = {
   Medium: {
-    slugs: [
+    id: "Medium",
+    title: "Medium",
+    imageUrl:
+      "https://files.artsy.net/images/collections-mediums-category.jpeg",
+    sortedCollectionSlugs: [
       "painting",
       "sculpture",
       "works-on-paper",
@@ -14,7 +18,11 @@ export const marketingCollectionsByCategory = {
     ],
   },
   Movement: {
-    slugs: [
+    id: "Movement",
+    title: "Movement",
+    imageUrl:
+      "https://files.artsy.net/images/collections-movement-category.jpeg",
+    sortedCollectionSlugs: [
       "contemporary-art",
       "abstract-art",
       "impressionist-and-modern",
@@ -28,14 +36,20 @@ export const marketingCollectionsByCategory = {
     ],
   },
   "Collect by Size": {
-    slugs: [
+    id: "Collect by Size",
+    title: "Size",
+    imageUrl: "https://files.artsy.net/images/collections-size-category.jpeg",
+    sortedCollectionSlugs: [
       "art-for-small-spaces",
       "art-for-large-spaces",
       "tabletop-sculpture",
     ],
   },
   "Collect by Color": {
-    slugs: [
+    id: "Collect by Color",
+    title: "Color",
+    imageUrl: "https://files.artsy.net/images/collections-color-category.png",
+    sortedCollectionSlugs: [
       "black-and-white-artworks",
       "warm-toned-artworks",
       "cool-toned-artworks",
@@ -48,7 +62,10 @@ export const marketingCollectionsByCategory = {
     ],
   },
   "Collect by Price": {
-    slugs: [
+    id: "Collect by Price",
+    title: "Price",
+    imageUrl: "https://files.artsy.net/images/collections-price-category.jpeg",
+    sortedCollectionSlugs: [
       "art-under-500-dollars",
       "art-under-1000-dollars",
       "art-under-2500-dollars",
@@ -59,7 +76,11 @@ export const marketingCollectionsByCategory = {
     ],
   },
   Gallery: {
-    slugs: [
+    id: "Gallery",
+    title: "Gallery",
+    imageUrl:
+      "https://files.artsy.net/images/collections-gallery-category.jpeg",
+    sortedCollectionSlugs: [
       "new-from-tastemaking-galleries",
       "new-from-nonprofits-acaf27cc-2d39-4ed3-93dd-d7099e183691",
       "new-from-small-galleries",
