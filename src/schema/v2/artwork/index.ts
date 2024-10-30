@@ -1017,6 +1017,30 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return savedArtworkLoader(_id).then(({ is_saved }) => is_saved)
         },
       },
+      isSavedToAnyList: {
+        description:
+          "Checks if artwork is saved to any of the user's 'saves' lists",
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: async ({ _id }, {}, { collectionsLoader, userID }) => {
+          if (!userID || !collectionsLoader) return false
+          try {
+            const { headers } = await collectionsLoader({
+              artwork_id: _id,
+              user_id: userID,
+              private: true,
+              size: 0,
+              total_count: true,
+              saves: true,
+            })
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+            return totalCount > 0
+          } catch (e) {
+            error(e)
+            return false
+          }
+        },
+      },
       isSavedToList: {
         description: "Checks if artwork is saved to user's lists",
         args: {
