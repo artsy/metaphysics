@@ -142,6 +142,44 @@ describe("MarketingCollections", () => {
       }
     `)
   })
+  it("requests an ordered set of collections by slug when using curated sort", async () => {
+    const marketingCollectionsLoaderMock = jest
+      .fn()
+      .mockResolvedValue({ body: marketingCollectionsData })
+
+    const query = gql`
+      {
+        marketingCollections(category: "Collect by Price", sort: CURATED) {
+          slug
+          title
+        }
+      }
+    `
+
+    const context: any = {
+      marketingCollectionsLoader: marketingCollectionsLoaderMock,
+    }
+
+    await runQuery(query, context)
+
+    expect(marketingCollectionsLoaderMock.mock.calls[0][0]).not.toContainKeys([
+      "category",
+      "sort",
+    ])
+    expect(marketingCollectionsLoaderMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        slugs: [
+          "art-under-500-dollars",
+          "art-under-1000-dollars",
+          "art-under-2500-dollars",
+          "art-under-5000-dollars",
+          "art-under-10000-dollars",
+          "art-under-25000-dollars",
+          "art-under-50000-dollars",
+        ],
+      })
+    )
+  })
 
   it("returns curated marketing collections", async () => {
     const query = gql`

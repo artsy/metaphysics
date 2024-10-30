@@ -24,6 +24,7 @@ import Image, { normalizeImageData, getDefault } from "schema/v2/image"
 import { date } from "schema/v2/fields/date"
 import { markdown } from "schema/v2/fields/markdown"
 import marketingCollectionCategories from "lib/marketingCollectionCategories"
+import { omit } from "lodash"
 
 const MarketingCollectionQuery = new GraphQLObjectType<any, ResolverContext>({
   name: "MarketingCollectionQuery",
@@ -324,20 +325,24 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
     },
   }),
 
-  resolve: async (_root, args, { marketingCollectionsLoader }) => {
-    // Coerce request with an `explore_by` sort to use an ordered list of slugs
-    if (args.sort === MARKETING_COLLECTIONS_SORTS.EXPLORE_BY.value) {
-      if (!args.category) {
+  resolve: async (_root, inputArgs, { marketingCollectionsLoader }) => {
+    let args = inputArgs
+
+    // Coerce request with `CURATED` sort to use an ordered list of slugs
+    if (inputArgs.sort === MARKETING_COLLECTIONS_SORTS.CURATED.value) {
+      if (!inputArgs.category) {
         throw new GraphQLError(
-          "Need to specify `category` when sorting by `explore_by`"
+          "Need to specify `category` when requesting `CURATED` sort"
         )
       }
 
       const category = marketingCollectionCategories[args.category]
 
       if (category) {
-        args.sort = undefined
-        args.slugs = category.orderedCollectionSlugs
+        args = {
+          ...omit(args, ["category", "sort"]),
+          slugs: category.orderedCollectionSlugs,
+        }
       } else {
         throw new GraphQLError(`Unknown category: ${args.category}`)
       }
