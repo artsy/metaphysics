@@ -13,8 +13,8 @@ export const MARKETING_COLLECTIONS_SORTS = {
   UPDATED_AT_DESC: {
     value: "-updated_at",
   },
-  CUSTOM: {
-    value: "custom",
+  CURATED: {
+    value: "curated",
   },
 }
 

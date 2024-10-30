@@ -173,10 +173,10 @@ describe("MarketingCollections", () => {
     })
   })
 
-  it("uses the custom sort for marketing collections", async () => {
+  it("uses the curated sort for marketing collections", async () => {
     const query = gql`
       {
-        marketingCollections(sort: CUSTOM, size: 2, category: "Gallery") {
+        marketingCollections(sort: CURATED, size: 2, category: "Gallery") {
           slug
         }
       }
@@ -193,27 +193,84 @@ describe("MarketingCollections", () => {
 
     const context = {
       authenticatedLoaders: {},
-      marketingCollectionsLoader: () => Promise.resolve({ body: payload }),
     } as any
 
+    context.marketingCollectionsLoader = jest
+      .fn()
+      .mockReturnValueOnce(Promise.resolve({ body: payload }))
+
     const data = await runQuery(query, context)
+
+    expect(context.marketingCollectionsLoader).toHaveBeenCalledWith({
+      size: 2,
+      slugs: [
+        "new-from-tastemaking-galleries",
+        "new-from-nonprofits-acaf27cc-2d39-4ed3-93dd-d7099e183691",
+        "new-from-small-galleries",
+        "new-from-leading-galleries",
+        "new-to-artsy",
+      ],
+    })
 
     expect(data).toEqual({
       marketingCollections: payload,
     })
   })
 
-  it("throws an error when used with a non-existent custom-sorted category", async () => {
+  it("passes the params to the marketing collection loader", async () => {
     const query = gql`
       {
-        marketingCollections(sort: CUSTOM, size: 2, category: "newest") {
+        marketingCollections(
+          size: 2
+          category: "trending"
+          slugs: ["percys-z-collection-1", "fiby-z-collection-2"]
+        ) {
+          slug
+        }
+      }
+    `
+
+    const payload = [
+      {
+        slug: "percys-z-collection-1",
+      },
+      {
+        slug: "fiby-z-collection-2",
+      },
+    ]
+
+    const context = {
+      authenticatedLoaders: {},
+    } as any
+
+    context.marketingCollectionsLoader = jest
+      .fn()
+      .mockReturnValueOnce(Promise.resolve({ body: payload }))
+
+    const data = await runQuery(query, context)
+
+    expect(context.marketingCollectionsLoader).toHaveBeenCalledWith({
+      size: 2,
+      category: "trending",
+      slugs: ["percys-z-collection-1", "fiby-z-collection-2"],
+    })
+
+    expect(data).toEqual({
+      marketingCollections: payload,
+    })
+  })
+
+  it("throws an error when used with a non-existent category", async () => {
+    const query = gql`
+      {
+        marketingCollections(sort: CURATED, size: 2, category: "newest") {
           slug
         }
       }
     `
     const context = {} as any
     await expect(runQuery(query, context)).rejects.toThrow(
-      "No custom sort available for category: newest"
+      "No curated sort available for category: newest"
     )
   })
 })
