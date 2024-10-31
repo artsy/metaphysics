@@ -630,9 +630,8 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     submissionsConnection: submissionsConnection,
-    // DEPRECATED: This genomic recs loader is no longer in use.
-    // Use the artworkRecommendations connection to Vortex instead.
     recommendedArtworks: {
+       deprecationReason: "This genomic recs loader is no longer in use. Use the artworkRecommendations instead.",
       type: artworkConnection.connectionType,
       args: pageable({
         page: { type: GraphQLInt },
