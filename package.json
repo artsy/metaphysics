@@ -119,6 +119,8 @@
     "@babel/preset-typescript": "^7.25.9",
     "@cloudflare/workers-types": "^4.20240909.0",
     "@graphql-inspector/core": "1.27.0",
+    "@swc/core": "^1.7.42",
+    "@swc/jest": "^0.2.37",
     "@types/express-rate-limit": "2.9.3",
     "@types/google-libphonenumber": "^7.4.22",
     "@types/graphql-relay": "0.4.9",

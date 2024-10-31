@@ -16,6 +16,13 @@ module.exports = {
     "src/schema/v2/__tests__/ecommerce/",
   ],
   transform: {
-    "^.+\\.(js|ts)$": require.resolve("babel-jest"),
+    "^.+\\.(js|ts)$": ["@swc/jest"],
+  },
+  moduleNameMapper: {
+    // Map any module under src directory
+    "^(src|data|directives|integration|lib|schema|test|types)/(.*)$":
+      "<rootDir>/src/$1/$2",
+    // Optional: Specific mapping for config if needed
+    "^config$": "<rootDir>/src/config",
   },
 }
