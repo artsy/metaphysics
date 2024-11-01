@@ -14,7 +14,7 @@ export const marketingCollectionCategories = {
       "ceramics",
       "mixed-media",
       "design",
-      "watercolor",
+      "photography",
     ],
   },
   Movement: {
