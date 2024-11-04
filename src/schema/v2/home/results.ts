@@ -102,6 +102,8 @@ const moduleResults: HomePageArtworkModuleResolvers<any> = {
       }).then(({ hits }) => hits)
     })
   },
+  // DEPRECATED: This endpoint is no longer in use.
+  // Use the artworkRecommendations connection to vortex instead.
   recommended_works: ({ homepageSuggestedArtworksLoader }) => {
     if (!homepageSuggestedArtworksLoader) return null
     return homepageSuggestedArtworksLoader({
