@@ -13,11 +13,17 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { CollectionType } from "./collection"
+import { ArtworkType } from "../artwork"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworksCollectionsBatchUpdateSuccess",
   isTypeOf: (data) => data.counts,
   fields: () => ({
+    artwork: {
+      type: ArtworkType,
+      resolve: ({ artworkID }, _, { artworkLoader }) =>
+        artworkLoader(artworkID),
+    },
     counts: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "ArtworksCollectionsBatchUpdateCounts",
@@ -130,7 +136,12 @@ export const artworksCollectionsBatchUpdateMutation = mutationWithClientMutation
         remove_from: args.removeFromCollectionIDs,
       })
 
-      return response
+      const artworkID = args.artworkIDs[0]
+
+      return {
+        ...response,
+        artworkID,
+      }
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
