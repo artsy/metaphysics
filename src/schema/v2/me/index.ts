@@ -631,7 +631,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     },
     submissionsConnection: submissionsConnection,
     recommendedArtworks: {
-       deprecationReason: "This genomic recs loader is no longer in use. Use the artworkRecommendations instead.",
+      deprecationReason: "These genomic recs are deprecated. Use artworkRecommendations instead.",
       type: artworkConnection.connectionType,
       args: pageable({
         page: { type: GraphQLInt },
