@@ -78,8 +78,10 @@ describe("homeView", () => {
               },
               {
                 "node": {
-                  "__typename": "HomeViewSectionHeroUnits",
-                  "component": null,
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": {
+                    "title": "Curators' Picks Emerging",
+                  },
                 },
               },
               {
@@ -88,6 +90,12 @@ describe("homeView", () => {
                   "component": {
                     "title": "Explore by Category",
                   },
+                },
+              },
+              {
+                "node": {
+                  "__typename": "HomeViewSectionHeroUnits",
+                  "component": null,
                 },
               },
               {
@@ -119,14 +127,6 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionArticles",
                   "component": {
                     "title": "News",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Curators' Picks Emerging",
                   },
                 },
               },
@@ -200,6 +200,14 @@ describe("homeView", () => {
               },
               {
                 "node": {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": {
+                    "title": "Recently Viewed",
+                  },
+                },
+              },
+              {
+                "node": {
                   "__typename": "HomeViewSectionCards",
                   "component": {
                     "title": "Discover Something New",
@@ -208,8 +216,18 @@ describe("homeView", () => {
               },
               {
                 "node": {
-                  "__typename": "HomeViewSectionHeroUnits",
-                  "component": null,
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": {
+                    "title": "Artwork Recommendations",
+                  },
+                },
+              },
+              {
+                "node": {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": {
+                    "title": "Curators' Picks Emerging",
+                  },
                 },
               },
               {
@@ -218,6 +236,12 @@ describe("homeView", () => {
                   "component": {
                     "title": "Explore by Category",
                   },
+                },
+              },
+              {
+                "node": {
+                  "__typename": "HomeViewSectionHeroUnits",
+                  "component": null,
                 },
               },
               {
@@ -278,25 +302,9 @@ describe("homeView", () => {
               },
               {
                 "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Curators' Picks Emerging",
-                  },
-                },
-              },
-              {
-                "node": {
                   "__typename": "HomeViewSectionMarketingCollections",
                   "component": {
                     "title": "Collections",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Artwork Recommendations",
                   },
                 },
               },
@@ -321,14 +329,6 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionArtists",
                   "component": {
                     "title": "Trending Artists",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Recently Viewed",
                   },
                 },
               },
