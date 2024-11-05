@@ -13,7 +13,6 @@ import { HeroUnits } from "../sections/HeroUnits"
 import { LatestActivity } from "../sections/LatestActivity"
 import { LatestArticles } from "../sections/LatestArticles"
 import { LatestAuctionResults } from "../sections/LatestAuctionResults"
-import { MarketingCollections } from "../sections/MarketingCollections"
 import { News } from "../sections/News"
 import { NewWorksForYou } from "../sections/NewWorksForYou"
 import { NewWorksFromGalleriesYouFollow } from "../sections/NewWorksFromGalleriesYouFollow"
@@ -43,7 +42,6 @@ const SECTIONS: HomeViewSection[] = [
   GalleriesNearYou,
   LatestArticles,
   News,
-  MarketingCollections,
   NewWorksFromGalleriesYouFollow,
   RecommendedArtists,
   TrendingArtists,
