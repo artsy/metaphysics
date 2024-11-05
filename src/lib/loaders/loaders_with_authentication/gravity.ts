@@ -393,6 +393,7 @@ export default (accessToken, userID, opts) => {
     followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
     gravityGraphQLLoader: gravityGraphQL(accessToken),
     homepageModulesLoader: gravityLoader("me/modules"),
+    // DEPRECATED: This endpoint is no longer in use.
     homepageSuggestedArtworksLoader: gravityLoader(
       "me/suggested/artworks/homepage"
     ),

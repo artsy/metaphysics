@@ -630,8 +630,8 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     submissionsConnection: submissionsConnection,
-    // genomic recommendation
     recommendedArtworks: {
+      deprecationReason: "These genomic recs are deprecated. Use artworkRecommendations instead.",
       type: artworkConnection.connectionType,
       args: pageable({
         page: { type: GraphQLInt },
