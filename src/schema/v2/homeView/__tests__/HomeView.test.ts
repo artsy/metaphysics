@@ -200,9 +200,25 @@ describe("homeView", () => {
               },
               {
                 "node": {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": {
+                    "title": "Recently Viewed",
+                  },
+                },
+              },
+              {
+                "node": {
                   "__typename": "HomeViewSectionCards",
                   "component": {
                     "title": "Discover Something New",
+                  },
+                },
+              },
+              {
+                "node": {
+                  "__typename": "HomeViewSectionArtworks",
+                  "component": {
+                    "title": "Artwork Recommendations",
                   },
                 },
               },
@@ -296,14 +312,6 @@ describe("homeView", () => {
                 "node": {
                   "__typename": "HomeViewSectionArtworks",
                   "component": {
-                    "title": "Artwork Recommendations",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
                     "title": "New Works from Galleries You Follow",
                   },
                 },
@@ -321,14 +329,6 @@ describe("homeView", () => {
                   "__typename": "HomeViewSectionArtists",
                   "component": {
                     "title": "Trending Artists",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Recently Viewed",
                   },
                 },
               },
