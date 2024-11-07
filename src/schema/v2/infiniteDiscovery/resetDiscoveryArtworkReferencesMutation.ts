@@ -68,6 +68,9 @@ export const DeleteDiscoveryUserReferencesMutation = mutationWithClientMutationI
   mutateAndGetPayload: async ({ userId }, {}) => {
     const weaviteUserId = generateUuid(userId)
 
+    // TODO: Temporary implementation to delete likedArtworks and seenArtworks
+    // during spike/testing phase. Don't let this code go to production.
+    // https://github.com/artsy/metaphysics/pull/6211#discussion_r1832675631
     try {
       await fetch(
         `https://weaviate.stg.artsy.systems/v1/objects/InfiniteDiscoveryUsers/${weaviteUserId}`,
