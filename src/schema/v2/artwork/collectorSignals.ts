@@ -259,10 +259,7 @@ const getIncreasedInterest = (artwork) => {
 }
 
 const getActivePartnerOffer = async (artwork, ctx) => {
-  const partnerOfferEligible =
-    checkFeatureFlag("emerald_signals-partner-offers", ctx) &&
-    artwork.purchasable &&
-    ctx.mePartnerOffersLoader
+  const partnerOfferEligible = artwork.purchasable && ctx.mePartnerOffersLoader
   if (!partnerOfferEligible) {
     return null
   }
