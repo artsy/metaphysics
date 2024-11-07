@@ -240,7 +240,7 @@ import { ackTaskMutation } from "./me/ack_task_mutation"
 import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
 import { CreateDiscoveryLikedArtworkMutation } from "./infiniteDiscovery/createDiscoveryArtworkReferenceMutation"
 import { CreateDiscoveryUserMutation } from "./infiniteDiscovery/createDiscoveryUserMutation"
-import { DeleteDiscoveryUserReferencesMutation } from "./infiniteDiscovery/deleteDiscoveryArtworkReferencesMutation"
+import { DeleteDiscoveryUserReferencesMutation } from "./infiniteDiscovery/resetDiscoveryArtworkReferencesMutation"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,

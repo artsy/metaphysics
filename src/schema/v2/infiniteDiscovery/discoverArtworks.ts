@@ -4,6 +4,7 @@ import {
   GraphQLInt,
   GraphQLEnumType,
   GraphQLFloat,
+  GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
@@ -25,7 +26,7 @@ export const generateBeacon = (namespace: string, identifier: string) => {
 export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
   args: pageable({
-    userId: { type: GraphQLString },
+    userId: { type: GraphQLNonNull(GraphQLString) },
     limit: { type: GraphQLInt },
     offset: { type: GraphQLInt },
     certainty: { type: GraphQLFloat },
@@ -47,8 +48,18 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       }),
     },
   }),
-  resolve: async (_root, args, { weaviateGraphqlLoader, artworksLoader }) => {
-    if (!weaviateGraphqlLoader) return
+  resolve: async (
+    _root,
+    args,
+    { weaviateCreateObjectLoader, weaviateGraphqlLoader, artworksLoader }
+  ) => {
+    if (
+      !weaviateGraphqlLoader ||
+      !weaviateCreateObjectLoader ||
+      !artworksLoader
+    ) {
+      new Error("A loader is not available")
+    }
 
     const { userId, limit = 5, offset = 0, certainty = 0.5, sort } = args
 
@@ -79,10 +90,22 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       query: userQuery,
     })()
 
-    const user = userQueryResponse?.data?.Get?.InfiniteDiscoveryUsers?.[0]
+    let user = userQueryResponse?.data?.Get?.InfiniteDiscoveryUsers?.[0]
 
+    // If user doesn't exist, create it
     if (!user) {
-      throw new Error("Weaviate user not found")
+      try {
+        const body = {
+          class: "InfiniteDiscoveryUsers",
+          id: userUUID,
+          properties: {
+            internalID: userId,
+          },
+        }
+        user = await weaviateCreateObjectLoader("/objects", body)
+      } catch (error) {
+        throw new Error(`Error creating user in Weaviate: ${error}`)
+      }
     }
 
     const likedArtworkIds =
