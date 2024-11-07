@@ -29,10 +29,6 @@ interface ActiveLotData {
 
 const AuctionCollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (artwork, {}, ctx) => {
-    if (!checkFeatureFlag("emerald_signals-auction-improvements", ctx)) {
-      return null
-    }
-
     const activeLotData = await getActiveAuctionValues(artwork, ctx)
 
     if (!activeLotData) {
