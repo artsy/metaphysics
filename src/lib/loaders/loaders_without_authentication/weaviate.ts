@@ -30,10 +30,5 @@ export default (opts) => {
       {},
       { method: "POST" }
     ),
-    weaviateDeleteObjectLoader: weaviateLoader(
-      (path) => path,
-      {},
-      { method: "DELETE" }
-    ),
   }
 }
