@@ -13,6 +13,9 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { generateUuid } from "./discoverArtworks"
 import fetch from "node-fetch"
+import config from "config"
+
+const { WEAVIATE_API_BASE } = config
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeleteDiscoveryUserReferencesMutationSuccess",
@@ -73,7 +76,7 @@ export const DeleteDiscoveryUserReferencesMutation = mutationWithClientMutationI
     // https://github.com/artsy/metaphysics/pull/6211#discussion_r1832675631
     try {
       await fetch(
-        `https://weaviate.stg.artsy.systems/v1/objects/InfiniteDiscoveryUsers/${weaviteUserId}`,
+        `${WEAVIATE_API_BASE}/objects/InfiniteDiscoveryUsers/${weaviteUserId}`,
         {
           method: "PATCH",
           headers: {
