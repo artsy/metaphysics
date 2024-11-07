@@ -39,8 +39,7 @@ export const DiscoverSomethingNew: HomeViewSection = {
         href: `/collection/${marketingCollection.slug}`,
         entityID: marketingCollection.id,
         entityType: "MarketingCollection",
-        // TODO: Include category in short JSON response
-        // subtitle: marketingCollection.category,
+        subtitle: marketingCollection.category,
         title: marketingCollection.title,
         image_url: marketingCollection.thumbnail,
       }
