@@ -203,7 +203,7 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
   }),
 }
 
-type PrimaryLabel = "PARTNER_OFFER" | "INCREASED_INTEREST" | "CURATORS_PICK"
+type PrimaryLabel = "INCREASED_INTEREST" | "CURATORS_PICK"
 
 // Single function to resolve mutually-exclusive label signals
 const getPrimaryLabel = async (
@@ -216,23 +216,13 @@ const getPrimaryLabel = async (
   }
 
   const ignoreLabels = args.ignore
-  const partnerOfferPromise =
-    !ignoreLabels?.includes("PARTNER_OFFER") &&
-    getActivePartnerOffer(artwork, ctx)
   const curatorsPickPromise =
     !ignoreLabels?.includes("CURATORS_PICK") && getIsCuratorsPick(artwork, ctx)
   const increasedInterest =
     !ignoreLabels?.includes("INCREASED_INTEREST") &&
     getIncreasedInterest(artwork)
 
-  const [activePartnerOffer, curatorsPick] = await Promise.all([
-    partnerOfferPromise,
-    curatorsPickPromise,
-  ])
-
-  if (activePartnerOffer) {
-    return "PARTNER_OFFER"
-  }
+  const [curatorsPick] = await Promise.all([curatorsPickPromise])
 
   if (curatorsPick) {
     return "CURATORS_PICK"
