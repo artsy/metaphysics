@@ -23,7 +23,7 @@ export const LikedDiscoveryArtworks: GraphQLFieldConfig<
     if (!weaviateGraphqlLoader || !artworksLoader) {
       new Error("A loader is not available")
     }
-    const { userId, limit } = args
+    const { userId, limit = 10 } = args
 
     const userQuery = gql`
       {
