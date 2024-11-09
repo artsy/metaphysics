@@ -8,7 +8,6 @@ import {
 import { GraphQLInt, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { PartnerOfferToCollectorType } from "../partnerOfferToCollector"
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 import Show from "../show"
 import { date } from "../fields/date"
 import { GraphQLNonNull } from "graphql"
@@ -243,22 +242,12 @@ const getPrimaryLabel = async (
   return null
 }
 
-const checkFeatureFlag = (flag: any, context: any) => {
-  const unleashContext = {
-    userId: context.userID,
-  }
-  return isFeatureFlagEnabled(flag, unleashContext)
-}
-
 const getIncreasedInterest = (artwork) => {
   return !isAuctionArtwork(artwork) && !!artwork.increased_interest_signal
 }
 
 const getActivePartnerOffer = async (artwork, ctx) => {
-  const partnerOfferEligible =
-    checkFeatureFlag("emerald_signals-partner-offers", ctx) &&
-    artwork.purchasable &&
-    ctx.mePartnerOffersLoader
+  const partnerOfferEligible = artwork.purchasable && ctx.mePartnerOffersLoader
   if (!partnerOfferEligible) {
     return null
   }
