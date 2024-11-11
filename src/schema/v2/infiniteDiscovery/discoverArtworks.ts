@@ -5,6 +5,7 @@ import {
   GraphQLEnumType,
   GraphQLFloat,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
@@ -12,6 +13,7 @@ import { connectionFromArray } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
 import gql from "lib/gql"
 import uuid from "uuid/v5"
+import { sampleSize } from "lodash"
 
 export const generateUuid = (userId: string) => {
   if (!userId) return ""
@@ -47,21 +49,76 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         },
       }),
     },
+    useRelatedArtworks: { type: GraphQLBoolean, defaultValue: false },
   }),
   resolve: async (
     _root,
     args,
-    { weaviateCreateObjectLoader, weaviateGraphqlLoader, artworksLoader }
+    {
+      weaviateCreateObjectLoader,
+      weaviateGraphqlLoader,
+      artworksLoader,
+      relatedArtworksLoader,
+      marketingCollectionLoader,
+      savedArtworksLoader,
+    }
   ) => {
     if (
+      !artworksLoader ||
       !weaviateGraphqlLoader ||
-      !weaviateCreateObjectLoader ||
-      !artworksLoader
+      !weaviateCreateObjectLoader
     ) {
       new Error("A loader is not available")
     }
 
-    const { userId, limit = 5, offset = 0, certainty = 0.5, sort } = args
+    const {
+      userId,
+      limit = 5,
+      offset = 0,
+      certainty = 0.5,
+      sort,
+      useRelatedArtworks,
+    } = args
+
+    if (useRelatedArtworks) {
+      if (!savedArtworksLoader) {
+        return new Error("Saved artworks loader is not available")
+      }
+
+      const { body: savedArtworks } = await savedArtworksLoader({
+        size: 28,
+        sort: "-position",
+        user_id: userId,
+        private: true,
+      })
+
+      // Extract saved artwork IDs
+      const savedArtworkIds = savedArtworks.map((artwork) => artwork.id)
+
+      // Load curated artworks
+      const curatedArtworks = await marketingCollectionLoader("curators-picks")
+      const curatedArtworkIds = curatedArtworks?.artwork_ids || []
+
+      // Select two random artwork IDs from curated artworks
+      const randomCuratedArtworkIds = sampleSize(curatedArtworkIds, 2)
+
+      // Combine IDs: use curated if no saved artworks, otherwise combine
+      const finalArtworkIds =
+        savedArtworkIds.length > 0
+          ? [...savedArtworkIds, ...randomCuratedArtworkIds]
+          : curatedArtworkIds
+
+      // Limit the number of artwork IDs to a maximum of 30
+      const queryArtworkIds = finalArtworkIds.slice(0, 30)
+
+      // Fetch related artworks based on limited artwork IDs
+      const relatedArtworks = await relatedArtworksLoader({
+        artwork_id: queryArtworkIds,
+        size: 10,
+      })
+
+      return connectionFromArray(relatedArtworks, args)
+    }
 
     const userUUID = generateUuid(userId)
     const beacon = generateBeacon("InfiniteDiscoveryUsers", userUUID)
@@ -122,7 +179,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         Get {
           InfiniteDiscoveryArtworks(
               nearObject: {
-                beacon: "${beacon}", 
+                beacon: "${beacon}",
                 certainty: ${certainty}
               },
               limit: ${limit},
