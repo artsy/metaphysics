@@ -10,7 +10,6 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
  */
 const FEATURE_FLAGS_LIST = [
   "diamond_blurhash-enabled-globally",
-  "emerald_signals-partner-offers",
   "onyx_enable-home-view-section-featured-fairs",
   "diamond_home-view-marketing-collection-categories",
   "emerald_home-view-tasks-section",
