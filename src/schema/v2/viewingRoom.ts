@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLFieldConfig,
+  GraphQLID,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -112,7 +113,7 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         args: {
           short: {
-            type: GraphQLBoolean,
+            type: new GraphQLNonNull(GraphQLBoolean),
             defaultValue: false,
           },
         },
@@ -156,7 +157,7 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         args: {
           short: {
-            type: GraphQLBoolean,
+            type: new GraphQLNonNull(GraphQLBoolean),
             defaultValue: false,
           },
         },
@@ -299,11 +300,10 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
 
 export const ViewingRoom: GraphQLFieldConfig<void, ResolverContext> = {
   type: ViewingRoomType,
-  description: "Viewing Room",
+  description: "Find a viewing room by ID",
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The slug or ID of the Viewing Room",
+      type: new GraphQLNonNull(GraphQLID),
     },
   },
   resolve: async (_root, { id }, { viewingRoomLoader }) => {

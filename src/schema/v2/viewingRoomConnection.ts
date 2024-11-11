@@ -2,8 +2,9 @@ import {
   GraphQLBoolean,
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLID,
   GraphQLList,
-  GraphQLString,
+  GraphQLNonNull,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {
@@ -44,16 +45,17 @@ export const ViewingRoomsConnection: GraphQLFieldConfig<
   type: ViewingRoomsConnectionType.connectionType,
   args: pageable({
     ids: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
     },
     featured: {
       type: GraphQLBoolean,
     },
     partnerID: {
-      type: GraphQLString,
+      type: GraphQLID,
     },
     statuses: {
-      type: new GraphQLList(ViewingRoomStatusEnum),
+      type: new GraphQLList(new GraphQLNonNull(ViewingRoomStatusEnum)),
+      defaultValue: ["live"],
     },
   }),
   resolve: async (_root, args, { viewingRoomsLoader }) => {

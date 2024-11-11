@@ -647,7 +647,6 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       ...(config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA && {
         viewingRoomsConnection: {
           type: ViewingRoomsConnection.type,
-          args: pageable({}),
           resolve: async (
             { viewing_room_ids },
             args,
