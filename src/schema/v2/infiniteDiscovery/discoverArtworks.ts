@@ -96,12 +96,20 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       const savedArtworkIds = savedArtworks.map((artwork) => artwork.id)
 
       // Load curated artworks
-      const curatedArtworks = await marketingCollectionLoader("curators-picks")
-      const curatedArtworkIds = curatedArtworks.map((artwork) => artwork.id)
-      // Select two random artworks from curated artworks
-      const randomCuratedArtworks = sampleSize(curatedArtworks, 2)
+      const curatedArtworksCollection = await marketingCollectionLoader(
+        "curators-picks"
+      )
 
-      // Combine IDs: use curated if no saved artworks, otherwise combine
+      const curatedArtworkIds = curatedArtworksCollection.artwork_ids
+
+      // Select two random artworks from curated artworks
+      const randomCuratedArtworksIds = sampleSize(curatedArtworkIds, 2)
+
+      const curatedArtworks = await artworksLoader({
+        ids: randomCuratedArtworksIds,
+      })
+
+      // use curated if there are no saved artworks
       const finalArtworkIds =
         savedArtworkIds.length > 0 ? [...savedArtworkIds] : curatedArtworkIds
 
@@ -114,11 +122,9 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         size: 8,
       })
 
-      // inject two random curated artworks and shuffle the list
-      const shuffledArtworks = shuffle([
-        ...relatedArtworks,
-        ...randomCuratedArtworks,
-      ])
+      // inject curated artworks and shuffle the list
+      const shuffledArtworks = shuffle([...relatedArtworks, ...curatedArtworks])
+
       return connectionFromArray(shuffledArtworks, args)
     }
 
