@@ -82,7 +82,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
     if (useRelatedArtworks) {
       if (!savedArtworksLoader) {
-        return new Error("Saved artworks loader is not available")
+        return new Error("You need to be signed in to perform this action")
       }
 
       const { body: savedArtworks } = await savedArtworksLoader({
@@ -97,16 +97,13 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
       // Load curated artworks
       const curatedArtworks = await marketingCollectionLoader("curators-picks")
-      const curatedArtworkIds = curatedArtworks?.artwork_ids || []
-
-      // Select two random artwork IDs from curated artworks
-      const randomCuratedArtworkIds = sampleSize(curatedArtworkIds, 2)
+      const curatedArtworkIds = curatedArtworks.map((artwork) => artwork.id)
+      // Select two random artworks from curated artworks
+      const randomCuratedArtworks = sampleSize(curatedArtworks, 2)
 
       // Combine IDs: use curated if no saved artworks, otherwise combine
       const finalArtworkIds =
-        savedArtworkIds.length > 0
-          ? [...savedArtworkIds, ...randomCuratedArtworkIds]
-          : curatedArtworkIds
+        savedArtworkIds.length > 0 ? [...savedArtworkIds] : curatedArtworkIds
 
       // Limit the number of artwork IDs to a maximum of 30
       const queryArtworkIds = finalArtworkIds.slice(0, 30)
@@ -114,10 +111,12 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       // Fetch related artworks based on limited artwork IDs
       const relatedArtworks = await relatedArtworksLoader({
         artwork_id: queryArtworkIds,
-        size: 10,
+        size: 8,
       })
 
-      return connectionFromArray(relatedArtworks, args)
+      // inject two random curated artworks
+      const finalArtworks = [...relatedArtworks, ...randomCuratedArtworks]
+      return connectionFromArray(finalArtworks, args)
     }
 
     const userUUID = generateUuid(userId)
