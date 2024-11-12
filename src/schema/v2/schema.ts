@@ -241,6 +241,7 @@ import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
 import { CreateDiscoveryLikedArtworkMutation } from "./infiniteDiscovery/createDiscoveryArtworkReferenceMutation"
 import { CreateDiscoveryUserMutation } from "./infiniteDiscovery/createDiscoveryUserMutation"
 import { DeleteDiscoveryUserReferencesMutation } from "./infiniteDiscovery/resetDiscoveryArtworkReferencesMutation"
+import { LikedDiscoveryArtworks } from "./infiniteDiscovery/likedDiscoveryArtworks"
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -312,6 +313,7 @@ const rootFields = {
   invoice: Invoice,
   job,
   jobs,
+  LikedDiscoveryArtworks,
   saleAgreement: SaleAgreement,
   saleAgreementsConnection: SaleAgreementsConnection,
   markdown: MarkdownContent,
