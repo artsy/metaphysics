@@ -13,7 +13,7 @@ import { connectionFromArray } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
 import gql from "lib/gql"
 import uuid from "uuid/v5"
-import { sampleSize } from "lodash"
+import { sampleSize, shuffle } from "lodash"
 
 export const generateUuid = (userId: string) => {
   if (!userId) return ""
@@ -114,9 +114,12 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         size: 8,
       })
 
-      // inject two random curated artworks
-      const finalArtworks = [...relatedArtworks, ...randomCuratedArtworks]
-      return connectionFromArray(finalArtworks, args)
+      // inject two random curated artworks and shuffle the list
+      const shuffledArtworks = shuffle([
+        ...relatedArtworks,
+        ...randomCuratedArtworks,
+      ])
+      return connectionFromArray(shuffledArtworks, args)
     }
 
     const userUUID = generateUuid(userId)
