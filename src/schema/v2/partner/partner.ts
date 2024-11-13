@@ -863,12 +863,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             },
             title: {
               type: GraphQLString,
-              resolve: ({ owner: { name }, owner_type: type }) => {
-                return compact([
-                  name ? name : "Profile",
-                  partnerTitleContent(type),
-                  "Artsy",
-                ]).join(" | ")
+              resolve: ({ owner, owner_type: type, partner }) => {
+                const partnerName = owner.name || "Profile"
+                const titleContent = partner.display_full_partner_page
+                  ? partnerTitleContent(type)
+                  : "About the Gallery and Nearby Galleries"
+
+                return compact([partnerName, titleContent, "Artsy"]).join(" | ")
               },
             },
             image: {
@@ -883,10 +884,17 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             },
           },
         }),
-        resolve: (partner, _options, { profileLoader }) =>
-          profileLoader(partner.default_profile_id).catch(() => ({
-            owner: partner,
-          })),
+        resolve: async (partner, _options, { profileLoader }) => {
+          try {
+            const profile = await profileLoader(partner.default_profile_id)
+            return { ...profile, partner }
+          } catch (error) {
+            return {
+              owner: partner,
+              partner,
+            }
+          }
+        },
       },
       href: {
         type: GraphQLString,
