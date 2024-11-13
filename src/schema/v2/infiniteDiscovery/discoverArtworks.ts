@@ -92,10 +92,8 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         private: true,
       })
 
-      // Extract saved artwork IDs
       const savedArtworkIds = savedArtworks.map((artwork) => artwork.id)
 
-      // Load curated artworks
       const curatedArtworksCollection = await marketingCollectionLoader(
         "curators-picks"
       )
@@ -109,14 +107,13 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         ids: randomCuratedArtworksIds,
       })
 
-      // use curated if there are no saved artworks
+      // use curated artworks if there are no saved artworks
       const finalArtworkIds =
         savedArtworkIds.length > 0 ? [...savedArtworkIds] : curatedArtworkIds
 
-      // Limit the number of artwork IDs to a maximum of 30
-      const queryArtworkIds = finalArtworkIds.slice(0, 30)
+      // Limit the number of artwork IDs to a maximum of 10
+      const queryArtworkIds = finalArtworkIds.slice(0, 10)
 
-      // Fetch related artworks based on limited artwork IDs
       const relatedArtworks = await relatedArtworksLoader({
         artwork_id: queryArtworkIds,
         size: 8,
@@ -124,7 +121,6 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
       // inject curated artworks and shuffle the list
       const shuffledArtworks = shuffle([...relatedArtworks, ...curatedArtworks])
-
       return connectionFromArray(shuffledArtworks, args)
     }
 
