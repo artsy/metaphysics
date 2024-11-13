@@ -1,8 +1,5 @@
 module.exports = {
   cacheDirectory: ".cache/jest",
-  coverageDirectory: "coverage",
-  collectCoverage: true,
-  coverageReporters: ["lcov", "text-summary"],
   moduleFileExtensions: ["js", "jsx", "json", "ts", "tsx"],
   setupFilesAfterEnv: ["jest-extended", "<rootDir>/src/test/helper.js"],
   testRegex: "(.test)\\.(js|ts)$",
