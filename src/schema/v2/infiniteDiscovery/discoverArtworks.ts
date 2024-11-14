@@ -237,8 +237,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       ).forEach((challengeArtwork) => {
         const length = response.length
         const randomIndex = random(length)
-        // Splice mutates the array
-        response.splice(randomIndex, 0, challengeArtwork)
+        response = response.toSpliced(randomIndex, 0, challengeArtwork)
       })
     } else {
       response = await weaviateGraphqlLoader({
