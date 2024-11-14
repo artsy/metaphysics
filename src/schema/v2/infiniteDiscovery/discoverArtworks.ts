@@ -201,7 +201,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         }
       `
 
-      const challengeQuery = gql`
+      const curatedArtworksQuery = gql`
         {
           Get {
             InfiniteDiscoveryArtworks(
@@ -225,7 +225,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         query: searchQuery,
       })()
       const challengeResponse = await weaviateGraphqlLoader({
-        query: challengeQuery,
+        query: curatedArtworksQuery,
       })()
 
       response = nearObjectResponse?.data?.Get?.InfiniteDiscoveryArtworks
