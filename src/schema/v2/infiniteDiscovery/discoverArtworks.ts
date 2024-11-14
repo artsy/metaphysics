@@ -261,7 +261,9 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
             }
           }
         `,
-      })().then((res) => res.data.Get.InfiniteDiscoveryArtworks)
+      })().then((res) => {
+        return shuffle(res.data.Get.InfiniteDiscoveryArtworks)
+      })
     }
 
     if (!response) return connectionFromArray([], args)
