@@ -257,7 +257,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
           }
         `,
       })().then((res) => {
-        return shuffle(res.data.Get.InfiniteDiscoveryArtworks).slice(0, limit)
+        return sampleSize(res.data.Get.InfiniteDiscoveryArtworks, limit)
       })
     }
 
