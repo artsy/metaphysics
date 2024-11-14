@@ -69,26 +69,18 @@ export const DeleteDiscoveryUserReferencesMutation = mutationWithClientMutationI
     },
   },
   mutateAndGetPayload: async ({ userId }, {}) => {
-    const weaviteUserId = generateUuid(userId)
+    const weaviateUserId = generateUuid(userId)
 
-    // TODO: Temporary implementation to delete likedArtworks and seenArtworks
-    // during spike/testing phase. Don't let this code go to production.
+    // TODO: Temporary implementation to reset likedArtworks and seenArtworks.
+    // This works right now because we always create a new user object in weaviate
+    // if it doesn't exist.
+    // Just for spike/testing phase. Don't let this code go to production.
     // https://github.com/artsy/metaphysics/pull/6211#discussion_r1832675631
     try {
       await fetch(
-        `${WEAVIATE_API_BASE}/objects/InfiniteDiscoveryUsers/${weaviteUserId}`,
+        `${WEAVIATE_API_BASE}/objects/InfiniteDiscoveryUsers/${weaviateUserId}`,
         {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            properties: {
-              likedArtworks: null,
-              seenArtworks: null,
-            },
-          }),
+          method: "DELETE",
         }
       )
       return { success: true }
