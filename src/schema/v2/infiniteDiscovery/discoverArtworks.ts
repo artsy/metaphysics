@@ -233,7 +233,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       ).forEach((challengeArtwork) => {
         const length = response.length
         const randomIndex = random(length)
-        response = response.toSpliced(randomIndex, 0, challengeArtwork)
+        response.splice(randomIndex, 0, challengeArtwork)
       })
     } else {
       response = await weaviateGraphqlLoader({
@@ -246,7 +246,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
                   operator: Equal
                   valueBoolean: true
                 }
-                limit: ${limit}
+                limit: 200
               ) {
                 internalID
                 _additional {
@@ -257,7 +257,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
           }
         `,
       })().then((res) => {
-        return shuffle(res.data.Get.InfiniteDiscoveryArtworks)
+        return sampleSize(res.data.Get.InfiniteDiscoveryArtworks, limit)
       })
     }
 
