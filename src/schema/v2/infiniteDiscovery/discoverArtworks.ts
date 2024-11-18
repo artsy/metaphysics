@@ -145,7 +145,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       query: getCuratedArtworksQuery(),
     })()
 
-    if (user.likedArtworks?.length > 0) {
+    if (user!.likedArtworks?.length > 0) {
       const nearArtworksResponse = await weaviateGraphqlLoader({
         query: getNearObjectQuery(userId, { certainty, limit, offset }),
       })()
@@ -160,7 +160,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
       const filteredArtworkIds = getFilteredIdList(
         mixedArtworkIds,
-        getUserFilterList(user)
+        getUserFilterList(user!)
       )
 
       if (sort == "certainty") {
@@ -176,6 +176,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         limit
       )
       const curatedArtworks = await artworksLoader({ ids: curatedArtworkIds })
+
       return connectionFromArray(curatedArtworks, args)
     }
   },
