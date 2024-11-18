@@ -7,6 +7,7 @@ import {
   RenameRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
+import config from "config"
 
 const rootFieldsAllowList = [
   "agreement",
@@ -48,6 +49,14 @@ export const executableGravitySchema = () => {
     "ArtistSeriesEdge",
     "ArtistSeriesConnection",
   ]
+
+  if (config.USE_UNSTITCHED_SECOND_FACTORS_SCHEMA) {
+    duplicatedTypes.push("SecondFactor")
+    duplicatedTypes.push("AppSecondFactor")
+    duplicatedTypes.push("BackupSecondFactor")
+    duplicatedTypes.push("SmsSecondFactor")
+    duplicatedTypes.push("SecondFactorKind")
+  }
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.

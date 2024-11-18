@@ -242,6 +242,17 @@ import { CreateDiscoveryLikedArtworkMutation } from "./infiniteDiscovery/createD
 import { CreateDiscoveryUserMutation } from "./infiniteDiscovery/createDiscoveryUserMutation"
 import { DeleteDiscoveryUserReferencesMutation } from "./infiniteDiscovery/resetDiscoveryArtworkReferencesMutation"
 import { LikedDiscoveryArtworks } from "./infiniteDiscovery/likedDiscoveryArtworks"
+import {
+  BackupSecondFactor,
+  AppSecondFactor,
+  SmsSecondFactor,
+} from "./me/secondFactors"
+import config from "config"
+
+const useUnstitchedSecondFactorsSchema = !!config.USE_UNSTITCHED_SECOND_FACTORS_SCHEMA
+const secondFactorTypes = useUnstitchedSecondFactorsSchema
+  ? [BackupSecondFactor, AppSecondFactor, SmsSecondFactor]
+  : []
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -520,6 +531,7 @@ export default new GraphQLSchema({
     ArtworkOrEditionSetType,
     SearchCriteriaLabel,
     ...homeViewSectionTypes,
+    ...secondFactorTypes,
   ],
   directives: specifiedDirectives.concat([
     PrincipalFieldDirective,
