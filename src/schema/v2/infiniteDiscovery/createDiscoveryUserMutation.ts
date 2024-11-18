@@ -11,7 +11,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { generateUuid } from "./discoverArtworks"
+import { generateUuid } from "lib/infiniteDiscovery/weaviateHelpers"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DiscoveryUserMutationSuccess",
