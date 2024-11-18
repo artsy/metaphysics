@@ -77,6 +77,31 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createSecondFactorLoader: gravityLoader(
+      "me/second_factors",
+      {},
+      { method: "POST" }
+    ),
+    deliverSecondFactor: gravityLoader(
+      (id) => `me/second_factors/${id}/deliver`,
+      {},
+      { method: "PUT" }
+    ),
+    disableSecondFactorLoader: gravityLoader(
+      (id) => `me/second_factors/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    enableSecondFactorLoader: gravityLoader(
+      (id) => `me/second_factors/${id}/enable`,
+      {},
+      { method: "PUT" }
+    ),
+    updateSecondFactorLoader: gravityLoader(
+      (id) => `me/second_factors/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     updateArtistCareerHighlightLoader: gravityLoader(
       (id) => `artist_career_highlight/${id}`,
       {},
