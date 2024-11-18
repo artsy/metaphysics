@@ -1,8 +1,9 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { SimilarToRecentlyViewed } from "schema/v2/me/similarToRecentlyViewed"
+import { emptyConnection } from "schema/v2/fields/pagination"
 
 export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
   id: "home-view-section-similar-to-recently-viewed-artworks",
@@ -20,12 +21,12 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
   requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
-    if (!context.meLoader) return []
+    if (!context.meLoader) return emptyConnection
 
     const { recently_viewed_artwork_ids } = await context.meLoader()
 
     if (recently_viewed_artwork_ids.length === 0) {
-      return []
+      return emptyConnection
     }
     const recentlyViewedIds = recently_viewed_artwork_ids.slice(0, 7)
 

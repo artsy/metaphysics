@@ -69,24 +69,24 @@ describe("artworksCollectionsBatchUpdate", () => {
       const result = await runAuthenticatedQuery(mutation, context)
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "artworksCollectionsBatchUpdate": Object {
-            "responseOrError": Object {
-              "addedToCollections": Array [
-                Object {
+        {
+          "artworksCollectionsBatchUpdate": {
+            "responseOrError": {
+              "addedToCollections": [
+                {
                   "internalID": "collection-1",
                 },
-                Object {
+                {
                   "internalID": "collection-2",
                 },
               ],
-              "counts": Object {
+              "counts": {
                 "addedToCollections": 2,
                 "artworks": 1,
                 "removedFromCollections": 1,
               },
-              "removedFromCollections": Array [
-                Object {
+              "removedFromCollections": [
+                {
                   "internalID": "collection-3",
                 },
               ],
@@ -107,10 +107,10 @@ describe("artworksCollectionsBatchUpdate", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "artworksCollectionsBatchUpdate": Object {
-          "responseOrError": Object {
-            "mutationError": Object {
+      {
+        "artworksCollectionsBatchUpdate": {
+          "responseOrError": {
+            "mutationError": {
               "message": "One or more specified artworks was not found",
             },
           },

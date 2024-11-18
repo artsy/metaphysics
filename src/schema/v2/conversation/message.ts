@@ -12,10 +12,8 @@ import {
 } from "schema/v2/object_identification"
 import { AttachmentType } from "./attachment"
 import { DeliveryType } from "./delivery"
-import { InvoiceType } from "./invoice"
 import { isExisty } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 const MessageInitiatorType = new GraphQLObjectType<any, ResolverContext>({
   name: "MessageInitiator",
@@ -29,10 +27,6 @@ const MessageInitiatorType = new GraphQLObjectType<any, ResolverContext>({
     },
   },
 })
-
-const isInvoiceMessage = (metadata) => {
-  return !!metadata && isExisty(metadata.lewitt_invoice_id)
-}
 
 export const MessageType = new GraphQLObjectType<any, ResolverContext>({
   name: "Message",
@@ -113,25 +107,6 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
     },
     attachments: {
       type: new GraphQLList(AttachmentType),
-    },
-    invoice: {
-      type: InvoiceType,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        reason:
-          "Payment Request was deprecated. The field was kept for legacy client support.",
-      }),
-      resolve: () => null,
-    },
-    isInvoice: {
-      description: "True if message is an invoice message",
-      type: GraphQLBoolean,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        reason:
-          "Payment Request was deprecated. The field was kept for legacy client support.",
-      }),
-      resolve: ({ metadata }) => isInvoiceMessage(metadata),
     },
     isMessageSentOnPlatform: {
       description:

@@ -48,22 +48,22 @@ describe("RecentlyViewedArtworks", () => {
     const recentlyViewedArtworks = data!.me.recentlyViewedArtworksConnection
 
     expect(recentlyViewedArtworks).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [
-          Object {
-            "node": Object {
+      {
+        "edges": [
+          {
+            "node": {
               "slug": "percy",
               "title": "Percy the Cat",
             },
           },
-          Object {
-            "node": Object {
+          {
+            "node": {
               "slug": "matt",
               "title": "Matt the Person",
             },
           },
         ],
-        "pageInfo": Object {
+        "pageInfo": {
           "hasNextPage": true,
         },
       }
@@ -94,10 +94,10 @@ describe("RecentlyViewedArtworks", () => {
     const recentlyViewedArtworks = data!.me.recentlyViewedArtworksConnection
 
     expect(recentlyViewedArtworks).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [
-          Object {
-            "node": Object {
+      {
+        "edges": [
+          {
+            "node": {
               "slug": "paul",
               "title": "Paul the snail",
             },
@@ -134,22 +134,22 @@ describe("RecentlyViewedArtworks", () => {
     const recentlyViewedArtworks = data!.me.recentlyViewedArtworksConnection
 
     expect(recentlyViewedArtworks).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [
-          Object {
-            "node": Object {
+      {
+        "edges": [
+          {
+            "node": {
               "slug": "percy",
               "title": "Percy the Cat",
             },
           },
-          Object {
-            "node": Object {
+          {
+            "node": {
               "slug": "matt",
               "title": "Matt the Person",
             },
           },
         ],
-        "pageInfo": Object {
+        "pageInfo": {
           "hasNextPage": true,
         },
       }

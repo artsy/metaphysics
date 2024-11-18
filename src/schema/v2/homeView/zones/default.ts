@@ -1,50 +1,50 @@
-import { ResolverContext } from "types/graphql"
 import { HomeViewSection } from "schema/v2/homeView/sections"
-import { GalleriesNearYou } from "../sections/GalleriesNearYou"
-import { Auctions } from "../sections/Auctions"
-import { LatestArticles } from "../sections/LatestArticles"
-import { News } from "../sections/News"
-import { LatestAuctionResults } from "../sections/LatestAuctionResults"
-import { LatestActivity } from "../sections/LatestActivity"
-import { ViewingRooms } from "../sections/ViewingRooms"
-import { ShowsForYou } from "../sections/ShowsForYou"
-import { MarketingCollections } from "../sections/MarketingCollections"
-import { FeaturedFairs } from "../sections/FeaturedFairs"
-import { HeroUnits } from "../sections/HeroUnits"
-import { RecommendedArtists } from "../sections/RecommendedArtists"
-import { TrendingArtists } from "../sections/TrendingArtists"
-import { ActiveBids } from "../sections/ActiveBids"
-import { RecommendedArtworks } from "../sections/RecommendedArtworks"
-import { NewWorksFromGalleriesYouFollow } from "../sections/NewWorksFromGalleriesYouFollow"
-import { NewWorksForYou } from "../sections/NewWorksForYou"
-import { AuctionLotsForYou } from "../sections/AuctionLotsForYou"
-import { RecentlyViewedArtworks } from "../sections/RecentlyViewedArtworks"
-import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
-import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
+import { ResolverContext } from "types/graphql"
 import { isSectionDisplayable } from "../helpers/isSectionDisplayable"
-import { DiscoverMarketingCollections } from "../sections/DiscoverMarketingCollections"
-import { ExploreByMarketingCollectionCategories } from "../sections/ExploreByMarketingCollectionCategories"
+import { ActiveBids } from "../sections/ActiveBids"
+import { AuctionLotsForYou } from "../sections/AuctionLotsForYou"
+import { Auctions } from "../sections/Auctions"
+import { CuratorsPicksEmerging } from "../sections/CuratorsPicksEmerging"
+import { DiscoverSomethingNew } from "../sections/DiscoverSomethingNew"
+import { ExploreByCategory } from "../sections/ExploreByCategory"
+import { FeaturedFairs } from "../sections/FeaturedFairs"
+import { GalleriesNearYou } from "../sections/GalleriesNearYou"
+import { HeroUnits } from "../sections/HeroUnits"
+import { LatestActivity } from "../sections/LatestActivity"
+import { LatestArticles } from "../sections/LatestArticles"
+import { LatestAuctionResults } from "../sections/LatestAuctionResults"
+import { News } from "../sections/News"
+import { NewWorksForYou } from "../sections/NewWorksForYou"
+import { NewWorksFromGalleriesYouFollow } from "../sections/NewWorksFromGalleriesYouFollow"
+import { RecentlyViewedArtworks } from "../sections/RecentlyViewedArtworks"
+import { RecommendedArtists } from "../sections/RecommendedArtists"
+import { RecommendedArtworks } from "../sections/RecommendedArtworks"
+import { ShowsForYou } from "../sections/ShowsForYou"
+import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyViewedArtworks"
+import { Tasks } from "../sections/Tasks"
+import { TrendingArtists } from "../sections/TrendingArtists"
+import { ViewingRooms } from "../sections/ViewingRooms"
 
 const SECTIONS: HomeViewSection[] = [
+  Tasks,
   LatestActivity,
   NewWorksForYou,
+  RecentlyViewedArtworks,
+  DiscoverSomethingNew,
+  RecommendedArtworks,
+  CuratorsPicksEmerging,
+  ExploreByCategory,
   HeroUnits,
-  ExploreByMarketingCollectionCategories,
   ActiveBids,
   AuctionLotsForYou,
   Auctions,
-  DiscoverMarketingCollections,
   LatestAuctionResults,
   GalleriesNearYou,
   LatestArticles,
   News,
-  CuratorsPicksEmerging,
-  MarketingCollections,
-  RecommendedArtworks,
   NewWorksFromGalleriesYouFollow,
   RecommendedArtists,
   TrendingArtists,
-  RecentlyViewedArtworks,
   SimilarToRecentlyViewedArtworks,
   ViewingRooms,
   ShowsForYou,

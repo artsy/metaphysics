@@ -61,14 +61,14 @@ describe("AnalyticsRankedStats type", () => {
     })
     it("is accessible through the partner type", () => {
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "partner": Object {
-            "analytics": Object {
-              "rankedStats": Object {
-                "edges": Array [
-                  Object {
-                    "node": Object {
-                      "entity": Object {
+        {
+          "partner": {
+            "analytics": {
+              "rankedStats": {
+                "edges": [
+                  {
+                    "node": {
+                      "entity": {
                         "title": "Lona Misa",
                       },
                     },
@@ -94,14 +94,14 @@ describe("AnalyticsRankedStats type", () => {
     })
     it("is accessible through the partner type", () => {
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "partner": Object {
-            "analytics": Object {
-              "rankedStats": Object {
-                "edges": Array [
-                  Object {
-                    "node": Object {
-                      "entity": Object {
+        {
+          "partner": {
+            "analytics": {
+              "rankedStats": {
+                "edges": [
+                  {
+                    "node": {
+                      "entity": {
                         "title": "Lona Misa",
                       },
                     },

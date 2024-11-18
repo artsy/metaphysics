@@ -1,7 +1,7 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { NotificationsConnection } from "schema/v2/notifications"
 
 export const LatestActivity: HomeViewSection = {

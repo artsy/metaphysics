@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLEnumType,
+  GraphQLError,
   GraphQLFieldConfig,
   GraphQLFloat,
   GraphQLInt,
@@ -8,25 +9,46 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLError,
 } from "graphql"
+import { connectionFromArraySlice } from "graphql-relay"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
+import {
+  DEFAULT_CURRENCY_PREFERENCE,
+  DEFAULT_LENGTH_UNIT_PREFERENCE,
+  convertConnectionArgsToGravityArgs,
+  snakeCaseKeys,
+} from "lib/helpers"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import moment from "moment"
+import { pageable } from "relay-cursor-paging"
 import Conversation from "schema/v2/conversation"
 import Conversations from "schema/v2/conversation/conversations"
-import Invoice from "schema/v2/conversation/invoice"
 import date from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
+import { createPageCursors } from "schema/v2/fields/pagination"
 import { IDFields, NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
+import {
+  AlertType,
+  AlertsConnectionSortEnum,
+  AlertsConnectionType,
+  resolveAlertFromJSON,
+} from "../Alerts"
 import { MeCollectorProfile } from "../CollectorProfile/collectorProfile"
+import { artworkConnection } from "../artwork"
+import { emptyConnection, paginationResolver } from "../fields/pagination"
 import {
   IdentityVerification,
   PendingIdentityVerification,
 } from "../identityVerification"
 import Image from "../image"
+import { NotificationType } from "../notifications"
+import {
+  PartnerOfferToCollectorConnectionType,
+  PartnerOfferToCollectorSortsType,
+} from "../partnerOfferToCollector"
 import { PhoneNumber } from "../phoneNumber"
+import { PreviewSavedSearchAttributesType } from "../previewSavedSearch"
 import { quiz } from "../quiz"
 import { SaleArtworksConnectionField } from "../sale_artworks"
 import { ArtistRecommendations } from "./artistRecommendations"
@@ -65,34 +87,11 @@ import { SavedArtworks } from "./savedArtworks"
 import { ShowsByFollowedArtists } from "./showsByFollowedArtists"
 import { ShowsConnection } from "./showsConnection"
 import { SimilarToRecentlyViewed } from "./similarToRecentlyViewed"
+import { submissionsConnection } from "./submissionsConnection"
+import { TaskType } from "./task"
 import { UserInterest } from "./userInterest"
 import { UserInterestsConnection } from "./userInterestsConnection"
 import { WatchedLotConnection } from "./watchedLotConnection"
-import { NotificationType } from "../notifications"
-import { artworkConnection } from "../artwork"
-import { connectionFromArraySlice } from "graphql-relay"
-import { createPageCursors } from "schema/v2/fields/pagination"
-import {
-  DEFAULT_CURRENCY_PREFERENCE,
-  DEFAULT_LENGTH_UNIT_PREFERENCE,
-  snakeCaseKeys,
-} from "lib/helpers"
-import {
-  AlertType,
-  AlertsConnectionSortEnum,
-  AlertsConnectionType,
-  resolveAlertFromJSON,
-} from "../Alerts"
-import { emptyConnection, paginationResolver } from "../fields/pagination"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { pageable } from "relay-cursor-paging"
-import {
-  PartnerOfferToCollectorConnectionType,
-  PartnerOfferToCollectorSortsType,
-} from "../partnerOfferToCollector"
-import { PreviewSavedSearchAttributesType } from "../previewSavedSearch"
-import { submissionsConnection } from "./submissionsConnection"
-import TaskType from "./task"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -408,7 +407,6 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       type: Image.type,
       resolve: collectorProfileResolver("icon"),
     },
-    invoice: Invoice,
     identityVerification: IdentityVerification,
     identityVerified: {
       type: GraphQLBoolean,
@@ -632,8 +630,9 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     submissionsConnection: submissionsConnection,
-    // genomic recommendation
     recommendedArtworks: {
+      deprecationReason:
+        "These genomic recs are deprecated. Use artworkRecommendations instead.",
       type: artworkConnection.connectionType,
       args: pageable({
         page: { type: GraphQLInt },
@@ -689,7 +688,7 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
       },
       resolve: (_root, { limit }, { meTasksLoader }) => {
         if (!meTasksLoader) return null
-        return meTasksLoader({ limit })
+        return meTasksLoader({ size: limit })
       },
     },
     type: {

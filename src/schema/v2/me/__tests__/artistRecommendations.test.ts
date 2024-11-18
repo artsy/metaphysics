@@ -44,16 +44,16 @@ describe("artistRecommendations", () => {
     } = await runAuthenticatedQuery(query, context)
 
     expect(artistRecommendations).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [
-          Object {
-            "node": Object {
+      {
+        "edges": [
+          {
+            "node": {
               "internalID": "608a7416bdfbd1a789ba0911",
               "slug": "banksy",
             },
           },
-          Object {
-            "node": Object {
+          {
+            "node": {
               "internalID": "608a7417bdfbd1a789ba092a",
               "slug": "1-plus-1-plus-1",
             },
@@ -111,8 +111,8 @@ describe("artistRecommendations", () => {
     } = await runAuthenticatedQuery(query, context)
 
     expect(artistRecommendations).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [],
+      {
+        "edges": [],
         "totalCount": 0,
       }
     `)
@@ -145,16 +145,16 @@ describe("artistRecommendations", () => {
     } = await runAuthenticatedQuery(query, context)
 
     expect(artistRecommendations).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [
-          Object {
-            "node": Object {
+      {
+        "edges": [
+          {
+            "node": {
               "internalID": "608a7416bdfbd1a789ba0911",
               "slug": "banksy",
             },
           },
-          Object {
-            "node": Object {
+          {
+            "node": {
               "internalID": "608a7417bdfbd1a789ba092a",
               "slug": "1-plus-1-plus-1",
             },

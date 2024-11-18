@@ -53,6 +53,7 @@ describe("when trending artists are present", () => {
       ),
       artistsLoader: jest.fn(
         // mock implementation to filter over the array of artists above
+        // @ts-ignore
         ({ ids }) => {
           const matchedRecords = mockArtistRecords.filter(({ _id }) =>
             ids.includes(_id)

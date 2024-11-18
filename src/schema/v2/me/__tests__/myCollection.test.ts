@@ -3,7 +3,11 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { ResolverContext } from "types/graphql"
 
 describe("me.myCollection", () => {
-  const marketPriceInsightsBatchLoader = jest.fn(async () => mockVortexResponse)
+  const marketPriceInsightsBatchLoader = jest.fn()
+
+  beforeEach(() => {
+    marketPriceInsightsBatchLoader.mockResolvedValue(mockVortexResponse)
+  })
 
   it("returns artworks for a collection and passes params correctly", async () => {
     const query = gql`
@@ -106,34 +110,34 @@ describe("me.myCollection", () => {
       `
 
       const context: Partial<ResolverContext> = {
-        meLoader: () =>
-          Promise.resolve({
-            id: "some-user-id",
-          }),
-
-        meMyCollectionArtworksLoader: async () =>
-          mockCollectionArtworksResponse,
-        marketPriceInsightsBatchLoader: jest.fn(async () => mockVortexResponse),
-        artistLoader: () =>
-          Promise.resolve({
-            _id: "artist-id",
-          }),
+        meLoader: jest.fn().mockResolvedValue({
+          id: "some-user-id",
+        }),
+        meMyCollectionArtworksLoader: jest
+          .fn()
+          .mockResolvedValue(mockCollectionArtworksResponse),
+        marketPriceInsightsBatchLoader: jest
+          .fn()
+          .mockResolvedValue(mockVortexResponse),
+        artistLoader: jest.fn().mockResolvedValue({
+          _id: "artist-id",
+        }),
       }
 
       const data = await runAuthenticatedQuery(query, context)
 
       expect(data.me.myCollectionConnection.edges).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "node": Object {
-              "marketPriceInsights": Object {
+        [
+          {
+            "node": {
+              "marketPriceInsights": {
                 "lastAuctionResultDate": "2023-06-15T00:00:00Z",
               },
             },
           },
-          Object {
-            "node": Object {
-              "marketPriceInsights": Object {
+          {
+            "node": {
+              "marketPriceInsights": {
                 "lastAuctionResultDate": "2022-06-15T00:00:00Z",
               },
             },
@@ -158,9 +162,9 @@ describe("me.myCollection", () => {
       }
     `
 
-    const mockMeMyCollectionArtworksLoader = jest.fn(() => {
-      return mockCollectionArtworksResponse
-    })
+    const mockMeMyCollectionArtworksLoader = jest
+      .fn()
+      .mockResolvedValue(mockCollectionArtworksResponse)
 
     const context: Partial<ResolverContext> = {
       meLoader: () =>
@@ -169,7 +173,9 @@ describe("me.myCollection", () => {
         }),
 
       meMyCollectionArtworksLoader: mockMeMyCollectionArtworksLoader,
-      marketPriceInsightsBatchLoader: jest.fn(async () => mockVortexResponse),
+      marketPriceInsightsBatchLoader: jest
+        .fn()
+        .mockResolvedValue(mockVortexResponse),
       artistLoader: () =>
         Promise.resolve({
           _id: "artist-id",
@@ -444,18 +450,18 @@ describe("me.myCollection", () => {
     const data = await runAuthenticatedQuery(query, context)
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "me": Object {
-          "myCollectionConnection": Object {
-            "edges": Array [
-              Object {
-                "node": Object {
-                  "artist": Object {
+      {
+        "me": {
+          "myCollectionConnection": {
+            "edges": [
+              {
+                "node": {
+                  "artist": {
                     "internalID": "artist-id",
                   },
                   "category": "Painting",
                   "internalID": "artwork_id_with_market_price_insights",
-                  "marketPriceInsights": Object {
+                  "marketPriceInsights": {
                     "annualValueSoldDisplayText": "$22M",
                     "averageSalePriceDisplayText": "US$2,176,421",
                     "demandRank": 0.64,

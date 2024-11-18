@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Me Conversation concerning items doesnt return invalid items 1`] = `
-Array [
-  Object {
-    "item": Object {
+[
+  {
+    "item": {
       "__typename": "Show",
       "isReference": true,
     },
@@ -13,16 +13,16 @@ Array [
 `;
 
 exports[`Me Conversation concerning items returns the conversation items 1`] = `
-Array [
-  Object {
-    "item": Object {
+[
+  {
+    "item": {
       "__typename": "Artwork",
       "isAcquireable": true,
     },
     "title": "Pwetty Cats",
   },
-  Object {
-    "item": Object {
+  {
+    "item": {
       "__typename": "Show",
       "isReference": true,
     },
@@ -32,7 +32,7 @@ Array [
 `;
 
 exports[`Me Conversation concerning unread indicator returns the right unread status 1`] = `
-Object {
+{
   "isLastMessageToUser": true,
   "unread": true,
   "unreadByCollector": true,
@@ -46,12 +46,12 @@ exports[`Me Conversation inquiry request returns the formatted first message as 
 `;
 
 exports[`Me Conversation inquiry request returns the formatted first message, questions, and shipping location when present 1`] = `
-Array [
-  Object {
+[
+  {
     "internalID": "shipping_quote",
     "question": "Shipping",
   },
-  Object {
+  {
     "internalID": "condition_and_provenance",
     "question": "Condition & Provenance",
   },
@@ -59,7 +59,7 @@ Array [
 `;
 
 exports[`Me Conversation inquiry request returns the formatted first message, questions, and shipping location when present 2`] = `
-Object {
+{
   "city": "New York City",
   "country": "US",
   "state": "NY",
@@ -75,77 +75,69 @@ I would like to request the following information about this artwork:
 `;
 
 exports[`Me Conversation returns a conversation 1`] = `
-Object {
-  "conversation": Object {
-    "from": Object {
+{
+  "conversation": {
+    "from": {
       "email": "collector@example.com",
     },
-    "fromProfile": Object {
+    "fromProfile": {
       "email": "collector@example.com",
     },
     "initialMessage": "Loved some of the works at your fair booth!",
     "internalID": "420",
     "lastMessage": "Loved some of the works at your fair booth!",
-    "messages": Object {
-      "edges": Array [
-        Object {
-          "node": Object {
+    "messages": {
+      "edges": [
+        {
+          "node": {
             "body": "I'm a cat",
             "deliveries": null,
-            "from": Object {
+            "from": {
               "email": "fancy_german_person@posteo.de",
               "name": "Percy Z",
             },
             "internalID": "240",
-            "invoice": null,
             "isFromUser": true,
-            "isInvoice": true,
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "body": "",
             "deliveries": null,
-            "from": Object {
+            "from": {
               "email": "postman@posteo.de",
               "name": "Bitty Z",
             },
             "internalID": "241",
-            "invoice": null,
             "isFromUser": false,
-            "isInvoice": false,
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "body": null,
             "deliveries": null,
-            "from": Object {
+            "from": {
               "email": "fancy_german_person+wunderbar@posteo.de",
               "name": "Matt Z",
             },
             "internalID": "242",
-            "invoice": null,
             "isFromUser": true,
-            "isInvoice": false,
           },
         },
-        Object {
-          "node": Object {
+        {
+          "node": {
             "body": null,
-            "deliveries": Array [
-              Object {
+            "deliveries": [
+              {
                 "openedAt": "2020-12-31T12:00:00+00:00",
               },
             ],
-            "from": Object {
+            "from": {
               "email": "postman+wunderlich@posteo.de",
               "name": null,
             },
             "internalID": "243",
-            "invoice": null,
             "isFromUser": false,
-            "isInvoice": false,
           },
         },
       ],

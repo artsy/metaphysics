@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Invoice fetches invoice by token and matches snapshot 1`] = `
+{
+  "currency": "USD",
+  "email": "percy.z@example.com",
+  "externalNote": "Thank you for your purchase",
+  "lineItems": [
+    {
+      "description": "Artwork Purchase",
+      "quantity": 1,
+      "subtotal": "$500",
+    },
+  ],
+  "name": "Percy Z",
+  "number": "25173",
+  "payments": [
+    {
+      "amount": "$500",
+      "createdAt": "2024-10-13T00:00:00Z",
+      "creditCard": {
+        "brand": "Visa",
+        "lastDigits": "1234",
+      },
+      "successful": true,
+    },
+  ],
+  "readyAt": "2024-10-12T00:00:00Z",
+  "remaining": "$0",
+  "state": "READY",
+}
+`;

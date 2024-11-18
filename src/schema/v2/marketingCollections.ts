@@ -14,11 +14,15 @@ import {
 import { ResolverContext } from "types/graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { MarketingCollectionsSorts } from "./sorts/marketingCollectionsSort"
+import {
+  MarketingCollectionsSorts,
+  MARKETING_COLLECTIONS_SORTS,
+} from "./sorts/marketingCollectionsSort"
 import { NodeInterface, InternalIDFields } from "./object_identification"
 import Image, { normalizeImageData, getDefault } from "schema/v2/image"
 import { date } from "schema/v2/fields/date"
 import { markdown } from "schema/v2/fields/markdown"
+import { marketingCollectionCategories } from "lib/marketingCollectionCategories"
 
 const MarketingCollectionQuery = new GraphQLObjectType<any, ResolverContext>({
   name: "MarketingCollectionQuery",
@@ -320,6 +324,24 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
   }),
   resolve: async (_root, args, { marketingCollectionsLoader }) => {
     const { size } = convertConnectionArgsToGravityArgs(args)
+    // Enable curated sorting
+    if (args.sort === MARKETING_COLLECTIONS_SORTS.CURATED.value) {
+      if (!args.category) {
+        throw new Error("Category is required for CURATED sort.")
+      }
+
+      const category = args.category
+
+      if (!marketingCollectionCategories[category]) {
+        throw new Error(`No curated sort available for category: ${category}`)
+      }
+
+      args.slugs = marketingCollectionCategories[category].sortedCollectionSlugs
+
+      delete args.category
+      delete args.sort
+    }
+
     const gravityArgs: {
       page?: number
       size: number
@@ -329,10 +351,10 @@ export const MarketingCollections: GraphQLFieldConfig<void, ResolverContext> = {
       category?: string
       sort?: string
     } = {
-      size,
-      artist_id: args.artistId,
-      is_featured_artist_content: args.isFeaturedArtistContent,
       ...args,
+      size,
+      artist_id: args.artistID,
+      is_featured_artist_content: args.is_featured_artist_content,
     }
 
     try {

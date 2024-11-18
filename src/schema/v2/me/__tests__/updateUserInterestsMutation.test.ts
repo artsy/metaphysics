@@ -52,16 +52,16 @@ describe("updateUserInterestMutation", () => {
     })
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "updateUserInterests": Object {
-          "userInterestsOrErrors": Array [
-            Object {
+      {
+        "updateUserInterests": {
+          "userInterestsOrErrors": [
+            {
               "private": false,
             },
-            Object {
+            {
               "private": true,
             },
-            Object {
+            {
               "private": false,
             },
           ],

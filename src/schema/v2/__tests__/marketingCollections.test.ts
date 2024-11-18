@@ -14,6 +14,15 @@ const marketingCollectionsData = [
   },
 ]
 
+const marketingCollectionsSlugsData = [
+  {
+    slug: "percys-z-collection-1",
+  },
+  {
+    slug: "fiby-z-collection-2",
+  },
+]
+
 describe("MarketingCollections", () => {
   it("returns a list of marketing collections", async () => {
     const query = gql`
@@ -104,34 +113,34 @@ describe("MarketingCollections", () => {
     const data = await runQuery(query, context)
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "marketingCollections": Array [
-          Object {
-            "artworksConnection": Object {
-              "edges": Array [
-                Object {
-                  "node": Object {
+      {
+        "marketingCollections": [
+          {
+            "artworksConnection": {
+              "edges": [
+                {
+                  "node": {
                     "slug": "percy-1",
                   },
                 },
-                Object {
-                  "node": Object {
+                {
+                  "node": {
                     "slug": "fiby-2",
                   },
                 },
               ],
             },
           },
-          Object {
-            "artworksConnection": Object {
-              "edges": Array [
-                Object {
-                  "node": Object {
+          {
+            "artworksConnection": {
+              "edges": [
+                {
+                  "node": {
                     "slug": "percy-1",
                   },
                 },
-                Object {
-                  "node": Object {
+                {
+                  "node": {
                     "slug": "fiby-2",
                   },
                 },
@@ -152,24 +161,83 @@ describe("MarketingCollections", () => {
       }
     `
 
-    const payload = [
-      {
-        slug: "percys-z-collection-1",
-      },
-      {
-        slug: "fiby-z-collection-2",
-      },
-    ]
-
     const context = {
       authenticatedLoaders: {},
-      marketingCollectionsLoader: () => Promise.resolve({ body: payload }),
+      marketingCollectionsLoader: () =>
+        Promise.resolve({ body: marketingCollectionsSlugsData }),
     } as any
 
     const data = await runQuery(query, context)
 
     expect(data).toEqual({
-      curatedMarketingCollections: payload,
+      curatedMarketingCollections: marketingCollectionsSlugsData,
     })
+  })
+
+  it("returns the marketing collections with a curated sort and specific category", async () => {
+    const query = gql`
+      {
+        marketingCollections(sort: CURATED, size: 2, category: "Gallery") {
+          slug
+        }
+      }
+    `
+
+    const context = {
+      authenticatedLoaders: {},
+    } as any
+
+    context.marketingCollectionsLoader = jest
+      .fn()
+      .mockResolvedValue({ body: marketingCollectionsData })
+
+    const data = await runQuery(query, context)
+
+    expect(
+      context.marketingCollectionsLoader.mock.calls[0][0]
+    ).not.toContainKeys(["category", "sort"])
+
+    expect(context.marketingCollectionsLoader).toHaveBeenCalledWith({
+      size: 2,
+      slugs: [
+        "new-from-tastemaking-galleries",
+        "new-from-nonprofits-acaf27cc-2d39-4ed3-93dd-d7099e183691",
+        "new-from-small-galleries",
+        "new-from-leading-galleries",
+        "new-to-artsy",
+      ],
+    })
+
+    expect(data).toEqual({
+      marketingCollections: marketingCollectionsSlugsData,
+    })
+  })
+
+  it("returns an error when used with curated sort and non-existing category params", async () => {
+    const query = gql`
+      {
+        marketingCollections(sort: CURATED, size: 2, category: "newest") {
+          slug
+        }
+      }
+    `
+    const context = {} as any
+    await expect(runQuery(query, context)).rejects.toThrow(
+      "No curated sort available for category: newest"
+    )
+  })
+
+  it("returns an error when used with a curated sort and without category params", async () => {
+    const query = gql`
+      {
+        marketingCollections(sort: CURATED, size: 2) {
+          slug
+        }
+      }
+    `
+    const context = {} as any
+    await expect(runQuery(query, context)).rejects.toThrow(
+      "Category is required for CURATED sort."
+    )
   })
 })

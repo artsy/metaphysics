@@ -1,7 +1,7 @@
 import { ContextModule } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { ArtistRecommendations } from "schema/v2/me/artistRecommendations"
 
 export const RecommendedArtists: HomeViewSection = {

@@ -2,7 +2,7 @@ import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { ResolverContext } from "types/graphql"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { filterArtworksConnectionWithParams } from "schema/v2/filterArtworksConnection"
 
 /*
@@ -92,7 +92,7 @@ export const ExampleSection: HomeViewSection = {
    * -or-
    * type: HomeViewSectionTypeNames.HomeViewSectionArtists
    * -or-
-   * type: HomeViewSectionTypeNames.HomeViewSectionGalleries
+   * type: HomeViewSectionTypeNames.HomeViewSectionShows
    * etc…
    *
    */

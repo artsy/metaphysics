@@ -1,6 +1,6 @@
 import config from "config"
-import { Context as UnleashContext, Unleash, initialize } from "unleash-client"
-import { info, error } from "./loggers"
+import { Unleash, Context as UnleashContext, initialize } from "unleash-client"
+import { error, info } from "./loggers"
 
 const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
 
@@ -10,10 +10,10 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
  */
 const FEATURE_FLAGS_LIST = [
   "diamond_blurhash-enabled-globally",
-  "emerald_signals-partner-offers",
-  "emerald_signals-auction-improvements",
   "onyx_enable-home-view-section-featured-fairs",
   "diamond_home-view-marketing-collection-categories",
+  "emerald_home-view-tasks-section",
+  "onyx_experiment_home_view_test",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
@@ -49,4 +49,29 @@ export function isFeatureFlagEnabled(
   }
 
   return unleashClient.isEnabled(flag, context)
+}
+
+export function getFeatureFlag(flag: FeatureFlag) {
+  if (!unleashClient) {
+    error(
+      `[featureFlags] Error retrieving ${flag} feature flag. Unleash client not initialized.`
+    )
+    return false
+  }
+
+  return unleashClient.getFeatureToggleDefinition(flag)
+}
+
+export function getExperimentVariant(
+  flag: FeatureFlag,
+  context: UnleashContext = {}
+) {
+  if (!unleashClient) {
+    error(
+      `[featureFlags] Error retrieving ${flag} feature flag. Unleash client not initialized.`
+    )
+    return false
+  }
+
+  return unleashClient.getVariant(flag, context)
 }

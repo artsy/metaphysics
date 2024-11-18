@@ -393,6 +393,7 @@ export default (accessToken, userID, opts) => {
     followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
     gravityGraphQLLoader: gravityGraphQL(accessToken),
     homepageModulesLoader: gravityLoader("me/modules"),
+    // DEPRECATED: This endpoint is no longer in use.
     homepageSuggestedArtworksLoader: gravityLoader(
       "me/suggested/artworks/homepage"
     ),
@@ -516,7 +517,17 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
-    meTasksLoader: gravityLoader("me/tasks", {}, {}),
+    meTasksLoader: gravityLoader("me/tasks", {}, { headers: true }),
+    meDismissTaskLoader: gravityLoader(
+      (id) => `me/task/${id}/dismiss`,
+      {},
+      { method: "PUT" }
+    ),
+    meAckTaskLoader: gravityLoader(
+      (id) => `me/task/${id}/acknowledge`,
+      {},
+      { method: "PUT" }
+    ),
     meUpdateCollectorProfileLoader: gravityLoader(
       "me/collector_profile",
       {},

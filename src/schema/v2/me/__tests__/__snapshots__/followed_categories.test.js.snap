@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`returns artworks for a collection 1`] = `
-Object {
-  "me": Object {
-    "followsAndSaves": Object {
-      "genesConnection": Object {
-        "edges": Array [
-          Object {
-            "node": Object {
-              "gene": Object {
+{
+  "me": {
+    "followsAndSaves": {
+      "genesConnection": {
+        "edges": [
+          {
+            "node": {
+              "gene": {
                 "name": "Engaged with Traditional African Art",
                 "slug": "engaged-with-traditional-african-art",
               },

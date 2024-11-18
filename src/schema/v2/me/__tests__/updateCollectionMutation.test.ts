@@ -61,10 +61,10 @@ describe("updateCollection", () => {
       const result = await runAuthenticatedQuery(mutation, context)
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "updateCollection": Object {
-            "responseOrError": Object {
-              "collection": Object {
+        {
+          "updateCollection": {
+            "responseOrError": {
+              "collection": {
                 "name": "Dining room",
                 "shareableWithPartners": true,
               },
@@ -95,12 +95,12 @@ describe("updateCollection", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "updateCollection": Object {
-          "responseOrError": Object {
-            "mutationError": Object {
-              "fieldErrors": Array [
-                Object {
+      {
+        "updateCollection": {
+          "responseOrError": {
+            "mutationError": {
+              "fieldErrors": [
+                {
                   "message": "You already have a list with this name",
                   "name": "name",
                 },

@@ -101,8 +101,12 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
             const reduceData = ({ body, headers }) =>
               apiOptions.headers ? { body, headers } : body
 
+            // Include `headers` in the cache key if `headers: true` was specified.
+            // This is because the shape of the cached data will be different.
+            const cacheKey = apiOptions.headers ? `${key}::headers` : key
+
             const cacheData = (data, options: CacheOptions) => {
-              cache.set(key, data, options).catch((err) => warn(key, err))
+              cache.set(cacheKey, data, options).catch((err) => warn(key, err))
               return data
             }
 
@@ -126,7 +130,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
               // No need to run reduceData on a cache fetch.
               return (
                 cache
-                  .get(key)
+                  .get(cacheKey)
                   // Cache hit
                   .then(
                     finish({

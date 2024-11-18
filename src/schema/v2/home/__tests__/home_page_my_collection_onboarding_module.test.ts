@@ -30,9 +30,9 @@ describe("HomePageMyCollectionOnboardingModule", () => {
     const data = await runAuthenticatedQuery(query, context)
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "homePage": Object {
-          "onboardingModule": Object {
+      {
+        "homePage": {
+          "onboardingModule": {
             "showMyCollectionCard": false,
             "showSWACard": false,
           },
@@ -69,9 +69,9 @@ describe("HomePageMyCollectionOnboardingModule", () => {
     const data = await runAuthenticatedQuery(query, context)
 
     expect(data).toMatchInlineSnapshot(`
-      Object {
-        "homePage": Object {
-          "onboardingModule": Object {
+      {
+        "homePage": {
+          "onboardingModule": {
             "showMyCollectionCard": true,
             "showSWACard": true,
           },

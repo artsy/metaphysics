@@ -48,22 +48,22 @@ describe("NewWorksFromGalleriesYouFollow", () => {
       .newWorksFromGalleriesYouFollowConnection
 
     expect(newWorksFromGalleriesYouFollow).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [
-          Object {
-            "node": Object {
+      {
+        "edges": [
+          {
+            "node": {
               "slug": "percy",
               "title": "Percy the Cat",
             },
           },
-          Object {
-            "node": Object {
+          {
+            "node": {
               "slug": "matt",
               "title": "Matt the Person",
             },
           },
         ],
-        "pageInfo": Object {
+        "pageInfo": {
           "hasNextPage": true,
         },
       }
@@ -101,9 +101,9 @@ describe("NewWorksFromGalleriesYouFollow", () => {
       .newWorksFromGalleriesYouFollowConnection
 
     expect(newWorksFromGalleriesYouFollow).toMatchInlineSnapshot(`
-      Object {
-        "edges": Array [],
-        "pageInfo": Object {
+      {
+        "edges": [],
+        "pageInfo": {
           "hasNextPage": true,
         },
       }

@@ -35,7 +35,6 @@ import {
 import { UserInterestConnection } from "./userInterests"
 import { UserSaleProfile } from "./userSaleProfile"
 import { Devices } from "./devices"
-import config from "config"
 
 export const UserAdminNoteType = new GraphQLObjectType<any, ResolverContext>({
   name: "UserAdminNotes",
@@ -203,7 +202,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
           return profiles[0]
         },
       },
-      ...(config.USE_UNSTITCHED_USER_DEVICES ? { devices: Devices } : {}),
+      devices: Devices,
       name: {
         description: "The given name of the user.",
         type: new GraphQLNonNull(GraphQLString),

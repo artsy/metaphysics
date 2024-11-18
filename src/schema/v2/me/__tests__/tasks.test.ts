@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("Me", () => {
   describe("Tasks", () => {
@@ -27,7 +27,7 @@ describe("Me", () => {
         },
       ]
 
-      const meTasksLoader = jest.fn(async () => [
+      const meTasksLoader = jest.fn().mockResolvedValue([
         {
           title: "Come on baby light my wire",
           task_type: "send_wire",
@@ -39,7 +39,7 @@ describe("Me", () => {
       ])
 
       const context = {
-        meLoader: () => Promise.resolve({}),
+        meLoader: jest.fn().mockResolvedValue({}),
         meTasksLoader,
       }
 
@@ -50,7 +50,7 @@ describe("Me", () => {
       expect(tasks).toEqual(expectedData)
 
       expect(meTasksLoader).toHaveBeenCalledWith({
-        limit: 2,
+        size: 2,
       })
     })
   })

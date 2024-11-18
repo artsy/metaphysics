@@ -70,22 +70,22 @@ describe("createAlertMutation", () => {
     const res = await runAuthenticatedQuery(mutation, context)
 
     expect(res).toMatchInlineSnapshot(`
-      Object {
-        "createAlert": Object {
-          "responseOrError": Object {
+      {
+        "createAlert": {
+          "responseOrError": {
             "__typename": "CreateAlertSuccess",
-            "alert": Object {
-              "artistsConnection": Object {
-                "edges": Array [
-                  Object {
-                    "node": Object {
+            "alert": {
+              "artistsConnection": {
+                "edges": [
+                  {
+                    "node": {
                       "name": "Catty Artist",
                     },
                   },
                 ],
               },
               "internalID": "alert-id",
-              "settings": Object {
+              "settings": {
                 "email": true,
                 "frequency": "DAILY",
                 "push": true,

@@ -1,7 +1,7 @@
 import { ContextModule } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { connectionFromArray } from "graphql-relay"
 import { getCuratedArtists } from "schema/v2/artists/curatedTrending"
 

@@ -865,12 +865,12 @@ describe("Artist type", () => {
           "partnerID"
         )
         expect(data).toMatchInlineSnapshot(`
-          Object {
-            "artist": Object {
-              "filterArtworksConnection": Object {
-                "edges": Array [
-                  Object {
-                    "node": Object {
+          {
+            "artist": {
+              "filterArtworksConnection": {
+                "edges": [
+                  {
+                    "node": {
                       "internalID": "im-a-cat",
                       "title": "I'm a cat",
                     },

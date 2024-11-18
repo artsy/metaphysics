@@ -219,6 +219,7 @@ describe("graphQLTimeoutMiddleware", () => {
     describe("concerning clearing timeouts", () => {
       beforeAll(() => {
         jest.useFakeTimers()
+        jest.spyOn(global, "clearTimeout")
       })
 
       afterAll(() => {

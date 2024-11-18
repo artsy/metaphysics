@@ -82,7 +82,8 @@ describe("SubmitInquiryRequestMutation", () => {
       const context = {
         submitArtworkInquiryRequestLoader,
         userByIDLoader,
-        artistLoader,
+        unauthenticatedLoaders: { artistLoader },
+        authenticatedLoaders: { artistLoader },
       }
 
       expect.assertions(4)
@@ -156,7 +157,8 @@ describe("SubmitInquiryRequestMutation", () => {
       const context = {
         submitArtworkInquiryRequestLoader,
         userByIDLoader,
-        artistLoader,
+        unauthenticatedLoaders: { artistLoader },
+        authenticatedLoaders: { artistLoader },
       }
 
       expect.assertions(4)

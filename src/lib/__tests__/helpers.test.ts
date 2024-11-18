@@ -339,7 +339,7 @@ describe("camelCaseKeys", () => {
     }
 
     expect(camelCaseKeys(object)).toMatchInlineSnapshot(`
-      Object {
+      {
         "age": 42,
         "favoritePlant": "cactus",
         "firstName": "John",
@@ -356,8 +356,8 @@ describe("camelCaseKeys", () => {
     }
 
     expect(camelCaseKeys(object)).toMatchInlineSnapshot(`
-      Object {
-        "artistIDs": Array [
+      {
+        "artistIDs": [
           "123",
         ],
         "id": "123",
@@ -377,7 +377,7 @@ describe("snakeCaseKeys", () => {
     }
 
     expect(snakeCaseKeys(object)).toMatchInlineSnapshot(`
-      Object {
+      {
         "age": 42,
         "favorite_plant": "cactus",
         "first_name": "John",
@@ -394,8 +394,8 @@ describe("snakeCaseKeys", () => {
     }
 
     expect(snakeCaseKeys(object)).toMatchInlineSnapshot(`
-      Object {
-        "artist_ids": Array [
+      {
+        "artist_ids": [
           "123",
         ],
         "id": "123",

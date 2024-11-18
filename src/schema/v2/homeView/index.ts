@@ -11,10 +11,11 @@ import {
   connectionWithCursorInfo,
   paginationResolver,
 } from "../fields/pagination"
-import { HomeViewGenericSectionInterface } from "./HomeViewSection"
+import { HomeViewGenericSectionInterface } from "./sectionTypes/GenericSectionInterface"
 import { getSectionsForUser } from "./helpers/getSectionsForUser"
 import { registry } from "./sections"
 import { isSectionDisplayable } from "./helpers/isSectionDisplayable"
+import { HomeViewExperiments } from "./experiments/HomeViewExperiments"
 
 const SectionsConnectionType = connectionWithCursorInfo({
   nodeType: HomeViewGenericSectionInterface,
@@ -60,7 +61,7 @@ export const Section: GraphQLFieldConfig<void, ResolverContext> = {
     }
 
     if (!isSectionDisplayable(section, context)) {
-      throw new Error(`Section requires authorized user: ${id}`)
+      throw new Error(`Section is not displayable: ${id}`)
     }
 
     return section
@@ -73,6 +74,7 @@ const HomeViewType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomeView",
   description: "Schema for server-driven home view content",
   fields: {
+    experiments: HomeViewExperiments,
     sectionsConnection: SectionConnection,
     section: Section,
   },

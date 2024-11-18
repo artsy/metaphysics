@@ -33,6 +33,7 @@ export const executableGravitySchema = () => {
     "Artwork",
     "ArtworkConnection",
     "ArtworkEdge",
+    "Device",
     "Lot",
     "Money",
     "MoneyInput",
@@ -47,10 +48,6 @@ export const executableGravitySchema = () => {
     "ArtistSeriesEdge",
     "ArtistSeriesConnection",
   ]
-
-  if (config.USE_UNSTITCHED_USER_DEVICES) {
-    duplicatedTypes.push("Device")
-  }
 
   if (config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA) {
     duplicatedTypes.push("ViewingRoom")

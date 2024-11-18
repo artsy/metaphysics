@@ -198,6 +198,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           resolve: ({ artwork }) => artwork,
         },
         createdAt: date(),
+        partnerSearchCriteriaID: {
+          type: GraphQLString,
+          resolve: ({ partner_search_criteria_id }) =>
+            partner_search_criteria_id,
+        },
         userIDs: {
           type: new GraphQLList(GraphQLString),
           resolve: ({ user_ids }) => user_ids,
@@ -762,25 +767,17 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             defaultValue: 25,
           },
         },
-        resolve: ({ id }, options, { partnerLocationsConnectionLoader }) => {
-          return partnerLocationsConnectionLoader(id, {
-            total_count: true,
-            ...options,
-          }).then((locations) => {
-            const locationCities = locations.body.map((location) => {
-              return location.city
-            })
-            const filteredForDuplicatesAndBlanks = locationCities.filter(
-              (city, pos) => {
-                return (
-                  city &&
-                  locationCities.indexOf(city) === pos &&
-                  city.length > 0
-                )
-              }
-            )
-            return filteredForDuplicatesAndBlanks
-          })
+        resolve: async (
+          { id },
+          { size },
+          { unauthenticatedLoaders: { partnerLocationsConnectionLoader } }
+        ) => {
+          const { body } = await partnerLocationsConnectionLoader(id, { size })
+
+          const cities = (body ?? []).map((location) => location.city)
+
+          // Filter for dupes and blanks
+          return Array.from(new Set(cities)).filter(Boolean)
         },
       },
       defaultProfileID: {
@@ -871,12 +868,13 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             },
             title: {
               type: GraphQLString,
-              resolve: ({ owner: { name }, owner_type: type }) => {
-                return compact([
-                  name ? name : "Profile",
-                  partnerTitleContent(type),
-                  "Artsy",
-                ]).join(" | ")
+              resolve: ({ owner, owner_type: type, partner }) => {
+                const partnerName = owner.name || "Profile"
+                const titleContent = partner.display_full_partner_page
+                  ? partnerTitleContent(type)
+                  : "About the Gallery and Nearby Galleries"
+
+                return compact([partnerName, titleContent, "Artsy"]).join(" | ")
               },
             },
             image: {
@@ -891,10 +889,17 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             },
           },
         }),
-        resolve: (partner, _options, { profileLoader }) =>
-          profileLoader(partner.default_profile_id).catch(() => ({
-            owner: partner,
-          })),
+        resolve: async (partner, _options, { profileLoader }) => {
+          try {
+            const profile = await profileLoader(partner.default_profile_id)
+            return { ...profile, partner }
+          } catch (error) {
+            return {
+              owner: partner,
+              partner,
+            }
+          }
+        },
       },
       href: {
         type: GraphQLString,
@@ -961,8 +966,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             defaultValue: 25,
           },
         },
-        resolve: ({ id }, options, { partnerLocationsLoader }) =>
-          partnerLocationsLoader(id, options),
+        resolve: async ({ id }, options, { partnerLocationsLoader }) => {
+          const locations = await partnerLocationsLoader(id, options)
+
+          return locations ?? []
+        },
       },
       locationsConnection: {
         description: "A connection of locations from a Partner.",

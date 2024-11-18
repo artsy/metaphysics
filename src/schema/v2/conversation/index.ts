@@ -260,7 +260,7 @@ const messagesConnection = {
       // Inject the convesation initiator's email into each message payload
       // so we can tell if the user sent a particular message.
       // Also inject the conversation id, since we need it in some message
-      // resolvers (invoices).
+      // resolvers.
       /* eslint-disable no-param-reassign */
       message_details = message_details.map((message) => {
         return merge(message, {
@@ -605,7 +605,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         // Inject the convesation initiator's email into each message payload
         // so we can tell if the user sent a particular message.
         // Also inject the conversation id, since we need it in some message
-        // resolvers (invoices).
+        // resolvers.
         const messagesAndEvents = body.messages_and_conversation_events.map(
           (messageOrEvent) => {
             if (messageOrEvent.type === "message_detail") {

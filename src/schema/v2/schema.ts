@@ -76,6 +76,7 @@ import { deleteBankAccountMutation } from "./me/delete_bank_account_mutation"
 import { deleteCreditCardMutation } from "./me/delete_credit_card_mutation"
 import { deleteCollectorProfileIconMutation } from "./me/deleteCollectorProfileIconMutation"
 import dislikeArtworkMutation from "./me/dislikeArtworkMutation"
+import { dismissTaskMutation } from "./me/dismiss_task_mutation"
 import FollowArtist from "./me/follow_artist"
 import FollowGene from "./me/follow_gene"
 import FollowProfile from "./me/follow_profile"
@@ -130,11 +131,11 @@ import { TargetSupply } from "./TargetSupply"
 import { UserField } from "./user"
 // import TrendingArtists from "./artists/trending"
 import { updateQuizMutation } from "schema/v2/updateQuizMutation"
-import { AdminField } from "./admin"
-import { createFeatureFlagMutation } from "./admin/mutations/createFeatureFlagMutation"
-import { deleteFeatureFlagMutation } from "./admin/mutations/deleteFeatureFlagMutation"
-import { toggleFeatureFlagMutation } from "./admin/mutations/toggleFeatureFlagMutation"
-import { updateFeatureFlagMutation } from "./admin/mutations/updateFeatureFlagMutation"
+import { AdminField } from "./featureFlags/admin"
+import { createFeatureFlagMutation } from "./featureFlags/admin/mutations/createFeatureFlagMutation"
+import { deleteFeatureFlagMutation } from "./featureFlags/admin/mutations/deleteFeatureFlagMutation"
+import { toggleFeatureFlagMutation } from "./featureFlags/admin/mutations/toggleFeatureFlagMutation"
+import { updateFeatureFlagMutation } from "./featureFlags/admin/mutations/updateFeatureFlagMutation"
 import { channel } from "./article/channel"
 import { createArtistMutation } from "./artist/createArtistMutation"
 import { deleteArtistMutation } from "./artist/deleteArtistMutation"
@@ -227,7 +228,7 @@ import { updateCareerHighlightMutation } from "./careerHighlight/updateCareerHig
 import { updatePartnerShowMutation } from "./partner/updatePartnerShowMutation"
 import { VerifyUser } from "./verifyUser"
 import { ArtistSeries, ArtistSeriesConnection } from "./artistSeries"
-import { homeViewSectionTypes } from "./homeView/HomeViewSection"
+import { homeViewSectionTypes } from "./homeView/sectionTypes"
 import { CacheableDirective } from "directives/cacheableDirective"
 import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsDirectiveExtension"
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
@@ -236,6 +237,14 @@ import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOpt
 import config from "config"
 import { ViewingRoom } from "./viewingRoom"
 import { ViewingRoomsConnection } from "./viewingRoomConnection"
+import { Invoice } from "./Invoice/invoice"
+import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
+import { ackTaskMutation } from "./me/ack_task_mutation"
+import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
+import { CreateDiscoveryLikedArtworkMutation } from "./infiniteDiscovery/createDiscoveryArtworkReferenceMutation"
+import { CreateDiscoveryUserMutation } from "./infiniteDiscovery/createDiscoveryUserMutation"
+import { DeleteDiscoveryUserReferencesMutation } from "./infiniteDiscovery/resetDiscoveryArtworkReferencesMutation"
+import { LikedDiscoveryArtworks } from "./infiniteDiscovery/likedDiscoveryArtworks"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -290,6 +299,7 @@ const rootFields = {
   conversationsConnection: Conversations,
   creditCard: CreditCard,
   curatedTrendingArtists: CuratedTrendingArtists,
+  discoverArtworks: DiscoverArtworks,
   departments,
   external: externalField,
   fair: Fair,
@@ -310,8 +320,10 @@ const rootFields = {
   homeView: HomeView,
   identityVerification: IdentityVerification,
   identityVerificationsConnection,
+  invoice: Invoice,
   job,
   jobs,
+  LikedDiscoveryArtworks,
   saleAgreement: SaleAgreement,
   saleAgreementsConnection: SaleAgreementsConnection,
   markdown: MarkdownContent,
@@ -380,6 +392,7 @@ export default new GraphQLSchema({
   mutation: new GraphQLObjectType<any, ResolverContext>({
     name: "Mutation",
     fields: {
+      ackTask: ackTaskMutation,
       addOrderedSetItem: addOrderedSetItemMutation,
       addUserRole: addUserRoleMutation,
       adminCreateFeatureFlag: createFeatureFlagMutation,
@@ -392,6 +405,7 @@ export default new GraphQLSchema({
       commerceOptInReport: commerceOptInReportMutation,
       createAccountRequest: createAccountRequestMutation,
       createAlert: createAlertMutation,
+      createInvoicePayment: createInvoicePaymentMutation,
       createVerifiedRepresentative: createVerifiedRepresentativeMutation,
       deleteVerifiedRepresentative: deleteVerifiedRepresentativeMutation,
       createCareerHighlight: createCareerHighlightMutation,
@@ -403,6 +417,9 @@ export default new GraphQLSchema({
       createCollection: createCollectionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
       createCreditCard: createCreditCardMutation,
+      createDiscoveryArtworkReference: CreateDiscoveryLikedArtworkMutation,
+      createDiscoveryUser: CreateDiscoveryUserMutation,
+      deleteDiscoveryUserReferences: DeleteDiscoveryUserReferencesMutation,
       createFeature: CreateFeatureMutation,
       createFeaturedLink: CreateFeaturedLinkMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
@@ -439,6 +456,7 @@ export default new GraphQLSchema({
       deleteUserInterests: deleteUserInterestsMutation,
       deleteUserRole: deleteUserRoleMutation,
       dislikeArtwork: dislikeArtworkMutation,
+      dismissTask: dismissTaskMutation,
       endSale: endSaleMutation,
       followArtist: FollowArtist,
       followGene: FollowGene,

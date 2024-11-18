@@ -30,17 +30,17 @@ describe("GeneFamiliesConnection", () => {
     const geneFamilies = await runQuery(query, { geneFamiliesLoader })
 
     expect(geneFamilies).toMatchInlineSnapshot(`
-      Object {
-        "geneFamiliesConnection": Object {
-          "edges": Array [
-            Object {
-              "node": Object {
+      {
+        "geneFamiliesConnection": {
+          "edges": [
+            {
+              "node": {
                 "name": "Design Concepts and Techniques",
                 "slug": "design-concepts-and-techniques",
               },
             },
-            Object {
-              "node": Object {
+            {
+              "node": {
                 "name": "Furniture & Lighting",
                 "slug": "furniture-and-lighting",
               },

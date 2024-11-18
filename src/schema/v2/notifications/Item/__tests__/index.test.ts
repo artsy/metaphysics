@@ -19,24 +19,21 @@ describe("NotificationItem", () => {
   })
 
   describe('for "ArtworkPublishedNotificationItem"', () => {
-    const artistsLoader = jest.fn(() =>
-      Promise.resolve({
-        body: [
-          {
-            id: "artist-id",
-            name: "Catty Artist",
-          },
-        ],
-      })
-    )
-    const artworksLoader = jest.fn(() =>
-      Promise.resolve([
+    const artistsLoader = jest.fn().mockResolvedValue({
+      body: [
         {
-          id: "artwork-id",
-          title: "Catty Artwork",
+          id: "artist-id",
+          name: "Catty Artist",
         },
-      ])
-    )
+      ],
+    })
+
+    const artworksLoader = jest.fn().mockResolvedValue([
+      {
+        id: "artwork-id",
+        title: "Catty Artwork",
+      },
+    ])
 
     beforeEach(() => {
       meNotificationLoader = jest.fn(() =>
@@ -80,20 +77,20 @@ describe("NotificationItem", () => {
       })
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "notification": Object {
-              "item": Object {
+        {
+          "me": {
+            "notification": {
+              "item": {
                 "__typename": "ArtworkPublishedNotificationItem",
-                "artists": Array [
-                  Object {
+                "artists": [
+                  {
                     "name": "Catty Artist",
                   },
                 ],
-                "artworksConnection": Object {
-                  "edges": Array [
-                    Object {
-                      "node": Object {
+                "artworksConnection": {
+                  "edges": [
+                    {
+                      "node": {
                         "title": "Catty Artwork",
                       },
                     },
@@ -169,30 +166,30 @@ describe("NotificationItem", () => {
       })
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "notification": Object {
-              "item": Object {
+        {
+          "me": {
+            "notification": {
+              "item": {
                 "__typename": "AlertNotificationItem",
-                "alert": Object {
-                  "attributionClass": Array [
+                "alert": {
+                  "attributionClass": [
                     "open edition",
                     "unique",
                   ],
                   "internalID": "search-criteria-id",
-                  "labels": Array [
-                    Object {
+                  "labels": [
+                    {
                       "displayValue": "Open edition",
                     },
-                    Object {
+                    {
                       "displayValue": "Unique",
                     },
                   ],
                 },
-                "artworksConnection": Object {
-                  "edges": Array [
-                    Object {
-                      "node": Object {
+                "artworksConnection": {
+                  "edges": [
+                    {
+                      "node": {
                         "title": "Catty Artwork",
                       },
                     },
@@ -212,16 +209,14 @@ describe("NotificationItem", () => {
         id: "article-id",
       })
     )
-    const artistsLoader = jest.fn(() =>
-      Promise.resolve({
-        body: [
-          {
-            id: "artist-id",
-            name: "Catty Artist",
-          },
-        ],
-      })
-    )
+    const artistsLoader = jest.fn().mockResolvedValue({
+      body: [
+        {
+          id: "artist-id",
+          name: "Catty Artist",
+        },
+      ],
+    })
 
     beforeEach(() => {
       meNotificationLoader = jest.fn(() =>
@@ -265,18 +260,18 @@ describe("NotificationItem", () => {
       })
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "notification": Object {
-              "item": Object {
+        {
+          "me": {
+            "notification": {
+              "item": {
                 "__typename": "ArticleFeaturedArtistNotificationItem",
-                "article": Object {
+                "article": {
                   "internalID": "article-id",
                 },
-                "artistsConnection": Object {
-                  "edges": Array [
-                    Object {
-                      "node": Object {
+                "artistsConnection": {
+                  "edges": [
+                    {
+                      "node": {
                         "name": "Catty Artist",
                       },
                     },
@@ -347,18 +342,18 @@ describe("NotificationItem", () => {
       })
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "notification": Object {
-              "item": Object {
+        {
+          "me": {
+            "notification": {
+              "item": {
                 "__typename": "ShowOpenedNotificationItem",
-                "partner": Object {
+                "partner": {
                   "internalID": "partner-id",
                 },
-                "showsConnection": Object {
-                  "edges": Array [
-                    Object {
-                      "node": Object {
+                "showsConnection": {
+                  "edges": [
+                    {
+                      "node": {
                         "name": "Catty Artist",
                       },
                     },
@@ -427,15 +422,15 @@ describe("NotificationItem", () => {
       })
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "notification": Object {
-              "item": Object {
+        {
+          "me": {
+            "notification": {
+              "item": {
                 "__typename": "ViewingRoomPublishedNotificationItem",
-                "partner": Object {
+                "partner": {
                   "internalID": "partner-id",
                 },
-                "viewingRoomIDs": Array [
+                "viewingRoomIDs": [
                   "viewing-room-id",
                 ],
               },
@@ -577,15 +572,15 @@ describe("NotificationItem", () => {
       })
 
       expect(data).toMatchInlineSnapshot(`
-        Object {
-          "me": Object {
-            "notification": Object {
-              "item": Object {
+        {
+          "me": {
+            "notification": {
+              "item": {
                 "__typename": "PartnerOfferCreatedNotificationItem",
-                "artworksConnection": Object {
-                  "edges": Array [
-                    Object {
-                      "node": Object {
+                "artworksConnection": {
+                  "edges": [
+                    {
+                      "node": {
                         "title": "Catty Artwork",
                       },
                     },
@@ -593,7 +588,7 @@ describe("NotificationItem", () => {
                 },
                 "available": true,
                 "expiresAt": "2024-01-08T10:10:10+10:00",
-                "partnerOffer": Object {
+                "partnerOffer": {
                   "endAt": "2024-01-08T10:10:10+10:00",
                   "isAvailable": true,
                   "priceListedMessage": "€100",

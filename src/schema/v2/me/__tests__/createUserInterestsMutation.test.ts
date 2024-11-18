@@ -65,21 +65,21 @@ describe("createUserInterestsMutation", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "createUserInterests": Object {
-          "me": Object {
+      {
+        "createUserInterests": {
+          "me": {
             "name": "John Doe",
           },
-          "userInterestsOrErrors": Array [
-            Object {
+          "userInterestsOrErrors": [
+            {
               "category": "COLLECTED_BEFORE",
-              "interest": Object {
+              "interest": {
                 "name": "Artist Name",
               },
             },
-            Object {
+            {
               "category": "COLLECTED_BEFORE",
-              "interest": Object {
+              "interest": {
                 "name": "Artist Name",
               },
             },

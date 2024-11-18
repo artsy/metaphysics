@@ -33,29 +33,29 @@ describe("PartnerStatsSales type", () => {
     `
     const result = await runQuery(query, context)
     expect(result).toMatchInlineSnapshot(`
-Object {
-  "partner": Object {
-    "analytics": Object {
-      "sales": Object {
-        "partnerId": "5748d153cd530e2d5100031c",
-        "timeSeries": Array [
-          Object {
-            "endTime": "2019-05-05T00:00:00Z",
-            "startTime": "2019-05-04T00:00:00Z",
-            "totalCents": 0,
+      {
+        "partner": {
+          "analytics": {
+            "sales": {
+              "partnerId": "5748d153cd530e2d5100031c",
+              "timeSeries": [
+                {
+                  "endTime": "2019-05-05T00:00:00Z",
+                  "startTime": "2019-05-04T00:00:00Z",
+                  "totalCents": 0,
+                },
+                {
+                  "endTime": "2019-05-06T00:00:00Z",
+                  "startTime": "2019-05-05T00:00:00Z",
+                  "totalCents": 280000,
+                },
+              ],
+              "totalCents": 3682500,
+            },
           },
-          Object {
-            "endTime": "2019-05-06T00:00:00Z",
-            "startTime": "2019-05-05T00:00:00Z",
-            "totalCents": 280000,
-          },
-        ],
-        "totalCents": 3682500,
-      },
-    },
-  },
-}
-`)
+        },
+      }
+    `)
   })
 
   it("exposes formatted total fields", async () => {
@@ -86,31 +86,31 @@ Object {
     `
     const result = await runQuery(query, context)
     expect(result).toMatchInlineSnapshot(`
-Object {
-  "partner": Object {
-    "analytics": Object {
-      "sales": Object {
-        "partnerId": "5748d153cd530e2d5100031c",
-        "timeSeries": Array [
-          Object {
-            "endTime": "2019-05-05T00:00:00Z",
-            "startTime": "2019-05-04T00:00:00Z",
-            "total": "0。000 ¥",
-            "totalCents": 0,
+      {
+        "partner": {
+          "analytics": {
+            "sales": {
+              "partnerId": "5748d153cd530e2d5100031c",
+              "timeSeries": [
+                {
+                  "endTime": "2019-05-05T00:00:00Z",
+                  "startTime": "2019-05-04T00:00:00Z",
+                  "total": "0。000 ¥",
+                  "totalCents": 0,
+                },
+                {
+                  "endTime": "2019-05-06T00:00:00Z",
+                  "startTime": "2019-05-05T00:00:00Z",
+                  "total": "2|800。000 ¥",
+                  "totalCents": 280000,
+                },
+              ],
+              "total": "$36,825",
+              "totalCents": 3682500,
+            },
           },
-          Object {
-            "endTime": "2019-05-06T00:00:00Z",
-            "startTime": "2019-05-05T00:00:00Z",
-            "total": "2|800。000 ¥",
-            "totalCents": 280000,
-          },
-        ],
-        "total": "$36,825",
-        "totalCents": 3682500,
-      },
-    },
-  },
-}
-`)
+        },
+      }
+    `)
   })
 })

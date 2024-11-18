@@ -31,6 +31,8 @@ interface Input {
   coaByGallery?: boolean
   coaByAuthenticatingBody?: boolean
   eligible?: boolean
+  locationId?: string
+  artsyShippingDomestic?: boolean
 }
 
 const CommerceOptInReportSuccesssType = new GraphQLObjectType<
@@ -116,6 +118,14 @@ export const commerceOptInReportMutation = mutationWithClientMutationId<
       description:
         "whether the report will contain data for eligible or non-eligible artworks.",
     },
+    locationId: {
+      type: GraphQLString,
+      description: "The partner location ID to assign",
+    },
+    artsyShippingDomestic: {
+      type: GraphQLBoolean,
+      description: "Opt artwork into Artsy Shipping Domestic",
+    },
   },
   outputFields: {
     commerceOptInReportMutationOrError: {
@@ -133,6 +143,8 @@ export const commerceOptInReportMutation = mutationWithClientMutationId<
       coaByGallery,
       coaByAuthenticatingBody,
       eligible,
+      locationId,
+      artsyShippingDomestic,
     },
     { createCommerceOptInEligibleArtworksReportLoader }
   ) => {
@@ -144,6 +156,8 @@ export const commerceOptInReportMutation = mutationWithClientMutationId<
       coa_by_gallery: coaByGallery,
       coa_by_authenticating_body: coaByAuthenticatingBody,
       eligible: eligible,
+      location_id: locationId,
+      artsy_shipping_domestic: artsyShippingDomestic,
     }
 
     if (!createCommerceOptInEligibleArtworksReportLoader) {

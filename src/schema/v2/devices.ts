@@ -5,6 +5,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLBoolean,
+  GraphQLID,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -13,7 +14,7 @@ const DeviceType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     // FIXME: Use the InternalIDFields
     id: {
-      type: GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLID),
       description: "Unique ID for this device",
     },
     name: {

@@ -1,7 +1,7 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { artworksForUser } from "schema/v2/artworksForUser/artworksForUser"
 
 export const AuctionLotsForYou: HomeViewSection = {
@@ -9,7 +9,7 @@ export const AuctionLotsForYou: HomeViewSection = {
   type: HomeViewSectionTypeNames.HomeViewSectionArtworks,
   contextModule: ContextModule.lotsForYouRail,
   component: {
-    title: "Auction lots for You",
+    title: "Auction Lots for You",
     behaviors: {
       viewAll: {
         buttonText: "Browse All Artworks",

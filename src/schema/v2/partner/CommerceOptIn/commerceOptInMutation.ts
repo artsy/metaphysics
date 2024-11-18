@@ -33,6 +33,8 @@ interface Input {
   certificateOfAuthenticity?: boolean
   coaByGallery?: boolean
   coaByAuthenticatingBody?: boolean
+  locationId?: string
+  artsyShippingDomestic?: boolean
 }
 
 const CommerceOptInSuccesssType = new GraphQLObjectType<any, ResolverContext>({
@@ -106,6 +108,14 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "whether or not the CoA is by an authenticating body",
     },
+    locationId: {
+      type: GraphQLString,
+      description: "The partner location ID to assign",
+    },
+    artsyShippingDomestic: {
+      type: GraphQLBoolean,
+      description: "Opt artwork into Artsy Shipping Domestic",
+    },
   },
   outputFields: {
     commerceOptInMutationOrError: {
@@ -122,6 +132,8 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       certificateOfAuthenticity,
       coaByGallery,
       coaByAuthenticatingBody,
+      locationId,
+      artsyShippingDomestic,
     },
     { optInArtworksIntoCommerceLoader }
   ) => {
@@ -132,6 +144,8 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       certificate_of_authenticity: certificateOfAuthenticity,
       coa_by_gallery: coaByGallery,
       coa_by_authenticating_body: coaByAuthenticatingBody,
+      location_id: locationId,
+      artsy_shipping_domestic: artsyShippingDomestic,
     }
 
     if (!optInArtworksIntoCommerceLoader) {

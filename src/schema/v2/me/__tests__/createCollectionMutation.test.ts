@@ -59,10 +59,10 @@ describe("createCollection", () => {
       const result = await runAuthenticatedQuery(mutation, context)
 
       expect(result).toMatchInlineSnapshot(`
-        Object {
-          "createCollection": Object {
-            "responseOrError": Object {
-              "collection": Object {
+        {
+          "createCollection": {
+            "responseOrError": {
+              "collection": {
                 "name": "Dining room",
                 "shareableWithPartners": false,
               },
@@ -93,12 +93,12 @@ describe("createCollection", () => {
     const result = await runAuthenticatedQuery(mutation, context)
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "createCollection": Object {
-          "responseOrError": Object {
-            "mutationError": Object {
-              "fieldErrors": Array [
-                Object {
+      {
+        "createCollection": {
+          "responseOrError": {
+            "mutationError": {
+              "fieldErrors": [
+                {
                   "message": "You already have a list with this name",
                   "name": "name",
                 },

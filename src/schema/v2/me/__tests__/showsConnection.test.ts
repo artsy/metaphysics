@@ -27,10 +27,10 @@ describe("Me", () => {
             }
           `
 
-          const meShowsLoader = jest.fn(async () => mockShowsResponse)
+          const meShowsLoader = jest.fn().mockResolvedValue(mockShowsResponse)
 
           const context = {
-            meLoader: () => Promise.resolve({}),
+            meLoader: jest.fn().mockResolvedValue({}),
             meShowsLoader,
           }
 
@@ -49,22 +49,22 @@ describe("Me", () => {
           })
 
           expect(showsConnection).toMatchInlineSnapshot(`
-          Object {
-            "edges": Array [
-              Object {
-                "node": Object {
-                  "name": "Design for a Garden",
+            {
+              "edges": [
+                {
+                  "node": {
+                    "name": "Design for a Garden",
+                  },
                 },
-              },
-              Object {
-                "node": Object {
-                  "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                {
+                  "node": {
+                    "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                  },
                 },
-              },
-            ],
-            "totalCount": 5084,
-          }
-        `)
+              ],
+              "totalCount": 5084,
+            }
+          `)
         })
       })
 
@@ -90,13 +90,13 @@ describe("Me", () => {
             }
           `
 
-          const meShowsLoader = jest.fn(async () => mockShowsResponse)
-          const requestLocationLoader = jest.fn(
-            async () => mockLocationResponse
-          )
+          const meShowsLoader = jest.fn().mockResolvedValue(mockShowsResponse)
+          const requestLocationLoader = jest
+            .fn()
+            .mockResolvedValue(mockLocationResponse)
 
           const context = {
-            meLoader: () => Promise.resolve({}),
+            meLoader: jest.fn().mockResolvedValue({}),
             meShowsLoader,
             requestLocationLoader,
           }
@@ -118,22 +118,22 @@ describe("Me", () => {
           })
 
           expect(showsConnection).toMatchInlineSnapshot(`
-          Object {
-            "edges": Array [
-              Object {
-                "node": Object {
-                  "name": "Design for a Garden",
-                },
-              },
-              Object {
-                "node": Object {
-                  "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
-                },
-              },
-            ],
-            "totalCount": 5084,
-          }
-        `)
+                      Object {
+                        "edges": Array [
+                          Object {
+                            "node": Object {
+                              "name": "Design for a Garden",
+                            },
+                          },
+                          Object {
+                            "node": Object {
+                              "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                            },
+                          },
+                        ],
+                        "totalCount": 5084,
+                      }
+                  `)
         })
       })
 
@@ -159,14 +159,14 @@ describe("Me", () => {
             }
           `
 
-          const meShowsLoader = jest.fn(async () => mockShowsResponse)
-          const requestLocationLoader = jest.fn(
-            async () => mockLocationResponse
-          )
+          const meShowsLoader = jest.fn().mockResolvedValue(mockShowsResponse)
+          const requestLocationLoader = jest
+            .fn()
+            .mockResolvedValue(mockLocationResponse)
 
           const context = {
             ipAddress: "context-ip",
-            meLoader: () => Promise.resolve({}),
+            meLoader: jest.fn().mockResolvedValue({}),
             meShowsLoader,
             requestLocationLoader,
           }
@@ -190,22 +190,22 @@ describe("Me", () => {
           })
 
           expect(showsConnection).toMatchInlineSnapshot(`
-          Object {
-            "edges": Array [
-              Object {
-                "node": Object {
-                  "name": "Design for a Garden",
-                },
-              },
-              Object {
-                "node": Object {
-                  "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
-                },
-              },
-            ],
-            "totalCount": 5084,
-          }
-        `)
+                      Object {
+                        "edges": Array [
+                          Object {
+                            "node": Object {
+                              "name": "Design for a Garden",
+                            },
+                          },
+                          Object {
+                            "node": Object {
+                              "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                            },
+                          },
+                        ],
+                        "totalCount": 5084,
+                      }
+                  `)
         })
       })
     })
@@ -227,10 +227,10 @@ describe("Me", () => {
           }
         `
 
-        const meShowsLoader = jest.fn(async () => mockShowsResponse)
+        const meShowsLoader = jest.fn().mockResolvedValue(mockShowsResponse)
 
         const context = {
-          meLoader: () => Promise.resolve({}),
+          meLoader: jest.fn().mockResolvedValue({}),
           meShowsLoader,
         }
 
@@ -247,22 +247,22 @@ describe("Me", () => {
         })
 
         expect(showsConnection).toMatchInlineSnapshot(`
-        Object {
-          "edges": Array [
-            Object {
-              "node": Object {
-                "name": "Design for a Garden",
+          {
+            "edges": [
+              {
+                "node": {
+                  "name": "Design for a Garden",
+                },
               },
-            },
-            Object {
-              "node": Object {
-                "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+              {
+                "node": {
+                  "name": "Spazio Nobile Studiolo – Interlude, Group Exhibition",
+                },
               },
-            },
-          ],
-          "totalCount": 5084,
-        }
-      `)
+            ],
+            "totalCount": 5084,
+          }
+        `)
       })
     })
   })

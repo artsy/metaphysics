@@ -1,9 +1,10 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { HomePageSalesModuleType } from "schema/v2/home/home_page_sales_module"
 import { connectionFromArray } from "graphql-relay"
+import { emptyConnection } from "schema/v2/fields/pagination"
 
 export const Auctions: HomeViewSection = {
   id: "home-view-section-auctions",
@@ -25,7 +26,7 @@ export const Auctions: HomeViewSection = {
     const { results: resolver } = HomePageSalesModuleType.getFields()
 
     if (!resolver?.resolve) {
-      return []
+      return emptyConnection
     }
 
     const result = await resolver.resolve(parent, args, context, info)

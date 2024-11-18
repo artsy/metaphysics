@@ -303,9 +303,27 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             description:
               "Use whatever is in the original response instead of making a request",
           },
+          private: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+          },
         },
-        resolve: ({ artists }, { shallow }, { artistLoader }) => {
-          if (shallow) return artists
+        resolve: (
+          { artists },
+          args,
+          {
+            unauthenticatedLoaders: {
+              artistLoader: unauthenticatedArtistLoader,
+            },
+            authenticatedLoaders,
+          }
+        ) => {
+          if (args.shallow) return artists
+
+          const artistLoader =
+            args.private && authenticatedLoaders?.artistLoader
+              ? authenticatedLoaders?.artistLoader
+              : unauthenticatedArtistLoader
 
           return Promise.all(
             artists.map((artist) => artistLoader(artist.id))
@@ -999,6 +1017,30 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return savedArtworkLoader(_id).then(({ is_saved }) => is_saved)
         },
       },
+      isSavedToAnyList: {
+        description:
+          "Checks if artwork is saved to any of the user's 'saves' lists",
+        type: new GraphQLNonNull(GraphQLBoolean),
+        resolve: async ({ _id }, {}, { collectionsLoader, userID }) => {
+          if (!userID || !collectionsLoader) return false
+          try {
+            const { headers } = await collectionsLoader({
+              artwork_id: _id,
+              user_id: userID,
+              private: true,
+              size: 0,
+              total_count: true,
+              saves: true,
+            })
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+            return totalCount > 0
+          } catch (e) {
+            error(e)
+            return false
+          }
+        },
+      },
       isSavedToList: {
         description: "Checks if artwork is saved to user's lists",
         args: {
@@ -1130,8 +1172,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       myLotStanding: {
         type: new GraphQLList(new GraphQLNonNull(LotStandingType)),
         args: { live: { type: GraphQLBoolean, defaultValue: null } },
-        resolve: ({ id }, { live }, { lotStandingLoader }) => {
+        resolve: ({ id, sale_ids }, { live }, { lotStandingLoader }) => {
           if (!lotStandingLoader) return null
+          if (!sale_ids || sale_ids.length === 0) return null
           return lotStandingLoader({ artwork_id: id, live })
         },
       },

@@ -70,6 +70,11 @@ export default (opts) => {
     artworksLoader: gravityLoader("artworks"),
     authenticationStatusLoader: gravityLoader("me", {}, { headers: true }),
     bidderLoader: gravityLoader((id) => `bidder/${id}`),
+    createInvoicePaymentLoader: gravityLoader(
+      (id) => `invoice/${id}/payment`,
+      {},
+      { method: "POST" }
+    ),
     devicesLoader: gravityLoader("devices", {}, { headers: true }),
     exchangeRatesLoader: gravityLoader(
       "exchange_rates",
@@ -117,6 +122,7 @@ export default (opts) => {
     ),
     incrementsLoader: gravityLoader("increments"),
     inquiryRequestQuestionsLoader: gravityLoader(`inquiry_request_questions`),
+    invoicesLoader: gravityUncachedLoader("invoice"),
     marketingCollectionLoader: gravityLoader(
       (id) => `marketing_collections/${id}`
     ),

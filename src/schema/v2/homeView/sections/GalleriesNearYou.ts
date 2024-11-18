@@ -1,22 +1,30 @@
 import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
-import { HomeViewSectionTypeNames } from "../HomeViewSection"
+import { HomeViewSectionTypeNames } from "../sectionTypes/names"
+import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
+import type { HomeViewCard } from "../sectionTypes/Card"
 
 export const GalleriesNearYou: HomeViewSection = {
   id: "home-view-section-galleries-near-you",
-  type: HomeViewSectionTypeNames.HomeViewSectionGalleries,
+  type: HomeViewSectionTypeNames.HomeViewSectionCard,
   contextModule: ContextModule.galleriesForYouBanner,
   component: {
-    title: "Galleries Near You",
+    title: "Galleries near You",
     description:
       "Follow these local galleries for updates on artists you love.",
-    backgroundImageURL: "https://files.artsy.net/images/galleries_for_you.webp",
-    behaviors: {
-      viewAll: {
-        buttonText: "Explore",
-      },
-    },
   },
   ownerType: OwnerType.galleriesForYou,
   requiresAuthentication: false,
+
+  resolver: withHomeViewTimeout(async (parent, _args, _context, _info) => {
+    const card: HomeViewCard = {
+      title: parent.component.title,
+      subtitle: parent.component.description,
+      buttonText: "Explore",
+      image_url: "https://files.artsy.net/images/galleries_for_you.webp",
+      entityType: "Page",
+      entityID: parent.ownerType,
+    }
+    return card
+  }),
 }
