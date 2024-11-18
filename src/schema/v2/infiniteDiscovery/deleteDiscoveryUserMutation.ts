@@ -11,11 +11,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { generateUuid } from "./discoverArtworks"
-import fetch from "node-fetch"
-import config from "config"
-
-const { WEAVIATE_API_BASE } = config
+import { generateUuid } from "lib/infiniteDiscovery/weaviateHelpers"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeleteDiscoveryUserReferencesMutationSuccess",
@@ -46,13 +42,13 @@ const ResponseOrErrorType = new GraphQLUnionType({
   types: [SuccessType, FailureType],
 })
 
-export const DeleteDiscoveryUserReferencesMutation = mutationWithClientMutationId<
+export const deleteDiscoveryUserMutation = mutationWithClientMutationId<
   { userId: string },
   any,
   ResolverContext
 >({
-  name: "DeleteDiscoveryUserReferencesMutation",
-  description: "Deletes a user artwork references in weaviate",
+  name: "DeleteDiscoveryUserMutation",
+  description: "Deletes a user from the Infinite Discovery system.",
   inputFields: {
     userId: {
       description: "The user's ID",
@@ -68,21 +64,11 @@ export const DeleteDiscoveryUserReferencesMutation = mutationWithClientMutationI
       },
     },
   },
-  mutateAndGetPayload: async ({ userId }, {}) => {
+  mutateAndGetPayload: async ({ userId }, { weaviateDeleteUserLoader }) => {
     const weaviateUserId = generateUuid(userId)
 
-    // TODO: Temporary implementation to reset likedArtworks and seenArtworks.
-    // This works right now because we always create a new user object in weaviate
-    // if it doesn't exist.
-    // Just for spike/testing phase. Don't let this code go to production.
-    // https://github.com/artsy/metaphysics/pull/6211#discussion_r1832675631
     try {
-      await fetch(
-        `${WEAVIATE_API_BASE}/objects/InfiniteDiscoveryUsers/${weaviateUserId}`,
-        {
-          method: "DELETE",
-        }
-      )
+      await weaviateDeleteUserLoader(weaviateUserId)
       return { success: true }
     } catch (error) {
       const formattedErr = formatGravityError(error)

@@ -30,5 +30,10 @@ export default (opts) => {
       {},
       { method: "POST" }
     ),
+    weaviateDeleteUserLoader: weaviateLoader(
+      (userId) => `objects/InfiniteDiscoveryUsers/${userId}`,
+      {},
+      { method: "DELETE" }
+    ),
   }
 }
