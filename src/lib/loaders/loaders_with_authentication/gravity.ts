@@ -782,6 +782,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    secondFactorsLoader: gravityLoader("me/second_factors"),
     sendConfirmationEmailLoader: gravityLoader(
       "me/confirmation_emails",
       {},
