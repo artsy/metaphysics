@@ -28,6 +28,22 @@ spec:
         app.kubernetes.io/version: production
       name: metaphysics-web
     spec:
+      initContainers:
+      - name: setenv
+        image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/fortress:production
+        imagePullPolicy: Always
+        command:
+        - python
+        - src/load/load.py
+        - kubernetes
+        - production
+        - metaphysics
+        envFrom:
+        - configMapRef:
+            name: secrets-config
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
       containers:
       - name: metaphysics-web
         env:
@@ -49,7 +65,13 @@ spec:
               fieldPath: metadata.labels['app.kubernetes.io/version']
         envFrom:
         - configMapRef:
+            name: secrets-config
+        - configMapRef:
             name: metaphysics-environment
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+          readOnly: true
         image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:production
         imagePullPolicy: Always
         ports:
@@ -82,6 +104,7 @@ spec:
         options:
         - name: ndots
           value: '1'
+      serviceAccountName: metaphysics
       tolerations:
         - key: reserved
           operator: Equal
@@ -105,6 +128,10 @@ spec:
                 operator: In
                 values:
                 - foreground-spot
+      volumes:
+      - name: secrets
+        emptyDir: {}
+
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler

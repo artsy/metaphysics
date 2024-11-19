@@ -5,6 +5,7 @@ import { defineCustomLocale } from "lib/helpers"
 import { toGlobalId } from "graphql-relay"
 import { dateRange } from "lib/date"
 import { GraphQLSchemaWithTransforms } from "graphql-tools"
+import config from "config"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -45,6 +46,8 @@ defineCustomLocale(LocaleEnViewingRoomRelativeLong, {
   },
 })
 
+const useUnstitchedSecondFactors = !!config.USE_UNSTITCHED_SECOND_FACTORS_SCHEMA
+
 export const gravityStitchingEnvironment = (
   localSchema: GraphQLSchema,
   gravitySchema: GraphQLSchemaWithTransforms
@@ -53,7 +56,11 @@ export const gravityStitchingEnvironment = (
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
       extend type Me {
-        secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
+        ${
+          !useUnstitchedSecondFactors
+            ? `secondFactors(kinds: [SecondFactorKind]): [SecondFactor]`
+            : ""
+        }
         addressConnection(
           first: Int
           last: Int
@@ -134,18 +141,20 @@ export const gravityStitchingEnvironment = (
     `,
     resolvers: {
       Me: {
-        secondFactors: {
-          resolve: (_parent, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_secondFactors",
-              args: args,
-              context,
-              info,
-            })
+        ...(!useUnstitchedSecondFactors && {
+          secondFactors: {
+            resolve: (_parent, args, context, info) => {
+              return info.mergeInfo.delegateToSchema({
+                schema: gravitySchema,
+                operation: "query",
+                fieldName: "_unused_gravity_secondFactors",
+                args: args,
+                context,
+                info,
+              })
+            },
           },
-        },
+        }),
         addressConnection: {
           fragment: gql`
           ... on Me {

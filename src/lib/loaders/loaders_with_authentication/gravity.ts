@@ -77,6 +77,36 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createAndSendBackupSecondFactorLoader: gravityLoader(
+      (userID) => `user/${userID}/backup_code`,
+      {},
+      { method: "POST" }
+    ),
+    createSecondFactorLoader: gravityLoader(
+      "me/second_factors",
+      {},
+      { method: "POST" }
+    ),
+    deliverSecondFactor: gravityLoader(
+      (id) => `me/second_factors/${id}/deliver`,
+      {},
+      { method: "PUT" }
+    ),
+    disableSecondFactorLoader: gravityLoader(
+      (id) => `me/second_factors/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    enableSecondFactorLoader: gravityLoader(
+      (id) => `me/second_factors/${id}/enable`,
+      {},
+      { method: "PUT" }
+    ),
+    updateSecondFactorLoader: gravityLoader(
+      (id) => `me/second_factors/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     updateArtistCareerHighlightLoader: gravityLoader(
       (id) => `artist_career_highlight/${id}`,
       {},
@@ -517,6 +547,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    mePingLoader: gravityLoader("me/ping"),
     meTasksLoader: gravityLoader("me/tasks", {}, { headers: true }),
     meDismissTaskLoader: gravityLoader(
       (id) => `me/task/${id}/dismiss`,
@@ -782,6 +813,7 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    secondFactorsLoader: gravityLoader("me/second_factors"),
     sendConfirmationEmailLoader: gravityLoader(
       "me/confirmation_emails",
       {},
