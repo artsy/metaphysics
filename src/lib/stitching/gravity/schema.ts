@@ -80,6 +80,8 @@ export const executableGravitySchema = () => {
     duplicatedTypes.push("DeliverSecondFactorPayload")
     duplicatedTypes.push("EnableSecondFactorInput")
     duplicatedTypes.push("EnableSecondFactorPayload")
+    duplicatedTypes.push("CreateAndSendBackupSecondFactorInput")
+    duplicatedTypes.push("CreateAndSendBackupSecondFactorPayload")
   }
 
   const excludedMutations: string[] = []
@@ -92,6 +94,7 @@ export const executableGravitySchema = () => {
     excludedMutations.push("disableSecondFactor")
     excludedMutations.push("deliverSecondFactor")
     excludedMutations.push("enableSecondFactor")
+    excludedMutations.push("createAndSendBackupSecondFactor")
   }
 
   // Types which come from Gravity that are not (yet) needed in MP.

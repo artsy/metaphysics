@@ -257,6 +257,7 @@ import { createBackupSecondFactorsMutation } from "./me/secondFactors/mutations/
 import { disableSecondFactorMutation } from "./me/secondFactors/mutations/disableSecondFactor"
 import { deliverSecondFactorMutation } from "./me/secondFactors/mutations/deliverSecondFactor"
 import { enableSecondFactorMutation } from "./me/secondFactors/mutations/enableSecondFactor"
+import { createAndSendBackupSecondFactorMutation } from "./users/createAndSendBackupSecondFactorMutation"
 
 const useUnstitchedSecondFactorsSchema = !!config.USE_UNSTITCHED_SECOND_FACTORS_SCHEMA
 const secondFactorTypes = useUnstitchedSecondFactorsSchema
@@ -273,6 +274,7 @@ const secondFactorMutations: any = useUnstitchedSecondFactorsSchema
       disableSecondFactor: disableSecondFactorMutation,
       deliverSecondFactor: deliverSecondFactorMutation,
       enableSecondFactor: enableSecondFactorMutation,
+      createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
     }
   : {}
 
