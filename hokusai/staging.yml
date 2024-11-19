@@ -28,6 +28,22 @@ spec:
         app.kubernetes.io/version: staging
       name: metaphysics-web
     spec:
+      initContainers:
+      - name: setenv
+        image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/fortress:staging
+        imagePullPolicy: Always
+        command:
+        - python
+        - src/load/load.py
+        - kubernetes
+        - staging
+        - metaphysics
+        envFrom:
+        - configMapRef:
+            name: secrets-config
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
       containers:
       - name: metaphysics-web
         env:
@@ -49,7 +65,13 @@ spec:
               fieldPath: metadata.labels['app.kubernetes.io/version']
         envFrom:
         - configMapRef:
+            name: secrets-config
+        - configMapRef:
             name: metaphysics-environment
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+          readOnly: true
         image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:staging
         imagePullPolicy: Always
         ports:
@@ -82,6 +104,7 @@ spec:
         options:
         - name: ndots
           value: '1'
+      serviceAccountName: metaphysics
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -91,6 +114,10 @@ spec:
                 operator: In
                 values:
                 - foreground
+      volumes:
+      - name: secrets
+        emptyDir: {}
+
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
