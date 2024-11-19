@@ -1,4 +1,9 @@
-import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 
 const GravityImageURLsType = new GraphQLObjectType<any, ResolverContext>({
@@ -20,17 +25,18 @@ export const GravityARImageType = new GraphQLObjectType<any, ResolverContext>({
     imageURLs: {
       type: GravityImageURLsType,
       resolve: ({ image_urls }) => {
-        // TODO: check implementation
         return {
           normalized: image_urls?.normalized,
         }
       },
     },
     width: {
-      type: GraphQLString,
+      type: GraphQLInt,
+      resolve: ({ original_width }) => original_width,
     },
     height: {
-      type: GraphQLString,
+      type: GraphQLInt,
+      resolve: ({ original_height }) => original_height,
     },
   },
 })

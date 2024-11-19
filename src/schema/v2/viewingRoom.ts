@@ -188,7 +188,6 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       endAt: {
-        // TODO: type should be ISO8601DateTime
         type: GraphQLString,
         description:
           "Datetime after which the viewing room is no longer viewable",
@@ -212,7 +211,6 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ slug }) => `/viewing-room/${slug}`,
       },
-      // TODO: should be ARImageType
       image: {
         type: GravityARImageType,
         resolve: ({ image }) => {
@@ -267,7 +265,6 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLNonNull(GraphQLString),
       },
       startAt: {
-        // TODO: type should be ISO8601DateTime
         type: GraphQLString,
         description: "Datetime when the viewing room is viewable",
         resolve: ({ start_at }) => start_at,
