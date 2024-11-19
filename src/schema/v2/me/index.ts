@@ -92,6 +92,10 @@ import { TaskType } from "./task"
 import { UserInterest } from "./userInterest"
 import { UserInterestsConnection } from "./userInterestsConnection"
 import { WatchedLotConnection } from "./watchedLotConnection"
+import {
+  SecondFactorInterface,
+  SecondFactorKind,
+} from "./secondFactors/secondFactors"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
@@ -623,6 +627,18 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     recentlyViewedArtworksConnection: RecentlyViewedArtworks,
     newWorksFromGalleriesYouFollowConnection: newWorksFromGalleriesYouFollow,
     saleRegistrationsConnection: SaleRegistrationConnection,
+    secondFactors: {
+      type: new GraphQLList(SecondFactorInterface),
+      args: {
+        kinds: {
+          type: new GraphQLList(SecondFactorKind),
+        },
+      },
+      resolve: (_root, { kinds }, { secondFactorsLoader }) => {
+        if (!secondFactorsLoader) return []
+        return secondFactorsLoader({ kinds })
+      },
+    },
     shareFollows: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ share_follows }) => {
@@ -631,7 +647,8 @@ export const meType = new GraphQLObjectType<any, ResolverContext>({
     },
     submissionsConnection: submissionsConnection,
     recommendedArtworks: {
-      deprecationReason: "These genomic recs are deprecated. Use artworkRecommendations instead.",
+      deprecationReason:
+        "These genomic recs are deprecated. Use artworkRecommendations instead.",
       type: artworkConnection.connectionType,
       args: pageable({
         page: { type: GraphQLInt },
