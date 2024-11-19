@@ -10,18 +10,18 @@ interface UserResponse {
   }
 }
 
-interface WeaviateUser {
-  _additional: { id: string }
-  likedArtworks: { internalID: string }[]
-  seenArtworks: { internalID: string }[]
-}
-
 interface ArtworkResponse {
   data: {
     Get: {
       InfiniteDiscoveryArtworks: { internalID: string }[]
     }
   }
+}
+
+interface WeaviateUser {
+  _additional: { id: string }
+  likedArtworks: { internalID: string }[]
+  seenArtworks: { internalID: string }[]
 }
 
 interface UserCreationBody {
@@ -65,8 +65,7 @@ export function GetArtworkIds(response: ArtworkResponse): string[] {
 }
 
 /**
- * Inserts a sample of curated artworks into the target array
- * at random positions
+ * Inserts a sample of curated artworks at random indexes into the target array
  *
  * @param target the array to insert the curated artworks into
  * @param curatedWorks the array of curated artworks from which to sample
@@ -92,7 +91,7 @@ export const insertSampleCuratedWorks = (
 }
 
 /**
- * Extracts the liked and seen artworks from a weaviate InfiniteDiscoveryUser
+ * Extracts the liked and seen artworks from a InfiniteDiscoveryUser object
  *
  * @param user a user object from Weaviate
  * @returns an array of the internalIDs of the liked and seen artworks
@@ -132,13 +131,13 @@ export const generateUuid = (userId: string) => {
 /**
  * Generates a weaviate beacon based on the namespace and identifier
  *
- * @param namespace the namespace of the beacon
+ * @param collection the collection of the beacon
  * @param identifier the identifier of the beacon
  * @returns a beacon
  */
-export function generateBeacon(namespace: string, identifier: string): string {
+export function generateBeacon(collection: string, identifier: string): string {
   // TODO: Understand why localhost works here and weaviate://weaviate.stg.artsy.net doesn't
-  return `weaviate://localhost/${namespace}/${identifier}`
+  return `weaviate://localhost/${collection}/${identifier}`
 }
 
 /**

@@ -22,7 +22,7 @@ import {
   getUserQuery,
   GetArtworkIds,
   getFilteredIdList,
-} from "lib/infiniteDiscovery/weaviateHelpers"
+} from "lib/infiniteDiscovery/weaviate"
 
 export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
@@ -129,6 +129,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
     let user = getUser(userQueryResponse)
 
+    // Create a InfiniteDiscoveryUsers object if it doesn't exist
     if (!user) {
       try {
         user = await weaviateCreateObjectLoader(
@@ -140,7 +141,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       }
     }
 
-    // Get curated artworks first, since we will always use them
+    // Get curated artworks. We do this outside the conditional since we will always use them
     const curatedArtworksResponse = await weaviateGraphqlLoader({
       query: getCuratedArtworksQuery(),
     })()
