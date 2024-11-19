@@ -5,7 +5,6 @@ import {
   FilterTypes,
   RenameTypes,
   RenameRootFields,
-  FilterRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
@@ -48,48 +47,6 @@ export const executableGravitySchema = () => {
     "ArtistSeries",
     "ArtistSeriesEdge",
     "ArtistSeriesConnection",
-    "SecondFactor",
-    "AppSecondFactor",
-    "BackupSecondFactor",
-    "BackupSecondFactors",
-    "SmsSecondFactor",
-    "SecondFactorKind",
-    "SmsSecondFactorAttributes",
-    "SmsSecondFactorOrErrorsUnion",
-    "CreateSmsSecondFactorInput",
-    "CreateSmsSecondFactorPayload",
-    "UpdateSmsSecondFactorInput",
-    "UpdateSmsSecondFactorPayload",
-    "AppSecondFactorAttributes",
-    "AppSecondFactorOrErrorsUnion",
-    "CreateAppSecondFactorInput",
-    "CreateAppSecondFactorPayload",
-    "UpdateAppSecondFactorInput",
-    "UpdateAppSecondFactorPayload",
-    "BackupSecondFactorsOrErrorsUnion",
-    "CreateBackupSecondFactorsInput",
-    "CreateBackupSecondFactorsPayload",
-    "SecondFactorOrErrorsUnion",
-    "DisableSecondFactorInput",
-    "DisableSecondFactorPayload",
-    "DeliverSecondFactorInput",
-    "DeliverSecondFactorPayload",
-    "EnableSecondFactorInput",
-    "EnableSecondFactorPayload",
-    "CreateAndSendBackupSecondFactorInput",
-    "CreateAndSendBackupSecondFactorPayload",
-  ]
-
-  const excludedMutations = [
-    "createSmsSecondFactor",
-    "updateSmsSecondFactor",
-    "createAppSecondFactor",
-    "updateAppSecondFactor",
-    "createBackupSecondFactors",
-    "disableSecondFactor",
-    "deliverSecondFactor",
-    "enableSecondFactor",
-    "createAndSendBackupSecondFactor",
   ]
 
   // Types which come from Gravity that are not (yet) needed in MP.
@@ -131,15 +88,6 @@ export const executableGravitySchema = () => {
       } else {
         return name
       }
-    }),
-    new FilterRootFields((operation, name) => {
-      if (!name) return true
-
-      if (operation === "Mutation") {
-        return !excludedMutations.includes(name)
-      }
-
-      return true
     }),
   ])
 }
