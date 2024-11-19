@@ -649,16 +649,18 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           type: ViewingRoomsConnection.type,
           resolve: async (
             { viewing_room_ids },
-            args,
+            _args,
             { viewingRoomsLoader }
           ) => {
             if (!viewing_room_ids || viewing_room_ids.length === 0) {
               return null
             }
 
-            const { page, size, offset } = convertConnectionArgsToGravityArgs(
-              args
-            )
+            // viewingRoomsConnection for a show doesn't have pagination options, that's
+            // why we are hardcoding the values
+            const page = 1
+            const offset = 0
+            const size = viewing_room_ids.length
 
             const gravityArgs = {
               ids: viewing_room_ids,
@@ -672,7 +674,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
             return paginationResolver({
-              args,
+              args: {},
               body,
               offset,
               page,
