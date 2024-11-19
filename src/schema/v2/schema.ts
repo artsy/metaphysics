@@ -248,7 +248,6 @@ import {
   SmsSecondFactor,
   BackupSecondFactors,
 } from "./me/secondFactors/secondFactors"
-import config from "config"
 import { createSmsSecondFactorMutation } from "./me/secondFactors/mutations/createSmsSecondFactor"
 import { updateSmsSecondFactorMutation } from "./me/secondFactors/mutations/updateSmsSecondFactor"
 import { createAppSecondFactorMutation } from "./me/secondFactors/mutations/createAppSecondFactor"
@@ -258,25 +257,6 @@ import { disableSecondFactorMutation } from "./me/secondFactors/mutations/disabl
 import { deliverSecondFactorMutation } from "./me/secondFactors/mutations/deliverSecondFactor"
 import { enableSecondFactorMutation } from "./me/secondFactors/mutations/enableSecondFactor"
 import { createAndSendBackupSecondFactorMutation } from "./users/createAndSendBackupSecondFactorMutation"
-
-const useUnstitchedSecondFactorsSchema = !!config.USE_UNSTITCHED_SECOND_FACTORS_SCHEMA
-const secondFactorTypes = useUnstitchedSecondFactorsSchema
-  ? [BackupSecondFactor, AppSecondFactor, SmsSecondFactor, BackupSecondFactors]
-  : []
-
-const secondFactorMutations: any = useUnstitchedSecondFactorsSchema
-  ? {
-      createSmsSecondFactor: createSmsSecondFactorMutation,
-      updateSmsSecondFactor: updateSmsSecondFactorMutation,
-      createAppSecondFactor: createAppSecondFactorMutation,
-      updateAppSecondFactor: updateAppSecondFactorMutation,
-      createBackupSecondFactors: createBackupSecondFactorsMutation,
-      disableSecondFactor: disableSecondFactorMutation,
-      deliverSecondFactor: deliverSecondFactorMutation,
-      enableSecondFactor: enableSecondFactorMutation,
-      createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
-    }
-  : {}
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -530,7 +510,15 @@ export default new GraphQLSchema({
       updateUserInterest: updateUserInterestMutation,
       updateUserInterests: updateUserInterestsMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
-      ...secondFactorMutations,
+      createSmsSecondFactor: createSmsSecondFactorMutation,
+      updateSmsSecondFactor: updateSmsSecondFactorMutation,
+      createAppSecondFactor: createAppSecondFactorMutation,
+      updateAppSecondFactor: updateAppSecondFactorMutation,
+      createBackupSecondFactors: createBackupSecondFactorsMutation,
+      disableSecondFactor: disableSecondFactorMutation,
+      deliverSecondFactor: deliverSecondFactorMutation,
+      enableSecondFactor: enableSecondFactorMutation,
+      createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
@@ -556,7 +544,10 @@ export default new GraphQLSchema({
     ArtworkOrEditionSetType,
     SearchCriteriaLabel,
     ...homeViewSectionTypes,
-    ...secondFactorTypes,
+    BackupSecondFactor,
+    AppSecondFactor,
+    SmsSecondFactor,
+    BackupSecondFactors,
   ],
   directives: specifiedDirectives.concat([
     PrincipalFieldDirective,
