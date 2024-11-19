@@ -77,6 +77,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createAndSendBackupSecondFactorLoader: gravityLoader(
+      (userID) => `user/${userID}/backup_code`,
+      {},
+      { method: "POST" }
+    ),
     createSecondFactorLoader: gravityLoader(
       "me/second_factors",
       {},
