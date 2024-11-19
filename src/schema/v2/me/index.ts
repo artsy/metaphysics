@@ -92,7 +92,10 @@ import { TaskType } from "./task"
 import { UserInterest } from "./userInterest"
 import { UserInterestsConnection } from "./userInterestsConnection"
 import { WatchedLotConnection } from "./watchedLotConnection"
-import { SecondFactorInterface, SecondFactorKind } from "./secondFactors"
+import {
+  SecondFactorInterface,
+  SecondFactorKind,
+} from "./secondFactors/secondFactors"
 
 /**
  * @deprecated: Please use the CollectorProfile type instead of adding fields to me directly.
