@@ -54,6 +54,6 @@ COPY --chown=deploy:deploy --from=builder-base /app/src/data ./src/data
 COPY --chown=deploy:deploy --from=builder-base /opt/node_modules.prod ./node_modules
 COPY --chown=deploy:deploy --from=builder-base /app/scripts/load_secrets_and_run.sh load_secrets_and_run.sh
 
-ENTRYPOINT ["/usr/bin/dumb-init", "./scripts/load_secrets_and_run.sh"]
+ENTRYPOINT ["/usr/bin/dumb-init", "./load_secrets_and_run.sh"]
 
 CMD ["node", "--heapsnapshot-signal=SIGUSR2", "build/index.js"]
