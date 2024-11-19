@@ -19382,7 +19382,7 @@ type System {
   # The schema for difference micro-service settings
   services: Services
 
-  # Gravity system time, necessary for synchronizing device clocks.
+  # Core system time, necessary for synchronizing device clocks.
   time: SystemTime
 
   # List of all available product privileges
