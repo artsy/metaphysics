@@ -59,7 +59,6 @@ describe("ViewingRoom", () => {
           status
           timeZone
           title
-          # viewingRoomArtworks
         }
       }
     `
