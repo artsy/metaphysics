@@ -176,6 +176,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         GetArtworkIds(curatedArtworksResponse),
         limit
       )
+
       const curatedArtworks = await artworksLoader({ ids: curatedArtworkIds })
 
       return connectionFromArray(curatedArtworks, args)

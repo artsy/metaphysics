@@ -14,7 +14,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { generateUuid } from "lib/infiniteDiscovery/weaviate"
 
 const SuccessType = new GraphQLObjectType<any, ResolverContext>({
-  name: "DeleteDiscoveryUserReferencesMutationSuccess",
+  name: "DeleteDiscoveryUserMutationSuccess",
   isTypeOf: (data) => data.success,
   fields: () => ({
     success: {
@@ -25,7 +25,7 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const FailureType = new GraphQLObjectType<any, ResolverContext>({
-  name: "DeleteDiscoveryUserReferencesMutationFailure",
+  name: "DeleteDiscoveryUserMutationFailure",
   isTypeOf: (data) => {
     return data._type === "GravityMutationError"
   },
@@ -38,7 +38,7 @@ const FailureType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const ResponseOrErrorType = new GraphQLUnionType({
-  name: "DeleteDiscoveryUserReferencesResponseOrError",
+  name: "DeleteDiscoveryUserResponseOrError",
   types: [SuccessType, FailureType],
 })
 
@@ -56,7 +56,7 @@ export const deleteDiscoveryUserMutation = mutationWithClientMutationId<
     },
   },
   outputFields: {
-    deleteDiscoveryUserReferencesResponseOrError: {
+    deleteDiscoveryUserResponseOrError: {
       type: ResponseOrErrorType,
       description: "On success: return boolean. On failure: MutationError.",
       resolve: (result) => {

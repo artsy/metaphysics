@@ -8965,6 +8965,10 @@ type DeleteCreditCardPayload {
   me: Me
 }
 
+type DeleteDiscoveryUserMutationFailure {
+  mutationError: GravityMutationError
+}
+
 input DeleteDiscoveryUserMutationInput {
   clientMutationId: String
 
@@ -8976,20 +8980,16 @@ type DeleteDiscoveryUserMutationPayload {
   clientMutationId: String
 
   # On success: return boolean. On failure: MutationError.
-  deleteDiscoveryUserReferencesResponseOrError: DeleteDiscoveryUserReferencesResponseOrError
+  deleteDiscoveryUserResponseOrError: DeleteDiscoveryUserResponseOrError
 }
 
-type DeleteDiscoveryUserReferencesMutationFailure {
-  mutationError: GravityMutationError
-}
-
-type DeleteDiscoveryUserReferencesMutationSuccess {
+type DeleteDiscoveryUserMutationSuccess {
   success: Boolean
 }
 
-union DeleteDiscoveryUserReferencesResponseOrError =
-    DeleteDiscoveryUserReferencesMutationFailure
-  | DeleteDiscoveryUserReferencesMutationSuccess
+union DeleteDiscoveryUserResponseOrError =
+    DeleteDiscoveryUserMutationFailure
+  | DeleteDiscoveryUserMutationSuccess
 
 type DeleteFeatureFailure {
   mutationError: GravityMutationError
