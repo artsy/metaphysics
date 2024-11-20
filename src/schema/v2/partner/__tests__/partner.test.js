@@ -1,6 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import config from "config"
 
 describe("Partner type", () => {
   let partnerData = null
@@ -156,62 +157,71 @@ describe("Partner type", () => {
     })
   })
 
-  // TODO: skip until USE_UNSTITCHED_VIEWING_ROOM_SCHEMA is set to true and the schema is updated
-  it.skip("returns viewingRoomsConnection field", async () => {
-    const query = gql`
-      {
-        partner(id: "catty-partner") {
-          viewingRoomsConnection(first: 1) {
-            totalCount
-            edges {
-              node {
-                title
+  describe("#viewingRoomsConnection", () => {
+    beforeAll(() => {
+      config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = true
+    })
+
+    afterAll(() => {
+      config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = false
+    })
+
+    it("returns viewingRoomsConnection field", async () => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            viewingRoomsConnection(first: 1) {
+              totalCount
+              edges {
+                node {
+                  title
+                }
               }
             }
           }
         }
-      }
-    `
+      `
 
-    const viewingRoomsLoader = jest.fn().mockResolvedValue({
-      body: [
-        {
-          title: "Viewing Room 1",
-        },
-      ],
-      headers: {
-        "x-total-count": 1,
-      },
-    })
-
-    const data = await runQuery(query, {
-      ...context,
-      viewingRoomsLoader: viewingRoomsLoader,
-    })
-
-    expect(viewingRoomsLoader).toHaveBeenCalledWith({
-      page: 1,
-      partner_id: "internal-id",
-      size: 1,
-      total_count: true,
-    })
-
-    expect(data).toMatchInlineSnapshot(`
-      Object {
-        "partner": Object {
-          "viewingRoomsConnection": Object {
-            "edges": Array [
-              Object {
-                "node": Object {
-                  "title": "Viewing Room 1",
-                },
-              },
-            ],
-            "totalCount": 1,
+      const viewingRoomsLoader = jest.fn().mockResolvedValue({
+        body: [
+          {
+            title: "Viewing Room 1",
           },
+        ],
+        headers: {
+          "x-total-count": 1,
         },
-      }
-    `)
+      })
+
+      const data = await runQuery(query, {
+        ...context,
+        viewingRoomsLoader: viewingRoomsLoader,
+      })
+
+      expect(viewingRoomsLoader).toHaveBeenCalledWith({
+        page: 1,
+        partner_id: "internal-id",
+        size: 1,
+        total_count: true,
+      })
+
+      expect(data).toMatchInlineSnapshot(`
+        {
+          "partner": {
+            "viewingRoomsConnection": {
+              "edges": [
+                {
+                  "node": {
+                    "title": "Viewing Room 1",
+                  },
+                },
+              ],
+              "totalCount": 1,
+            },
+          },
+        }
+      `)
+    })
   })
 
   it.each([

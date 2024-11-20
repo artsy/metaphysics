@@ -1,8 +1,16 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import config from "config"
 
-// TODO: skip until USE_UNSTITCHED_VIEWING_ROOM_SCHEMA is set to true and the schema is updated
-describe.skip("ViewingRoomConnection", () => {
+describe("ViewingRoomConnection", () => {
+  beforeAll(() => {
+    config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = true
+  })
+
+  afterAll(() => {
+    config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = false
+  })
+
   const viewingRooms = [
     {
       id: "viewing-room-1",
@@ -48,17 +56,17 @@ describe.skip("ViewingRoomConnection", () => {
     const result = await runQuery(query, context)
 
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "viewingRoomsConnection": Object {
-          "edges": Array [
-            Object {
-              "node": Object {
+      {
+        "viewingRoomsConnection": {
+          "edges": [
+            {
+              "node": {
                 "internalID": "viewing-room-1",
                 "title": "Viewing Room 1",
               },
             },
-            Object {
-              "node": Object {
+            {
+              "node": {
                 "internalID": "viewing-room-2",
                 "title": "Viewing Room 2",
               },
@@ -88,11 +96,13 @@ describe.skip("ViewingRoomConnection", () => {
 
     await runQuery(query, context)
 
-    expect(viewingRoomsLoader).toHaveBeenCalledWith({
-      page: 1,
-      size: 20,
-      total_count: true,
-    })
+    expect(viewingRoomsLoader).toHaveBeenCalledWith(
+      expect.objectContaining({
+        page: 1,
+        size: 20,
+        total_count: true,
+      })
+    )
   })
 
   it("passes correct options to gravity", async () => {

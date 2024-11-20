@@ -7,7 +7,6 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { InternalIDFields, NodeInterface } from "./object_identification"
 import { ResolverContext } from "types/graphql"
 import {
   convertConnectionArgsToGravityArgs,
@@ -66,12 +65,13 @@ defineCustomLocale(LocaleEnViewingRoomRelativeLong, {
 
 export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
   name: "ViewingRoom",
-  interfaces: () => {
-    return [NodeInterface]
-  },
   fields: () => {
     return {
-      ...InternalIDFields,
+      internalID: {
+        description: "A type-specific ID likely used as a database ID.",
+        type: new GraphQLNonNull(GraphQLID),
+        resolve: ({ id }) => id,
+      },
       artworkIDs: {
         type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
         resolve: ({ artwork_ids }) => artwork_ids,
