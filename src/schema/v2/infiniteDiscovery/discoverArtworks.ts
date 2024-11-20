@@ -146,7 +146,11 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       query: getCuratedArtworksQuery(),
     })()
 
-    if (user!.likedArtworks?.length > 0) {
+    const userFilterList = getUserFilterList(user!)
+
+    // If the user has liked more than 3 artworks, we will use the nearObject query
+    // to get recommendations based on the user's taste.
+    if (user!.likedArtworks?.length > 2) {
       const nearArtworksResponse = await weaviateGraphqlLoader({
         query: getNearObjectQuery(userId, { certainty, limit, offset }),
       })()
@@ -159,16 +163,16 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         2
       )
 
-      const filteredArtworkIds = getFilteredIdList(
+      const filteredNearArtworkIds = getFilteredIdList(
         mixedArtworkIds,
-        getUserFilterList(user!)
+        userFilterList
       )
 
       if (sort == "certainty") {
-        filteredArtworkIds.reverse()
+        filteredNearArtworkIds.reverse()
       }
 
-      const artworks = await artworksLoader({ ids: filteredArtworkIds })
+      const artworks = await artworksLoader({ ids: filteredNearArtworkIds })
 
       return connectionFromArray(artworks, args)
     } else {
@@ -177,7 +181,14 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         limit
       )
 
-      const curatedArtworks = await artworksLoader({ ids: curatedArtworkIds })
+      const filteredCuratedArtworkIds = getFilteredIdList(
+        curatedArtworkIds,
+        userFilterList
+      )
+
+      const curatedArtworks = await artworksLoader({
+        ids: filteredCuratedArtworkIds,
+      })
 
       return connectionFromArray(curatedArtworks, args)
     }
