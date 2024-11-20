@@ -245,6 +245,21 @@ import { CreateDiscoveryLikedArtworkMutation } from "./infiniteDiscovery/createD
 import { CreateDiscoveryUserMutation } from "./infiniteDiscovery/createDiscoveryUserMutation"
 import { DeleteDiscoveryUserReferencesMutation } from "./infiniteDiscovery/resetDiscoveryArtworkReferencesMutation"
 import { LikedDiscoveryArtworks } from "./infiniteDiscovery/likedDiscoveryArtworks"
+import {
+  BackupSecondFactor,
+  AppSecondFactor,
+  SmsSecondFactor,
+  BackupSecondFactors,
+} from "./me/secondFactors/secondFactors"
+import { createSmsSecondFactorMutation } from "./me/secondFactors/mutations/createSmsSecondFactor"
+import { updateSmsSecondFactorMutation } from "./me/secondFactors/mutations/updateSmsSecondFactor"
+import { createAppSecondFactorMutation } from "./me/secondFactors/mutations/createAppSecondFactor"
+import { updateAppSecondFactorMutation } from "./me/secondFactors/mutations/updateAppSecondFactor"
+import { createBackupSecondFactorsMutation } from "./me/secondFactors/mutations/createBackupSecondFactors"
+import { disableSecondFactorMutation } from "./me/secondFactors/mutations/disableSecondFactor"
+import { deliverSecondFactorMutation } from "./me/secondFactors/mutations/deliverSecondFactor"
+import { enableSecondFactorMutation } from "./me/secondFactors/mutations/enableSecondFactor"
+import { createAndSendBackupSecondFactorMutation } from "./users/createAndSendBackupSecondFactorMutation"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -506,6 +521,15 @@ export default new GraphQLSchema({
       updateUserInterest: updateUserInterestMutation,
       updateUserInterests: updateUserInterestsMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
+      createSmsSecondFactor: createSmsSecondFactorMutation,
+      updateSmsSecondFactor: updateSmsSecondFactorMutation,
+      createAppSecondFactor: createAppSecondFactorMutation,
+      updateAppSecondFactor: updateAppSecondFactorMutation,
+      createBackupSecondFactors: createBackupSecondFactorsMutation,
+      disableSecondFactor: disableSecondFactorMutation,
+      deliverSecondFactor: deliverSecondFactorMutation,
+      enableSecondFactor: enableSecondFactorMutation,
+      createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
@@ -531,6 +555,10 @@ export default new GraphQLSchema({
     ArtworkOrEditionSetType,
     SearchCriteriaLabel,
     ...homeViewSectionTypes,
+    BackupSecondFactor,
+    AppSecondFactor,
+    SmsSecondFactor,
+    BackupSecondFactors,
   ],
   directives: specifiedDirectives.concat([
     PrincipalFieldDirective,

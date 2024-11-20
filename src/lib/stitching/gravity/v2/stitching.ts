@@ -56,7 +56,6 @@ export const gravityStitchingEnvironment = (
     // The SDL used to declare how to stitch an object
     extensionSchema: gql`
       extend type Me {
-        secondFactors(kinds: [SecondFactorKind]): [SecondFactor]
         addressConnection(
           first: Int
           last: Int
@@ -157,18 +156,6 @@ export const gravityStitchingEnvironment = (
     `,
     resolvers: {
       Me: {
-        secondFactors: {
-          resolve: (_parent, args, context, info) => {
-            return info.mergeInfo.delegateToSchema({
-              schema: gravitySchema,
-              operation: "query",
-              fieldName: "_unused_gravity_secondFactors",
-              args: args,
-              context,
-              info,
-            })
-          },
-        },
         addressConnection: {
           fragment: gql`
           ... on Me {
