@@ -333,6 +333,9 @@ export default (opts) => {
     viewingRoomSubsectionsLoader: gravityLoader(
       (id) => `viewing_room/${id}/subsections`
     ),
+    viewingRoomArtworksLoader: gravityLoader(
+      (id) => `viewing_room/${id}/viewing_room_artworks`
+    ),
     viewingRoomsLoader: gravityLoader("viewing_rooms", {}, { headers: true }),
   }
 }

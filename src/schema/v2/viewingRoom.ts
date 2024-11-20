@@ -22,7 +22,7 @@ import { dateRange } from "lib/date"
 import { GravityARImageType } from "./GravityARImageType"
 import { ViewingRoomSubsectionType } from "./viewingRoomSubsection"
 // import PartnerArtworks from "./partner/partnerArtworks"
-// import { ViewingRoomArtworkType } from "./viewingRoomArtwork"
+import { ViewingRoomArtworkType } from "./viewingRoomArtwork"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -285,11 +285,12 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLNonNull(GraphQLString),
         description: "Viewing room name",
       },
-      // TODO: In separate PR
-      // viewingRoomArtworks: {
-      //   type: new GraphQLNonNull(new GraphQLList(ViewingRoomArtworkType)),
-      //   resolve: ({ viewing_room_artworks }) => viewing_room_artworks,
-      // },
+      viewingRoomArtworks: {
+        type: new GraphQLNonNull(new GraphQLList(ViewingRoomArtworkType)),
+        resolve: async ({ id }, _args, { viewingRoomArtworksLoader }) => {
+          return viewingRoomArtworksLoader(id)
+        },
+      },
     }
   },
 })
