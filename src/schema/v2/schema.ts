@@ -234,6 +234,9 @@ import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsD
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
 import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
 import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
+import config from "config"
+import { ViewingRoom } from "./viewingRoom"
+import { ViewingRoomsConnection } from "./viewingRoomConnection"
 import { Invoice } from "./Invoice/invoice"
 import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
 import { ackTaskMutation } from "./me/ack_task_mutation"
@@ -257,6 +260,13 @@ import { disableSecondFactorMutation } from "./me/secondFactors/mutations/disabl
 import { deliverSecondFactorMutation } from "./me/secondFactors/mutations/deliverSecondFactor"
 import { enableSecondFactorMutation } from "./me/secondFactors/mutations/enableSecondFactor"
 import { createAndSendBackupSecondFactorMutation } from "./users/createAndSendBackupSecondFactorMutation"
+
+const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
+  ? {
+      viewingRoom: ViewingRoom,
+      viewingRoomsConnection: ViewingRoomsConnection,
+    }
+  : ({} as any)
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -377,6 +387,7 @@ const rootFields = {
   vanityURLEntity: VanityURLEntity,
   verifyAddress: VerifyAddress,
   verifyUser: VerifyUser,
+  ...viewingRoomUnstitchedRootField,
 }
 
 // FIXME: Remove type once Reaction MPv2 migration is complete

@@ -7,13 +7,13 @@ import {
   RenameRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
+import config from "config"
 
-const rootFieldsAllowList = [
-  "agreement",
-  "viewingRoom",
-  "viewingRooms",
-  "viewingRoomsConnection",
-]
+const rootFieldsAllowList = ["agreement"].concat(
+  config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
+    ? []
+    : ["viewingRoom", "viewingRooms", "viewingRoomsConnection"]
+)
 
 export const executableGravitySchema = () => {
   const gravityTypeDefs = readFileSync("src/data/gravity.graphql", "utf8")
@@ -48,6 +48,12 @@ export const executableGravitySchema = () => {
     "ArtistSeriesEdge",
     "ArtistSeriesConnection",
   ]
+
+  if (config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA) {
+    duplicatedTypes.push("ViewingRoom")
+    duplicatedTypes.push("ViewingRoomsConnection")
+    duplicatedTypes.push("ViewingRoomsEdge")
+  }
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
