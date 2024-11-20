@@ -234,6 +234,9 @@ import { OptionalFieldDirective } from "directives/optionalField/optionalFieldsD
 import { PrincipalFieldDirective } from "directives/principalField/principalFieldDirectiveExtension"
 import { commerceOptInMutation } from "./partner/CommerceOptIn/commerceOptInMutation"
 import { commerceOptInReportMutation } from "./partner/CommerceOptIn/commerceOptInReportMutation"
+import config from "config"
+import { ViewingRoom } from "./viewingRoom"
+import { ViewingRoomsConnection } from "./viewingRoomConnection"
 import { Invoice } from "./Invoice/invoice"
 import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
 import { ackTaskMutation } from "./me/ack_task_mutation"
@@ -248,7 +251,6 @@ import {
   SmsSecondFactor,
   BackupSecondFactors,
 } from "./me/secondFactors/secondFactors"
-import config from "config"
 import { createSmsSecondFactorMutation } from "./me/secondFactors/mutations/createSmsSecondFactor"
 import { updateSmsSecondFactorMutation } from "./me/secondFactors/mutations/updateSmsSecondFactor"
 import { createAppSecondFactorMutation } from "./me/secondFactors/mutations/createAppSecondFactor"
@@ -259,24 +261,12 @@ import { deliverSecondFactorMutation } from "./me/secondFactors/mutations/delive
 import { enableSecondFactorMutation } from "./me/secondFactors/mutations/enableSecondFactor"
 import { createAndSendBackupSecondFactorMutation } from "./users/createAndSendBackupSecondFactorMutation"
 
-const useUnstitchedSecondFactorsSchema = !!config.USE_UNSTITCHED_SECOND_FACTORS_SCHEMA
-const secondFactorTypes = useUnstitchedSecondFactorsSchema
-  ? [BackupSecondFactor, AppSecondFactor, SmsSecondFactor, BackupSecondFactors]
-  : []
-
-const secondFactorMutations: any = useUnstitchedSecondFactorsSchema
+const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
-      createSmsSecondFactor: createSmsSecondFactorMutation,
-      updateSmsSecondFactor: updateSmsSecondFactorMutation,
-      createAppSecondFactor: createAppSecondFactorMutation,
-      updateAppSecondFactor: updateAppSecondFactorMutation,
-      createBackupSecondFactors: createBackupSecondFactorsMutation,
-      disableSecondFactor: disableSecondFactorMutation,
-      deliverSecondFactor: deliverSecondFactorMutation,
-      enableSecondFactor: enableSecondFactorMutation,
-      createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
+      viewingRoom: ViewingRoom,
+      viewingRoomsConnection: ViewingRoomsConnection,
     }
-  : {}
+  : ({} as any)
 
 const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
@@ -397,6 +387,7 @@ const rootFields = {
   vanityURLEntity: VanityURLEntity,
   verifyAddress: VerifyAddress,
   verifyUser: VerifyUser,
+  ...viewingRoomUnstitchedRootField,
 }
 
 // FIXME: Remove type once Reaction MPv2 migration is complete
@@ -530,7 +521,15 @@ export default new GraphQLSchema({
       updateUserInterest: updateUserInterestMutation,
       updateUserInterests: updateUserInterestsMutation,
       updateUserSaleProfile: updateUserSaleProfileMutation,
-      ...secondFactorMutations,
+      createSmsSecondFactor: createSmsSecondFactorMutation,
+      updateSmsSecondFactor: updateSmsSecondFactorMutation,
+      createAppSecondFactor: createAppSecondFactorMutation,
+      updateAppSecondFactor: updateAppSecondFactorMutation,
+      createBackupSecondFactors: createBackupSecondFactorsMutation,
+      disableSecondFactor: disableSecondFactorMutation,
+      deliverSecondFactor: deliverSecondFactorMutation,
+      enableSecondFactor: enableSecondFactorMutation,
+      createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({
@@ -556,7 +555,10 @@ export default new GraphQLSchema({
     ArtworkOrEditionSetType,
     SearchCriteriaLabel,
     ...homeViewSectionTypes,
-    ...secondFactorTypes,
+    BackupSecondFactor,
+    AppSecondFactor,
+    SmsSecondFactor,
+    BackupSecondFactors,
   ],
   directives: specifiedDirectives.concat([
     PrincipalFieldDirective,

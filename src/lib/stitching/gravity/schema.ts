@@ -5,17 +5,15 @@ import {
   FilterTypes,
   RenameTypes,
   RenameRootFields,
-  FilterRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
 import config from "config"
 
-const rootFieldsAllowList = [
-  "agreement",
-  "viewingRoom",
-  "viewingRooms",
-  "viewingRoomsConnection",
-]
+const rootFieldsAllowList = ["agreement"].concat(
+  config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
+    ? []
+    : ["viewingRoom", "viewingRooms", "viewingRoomsConnection"]
+)
 
 export const executableGravitySchema = () => {
   const gravityTypeDefs = readFileSync("src/data/gravity.graphql", "utf8")
@@ -51,50 +49,10 @@ export const executableGravitySchema = () => {
     "ArtistSeriesConnection",
   ]
 
-  if (config.USE_UNSTITCHED_SECOND_FACTORS_SCHEMA) {
-    duplicatedTypes.push("SecondFactor")
-    duplicatedTypes.push("AppSecondFactor")
-    duplicatedTypes.push("BackupSecondFactor")
-    duplicatedTypes.push("BackupSecondFactors")
-    duplicatedTypes.push("SmsSecondFactor")
-    duplicatedTypes.push("SecondFactorKind")
-    duplicatedTypes.push("SmsSecondFactorAttributes")
-    duplicatedTypes.push("SmsSecondFactorOrErrorsUnion")
-    duplicatedTypes.push("CreateSmsSecondFactorInput")
-    duplicatedTypes.push("CreateSmsSecondFactorPayload")
-    duplicatedTypes.push("UpdateSmsSecondFactorInput")
-    duplicatedTypes.push("UpdateSmsSecondFactorPayload")
-    duplicatedTypes.push("AppSecondFactorAttributes")
-    duplicatedTypes.push("AppSecondFactorOrErrorsUnion")
-    duplicatedTypes.push("CreateAppSecondFactorInput")
-    duplicatedTypes.push("CreateAppSecondFactorPayload")
-    duplicatedTypes.push("UpdateAppSecondFactorInput")
-    duplicatedTypes.push("UpdateAppSecondFactorPayload")
-    duplicatedTypes.push("BackupSecondFactorsOrErrorsUnion")
-    duplicatedTypes.push("CreateBackupSecondFactorsInput")
-    duplicatedTypes.push("CreateBackupSecondFactorsPayload")
-    duplicatedTypes.push("SecondFactorOrErrorsUnion")
-    duplicatedTypes.push("DisableSecondFactorInput")
-    duplicatedTypes.push("DisableSecondFactorPayload")
-    duplicatedTypes.push("DeliverSecondFactorInput")
-    duplicatedTypes.push("DeliverSecondFactorPayload")
-    duplicatedTypes.push("EnableSecondFactorInput")
-    duplicatedTypes.push("EnableSecondFactorPayload")
-    duplicatedTypes.push("CreateAndSendBackupSecondFactorInput")
-    duplicatedTypes.push("CreateAndSendBackupSecondFactorPayload")
-  }
-
-  const excludedMutations: string[] = []
-  if (config.USE_UNSTITCHED_SECOND_FACTORS_SCHEMA) {
-    excludedMutations.push("createSmsSecondFactor")
-    excludedMutations.push("updateSmsSecondFactor")
-    excludedMutations.push("createAppSecondFactor")
-    excludedMutations.push("updateAppSecondFactor")
-    excludedMutations.push("createBackupSecondFactors")
-    excludedMutations.push("disableSecondFactor")
-    excludedMutations.push("deliverSecondFactor")
-    excludedMutations.push("enableSecondFactor")
-    excludedMutations.push("createAndSendBackupSecondFactor")
+  if (config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA) {
+    duplicatedTypes.push("ViewingRoom")
+    duplicatedTypes.push("ViewingRoomsConnection")
+    duplicatedTypes.push("ViewingRoomsEdge")
   }
 
   // Types which come from Gravity that are not (yet) needed in MP.
@@ -136,15 +94,6 @@ export const executableGravitySchema = () => {
       } else {
         return name
       }
-    }),
-    new FilterRootFields((operation, name) => {
-      if (!name) return true
-
-      if (operation === "Mutation") {
-        return !excludedMutations.includes(name)
-      }
-
-      return true
     }),
   ])
 }

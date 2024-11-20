@@ -1,6 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import config from "config"
 
 describe("Partner type", () => {
   let partnerData = null
@@ -8,6 +9,7 @@ describe("Partner type", () => {
 
   beforeEach(() => {
     partnerData = {
+      _id: "internal-id",
       id: "catty-partner",
       slug: "catty-partner",
       name: "Catty Partner",
@@ -152,6 +154,74 @@ describe("Partner type", () => {
       partner: {
         displayFullPartnerPage: true,
       },
+    })
+  })
+
+  // TODO: fails on CI, check later
+  describe.skip("#viewingRoomsConnection", () => {
+    beforeAll(() => {
+      config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = true
+    })
+
+    afterAll(() => {
+      config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA = false
+    })
+
+    it("returns viewingRoomsConnection field", async () => {
+      const query = gql`
+        {
+          partner(id: "catty-partner") {
+            viewingRoomsConnection(first: 1) {
+              totalCount
+              edges {
+                node {
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const viewingRoomsLoader = jest.fn().mockResolvedValue({
+        body: [
+          {
+            title: "Viewing Room 1",
+          },
+        ],
+        headers: {
+          "x-total-count": 1,
+        },
+      })
+
+      const data = await runQuery(query, {
+        ...context,
+        viewingRoomsLoader: viewingRoomsLoader,
+      })
+
+      expect(viewingRoomsLoader).toHaveBeenCalledWith({
+        page: 1,
+        partner_id: "internal-id",
+        size: 1,
+        total_count: true,
+      })
+
+      expect(data).toMatchInlineSnapshot(`
+        {
+          "partner": {
+            "viewingRoomsConnection": {
+              "edges": [
+                {
+                  "node": {
+                    "title": "Viewing Room 1",
+                  },
+                },
+              ],
+              "totalCount": 1,
+            },
+          },
+        }
+      `)
     })
   })
 

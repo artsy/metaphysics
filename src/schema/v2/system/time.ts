@@ -1,6 +1,5 @@
 import {
   GraphQLString,
-  GraphQLBoolean,
   GraphQLInt,
   GraphQLObjectType,
   GraphQLFieldConfig,
@@ -18,13 +17,7 @@ const SystemTimeType = new GraphQLObjectType<any, ResolverContext>({
       hour: { type: GraphQLInt },
       min: { type: GraphQLInt },
       sec: { type: GraphQLInt },
-      dst: { type: GraphQLBoolean },
       unix: { type: GraphQLInt },
-      utcOffset: {
-        type: GraphQLInt,
-        resolve: ({ utc_offset }) => utc_offset,
-      },
-      zone: { type: GraphQLString },
       iso8601: { type: GraphQLString },
     }
   },
@@ -32,10 +25,20 @@ const SystemTimeType = new GraphQLObjectType<any, ResolverContext>({
 
 const SystemTime: GraphQLFieldConfig<any, ResolverContext> = {
   type: SystemTimeType,
-  description:
-    "Gravity system time, necessary for synchronizing device clocks.",
-  resolve: (_root, _options, { systemTimeLoader }) => {
-    return systemTimeLoader()
+  description: "Core system time, helpful for reliable times on clients.",
+  resolve: () => {
+    const now = new Date()
+    return {
+      day: now.getDate(),
+      wday: now.getDay(),
+      month: now.getMonth() + 1, // convert from 0-indexed to 1-indexed
+      year: now.getFullYear(),
+      hour: now.getHours(),
+      min: now.getMinutes(),
+      sec: now.getSeconds(),
+      unix: Math.floor(now.getTime() / 1000),
+      iso8601: now.toISOString(),
+    }
   },
 }
 
