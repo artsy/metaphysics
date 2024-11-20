@@ -20,8 +20,8 @@ import moment from "moment"
 import { PartnerType } from "./partner/partner"
 import { dateRange } from "lib/date"
 import { GravityARImageType } from "./GravityARImageType"
+import { ViewingRoomSubsectionType } from "./viewingRoomSubsection"
 // import PartnerArtworks from "./partner/partnerArtworks"
-// import { ViewingRoomSubsectionType } from "./viewingRoomSubsection"
 // import { ViewingRoomArtworkType } from "./viewingRoomArtwork"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
@@ -213,9 +213,6 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
       },
       image: {
         type: GravityARImageType,
-        resolve: ({ image }) => {
-          return image
-        },
       },
       introStatement: {
         type: GraphQLString,
@@ -274,10 +271,12 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "Calculated field to reflect visibility and state of this viewing room",
       },
-      // TODO: In separate PR
-      // subsections: {
-      //   type: new GraphQLNonNull(new GraphQLList(ViewingRoomSubsectionType)),
-      // },
+      subsections: {
+        type: new GraphQLNonNull(new GraphQLList(ViewingRoomSubsectionType)),
+        resolve: async ({ id }, _args, { viewingRoomSubsectionsLoader }) => {
+          return viewingRoomSubsectionsLoader(id)
+        },
+      },
       timeZone: {
         type: GraphQLString,
         resolve: ({ time_zone }) => time_zone,

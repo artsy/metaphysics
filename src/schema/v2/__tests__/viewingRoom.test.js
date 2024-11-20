@@ -57,7 +57,6 @@ describe("ViewingRoom", () => {
           slug
           startAt
           status
-          # subsections
           timeZone
           title
           # viewingRoomArtworks
