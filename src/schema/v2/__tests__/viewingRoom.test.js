@@ -43,14 +43,14 @@ describe("ViewingRoom", () => {
           partner {
             name
           }
-          # partnerArtworksConnection(first: 1) {
-          #   totalCount
-          #   edges {
-          #     node {
-          #       title
-          #     }
-          #   }
-          # }
+          partnerArtworksConnection(first: 1) {
+            totalCount
+            edges {
+              node {
+                title
+              }
+            }
+          }
           partnerID
           published
           pullQuote
@@ -135,12 +135,12 @@ describe("ViewingRoom", () => {
 
       expect(partnerLoader).toHaveBeenCalledWith("partner-id")
 
-      // expect(partnerArtworksLoader).toHaveBeenCalledWith("partner-id", {
-      //   page: 1,
-      //   size: 1,
-      //   total_count: true,
-      //   viewing_room_id: "viewing-room-id",
-      // })
+      expect(partnerArtworksLoader).toHaveBeenCalledWith("partner-id", {
+        page: 1,
+        size: 1,
+        total_count: true,
+        viewing_room_id: "viewing-room-id",
+      })
 
       expect(result).toMatchInlineSnapshot(`
         {
@@ -176,6 +176,16 @@ describe("ViewingRoom", () => {
             "introStatement": "intro statement",
             "partner": {
               "name": "Partner Name",
+            },
+            "partnerArtworksConnection": {
+              "edges": [
+                {
+                  "node": {
+                    "title": "Partner Artwork 1",
+                  },
+                },
+              ],
+              "totalCount": 2,
             },
             "partnerID": "partner-id",
             "published": true,

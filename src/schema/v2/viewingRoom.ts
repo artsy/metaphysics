@@ -12,7 +12,7 @@ import {
   convertConnectionArgsToGravityArgs,
   defineCustomLocale,
 } from "lib/helpers"
-import { createPageCursors } from "./fields/pagination"
+import { createPageCursors, emptyConnection } from "./fields/pagination"
 import { connectionFromArray } from "graphql-relay"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
@@ -21,7 +21,6 @@ import { PartnerType } from "./partner/partner"
 import { dateRange } from "lib/date"
 import { GravityARImageType } from "./GravityARImageType"
 import { ViewingRoomSubsectionType } from "./viewingRoomSubsection"
-// import PartnerArtworks from "./partner/partnerArtworks"
 import { ViewingRoomArtworkType } from "./viewingRoomArtwork"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
@@ -66,6 +65,8 @@ defineCustomLocale(LocaleEnViewingRoomRelativeLong, {
 export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
   name: "ViewingRoom",
   fields: () => {
+    const { PartnerArtworks } = require("schema/v2/partner/partnerArtworks")
+
     return {
       internalID: {
         description: "A type-specific ID likely used as a database ID.",
@@ -225,27 +226,26 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
           return partnerLoader(partner_id)
         },
       },
-      // TODO: it causes yarn dump:local to fail with typeError: Cannot read properties of undefined (reading 'connectionType') in partnerArtworks.ts
-      // partnerArtworksConnection: {
-      //   type: artworkConnection.connectionType,
-      //   args: pageable({}),
-      //   resolve: ({ partner_id, id }, args, context, info) => {
-      //     if (!PartnerArtworks?.resolve) {
-      //       return emptyConnection
-      //     }
+      partnerArtworksConnection: {
+        type: artworkConnection.connectionType,
+        args: pageable({}),
+        resolve: ({ partner_id, id }, args, context, info) => {
+          if (!PartnerArtworks?.resolve) {
+            return emptyConnection
+          }
 
-      //     return PartnerArtworks.resolve(
-      //       undefined,
-      //       {
-      //         partnerID: partner_id,
-      //         viewingRoomID: id,
-      //         ...args,
-      //       },
-      //       context,
-      //       info
-      //     )
-      //   },
-      // },
+          return PartnerArtworks.resolve(
+            undefined,
+            {
+              partnerID: partner_id,
+              viewingRoomID: id,
+              ...args,
+            },
+            context,
+            info
+          )
+        },
+      },
       partnerID: {
         type: new GraphQLNonNull(GraphQLString),
         description: "ID of the partner associated with this viewing room",
