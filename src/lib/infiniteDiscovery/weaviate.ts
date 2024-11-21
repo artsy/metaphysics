@@ -52,7 +52,7 @@ export function getUser(response: UserResponse): WeaviateUser | null {
  * @param response from the Weaviate API containing InfiniteDiscoveryArtworks
  * @returns an array of the artwork internalIDs
  */
-export function GetArtworkIds(response: ArtworkResponse): string[] {
+export function getArtworkIds(response: ArtworkResponse): string[] {
   const responseArray = response?.data?.Get
 
   if (!responseArray) {

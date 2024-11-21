@@ -20,7 +20,7 @@ import {
   getUser,
   getUserCreationBody,
   getUserQuery,
-  GetArtworkIds,
+  getArtworkIds,
   getFilteredIdList,
 } from "lib/infiniteDiscovery/weaviate"
 
@@ -158,8 +158,8 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       // Insert two random curated artworks into the recommendations
       // to "challenge" the user's taste.
       const mixedArtworkIds = insertSampleCuratedWorks(
-        GetArtworkIds(nearArtworksResponse),
-        GetArtworkIds(curatedArtworksResponse),
+        getArtworkIds(nearArtworksResponse),
+        getArtworkIds(curatedArtworksResponse),
         2
       )
 
@@ -177,7 +177,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       return connectionFromArray(artworks, args)
     } else {
       const curatedArtworkIds = sampleSize(
-        GetArtworkIds(curatedArtworksResponse),
+        getArtworkIds(curatedArtworksResponse),
         limit
       )
 
