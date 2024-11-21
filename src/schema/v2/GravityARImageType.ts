@@ -10,7 +10,7 @@ const GravityImageURLsType = new GraphQLObjectType<any, ResolverContext>({
   name: "GravityImageURLs",
   fields: {
     normalized: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
   },
 })
