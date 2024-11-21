@@ -154,7 +154,7 @@ export const vortexStitchingEnvironment = (
             isPriceHidden
             isInAuction
             priceCurrency
-            artists {
+            pricingContextArtists: artists(shallow: true) {
               internalID
             }
             artistNames
@@ -163,7 +163,7 @@ export const vortexStitchingEnvironment = (
         resolve: async (source, _, context, info) => {
           const {
             artist,
-            artists,
+            pricingContextArtists,
             artistNames,
             category,
             editionSets,
@@ -196,7 +196,7 @@ export const vortexStitchingEnvironment = (
             isPriceHidden ||
             isInAuction ||
             priceCurrency !== "USD" ||
-            (artists && artists.length > 1) ||
+            (pricingContextArtists && pricingContextArtists.length > 1) ||
             !isForSale ||
             !price ||
             !artist ||

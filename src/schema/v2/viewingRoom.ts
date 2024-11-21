@@ -12,7 +12,7 @@ import {
   convertConnectionArgsToGravityArgs,
   defineCustomLocale,
 } from "lib/helpers"
-import { createPageCursors } from "./fields/pagination"
+import { createPageCursors, emptyConnection } from "./fields/pagination"
 import { connectionFromArray } from "graphql-relay"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
@@ -20,9 +20,8 @@ import moment from "moment"
 import { PartnerType } from "./partner/partner"
 import { dateRange } from "lib/date"
 import { GravityARImageType } from "./GravityARImageType"
-// import PartnerArtworks from "./partner/partnerArtworks"
-// import { ViewingRoomSubsectionType } from "./viewingRoomSubsection"
-// import { ViewingRoomArtworkType } from "./viewingRoomArtwork"
+import { ViewingRoomSubsectionType } from "./viewingRoomSubsection"
+import { ViewingRoomArtworkType } from "./viewingRoomArtwork"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -66,6 +65,8 @@ defineCustomLocale(LocaleEnViewingRoomRelativeLong, {
 export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
   name: "ViewingRoom",
   fields: () => {
+    const { PartnerArtworks } = require("schema/v2/partner/partnerArtworks")
+
     return {
       internalID: {
         description: "A type-specific ID likely used as a database ID.",
@@ -213,9 +214,6 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
       },
       image: {
         type: GravityARImageType,
-        resolve: ({ image }) => {
-          return image
-        },
       },
       introStatement: {
         type: GraphQLString,
@@ -228,27 +226,26 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
           return partnerLoader(partner_id)
         },
       },
-      // TODO: it causes yarn dump:local to fail with typeError: Cannot read properties of undefined (reading 'connectionType') in partnerArtworks.ts
-      // partnerArtworksConnection: {
-      //   type: artworkConnection.connectionType,
-      //   args: pageable({}),
-      //   resolve: ({ partner_id, id }, args, context, info) => {
-      //     if (!PartnerArtworks?.resolve) {
-      //       return emptyConnection
-      //     }
+      partnerArtworksConnection: {
+        type: artworkConnection.connectionType,
+        args: pageable({}),
+        resolve: ({ partner_id, id }, args, context, info) => {
+          if (!PartnerArtworks?.resolve) {
+            return emptyConnection
+          }
 
-      //     return PartnerArtworks.resolve(
-      //       undefined,
-      //       {
-      //         partnerID: partner_id,
-      //         viewingRoomID: id,
-      //         ...args,
-      //       },
-      //       context,
-      //       info
-      //     )
-      //   },
-      // },
+          return PartnerArtworks.resolve(
+            undefined,
+            {
+              partnerID: partner_id,
+              viewingRoomID: id,
+              ...args,
+            },
+            context,
+            info
+          )
+        },
+      },
       partnerID: {
         type: new GraphQLNonNull(GraphQLString),
         description: "ID of the partner associated with this viewing room",
@@ -274,10 +271,12 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "Calculated field to reflect visibility and state of this viewing room",
       },
-      // TODO: In separate PR
-      // subsections: {
-      //   type: new GraphQLNonNull(new GraphQLList(ViewingRoomSubsectionType)),
-      // },
+      subsections: {
+        type: new GraphQLNonNull(new GraphQLList(ViewingRoomSubsectionType)),
+        resolve: async ({ id }, _args, { viewingRoomSubsectionsLoader }) => {
+          return viewingRoomSubsectionsLoader(id)
+        },
+      },
       timeZone: {
         type: GraphQLString,
         resolve: ({ time_zone }) => time_zone,
@@ -286,11 +285,12 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLNonNull(GraphQLString),
         description: "Viewing room name",
       },
-      // TODO: In separate PR
-      // viewingRoomArtworks: {
-      //   type: new GraphQLNonNull(new GraphQLList(ViewingRoomArtworkType)),
-      //   resolve: ({ viewing_room_artworks }) => viewing_room_artworks,
-      // },
+      viewingRoomArtworks: {
+        type: new GraphQLNonNull(new GraphQLList(ViewingRoomArtworkType)),
+        resolve: async ({ id }, _args, { viewingRoomArtworksLoader }) => {
+          return viewingRoomArtworksLoader(id)
+        },
+      },
     }
   },
 })

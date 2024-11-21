@@ -12,7 +12,7 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { generateUuid, generateBeacon } from "./discoverArtworks"
+import { generateBeacon, generateUuid } from "lib/infiniteDiscovery/weaviate"
 
 export const ReferenceTypesEnum = new GraphQLEnumType({
   name: "ReferenceTypes",

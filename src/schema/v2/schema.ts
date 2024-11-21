@@ -243,7 +243,7 @@ import { ackTaskMutation } from "./me/ack_task_mutation"
 import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
 import { CreateDiscoveryLikedArtworkMutation } from "./infiniteDiscovery/createDiscoveryArtworkReferenceMutation"
 import { CreateDiscoveryUserMutation } from "./infiniteDiscovery/createDiscoveryUserMutation"
-import { DeleteDiscoveryUserReferencesMutation } from "./infiniteDiscovery/resetDiscoveryArtworkReferencesMutation"
+import { deleteDiscoveryUserMutation } from "./infiniteDiscovery/deleteDiscoveryUserMutation"
 import { LikedDiscoveryArtworks } from "./infiniteDiscovery/likedDiscoveryArtworks"
 import {
   BackupSecondFactor,
@@ -434,7 +434,6 @@ export default new GraphQLSchema({
       createCreditCard: createCreditCardMutation,
       createDiscoveryArtworkReference: CreateDiscoveryLikedArtworkMutation,
       createDiscoveryUser: CreateDiscoveryUserMutation,
-      deleteDiscoveryUserReferences: DeleteDiscoveryUserReferencesMutation,
       createFeature: CreateFeatureMutation,
       createFeaturedLink: CreateFeaturedLinkMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
@@ -456,6 +455,7 @@ export default new GraphQLSchema({
       deleteCollection: deleteCollectionMutation,
       deleteConversation: deleteConversationMutation,
       deleteCreditCard: deleteCreditCardMutation,
+      deleteDiscoveryUserMutation: deleteDiscoveryUserMutation,
       deleteFeature: DeleteFeatureMutation,
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,

@@ -8,7 +8,7 @@ import { GraphQLBoolean } from "graphql"
 import { merge } from "lodash"
 import { createPageCursors } from "schema/v2/fields/pagination"
 
-const PartnerArtworks: GraphQLFieldConfig<void, ResolverContext> = {
+export const PartnerArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
   description: "A list of Artworks for a partner",
   deprecationReason:

@@ -11,19 +11,18 @@ import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import { connectionFromArray } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
-import gql from "lib/gql"
-import uuid from "uuid/v5"
-import { random, sampleSize, shuffle } from "lodash"
-
-export const generateUuid = (userId: string) => {
-  if (!userId) return ""
-  return uuid(userId, uuid.DNS).toString()
-}
-
-export const generateBeacon = (namespace: string, identifier: string) => {
-  // TODO: Understand why localhost works here and weaviate://weaviate.stg.artsy.net doesn't
-  return `weaviate://localhost/${namespace}/${identifier}`
-}
+import { sampleSize, shuffle } from "lodash"
+import {
+  insertSampleCuratedWorks,
+  getUserFilterList,
+  getCuratedArtworksQuery,
+  getNearObjectQuery,
+  getUser,
+  getUserCreationBody,
+  getUserQuery,
+  getArtworkIds,
+  getFilteredIdList,
+} from "lib/infiniteDiscovery/weaviate"
 
 export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
@@ -124,161 +123,74 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       return connectionFromArray(shuffledArtworks, args)
     }
 
-    const userUUID = generateUuid(userId)
-    const beacon = generateBeacon("InfiniteDiscoveryUsers", userUUID)
-
-    const userQuery = gql`
-      {
-        Get {
-          InfiniteDiscoveryUsers(
-            where: { path: ["internalID"], operator: Equal, valueString: "${userId}" }
-          ) {
-            likedArtworks {
-              ... on InfiniteDiscoveryArtworks {
-                internalID
-              }
-            }
-            seenArtworks  {
-              ... on InfiniteDiscoveryArtworks {
-                internalID
-              }
-            }
-          }
-        }
-      }
-    `
     const userQueryResponse = await weaviateGraphqlLoader({
-      query: userQuery,
+      query: getUserQuery(userId),
     })()
 
-    let user = userQueryResponse?.data?.Get?.InfiniteDiscoveryUsers?.[0]
+    let user = getUser(userQueryResponse)
 
-    // If user doesn't exist, create it
+    // Create a InfiniteDiscoveryUsers object if it doesn't exist
     if (!user) {
       try {
-        const body = {
-          class: "InfiniteDiscoveryUsers",
-          id: userUUID,
-          properties: {
-            internalID: userId,
-          },
-        }
-        user = await weaviateCreateObjectLoader("/objects", body)
+        user = await weaviateCreateObjectLoader(
+          "/objects",
+          getUserCreationBody(userId)
+        )
       } catch (error) {
         throw new Error(`Error creating user in Weaviate: ${error}`)
       }
     }
 
-    const likedArtworkIds =
-      user.likedArtworks?.map((node) => node.internalID) || []
-    const seenArtworkIds =
-      user.seenArtworks?.map((node) => node.internalID) || []
-    const artworkIdsToFilter = [...likedArtworkIds, ...seenArtworkIds]
+    // Get curated artworks. We do this outside the conditional since we will always use them
+    const curatedArtworksResponse = await weaviateGraphqlLoader({
+      query: getCuratedArtworksQuery(),
+    })()
 
-    let response
-    if (likedArtworkIds.length > 0) {
-      const searchQuery = gql`
-        {
-          Get {
-            InfiniteDiscoveryArtworks(
-                nearObject: {
-                  beacon: "${beacon}",
-                  certainty: ${certainty}
-                },
-                limit: ${limit},
-                offset: ${offset},
-            ) {
-              internalID
-              _additional {
-                id
-              }
-            }
-          }
-        }
-      `
+    const userFilterList = getUserFilterList(user!)
 
-      const curatedArtworksQuery = gql`
-        {
-          Get {
-            InfiniteDiscoveryArtworks(
-              limit: 200
-              where: {
-                path: ["isCurated"]
-                operator: Equal
-                valueBoolean: true
-              }
-            ) {
-              internalID
-              _additional {
-                id
-              }
-            }
-          }
-        }
-      `
-
-      const nearObjectResponse = await weaviateGraphqlLoader({
-        query: searchQuery,
-      })()
-      const challengeResponse = await weaviateGraphqlLoader({
-        query: curatedArtworksQuery,
+    // If the user has liked more than 3 artworks, we will use the nearObject query
+    // to get recommendations based on the user's taste.
+    if (user!.likedArtworks?.length > 2) {
+      const nearArtworksResponse = await weaviateGraphqlLoader({
+        query: getNearObjectQuery(userId, { certainty, limit, offset }),
       })()
 
-      response = nearObjectResponse?.data?.Get?.InfiniteDiscoveryArtworks
-
-      // Insert the challenge artwork at a random index
-      sampleSize(
-        challengeResponse.data?.Get?.InfiniteDiscoveryArtworks,
+      // Insert two random curated artworks into the recommendations
+      // to "challenge" the user's taste.
+      const mixedArtworkIds = insertSampleCuratedWorks(
+        getArtworkIds(nearArtworksResponse),
+        getArtworkIds(curatedArtworksResponse),
         2
-      ).forEach((challengeArtwork) => {
-        const length = response.length
-        const randomIndex = random(length)
-        response.splice(randomIndex, 0, challengeArtwork)
-      })
+      )
+
+      const filteredNearArtworkIds = getFilteredIdList(
+        mixedArtworkIds,
+        userFilterList
+      )
+
+      if (sort == "certainty") {
+        filteredNearArtworkIds.reverse()
+      }
+
+      const artworks = await artworksLoader({ ids: filteredNearArtworkIds })
+
+      return connectionFromArray(artworks, args)
     } else {
-      response = await weaviateGraphqlLoader({
-        query: gql`
-          {
-            Get {
-              InfiniteDiscoveryArtworks(
-                where: {
-                  path: ["isCurated"]
-                  operator: Equal
-                  valueBoolean: true
-                }
-                limit: 200
-              ) {
-                internalID
-                _additional {
-                  id
-                }
-              }
-            }
-          }
-        `,
-      })().then((res) => {
-        return sampleSize(res.data.Get.InfiniteDiscoveryArtworks, limit)
+      const curatedArtworkIds = sampleSize(
+        getArtworkIds(curatedArtworksResponse),
+        limit
+      )
+
+      const filteredCuratedArtworkIds = getFilteredIdList(
+        curatedArtworkIds,
+        userFilterList
+      )
+
+      const curatedArtworks = await artworksLoader({
+        ids: filteredCuratedArtworkIds,
       })
+
+      return connectionFromArray(curatedArtworks, args)
     }
-
-    if (!response) return connectionFromArray([], args)
-
-    const artworkIds = response.map((node) => node.internalID)
-
-    // Remove liked artworks from the list
-    const filteredArtworkIds = artworkIds.filter(
-      (id) => artworkIdsToFilter.indexOf(id) === -1
-    )
-
-    if (sort == "certainty") {
-      filteredArtworkIds.reverse()
-    }
-
-    const artworks =
-      filteredArtworkIds?.length > 0
-        ? await artworksLoader({ ids: filteredArtworkIds })
-        : []
-
-    return connectionFromArray(artworks, args)
   },
 }
