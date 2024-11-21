@@ -22,6 +22,7 @@ import { dateRange } from "lib/date"
 import { GravityARImageType } from "./GravityARImageType"
 import { ViewingRoomSubsectionType } from "./viewingRoomSubsection"
 import { ViewingRoomArtworkType } from "./viewingRoomArtwork"
+import { InternalIDField } from "./object_identification"
 
 const LocaleEnViewingRoomRelativeShort = "en-viewing-room-relative-short"
 defineCustomLocale(LocaleEnViewingRoomRelativeShort, {
@@ -68,11 +69,7 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
     const { PartnerArtworks } = require("schema/v2/partner/partnerArtworks")
 
     return {
-      internalID: {
-        description: "A type-specific ID likely used as a database ID.",
-        type: new GraphQLNonNull(GraphQLID),
-        resolve: ({ id }) => id,
-      },
+      ...InternalIDField,
       artworkIDs: {
         type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
         resolve: ({ artwork_ids }) => artwork_ids,
