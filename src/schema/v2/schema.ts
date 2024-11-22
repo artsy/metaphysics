@@ -263,6 +263,8 @@ import { createAndSendBackupSecondFactorMutation } from "./users/createAndSendBa
 import { createViewingRoomMutation } from "./viewingRooms/mutations/createViewingRoomMutation"
 import { updateViewingRoomMutation } from "./viewingRooms/mutations/updateViewingRoomMutation"
 import { deleteViewingRoomMutation } from "./viewingRooms/mutations/deleteViewingRoomMutation"
+import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishViewingRoomMutation"
+import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublishViewingRoomMutation"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -276,6 +278,8 @@ const viewingRoomsMutations = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
       createViewingRoom: createViewingRoomMutation,
       deleteViewingRoom: deleteViewingRoomMutation,
       updateViewingRoom: updateViewingRoomMutation,
+      publishViewingRoom: publishViewingRoomMutation,
+      unpublishViewingRoom: unpublishViewingRoomMutation,
     }
   : ({} as any)
 
