@@ -31,7 +31,9 @@ export const createViewingRoomMutation = mutationWithClientMutationId<
 >({
   name: "createViewingRoom",
   inputFields: {
-    // TODO: explain duplication
+    // If you scroll futher down, you'll notice that some attributes from attributes are duplicated in the inputFields
+    // This is because Gravity has such duplication https://github.com/artsy/gravity/blob/main/app/graphql/mutations/create_viewing_room.rb#L12
+    // We can get rid of it once we finish with the migration. For now I want to keep such changes to a minimum
     attributes: {
       type: new GraphQLInputObjectType({
         name: "ViewingRoomAttributes",

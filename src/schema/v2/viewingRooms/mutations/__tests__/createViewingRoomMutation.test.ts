@@ -83,15 +83,15 @@ describe("createViewingRoomMutation", () => {
         })
 
         expect(result).toMatchInlineSnapshot(`
-                  {
-                    "createViewingRoom": {
-                      "viewingRoomOrErrors": {
-                        "__typename": "ViewingRoom",
-                        "internalID": "viewing-room-id",
-                      },
-                    },
-                  }
-              `)
+          {
+            "createViewingRoom": {
+              "viewingRoomOrErrors": {
+                "__typename": "ViewingRoom",
+                "internalID": "viewing-room-id",
+              },
+            },
+          }
+        `)
       })
     })
 
@@ -148,15 +148,15 @@ describe("createViewingRoomMutation", () => {
         })
 
         expect(result).toMatchInlineSnapshot(`
-                  {
-                    "createViewingRoom": {
-                      "viewingRoomOrErrors": {
-                        "__typename": "ViewingRoom",
-                        "internalID": "viewing-room-id",
-                      },
-                    },
-                  }
-              `)
+          {
+            "createViewingRoom": {
+              "viewingRoomOrErrors": {
+                "__typename": "ViewingRoom",
+                "internalID": "viewing-room-id",
+              },
+            },
+          }
+        `)
       })
     })
 
@@ -209,15 +209,15 @@ describe("createViewingRoomMutation", () => {
         })
 
         expect(result).toMatchInlineSnapshot(`
-                  {
-                    "createViewingRoom": {
-                      "viewingRoomOrErrors": {
-                        "__typename": "ViewingRoom",
-                        "internalID": "viewing-room-id",
-                      },
-                    },
-                  }
-              `)
+          {
+            "createViewingRoom": {
+              "viewingRoomOrErrors": {
+                "__typename": "ViewingRoom",
+                "internalID": "viewing-room-id",
+              },
+            },
+          }
+        `)
       })
     })
   })
