@@ -5,6 +5,7 @@ import {
   FilterTypes,
   RenameTypes,
   RenameRootFields,
+  FilterRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
 import config from "config"
@@ -53,6 +54,17 @@ export const executableGravitySchema = () => {
     duplicatedTypes.push("ViewingRoom")
     duplicatedTypes.push("ViewingRoomsConnection")
     duplicatedTypes.push("ViewingRoomsEdge")
+    duplicatedTypes.push("ViewingRoomsEdge")
+
+    duplicatedTypes.push("CreateViewingRoomPayload")
+    duplicatedTypes.push("CreateViewingRoomInput")
+    duplicatedTypes.push("ViewingRoomOrErrorsUnion")
+    duplicatedTypes.push("ViewingRoomAttributes")
+  }
+
+  const excludedMutations: string[] = []
+  if (config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA) {
+    excludedMutations.push("createViewingRoom")
   }
 
   // Types which come from Gravity that are not (yet) needed in MP.
@@ -94,6 +106,15 @@ export const executableGravitySchema = () => {
       } else {
         return name
       }
+    }),
+    new FilterRootFields((operation, name) => {
+      if (!name) return true
+
+      if (operation === "Mutation") {
+        return !excludedMutations.includes(name)
+      }
+
+      return true
     }),
   ])
 }
