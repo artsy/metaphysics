@@ -256,6 +256,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updateViewingRoomLoader: gravityLoader(
+      (id) => `viewing_room/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     deleteHeroUnitLoader: gravityLoader(
       (id) => `hero_units/${id}`,
       {},
