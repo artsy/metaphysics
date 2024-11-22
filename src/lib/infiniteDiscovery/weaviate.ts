@@ -141,9 +141,10 @@ export function generateBeacon(collection: string, identifier: string): string {
 }
 
 /**
- * Checks if a user has an existing cross reference
+ * Checks if a user has an existing cross reference for a given artwork
+ *
  * @param user the user object from Weaviate
- * @param newInternalId the internalID to check for
+ * @param newInternalId the internalID of the artwork for which to check
  * @returns a boolean indicating if the user has an existing cross reference
  */
 export function hasExistingCrossReference(

@@ -110,7 +110,7 @@ export const CreateDiscoveryLikedArtworkMutation = mutationWithClientMutationId<
       throw new Error("Weaviate user not found")
     }
 
-    // Check if the user already has a cross reference
+    // Check if the user already has an existing cross reference for the artwork
     if (hasExistingCrossReference(user, artworkId)) {
       return { success: true }
     }
