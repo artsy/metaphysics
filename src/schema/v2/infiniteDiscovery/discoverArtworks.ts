@@ -11,7 +11,7 @@ import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import { connectionFromArray } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
-import { sampleSize, shuffle } from "lodash"
+import { sampleSize, shuffle, uniqBy } from "lodash"
 import {
   insertSampleCuratedWorks,
   getUserFilterList,
@@ -174,7 +174,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
       const artworks = await artworksLoader({ ids: filteredNearArtworkIds })
 
-      return connectionFromArray(artworks, args)
+      return connectionFromArray(uniqBy(artworks, "artist.id"), args)
     } else {
       const curatedArtworkIds = sampleSize(
         getArtworkIds(curatedArtworksResponse),
@@ -190,7 +190,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         ids: filteredCuratedArtworkIds,
       })
 
-      return connectionFromArray(curatedArtworks, args)
+      return connectionFromArray(uniqBy(curatedArtworks, "artist.id"), args)
     }
   },
 }

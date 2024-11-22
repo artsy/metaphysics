@@ -141,6 +141,24 @@ export function generateBeacon(collection: string, identifier: string): string {
 }
 
 /**
+ * Checks if a user has an existing cross reference for a given artwork
+ *
+ * @param user the user object from Weaviate
+ * @param newInternalId the internalID of the artwork for which to check
+ * @returns a boolean indicating if the user has an existing cross reference
+ */
+export function hasExistingCrossReference(
+  user: WeaviateUser,
+  newInternalId: string
+): boolean {
+  const existingReferences = getUserFilterList(user)
+
+  return existingReferences.some((oldInternalID) => {
+    return newInternalId === oldInternalID
+  })
+}
+
+/**
  * Generates a weaviate graphql query to get a user by their internalID
  *
  * @param userId the internalID of the user

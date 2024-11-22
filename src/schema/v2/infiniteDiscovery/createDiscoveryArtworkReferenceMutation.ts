@@ -12,7 +12,13 @@ import {
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { generateBeacon, generateUuid } from "lib/infiniteDiscovery/weaviate"
+import {
+  generateBeacon,
+  generateUuid,
+  getUser,
+  getUserQuery,
+  hasExistingCrossReference,
+} from "lib/infiniteDiscovery/weaviate"
 
 export const ReferenceTypesEnum = new GraphQLEnumType({
   name: "ReferenceTypes",
@@ -87,10 +93,26 @@ export const CreateDiscoveryLikedArtworkMutation = mutationWithClientMutationId<
   },
   mutateAndGetPayload: async (
     { userId, artworkId, reference },
-    { weaviateCreateCrossReferenceLoader }
+    { weaviateCreateCrossReferenceLoader, weaviateGraphqlLoader }
   ) => {
-    if (!weaviateCreateCrossReferenceLoader) {
+    if (!weaviateCreateCrossReferenceLoader || !weaviateGraphqlLoader) {
       new Error("Weaviate loader not available")
+    }
+
+    // Fetch the user from Weaviate
+    const userQueryResponse = await weaviateGraphqlLoader({
+      query: getUserQuery(userId),
+    })()
+
+    const user = getUser(userQueryResponse)
+
+    if (!user) {
+      throw new Error("Weaviate user not found")
+    }
+
+    // Check if the user already has an existing cross reference for the artwork
+    if (hasExistingCrossReference(user, artworkId)) {
+      return { success: true }
     }
 
     const artworkUUID = generateUuid(artworkId)
