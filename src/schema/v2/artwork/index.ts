@@ -1185,6 +1185,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
             description:
               "Use whatever is in the original response instead of making a request",
+            defaultValue: true, // avoids API request that's usually unnecessary
           },
         },
         resolve: ({ partner }, { shallow }, { partnerLoader }) => {
