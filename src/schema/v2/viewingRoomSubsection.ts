@@ -28,6 +28,10 @@ export const ViewingRoomSubsectionType = new GraphQLObjectType<
       image: {
         type: GravityARImageType,
       },
+      imageURL: {
+        type: GraphQLString,
+        resolve: ({ image_url }) => image_url,
+      },
       title: {
         type: GraphQLString,
       },
