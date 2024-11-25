@@ -7,6 +7,7 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ErrorsType } from "lib/gravityErrorHandler"
+import { identity, pickBy } from "lodash"
 import { ViewingRoomType } from "schema/v2/viewingRoom"
 import { ResolverContext } from "types/graphql"
 
@@ -125,17 +126,21 @@ export const createViewingRoomMutation = mutationWithClientMutationId<
     }
 
     try {
-      const gravityArgs = {
-        body: args.body || args.attributes?.body,
-        end_at: args.endAt || args.attributes?.endAt,
-        image: args.image,
-        intro_statement: args.introStatement || args.attributes?.introStatement,
-        partner_id: args.partnerId || args.partnerID,
-        pull_quote: args.pullQuote || args.attributes?.pullQuote,
-        start_at: args.startAt || args.attributes?.startAt,
-        time_zone: args.timeZone || args.attributes?.timeZone,
-        title: args.title || args.attributes?.title,
-      }
+      const gravityArgs = pickBy(
+        {
+          body: args.body || args.attributes?.body,
+          end_at: args.endAt || args.attributes?.endAt,
+          ar_image_id: args.image?.internalID,
+          intro_statement:
+            args.introStatement || args.attributes?.introStatement,
+          partner_id: args.partnerId || args.partnerID,
+          pull_quote: args.pullQuote || args.attributes?.pullQuote,
+          start_at: args.startAt || args.attributes?.startAt,
+          time_zone: args.timeZone || args.attributes?.timeZone,
+          title: args.title || args.attributes?.title,
+        },
+        identity
+      )
 
       const response = await createViewingRoomLoader(gravityArgs)
 

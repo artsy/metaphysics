@@ -71,9 +71,9 @@ describe("createViewingRoomMutation", () => {
         const result = await runAuthenticatedQuery(mutation, context)
 
         expect(mockCreateViewingRoomLoader).toHaveBeenCalledWith({
+          ar_image_id: "image-id",
           body: "test body",
           end_at: "2092-05-23T00:00:00.000Z",
-          image: { internalID: "image-id" },
           intro_statement: "intro statement",
           partner_id: "partner-id",
           pull_quote: "pull quote",
@@ -136,9 +136,9 @@ describe("createViewingRoomMutation", () => {
         const result = await runAuthenticatedQuery(mutation, context)
 
         expect(mockCreateViewingRoomLoader).toHaveBeenCalledWith({
+          ar_image_id: "image-id",
           body: "test body",
           end_at: "2092-05-23T00:00:00.000Z",
-          image: { internalID: "image-id" },
           intro_statement: "intro statement",
           partner_id: "partner-id",
           pull_quote: "pull quote",
@@ -199,9 +199,9 @@ describe("createViewingRoomMutation", () => {
         const result = await runAuthenticatedQuery(mutation, context)
 
         expect(mockCreateViewingRoomLoader).toHaveBeenCalledWith({
+          ar_image_id: "image-id",
           body: "test body",
           end_at: "2092-05-23T00:00:00.000Z",
-          image: { internalID: "image-id" },
           partner_id: "partner-id",
           start_at: "1992-05-23T00:00:00.000Z",
           time_zone: "Etc/UTC",
