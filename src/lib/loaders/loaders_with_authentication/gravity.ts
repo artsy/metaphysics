@@ -294,6 +294,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    deleteViewingRoomLoader: gravityLoader(
+      (id) => `viewing_room/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     dislikeArtworkLoader: gravityLoader(
       (id) => `collection/disliked-artwork/artwork/${id}`,
       {},
