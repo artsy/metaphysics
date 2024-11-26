@@ -36,7 +36,7 @@ describe("stitched schema regressions", () => {
         artworkLoader: async () => artworkResponse,
         salesLoader: async () => salesResponse,
         relatedFairsLoader: async () => ({}),
-        relatedShowsLoader: async () => ({}),
+        showsLoader: async () => ({}),
       }
     )
     expect(result).toEqual({
