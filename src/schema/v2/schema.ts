@@ -260,11 +260,18 @@ import { disableSecondFactorMutation } from "./me/secondFactors/mutations/disabl
 import { deliverSecondFactorMutation } from "./me/secondFactors/mutations/deliverSecondFactor"
 import { enableSecondFactorMutation } from "./me/secondFactors/mutations/enableSecondFactor"
 import { createAndSendBackupSecondFactorMutation } from "./users/createAndSendBackupSecondFactorMutation"
+import { createViewingRoomMutation } from "./viewingRooms/mutations/createViewingRoomMutation"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
       viewingRoom: ViewingRoom,
       viewingRoomsConnection: ViewingRoomsConnection,
+    }
+  : ({} as any)
+
+const viewingRoomsMutations = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
+  ? {
+      createViewingRoom: createViewingRoomMutation,
     }
   : ({} as any)
 
@@ -530,6 +537,7 @@ export default new GraphQLSchema({
       deliverSecondFactor: deliverSecondFactorMutation,
       enableSecondFactor: enableSecondFactorMutation,
       createAndSendBackupSecondFactor: createAndSendBackupSecondFactorMutation,
+      ...viewingRoomsMutations,
     },
   }),
   query: new GraphQLObjectType<any, ResolverContext>({

@@ -123,6 +123,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createViewingRoomLoader: gravityLoader(
+      "viewing_room",
+      {},
+      { method: "POST" }
+    ),
     deleteVerifiedRepresetativeLoader: gravityLoader(
       (id) => `verified_representatives/${id}`,
       {},

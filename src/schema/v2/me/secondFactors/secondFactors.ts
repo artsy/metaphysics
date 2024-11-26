@@ -12,6 +12,7 @@ import {
 } from "graphql"
 import { date } from "../../fields/date"
 import { ResolverContext } from "types/graphql"
+import { ErrorsType } from "lib/gravityErrorHandler"
 
 export const SecondFactorKind = new GraphQLEnumType({
   name: "SecondFactorKind",
@@ -155,27 +156,6 @@ export const AppSecondFactorAttributes = new GraphQLInputObjectType({
   fields: {
     name: {
       type: GraphQLString,
-    },
-  },
-})
-
-const ErrorType = new GraphQLObjectType<any, ResolverContext>({
-  name: "Error",
-  fields: () => ({
-    code: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    message: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-  }),
-})
-
-const ErrorsType = new GraphQLObjectType<any, ResolverContext>({
-  name: "Errors",
-  fields: {
-    errors: {
-      type: new GraphQLList(ErrorType),
     },
   },
 })
