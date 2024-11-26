@@ -1821,7 +1821,7 @@ describe("Artwork type", () => {
       })
       context.salesLoader = sinon.stub().returns(Promise.resolve([relatedSale]))
       context.relatedFairsLoader = sinon.stub().returns(Promise.resolve([]))
-      context.relatedShowsLoader = sinon.stub().returns(Promise.resolve([]))
+      context.showsLoader = sinon.stub().returns(Promise.resolve([]))
       const query = `
         {
           artwork(id: "richard-prince-untitled-portrait") {
@@ -4670,7 +4670,7 @@ describe("Artwork type", () => {
         salesLoader: jest.fn(),
         saleArtworkLoader: jest.fn(),
         marketingCollectionLoader: jest.fn(),
-        relatedShowsLoader: jest.fn(),
+        showsLoader: jest.fn(),
       }
       context = {
         userID: "testUser",
@@ -4681,7 +4681,7 @@ describe("Artwork type", () => {
       context.mePartnerOffersLoader.mockResolvedValue({ body: [] })
       context.salesLoader.mockResolvedValue([])
       context.marketingCollectionLoader.mockResolvedValue({ artwork_ids: [] })
-      context.relatedShowsLoader.mockResolvedValue({ body: [] })
+      context.showsLoader.mockResolvedValue([])
     })
 
     describe("feature flags enabled", () => {
@@ -5129,15 +5129,13 @@ describe("Artwork type", () => {
       describe("runningShow", () => {
         it("returns the show or fair if the artwork id is in a running show or fair", async () => {
           artwork.purchasable = true
-          context.relatedShowsLoader.mockResolvedValue({
-            body: [
-              {
-                name: "Test Show",
-                start_at: "2023-01-01T00:00:00Z",
-                end_at: "2023-01-02T00:00:00Z",
-              },
-            ],
-          })
+          context.showsLoader.mockResolvedValue([
+            {
+              name: "Test Show",
+              start_at: "2023-01-01T00:00:00Z",
+              end_at: "2023-01-02T00:00:00Z",
+            },
+          ])
 
           const data = await runQuery(query, context)
           expect(data.artwork.collectorSignals.runningShow).toEqual({
@@ -5149,7 +5147,7 @@ describe("Artwork type", () => {
 
         it("returns null if the artwork id is not in a running show or fair", async () => {
           artwork.purchasable = true
-          context.relatedShowsLoader.mockResolvedValue({ body: [] })
+          context.showsLoader.mockResolvedValue([])
 
           const data = await runQuery(query, context)
           expect(data.artwork.collectorSignals.runningShow).toBeNull()
