@@ -36,7 +36,7 @@ const Context: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: (
     { id, sale_ids },
     _options,
-    { salesLoader, relatedFairsLoader, relatedShowsLoader }
+    { salesLoader, relatedFairsLoader, showsLoader }
   ) => {
     let sale_promise
     if (sale_ids && sale_ids.length > 0) {
@@ -58,13 +58,11 @@ const Context: GraphQLFieldConfig<any, ResolverContext> = {
         return assign({ context_type: "Fair" }, fair)
       })
 
-    const show_promise = relatedShowsLoader({
-      artwork: [id],
+    const show_promise = showsLoader({
+      artwork: id,
       size: 1,
-      active: false,
       at_a_fair: false,
     })
-      .then(({ body }) => body)
       .then(first)
       .then((show) => {
         if (!show) return null
