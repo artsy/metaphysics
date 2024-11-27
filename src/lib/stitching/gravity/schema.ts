@@ -58,6 +58,8 @@ export const executableGravitySchema = () => {
 
     duplicatedTypes.push("CreateViewingRoomPayload")
     duplicatedTypes.push("CreateViewingRoomInput")
+    duplicatedTypes.push("DeleteViewingRoomInput")
+    duplicatedTypes.push("DeleteViewingRoomPayload")
     duplicatedTypes.push("ViewingRoomOrErrorsUnion")
     duplicatedTypes.push("ViewingRoomAttributes")
     duplicatedTypes.push("UpdateViewingRoomPayload")
@@ -67,6 +69,7 @@ export const executableGravitySchema = () => {
   const excludedMutations: string[] = []
   if (config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA) {
     excludedMutations.push("createViewingRoom")
+    excludedMutations.push("deleteViewingRoom")
     excludedMutations.push("updateViewingRoom")
   }
 
