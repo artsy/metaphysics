@@ -8,7 +8,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { snakeCaseKeys } from "lib/helpers"
+import { identity, pickBy } from "lodash"
 import { ResolverContext } from "types/graphql"
 
 const ViewingRoomArtworkInput = new GraphQLInputObjectType({
@@ -58,9 +58,17 @@ export const updateViewingRoomArtworksMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    const artworks = args.artworks.map((artwork, _index) =>
-      snakeCaseKeys(artwork)
-    )
+    const artworks = args.artworks.map((artwork, index) => {
+      return pickBy(
+        {
+          [index]: {
+            artwork_id: artwork.artworkID,
+            delete: artwork.delete,
+          },
+        },
+        identity
+      )
+    })
 
     const response = await updateViewingRoomArtworksLoader(args.viewingRoomID, {
       artworks: artworks,

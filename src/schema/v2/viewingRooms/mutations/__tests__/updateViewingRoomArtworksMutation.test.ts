@@ -35,7 +35,7 @@ describe("updateViewingRoomArtworksMutation", () => {
         input: {
           viewingRoomID: "viewing-room-id"
           artworks: [
-            { artworkID: "artwork-1", position: 0 }
+            { artworkID: "artwork-1" }
             { artworkID: "artwork-2", delete: true }
           ]
         }
@@ -54,8 +54,8 @@ describe("updateViewingRoomArtworksMutation", () => {
       "viewing-room-id",
       {
         artworks: [
-          { artwork_id: "artwork-1", position: 0 },
-          { artwork_id: "artwork-2", delete: true },
+          { "0": { artwork_id: "artwork-1" } },
+          { "1": { artwork_id: "artwork-2", delete: true } },
         ],
       }
     )

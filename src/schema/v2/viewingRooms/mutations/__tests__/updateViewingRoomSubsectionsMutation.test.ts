@@ -93,14 +93,22 @@ describe("updateViewingRoomSubsectionsMutation", () => {
       {
         subsections: [
           {
-            ar_image_id: "example-image",
-            attributes: {
-              body: "subsection body",
-              caption: "subsection caption",
-              title: "subsection title",
+            "0": {
+              ar_image_id: "example-image",
+              attributes: {
+                body: "subsection body",
+                caption: "subsection caption",
+                title: "subsection title",
+              },
             },
           },
-          { attributes: {}, delete: true, id: "subsection-to-delete-id" },
+          {
+            "1": {
+              attributes: {},
+              delete: true,
+              id: "subsection-to-delete-id",
+            },
+          },
         ],
       }
     )
