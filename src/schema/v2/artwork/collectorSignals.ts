@@ -185,9 +185,12 @@ export const CollectorSignals: GraphQLFieldConfig<any, ResolverContext> = {
         type: Show.type,
         description:
           "Most recent running Show or Fair booth the artwork is currently in, sorted by relevance",
-        resolve: async (artwork, {}, ctx) => {
+        resolve: async ({ show_ids, _id }, {}, ctx) => {
+          if (!show_ids || show_ids.length === 0) {
+            return null
+          }
           const showOrFair = await await ctx.showsLoader({
-            artwork: artwork._id,
+            artwork: _id,
             size: 1,
             status: "running",
             has_location: true,
