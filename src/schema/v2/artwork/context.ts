@@ -61,7 +61,7 @@ const Context: GraphQLFieldConfig<any, ResolverContext> = {
     let showPromise
     if (show_ids && show_ids.length > 0) {
       showPromise = showsLoader({
-        artwork: id,
+        id: show_ids,
         size: 1,
         at_a_fair: false,
       })
