@@ -12,7 +12,6 @@ const FEATURE_FLAGS_LIST = [
   "diamond_blurhash-enabled-globally",
   "onyx_enable-home-view-section-featured-fairs",
   "diamond_home-view-marketing-collection-categories",
-  "emerald_home-view-tasks-section",
   "onyx_experiment_home_view_test",
 ] as const
 

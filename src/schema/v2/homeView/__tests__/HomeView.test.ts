@@ -176,6 +176,14 @@ describe("homeView", () => {
             "edges": [
               {
                 "node": {
+                  "__typename": "HomeViewSectionTasks",
+                  "component": {
+                    "title": "Act Now",
+                  },
+                },
+              },
+              {
+                "node": {
                   "__typename": "HomeViewSectionActivity",
                   "component": {
                     "title": "Latest Activity",
