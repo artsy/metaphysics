@@ -64,6 +64,10 @@ export const executableGravitySchema = () => {
     duplicatedTypes.push("ViewingRoomAttributes")
     duplicatedTypes.push("UpdateViewingRoomPayload")
     duplicatedTypes.push("UpdateViewingRoomArtworksInput")
+    duplicatedTypes.push("PublishViewingRoomInput")
+    duplicatedTypes.push("PublishViewingRoomPayload")
+    duplicatedTypes.push("UnpublishViewingRoomInput")
+    duplicatedTypes.push("UnpublishViewingRoomPayload")
   }
 
   const excludedMutations: string[] = []
@@ -71,6 +75,8 @@ export const executableGravitySchema = () => {
     excludedMutations.push("createViewingRoom")
     excludedMutations.push("deleteViewingRoom")
     excludedMutations.push("updateViewingRoom")
+    excludedMutations.push("publishViewingRoom")
+    excludedMutations.push("unpublishViewingRoom")
   }
 
   // Types which come from Gravity that are not (yet) needed in MP.
