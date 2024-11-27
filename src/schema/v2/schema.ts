@@ -265,6 +265,7 @@ import { updateViewingRoomMutation } from "./viewingRooms/mutations/updateViewin
 import { deleteViewingRoomMutation } from "./viewingRooms/mutations/deleteViewingRoomMutation"
 import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishViewingRoomMutation"
 import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublishViewingRoomMutation"
+import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -277,9 +278,10 @@ const viewingRoomsMutations = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
       createViewingRoom: createViewingRoomMutation,
       deleteViewingRoom: deleteViewingRoomMutation,
-      updateViewingRoom: updateViewingRoomMutation,
       publishViewingRoom: publishViewingRoomMutation,
       unpublishViewingRoom: unpublishViewingRoomMutation,
+      updateViewingRoom: updateViewingRoomMutation,
+      updateViewingRoomArtworks: updateViewingRoomArtworksMutation,
     }
   : ({} as any)
 

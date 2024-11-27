@@ -68,15 +68,17 @@ export const executableGravitySchema = () => {
     duplicatedTypes.push("PublishViewingRoomPayload")
     duplicatedTypes.push("UnpublishViewingRoomInput")
     duplicatedTypes.push("UnpublishViewingRoomPayload")
+    duplicatedTypes.push("UpdateViewingRoomArtworksPayload")
   }
 
   const excludedMutations: string[] = []
   if (config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA) {
     excludedMutations.push("createViewingRoom")
     excludedMutations.push("deleteViewingRoom")
-    excludedMutations.push("updateViewingRoom")
     excludedMutations.push("publishViewingRoom")
     excludedMutations.push("unpublishViewingRoom")
+    excludedMutations.push("updateViewingRoom")
+    excludedMutations.push("updateViewingRoomArtworks")
   }
 
   // Types which come from Gravity that are not (yet) needed in MP.
