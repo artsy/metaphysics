@@ -261,6 +261,7 @@ import { deliverSecondFactorMutation } from "./me/secondFactors/mutations/delive
 import { enableSecondFactorMutation } from "./me/secondFactors/mutations/enableSecondFactor"
 import { createAndSendBackupSecondFactorMutation } from "./users/createAndSendBackupSecondFactorMutation"
 import { createViewingRoomMutation } from "./viewingRooms/mutations/createViewingRoomMutation"
+import { updateViewingRoomMutation } from "./viewingRooms/mutations/updateViewingRoomMutation"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -272,6 +273,7 @@ const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
 const viewingRoomsMutations = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
       createViewingRoom: createViewingRoomMutation,
+      updateViewingRoom: updateViewingRoomMutation,
     }
   : ({} as any)
 

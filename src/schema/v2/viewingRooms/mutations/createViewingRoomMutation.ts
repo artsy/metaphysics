@@ -1,29 +1,10 @@
-import {
-  GraphQLID,
-  GraphQLInputObjectType,
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLUnionType,
-} from "graphql"
+import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ErrorsType } from "lib/gravityErrorHandler"
 import { identity, pickBy } from "lodash"
-import { ViewingRoomType } from "schema/v2/viewingRoom"
 import { ResolverContext } from "types/graphql"
-
-const ResponseOrErrorType = new GraphQLNonNull(
-  new GraphQLUnionType({
-    name: "ViewingRoomOrErrorsUnion",
-    types: [ViewingRoomType, ErrorsType],
-    resolveType: (data) => {
-      if (data.id) {
-        return ViewingRoomType
-      }
-
-      return ErrorsType
-    },
-  })
-)
+import { ViewingRoomInputAttributesType } from "./viewingRoomInputAttributes"
+import { ViewingRoomOrErrorType } from "./viewingRoomOrError"
+import { ARImageInputType } from "./ARImageInput"
 
 export const createViewingRoomMutation = mutationWithClientMutationId<
   any,
@@ -36,37 +17,7 @@ export const createViewingRoomMutation = mutationWithClientMutationId<
     // This is because Gravity has such duplication https://github.com/artsy/gravity/blob/main/app/graphql/mutations/create_viewing_room.rb#L12
     // We can get rid of it once we finish with the migration. For now I want to keep such changes to a minimum
     attributes: {
-      type: new GraphQLInputObjectType({
-        name: "ViewingRoomAttributes",
-        fields: {
-          body: {
-            type: GraphQLString,
-          },
-          endAt: {
-            type: GraphQLString,
-            description: "Datetime (in UTC) when Viewing Room closes",
-          },
-          introStatement: {
-            type: GraphQLString,
-          },
-          pullQuote: {
-            type: GraphQLString,
-          },
-          startAt: {
-            type: GraphQLString,
-            description: "Datetime (in UTC) when Viewing Room opens",
-          },
-          timeZone: {
-            type: GraphQLString,
-            description:
-              "Time zone (tz database format, e.g. America/New_York) in which start_at/end_at attributes were input",
-          },
-          title: {
-            type: GraphQLString,
-            description: "Title",
-          },
-        },
-      }),
+      type: ViewingRoomInputAttributesType,
     },
     body: {
       type: GraphQLString,
@@ -77,14 +28,7 @@ export const createViewingRoomMutation = mutationWithClientMutationId<
       description: "End datetime",
     },
     image: {
-      type: new GraphQLInputObjectType({
-        name: "ARImageInput",
-        fields: {
-          internalID: {
-            type: new GraphQLNonNull(GraphQLID),
-          },
-        },
-      }),
+      type: ARImageInputType,
     },
     introStatement: {
       type: GraphQLString,
@@ -116,7 +60,7 @@ export const createViewingRoomMutation = mutationWithClientMutationId<
   },
   outputFields: {
     viewingRoomOrErrors: {
-      type: ResponseOrErrorType,
+      type: ViewingRoomOrErrorType,
       resolve: (result) => result,
     },
   },
