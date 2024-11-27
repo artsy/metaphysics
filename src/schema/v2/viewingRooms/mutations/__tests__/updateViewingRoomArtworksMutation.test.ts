@@ -63,7 +63,7 @@ describe("updateViewingRoomArtworksMutation", () => {
     expect(result).toMatchInlineSnapshot(`
       {
         "updateViewingRoomArtworks": {
-          "__typename": "updateViewingRoomArtworksPayload",
+          "__typename": "UpdateViewingRoomArtworksPayload",
           "artworkIDs": [
             "artwork-1",
           ],

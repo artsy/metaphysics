@@ -108,7 +108,7 @@ describe("updateViewingRoomSubsectionsMutation", () => {
     expect(result).toMatchInlineSnapshot(`
       {
         "updateViewingRoomSubsections": {
-          "__typename": "updateViewingRoomSubsectionsPayload",
+          "__typename": "UpdateViewingRoomSubsectionsPayload",
           "subsections": [
             {
               "__typename": "ViewingRoomSubsection",

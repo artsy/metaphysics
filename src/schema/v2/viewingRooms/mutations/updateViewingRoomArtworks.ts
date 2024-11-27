@@ -34,13 +34,15 @@ export const updateViewingRoomArtworksMutation = mutationWithClientMutationId<
   any,
   ResolverContext
 >({
-  name: "updateViewingRoomArtworks",
+  name: "UpdateViewingRoomArtworks",
   inputFields: {
     viewingRoomID: {
       type: new GraphQLNonNull(GraphQLString),
     },
     artworks: {
-      type: new GraphQLNonNull(new GraphQLList(ViewingRoomArtworkInput)),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ViewingRoomArtworkInput))
+      ),
     },
   },
   outputFields: {

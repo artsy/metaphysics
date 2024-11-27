@@ -74,7 +74,9 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ id }) => id,
       },
       artworkIDs: {
-        type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(GraphQLString))
+        ),
         resolve: ({ artwork_ids }) => artwork_ids,
       },
       artworksConnection: {
@@ -272,7 +274,9 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
           "Calculated field to reflect visibility and state of this viewing room",
       },
       subsections: {
-        type: new GraphQLNonNull(new GraphQLList(ViewingRoomSubsectionType)),
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(ViewingRoomSubsectionType))
+        ),
         resolve: async ({ id }, _args, { viewingRoomSubsectionsLoader }) => {
           return viewingRoomSubsectionsLoader(id)
         },
@@ -286,7 +290,9 @@ export const ViewingRoomType = new GraphQLObjectType<any, ResolverContext>({
         description: "Viewing room name",
       },
       viewingRoomArtworks: {
-        type: new GraphQLNonNull(new GraphQLList(ViewingRoomArtworkType)),
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(ViewingRoomArtworkType))
+        ),
         resolve: async ({ id }, _args, { viewingRoomArtworksLoader }) => {
           return viewingRoomArtworksLoader(id)
         },

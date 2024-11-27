@@ -51,13 +51,15 @@ export const updateViewingRoomSubsectionsMutation = mutationWithClientMutationId
   any,
   ResolverContext
 >({
-  name: "updateViewingRoomSubsections",
+  name: "UpdateViewingRoomSubsections",
   inputFields: {
     viewingRoomID: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
     },
     subsections: {
-      type: new GraphQLNonNull(new GraphQLList(ViewingRoomSubsectionInput)),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ViewingRoomSubsectionInput))
+      ),
     },
   },
   outputFields: {
