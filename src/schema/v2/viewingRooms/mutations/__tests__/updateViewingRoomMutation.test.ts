@@ -99,7 +99,7 @@ describe("updateViewingRoomMutation", () => {
       })
     })
 
-    describe("when some attributes are ommited", () => {
+    describe("with null and ommited values", () => {
       const mutation = gql`
         mutation {
           updateViewingRoom(
@@ -107,7 +107,8 @@ describe("updateViewingRoomMutation", () => {
               viewingRoomID: "viewing-room-id"
               image: { internalID: "image-id" }
               attributes: {
-                body: "test body"
+                body: null
+                pullQuote: null
                 endAt: "2092-05-23T00:00:00.000Z"
                 startAt: "1992-05-23T00:00:00.000Z"
                 timeZone: "Etc/UTC"
@@ -134,14 +135,15 @@ describe("updateViewingRoomMutation", () => {
         }
       `
 
-      it("correctly calls the updateViewingRoomLoader (doesn't send undefined attributes)", async () => {
+      it("correctly calls the updateViewingRoomLoader", async () => {
         const result = await runAuthenticatedQuery(mutation, context)
 
         expect(mockUpdateViewingRoomLoader).toHaveBeenCalledWith(
           "viewing-room-id",
           {
             ar_image_id: "image-id",
-            body: "test body",
+            body: null,
+            pull_quote: null,
             end_at: "2092-05-23T00:00:00.000Z",
             start_at: "1992-05-23T00:00:00.000Z",
             time_zone: "Etc/UTC",

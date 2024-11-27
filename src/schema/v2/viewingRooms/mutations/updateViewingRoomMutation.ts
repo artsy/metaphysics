@@ -4,7 +4,6 @@ import { ResolverContext } from "types/graphql"
 import { ViewingRoomInputAttributesType } from "./viewingRoomInputAttributes"
 import { ViewingRoomOrErrorType } from "./viewingRoomOrError"
 import { ARImageInputType } from "./ARImageInput"
-import { identity, pickBy } from "lodash"
 
 export const updateViewingRoomMutation = mutationWithClientMutationId<
   any,
@@ -35,20 +34,16 @@ export const updateViewingRoomMutation = mutationWithClientMutationId<
     }
 
     try {
-      // remove undefined or null values from attributes
-      const gravityArgs = pickBy(
-        {
-          ar_image_id: args.image?.internalID,
-          body: args.attributes?.body,
-          end_at: args.attributes?.endAt,
-          intro_statement: args.attributes?.introStatement,
-          pull_quote: args.attributes?.pullQuote,
-          start_at: args.attributes?.startAt,
-          time_zone: args.attributes?.timeZone,
-          title: args.attributes?.title,
-        },
-        identity
-      )
+      const gravityArgs = {
+        ar_image_id: args.image?.internalID,
+        body: args.attributes?.body,
+        end_at: args.attributes?.endAt,
+        intro_statement: args.attributes?.introStatement,
+        pull_quote: args.attributes?.pullQuote,
+        start_at: args.attributes?.startAt,
+        time_zone: args.attributes?.timeZone,
+        title: args.attributes?.title,
+      }
 
       const response = await updateViewingRoomLoader(
         args.viewingRoomID,
