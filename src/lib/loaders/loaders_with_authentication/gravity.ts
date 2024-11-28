@@ -256,6 +256,21 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    updateViewingRoomLoader: gravityLoader(
+      (id) => `viewing_room/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    updateViewingRoomArtworksLoader: gravityLoader(
+      (id) => `viewing_room/${id}/viewing_room_artworks`,
+      {},
+      { method: "PUT" }
+    ),
+    updateViewingRoomSubsectionsLoader: gravityLoader(
+      (id) => `viewing_room/${id}/subsections`,
+      {},
+      { method: "PUT" }
+    ),
     deleteHeroUnitLoader: gravityLoader(
       (id) => `hero_units/${id}`,
       {},
@@ -286,6 +301,11 @@ export default (accessToken, userID, opts) => {
     ),
     deleteUserRoleLoader: gravityLoader<any, { id: string; role_type: string }>(
       ({ id, role_type }) => `user/${id}/roles/${role_type}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deleteViewingRoomLoader: gravityLoader(
+      (id) => `viewing_room/${id}`,
       {},
       { method: "DELETE" }
     ),

@@ -261,6 +261,12 @@ import { deliverSecondFactorMutation } from "./me/secondFactors/mutations/delive
 import { enableSecondFactorMutation } from "./me/secondFactors/mutations/enableSecondFactor"
 import { createAndSendBackupSecondFactorMutation } from "./users/createAndSendBackupSecondFactorMutation"
 import { createViewingRoomMutation } from "./viewingRooms/mutations/createViewingRoomMutation"
+import { updateViewingRoomMutation } from "./viewingRooms/mutations/updateViewingRoomMutation"
+import { deleteViewingRoomMutation } from "./viewingRooms/mutations/deleteViewingRoomMutation"
+import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishViewingRoomMutation"
+import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublishViewingRoomMutation"
+import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
+import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/updateViewingRoomSubsections"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -272,6 +278,12 @@ const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
 const viewingRoomsMutations = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
       createViewingRoom: createViewingRoomMutation,
+      deleteViewingRoom: deleteViewingRoomMutation,
+      publishViewingRoom: publishViewingRoomMutation,
+      unpublishViewingRoom: unpublishViewingRoomMutation,
+      updateViewingRoom: updateViewingRoomMutation,
+      updateViewingRoomArtworks: updateViewingRoomArtworksMutation,
+      updateViewingRoomSubsections: updateViewingRoomSubsectionsMutation,
     }
   : ({} as any)
 

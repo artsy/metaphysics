@@ -1,4 +1,3 @@
-import { isFeatureFlagEnabled } from "lib/featureFlags"
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
@@ -6,15 +5,7 @@ jest.mock("lib/featureFlags", () => ({
   isFeatureFlagEnabled: jest.fn(() => true),
 }))
 
-const mockIsFeatureFlagEnabled = isFeatureFlagEnabled as jest.Mock
-
 describe("HomeViewSectionTasks", () => {
-  beforeAll(() => {
-    mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
-      if (flag === "emerald_home-view-tasks-section") return true
-    })
-  })
-
   it("returns the section's metadata", async () => {
     const query = gql`
       {
@@ -132,34 +123,5 @@ describe("HomeViewSectionTasks", () => {
         },
       }
     `)
-  })
-
-  describe("when the feature flag is disabled", () => {
-    beforeAll(() => {
-      mockIsFeatureFlagEnabled.mockImplementation((flag: string) => {
-        if (flag === "emerald_home-view-tasks-section") return false
-      })
-    })
-
-    it("throws an error when accessed by id", async () => {
-      const query = gql`
-        {
-          homeView {
-            section(id: "home-view-section-tasks") {
-              __typename
-              component {
-                title
-              }
-            }
-          }
-        }
-      `
-
-      const context = {}
-
-      await expect(runQuery(query, context)).rejects.toThrow(
-        "Section is not displayable: home-view-section-tasks"
-      )
-    })
   })
 })
