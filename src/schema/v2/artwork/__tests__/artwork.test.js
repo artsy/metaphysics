@@ -5129,6 +5129,7 @@ describe("Artwork type", () => {
       describe("runningShow", () => {
         it("returns the show or fair if the artwork id is in a running show or fair", async () => {
           artwork.purchasable = true
+          artwork.show_ids = ["show-id"]
           context.showsLoader.mockResolvedValue([
             {
               name: "Test Show",
