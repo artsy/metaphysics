@@ -93,14 +93,22 @@ describe("updateViewingRoomSubsectionsMutation", () => {
       {
         subsections: [
           {
-            ar_image_id: "example-image",
-            attributes: {
-              body: "subsection body",
-              caption: "subsection caption",
-              title: "subsection title",
+            "0": {
+              ar_image_id: "example-image",
+              attributes: {
+                body: "subsection body",
+                caption: "subsection caption",
+                title: "subsection title",
+              },
             },
           },
-          { attributes: {}, delete: true, id: "subsection-to-delete-id" },
+          {
+            "1": {
+              attributes: {},
+              delete: true,
+              id: "subsection-to-delete-id",
+            },
+          },
         ],
       }
     )
@@ -108,7 +116,7 @@ describe("updateViewingRoomSubsectionsMutation", () => {
     expect(result).toMatchInlineSnapshot(`
       {
         "updateViewingRoomSubsections": {
-          "__typename": "updateViewingRoomSubsectionsPayload",
+          "__typename": "UpdateViewingRoomSubsectionsPayload",
           "subsections": [
             {
               "__typename": "ViewingRoomSubsection",

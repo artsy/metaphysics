@@ -51,13 +51,15 @@ export const updateViewingRoomSubsectionsMutation = mutationWithClientMutationId
   any,
   ResolverContext
 >({
-  name: "updateViewingRoomSubsections",
+  name: "UpdateViewingRoomSubsections",
   inputFields: {
     viewingRoomID: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
     },
     subsections: {
-      type: new GraphQLNonNull(new GraphQLList(ViewingRoomSubsectionInput)),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(ViewingRoomSubsectionInput))
+      ),
     },
   },
   outputFields: {
@@ -73,23 +75,25 @@ export const updateViewingRoomSubsectionsMutation = mutationWithClientMutationId
       throw new Error("You need to be signed in to perform this action")
     }
 
-    const subsections = args.subsections.map((subsection, _index) => {
-      return pickBy(
-        {
-          id: subsection.internalID,
-          delete: subsection.delete,
-          ar_image_id: subsection.image?.internalID,
-          attributes: pickBy(
-            {
-              body: subsection.attributes?.body,
-              caption: subsection.attributes?.caption,
-              title: subsection.attributes?.title,
-            },
-            identity
-          ),
-        },
-        identity
-      )
+    const subsections = args.subsections.map((subsection, index) => {
+      return {
+        [index]: pickBy(
+          {
+            id: subsection.internalID,
+            delete: subsection.delete,
+            ar_image_id: subsection.image?.internalID,
+            attributes: pickBy(
+              {
+                body: subsection.attributes?.body,
+                caption: subsection.attributes?.caption,
+                title: subsection.attributes?.title,
+              },
+              identity
+            ),
+          },
+          identity
+        ),
+      }
     })
 
     const response = await updateViewingRoomSubsectionsLoader(
