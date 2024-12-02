@@ -314,7 +314,6 @@ export default (opts) => {
       { method: "PUT" }
     ),
     staticContentLoader: gravityLoader((id) => `page/${id}`),
-    systemTimeLoader: gravityUncachedLoader("system/time", null),
     tagLoader: gravityLoader((id) => `tag/${id}`),
     trendingArtistsLoader: gravityLoader("artists/trending"),
     userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
