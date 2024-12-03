@@ -6,19 +6,17 @@ import { getMicrofunnelDataByArtworkInternalID } from "schema/v2/artist/targetSu
 import { runQuery } from "schema/v2/test/utils"
 import { CHECKOUT_TAXES_DOC_URL } from "../taxInfo"
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
-import config from "config"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
-
-jest.mock("lib/featureFlags", () => ({
-  isFeatureFlagEnabled: jest.fn(() => true),
-}))
-
-const mockIsFeatureFlagEnabled = isFeatureFlagEnabled
+import config from "config"
 
 jest.mock("schema/v2/artist/targetSupply/utils/getMicrofunnelData")
+jest.mock("lib/featureFlags", () => ({
+  isFeatureFlagEnabled: jest.fn(),
+}))
 /**
  * @type {jest.Mock}
  */
+const mockIsFeatureFlagEnabled = isFeatureFlagEnabled
 
 describe("Artwork type", () => {
   const sale = { id: "existy" }
