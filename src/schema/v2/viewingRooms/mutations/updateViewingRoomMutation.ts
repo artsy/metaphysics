@@ -10,10 +10,10 @@ export const updateViewingRoomMutation = mutationWithClientMutationId<
   any,
   ResolverContext
 >({
-  name: "updateViewingRoom",
+  name: "UpdateViewingRoom",
   inputFields: {
     attributes: {
-      type: ViewingRoomInputAttributesType,
+      type: new GraphQLNonNull(ViewingRoomInputAttributesType),
     },
     image: {
       type: ARImageInputType,

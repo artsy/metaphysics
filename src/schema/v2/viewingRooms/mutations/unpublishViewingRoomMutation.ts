@@ -1,5 +1,6 @@
-import { GraphQLNonNull, GraphQLString } from "graphql"
+import { GraphQLID, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { ViewingRoomType } from "schema/v2/viewingRoom"
 import { ResolverContext } from "types/graphql"
 
 export const unpublishViewingRoomMutation = mutationWithClientMutationId<
@@ -7,10 +8,16 @@ export const unpublishViewingRoomMutation = mutationWithClientMutationId<
   any,
   ResolverContext
 >({
-  name: "unpublishViewingRoom",
+  name: "UnpublishViewingRoom",
   inputFields: {
     viewingRoomID: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
+    },
+  },
+  outputFields: {
+    viewingRoom: {
+      type: new GraphQLNonNull(ViewingRoomType),
+      resolve: (result) => result,
     },
   },
   mutateAndGetPayload: async (args, { updateViewingRoomLoader }) => {

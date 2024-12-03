@@ -11,7 +11,7 @@ export const createViewingRoomMutation = mutationWithClientMutationId<
   any,
   ResolverContext
 >({
-  name: "createViewingRoom",
+  name: "CreateViewingRoom",
   inputFields: {
     // If you scroll futher down, you'll notice that some attributes from attributes are duplicated in the inputFields
     // This is because Gravity has such duplication https://github.com/artsy/gravity/blob/main/app/graphql/mutations/create_viewing_room.rb#L12
