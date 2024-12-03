@@ -24,6 +24,7 @@ import { SimilarToRecentlyViewedArtworks } from "../sections/SimilarToRecentlyVi
 import { Tasks } from "../sections/Tasks"
 import { TrendingArtists } from "../sections/TrendingArtists"
 import { ViewingRooms } from "../sections/ViewingRooms"
+import { InfiniteDiscovery } from "../sections/InfiniteDiscovery"
 
 const SECTIONS: HomeViewSection[] = [
   Tasks,
@@ -33,6 +34,7 @@ const SECTIONS: HomeViewSection[] = [
   DiscoverSomethingNew,
   RecommendedArtworks,
   CuratorsPicksEmerging,
+  InfiniteDiscovery,
   ExploreByCategory,
   HeroUnits,
   ActiveBids,

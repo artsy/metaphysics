@@ -27,6 +27,7 @@ import { SimilarToRecentlyViewedArtworks } from "./SimilarToRecentlyViewedArtwor
 import { Tasks } from "./Tasks"
 import { TrendingArtists } from "./TrendingArtists"
 import { ViewingRooms } from "./ViewingRooms"
+import { InfiniteDiscovery } from "./InfiniteDiscovery"
 
 type MaybeResolved<T> =
   | T
@@ -60,6 +61,7 @@ const sections: HomeViewSection[] = [
   FeaturedFairs,
   GalleriesNearYou,
   HeroUnits,
+  InfiniteDiscovery,
   LatestActivity,
   LatestArticles,
   LatestAuctionResults,
