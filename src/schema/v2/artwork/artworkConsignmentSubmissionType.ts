@@ -39,6 +39,8 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
       },
       isEditable: {
         type: GraphQLBoolean,
+        description:
+          "Whether the user is allowed to edit the associated My Collection artwork.",
         resolve: ({ state }) => {
           return ["REJECTED", "CLOSED", "PUBLISHED"].includes(state)
         },
