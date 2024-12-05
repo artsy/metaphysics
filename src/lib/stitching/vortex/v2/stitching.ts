@@ -3,6 +3,7 @@ import { amount } from "schema/v2/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import gql from "lib/gql"
 import { sortBy } from "lodash"
+import config from "config"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
@@ -337,8 +338,12 @@ export const vortexStitchingEnvironment = (
             typenameWithoutPrefix.charAt(0).toLowerCase() +
             typenameWithoutPrefix.slice(1)
           const id = parent.rankedEntity.entityId
-          const schema =
-            fieldName == "viewingRoom" ? gravitySchema : localSchema
+          let schema = localSchema
+
+          // don't fallback to gravitySchema when USE_UNSTITCHED_VIEWING_ROOM_SCHEMA is true
+          if (!config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA) {
+            schema = fieldName == "viewingRoom" ? gravitySchema : localSchema
+          }
 
           return info.mergeInfo
             .delegateToSchema({
