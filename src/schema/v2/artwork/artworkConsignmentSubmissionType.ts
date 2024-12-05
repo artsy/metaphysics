@@ -37,6 +37,12 @@ const ArtworkConsignmentSubmissionType = new GraphQLObjectType<
         type: GraphQLString,
         resolve: ({ externalId }) => externalId,
       },
+      isEditable: {
+        type: GraphQLBoolean,
+        resolve: ({ state }) => {
+          return ["REJECTED", "CLOSED", "PUBLISHED"].includes(state)
+        },
+      },
       displayText: {
         type: GraphQLString,
         deprecationReason: "Prefer `stateLabel` field.",

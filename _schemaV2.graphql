@@ -2767,6 +2767,7 @@ type ArtworkConsignmentSubmission {
   externalID: String
   inProgress: Boolean
   internalID: String
+  isEditable: Boolean
   isSold: Boolean
 
   # Submission state.
