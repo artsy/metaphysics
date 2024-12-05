@@ -52,9 +52,53 @@ describe("InfiniteDiscovery", () => {
         {
           "__typename": "HomeViewSectionCard",
           "component": null,
-          "contextModule": null,
+          "contextModule": "infiniteDiscoveryBanner",
           "internalID": "home-view-section-infinite-discovery",
-          "ownerType": null,
+          "ownerType": "infiniteDiscovery",
+        }
+      `)
+    })
+
+    it("returns the section's card data", async () => {
+      const query = gql`
+        {
+          homeView {
+            section(id: "home-view-section-infinite-discovery") {
+              ... on HomeViewSectionCard {
+                card {
+                  title
+                  subtitle
+                  href
+                  image {
+                    imageURL
+                  }
+                  entityType
+                  entityID
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        accessToken: "424242",
+      }
+
+      const { homeView } = await runQuery(query, context)
+
+      expect(homeView.section).toMatchInlineSnapshot(`
+        {
+          "card": {
+            "entityID": "infiniteDiscovery",
+            "entityType": "Page",
+            "href": null,
+            "image": {
+              "imageURL": "https://files.artsy.net/images/infinite_discovery.png",
+            },
+            "subtitle": "Our new feature learns your unique tastes as you explore, delivering personalized recommendations effortlessly.",
+            "title": "Discover art, tailored to you",
+          },
         }
       `)
     })
