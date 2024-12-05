@@ -494,6 +494,34 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      isEditable: {
+        type: GraphQLBoolean,
+        resolve: async (
+          { submission_id: submissionId, consignmentSubmission },
+          _,
+          { convectionGraphQLLoader }
+        ) => {
+          let submission
+
+          // If artwork already has submission information use it
+          if (consignmentSubmission) submission = consignmentSubmission
+
+          // Load submission by submission id in other case
+          if (submissionId && convectionGraphQLLoader) {
+            const submissions = await loadSubmissions(
+              [submissionId],
+              convectionGraphQLLoader
+            )
+            submission =
+              submissions && submissions.length ? submissions[0] : null
+          }
+
+          return (
+            !submission ||
+            ["REJECTED", "CLOSED", "PUBLISHED"].includes(submission.state)
+          )
+        },
+      },
       contactLabel: {
         type: GraphQLString,
         resolve: ({ partner }) => {
