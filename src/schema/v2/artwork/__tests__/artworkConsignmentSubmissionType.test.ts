@@ -43,6 +43,29 @@ describe("ArtworkConsignmentSubmissionType", () => {
     })
   })
 
+  describe("#isEditable", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          slug
+          consignmentSubmission {
+            isEditable
+          }
+        }
+      }
+    `
+
+    it("returns isEditable value", async () => {
+      artwork.consignmentSubmission.state = "SUBMITTED"
+      let data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.isEditable).toEqual(false)
+
+      artwork.consignmentSubmission.state = "PUBLISHED"
+      data = await runQuery(query, context)
+      expect(data.artwork.consignmentSubmission.isEditable).toEqual(true)
+    })
+  })
+
   describe("#displayText", () => {
     const query = `
       {
