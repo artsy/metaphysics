@@ -27,6 +27,7 @@ describe("getSections", () => {
           "home-view-section-discover-something-new",
           "home-view-section-recommended-artworks",
           "home-view-section-curators-picks-emerging",
+          "home-view-section-infinite-discovery",
           "home-view-section-explore-by-category",
           "home-view-section-hero-units",
           "home-view-section-active-bids",

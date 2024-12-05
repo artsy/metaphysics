@@ -11,8 +11,10 @@ const { UNLEASH_API, UNLEASH_APP_NAME, UNLEASH_SERVER_KEY } = config
 const FEATURE_FLAGS_LIST = [
   "diamond_blurhash-enabled-globally",
   "onyx_enable-home-view-section-featured-fairs",
+  "diamond_home-view-infinite-discovery",
   "diamond_home-view-marketing-collection-categories",
   "onyx_experiment_home_view_test",
+  "emerald_clientside-collector-signals",
 ] as const
 
 export type FeatureFlag = typeof FEATURE_FLAGS_LIST[number]
