@@ -46,7 +46,7 @@ describe("ArtworkMediums type", () => {
 
     const result = await runQuery(query, context)
 
-    expect(context.geneLoader).toHaveBeenCalledTimes(20)
+    expect(context.geneLoader).toHaveBeenCalledTimes(19)
 
     expect(result.artworkMediums[0].filterGene).toEqual({
       slug: "architecture-1",
