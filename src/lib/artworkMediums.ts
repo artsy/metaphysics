@@ -25,6 +25,16 @@ const artworkCategories = {
     mediumFilterGeneSlug: "design",
     internalID: "4ddbbd3c4027ac0001001962",
   },
+  "Digital Art": {
+    id: "Digital Art",
+    long_description: [
+      "A general category for works created using digital technology.",
+      "whether in the form of tangible hardware, such as computer monitors or electronics, or software, such as graphics editors, websites, and programming languages.",
+    ].join(" "),
+    name: "Digital Art",
+    mediumFilterGeneSlug: "digital-art",
+    internalID: "5577512c7261690a6500046f",
+  },
   "Drawing, Collage or other Work on Paper": {
     id: "Drawing, Collage or other Work on Paper",
     long_description: [
