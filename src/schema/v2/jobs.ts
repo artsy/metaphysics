@@ -20,6 +20,7 @@ interface Job {
   updated_at: string
   requisition_id: null | string
   title: string
+  departments: { name: string }[]
 }
 
 export const jobType = new GraphQLObjectType<Job, ResolverContext>({
@@ -54,6 +55,15 @@ export const jobType = new GraphQLObjectType<Job, ResolverContext>({
     },
     title: {
       type: new GraphQLNonNull(GraphQLString),
+    },
+    departmentName: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ departments }) => {
+        return departments
+          .map((department) => department.name)
+          .join(", ")
+          .replace(/\s\d.+/, "")
+      },
     },
   },
 })
