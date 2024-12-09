@@ -9517,6 +9517,9 @@ type Errors {
 }
 
 enum EventStatus {
+  # Currently active or in-preview shows
+  ACTIVE
+
   # Load all shows
   ALL
 

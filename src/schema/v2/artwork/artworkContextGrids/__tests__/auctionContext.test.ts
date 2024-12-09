@@ -65,7 +65,7 @@ describe("Auction Context", () => {
       artworkLoader: () => Promise.resolve(parentArtwork),
       artistArtworksLoader: () => Promise.resolve(artistArtworks),
       relatedFairsLoader: () => Promise.resolve(null),
-      relatedShowsLoader: () => Promise.resolve(null),
+      showsLoader: () => Promise.resolve(null),
       partnerArtworksLoader: () => {
         return Promise.resolve({
           body: partnerArtworks,

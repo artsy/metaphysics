@@ -65,13 +65,10 @@ describe("Fair Context", () => {
       artistArtworksLoader: () => Promise.resolve(artistArtworks),
       relatedFairsLoader: () =>
         Promise.resolve([{ id: "fair1", has_full_feature: true }]),
-      relatedShowsLoader: () => {
-        return Promise.resolve({
-          body: [
-            { id: "cool-show", name: "Cool Show", partner: { id: "partner" } },
-          ],
-          headers: { "x-total-count": "10" },
-        })
+      showsLoader: () => {
+        return Promise.resolve([
+          { id: "cool-show", name: "Cool Show", partner: { id: "partner" } },
+        ])
       },
       partnerArtworksLoader: () => {
         return Promise.resolve({
@@ -94,6 +91,7 @@ describe("Fair Context", () => {
     expect.assertions(6)
 
     parentArtwork.artist = null
+    parentArtwork.show_ids = ["abc123"]
     context.artistArtworksLoader = () => Promise.resolve(null)
 
     const data = await runAuthenticatedQuery(query, context)
