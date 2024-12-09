@@ -99,6 +99,7 @@ import { ArtworkVisibility } from "./artworkVisibility"
 import { ArtworkConditionType } from "./artworkCondition"
 import { CollectorSignals } from "./collectorSignals"
 import { ArtistSeriesConnectionType } from "../artistSeries"
+import { EventStatusEnums } from "../input_fields/event_status"
 
 const has_price_range = (price) => {
   return new RegExp(/-/).test(price)
@@ -662,22 +663,24 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(ArtworkHighlightType),
         description: "Returns the highlighted shows and articles",
         resolve: (
-          { id, _id },
+          { id, _id, show_ids },
           _options,
-          { relatedShowsLoader, articlesLoader }
+          { showsLoader, articlesLoader }
         ) =>
           Promise.all([
-            relatedShowsLoader({
-              artwork: [id],
-              size: 1,
-              at_a_fair: false,
-            }),
+            show_ids && show_ids.length > 0
+              ? showsLoader({
+                  artwork: id,
+                  size: 1,
+                  at_a_fair: false,
+                })
+              : Promise.resolve([]),
             articlesLoader({
               artwork_id: _id,
               published: true,
               limit: 1,
             }).then(({ results }) => results),
-          ]).then(([{ body: shows }, articles]) => {
+          ]).then(([shows, articles]) => {
             const highlightedShows = enhance(shows, {
               highlight_type: "Show",
             })
@@ -970,10 +973,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       isInShow: {
         type: GraphQLBoolean,
         description: "Is this artwork part of a current show",
-        resolve: ({ id }, _options, { relatedShowsLoader }) =>
-          relatedShowsLoader({ active: true, size: 1, artwork: [id] }).then(
-            ({ body: shows }) => shows.length > 0
-          ),
+        resolve: ({ id, show_ids }, _options, { showsLoader }) =>
+          show_ids && show_ids.length > 0
+            ? showsLoader({
+                status: EventStatusEnums.getValue("ACTIVE")?.value,
+                size: 1,
+                artwork: id,
+              }).then((shows) => shows.length > 0)
+            : Promise.resolve(false),
       },
       isNotForSale: {
         type: GraphQLString,
@@ -1665,19 +1672,26 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           sort: { type: ShowSorts },
         },
         resolve: (
-          { id },
+          { id, show_ids },
           { active, sort, atAFair: at_a_fair },
-          { relatedShowsLoader }
+          { showsLoader }
         ) =>
-          relatedShowsLoader({
-            artwork: [id],
-            size: 1,
-            active,
-            sort,
-            at_a_fair,
-          })
-            .then(({ body }) => body)
-            .then(_.first),
+          show_ids && show_ids.length > 0
+            ? showsLoader(
+                _.omitBy(
+                  {
+                    artwork: id,
+                    size: 1,
+                    status: active
+                      ? EventStatusEnums.getValue("ACTIVE")?.value
+                      : null,
+                    sort,
+                    at_a_fair,
+                  },
+                  _.isNil
+                )
+              ).then(_.first)
+            : Promise.resolve(null),
       },
       shows: {
         type: new GraphQLList(Show.type),
@@ -1688,18 +1702,26 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           sort: { type: ShowSorts },
         },
         resolve: (
-          { id },
+          { id, show_ids },
           { size, active, sort, atAFair: at_a_fair },
-          { relatedShowsLoader }
-        ) => {
-          return relatedShowsLoader({
-            artwork: [id],
-            active,
-            size,
-            sort,
-            at_a_fair,
-          }).then(({ body }) => body)
-        },
+          { showsLoader }
+        ) =>
+          show_ids && show_ids.length > 0
+            ? showsLoader(
+                _.omitBy(
+                  {
+                    artwork: id,
+                    status: active
+                      ? EventStatusEnums.getValue("ACTIVE")?.value
+                      : null,
+                    size,
+                    sort,
+                    at_a_fair,
+                  },
+                  _.isNil
+                )
+              )
+            : Promise.resolve([]),
       },
       signature: markdown(({ signature }) =>
         signature.replace(/^signature:\s+/i, "")
