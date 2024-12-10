@@ -111,9 +111,9 @@ export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
       const relatedFairShows =
         show_ids && show_ids.length > 0
           ? await showsLoader({
-              artwork: id,
-              size: 1,
               at_a_fair: true,
+              id: show_ids,
+              size: 1,
             })
           : []
 
@@ -142,9 +142,9 @@ export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
     const relatedShows =
       show_ids && show_ids.length > 0
         ? await showsLoader({
-            artwork: id,
-            size: 1,
             at_a_fair: false,
+            id: show_ids,
+            size: 1,
           })
         : []
 

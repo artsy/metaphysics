@@ -20,10 +20,6 @@ const EVENT_STATUS_SORTS = {
     description:
       "Special filtering option which is used to show running and upcoming shows",
   },
-  ACTIVE: {
-    value: "active",
-    description: "Currently active or in-preview shows",
-  },
   ALL: {
     value: null,
     description: "Load all shows",

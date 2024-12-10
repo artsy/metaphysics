@@ -662,16 +662,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(ArtworkHighlightType),
         description: "Returns the highlighted shows and articles",
         resolve: (
-          { id, _id, show_ids },
+          { _id, show_ids },
           _options,
           { showsLoader, articlesLoader }
         ) =>
           Promise.all([
             show_ids && show_ids.length > 0
               ? showsLoader({
-                  artwork: id,
-                  size: 1,
                   at_a_fair: false,
+                  id: show_ids,
+                  size: 1,
                 })
               : Promise.resolve([]),
             articlesLoader({
@@ -972,12 +972,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       isInShow: {
         type: GraphQLBoolean,
         description: "Is this artwork part of a current show",
-        resolve: ({ id, show_ids }, _options, { showsLoader }) =>
+        resolve: ({ show_ids }, _options, { showsLoader }) =>
           show_ids && show_ids.length > 0
             ? showsLoader({
-                status: "active",
+                id: show_ids,
                 size: 1,
-                artwork: id,
+                status: "active",
               }).then((shows) => shows.length > 0)
             : false,
       },
@@ -1671,16 +1671,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           sort: { type: ShowSorts },
         },
         resolve: (
-          { id, show_ids },
+          { show_ids },
           { active, sort, atAFair: at_a_fair },
           { showsLoader }
         ) =>
           show_ids && show_ids.length > 0
             ? showsLoader({
-                artwork: id,
+                at_a_fair,
+                id: show_ids,
                 size: 1,
                 sort,
-                at_a_fair,
                 ...(active ? { status: "active" } : {}),
               }).then(_.first)
             : null,
@@ -1694,16 +1694,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           sort: { type: ShowSorts },
         },
         resolve: (
-          { id, show_ids },
+          { show_ids },
           { size, active, sort, atAFair: at_a_fair },
           { showsLoader }
         ) =>
           show_ids && show_ids.length > 0
             ? showsLoader({
-                artwork: id,
+                at_a_fair,
+                id: show_ids,
                 size,
                 sort,
-                at_a_fair,
                 ...(active ? { status: "active" } : {}),
               })
             : [],
