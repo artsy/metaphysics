@@ -22,3 +22,18 @@ export function getEigenVersionNumber(
 
   return { major, minor, patch }
 }
+
+export function isAtLeastVersion(
+  version: SemanticVersionNumber,
+  atLeast: SemanticVersionNumber
+): boolean {
+  const { major, minor, patch } = atLeast
+
+  if (version.major > major) return true
+  if (version.major < major) return false
+
+  if (version.minor > minor) return true
+  if (version.minor < minor) return false
+
+  return version.patch >= patch
+}
