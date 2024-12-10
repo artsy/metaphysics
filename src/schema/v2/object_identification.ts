@@ -245,6 +245,14 @@ export const InternalIDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   },
 }
 
+export const InternalIDField: GraphQLFieldConfigMap<any, ResolverContext> = {
+  internalID: {
+    description: "A type-specific ID likely used as a database ID.",
+    type: new GraphQLNonNull(GraphQLID),
+    resolve: ({ id }) => id,
+  },
+}
+
 export default {
   GlobalIDField,
   GravityIDFields,
