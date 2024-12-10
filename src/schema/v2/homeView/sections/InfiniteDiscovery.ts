@@ -9,6 +9,8 @@ export const InfiniteDiscovery: HomeViewSection = {
   featureFlag: "diamond_home-view-infinite-discovery",
   id: "home-view-section-infinite-discovery",
   requiresAuthentication: true,
+  // TODO: update this to match the first release that can support Infinite Discovery
+  minimumEigenVersion: { major: 8, minor: 59, patch: 0 },
   ownerType: OwnerType.infiniteDiscovery,
   type: HomeViewSectionTypeNames.HomeViewSectionCard,
 
