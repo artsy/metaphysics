@@ -65,13 +65,10 @@ describe("Show Context", () => {
       artworkLoader: () => Promise.resolve(parentArtwork),
       artistArtworksLoader: () => Promise.resolve(artistArtworks),
       relatedFairsLoader: () => Promise.resolve(null),
-      relatedShowsLoader: () => {
-        return Promise.resolve({
-          body: [
-            { id: "cool-show", name: "Cool Show", partner: { id: "partner" } },
-          ],
-          headers: { "x-total-count": "10" },
-        })
+      showsLoader: () => {
+        return Promise.resolve([
+          { id: "cool-show", name: "Cool Show", partner: { id: "partner" } },
+        ])
       },
       partnerArtworksLoader: () => {
         return Promise.resolve({
@@ -91,6 +88,7 @@ describe("Show Context", () => {
   })
 
   it("Returns the correct values for metadata fields when there is just show data", async () => {
+    parentArtwork.show_ids = ["abc123"]
     parentArtwork.partner = null
     context.partnerArtworksLoader = () => Promise.resolve(null)
 
@@ -118,7 +116,7 @@ describe("Show Context", () => {
   it("Returns the correct values for metadata fields when there is just partner data", async () => {
     parentArtwork.artist = null
     context.artistArtworksLoader = () => Promise.resolve(null)
-    context.relatedShowsLoader = () => Promise.resolve(null)
+    context.showsLoader = () => Promise.resolve(null)
 
     const data = await runAuthenticatedQuery(query, context)
     // Should have one partner grid and one related grid with 0 works

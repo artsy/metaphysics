@@ -75,9 +75,9 @@ export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
   resolve: async (
     artwork,
     args,
-    { saleLoader, relatedFairsLoader, relatedShowsLoader }
+    { saleLoader, relatedFairsLoader, showsLoader }
   ) => {
-    const { id, artist, partner, sale_ids } = artwork
+    const { id, artist, partner, sale_ids, show_ids } = artwork
     const { includeRelatedArtworks } = args
 
     // If the artwork is in an auction, return a context that includes the auction
@@ -108,18 +108,18 @@ export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
     const fairs = await relatedFairsLoader({ artwork: [id], size: 1 })
     const fair: any = first(fairs)
     if (fair && fair.has_full_feature) {
-      const relatedFairShowsResponse = await relatedShowsLoader({
-        artwork: [id],
-        at_a_fair: true,
-      })
+      const relatedFairShows =
+        show_ids && show_ids.length > 0
+          ? await showsLoader({
+              at_a_fair: true,
+              id: show_ids,
+              size: 1,
+            })
+          : []
 
       // If the artwork is in a fair, return a context that includes that fair show
-      if (
-        relatedFairShowsResponse &&
-        relatedFairShowsResponse.body &&
-        relatedFairShowsResponse.body.length > 0
-      ) {
-        const fairShow = first(relatedFairShowsResponse.body)
+      if (relatedFairShows && relatedFairShows.length > 0) {
+        const fairShow = first(relatedFairShows)
         if (fairShow) {
           return [
             {
@@ -139,20 +139,18 @@ export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
       }
     }
 
-    const relatedShowsResponse = await relatedShowsLoader({
-      artwork: [id],
-      size: 1,
-      active: false,
-      at_a_fair: false,
-    })
+    const relatedShows =
+      show_ids && show_ids.length > 0
+        ? await showsLoader({
+            at_a_fair: false,
+            id: show_ids,
+            size: 1,
+          })
+        : []
 
     // If the artwork is in a show, return a context that includes that show
-    if (
-      relatedShowsResponse &&
-      relatedShowsResponse.body &&
-      relatedShowsResponse.body.length > 0
-    ) {
-      const show = first(relatedShowsResponse.body)
+    if (relatedShows && relatedShows.length > 0) {
+      const show = first(relatedShows)
       return [
         { gridType: "ShowArtworkGrid", show, artwork },
         ...(artist ? [{ gridType: "ArtistArtworkGrid", artist, artwork }] : []),
