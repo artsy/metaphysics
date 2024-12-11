@@ -28,7 +28,7 @@ import { Tasks } from "./Tasks"
 import { TrendingArtists } from "./TrendingArtists"
 import { ViewingRooms } from "./ViewingRooms"
 import { InfiniteDiscovery } from "./InfiniteDiscovery"
-import { SemanticVersionNumber } from "lib/semantic-versioning"
+import { SemanticVersionNumber } from "lib/semanticVersioning"
 
 type MaybeResolved<T> =
   | T

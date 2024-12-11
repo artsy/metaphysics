@@ -1,10 +1,7 @@
 import { ResolverContext } from "types/graphql"
 import { HomeViewSection } from "../sections"
 import { isFeatureFlagEnabled } from "lib/featureFlags"
-import {
-  getEigenVersionNumber,
-  isAtLeastVersion,
-} from "lib/semantic-versioning"
+import { getEigenVersionNumber, isAtLeastVersion } from "lib/semanticVersioning"
 
 /**
  * Determine if an individual section can be displayed, considering the current

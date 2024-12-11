@@ -2,7 +2,7 @@ import {
   SemanticVersionNumber,
   getEigenVersionNumber,
   isAtLeastVersion,
-} from "../semantic-versioning"
+} from "../semanticVersioning"
 
 describe("getEigenVersionNumber", () => {
   describe("with a typical Eigen user agent string", () => {
