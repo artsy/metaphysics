@@ -121,4 +121,81 @@ describe("isSectionDisplayable", () => {
       ).toBe(false)
     })
   })
+
+  describe("with a section that requires a minimum Eigen version", () => {
+    it("returns false if the user's Eigen version is below the minimum", () => {
+      const section: Partial<HomeViewSection> = {
+        requiresAuthentication: false,
+        minimumEigenVersion: { major: 9, minor: 0, patch: 0 },
+      }
+
+      const context: Partial<ResolverContext> = {
+        userAgent:
+          "unknown iOS/18.1.1 Artsy-Mobile/8.59.0 Eigen/2024.12.10.06/8.59.0",
+      }
+
+      expect(
+        isSectionDisplayable(
+          section as HomeViewSection,
+          context as ResolverContext
+        )
+      ).toBe(false)
+    })
+
+    it("returns true if the user's Eigen version is equal to the minimum", () => {
+      const section: Partial<HomeViewSection> = {
+        requiresAuthentication: false,
+        minimumEigenVersion: { major: 8, minor: 59, patch: 0 },
+      }
+
+      const context: Partial<ResolverContext> = {
+        userAgent:
+          "unknown iOS/18.1.1 Artsy-Mobile/8.59.0 Eigen/2024.12.10.06/8.59.0",
+      }
+
+      expect(
+        isSectionDisplayable(
+          section as HomeViewSection,
+          context as ResolverContext
+        )
+      ).toBe(true)
+    })
+
+    it("returns true if the user's Eigen version is above the minimum", () => {
+      const section: Partial<HomeViewSection> = {
+        requiresAuthentication: false,
+        minimumEigenVersion: { major: 8, minor: 0, patch: 0 },
+      }
+
+      const context: Partial<ResolverContext> = {
+        userAgent:
+          "unknown iOS/18.1.1 Artsy-Mobile/8.59.0 Eigen/2024.12.10.06/8.59.0",
+      }
+
+      expect(
+        isSectionDisplayable(
+          section as HomeViewSection,
+          context as ResolverContext
+        )
+      ).toBe(true)
+    })
+
+    it("returns true if an Eigen version is not recognized", () => {
+      const section: Partial<HomeViewSection> = {
+        requiresAuthentication: false,
+        minimumEigenVersion: { major: 8, minor: 0, patch: 0 },
+      }
+
+      const context: Partial<ResolverContext> = {
+        userAgent: "Hi it's me, Moo Deng, again",
+      }
+
+      expect(
+        isSectionDisplayable(
+          section as HomeViewSection,
+          context as ResolverContext
+        )
+      ).toBe(true)
+    })
+  })
 })

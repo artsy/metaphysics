@@ -12,7 +12,8 @@ export const fetchPersistedQuery: RequestHandler = (req, res, next) => {
     } else {
       const message = `Unable to serve persisted query with ID ${documentID}`
       error(message)
-      return res.status(404).send(message).end()
+      res.status(404).send(message).end()
+      return
     }
   }
   next()
