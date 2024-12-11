@@ -20,10 +20,22 @@ describe("getEigenVersionNumber", () => {
   })
 
   describe("with a __DEV__ Eigen user agent string", () => {
-    it("parses the version number", () => {
+    it("parses the version number from iOS", () => {
       expect(
         getEigenVersionNumber(
           "Artsy-Mobile ios null/null Artsy-Mobile/8.59.0 Eigen/null/8.59.0"
+        )
+      ).toEqual({
+        major: 8,
+        minor: 59,
+        patch: 0,
+      })
+    })
+
+    it("parses the version number from Android", () => {
+      expect(
+        getEigenVersionNumber(
+          "Artsy-Mobile android null/null Artsy-Mobile/8.59.0 Eigen/null/8.59.0"
         )
       ).toEqual({
         major: 8,
