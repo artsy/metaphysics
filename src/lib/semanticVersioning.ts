@@ -1,5 +1,3 @@
-import { isArray } from "lodash"
-
 export type SemanticVersionNumber = {
   major: number
   minor: number
@@ -7,13 +5,12 @@ export type SemanticVersionNumber = {
 }
 
 export function getEigenVersionNumber(
-  userAgent?: string | string[]
+  userAgent: string
 ): SemanticVersionNumber | null {
   if (!userAgent) return null
   if (!userAgent.includes("Artsy-Mobile")) return null
 
-  const agent = isArray(userAgent) ? userAgent[0] : userAgent
-  const parts = agent.split("/")
+  const parts = userAgent.split("/")
   const version = parts.at(-1)
 
   if (!version) return null

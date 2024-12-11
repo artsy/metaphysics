@@ -30,7 +30,9 @@ export function isSectionDisplayable(
 
   // minimum Eigen version
   if (isDisplayable && section.minimumEigenVersion) {
-    const actualEigenVersion = getEigenVersionNumber(context.userAgent)
+    const actualEigenVersion = getEigenVersionNumber(
+      context.userAgent as string
+    )
     if (actualEigenVersion) {
       isDisplayable = isAtLeastVersion(
         actualEigenVersion,
