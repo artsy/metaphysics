@@ -173,17 +173,19 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description: "A formatted description of the lot end date and time",
         resolve: (saleArtwork, _options, { defaultTimezone, saleLoader }) =>
-          saleLoader(saleArtwork.sale_id).then((sale) => {
-            if (
-              !sale.cascading_end_time_interval_minutes ||
-              saleArtwork.ended_at ||
-              !saleArtwork.end_at
-            ) {
-              return null
-            } else {
-              return formattedEndDateTime(saleArtwork.end_at, defaultTimezone)
-            }
-          }),
+          saleLoader(saleArtwork.sale_id)
+            .then((sale) => {
+              if (
+                !sale.cascading_end_time_interval_minutes ||
+                saleArtwork.ended_at ||
+                !saleArtwork.end_at
+              ) {
+                return null
+              } else {
+                return formattedEndDateTime(saleArtwork.end_at, defaultTimezone)
+              }
+            })
+            .catch(() => null),
       },
       highEstimate: money({
         name: "SaleArtworkHighEstimate",
