@@ -11842,6 +11842,25 @@ type ImageURLs {
   normalized: String
 }
 
+# Schema for everything infinite discovery-related
+type InfiniteDiscovery {
+  # Returns artworks connection based on similarity between user taste profile and artworks
+  artworksConnection(
+    after: String
+    before: String
+
+    # Exclude these artworks from the response, currently works only in combination with tasteProfileVector
+    excludeArtworkIds: [String]
+    first: Int
+    last: Int
+
+    # If tasteProfileVector is not provided, these artworks are used to calculate the taste profile vector. Previously liked artworks are excluded from the response
+    likedArtworkIds: [String]
+    tasteProfileVector: [Float]
+  ): ArtworkConnection
+  tasteProfileVector(artworkIDs: [String!]!): [Float]
+}
+
 type InputAddress {
   addressLine1: String!
   addressLine2: String
@@ -17049,6 +17068,7 @@ type Query {
     size: Int
     userId: String
   ): IdentityVerificationConnection
+  infiniteDiscovery: InfiniteDiscovery!
   invoice(token: String!): Invoice
   job(id: ID!): Job!
   jobs: [Job!]!
@@ -21698,6 +21718,7 @@ type Viewer {
     size: Int
     userId: String
   ): IdentityVerificationConnection
+  infiniteDiscovery: InfiniteDiscovery!
   invoice(token: String!): Invoice
   job(id: ID!): Job!
   jobs: [Job!]!

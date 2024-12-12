@@ -267,6 +267,7 @@ import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishView
 import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublishViewingRoomMutation"
 import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
 import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/updateViewingRoomSubsections"
+import { InfiniteDiscovery } from "./infiniteDiscovery/infiniteDiscovery"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -354,6 +355,7 @@ const rootFields = {
   homeView: HomeView,
   identityVerification: IdentityVerification,
   identityVerificationsConnection,
+  infiniteDiscovery: InfiniteDiscovery,
   invoice: Invoice,
   job,
   jobs,
