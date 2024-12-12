@@ -11856,7 +11856,6 @@ type InfiniteDiscovery {
 
     # If tasteProfileVector is not provided, these artworks are used to calculate the taste profile vector. Previously liked artworks are excluded from the response
     likedArtworkIds: [String]
-    tasteProfileVector: [Float]
   ): ArtworkConnection
 }
 

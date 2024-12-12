@@ -1,9 +1,4 @@
-import {
-  GraphQLFieldConfig,
-  GraphQLFloat,
-  GraphQLList,
-  GraphQLString,
-} from "graphql"
+import { GraphQLFieldConfig, GraphQLList, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import { pageable } from "relay-cursor-paging"
@@ -30,35 +25,21 @@ export const InfiniteDiscoveryArtworksConnection: GraphQLFieldConfig<
       description:
         "If tasteProfileVector is not provided, these artworks are used to calculate the taste profile vector. Previously liked artworks are excluded from the response",
     },
-    tasteProfileVector: {
-      type: new GraphQLList(GraphQLFloat),
-    },
   }),
   resolve: async (_root, args, { artworksLoader }) => {
-    const {
-      excludeArtworkIds: _excludeArtworkIds,
-      first,
-      likedArtworkIds,
-      tasteProfileVector: _tasteProfileVector,
-    } = args
-
-    let tasteProfileVector = _tasteProfileVector
-    const excludeArtworkIds = _excludeArtworkIds
-
-    if (!_tasteProfileVector && likedArtworkIds) {
-      tasteProfileVector = await calculateMeanArtworksVector(likedArtworkIds)
-    }
-
-    if (likedArtworkIds) {
-      // we don't want to recommend the same artworks that the user already liked
-      excludeArtworkIds.push(...likedArtworkIds)
-    }
+    const { excludeArtworkIds, first, likedArtworkIds } = args
 
     let result = []
 
-    if (!tasteProfileVector) {
+    if (!likedArtworkIds) {
       result = await getInitialArtworksSample(first, artworksLoader)
     } else {
+      const tasteProfileVector = await calculateMeanArtworksVector(
+        likedArtworkIds
+      )
+      // we don't want to recommend the same artworks that the user already liked
+      excludeArtworkIds.push(...likedArtworkIds)
+
       result = await findSimilarArtworks(
         tasteProfileVector,
         first,
