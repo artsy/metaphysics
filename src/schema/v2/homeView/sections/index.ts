@@ -28,6 +28,7 @@ import { Tasks } from "./Tasks"
 import { TrendingArtists } from "./TrendingArtists"
 import { ViewingRooms } from "./ViewingRooms"
 import { InfiniteDiscovery } from "./InfiniteDiscovery"
+import { SemanticVersionNumber } from "lib/semanticVersioning"
 
 type MaybeResolved<T> =
   | T
@@ -46,6 +47,7 @@ export type HomeViewSection = {
   }
   ownerType?: OwnerType
   requiresAuthentication: boolean
+  minimumEigenVersion?: SemanticVersionNumber
   shouldBeDisplayed?: (context: ResolverContext) => boolean
   resolver?: GraphQLFieldResolver<any, ResolverContext>
   type: keyof typeof HomeViewSectionTypeNames
