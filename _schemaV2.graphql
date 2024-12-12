@@ -11858,7 +11858,6 @@ type InfiniteDiscovery {
     likedArtworkIds: [String]
     tasteProfileVector: [Float]
   ): ArtworkConnection
-  tasteProfileVector(artworkIDs: [String!]!): [Float]
 }
 
 type InputAddress {
