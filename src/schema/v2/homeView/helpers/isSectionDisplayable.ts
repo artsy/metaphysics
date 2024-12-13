@@ -21,6 +21,17 @@ export function isSectionDisplayable(
 
   let isDisplayable = isPublicSection || isValidPersonalizedSection
 
+  section.id === "home-view-section-infinite-discovery" &&
+    console.log(
+      "[INFINITE_DISCO] even before check",
+      JSON.stringify({
+        isPublicSection,
+        isAuthenticatedUser,
+        requiresAuthentication: section.requiresAuthentication,
+        isDisplayable,
+      })
+    )
+
   // feature flags
   if (isDisplayable && section.featureFlag) {
     isDisplayable = isFeatureFlagEnabled(section.featureFlag, {
