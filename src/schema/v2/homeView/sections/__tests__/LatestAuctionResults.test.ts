@@ -1,5 +1,6 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
+import { ResolverContext } from "types/graphql"
 
 describe("LatestAuctionResults", () => {
   it("returns the section's metadata", async () => {
@@ -55,6 +56,32 @@ describe("LatestAuctionResults", () => {
         },
       }
     `)
+  })
+
+  it("requires an authenticated user", async () => {
+    const query = gql`
+      {
+        homeView {
+          section(id: "home-view-section-latest-auction-results") {
+            ... on HomeViewSectionAuctionResults {
+              auctionResultsConnection(first: 2) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context: Partial<ResolverContext> = { accessToken: undefined }
+
+    const { homeView } = await runQuery(query, context)
+
+    expect(homeView.section.artworksConnection).toBeNull()
   })
 
   it("returns the section's connection data", async () => {

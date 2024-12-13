@@ -18,5 +18,9 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
   },
   ownerType: OwnerType.newWorksFromGalleriesYouFollow,
 
-  resolver: withHomeViewTimeout(newWorksFromGalleriesYouFollow.resolve!),
+  resolver: withHomeViewTimeout(async (parent, args, context, info) => {
+    if (!context.accessToken) return null
+
+    return newWorksFromGalleriesYouFollow.resolve!(parent, args, context, info)
+  }),
 }

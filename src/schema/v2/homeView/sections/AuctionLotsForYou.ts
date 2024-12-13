@@ -19,6 +19,8 @@ export const AuctionLotsForYou: HomeViewSection = {
   ownerType: OwnerType.lotsByArtistsYouFollow,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
+    if (!context.accessToken) return null
+
     const finalArgs = {
       // formerly specified client-side
       includeBackfill: true,

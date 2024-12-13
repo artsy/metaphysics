@@ -20,6 +20,8 @@ export const LatestActivity: HomeViewSection = {
   },
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
+    if (!context.notificationsFeedLoader) return null
+
     return await NotificationsConnection.resolve!(parent, args, context, info)
   }),
 }

@@ -19,8 +19,7 @@ export const RecentlyViewedArtworks: HomeViewSection = {
   ownerType: OwnerType.recentlyViewed,
 
   resolver: withHomeViewTimeout(async (_parent, args, context, info) => {
-    if (!context.meLoader)
-      throw new Error("You need to be signed in to perform this action")
+    if (!context.accessToken || !context.meLoader) return null
 
     const me = await context.meLoader()
 

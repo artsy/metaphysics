@@ -3,7 +3,6 @@ import { HomeViewSection } from "."
 import { withHomeViewTimeout } from "../helpers/withHomeViewTimeout"
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 import { connectionFromArray } from "graphql-relay"
-import { emptyConnection } from "schema/v2/fields/pagination"
 
 export const ActiveBids: HomeViewSection = {
   id: "home-view-section-active-bids",
@@ -16,7 +15,7 @@ export const ActiveBids: HomeViewSection = {
   resolver: withHomeViewTimeout(async (_parent, args, context, _info) => {
     const { lotStandingLoader } = context
 
-    if (!lotStandingLoader) return emptyConnection
+    if (!lotStandingLoader) return null
 
     let result = await lotStandingLoader({
       live: true,

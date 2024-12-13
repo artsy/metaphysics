@@ -19,6 +19,8 @@ export const NewWorksForYou: HomeViewSection = {
   ownerType: OwnerType.newWorksForYou,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
+    if (!context.accessToken) return null
+
     const finalArgs = {
       // formerly specified client-side
       maxWorksPerArtist: 3,

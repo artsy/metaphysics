@@ -1,5 +1,6 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
+import { ResolverContext } from "types/graphql"
 
 describe("NewWorksFromGalleriesYouFollow", () => {
   it("returns the section's metadata", async () => {
@@ -52,6 +53,32 @@ describe("NewWorksFromGalleriesYouFollow", () => {
         "ownerType": "newWorksFromGalleriesYouFollow",
       }
     `)
+  })
+
+  it("requires an authenticated user", async () => {
+    const query = gql`
+      {
+        homeView {
+          section(id: "home-view-section-new-works-from-galleries-you-follow") {
+            ... on HomeViewSectionArtworks {
+              artworksConnection(first: 10) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    const context: Partial<ResolverContext> = { accessToken: undefined }
+
+    const { homeView } = await runQuery(query, context)
+
+    expect(homeView.section.artworksConnection).toBeNull()
   })
 
   it("returns the section's connection data", async () => {

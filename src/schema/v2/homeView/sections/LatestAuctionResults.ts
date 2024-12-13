@@ -23,6 +23,8 @@ export const LatestAuctionResults: HomeViewSection = {
   ownerType: OwnerType.auctionResultsForArtistsYouFollow,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
+    if (!context.accessToken) return null
+
     const finalArgs = {
       state: AuctionResultsStateEnums.getValue("PAST")?.value,
       sort: AuctionResultSortEnum.getValue("DATE_DESC")?.value,

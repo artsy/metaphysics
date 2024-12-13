@@ -18,5 +18,9 @@ export const RecommendedArtworks: HomeViewSection = {
   },
   ownerType: OwnerType.artworkRecommendations,
 
-  resolver: withHomeViewTimeout(ArtworkRecommendations.resolve!),
+  resolver: withHomeViewTimeout(async (parent, args, context, info) => {
+    if (!context.accessToken) return null
+
+    return ArtworkRecommendations.resolve!(parent, args, context, info)
+  }),
 }
