@@ -28,59 +28,68 @@ export function isSectionDisplayable(
     })
   }
 
-  console.log(
-    "[INFINITE_DISCO] before check",
-    JSON.stringify({
-      id: section.id,
-      isDisplayable,
-      sectionMinimumEigenVersion: section.minimumEigenVersion,
-    })
-  )
+  section.id === "home-view-section-infinite-discovery" &&
+    console.log(
+      "[INFINITE_DISCO] before check",
+      JSON.stringify({
+        id: section.id,
+        isDisplayable,
+        sectionMinimumEigenVersion: section.minimumEigenVersion,
+        userId: context.userID,
+      })
+    )
   // minimum Eigen version
   if (isDisplayable && section.minimumEigenVersion) {
     const actualEigenVersion = getEigenVersionNumber(
       context.userAgent as string
     )
-    console.log(
-      "[INFINITE_DISCO] checking",
-      JSON.stringify({
-        actualEigenVersion,
-        contextUserAgent: context.userAgent,
-      })
-    )
+    section.id === "home-view-section-infinite-discovery" &&
+      console.log(
+        "[INFINITE_DISCO] checking",
+        JSON.stringify({
+          actualEigenVersion,
+          contextUserAgent: context.userAgent,
+          userId: context.userID,
+        })
+      )
 
     if (actualEigenVersion) {
-      console.log(
-        "[INFINITE_DISCO] isAtLeast?",
-        isAtLeastVersion(actualEigenVersion, section.minimumEigenVersion)
-      )
+      section.id === "home-view-section-infinite-discovery" &&
+        console.log(
+          "[INFINITE_DISCO] isAtLeast?",
+          isAtLeastVersion(actualEigenVersion, section.minimumEigenVersion)
+        )
       isDisplayable = isAtLeastVersion(
         actualEigenVersion,
         section.minimumEigenVersion
       )
     }
   }
-  console.log(
-    "[INFINITE_DISCO] after check",
-    JSON.stringify({
-      id: section.id,
-      isDisplayable,
-      sectionMinimumEigenVersion: section.minimumEigenVersion,
-    })
-  )
+  section.id === "home-view-section-infinite-discovery" &&
+    console.log(
+      "[INFINITE_DISCO] after check",
+      JSON.stringify({
+        id: section.id,
+        isDisplayable,
+        sectionMinimumEigenVersion: section.minimumEigenVersion,
+        userId: context.userID,
+      })
+    )
 
   // section's display pre-check
   if (typeof section.shouldBeDisplayed === "function") {
     isDisplayable = isDisplayable && section?.shouldBeDisplayed(context)
   }
 
-  console.log(
-    "[INFINITE_DISCO] finally",
-    JSON.stringify({
-      id: section.id,
-      isDisplayable,
-    })
-  )
+  section.id === "home-view-section-infinite-discovery" &&
+    console.log(
+      "[INFINITE_DISCO] finally",
+      JSON.stringify({
+        id: section.id,
+        isDisplayable,
+        userId: context.userID,
+      })
+    )
 
   return isDisplayable
 }
