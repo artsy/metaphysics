@@ -118,6 +118,7 @@ export default {
           response.headers.set("Cache-Control", `max-age=${maxAge}`)
           ctx.waitUntil(cache.put(cacheKey, response.clone()))
         }
+        response.headers.set("Access-Control-Expose-Headers", "Cf-Cache-Status")
         return response
       }
 
