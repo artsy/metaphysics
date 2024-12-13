@@ -23,7 +23,7 @@ export const DiscoverArtworksConnection: GraphQLFieldConfig<
     likedArtworkIds: {
       type: new GraphQLList(GraphQLString),
       description:
-        "If tasteProfileVector is not provided, these artworks are used to calculate the taste profile vector. Previously liked artworks are excluded from the response",
+        "These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response",
     },
   }),
   resolve: async (_root, args, { artworksLoader }) => {

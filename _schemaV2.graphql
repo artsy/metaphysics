@@ -16871,7 +16871,7 @@ type Query {
     first: Int
     last: Int
 
-    # If tasteProfileVector is not provided, these artworks are used to calculate the taste profile vector. Previously liked artworks are excluded from the response
+    # These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
     likedArtworkIds: [String]
   ): ArtworkConnection
 
@@ -21535,7 +21535,7 @@ type Viewer {
     first: Int
     last: Int
 
-    # If tasteProfileVector is not provided, these artworks are used to calculate the taste profile vector. Previously liked artworks are excluded from the response
+    # These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
     likedArtworkIds: [String]
   ): ArtworkConnection
 
