@@ -29,7 +29,6 @@ import { findSimilarArtworks } from "lib/infiniteDiscovery/findSimilarArtworks"
 
 export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
-  deprecationReason: "use discoverArtworksConnection instead",
   args: pageable({
     userId: { type: GraphQLString },
     limit: { type: GraphQLInt },

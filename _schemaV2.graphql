@@ -16865,7 +16865,6 @@ type Query {
     useOpenSearch: Boolean = false
     userId: String
   ): ArtworkConnection
-    @deprecated(reason: "use discoverArtworksConnection instead")
 
   # A namespace external partners (provided by Galaxy)
   external: External!
@@ -21521,7 +21520,6 @@ type Viewer {
     useOpenSearch: Boolean = false
     userId: String
   ): ArtworkConnection
-    @deprecated(reason: "use discoverArtworksConnection instead")
 
   # A namespace external partners (provided by Galaxy)
   external: External!
