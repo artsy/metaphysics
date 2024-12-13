@@ -16851,29 +16851,21 @@ type Query {
     after: String
     before: String
     certainty: Float
-    first: Int
-    last: Int
-    limit: Int
-    offset: Int
-    sort: DiscoverArtworksSort
-    useRelatedArtworks: Boolean = false
-    userId: String!
-  ): ArtworkConnection
-    @deprecated(reason: "use discoverArtworksConnection instead")
 
-  # Returns artworks connection based on similarity between user taste profile and artworks
-  discoverArtworksConnection(
-    after: String
-    before: String
-
-    # Exclude these artworks from the response, currently works only in combination with tasteProfileVector
+    # (Only for when useOpenSearch is true) Exclude these artworks from the response, currently works only in combination with tasteProfileVector
     excludeArtworkIds: [String]
     first: Int
     last: Int
 
-    # These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
+    # (Only for when useOpenSearch is true) These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
     likedArtworkIds: [String]
+    limit: Int
+    offset: Int
+    sort: DiscoverArtworksSort
+    useOpenSearch: Boolean = false
+    userId: String
   ): ArtworkConnection
+    @deprecated(reason: "use discoverArtworksConnection instead")
 
   # A namespace external partners (provided by Galaxy)
   external: External!
@@ -21515,29 +21507,21 @@ type Viewer {
     after: String
     before: String
     certainty: Float
-    first: Int
-    last: Int
-    limit: Int
-    offset: Int
-    sort: DiscoverArtworksSort
-    useRelatedArtworks: Boolean = false
-    userId: String!
-  ): ArtworkConnection
-    @deprecated(reason: "use discoverArtworksConnection instead")
 
-  # Returns artworks connection based on similarity between user taste profile and artworks
-  discoverArtworksConnection(
-    after: String
-    before: String
-
-    # Exclude these artworks from the response, currently works only in combination with tasteProfileVector
+    # (Only for when useOpenSearch is true) Exclude these artworks from the response, currently works only in combination with tasteProfileVector
     excludeArtworkIds: [String]
     first: Int
     last: Int
 
-    # These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
+    # (Only for when useOpenSearch is true) These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response
     likedArtworkIds: [String]
+    limit: Int
+    offset: Int
+    sort: DiscoverArtworksSort
+    useOpenSearch: Boolean = false
+    userId: String
   ): ArtworkConnection
+    @deprecated(reason: "use discoverArtworksConnection instead")
 
   # A namespace external partners (provided by Galaxy)
   external: External!

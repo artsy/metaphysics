@@ -4,14 +4,14 @@ import {
   GraphQLInt,
   GraphQLEnumType,
   GraphQLFloat,
-  GraphQLNonNull,
   GraphQLBoolean,
+  GraphQLList,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { artworkConnection } from "../artwork"
 import { connectionFromArray } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
-import { sampleSize, shuffle, uniqBy } from "lodash"
+import { sampleSize, uniqBy } from "lodash"
 import {
   insertSampleCuratedWorks,
   getUserFilterList,
@@ -23,12 +23,15 @@ import {
   getArtworkIds,
   getFilteredIdList,
 } from "lib/infiniteDiscovery/weaviate"
+import { getInitialArtworksSample } from "lib/infiniteDiscovery/getInitialArtworksSample"
+import { calculateMeanArtworksVector } from "lib/infiniteDiscovery/calculateMeanArtworksVector"
+import { findSimilarArtworks } from "lib/infiniteDiscovery/findSimilarArtworks"
 
 export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
   deprecationReason: "use discoverArtworksConnection instead",
   args: pageable({
-    userId: { type: GraphQLNonNull(GraphQLString) },
+    userId: { type: GraphQLString },
     limit: { type: GraphQLInt },
     offset: { type: GraphQLInt },
     certainty: { type: GraphQLFloat },
@@ -49,19 +52,22 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         },
       }),
     },
-    useRelatedArtworks: { type: GraphQLBoolean, defaultValue: false },
+    useOpenSearch: { type: GraphQLBoolean, defaultValue: false },
+    excludeArtworkIds: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        "(Only for when useOpenSearch is true) Exclude these artworks from the response, currently works only in combination with tasteProfileVector",
+    },
+    likedArtworkIds: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        "(Only for when useOpenSearch is true) These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response",
+    },
   }),
   resolve: async (
     _root,
     args,
-    {
-      weaviateCreateObjectLoader,
-      weaviateGraphqlLoader,
-      artworksLoader,
-      relatedArtworksLoader,
-      marketingCollectionLoader,
-      savedArtworksLoader,
-    }
+    { weaviateCreateObjectLoader, weaviateGraphqlLoader, artworksLoader }
   ) => {
     if (
       !artworksLoader ||
@@ -77,51 +83,32 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       offset = 0,
       certainty = 0.5,
       sort,
-      useRelatedArtworks,
+      useOpenSearch,
     } = args
 
-    if (useRelatedArtworks) {
-      if (!savedArtworksLoader) {
-        return new Error("You need to be signed in to perform this action")
+    if (useOpenSearch) {
+      const { excludeArtworkIds, likedArtworkIds } = args
+
+      let result = []
+
+      if (!likedArtworkIds) {
+        result = await getInitialArtworksSample(limit, artworksLoader)
+      } else {
+        const tasteProfileVector = await calculateMeanArtworksVector(
+          likedArtworkIds
+        )
+        // we don't want to recommend the same artworks that the user already liked
+        excludeArtworkIds.push(...likedArtworkIds)
+
+        result = await findSimilarArtworks(
+          tasteProfileVector,
+          limit,
+          excludeArtworkIds,
+          artworksLoader
+        )
       }
 
-      const { body: savedArtworks } = await savedArtworksLoader({
-        size: 28,
-        sort: "-position",
-        user_id: userId,
-        private: true,
-      })
-
-      const savedArtworkIds = savedArtworks.map((artwork) => artwork.id)
-
-      const curatedArtworksCollection = await marketingCollectionLoader(
-        "curators-picks"
-      )
-
-      const curatedArtworkIds = curatedArtworksCollection.artwork_ids
-
-      // Select two random artworks from curated artworks
-      const randomCuratedArtworksIds = sampleSize(curatedArtworkIds, 2)
-
-      const curatedArtworks = await artworksLoader({
-        ids: randomCuratedArtworksIds,
-      })
-
-      // use curated artworks if there are no saved artworks
-      const finalArtworkIds =
-        savedArtworkIds.length > 0 ? [...savedArtworkIds] : curatedArtworkIds
-
-      // Limit the number of artwork IDs to a maximum of 10
-      const queryArtworkIds = finalArtworkIds.slice(0, 10)
-
-      const relatedArtworks = await relatedArtworksLoader({
-        artwork_id: queryArtworkIds,
-        size: 8,
-      })
-
-      // inject curated artworks and shuffle the list
-      const shuffledArtworks = shuffle([...relatedArtworks, ...curatedArtworks])
-      return connectionFromArray(shuffledArtworks, args)
+      return connectionFromArray(result, args)
     }
 
     const userQueryResponse = await weaviateGraphqlLoader({

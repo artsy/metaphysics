@@ -267,7 +267,6 @@ import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishView
 import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublishViewingRoomMutation"
 import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
 import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/updateViewingRoomSubsections"
-import { DiscoverArtworksConnection } from "./infiniteDiscovery/discoverArtworksConnection"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -335,7 +334,6 @@ const rootFields = {
   creditCard: CreditCard,
   curatedTrendingArtists: CuratedTrendingArtists,
   discoverArtworks: DiscoverArtworks,
-  discoverArtworksConnection: DiscoverArtworksConnection,
   departments,
   external: externalField,
   fair: Fair,
