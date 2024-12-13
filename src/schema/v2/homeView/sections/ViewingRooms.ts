@@ -15,5 +15,4 @@ export const ViewingRooms: HomeViewSection = {
       },
     },
   },
-  requiresAuthentication: false,
 }

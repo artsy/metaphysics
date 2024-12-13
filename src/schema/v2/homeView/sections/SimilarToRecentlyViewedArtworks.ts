@@ -18,7 +18,6 @@ export const SimilarToRecentlyViewedArtworks: HomeViewSection = {
     },
   },
   ownerType: OwnerType.similarToRecentlyViewed,
-  requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     if (!context.meLoader) return emptyConnection

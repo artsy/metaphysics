@@ -17,7 +17,6 @@ export const RecommendedArtworks: HomeViewSection = {
     },
   },
   ownerType: OwnerType.artworkRecommendations,
-  requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(ArtworkRecommendations.resolve!),
 }

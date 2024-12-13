@@ -20,7 +20,6 @@ export const Auctions: HomeViewSection = {
       },
     },
   },
-  requiresAuthentication: false,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const { results: resolver } = HomePageSalesModuleType.getFields()

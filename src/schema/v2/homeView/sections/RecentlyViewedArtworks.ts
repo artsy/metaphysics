@@ -17,7 +17,6 @@ export const RecentlyViewedArtworks: HomeViewSection = {
     },
   },
   ownerType: OwnerType.recentlyViewed,
-  requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(async (_parent, args, context, info) => {
     if (!context.meLoader)

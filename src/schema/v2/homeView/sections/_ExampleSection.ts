@@ -234,12 +234,6 @@ export const ExampleSection: HomeViewSection = {
   },
 
   /*
-   * Whether the user must be authenticated in order to view this section.
-   * (A non-issue in Eigen, this anticipates future usage on web.)
-   */
-  requiresAuthentication: false,
-
-  /*
    * Arbitrary logic to determine whether this section should be displayed.
    *
    * Intended for considering any logic beyond the standard checks

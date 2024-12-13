@@ -18,7 +18,6 @@ export const LatestActivity: HomeViewSection = {
       },
     },
   },
-  requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     return await NotificationsConnection.resolve!(parent, args, context, info)

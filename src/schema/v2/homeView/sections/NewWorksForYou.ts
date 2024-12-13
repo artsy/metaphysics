@@ -17,7 +17,6 @@ export const NewWorksForYou: HomeViewSection = {
     },
   },
   ownerType: OwnerType.newWorksForYou,
-  requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const finalArgs = {

@@ -27,7 +27,6 @@ export const DiscoverSomethingNew: HomeViewSection = {
     title: "Discover Something New",
     type: "Chips",
   },
-  requiresAuthentication: false,
   resolver: async (_parent, args, context, _info) => {
     const { body } = await context.marketingCollectionsLoader({
       slugs: marketingCollectionSlugs,

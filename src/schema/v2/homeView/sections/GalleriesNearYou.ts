@@ -14,7 +14,6 @@ export const GalleriesNearYou: HomeViewSection = {
       "Follow these local galleries for updates on artists you love.",
   },
   ownerType: OwnerType.galleriesForYou,
-  requiresAuthentication: false,
 
   resolver: withHomeViewTimeout(async (parent, _args, _context, _info) => {
     const card: HomeViewCard = {

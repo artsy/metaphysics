@@ -21,7 +21,6 @@ export const News: HomeViewSection = {
       },
     },
   },
-  requiresAuthentication: false,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const finalArgs = {

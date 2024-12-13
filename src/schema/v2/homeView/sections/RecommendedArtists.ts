@@ -11,7 +11,6 @@ export const RecommendedArtists: HomeViewSection = {
   component: {
     title: "Recommended Artists",
   },
-  requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     return await ArtistRecommendations.resolve!(parent, args, context, info)

@@ -75,7 +75,6 @@ export const MyNewSection: HomeViewSection = {
   component: {
     title: "My New Section",
   },
-  requiresAuthentication: true,
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     // Add your resolver logic here
   }),

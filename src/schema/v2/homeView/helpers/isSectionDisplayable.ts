@@ -11,15 +11,7 @@ export function isSectionDisplayable(
   section: HomeViewSection,
   context: ResolverContext
 ): boolean {
-  // public content
-  const isPublicSection = section.requiresAuthentication === false
-
-  // personalized content
-  const isAuthenticatedUser = !!context.accessToken
-  const isValidPersonalizedSection =
-    section.requiresAuthentication && isAuthenticatedUser
-
-  let isDisplayable = isPublicSection || isValidPersonalizedSection
+  let isDisplayable = true
 
   // feature flags
   if (isDisplayable && section.featureFlag) {

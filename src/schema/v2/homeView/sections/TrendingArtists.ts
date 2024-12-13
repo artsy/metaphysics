@@ -12,7 +12,6 @@ export const TrendingArtists: HomeViewSection = {
   component: {
     title: "Trending Artists",
   },
-  requiresAuthentication: false,
 
   resolver: withHomeViewTimeout(async (_parent, args, context, _info) => {
     const artistRecords = await getCuratedArtists(context)

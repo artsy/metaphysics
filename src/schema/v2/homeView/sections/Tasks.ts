@@ -13,7 +13,6 @@ export const Tasks: HomeViewSection = {
   component: {
     title: "Act Now",
   },
-  requiresAuthentication: true,
   resolver: withHomeViewTimeout(async (_parent, args, { meTasksLoader }) => {
     if (!meTasksLoader) return null
 

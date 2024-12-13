@@ -15,7 +15,6 @@ export const FeaturedFairs: HomeViewSection = {
     description: "See works in top art fairs",
   },
   featureFlag: "onyx_enable-home-view-section-featured-fairs",
-  requiresAuthentication: false,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const { results: resolver } = HomePageFairsModuleType.getFields()

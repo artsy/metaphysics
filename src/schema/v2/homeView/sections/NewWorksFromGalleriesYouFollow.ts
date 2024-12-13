@@ -17,7 +17,6 @@ export const NewWorksFromGalleriesYouFollow: HomeViewSection = {
     },
   },
   ownerType: OwnerType.newWorksFromGalleriesYouFollow,
-  requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(newWorksFromGalleriesYouFollow.resolve!),
 }

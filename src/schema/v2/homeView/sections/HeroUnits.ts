@@ -8,7 +8,6 @@ export const HeroUnits: HomeViewSection = {
   id: "home-view-section-hero-units",
   type: HomeViewSectionTypeNames.HomeViewSectionHeroUnits,
   contextModule: ContextModule.heroUnitsRail,
-  requiresAuthentication: false,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const result = await heroUnitsConnection.resolve!(

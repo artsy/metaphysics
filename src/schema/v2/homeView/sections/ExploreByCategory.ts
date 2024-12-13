@@ -21,7 +21,6 @@ export const ExploreByCategory: HomeViewSection = {
   component: {
     title: "Explore by Category",
   },
-  requiresAuthentication: false,
   resolver: (_parent, args, _context, _info) => {
     const cards = orderedCategoryKeys.map((key) => {
       const category = marketingCollectionCategories[key]

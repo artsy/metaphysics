@@ -43,7 +43,6 @@ export const CuratorsPicksEmerging: HomeViewSection = {
       },
     },
   },
-  requiresAuthentication: false,
 
   resolver: withHomeViewTimeout(async (parent, args, context, info) => {
     const loader = filterArtworksConnectionWithParams((_args) => {

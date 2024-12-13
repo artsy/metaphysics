@@ -12,7 +12,6 @@ export const ActiveBids: HomeViewSection = {
   component: {
     title: "Your Active Bids",
   },
-  requiresAuthentication: true,
 
   resolver: withHomeViewTimeout(async (_parent, args, context, _info) => {
     const { lotStandingLoader } = context

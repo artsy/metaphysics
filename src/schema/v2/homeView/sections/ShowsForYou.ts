@@ -19,7 +19,6 @@ export const ShowsForYou: HomeViewSection = {
   component: {
     title: "Shows for You",
   },
-  requiresAuthentication: true,
 
   shouldBeDisplayed: (_context: ResolverContext) => true,
 
