@@ -55,316 +55,208 @@ describe("homeView", () => {
       }
     `
 
-    describe("with an unauthenticated user", () => {
+    it("returns the correct sections", async () => {
       const context: Partial<ResolverContext> = {
         siteHeroUnitLoader: jest.fn().mockReturnValue({
           app_title: "Curators' Picks Emerging",
         }),
       }
 
-      it("returns the correct sections", async () => {
-        const { homeView } = await runQuery(query, context)
+      const { homeView } = await runQuery(query, context)
 
-        expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
-          {
-            "edges": [
-              {
-                "node": {
-                  "__typename": "HomeViewSectionCards",
-                  "component": {
-                    "title": "Discover Something New",
-                  },
+      expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
+        {
+          "edges": [
+            {
+              "node": {
+                "__typename": "HomeViewSectionTasks",
+                "component": {
+                  "title": "Act Now",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Curators' Picks Emerging",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionActivity",
+                "component": {
+                  "title": "Latest Activity",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionCards",
-                  "component": {
-                    "title": "Explore by Category",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArtworks",
+                "component": {
+                  "title": "New Works for You",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionHeroUnits",
-                  "component": null,
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArtworks",
+                "component": {
+                  "title": "Recently Viewed",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionSales",
-                  "component": {
-                    "title": "Auctions",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionCards",
+                "component": {
+                  "title": "Discover Something New",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionCard",
-                  "component": {
-                    "title": "Galleries near You",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArtworks",
+                "component": {
+                  "title": "Artwork Recommendations",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArticles",
-                  "component": {
-                    "title": "Artsy Editorial",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArtworks",
+                "component": {
+                  "title": "Curators' Picks Emerging",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArticles",
-                  "component": {
-                    "title": "News",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionCards",
+                "component": {
+                  "title": "Explore by Category",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtists",
-                  "component": {
-                    "title": "Trending Artists",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionHeroUnits",
+                "component": null,
+              },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArtworks",
+                "component": {
+                  "title": "Your Active Bids",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionViewingRooms",
-                  "component": {
-                    "title": "Viewing Rooms",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArtworks",
+                "component": {
+                  "title": "Auction Lots for You",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionFairs",
-                  "component": {
-                    "title": "Featured Fairs",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionSales",
+                "component": {
+                  "title": "Auctions",
                 },
               },
-            ],
-          }
-        `)
-      })
-    })
-
-    describe("with an authenticated user", () => {
-      const context: Partial<ResolverContext> = {
-        accessToken: "424242",
-        siteHeroUnitLoader: jest.fn().mockReturnValue({
-          app_title: "Curators' Picks Emerging",
-        }),
-      }
-
-      it("returns the correct sections", async () => {
-        const { homeView } = await runQuery(query, context)
-
-        expect(homeView.sectionsConnection).toMatchInlineSnapshot(`
-          {
-            "edges": [
-              {
-                "node": {
-                  "__typename": "HomeViewSectionTasks",
-                  "component": {
-                    "title": "Act Now",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionAuctionResults",
+                "component": {
+                  "title": "Latest Auction Results",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionActivity",
-                  "component": {
-                    "title": "Latest Activity",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionCard",
+                "component": {
+                  "title": "Galleries near You",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "New Works for You",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArticles",
+                "component": {
+                  "title": "Artsy Editorial",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Recently Viewed",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArticles",
+                "component": {
+                  "title": "News",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionCards",
-                  "component": {
-                    "title": "Discover Something New",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArtworks",
+                "component": {
+                  "title": "New Works from Galleries You Follow",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Artwork Recommendations",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArtists",
+                "component": {
+                  "title": "Recommended Artists",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Curators' Picks Emerging",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArtists",
+                "component": {
+                  "title": "Trending Artists",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionCards",
-                  "component": {
-                    "title": "Explore by Category",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionArtworks",
+                "component": {
+                  "title": "Similar to Works You’ve Viewed",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionHeroUnits",
-                  "component": null,
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionViewingRooms",
+                "component": {
+                  "title": "Viewing Rooms",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Your Active Bids",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionShows",
+                "component": {
+                  "title": "Shows for You",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Auction Lots for You",
-                  },
+            },
+            {
+              "node": {
+                "__typename": "HomeViewSectionFairs",
+                "component": {
+                  "title": "Featured Fairs",
                 },
               },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionSales",
-                  "component": {
-                    "title": "Auctions",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionAuctionResults",
-                  "component": {
-                    "title": "Latest Auction Results",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionCard",
-                  "component": {
-                    "title": "Galleries near You",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArticles",
-                  "component": {
-                    "title": "Artsy Editorial",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArticles",
-                  "component": {
-                    "title": "News",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "New Works from Galleries You Follow",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtists",
-                  "component": {
-                    "title": "Recommended Artists",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtists",
-                  "component": {
-                    "title": "Trending Artists",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionArtworks",
-                  "component": {
-                    "title": "Similar to Works You’ve Viewed",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionViewingRooms",
-                  "component": {
-                    "title": "Viewing Rooms",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionShows",
-                  "component": {
-                    "title": "Shows for You",
-                  },
-                },
-              },
-              {
-                "node": {
-                  "__typename": "HomeViewSectionFairs",
-                  "component": {
-                    "title": "Featured Fairs",
-                  },
-                },
-              },
-            ],
-          }
-        `)
-      })
+            },
+          ],
+        }
+      `)
     })
   })
 
   describe("section", () => {
-    describe("with a section that requires authentication", () => {
+    it("returns the requested section", async () => {
       const query = gql`
         {
           homeView {
@@ -380,87 +272,16 @@ describe("homeView", () => {
         }
       `
 
-      describe("with an unauthenticated user", () => {
-        const context: Partial<ResolverContext> = {}
+      const { homeView } = await runQuery(query)
 
-        it("throws an error when accessed by id", async () => {
-          await expect(runQuery(query, context)).rejects.toThrow(
-            "Section is not displayable"
-          )
-        })
-      })
-
-      describe("with an authenticated user", () => {
-        const context: Partial<ResolverContext> = {
-          accessToken: "424242",
-        }
-
-        it("returns the requested section", async () => {
-          const { homeView } = await runQuery(query, context)
-
-          expect(homeView.section).toMatchInlineSnapshot(`
-            {
-              "__typename": "HomeViewSectionArtworks",
-              "component": {
-                "title": "Auction Lots for You",
-              },
-            }
-          `)
-        })
-      })
-    })
-
-    describe("with a section that does not require authentication", () => {
-      const query = gql`
+      expect(homeView.section).toMatchInlineSnapshot(`
         {
-          homeView {
-            section(id: "home-view-section-news") {
-              __typename
-              ... on HomeViewSectionGeneric {
-                component {
-                  title
-                }
-              }
-            }
-          }
+          "__typename": "HomeViewSectionArtworks",
+          "component": {
+            "title": "Auction Lots for You",
+          },
         }
-      `
-
-      describe("with an unauthenticated user", () => {
-        const context: Partial<ResolverContext> = {}
-
-        it("returns the requested section", async () => {
-          const { homeView } = await runQuery(query, context)
-
-          expect(homeView.section).toMatchInlineSnapshot(`
-            {
-              "__typename": "HomeViewSectionArticles",
-              "component": {
-                "title": "News",
-              },
-            }
-          `)
-        })
-      })
-
-      describe("with an authenticated user", () => {
-        const context: Partial<ResolverContext> = {
-          accessToken: "424242",
-        }
-
-        it("returns the requested section", async () => {
-          const { homeView } = await runQuery(query, context)
-
-          expect(homeView.section).toMatchInlineSnapshot(`
-            {
-              "__typename": "HomeViewSectionArticles",
-              "component": {
-                "title": "News",
-              },
-            }
-          `)
-        })
-      })
+      `)
     })
   })
 
