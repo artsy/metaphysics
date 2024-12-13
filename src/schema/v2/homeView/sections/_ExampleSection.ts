@@ -42,6 +42,12 @@ export const ExampleSection: HomeViewSection = {
   // @ts-expect-error - not a real flag ID
   featureFlag: "onyx_enable-home-view-section-example",
 
+  /**
+   * (optional) A minimum version of Eigen that is required in order to
+   * display this section. Will have no effect on non-Eigen clients.
+   */
+  minimumEigenVersion: { major: 4, minor: 2, patch: 4 },
+
   /*
    * An analytics label to describe this section.
    *
