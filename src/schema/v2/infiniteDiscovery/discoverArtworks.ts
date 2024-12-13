@@ -55,7 +55,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     excludeArtworkIds: {
       type: new GraphQLList(GraphQLString),
       description:
-        "(Only for when useOpenSearch is true) Exclude these artworks from the response, currently works only in combination with tasteProfileVector",
+        "(Only for when useOpenSearch is true) Exclude these artworks from the response",
     },
     likedArtworkIds: {
       type: new GraphQLList(GraphQLString),
