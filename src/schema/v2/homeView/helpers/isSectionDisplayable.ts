@@ -28,23 +28,59 @@ export function isSectionDisplayable(
     })
   }
 
+  console.log(
+    "[INFINITE_DISCO] before check",
+    JSON.stringify({
+      id: section.id,
+      isDisplayable,
+      sectionMinimumEigenVersion: section.minimumEigenVersion,
+    })
+  )
   // minimum Eigen version
   if (isDisplayable && section.minimumEigenVersion) {
     const actualEigenVersion = getEigenVersionNumber(
       context.userAgent as string
     )
+    console.log(
+      "[INFINITE_DISCO] checking",
+      JSON.stringify({
+        actualEigenVersion,
+        contextUserAgent: context.userAgent,
+      })
+    )
+
     if (actualEigenVersion) {
+      console.log(
+        "[INFINITE_DISCO] isAtLeast?",
+        isAtLeastVersion(actualEigenVersion, section.minimumEigenVersion)
+      )
       isDisplayable = isAtLeastVersion(
         actualEigenVersion,
         section.minimumEigenVersion
       )
     }
   }
+  console.log(
+    "[INFINITE_DISCO] after check",
+    JSON.stringify({
+      id: section.id,
+      isDisplayable,
+      sectionMinimumEigenVersion: section.minimumEigenVersion,
+    })
+  )
 
   // section's display pre-check
   if (typeof section.shouldBeDisplayed === "function") {
     isDisplayable = isDisplayable && section?.shouldBeDisplayed(context)
   }
+
+  console.log(
+    "[INFINITE_DISCO] finally",
+    JSON.stringify({
+      id: section.id,
+      isDisplayable,
+    })
+  )
 
   return isDisplayable
 }
