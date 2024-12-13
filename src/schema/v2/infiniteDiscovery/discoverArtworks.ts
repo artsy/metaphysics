@@ -26,6 +26,7 @@ import {
 
 export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: artworkConnection.connectionType,
+  deprecationReason: "use discoverArtworksConnection instead",
   args: pageable({
     userId: { type: GraphQLNonNull(GraphQLString) },
     limit: { type: GraphQLInt },

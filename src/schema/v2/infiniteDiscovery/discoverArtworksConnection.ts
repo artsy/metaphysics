@@ -7,7 +7,7 @@ import { getInitialArtworksSample } from "lib/infiniteDiscovery/getInitialArtwor
 import { findSimilarArtworks } from "lib/infiniteDiscovery/findSimilarArtworks"
 import { calculateMeanArtworksVector } from "lib/infiniteDiscovery/calculateMeanArtworksVector"
 
-export const InfiniteDiscoveryArtworksConnection: GraphQLFieldConfig<
+export const DiscoverArtworksConnection: GraphQLFieldConfig<
   void,
   ResolverContext
 > = {
