@@ -9229,7 +9229,7 @@ type Delivery {
 
 type Department {
   id: ID!
-  jobs: [Job!]!
+  jobs: [Job!]! @deprecated
   name: String!
 }
 
