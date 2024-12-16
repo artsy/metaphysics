@@ -19,6 +19,9 @@ export const findSimilarArtworks = async (
   const knnQuery = {
     size: size,
     _source: ["_id"],
+    collapse: {
+      field: "artistName",
+    },
     query: {
       bool: {
         must_not: {
