@@ -86,7 +86,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     } = args
 
     if (useOpenSearch) {
-      const { excludeArtworkIds, likedArtworkIds } = args
+      const { excludeArtworkIds = [], likedArtworkIds = [] } = args
 
       let result = []
 
