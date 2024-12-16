@@ -78,7 +78,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
     const {
       userId,
-      limit = 5,
+      limit = 10,
       offset = 0,
       certainty = 0.5,
       sort,
@@ -90,7 +90,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
       let result = []
 
-      if (!likedArtworkIds) {
+      if (likedArtworkIds.length < 3) {
         result = await getInitialArtworksSample(limit, artworksLoader)
       } else {
         const tasteProfileVector = await calculateMeanArtworksVector(
