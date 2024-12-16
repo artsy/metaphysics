@@ -12,7 +12,7 @@ import config from "config"
 
 const rootFieldsAllowList = ["agreement"].concat(
   config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
-    ? ["viewingRooms"]
+    ? []
     : ["viewingRoom", "viewingRooms", "viewingRoomsConnection"]
 )
 
@@ -53,8 +53,11 @@ export const executableGravitySchema = () => {
   if (config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA) {
     duplicatedTypes.push("ViewingRoom")
     duplicatedTypes.push("ViewingRoomsConnection")
+    duplicatedTypes.push("ViewingRoomConnection")
     duplicatedTypes.push("ViewingRoomsEdge")
     duplicatedTypes.push("ViewingRoomsEdge")
+    duplicatedTypes.push("ViewingRoomEdge")
+    duplicatedTypes.push("ViewingRoomEdge")
 
     duplicatedTypes.push("CreateViewingRoomPayload")
     duplicatedTypes.push("CreateViewingRoomInput")

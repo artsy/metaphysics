@@ -267,11 +267,13 @@ import { publishViewingRoomMutation } from "./viewingRooms/mutations/publishView
 import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublishViewingRoomMutation"
 import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
 import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/updateViewingRoomSubsections"
+import { ViewingRoomConnection } from "./viewingRooms"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
       viewingRoom: ViewingRoom,
       viewingRoomsConnection: ViewingRoomsConnection,
+      viewingRooms: ViewingRoomConnection,
     }
   : ({} as any)
 
