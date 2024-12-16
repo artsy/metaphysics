@@ -78,7 +78,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
     const {
       userId,
-      limit = 5,
+      limit = 10,
       offset = 0,
       certainty = 0.5,
       sort,
@@ -86,12 +86,16 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     } = args
 
     if (useOpenSearch) {
-      const { excludeArtworkIds, likedArtworkIds } = args
+      const { excludeArtworkIds = [], likedArtworkIds = [] } = args
 
-      let result = []
+      let result: any = []
 
-      if (!likedArtworkIds) {
-        result = await getInitialArtworksSample(limit, artworksLoader)
+      if (likedArtworkIds.length < 3) {
+        result = await getInitialArtworksSample(
+          limit,
+          excludeArtworkIds,
+          artworksLoader
+        )
       } else {
         const tasteProfileVector = await calculateMeanArtworksVector(
           likedArtworkIds
@@ -101,10 +105,18 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
         result = await findSimilarArtworks(
           tasteProfileVector,
-          limit,
+          8,
           excludeArtworkIds,
           artworksLoader
         )
+
+        // backfill with random curated picks if we don't have enough similar artworks
+        const randomArtworks = await getInitialArtworksSample(
+          limit - result.length,
+          excludeArtworkIds,
+          artworksLoader
+        )
+        result.push(...randomArtworks)
       }
 
       return connectionFromArray(result, args)
