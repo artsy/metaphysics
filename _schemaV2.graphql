@@ -12189,7 +12189,7 @@ type Job {
   content: String!
   departmentName: String!
 
-  # The url of the job listing on Greenhouse
+  # The url of the job listing
   externalURL: String!
   id: ID!
   location: String!

@@ -6,7 +6,6 @@ import geminiLoaders from "./gemini"
 import geodataLoaders from "./geodata"
 import gravityLoaders from "./gravity"
 import positronLoaders from "./positron"
-import greenhouseLoaders from "./greenhouse"
 import ipbaseLoaders from "./ipbase"
 import vortexLoaders from "./vortex"
 import weaviateLoaders from "./weaviate"
@@ -20,7 +19,6 @@ export const createLoadersWithoutAuthentication = (opts) => ({
   ...gravityLoaders(opts),
   ...positronLoaders(opts),
   ...geodataLoaders(opts),
-  ...greenhouseLoaders(opts),
   ...ipbaseLoaders(opts),
   ...vortexLoaders(opts),
   ...weaviateLoaders(opts),
