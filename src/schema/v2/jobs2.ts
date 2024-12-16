@@ -156,13 +156,6 @@ export const departmentType = new GraphQLObjectType<
         return name.replace(/\s\d.+/, "")
       },
     },
-    jobs: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(jobType))),
-      deprecationReason: "No longer supported",
-      resolve: () => {
-        return []
-      },
-    },
   },
 })
 
