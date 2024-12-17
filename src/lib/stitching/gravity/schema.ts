@@ -87,6 +87,7 @@ export const executableGravitySchema = () => {
     excludedMutations.push("updateViewingRoomArtworks")
     excludedMutations.push("updateViewingRoomSubsections")
   }
+  excludedMutations.push("recordArtworkView")
 
   // Types which come from Gravity that are not (yet) needed in MP.
   // In the future, these can be removed from this list as they are needed.
@@ -96,6 +97,8 @@ export const executableGravitySchema = () => {
     "LotEvent",
     "RefundCommissionExemptionInput",
     "RefundCommissionExemptionPayload",
+    "RecordArtworkViewInput",
+    "RecordArtworkViewPayload",
   ]
 
   // Return the new modified schema

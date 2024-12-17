@@ -22,7 +22,7 @@ describe("RecentlyViewedArtworks", () => {
     context = {
       meLoader: async () => me,
       artworksLoader: async () => artworks,
-      recordArtworkViewLoader: jest.fn(async () => me),
+      createArtworkViewLoader: jest.fn(async (id) => ({ artwork_id: id })),
     }
   })
 
@@ -212,12 +212,6 @@ describe("RecentlyViewedArtworks", () => {
     })
 
     const data = await runAuthenticatedQuery(mutation, context)
-
-    // The graphQL API
-    expect(mockFetch).toBeCalledWith(
-      "https://api.artsy.test/api/graphql",
-      expect.anything()
-    )
 
     const artworkID = data!.recordArtworkView.artwork_id
     expect(artworkID).toEqual("percy")
