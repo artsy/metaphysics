@@ -107,7 +107,7 @@ export const jobType = new GraphQLObjectType<
     },
     departmentName: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ departmentName }) => departmentName,
+      resolve: ({ departmentName }) => cleanDepartmentName(departmentName),
     },
   },
 })
@@ -151,10 +151,7 @@ export const departmentType = new GraphQLObjectType<
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ name }) => {
-        // Remove department numbers
-        return name.replace(/\s\d.+/, "")
-      },
+      resolve: ({ name }) => cleanDepartmentName(name),
     },
     jobs: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(jobType))),
@@ -172,4 +169,9 @@ export const departments: GraphQLFieldConfig<void, ResolverContext> = {
     const { results } = await ashby("department.list")
     return results
   },
+}
+
+// Remove department codes: Workplace 852WKP -> Workplace
+const cleanDepartmentName = (name: string) => {
+  return name.replace(/\b\d\w+$/g, "").trim()
 }
