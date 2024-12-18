@@ -57,6 +57,18 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       description:
         "(Only for when useOpenSearch is true) Exclude these artworks from the response",
     },
+    useMltQuery: {
+      type: GraphQLBoolean,
+      description:
+        "(Only for when useOpenSearch is true) Use the More Like This query with the kNN query",
+      defaultValue: false,
+    },
+    mltFields: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        "(Only for when useOpenSearch is true) These fields are used to calculate the More Like This query",
+      defaultValue: ["material", "categories", "tags", "medium"],
+    },
     likedArtworkIds: {
       type: new GraphQLList(GraphQLString),
       description:
@@ -83,6 +95,8 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       certainty = 0.5,
       sort,
       useOpenSearch,
+      useMltQuery,
+      mltFields,
     } = args
 
     if (useOpenSearch) {
@@ -103,12 +117,19 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         // we don't want to recommend the same artworks that the user already liked
         excludeArtworkIds.push(...likedArtworkIds)
 
-        result = await findSimilarArtworks(
-          tasteProfileVector,
-          8,
+        const options = {
+          vectorEmbedding: tasteProfileVector,
+          size: limit,
+          likedArtworkIds,
           excludeArtworkIds,
-          artworksLoader
-        )
+          fields: mltFields,
+          useMltQuery,
+        }
+
+        result = await findSimilarArtworks(options, artworksLoader)
+
+        // use first 8 artworks
+        result = result.slice(0, 8)
 
         // backfill with random curated picks if we don't have enough similar artworks
         const randomArtworks = await getInitialArtworksSample(
@@ -171,7 +192,9 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         filteredNearArtworkIds.reverse()
       }
 
-      const artworks = await artworksLoader({ ids: filteredNearArtworkIds })
+      const artworks = await artworksLoader({
+        ids: filteredNearArtworkIds,
+      })
 
       return connectionFromArray(uniqBy(artworks, "artist.id"), args)
     } else {
