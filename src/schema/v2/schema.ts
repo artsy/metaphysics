@@ -138,6 +138,7 @@ import { toggleFeatureFlagMutation } from "./featureFlags/admin/mutations/toggle
 import { updateFeatureFlagMutation } from "./featureFlags/admin/mutations/updateFeatureFlagMutation"
 import { channel } from "./article/channel"
 import { createArtistMutation } from "./artist/createArtistMutation"
+import { createCanonicalArtistMutation } from "./artist/createCanonicalArtistMutation"
 import { deleteArtistMutation } from "./artist/deleteArtistMutation"
 import { updateArtworkMutation } from "./artwork/updateArtworkMutation"
 import { artworksForUser } from "./artworksForUser"
@@ -448,6 +449,7 @@ export default new GraphQLSchema({
       updateCareerHighlight: updateCareerHighlightMutation,
       deleteCareerHighlight: deleteCareerHighlightMutation,
       createArtist: createArtistMutation,
+      createCanonicalArtist: createCanonicalArtistMutation,
       createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
       createCollection: createCollectionMutation,
