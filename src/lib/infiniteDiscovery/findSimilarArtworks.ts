@@ -7,7 +7,7 @@ interface FindSimilarArtworksOptions {
   likedArtworkIds?: string[]
   excludeArtworkIds?: string[]
   fields?: string[]
-  useMltQuery?: boolean
+  weights?: number[]
 }
 
 /**
@@ -27,7 +27,7 @@ export const findSimilarArtworks = async (
     likedArtworkIds = [],
     excludeArtworkIds = [],
     fields = [],
-    useMltQuery,
+    weights,
   } = options
 
   const mltQuery = {
@@ -44,22 +44,52 @@ export const findSimilarArtworks = async (
       vector_embedding: {
         vector: vectorEmbedding,
         k: size,
+        filter: {
+          bool: {
+            must_not: {
+              terms: {
+                _id: excludeArtworkIds,
+              },
+            },
+          },
+        },
       },
     },
   }
 
   // Combine MLT and k-NN queries into a `should` clause
-  const shouldQueries = useMltQuery ? [mltQuery, knnQuery] : [knnQuery]
-
   const query = {
     size,
-    _source: ["_id"],
-    collapse: { field: "artistName" },
+    _source: ["_id", "artistName"],
     query: {
-      bool: {
-        must_not: { terms: { _id: excludeArtworkIds } },
-        should: shouldQueries,
+      hybrid: {
+        queries: [mltQuery, knnQuery],
       },
+    },
+    search_pipeline: {
+      phase_results_processors: [
+        {
+          "normalization-processor": {
+            normalization: {
+              technique: "min_max",
+            },
+            combination: {
+              technique: "arithmetic_mean",
+              parameters: {
+                weights,
+              },
+            },
+            ignore_failure: false,
+          },
+        },
+      ],
+      response_processors: [
+        {
+          collapse: {
+            field: "artistName",
+          },
+        },
+      ],
     },
   }
 
