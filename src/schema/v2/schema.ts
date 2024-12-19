@@ -268,6 +268,8 @@ import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublish
 import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
 import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/updateViewingRoomSubsections"
 import { ViewingRoomConnection } from "./viewingRooms"
+import { recordArtworkViewMutation } from "./recordArtworkView"
+import { removeArtworkViewMutation } from "./removeArtworkView"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -506,6 +508,8 @@ export default new GraphQLSchema({
       myCollectionCreateArtwork: myCollectionCreateArtworkMutation,
       myCollectionDeleteArtwork: myCollectionDeleteArtworkMutation,
       myCollectionUpdateArtwork: myCollectionUpdateArtworkMutation,
+      recordArtworkView: recordArtworkViewMutation,
+      removeArtworkView: removeArtworkViewMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       requestPriceEstimate: requestPriceEstimateMutation,
       saveArtwork: saveArtworkMutation,
