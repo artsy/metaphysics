@@ -57,12 +57,6 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       description:
         "(Only for when useOpenSearch is true) Exclude these artworks from the response",
     },
-    useMltQuery: {
-      type: GraphQLBoolean,
-      description:
-        "(Only for when useOpenSearch is true) Use the More Like This query with the kNN query",
-      defaultValue: false,
-    },
     mltFields: {
       type: new GraphQLList(GraphQLString),
       description:
@@ -73,6 +67,12 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLList(GraphQLString),
       description:
         "(Only for when useOpenSearch is true) These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response",
+    },
+    osWeights: {
+      type: new GraphQLList(GraphQLFloat),
+      description:
+        "(Only for when useOpenSearch is true) Weights for the OpenSearch query",
+      defaultValue: [0.6, 0.4],
     },
   }),
   resolve: async (
@@ -95,8 +95,8 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       certainty = 0.5,
       sort,
       useOpenSearch,
-      useMltQuery,
       mltFields,
+      osWeights,
     } = args
 
     if (useOpenSearch) {
@@ -123,7 +123,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
           likedArtworkIds,
           excludeArtworkIds,
           fields: mltFields,
-          useMltQuery,
+          weights: osWeights,
         }
 
         result = await findSimilarArtworks(options, artworksLoader)
