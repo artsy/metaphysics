@@ -14,13 +14,23 @@ interface URLAndRequestBodyParams extends RequestBodyParams {
   url: string
 }
 
-export const constructUrlAndParams = (method, url): URLAndRequestBodyParams => {
+export const constructUrlAndParams = (
+  method,
+  url,
+  options: RequestBodyParams = {}
+): URLAndRequestBodyParams => {
   const opts: RequestBodyParams = {}
 
   if (method === "PUT" || method === "POST" || method === "DELETE") {
     const [path, queryParams] = url.split("?")
     const parsedParams = parse(queryParams)
+
     let body
+
+    if (options.body) {
+      opts.body = options.body
+      opts.json = true
+    }
 
     if (isExisty(parsedParams)) {
       // If the query params are formatted in a 0, 1, 2 way we know it's an array
@@ -39,14 +49,17 @@ export const constructUrlAndParams = (method, url): URLAndRequestBodyParams => {
         body = parsedParams
       }
 
-      opts.body = body
+      opts.body = {
+        ...opts.body,
+        ...body,
+      }
       opts.json = true
 
       return { url: path, ...opts }
     }
   }
 
-  return { url }
+  return { url, ...opts }
 }
 
 // TODO: This `any` is a shame, but
@@ -69,7 +82,11 @@ export default (url, options = {}) => {
     opts.headers = assign({}, { "User-Agent": userAgent }, opts.headers)
 
     const { method } = opts
-    const { url: cleanedUrl, body, json } = constructUrlAndParams(method, url)
+    const { url: cleanedUrl, body, json } = constructUrlAndParams(
+      method,
+      url,
+      opts
+    )
 
     request(cleanedUrl, { ...opts, body, json }, (err, response) => {
       if (err) return reject(err)
