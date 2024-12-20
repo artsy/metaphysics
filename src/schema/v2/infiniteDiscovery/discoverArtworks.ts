@@ -74,6 +74,12 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         "(Only for when useOpenSearch is true) Weights for the OpenSearch query",
       defaultValue: [0.6, 0.4],
     },
+    initialArtworksIndexName: {
+      type: GraphQLString,
+      description:
+        "(Only for when useOpenSearch is true) Which index to use to display initial batch of artworks",
+      defaultValue: "infinite_discovery_initial_artworks",
+    },
   }),
   resolve: async (
     _root,
@@ -97,6 +103,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       useOpenSearch,
       mltFields,
       osWeights,
+      initialArtworksIndexName,
     } = args
 
     if (useOpenSearch) {
@@ -108,7 +115,8 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         result = await getInitialArtworksSample(
           limit,
           excludeArtworkIds,
-          artworksLoader
+          artworksLoader,
+          initialArtworksIndexName
         )
       } else {
         const tasteProfileVector = await calculateMeanArtworksVector(
@@ -135,7 +143,8 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         const randomArtworks = await getInitialArtworksSample(
           limit - result.length,
           excludeArtworkIds,
-          artworksLoader
+          artworksLoader,
+          initialArtworksIndexName
         )
         result.push(...randomArtworks)
       }

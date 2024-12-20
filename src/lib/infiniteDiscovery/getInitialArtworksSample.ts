@@ -3,13 +3,14 @@ import { opensearch } from "lib/apis/opensearch"
 export const getInitialArtworksSample = async (
   limit,
   excludeArtworkIds,
-  artworksLoader
+  artworksLoader,
+  indexName
 ) => {
   // initial artworks sample comes from indexed curators picks, but
   // in future we plan to come up with a more sophisticated approach
   const RANDOM_SEED = Math.floor(Math.random() * 1000)
 
-  const curatorsPicks = await opensearch(`/curators_picks/_search`, undefined, {
+  const curatorsPicks = await opensearch(`/${indexName}/_search`, undefined, {
     method: "POST",
     body: JSON.stringify({
       size: limit,
