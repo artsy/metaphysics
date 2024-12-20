@@ -8,7 +8,6 @@ import {
   GraphQLString,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { identity, pickBy } from "lodash"
 import { ResolverContext } from "types/graphql"
 
 const ViewingRoomArtworkInput = new GraphQLInputObjectType({
@@ -58,21 +57,24 @@ export const updateViewingRoomArtworksMutation = mutationWithClientMutationId<
       throw new Error("You need to be signed in to perform this action")
     }
 
-    const artworks = args.artworks.map((artwork, index) => {
-      return pickBy(
-        {
-          [index]: {
-            artwork_id: artwork.artworkID,
-            delete: artwork.delete,
-          },
-        },
-        identity
-      )
+    const artworks = args.artworks.map((artwork, _index) => {
+      return {
+        artwork_id: artwork.artworkID,
+        delete: artwork.delete,
+      }
     })
 
-    const response = await updateViewingRoomArtworksLoader(args.viewingRoomID, {
-      artworks: artworks,
-    })
+    // Can we keep the argument input the same and trigger use of
+    // the request body (instead of query params) further down the stack?
+    const response = await updateViewingRoomArtworksLoader(
+      args.viewingRoomID,
+      {},
+      {
+        body: {
+          artworks: artworks,
+        },
+      }
+    )
 
     return response
   },
