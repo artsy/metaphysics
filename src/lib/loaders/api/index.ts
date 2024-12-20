@@ -9,7 +9,6 @@ import gravity from "lib/apis/gravity"
 import impulse from "lib/apis/impulse"
 import positron from "lib/apis/positron"
 import { vortex } from "lib/apis/vortex"
-import { greenhouse } from "lib/apis/greenhouse"
 import { ipbase } from "lib/apis/ipbase"
 import { unleash } from "lib/apis/unleash"
 import { weaviate } from "lib/apis/weaviate"
@@ -128,20 +127,6 @@ export default (opts) => ({
       userAgent: opts.userAgent,
       appToken: opts.appToken,
       isMutation: opts.isMutation,
-    }
-  ),
-
-  /**
-   * The Greenhouse loaders produced by this factory _will_ cache all responses to memcache.
-   *
-   * Do **not** use it for authenticated requests!
-   */
-  greenhouseLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
-    greenhouse,
-    "greenhouse",
-    {
-      requestIDs: opts.requestIDs,
-      userAgent: opts.userAgent,
     }
   ),
 
