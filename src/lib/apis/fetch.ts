@@ -19,7 +19,8 @@ export const constructUrlAndParams = (method, url): URLAndRequestBodyParams => {
 
   if (method === "PUT" || method === "POST" || method === "DELETE") {
     const [path, queryParams] = url.split("?")
-    const parsedParams = parse(queryParams)
+    const parsedParams = parse(queryParams, { arrayLimit: 1000 })
+
     let body
 
     if (isExisty(parsedParams)) {
