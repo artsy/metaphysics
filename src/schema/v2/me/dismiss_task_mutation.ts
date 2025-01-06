@@ -11,6 +11,8 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { Task, TaskType } from "./task"
+import { HomeViewTasksSectionType } from "../homeView/sectionTypes/Tasks"
+import { Tasks } from "../homeView/sections/Tasks"
 
 interface Input {
   id: string
@@ -26,6 +28,39 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
         return response
       },
     },
+    homeViewTasksSection: {
+      type: HomeViewTasksSectionType,
+      resolve: () => Tasks.resolver,
+    },
+    // tasksConnection: {
+    //   type: TaskConnectionType,
+    //   args: pageable({}),
+    //   resolve: async (_parent, args, { meTasksLoader }) => {
+    //     if (!meTasksLoader)
+    //       throw new Error(
+    //         "There must have been a user, but no task loader... :/"
+    //       )
+
+    //     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
+
+    //     const { body: results, headers } = await meTasksLoader({
+    //       page,
+    //       size,
+    //       total_count: true,
+    //     })
+
+    //     const count = parseInt(headers["x-total-count"] || "0", 10)
+
+    //     return {
+    //       totalCount: count,
+    //       pageCursors: createPageCursors({ ...args, page, size }, count),
+    //       ...connectionFromArraySlice(results, args, {
+    //         arrayLength: count,
+    //         sliceStart: offset,
+    //       }),
+    //     }
+    //   },
+    // },
   }),
 })
 

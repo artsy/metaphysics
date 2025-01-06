@@ -9296,6 +9296,7 @@ type DismissTaskMutationPayload {
 union DismissTaskResponseOrError = DismissTaskFailure | DismissTaskSuccess
 
 type DismissTaskSuccess {
+  homeViewTasksSection: HomeViewSectionTasks
   task: Task!
 }
 
