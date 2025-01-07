@@ -61,7 +61,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLList(GraphQLString),
       description:
         "(Only for when useOpenSearch is true) These fields are used to calculate the More Like This query",
-      defaultValue: ["material", "categories", "tags", "medium"],
+      defaultValue: ["genes", "materials", "tags", "medium"],
     },
     likedArtworkIds: {
       type: new GraphQLList(GraphQLString),
@@ -133,7 +133,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
         // backfill with random curated picks if we don't have enough similar artworks
         const randomArtworks = await getInitialArtworksSample(
-          limit - result.length,
+          2,
           excludeArtworkIds,
           artworksLoader
         )
