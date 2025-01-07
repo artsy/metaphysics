@@ -35,6 +35,12 @@ interface Input {
   coaByAuthenticatingBody?: boolean
   locationId?: string
   artsyShippingDomestic?: boolean
+  signedByArtist?: boolean
+  stampedByArtistEstate?: boolean
+  stickerLabel?: boolean
+  signedInPlate?: boolean
+  signedOther?: boolean
+  notSigned?: boolean
 }
 
 const CommerceOptInSuccesssType = new GraphQLObjectType<any, ResolverContext>({
@@ -116,6 +122,30 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Opt artwork into Artsy Shipping Domestic",
     },
+    signedByArtist: {
+      type: GraphQLBoolean,
+      description: "whether or not it is signed",
+    },
+    stampedByArtistEstate: {
+      type: GraphQLBoolean,
+      description: "whether or not it is stamped by the artist estate",
+    },
+    stickerLabel: {
+      type: GraphQLBoolean,
+      description: "whether or not it has a sticker label",
+    },
+    signedInPlate: {
+      type: GraphQLBoolean,
+      description: "whether or not it is signed in plate",
+    },
+    signedOther: {
+      type: GraphQLBoolean,
+      description: "whether or not other is selected for signature",
+    },
+    notSigned: {
+      type: GraphQLBoolean,
+      description: "whether or not it is not signed",
+    },
   },
   outputFields: {
     commerceOptInMutationOrError: {
@@ -134,6 +164,12 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       coaByAuthenticatingBody,
       locationId,
       artsyShippingDomestic,
+      signedByArtist,
+      stampedByArtistEstate,
+      stickerLabel,
+      signedInPlate,
+      signedOther,
+      notSigned,
     },
     { optInArtworksIntoCommerceLoader }
   ) => {
@@ -146,6 +182,12 @@ export const commerceOptInMutation = mutationWithClientMutationId<
       coa_by_authenticating_body: coaByAuthenticatingBody,
       location_id: locationId,
       artsy_shipping_domestic: artsyShippingDomestic,
+      signed_by_artist: signedByArtist,
+      stamped_by_artist_estate: stampedByArtistEstate,
+      sticker_label: stickerLabel,
+      signed_in_plate: signedInPlate,
+      signed_other: signedOther,
+      not_signed: notSigned,
     }
 
     if (!optInArtworksIntoCommerceLoader) {
