@@ -59,7 +59,7 @@ async function updateSchemaFile({
         }
 
         execSync(
-          `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier --write ${dest}`,
+          `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier --parser=graphql --write ${dest}`,
           {
             cwd: repoDir,
           }
