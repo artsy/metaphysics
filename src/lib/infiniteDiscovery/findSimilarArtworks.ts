@@ -60,7 +60,7 @@ export const findSimilarArtworks = async (
   // Combine MLT and k-NN queries into a `should` clause
   const query = {
     size,
-    _source: ["_id", "artistName"],
+    _source: ["_id", "artist_id"],
     query: {
       hybrid: {
         queries: [mltQuery, knnQuery],
