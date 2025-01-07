@@ -86,7 +86,7 @@ export const findSimilarArtworks = async (
       response_processors: [
         {
           collapse: {
-            field: "artistName",
+            field: "artist_id",
           },
         },
       ],
