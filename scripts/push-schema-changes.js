@@ -42,6 +42,7 @@ async function updateSchemaFile({
 
       destinations.forEach((dest) => {
         const repoDest = path.join(repoDir, dest)
+        let prettierArgs = ""
         if (dest.endsWith(".json")) {
           const sdl = readFileSync("_schemaV2.graphql", "utf8").toString()
           const schema = buildSchema(sdl, { commentDescriptions: true })
@@ -49,6 +50,7 @@ async function updateSchemaFile({
           writeFileSync(repoDest, JSON.stringify(gql, null, 2))
         } else {
           execSync(`cp _schemaV2.graphql '${repoDest}'`)
+          prettierArgs = "--parser=graphql"
 
           // Running the compiler directly for Rails projects
           const relayCompilerCommand = ["pulse", "volt"].includes(repo)
@@ -59,7 +61,7 @@ async function updateSchemaFile({
         }
 
         execSync(
-          `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier --parser=graphql --write ${dest}`,
+          `[ ! -f ./node_modules/.bin/prettier ] || ./node_modules/.bin/prettier ${prettierArgs} --write ${dest}`,
           {
             cwd: repoDir,
           }
