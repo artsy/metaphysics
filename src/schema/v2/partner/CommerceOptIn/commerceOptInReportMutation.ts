@@ -33,6 +33,12 @@ interface Input {
   eligible?: boolean
   locationId?: string
   artsyShippingDomestic?: boolean
+  signedByArtist?: boolean
+  stampedByArtistEstate?: boolean
+  stickerLabel?: boolean
+  signedInPlate?: boolean
+  signedOther?: boolean
+  notSigned?: boolean
 }
 
 const CommerceOptInReportSuccesssType = new GraphQLObjectType<
@@ -126,6 +132,30 @@ export const commerceOptInReportMutation = mutationWithClientMutationId<
       type: GraphQLBoolean,
       description: "Opt artwork into Artsy Shipping Domestic",
     },
+    signedByArtist: {
+      type: GraphQLBoolean,
+      description: "whether or not it is signed",
+    },
+    stampedByArtistEstate: {
+      type: GraphQLBoolean,
+      description: "whether or not it is stamped by the artist estate",
+    },
+    stickerLabel: {
+      type: GraphQLBoolean,
+      description: "whether or not it has a sticker label",
+    },
+    signedInPlate: {
+      type: GraphQLBoolean,
+      description: "whether or not it is signed in plate",
+    },
+    signedOther: {
+      type: GraphQLBoolean,
+      description: "whether or not other is selected for signature",
+    },
+    notSigned: {
+      type: GraphQLBoolean,
+      description: "whether or not it is not signed",
+    },
   },
   outputFields: {
     commerceOptInReportMutationOrError: {
@@ -145,6 +175,12 @@ export const commerceOptInReportMutation = mutationWithClientMutationId<
       eligible,
       locationId,
       artsyShippingDomestic,
+      signedByArtist,
+      stampedByArtistEstate,
+      stickerLabel,
+      signedInPlate,
+      signedOther,
+      notSigned,
     },
     { createCommerceOptInEligibleArtworksReportLoader }
   ) => {
@@ -158,6 +194,12 @@ export const commerceOptInReportMutation = mutationWithClientMutationId<
       eligible: eligible,
       location_id: locationId,
       artsy_shipping_domestic: artsyShippingDomestic,
+      signed_by_artist: signedByArtist,
+      stamped_by_artist_estate: stampedByArtistEstate,
+      sticker_label: stickerLabel,
+      signed_in_plate: signedInPlate,
+      signed_other: signedOther,
+      not_signed: notSigned,
     }
 
     if (!createCommerceOptInEligibleArtworksReportLoader) {

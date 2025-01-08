@@ -39,6 +39,17 @@ export const findSimilarArtworks = async (
     },
   }
 
+  const boolQuery = {
+    bool: {
+      must_not: {
+        terms: {
+          _id: excludeArtworkIds,
+        },
+      },
+      must: mltQuery,
+    },
+  }
+
   const knnQuery = {
     knn: {
       vector_embedding: {
@@ -60,10 +71,10 @@ export const findSimilarArtworks = async (
   // Combine MLT and k-NN queries into a `should` clause
   const query = {
     size,
-    _source: ["_id", "artistName"],
+    _source: ["id", "artist_id"],
     query: {
       hybrid: {
-        queries: [mltQuery, knnQuery],
+        queries: [boolQuery, knnQuery],
       },
     },
     search_pipeline: {
@@ -86,7 +97,7 @@ export const findSimilarArtworks = async (
       response_processors: [
         {
           collapse: {
-            field: "artistName",
+            field: "artist_id",
           },
         },
       ],
