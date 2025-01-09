@@ -30,37 +30,8 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
     },
     homeViewTasksSection: {
       type: HomeViewTasksSectionType,
-      resolve: () => Tasks.resolver,
+      resolve: () => Tasks,
     },
-    // tasksConnection: {
-    //   type: TaskConnectionType,
-    //   args: pageable({}),
-    //   resolve: async (_parent, args, { meTasksLoader }) => {
-    //     if (!meTasksLoader)
-    //       throw new Error(
-    //         "There must have been a user, but no task loader... :/"
-    //       )
-
-    //     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
-
-    //     const { body: results, headers } = await meTasksLoader({
-    //       page,
-    //       size,
-    //       total_count: true,
-    //     })
-
-    //     const count = parseInt(headers["x-total-count"] || "0", 10)
-
-    //     return {
-    //       totalCount: count,
-    //       pageCursors: createPageCursors({ ...args, page, size }, count),
-    //       ...connectionFromArraySlice(results, args, {
-    //         arrayLength: count,
-    //         sliceStart: offset,
-    //       }),
-    //     }
-    //   },
-    // },
   }),
 })
 
@@ -109,7 +80,7 @@ export const dismissTaskMutation = mutationWithClientMutationId<
     try {
       const task: Task = await meDismissTaskLoader?.(id)
 
-      return { ...task, __typename: "SuccessType" }
+      return { ...task, _type: "SuccessType" }
     } catch (error) {
       const formattedErr = formatGravityError(error)
 

@@ -67,6 +67,7 @@ type AckTaskMutationPayload {
 union AckTaskResponseOrError = AckTaskFailure | AckTaskSuccess
 
 type AckTaskSuccess {
+  homeViewTasksSection: HomeViewSectionTasks
   task: Task!
 }
 

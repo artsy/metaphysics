@@ -11,6 +11,8 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { Task, TaskType } from "./task"
+import { HomeViewTasksSectionType } from "../homeView/sectionTypes/Tasks"
+import { Tasks } from "../homeView/sections/Tasks"
 
 interface Input {
   id: string
@@ -25,6 +27,10 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
       resolve: (response) => {
         return response
       },
+    },
+    homeViewTasksSection: {
+      type: HomeViewTasksSectionType,
+      resolve: () => Tasks,
     },
   }),
 })
