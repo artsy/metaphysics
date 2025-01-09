@@ -15,7 +15,6 @@ export const Tasks: HomeViewSection = {
   },
   requiresAuthentication: true,
   resolver: withHomeViewTimeout(async (_parent, args, { meTasksLoader }) => {
-    console.log("resolving tasks")
     if (!meTasksLoader) return null
 
     const { page, size, offset } = convertConnectionArgsToGravityArgs(args)
@@ -28,7 +27,6 @@ export const Tasks: HomeViewSection = {
 
     const count = parseInt(headers["x-total-count"] || "0", 10)
 
-    console.log("resolved tasks", { count })
     return {
       totalCount: count,
       pageCursors: createPageCursors({ ...args, page, size }, count),
