@@ -74,6 +74,12 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         "(Only for when useOpenSearch is true) Weights for the OpenSearch query",
       defaultValue: [0.6, 0.4],
     },
+    curatedPicksSize: {
+      type: GraphQLInt,
+      description:
+        "The number of curated artworks to return. This is a temporary field to support the transition to OpenSearch",
+      defaultValue: 2,
+    },
   }),
   resolve: async (
     _root,
@@ -97,6 +103,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       useOpenSearch,
       mltFields,
       osWeights,
+      curatedPicksSize,
     } = args
 
     if (useOpenSearch) {
@@ -128,12 +135,11 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
         result = await findSimilarArtworks(options, artworksLoader)
 
-        // use first 8 artworks
-        result = result.slice(0, 8)
+        result = result.slice(0, limit - curatedPicksSize)
 
         // backfill with random curated picks if we don't have enough similar artworks
         const randomArtworks = await getInitialArtworksSample(
-          limit - result.length,
+          curatedPicksSize,
           excludeArtworkIds,
           artworksLoader
         )
