@@ -134,12 +134,13 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         }
 
         result = await findSimilarArtworks(options, artworksLoader)
-
         result = result.slice(0, limit - curatedPicksSize)
 
         // backfill with random curated picks if we don't have enough similar artworks
         const randomArtworks = await getInitialArtworksSample(
-          curatedPicksSize,
+          limit - result.length === curatedPicksSize
+            ? curatedPicksSize
+            : limit - result.length,
           excludeArtworkIds,
           artworksLoader
         )
