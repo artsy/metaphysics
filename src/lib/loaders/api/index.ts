@@ -11,7 +11,6 @@ import positron from "lib/apis/positron"
 import { vortex } from "lib/apis/vortex"
 import { ipbase } from "lib/apis/ipbase"
 import { unleash } from "lib/apis/unleash"
-import { weaviate } from "lib/apis/weaviate"
 
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
@@ -242,14 +241,6 @@ export default (opts) => ({
   vortexLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
     vortex,
     "vortex",
-    opts
-  ),
-
-  // Loaders created by this factory are used for Weaviate requests.
-  // There is no authentication required for these requests **for now**.
-  weaviateLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
-    weaviate,
-    "weaviate",
     opts
   ),
 })

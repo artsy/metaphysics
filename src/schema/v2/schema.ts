@@ -242,10 +242,6 @@ import { Invoice } from "./Invoice/invoice"
 import { createInvoicePaymentMutation } from "./Invoice/createInvoicePaymentMutation"
 import { ackTaskMutation } from "./me/ack_task_mutation"
 import { DiscoverArtworks } from "./infiniteDiscovery/discoverArtworks"
-import { CreateDiscoveryLikedArtworkMutation } from "./infiniteDiscovery/createDiscoveryArtworkReferenceMutation"
-import { CreateDiscoveryUserMutation } from "./infiniteDiscovery/createDiscoveryUserMutation"
-import { deleteDiscoveryUserMutation } from "./infiniteDiscovery/deleteDiscoveryUserMutation"
-import { LikedDiscoveryArtworks } from "./infiniteDiscovery/likedDiscoveryArtworks"
 import {
   BackupSecondFactor,
   AppSecondFactor,
@@ -360,7 +356,6 @@ const rootFields = {
   invoice: Invoice,
   job,
   jobs,
-  LikedDiscoveryArtworks,
   saleAgreement: SaleAgreement,
   saleAgreementsConnection: SaleAgreementsConnection,
   markdown: MarkdownContent,
@@ -455,8 +450,6 @@ export default new GraphQLSchema({
       createCollection: createCollectionMutation,
       createConsignmentInquiry: createConsignmentInquiryMutation,
       createCreditCard: createCreditCardMutation,
-      createDiscoveryArtworkReference: CreateDiscoveryLikedArtworkMutation,
-      createDiscoveryUser: CreateDiscoveryUserMutation,
       createFeature: CreateFeatureMutation,
       createFeaturedLink: CreateFeaturedLinkMutation,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
@@ -478,7 +471,6 @@ export default new GraphQLSchema({
       deleteCollection: deleteCollectionMutation,
       deleteConversation: deleteConversationMutation,
       deleteCreditCard: deleteCreditCardMutation,
-      deleteDiscoveryUserMutation: deleteDiscoveryUserMutation,
       deleteFeature: DeleteFeatureMutation,
       deleteFeaturedLink: DeleteFeaturedLinkMutation,
       deleteHeroUnit: deleteHeroUnitMutation,
