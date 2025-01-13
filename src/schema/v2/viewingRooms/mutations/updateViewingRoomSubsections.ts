@@ -75,21 +75,16 @@ export const updateViewingRoomSubsectionsMutation = mutationWithClientMutationId
       throw new Error("You need to be signed in to perform this action")
     }
 
-    const subsections = args.subsections.map((subsection, index) => {
+    const subsections = args.subsections.map((subsection, _index) => {
       return {
-        [index]: pickBy(
+        id: subsection.internalID,
+        delete: subsection.delete,
+        ar_image_id: subsection.image?.internalID,
+        attributes: pickBy(
           {
-            id: subsection.internalID,
-            delete: subsection.delete,
-            ar_image_id: subsection.image?.internalID,
-            attributes: pickBy(
-              {
-                body: subsection.attributes?.body,
-                caption: subsection.attributes?.caption,
-                title: subsection.attributes?.title,
-              },
-              identity
-            ),
+            body: subsection.attributes?.body,
+            caption: subsection.attributes?.caption,
+            title: subsection.attributes?.title,
           },
           identity
         ),
@@ -98,6 +93,7 @@ export const updateViewingRoomSubsectionsMutation = mutationWithClientMutationId
 
     const response = await updateViewingRoomSubsectionsLoader(
       args.viewingRoomID,
+      {},
       {
         subsections: subsections,
       }
