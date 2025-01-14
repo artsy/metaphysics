@@ -72,6 +72,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    createArtworkViewLoader: gravityLoader(
+      (artworkID) => `artwork/${artworkID}/view`,
+      {},
+      { method: "POST" }
+    ),
     createCommerceOptInEligibleArtworksReportLoader: gravityLoader(
       (id) => `partner/${id}/commerce_opt_in_eligible_artworks_report`,
       {},
@@ -212,6 +217,11 @@ export default (accessToken, userID, opts) => {
     ),
     deleteArtworkLoader: gravityLoader(
       (id) => `artwork/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
+    deleteArtworkViewLoader: gravityLoader(
+      (artworkID) => `artwork/${artworkID}/view`,
       {},
       { method: "DELETE" }
     ),
