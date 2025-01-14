@@ -45,13 +45,25 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         "The number of curated artworks to return. This is a temporary field to support the transition to OpenSearch",
       defaultValue: 2,
     },
+    initialArtworksIndexName: {
+      type: GraphQLString,
+      description:
+        "(Only for when useOpenSearch is true) Which index to use to display initial batch of artworks",
+      defaultValue: "infinite_discovery_initial_artworks",
+    },
   }),
   resolve: async (_root, args, { artworksLoader }) => {
     if (!artworksLoader) {
       new Error("A loader is not available")
     }
 
-    const { limit = 10, mltFields, osWeights, curatedPicksSize } = args
+    const {
+      limit = 10,
+      mltFields,
+      osWeights,
+      curatedPicksSize,
+      initialArtworksIndexName,
+    } = args
 
     const { excludeArtworkIds = [], likedArtworkIds = [] } = args
 
@@ -61,7 +73,8 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
       result = await getInitialArtworksSample(
         limit,
         excludeArtworkIds,
-        artworksLoader
+        artworksLoader,
+        initialArtworksIndexName
       )
     } else {
       const tasteProfileVector = await calculateMeanArtworksVector(
@@ -88,7 +101,8 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
           ? curatedPicksSize
           : limit - result.length,
         excludeArtworkIds,
-        artworksLoader
+        artworksLoader,
+        initialArtworksIndexName
       )
       result.push(...randomArtworks)
     }
