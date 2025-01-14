@@ -265,6 +265,7 @@ import { unpublishViewingRoomMutation } from "./viewingRooms/mutations/unpublish
 import { updateViewingRoomArtworksMutation } from "./viewingRooms/mutations/updateViewingRoomArtworks"
 import { updateViewingRoomSubsectionsMutation } from "./viewingRooms/mutations/updateViewingRoomSubsections"
 import { ViewingRoomConnection } from "./viewingRooms"
+import { seoExperimentArtists } from "schema/v2/seoExperimentArtists"
 
 const viewingRoomUnstitchedRootField = config.USE_UNSTITCHED_VIEWING_ROOM_SCHEMA
   ? {
@@ -392,6 +393,7 @@ const rootFields = {
   saleArtworksConnection: SaleArtworksConnectionField,
   salesConnection: SalesConnectionField,
   searchConnection: Search,
+  seoExperimentArtists,
   shortcut,
   show: Show,
   showsConnection: Shows,
