@@ -8,7 +8,6 @@ import gravityLoaders from "./gravity"
 import positronLoaders from "./positron"
 import ipbaseLoaders from "./ipbase"
 import vortexLoaders from "./vortex"
-import weaviateLoaders from "./weaviate"
 
 export const createLoadersWithoutAuthentication = (opts) => ({
   ...convectionLoaders(opts),
@@ -21,7 +20,6 @@ export const createLoadersWithoutAuthentication = (opts) => ({
   ...geodataLoaders(opts),
   ...ipbaseLoaders(opts),
   ...vortexLoaders(opts),
-  ...weaviateLoaders(opts),
 })
 
 export type LoadersWithoutAuthentication = ReturnType<
