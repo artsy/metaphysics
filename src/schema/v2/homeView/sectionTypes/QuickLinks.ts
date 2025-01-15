@@ -1,4 +1,3 @@
-// quickLinks
 import {
   GraphQLList,
   GraphQLNonNull,
@@ -26,12 +25,6 @@ const QuickLinkType = new GraphQLObjectType<QuickLink, ResolverContext>({
   }),
 })
 
-/*
- * A section type in the home view is specified declaratively
- * as a GraphQL object that implements the HomeViewGenericSectionInterface
- *
- * Below we will configure its various fields.
- */
 export const HomeViewQuickLinksSectionType = new GraphQLObjectType<
   any,
   ResolverContext

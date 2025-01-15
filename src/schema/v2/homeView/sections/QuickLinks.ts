@@ -1,15 +1,11 @@
-// import { ContextModule, OwnerType } from "@artsy/cohesion"
+import { ContextModule, OwnerType } from "@artsy/cohesion"
 import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 
 export const QuickLinks: HomeViewSection = {
   id: "home-view-section-quick-links",
-  // TODO: add ContextModule quickLinks
-  // contextModule: ContextModule.example,
-
-  // TODO: add OwnerType quickLinks
-  // ownerType: OwnerType.example,
-
+  contextModule: ContextModule.quickLinks,
+  ownerType: OwnerType.quickLinks,
   type: HomeViewSectionTypeNames.HomeViewSectionQuickLinks,
   requiresAuthentication: true,
   resolver: () => {
