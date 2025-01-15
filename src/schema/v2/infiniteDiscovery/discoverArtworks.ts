@@ -19,24 +19,21 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     limit: { type: GraphQLInt },
     excludeArtworkIds: {
       type: new GraphQLList(GraphQLString),
-      description:
-        "(Only for when useOpenSearch is true) Exclude these artworks from the response",
+      description: "Exclude these artworks from the response",
     },
     mltFields: {
       type: new GraphQLList(GraphQLString),
-      description:
-        "(Only for when useOpenSearch is true) These fields are used to calculate the More Like This query",
+      description: "These fields are used for More Like This query",
       defaultValue: ["genes", "materials", "tags", "medium"],
     },
     likedArtworkIds: {
       type: new GraphQLList(GraphQLString),
       description:
-        "(Only for when useOpenSearch is true) These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response",
+        "These artworks are used to calculate the taste profile vector. Such artworks are excluded from the response",
     },
     osWeights: {
       type: new GraphQLList(GraphQLFloat),
-      description:
-        "(Only for when useOpenSearch is true) Weights for the OpenSearch query",
+      description: "Weights for the KNN and MLT query",
       defaultValue: [0.6, 0.4],
     },
     curatedPicksSize: {
@@ -47,8 +44,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     },
     initialArtworksIndexName: {
       type: GraphQLString,
-      description:
-        "(Only for when useOpenSearch is true) Which index to use to display initial batch of artworks",
+      description: "Which index to use to display initial batch of artworks",
       defaultValue: "infinite_discovery_initial_artworks",
     },
   }),
