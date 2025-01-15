@@ -6,21 +6,21 @@ describe("DismissTaskMutation", () => {
     const mutation = gql`
       mutation {
         dismissTask(input: { id: "task-id" }) {
+          homeViewTasksSection {
+            tasksConnection(first: 10) {
+              edges {
+                node {
+                  internalID
+                  title
+                }
+              }
+            }
+          }
           taskOrError {
             ... on DismissTaskSuccess {
               task {
                 internalID
                 title
-              }
-              homeViewTasksSection {
-                tasksConnection(first: 10) {
-                  edges {
-                    node {
-                      internalID
-                      title
-                    }
-                  }
-                }
               }
             }
             ... on DismissTaskFailure {
@@ -40,12 +40,12 @@ describe("DismissTaskMutation", () => {
             internalID: "task-id",
             title: "Test Task",
           },
-          homeViewTasksSection: {
-            tasksConnection: {
-              edges: [
-                { node: { internalID: "asdf1234", title: "Remaining Task" } },
-              ],
-            },
+        },
+        homeViewTasksSection: {
+          tasksConnection: {
+            edges: [
+              { node: { internalID: "asdf1234", title: "Remaining Task" } },
+            ],
           },
         },
       },

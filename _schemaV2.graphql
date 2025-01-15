@@ -59,6 +59,7 @@ input AckTaskMutationInput {
 
 type AckTaskMutationPayload {
   clientMutationId: String
+  homeViewTasksSection: HomeViewSectionTasks
 
   # On success: the new state of the Task
   taskOrError: AckTaskResponseOrError!
@@ -67,7 +68,6 @@ type AckTaskMutationPayload {
 union AckTaskResponseOrError = AckTaskFailure | AckTaskSuccess
 
 type AckTaskSuccess {
-  homeViewTasksSection: HomeViewSectionTasks
   task: Task!
 }
 
@@ -9289,6 +9289,7 @@ input DismissTaskMutationInput {
 
 type DismissTaskMutationPayload {
   clientMutationId: String
+  homeViewTasksSection: HomeViewSectionTasks
 
   # On success: the new state of the Task
   taskOrError: DismissTaskResponseOrError!
@@ -9297,7 +9298,6 @@ type DismissTaskMutationPayload {
 union DismissTaskResponseOrError = DismissTaskFailure | DismissTaskSuccess
 
 type DismissTaskSuccess {
-  homeViewTasksSection: HomeViewSectionTasks
   task: Task!
 }
 

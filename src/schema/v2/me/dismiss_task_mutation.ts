@@ -28,10 +28,6 @@ const SuccessType = new GraphQLObjectType<any, ResolverContext>({
         return response
       },
     },
-    homeViewTasksSection: {
-      type: HomeViewTasksSectionType,
-      resolve: () => Tasks,
-    },
   }),
 })
 
@@ -70,6 +66,10 @@ export const dismissTaskMutation = mutationWithClientMutationId<
       type: new GraphQLNonNull(ResponseOrErrorType),
       description: "On success: the new state of the Task",
       resolve: (result) => result,
+    },
+    homeViewTasksSection: {
+      type: HomeViewTasksSectionType,
+      resolve: () => Tasks,
     },
   },
   mutateAndGetPayload: async ({ id }, { meDismissTaskLoader }) => {

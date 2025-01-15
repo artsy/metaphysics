@@ -6,21 +6,21 @@ describe("AckTaskMutation", () => {
     const mutation = gql`
       mutation {
         ackTask(input: { id: "task-id" }) {
+          homeViewTasksSection {
+            tasksConnection(first: 10) {
+              edges {
+                node {
+                  internalID
+                  title
+                }
+              }
+            }
+          }
           taskOrError {
             ... on AckTaskSuccess {
               task {
                 internalID
                 title
-              }
-              homeViewTasksSection {
-                tasksConnection(first: 10) {
-                  edges {
-                    node {
-                      internalID
-                      title
-                    }
-                  }
-                }
               }
             }
             ... on AckTaskFailure {
@@ -35,17 +35,17 @@ describe("AckTaskMutation", () => {
 
     const mutationResponse = {
       ackTask: {
+        homeViewTasksSection: {
+          tasksConnection: {
+            edges: [
+              { node: { internalID: "asdf1234", title: "Remaining Task" } },
+            ],
+          },
+        },
         taskOrError: {
           task: {
             internalID: "task-id",
             title: "Test Task",
-          },
-          homeViewTasksSection: {
-            tasksConnection: {
-              edges: [
-                { node: { internalID: "asdf1234", title: "Remaining Task" } },
-              ],
-            },
           },
         },
       },
