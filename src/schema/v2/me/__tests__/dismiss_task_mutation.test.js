@@ -6,6 +6,16 @@ describe("DismissTaskMutation", () => {
     const mutation = gql`
       mutation {
         dismissTask(input: { id: "task-id" }) {
+          homeViewTasksSection {
+            tasksConnection(first: 10) {
+              edges {
+                node {
+                  internalID
+                  title
+                }
+              }
+            }
+          }
           taskOrError {
             ... on DismissTaskSuccess {
               task {
@@ -31,6 +41,13 @@ describe("DismissTaskMutation", () => {
             title: "Test Task",
           },
         },
+        homeViewTasksSection: {
+          tasksConnection: {
+            edges: [
+              { node: { internalID: "asdf1234", title: "Remaining Task" } },
+            ],
+          },
+        },
       },
     }
 
@@ -38,6 +55,10 @@ describe("DismissTaskMutation", () => {
       meDismissTaskLoader: jest.fn().mockResolvedValue({
         id: "task-id",
         title: "Test Task",
+      }),
+      meTasksLoader: jest.fn().mockResolvedValue({
+        body: [{ id: "asdf1234", title: "Remaining Task" }],
+        headers: { "x-total-count": 1 },
       }),
     }
 

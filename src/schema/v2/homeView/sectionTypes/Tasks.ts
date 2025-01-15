@@ -1,10 +1,7 @@
 import { GraphQLObjectType } from "graphql"
 import { pageable } from "relay-cursor-paging"
-import {
-  connectionWithCursorInfo,
-  emptyConnection,
-} from "schema/v2/fields/pagination"
-import { TaskType } from "schema/v2/me/task"
+import { emptyConnection } from "schema/v2/fields/pagination"
+import { TaskConnectionType } from "schema/v2/me/task"
 import { NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import {
@@ -24,9 +21,7 @@ export const HomeViewTasksSectionType = new GraphQLObjectType<
     ...standardSectionFields,
 
     tasksConnection: {
-      type: connectionWithCursorInfo({
-        nodeType: TaskType,
-      }).connectionType,
+      type: TaskConnectionType,
       args: pageable({}),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : emptyConnection,
