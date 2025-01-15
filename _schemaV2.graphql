@@ -11480,6 +11480,25 @@ type HomeViewSectionMarketingCollections implements HomeViewSectionGeneric & Nod
   ownerType: String
 }
 
+# A selection of quick links in the home view
+type HomeViewSectionQuickLinks implements HomeViewSectionGeneric & Node {
+  # Component prescription for this section, for overriding or customizing presentation and behavior
+  component: HomeViewComponent
+
+  # [Analytics] `context module` analytics value for this section, as defined in our schema (artsy/cohesion)
+  contextModule: String
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+
+  # [Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)
+  ownerType: String
+  quickLinks: [QuickLink]
+}
+
 # A sales (auctions) section in the home view
 type HomeViewSectionSales implements HomeViewSectionGeneric & Node {
   # Component prescription for this section, for overriding or customizing presentation and behavior
@@ -17594,6 +17613,14 @@ type Query {
     partnerID: ID
     statuses: [ViewingRoomStatusEnum!] = [live]
   ): ViewingRoomsConnection
+}
+
+type QuickLink {
+  # Quick link URL
+  href: String!
+
+  # Quick link title
+  title: String!
 }
 
 type Quiz {
