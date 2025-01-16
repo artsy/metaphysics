@@ -9,10 +9,10 @@ import { NodeInterface } from "../../object_identification"
 import { HomeViewGenericSectionInterface } from "./GenericSectionInterface"
 import { HomeViewSectionTypeNames } from "./names"
 import { standardSectionFields } from "./GenericSectionInterface"
-import { QuickLink } from "../sections/QuickLinks"
+import { NavigationPill } from "../sections/NavigationPills"
 
-const QuickLinkType = new GraphQLObjectType<QuickLink, ResolverContext>({
-  name: "QuickLink",
+const QuickLinkType = new GraphQLObjectType<NavigationPill, ResolverContext>({
+  name: "NavigationPill",
   fields: () => ({
     title: {
       type: new GraphQLNonNull(GraphQLString),
@@ -33,16 +33,16 @@ const QuickLinkType = new GraphQLObjectType<QuickLink, ResolverContext>({
   }),
 })
 
-export const HomeViewQuickLinksSectionType = new GraphQLObjectType<
+export const HomeViewNavigationPillsSectionType = new GraphQLObjectType<
   any,
   ResolverContext
 >({
-  name: HomeViewSectionTypeNames.HomeViewSectionQuickLinks,
+  name: HomeViewSectionTypeNames.HomeViewSectionNavigationPills,
   description: "A selection of quick links in the home view",
   interfaces: [HomeViewGenericSectionInterface, NodeInterface],
   fields: {
     ...standardSectionFields,
-    quickLinks: {
+    navigationPills: {
       type: new GraphQLNonNull(new GraphQLList(QuickLinkType)),
       resolve: (parent, ...rest) =>
         parent.resolver ? parent.resolver(parent, ...rest) : [],

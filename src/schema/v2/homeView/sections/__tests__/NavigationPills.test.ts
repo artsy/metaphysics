@@ -1,7 +1,7 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
-describe("QuickLinks", () => {
+describe("NavigationPills", () => {
   it("returns the section's data", async () => {
     const query = gql`
       {
@@ -11,8 +11,8 @@ describe("QuickLinks", () => {
             internalID
             contextModule
             ownerType
-            ... on HomeViewSectionQuickLinks {
-              quickLinks {
+            ... on HomeViewSectionNavigationPills {
+              navigationPills {
                 title
                 href
                 ownerType
@@ -32,11 +32,10 @@ describe("QuickLinks", () => {
 
     expect(homeView.section).toMatchInlineSnapshot(`
       {
-        "__typename": "HomeViewSectionQuickLinks",
+        "__typename": "HomeViewSectionNavigationPills",
         "contextModule": "quickLinks",
         "internalID": "home-view-section-quick-links",
-        "ownerType": "quickLinks",
-        "quickLinks": [
+        "navigationPills": [
           {
             "contextScreenOwnerId": null,
             "href": "/favorites",
@@ -74,6 +73,7 @@ describe("QuickLinks", () => {
             "title": "Editorial",
           },
         ],
+        "ownerType": "quickLinks",
       }
     `)
   })

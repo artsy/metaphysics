@@ -11481,7 +11481,7 @@ type HomeViewSectionMarketingCollections implements HomeViewSectionGeneric & Nod
 }
 
 # A selection of quick links in the home view
-type HomeViewSectionQuickLinks implements HomeViewSectionGeneric & Node {
+type HomeViewSectionNavigationPills implements HomeViewSectionGeneric & Node {
   # Component prescription for this section, for overriding or customizing presentation and behavior
   component: HomeViewComponent
 
@@ -11493,10 +11493,10 @@ type HomeViewSectionQuickLinks implements HomeViewSectionGeneric & Node {
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
+  navigationPills: [NavigationPill]!
 
   # [Analytics] `owner type` analytics value for this scetion when displayed in a standalone UI, as defined in our schema (artsy/cohesion)
   ownerType: String
-  quickLinks: [QuickLink]
 }
 
 # A sales (auctions) section in the home view
@@ -14506,6 +14506,20 @@ type MyLocation {
   state: String
   summary: String
   timezone: String
+}
+
+type NavigationPill {
+  # The owner ID for the context module
+  contextScreenOwnerId: String
+
+  # Quick link URL
+  href: String!
+
+  # The context module for analytics
+  ownerType: String!
+
+  # Quick link title
+  title: String!
 }
 
 input Near {
@@ -17613,20 +17627,6 @@ type Query {
     partnerID: ID
     statuses: [ViewingRoomStatusEnum!] = [live]
   ): ViewingRoomsConnection
-}
-
-type QuickLink {
-  # The owner ID for the context module
-  contextScreenOwnerId: String
-
-  # Quick link URL
-  href: String!
-
-  # The context module for analytics
-  ownerType: String!
-
-  # Quick link title
-  title: String!
 }
 
 type Quiz {

@@ -14,7 +14,7 @@ export const HomeViewSectionTypeNames = {
   HomeViewSectionGeneric: "HomeViewSectionGeneric",
   HomeViewSectionHeroUnits: "HomeViewSectionHeroUnits",
   HomeViewSectionMarketingCollections: "HomeViewSectionMarketingCollections",
-  HomeViewSectionQuickLinks: "HomeViewSectionQuickLinks",
+  HomeViewSectionNavigationPills: "HomeViewSectionNavigationPills",
   HomeViewSectionSales: "HomeViewSectionSales",
   HomeViewSectionShows: "HomeViewSectionShows",
   HomeViewSectionTasks: "HomeViewSectionTasks",

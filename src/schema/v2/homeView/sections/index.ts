@@ -29,7 +29,7 @@ import { TrendingArtists } from "./TrendingArtists"
 import { ViewingRooms } from "./ViewingRooms"
 import { InfiniteDiscovery } from "./InfiniteDiscovery"
 import { SemanticVersionNumber } from "lib/semanticVersioning"
-import { QuickLinks } from "./QuickLinks"
+import { NavigationPills } from "./NavigationPills"
 
 type MaybeResolved<T> =
   | T
@@ -71,7 +71,7 @@ const sections: HomeViewSection[] = [
   News,
   NewWorksForYou,
   NewWorksFromGalleriesYouFollow,
-  QuickLinks,
+  NavigationPills,
   RecentlyViewedArtworks,
   RecommendedArtists,
   RecommendedArtworks,
