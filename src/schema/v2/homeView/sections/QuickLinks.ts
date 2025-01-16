@@ -14,15 +14,26 @@ export const QuickLinks: HomeViewSection = {
 }
 
 export interface QuickLink {
+  contextScreenOwnerId?: string | null
   title: string
   href: string
+  ownerType: OwnerType
 }
 
 const QUICK_LINKS: Array<QuickLink> = [
-  { title: "Follows", href: "/favorites" },
-  { title: "Auctions", href: "/auctions" },
-  { title: "Saves", href: "/favorites/saves" },
-  { title: "Art under $1000", href: "/collect?price_range=%2A-1000" },
-  { title: "Price Database", href: "/price-database" },
-  { title: "Editorial", href: "/news" },
+  { title: "Follows", href: "/favorites", ownerType: OwnerType.follows },
+  { title: "Auctions", href: "/auctions", ownerType: OwnerType.auctions },
+  { title: "Saves", href: "/favorites/saves", ownerType: OwnerType.saves },
+  {
+    title: "Art under $1000",
+    href: "/collect?price_range=%2A-1000",
+    ownerType: OwnerType.collect,
+    contextScreenOwnerId: "/collect?price_range=*-1000",
+  },
+  {
+    title: "Price Database",
+    href: "/price-database",
+    ownerType: OwnerType.priceDatabase,
+  },
+  { title: "Editorial", href: "/news", ownerType: OwnerType.articles },
 ]

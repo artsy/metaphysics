@@ -17616,8 +17616,14 @@ type Query {
 }
 
 type QuickLink {
+  # The owner ID for the context module
+  contextScreenOwnerId: String
+
   # Quick link URL
   href: String!
+
+  # The context module for analytics
+  ownerType: String!
 
   # Quick link title
   title: String!
