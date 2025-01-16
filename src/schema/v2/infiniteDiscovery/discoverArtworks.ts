@@ -54,7 +54,7 @@ export const DiscoverArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     }
 
     const {
-      limit = 10,
+      limit = 5,
       mltFields,
       osWeights,
       curatedPicksSize,
