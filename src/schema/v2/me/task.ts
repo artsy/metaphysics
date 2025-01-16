@@ -2,6 +2,7 @@ import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { IDFields, NodeInterface } from "../object_identification"
 import { date } from "./../fields/date"
+import { connectionWithCursorInfo } from "../fields/pagination"
 
 export interface Task {
   image_url: string
@@ -47,3 +48,7 @@ export const TaskType = new GraphQLObjectType<any, ResolverContext>({
     createdAt: date(),
   }),
 })
+
+export const TaskConnectionType = connectionWithCursorInfo({
+  nodeType: TaskType,
+}).connectionType

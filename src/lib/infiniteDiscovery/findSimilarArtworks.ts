@@ -10,6 +10,9 @@ interface FindSimilarArtworksOptions {
   weights?: number[]
 }
 
+const DEFAULT_BATCH_SIZE = 5
+const EXTRA_FETCH_SIZE = 10
+
 /**
  * Perform kNN operation to find artworks similar to a vector embedding
  * and optionally use a More Like This (MLT) query.
@@ -23,12 +26,14 @@ export const findSimilarArtworks = async (
 ) => {
   const {
     vectorEmbedding,
-    size,
+    size = DEFAULT_BATCH_SIZE,
     likedArtworkIds = [],
     excludeArtworkIds = [],
     fields = [],
     weights,
   } = options
+
+  const sizeWithOverfetch = size + EXTRA_FETCH_SIZE
 
   const mltQuery = {
     more_like_this: {
@@ -54,7 +59,7 @@ export const findSimilarArtworks = async (
     knn: {
       vector_embedding: {
         vector: vectorEmbedding,
-        k: size,
+        k: sizeWithOverfetch,
         filter: {
           bool: {
             must_not: {
@@ -70,7 +75,7 @@ export const findSimilarArtworks = async (
 
   // Combine MLT and k-NN queries into a `should` clause
   const query = {
-    size,
+    size: sizeWithOverfetch,
     _source: ["id", "artist_id"],
     query: {
       hybrid: {
@@ -116,5 +121,7 @@ export const findSimilarArtworks = async (
 
   // Extract and return artwork IDs
   const artworkIds = response.hits?.hits?.map((hit) => hit._id) || []
-  return artworksLoader({ ids: artworkIds })
+  const artworks = await artworksLoader({ ids: artworkIds })
+
+  return artworks.slice(0, size)
 }

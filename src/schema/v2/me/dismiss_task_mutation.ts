@@ -11,6 +11,8 @@ import {
 } from "lib/gravityErrorHandler"
 import { ResolverContext } from "types/graphql"
 import { Task, TaskType } from "./task"
+import { HomeViewTasksSectionType } from "../homeView/sectionTypes/Tasks"
+import { Tasks } from "../homeView/sections/Tasks"
 
 interface Input {
   id: string
@@ -65,6 +67,10 @@ export const dismissTaskMutation = mutationWithClientMutationId<
       description: "On success: the new state of the Task",
       resolve: (result) => result,
     },
+    homeViewTasksSection: {
+      type: HomeViewTasksSectionType,
+      resolve: () => Tasks,
+    },
   },
   mutateAndGetPayload: async ({ id }, { meDismissTaskLoader }) => {
     if (!meDismissTaskLoader) {
@@ -74,7 +80,7 @@ export const dismissTaskMutation = mutationWithClientMutationId<
     try {
       const task: Task = await meDismissTaskLoader?.(id)
 
-      return { ...task, __typename: "SuccessType" }
+      return { ...task, _type: "SuccessType" }
     } catch (error) {
       const formattedErr = formatGravityError(error)
 
