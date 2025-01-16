@@ -45,7 +45,7 @@ export const HomeViewQuickLinksSectionType = new GraphQLObjectType<
     quickLinks: {
       type: new GraphQLList(QuickLinkType),
       resolve: (parent, ...rest) =>
-        parent.resolver ? parent.resolver(parent, ...rest) : "",
+        parent.resolver ? parent.resolver(parent, ...rest) : [],
     },
   },
 })
