@@ -3,7 +3,7 @@ import { HomeViewSection } from "."
 import { HomeViewSectionTypeNames } from "../sectionTypes/names"
 
 export const NavigationPills: HomeViewSection = {
-  id: "home-view-section-quick-links",
+  id: "home-view-section-navigation-pills",
   contextModule: ContextModule.quickLinks,
   ownerType: OwnerType.quickLinks,
   type: HomeViewSectionTypeNames.HomeViewSectionNavigationPills,

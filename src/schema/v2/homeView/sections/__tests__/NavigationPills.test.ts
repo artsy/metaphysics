@@ -6,7 +6,7 @@ describe("NavigationPills", () => {
     const query = gql`
       {
         homeView {
-          section(id: "home-view-section-quick-links") {
+          section(id: "home-view-section-navigation-pills") {
             __typename
             internalID
             contextModule
@@ -34,7 +34,7 @@ describe("NavigationPills", () => {
       {
         "__typename": "HomeViewSectionNavigationPills",
         "contextModule": "quickLinks",
-        "internalID": "home-view-section-quick-links",
+        "internalID": "home-view-section-navigation-pills",
         "navigationPills": [
           {
             "contextScreenOwnerId": null,
